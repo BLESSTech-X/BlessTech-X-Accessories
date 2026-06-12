@@ -987,6 +987,30 @@ async function loadHomepage() {
 }
 
 loadHomepage();
+  async function loadFeaturedProducts() {
+  try {
+    const res = await fetch('/content/products/index.json');
+    if (!res.ok) throw new Error();
+    
+    const files = await res.json();
+    const products = await Promise.all(files.map(async (file) => {
+      const productRes = await fetch(`/content/products/${file}`);
+      const text = await productRes.text();
+      return {
+        title: text.match(/title:\s*(.+)/)?.[1]?.trim() || 'Product',
+        price: parseInt(text.match(/price:\s*(\d+)/)?.[1] || '0'),
+        image: text.match(/image:\s*(.+)/)?.[1]?.trim() || '',
+        featured: text.match(/featured:\s*(true|false)/)?.[1] === 'true'
+      };
+    }));
+    
+    const featured = products.filter(p => p.featured === true);
+    renderSlider(featured);
+    
+  } catch(e) {
+    console.log('No featured products yet');
+  }
+}
 </script>
 </body>
 </html>
