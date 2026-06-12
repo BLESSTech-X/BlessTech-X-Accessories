@@ -438,6 +438,57 @@ fetchAllProducts().then(products => {
   updateCounts();
   renderProducts();
 });
+  // Fetch products from CMS and display them
+async function loadProducts() {
+  try {
+    const res = await fetch('/content/products/index.json');
+    if (!res.ok) throw new Error('No products yet');
+    
+    const files = await res.json();
+    const products = await Promise.all(files.map(async (file) => {
+      const productRes = await fetch(`/content/products/${file}`);
+      const text = await productRes.text();
+      
+      return {
+        title: text.match(/title:\s*(.+)/)?.[1]?.trim() || 'Product',
+        price: parseInt(text.match(/price:\s*(\d+)/)?.[1] || '0'),
+        category: text.match(/category:\s*(.+)/)?.[1]?.trim() || 'other',
+        image: text.match(/image:\s*(.+)/)?.[1]?.trim() || '',
+        description: text.match(/description:\s*(.+)/)?.[1]?.trim() || ''
+      };
+    }));
+    
+    displayProducts(products);
+    
+  } catch(error) {
+    console.log('No products in CMS yet. Add them in /admin/');
+    document.getElementById('productsGrid').innerHTML = '<div style="text-align:center;padding:40px">No products yet. <a href="/admin/">Add products in CMS</a></div>';
+  }
+}
+
+function displayProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  if (!products.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px">No products found.</div>';
+    return;
+  }
+  
+  grid.innerHTML = products.map(p => `
+    <div class="product-card">
+      <div class="product-img-wrap">
+        ${p.image ? `<img src="${p.image}" alt="${p.title}">` : '<div class="product-img-placeholder">📱</div>'}
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.title}</div>
+        <div class="product-price">ZMW ${p.price.toLocaleString()}</div>
+        <a href="https://wa.me/260979603741?text=I'm%20interested%20in%20${encodeURIComponent(p.title)}" class="order-btn">Order on WhatsApp</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Call the function when page loads
+loadProducts();
 </script>
 </body>
 </html>
