@@ -1,12 +1,10 @@
 ---
-title: 65W PD Triple Port Charger
-price: 280
-category: charger
-image: https://images.unsplash.com/photo-1618440718493-fb0c7af63b77?w=800&q=85&auto=format&fit=crop
-description: Power your laptop, phone, and tablet all at once with three ports
-  delivering up to 65W total output. GaN technology keeps it cool and compact.
-  Intelligent power distribution automatically allocates wattage to each device.
-  Foldable plug design makes it travel-ready. Compatible with MacBook, iPad,
-  iPhone, and all USB-C laptops.
+title: iPhone 13 128GB
+price: 19995
+category: phone
+image: /assets/images/uploads/1000066464.jpg
+description: >
+  iPhone 13. 128GB storage. A15 Bionic chip. Dual camera system with Cinematic
+  mode. 5G ready. All-day battery life.
 featured: true
 ---
