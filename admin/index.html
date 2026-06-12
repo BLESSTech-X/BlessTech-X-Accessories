@@ -5,20 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — BLESSTech-ZM Accessories</title>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>body { margin: 0; font-family: sans-serif; background: #0f172a; }</style>
 </head>
 <body>
+
 <script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on('init', user => {
-    if (!user) {
-      window.netlifyIdentity.on('login', () => {
-        document.location.href = '/admin/';
-      });
-    }
-  });
-}
+window.CMS_MANUAL_INIT = true;
 </script>
-<script src="https://cdn.jsdelivr.net/npm/decap-cms@2.10.192/dist/decap-cms.js"></script>
+
+<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
 <script>
 CMS.init({
   config: {
@@ -31,115 +27,37 @@ CMS.init({
     collections: [
       {
         name: 'products',
-        label: 'Products',
+        label: '📦 Products',
         label_singular: 'Product',
         folder: 'content/products',
         create: true,
         delete: true,
         slug: '{{slug}}',
         fields: [
-          {
-            label: 'Product Name',
-            name: 'title',
-            widget: 'string',
-            hint: 'The full product name as it will appear on the site'
-          },
-          {
-            label: 'Price (ZMW)',
-            name: 'price',
-            widget: 'number',
-            value_type: 'float',
-            min: 0,
-            hint: 'Price in Zambian Kwacha (ZMW)'
-          },
-          {
-            label: 'Category',
-            name: 'category',
-            widget: 'select',
-            options: [
-              { label: 'Phone Cases', value: 'case' },
-              { label: 'Chargers', value: 'charger' },
-              { label: 'Cables', value: 'cable' },
-              { label: 'Earphones', value: 'earphone' },
-              { label: 'Power Banks', value: 'powerbank' },
-              { label: 'Screen Protectors', value: 'protector' },
-              { label: 'Phones', value: 'phone' },
-              { label: 'Other Accessories', value: 'other' }
-            ]
-          },
-          {
-            label: 'Product Image',
-            name: 'image',
-            widget: 'image',
-            required: false,
-            hint: 'Upload a product photo or use a URL'
-          },
-          {
-            label: 'Description',
-            name: 'description',
-            widget: 'text',
-            hint: '2-4 sentences describing the product features and benefits'
-          },
-          {
-            label: 'Show on Homepage Slider?',
-            name: 'featured',
-            widget: 'boolean',
-            default: false,
-            hint: 'Toggle on to feature this product in the homepage Top Picks slider'
-          }
+          { label: 'Product Name', name: 'title', widget: 'string' },
+          { label: 'Price (ZMW)', name: 'price', widget: 'number', value_type: 'int' },
+          { label: 'Category', name: 'category', widget: 'select', options: ['case', 'charger', 'cable', 'earphone', 'powerbank', 'protector', 'phone', 'other'] },
+          { label: 'Product Image', name: 'image', widget: 'image', required: false },
+          { label: 'Description', name: 'description', widget: 'text' },
+          { label: 'Show on Homepage Slider?', name: 'featured', widget: 'boolean', default: false }
         ]
       },
       {
         name: 'settings',
-        label: 'Site Settings',
+        label: '⚙️ Site Settings',
         files: [
           {
             label: 'Homepage Content',
             name: 'homepage',
             file: 'content/settings/homepage.json',
             fields: [
-              {
-                label: 'Hero Line 1 (plain white text)',
-                name: 'hero_line1',
-                widget: 'string',
-                hint: 'First line of the hero heading — displayed in white'
-              },
-              {
-                label: 'Hero Line 2 (rainbow gradient text)',
-                name: 'hero_line2',
-                widget: 'string',
-                hint: 'Second line of the hero heading — displayed with rainbow gradient'
-              },
-              {
-                label: 'Hero Subtitle',
-                name: 'hero_sub',
-                widget: 'text',
-                hint: 'The paragraph text below the hero heading'
-              },
-              {
-                label: 'Stat 1 (e.g. 500+)',
-                name: 'stat1',
-                widget: 'string',
-                hint: 'First statistic number shown on the homepage — Happy Customers'
-              },
-              {
-                label: 'Stat 2 (e.g. 1,200+)',
-                name: 'stat2',
-                widget: 'string',
-                hint: 'Second statistic — Products Sold'
-              },
-              {
-                label: 'Stat 3 (e.g. Same Day)',
-                name: 'stat3',
-                widget: 'string',
-                hint: 'Third statistic — Delivery in Lusaka'
-              },
-              {
-                label: 'Stat 4 (e.g. 4.9★)',
-                name: 'stat4',
-                widget: 'string',
-                hint: 'Fourth statistic — Customer Rating'
-              }
+              { label: 'Hero Line 1 (white text)', name: 'hero_line1', widget: 'string' },
+              { label: 'Hero Line 2 (rainbow text)', name: 'hero_line2', widget: 'string' },
+              { label: 'Hero Subtitle', name: 'hero_sub', widget: 'text' },
+              { label: 'Stat 1', name: 'stat1', widget: 'string' },
+              { label: 'Stat 2', name: 'stat2', widget: 'string' },
+              { label: 'Stat 3', name: 'stat3', widget: 'string' },
+              { label: 'Stat 4', name: 'stat4', widget: 'string' }
             ]
           },
           {
@@ -147,36 +65,11 @@ CMS.init({
             name: 'contact',
             file: 'content/settings/contact.json',
             fields: [
-              {
-                label: 'WhatsApp Number (no spaces, e.g. +260979603741)',
-                name: 'whatsapp',
-                widget: 'string',
-                hint: 'Used for wa.me links — no spaces or dashes'
-              },
-              {
-                label: 'Phone Number (display format)',
-                name: 'phone',
-                widget: 'string',
-                hint: 'Displayed to visitors — can include spaces, e.g. +260 979 603 741'
-              },
-              {
-                label: 'Email Address',
-                name: 'email',
-                widget: 'string',
-                hint: 'Contact email shown on the contact page and footer'
-              },
-              {
-                label: 'Location',
-                name: 'location',
-                widget: 'string',
-                hint: 'Physical location displayed on the contact page, e.g. Lusaka, Zambia'
-              },
-              {
-                label: 'Business Hours',
-                name: 'hours',
-                widget: 'string',
-                hint: 'Hours text shown in footer and contact page, e.g. Mon–Sat: 8am – 7pm'
-              }
+              { label: 'WhatsApp Number', name: 'whatsapp', widget: 'string' },
+              { label: 'Phone Number', name: 'phone', widget: 'string' },
+              { label: 'Email', name: 'email', widget: 'string' },
+              { label: 'Location', name: 'location', widget: 'string' },
+              { label: 'Business Hours', name: 'hours', widget: 'string' }
             ]
           }
         ]
@@ -185,5 +78,6 @@ CMS.init({
   }
 });
 </script>
+
 </body>
 </html>
