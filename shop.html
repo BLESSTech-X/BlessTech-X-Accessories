@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — BLESSTech-ZM Accessories</title>
+<meta name="description" content="Browse all phone accessories at BLESSTech-ZM. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+:root {
+  --dark:#0a0a14;--dark2:#12122a;--text:#1a1a2e;--muted:#6b7280;--light:#f8f9ff;--white:#ffffff;
+  --green:#25d366;--green-dark:#128c7e;--c1:#ff6b6b;--c2:#feca57;--c3:#48dbfb;--c4:#ff9ff3;--c5:#54a0ff;--c6:#5f27cd;
+  --grad:linear-gradient(135deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3,#54a0ff,#5f27cd);
+  --grad2:linear-gradient(135deg,#ff6b6b 0%,#feca57 50%,#48dbfb 100%);
+  --grad-green:linear-gradient(135deg,#128c7e,#25d366);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);overflow-x:hidden;padding-bottom:70px;}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;display:block;}
+
+@keyframes gradShift{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+@keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;background:rgba(10,10,20,0.96);backdrop-filter:blur(18px);}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:38px;height:38px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:18px;color:white;flex-shrink:0;}
+.logo-text .brand{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:white;line-height:1.1;}
+.logo-text .sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.45);}
+nav{display:flex;align-items:center;gap:28px;}
+nav a{color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;transition:color 0.2s;}
+nav a:hover,nav a.active{color:white;}
+.btn-order-header{background:var(--grad-green);color:white;font-weight:600;font-size:13px;padding:8px 16px;border-radius:100px;display:flex;align-items:center;gap:6px;transition:transform 0.2s,box-shadow 0.2s;}
+.btn-order-header:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(37,211,102,0.4);}
+.hamburger{display:none;background:none;border:none;color:white;font-size:22px;cursor:pointer;}
+.rainbow-streak{position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);background-size:200% 100%;animation:gradShift 4s linear infinite;}
+.mobile-nav{display:none;position:fixed;top:64px;left:0;right:0;z-index:190;background:rgba(10,10,20,0.98);backdrop-filter:blur(20px);padding:24px;flex-direction:column;gap:4px;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{color:rgba(255,255,255,0.85);font-size:16px;font-weight:500;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.mobile-nav a:last-of-type{border-bottom:none;}
+.mobile-nav .btn-wa-mobile{margin-top:16px;background:var(--grad-green);color:white;font-weight:700;padding:14px;border-radius:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+/* SHOP HERO */
+.shop-hero{background:var(--dark);padding:96px 24px 48px;position:relative;overflow:hidden;margin-top:64px;}
+.shop-hero-orb1{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,107,0.2),transparent 70%);top:-100px;right:-100px;pointer-events:none;}
+.shop-hero-orb2{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(84,160,255,0.15),transparent 70%);bottom:-80px;left:-60px;pointer-events:none;}
+.shop-hero-content{max-width:1280px;margin:0 auto;position:relative;z-index:1;}
+.shop-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.2rem);color:white;margin-bottom:12px;}
+.shop-hero p{color:rgba(255,255,255,0.55);font-size:16px;}
+.shop-hero p span{color:rgba(255,255,255,0.8);}
+
+/* FILTER BAR */
+.filter-bar{position:sticky;top:64px;z-index:90;background:white;border-bottom:1px solid rgba(0,0,0,0.07);padding:0 24px;}
+.filter-bar-inner{max-width:1280px;margin:0 auto;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;padding:12px 0;}
+.filter-bar-inner::-webkit-scrollbar{display:none;}
+.filter-pills{display:flex;gap:8px;width:max-content;}
+.filter-pill{background:white;border:1.5px solid rgba(0,0,0,0.1);color:var(--muted);font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.filter-pill:hover{border-color:var(--c5);color:var(--c5);}
+.filter-pill.active{background:var(--dark);border-color:var(--dark);color:white;}
+.filter-pill .count{font-size:11px;opacity:0.7;}
+
+/* SHOP TOP BAR */
+.shop-topbar{max-width:1280px;margin:0 auto;padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.products-count{color:var(--muted);font-size:14px;}
+.products-count strong{color:var(--text);}
+.sort-select{border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;background:white;cursor:pointer;outline:none;}
+.sort-select:focus{border-color:var(--c5);}
+
+/* PRODUCTS GRID */
+.products-section{max-width:1280px;margin:0 auto;padding:24px;}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;}
+
+/* SKELETON */
+.skeleton-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06);}
+.skeleton-img{height:200px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;}
+.skeleton-body{padding:16px;}
+.skeleton-line{height:12px;border-radius:6px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;margin-bottom:10px;}
+.skeleton-line.short{width:60%;}
+.skeleton-line.shorter{width:40%;}
+.skeleton-btn{height:38px;border-radius:10px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;margin-top:4px;}
+
+/* PRODUCT CARDS */
+.product-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.07);cursor:pointer;transition:transform 0.25s,box-shadow 0.25s;position:relative;animation:fadeIn 0.4s ease forwards;}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(0,0,0,0.14);}
+.product-card-img{height:200px;width:100%;object-fit:cover;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--muted);}
+.product-card-img img{width:100%;height:100%;object-fit:cover;}
+.cat-badge{position:absolute;top:12px;left:12px;z-index:2;color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;}
+.product-card-body{padding:16px;}
+.product-cat-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;}
+.product-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.product-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.product-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.product-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
+.btn-wa-card{background:var(--grad-green);color:white;font-weight:600;font-size:12px;padding:8px 14px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;}
+.btn-wa-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(37,211,102,0.4);}
+
+/* EMPTY STATE */
+.empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;}
+.empty-state .emoji{font-size:4rem;margin-bottom:16px;}
+.empty-state h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:8px;}
+.empty-state p{color:var(--muted);font-size:14px;}
+
+/* SECTION TAG */
+.section-tag{display:inline-block;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:4px;}
+
+/* FOOTER */
+footer{background:var(--dark);padding:64px 24px 0;}
+.footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
+.footer-brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:white;margin-bottom:10px;}
+.footer-tagline{color:rgba(255,255,255,0.45);font-size:13px;line-height:1.6;margin-bottom:20px;}
+.footer-socials{display:flex;gap:10px;}
+.social-btn{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);font-size:15px;transition:all 0.2s;cursor:pointer;}
+.social-btn:hover{background:rgba(255,255,255,0.12);color:white;transform:translateY(-2px);}
+.footer-col-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:white;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+.footer-links{display:flex;flex-direction:column;gap:10px;}
+.footer-links a{color:rgba(255,255,255,0.45);font-size:14px;transition:color 0.2s;}
+.footer-links a:hover{color:white;}
+.footer-contact-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.footer-contact-item i{color:rgba(255,255,255,0.4);font-size:13px;margin-top:2px;flex-shrink:0;}
+.footer-contact-item span,.footer-contact-item a{color:rgba(255,255,255,0.55);font-size:13px;line-height:1.5;}
+.footer-contact-item a:hover{color:white;}
+.footer-bottom{max-width:1280px;margin:40px auto 0;padding:20px 0;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.footer-bottom-left,.footer-bottom-right{color:rgba(255,255,255,0.3);font-size:12px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;z-index:200;background:rgba(255,255,255,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(0,0,0,0.06);box-shadow:0 -4px 20px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-around;}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:500;cursor:pointer;text-decoration:none;flex:1;padding:6px 0;transition:color 0.2s;}
+.bnav-item i{font-size:20px;transition:transform 0.2s;}
+.bnav-item:hover i{transform:translateY(-2px);}
+.bnav-item.active{color:var(--c5);}
+.bnav-order{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--grad-green);color:white;font-size:10px;font-weight:600;padding:10px 22px;border-radius:100px;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,0.45);transition:transform 0.2s;margin-bottom:4px;}
+.bnav-order i{font-size:22px;}
+.bnav-order:hover{transform:translateY(-2px);}
+
+@media(max-width:900px){nav{display:none;}.hamburger{display:block;}.footer-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="rainbow-streak"></div>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">📱</div>
+      <div class="logo-text"><div class="brand">BLESSTech-ZM</div><div class="sub">Accessories</div></div>
+    </a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="shop.html" class="active">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20BLESSTech-ZM." target="_blank" class="btn-order-header"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
+    </nav>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="index.html">Home</a>
+  <a href="shop.html">Shop</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20BLESSTech-ZM." target="_blank" class="btn-wa-mobile"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
+</div>
+
+<!-- SHOP HERO -->
+<section class="shop-hero">
+  <div class="shop-hero-orb1"></div>
+  <div class="shop-hero-orb2"></div>
+  <div class="shop-hero-content">
+    <div class="section-tag">All Products</div>
+    <h1>Shop All Accessories</h1>
+    <p><span>Genuine products</span> · <span>Fast delivery</span> · <span>WhatsApp ordering</span></p>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <div class="filter-pills" id="filter-pills">
+      <button class="filter-pill active" data-cat="all">All <span class="count" id="count-all"></span></button>
+      <button class="filter-pill" data-cat="case">Cases <span class="count" id="count-case"></span></button>
+      <button class="filter-pill" data-cat="charger">Chargers <span class="count" id="count-charger"></span></button>
+      <button class="filter-pill" data-cat="cable">Cables <span class="count" id="count-cable"></span></button>
+      <button class="filter-pill" data-cat="earphone">Earphones <span class="count" id="count-earphone"></span></button>
+      <button class="filter-pill" data-cat="powerbank">Power Banks <span class="count" id="count-powerbank"></span></button>
+      <button class="filter-pill" data-cat="protector">Protectors <span class="count" id="count-protector"></span></button>
+      <button class="filter-pill" data-cat="phone">Phones <span class="count" id="count-phone"></span></button>
+      <button class="filter-pill" data-cat="other">Other <span class="count" id="count-other"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="shop-topbar">
+  <div class="products-count"><strong id="product-count">0</strong> products found</div>
+  <select class="sort-select" id="sort-select">
+    <option value="default">Default</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+    <option value="name-asc">Name: A–Z</option>
+  </select>
+</div>
+
+<!-- PRODUCTS GRID -->
+<div class="products-section">
+  <div class="products-grid" id="products-grid">
+    <!-- Skeleton -->
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">BLESSTech-ZM 📱</div>
+      <p class="footer-tagline">Lusaka's Most Trusted Phone Accessories Store. Genuine products, fast delivery, personal service.</p>
+      <div class="footer-socials">
+        <a href="https://wa.me/260979603741" target="_blank" class="social-btn"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-tiktok"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Categories</div>
+      <div class="footer-links">
+        <a href="shop.html?cat=case">Cases</a><a href="shop.html?cat=charger">Chargers</a><a href="shop.html?cat=cable">Cables</a>
+        <a href="shop.html?cat=earphone">Earphones</a><a href="shop.html?cat=powerbank">Power Banks</a>
+        <a href="shop.html?cat=protector">Protectors</a><a href="shop.html?cat=phone">Phones</a><a href="shop.html?cat=other">Other</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <div class="footer-contact-item"><i class="fa-brands fa-whatsapp"></i><a href="https://wa.me/260979603741" target="_blank">+260 979 603 741</a></div>
+      <div class="footer-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:singbless89@gmail.com">singbless89@gmail.com</a></div>
+      <div class="footer-contact-item"><i class="fa-solid fa-location-dot"></i><span>Lusaka, Zambia</span></div>
+      <div class="footer-contact-item"><i class="fa-solid fa-clock"></i><span>Mon–Sat, 8am – 7pm</span></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-bottom-left">© 2025 BLESSTech-ZM Accessories · Barack Blessings. All rights reserved.</span>
+    <span class="footer-bottom-right">Jesus loves you. ❤️</span>
+  </div>
+  <div style="height:70px;"></div>
+</footer>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="bnav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a href="shop.html" class="bnav-item active"><i class="fa-solid fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20order." target="_blank" class="bnav-order"><i class="fa-brands fa-whatsapp"></i><span>Order</span></a>
+  <a href="contact.html" class="bnav-item"><i class="fa-solid fa-envelope"></i><span>Contact</span></a>
+</nav>
+
+<script>
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on('init', user => {
+    if (!user) window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
+  });
+}
+
+const DEMO_PRODUCTS = [
+  { slug:'clear-slim-case', title:'Clear Slim Case', price:85, category:'case', featured:true, image:'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80&auto=format&fit=crop', description:'Ultra-thin transparent back case. Premium TPU material. Compatible with wireless charging.' },
+  { slug:'shockproof-armor-case', title:'Shockproof Armor Case', price:130, category:'case', featured:false, image:'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80&auto=format&fit=crop', description:'Military-grade drop protection. Dual-layer TPU and PC shell. Air cushion corners.' },
+  { slug:'leather-wallet-case', title:'Leather Wallet Case', price:175, category:'case', featured:false, image:'https://images.unsplash.com/photo-1603713780744-d8c9af4e2eed?w=400&q=80&auto=format&fit=crop', description:'Premium leather flip case with 3 card slots. Magnetic closure. Full 360 protection.' },
+  { slug:'20w-usb-c-charger', title:'20W USB-C Fast Charger', price:150, category:'charger', featured:true, image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&auto=format&fit=crop', description:'GaN fast charger for iPhone and Android. Ultra-compact design. Includes USB-C cable.' },
+  { slug:'65w-pd-charger', title:'65W PD Triple Port Charger', price:280, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1618440718493-fb0c7af63b77?w=400&q=80&auto=format&fit=crop', description:'Charge laptop, phone and tablet simultaneously. Three ports. Foldable plug.' },
+  { slug:'wireless-charger-pad', title:'15W Wireless Charger Pad', price:220, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=400&q=80&auto=format&fit=crop', description:'Qi-certified 15W wireless charging. Anti-slip surface. LED indicator ring.' },
+  { slug:'braided-usb-c-cable', title:'Braided USB-C Cable 1.5m', price:60, category:'cable', featured:true, image:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80&auto=format&fit=crop', description:'Nylon braided 100W fast-charge cable. Reinforced connectors. 1.5 metre length.' },
+  { slug:'lightning-cable', title:'MFi Lightning Cable 1.2m', price:75, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1600490036275-25de35e6bfc5?w=400&q=80&auto=format&fit=crop', description:'Apple MFi certified Lightning cable. Braided design. 1.2m length.' },
+  { slug:'3-in-1-cable', title:'3-in-1 Charging Cable', price:95, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1601944179066-29786cb9d32a?w=400&q=80&auto=format&fit=crop', description:'USB-C, Lightning and Micro-USB in one cable. Never carry multiple cables again.' },
+  { slug:'tws-wireless-earbuds', title:'TWS Wireless Earbuds', price:380, category:'earphone', featured:true, image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop', description:'Active noise cancellation. 20-hour total battery. IPX5 water resistant. Bluetooth 5.3.' },
+  { slug:'bass-earphones', title:'Bass Boost Wired Earphones', price:120, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80&auto=format&fit=crop', description:'Deep bass wired earphones with in-line mic. 3.5mm jack. All-day comfort.' },
+  { slug:'sport-earphones', title:'Sport Hook Earphones', price:160, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&q=80&auto=format&fit=crop', description:'Sweat-proof sport earphones with secure ear hooks. IPX4 rating.' },
+  { slug:'10000mah-powerbank', title:'10000mAh Power Bank', price:420, category:'powerbank', featured:true, image:'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=400&q=80&auto=format&fit=crop', description:'Dual USB output. Charges phone 2-3 times. Slim pocket-friendly design.' },
+  { slug:'20000mah-powerbank', title:'20000mAh Power Bank', price:680, category:'powerbank', featured:false, image:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80&auto=format&fit=crop', description:'High capacity with USB-C fast input, dual USB-A output and digital display.' },
+  { slug:'tempered-glass', title:'9H Tempered Glass Protector', price:45, category:'protector', featured:true, image:'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&q=80&auto=format&fit=crop', description:'9H hardness. Anti-scratch. Bubble-free installation kit included.' },
+  { slug:'privacy-screen-protector', title:'Privacy Screen Protector', price:80, category:'protector', featured:false, image:'https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=400&q=80&auto=format&fit=crop', description:'Anti-spy privacy filter. 9H hardness. Matte anti-glare finish.' },
+  { slug:'android-smartphone', title:'Android Smartphone 64GB', price:2200, category:'phone', featured:true, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80&auto=format&fit=crop', description:'Dual SIM. 64GB storage. 4G LTE. Long battery life. Perfect for everyday use.' },
+  { slug:'selfie-ring-light', title:'Selfie Ring Light Clip', price:95, category:'other', featured:false, image:'https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=400&q=80&auto=format&fit=crop', description:'Universal clip-on LED ring light. 3 brightness levels. USB rechargeable.' }
+];
+
+const CAT_COLORS = {
+  case: 'linear-gradient(135deg,#54a0ff,#5f27cd)',
+  charger: 'linear-gradient(135deg,#feca57,#ff6b6b)',
+  cable: 'linear-gradient(135deg,#48dbfb,#54a0ff)',
+  earphone: 'linear-gradient(135deg,#ff9ff3,#ff6b6b)',
+  powerbank: 'linear-gradient(135deg,#5f27cd,#48dbfb)',
+  protector: 'linear-gradient(135deg,#48dbfb,#ff9ff3)',
+  phone: 'linear-gradient(135deg,#ff6b6b,#5f27cd)',
+  other: 'linear-gradient(135deg,#feca57,#48dbfb)'
+};
+
+function parseFrontmatter(text, slug) {
+  const match = text.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const out = { slug };
+  match[1].split('\n').forEach(line => {
+    const m = line.match(/^(\w+):\s*"?([^"]*)"?\s*$/);
+    if (!m) return;
+    const [, key, val] = m;
+    if (key === 'price') out[key] = parseFloat(val) || 0;
+    else if (key === 'featured') out[key] = val.trim() === 'true';
+    else out[key] = val.trim();
+  });
+  return out;
+}
+
+async function fetchAllProducts() {
+  try {
+    const indexRes = await fetch('/content/products/index.json');
+    if (indexRes.ok) return await indexRes.json();
+  } catch(e) {}
+  const slugs = ['clear-slim-case','shockproof-armor-case','leather-wallet-case','20w-usb-c-charger','65w-pd-charger','wireless-charger-pad','braided-usb-c-cable','lightning-cable','3-in-1-cable','tws-wireless-earbuds','bass-earphones','sport-earphones','10000mah-powerbank','20000mah-powerbank','tempered-glass','privacy-screen-protector','android-smartphone','selfie-ring-light'];
+  const results = await Promise.allSettled(slugs.map(s => fetch(`/content/products/${s}.md`).then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null)));
+  const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+  return fetched.length ? fetched : DEMO_PRODUCTS;
+}
+
+let allProducts = [];
+let activeCategory = 'all';
+const gridEl = document.getElementById('products-grid');
+const countEl = document.getElementById('product-count');
+const sortEl = document.getElementById('sort-select');
+
+function getCatLabel(cat) {
+  const map = { case:'Case', charger:'Charger', cable:'Cable', earphone:'Earphone', powerbank:'Power Bank', protector:'Protector', phone:'Phone', other:'Other' };
+  return map[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'Other');
+}
+
+function renderProducts() {
+  let filtered = activeCategory === 'all' ? [...allProducts] : allProducts.filter(p => p.category === activeCategory);
+  const sort = sortEl ? sortEl.value : 'default';
+  if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+  else if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+  else if (sort === 'name-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+
+  if (countEl) countEl.textContent = filtered.length;
+  if (!gridEl) return;
+  gridEl.innerHTML = '';
+
+  if (!filtered.length) {
+    gridEl.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div><h3>No products found</h3><p>Try a different category or <a href="https://wa.me/260979603741" target="_blank" style="color:var(--green)">ask us on WhatsApp</a> for what you need.</p></div>`;
+    return;
+  }
+
+  filtered.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.animationDelay = (i * 0.04) + 's';
+    const bg = CAT_COLORS[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
+    const waMsg = encodeURIComponent(`Hi! I'd like to order: ${p.title} – ZMW ${p.price}. Is it available?`);
+    card.innerHTML = `
+      <div class="cat-badge" style="background:${bg}">${getCatLabel(p.category)}</div>
+      <div class="product-card-img">${p.image ? `<img src="${p.image}" alt="${p.title}" loading="lazy">` : '📱'}</div>
+      <div class="product-card-body">
+        <div class="product-cat-label">${getCatLabel(p.category)}</div>
+        <div class="product-name">${p.title}</div>
+        <div class="product-desc">${p.description || ''}</div>
+        <div class="product-footer">
+          <div class="product-price">ZMW ${p.price.toLocaleString()}</div>
+          <a href="https://wa.me/260979603741?text=${waMsg}" target="_blank" class="btn-wa-card" onclick="event.stopPropagation()"><i class="fa-brands fa-whatsapp"></i> Order</a>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => { window.location.href = `product.html?id=${p.slug}`; });
+    gridEl.appendChild(card);
+  });
+}
+
+function updateCounts() {
+  const cats = ['all','case','charger','cable','earphone','powerbank','protector','phone','other'];
+  cats.forEach(cat => {
+    const el = document.getElementById(`count-${cat}`);
+    if (!el) return;
+    const count = cat === 'all' ? allProducts.length : allProducts.filter(p => p.category === cat).length;
+    el.textContent = `(${count})`;
+  });
+}
+
+// Filter pills
+document.querySelectorAll('.filter-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    activeCategory = pill.dataset.cat;
+    renderProducts();
+  });
+});
+
+if (sortEl) sortEl.addEventListener('change', renderProducts);
+
+// Check URL param
+const urlParams = new URLSearchParams(window.location.search);
+const urlCat = urlParams.get('cat');
+if (urlCat) {
+  document.querySelectorAll('.filter-pill').forEach(p => {
+    p.classList.remove('active');
+    if (p.dataset.cat === urlCat) p.classList.add('active');
+  });
+  activeCategory = urlCat;
+}
+
+// Hamburger
+const ham = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+if (ham && mobileNav) {
+  ham.addEventListener('click', () => {
+    mobileNav.classList.toggle('open');
+    ham.querySelector('i').className = mobileNav.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+  });
+}
+
+// Load products
+fetchAllProducts().then(products => {
+  allProducts = products;
+  updateCounts();
+  renderProducts();
+});
+</script>
+</body>
+</html>
