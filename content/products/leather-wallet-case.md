@@ -1,8 +1,15 @@
 ---
-title: "Leather Wallet Case"
-price: 175
-category: "case"
-image: "https://images.unsplash.com/photo-1603713780744-d8c9af4e2eed?w=800&q=85&auto=format&fit=crop"
-description: "Premium PU leather flip case with 3 card slots and a cash pocket — carry your phone and wallet in one. Strong magnetic closure keeps everything secure. Full 360-degree protection with a built-in kickstand for hands-free viewing. Available in multiple colours to match your style."
-featured: false
+title: "GOOGLE PIXEL 6 "
+price: 6000
+category: phone
+image: /assets/images/uploads/1000066475.jpg
+description: |-
+  ✅ 6.4" OLED 90Hz display
+  ✅ 50MP camera with Magic Eraser
+  ✅ Google Tensor chip. Fast and smart.
+  ✅ 5G ready. IP68 water resistant.
+  ✅ All-day battery + wireless charging.
+
+  Order now. Delivery in Lusaka.
+featured: true
 ---
