@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — BLESSTech-ZM Accessories</title>
+<title>Admin — PhoneYa2 Accessories</title>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>body { margin: 0; font-family: sans-serif; background: #0f172a; }</style>
 </head>
@@ -25,6 +25,9 @@ CMS.init({
     media_folder: 'assets/images/uploads',
     public_folder: '/assets/images/uploads',
     collections: [
+      // ============================================
+      // PRODUCTS COLLECTION (UPDATED)
+      // ============================================
       {
         name: 'products',
         label: '📦 Products',
@@ -33,15 +36,73 @@ CMS.init({
         create: true,
         delete: true,
         slug: '{{slug}}',
+        summary: '{{fields.title}} — ZMW {{fields.price}} {{#if fields.featured}}⭐{{/if}}',
         fields: [
-          { label: 'Product Name', name: 'title', widget: 'string' },
-          { label: 'Price (ZMW)', name: 'price', widget: 'number', value_type: 'int' },
-          { label: 'Category', name: 'category', widget: 'select', options: ['case', 'charger', 'cable', 'earphone', 'powerbank', 'protector', 'phone', 'other'] },
-          { label: 'Product Image', name: 'image', widget: 'image', required: false },
-          { label: 'Description', name: 'description', widget: 'text' },
-          { label: 'Show on Homepage Slider?', name: 'featured', widget: 'boolean', default: false }
+          { label: 'Product Name', name: 'title', widget: 'string', hint: 'Full product name shown on site' },
+          { label: 'Price (ZMW)', name: 'price', widget: 'number', value_type: 'int', min: 0, hint: 'Current selling price' },
+          { 
+            label: 'Original Price (ZMW)', 
+            name: 'original_price', 
+            widget: 'number', 
+            value_type: 'int', 
+            min: 0, 
+            default: 0, 
+            hint: 'Leave 0 if no discount. If higher than price, shows crossed-out original + SAVE badge' 
+          },
+          { 
+            label: 'Stock Quantity', 
+            name: 'stock', 
+            widget: 'number', 
+            value_type: 'int', 
+            default: 10, 
+            min: 0, 
+            hint: 'Number of units available. 0 = Out of Stock, 1-5 = Low Stock badge' 
+          },
+          { 
+            label: 'Category', 
+            name: 'category', 
+            widget: 'select', 
+            options: [
+              { label: '📱 Phone Cases', value: 'case' },
+              { label: '⚡ Chargers', value: 'charger' },
+              { label: '🔌 Cables', value: 'cable' },
+              { label: '🎧 Earphones', value: 'earphone' },
+              { label: '🔋 Power Banks', value: 'powerbank' },
+              { label: '🛡️ Screen Protectors', value: 'protector' },
+              { label: '📲 Phones', value: 'phone' },
+              { label: '✨ Other Accessories', value: 'other' }
+            ]
+          },
+          { label: 'Product Image', name: 'image', widget: 'image', required: false, hint: 'Main product photo' },
+          { label: 'Description', name: 'description', widget: 'text', hint: '2-4 sentences describing the product' },
+          { label: '⭐ Featured on Homepage Slider', name: 'featured', widget: 'boolean', default: false, hint: 'Turn ON to show in Top Picks slider' }
         ]
       },
+
+      // ============================================
+      // RECENT SALES COLLECTION (NEW)
+      // For social proof notification popup
+      // ============================================
+      {
+        name: 'recent_sales',
+        label: '🛍️ Recent Sales',
+        label_singular: 'Sale',
+        folder: 'content/settings',
+        create: true,
+        delete: true,
+        slug: 'recent-sales',
+        summary: '{{fields.product}} - {{fields.city}}',
+        fields: [
+          { label: 'Product Name', name: 'product', widget: 'string', hint: 'e.g. Clear Slim Case' },
+          { label: 'City', name: 'city', widget: 'string', default: 'Lusaka', hint: 'Customer location' },
+          { label: 'Time Ago', name: 'time', widget: 'string', default: '2 hours ago', hint: 'e.g. 2 hours ago, yesterday, 3 days ago' },
+          { label: 'Active', name: 'active', widget: 'boolean', default: true, hint: 'Uncheck to hide this sale' }
+        ]
+      },
+
+      // ============================================
+      // SITE SETTINGS (UPDATED with more fields)
+      // ============================================
       {
         name: 'settings',
         label: '⚙️ Site Settings',
@@ -51,13 +112,13 @@ CMS.init({
             name: 'homepage',
             file: 'content/settings/homepage.json',
             fields: [
-              { label: 'Hero Line 1 (white text)', name: 'hero_line1', widget: 'string' },
-              { label: 'Hero Line 2 (rainbow text)', name: 'hero_line2', widget: 'string' },
-              { label: 'Hero Subtitle', name: 'hero_sub', widget: 'text' },
-              { label: 'Stat 1', name: 'stat1', widget: 'string' },
-              { label: 'Stat 2', name: 'stat2', widget: 'string' },
-              { label: 'Stat 3', name: 'stat3', widget: 'string' },
-              { label: 'Stat 4', name: 'stat4', widget: 'string' }
+              { label: 'Hero Line 1 (white text)', name: 'hero_line1', widget: 'string', default: "Lusaka's Best" },
+              { label: 'Hero Line 2 (rainbow text)', name: 'hero_line2', widget: 'string', default: 'Phone Accessories' },
+              { label: 'Hero Subtitle', name: 'hero_sub', widget: 'text', default: 'Premium cases, chargers, cables & more. Same-day delivery across Lusaka.' },
+              { label: 'Stat 1 (e.g. 500+)', name: 'stat1', widget: 'string', default: '500+' },
+              { label: 'Stat 2 (e.g. 1,200+)', name: 'stat2', widget: 'string', default: '1,200+' },
+              { label: 'Stat 3 (e.g. Same Day)', name: 'stat3', widget: 'string', default: 'Same Day' },
+              { label: 'Stat 4 (e.g. 4.9★)', name: 'stat4', widget: 'string', default: '4.9★' }
             ]
           },
           {
@@ -65,11 +126,11 @@ CMS.init({
             name: 'contact',
             file: 'content/settings/contact.json',
             fields: [
-              { label: 'WhatsApp Number', name: 'whatsapp', widget: 'string' },
-              { label: 'Phone Number', name: 'phone', widget: 'string' },
-              { label: 'Email', name: 'email', widget: 'string' },
-              { label: 'Location', name: 'location', widget: 'string' },
-              { label: 'Business Hours', name: 'hours', widget: 'string' }
+              { label: 'WhatsApp Number (digits only)', name: 'whatsapp', widget: 'string', default: '260979603741' },
+              { label: 'Phone Number (display)', name: 'phone', widget: 'string', default: '+260 979 603 741' },
+              { label: 'Email', name: 'email', widget: 'string', default: 'singbless89@gmail.com' },
+              { label: 'Location', name: 'location', widget: 'string', default: 'Lusaka, Zambia' },
+              { label: 'Business Hours', name: 'hours', widget: 'string', default: 'Mon–Sat, 8am – 7pm' }
             ]
           }
         ]
