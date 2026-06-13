@@ -26,7 +26,7 @@ CMS.init({
     public_folder: '/assets/images/uploads',
     collections: [
       // ============================================
-      // PRODUCTS COLLECTION (UPDATED)
+      // PRODUCTS COLLECTION (WITH GALLERY)
       // ============================================
       {
         name: 'products',
@@ -73,15 +73,24 @@ CMS.init({
               { label: '✨ Other Accessories', value: 'other' }
             ]
           },
-          { label: 'Product Image', name: 'image', widget: 'image', required: false, hint: 'Main product photo' },
+          { label: 'Main Product Image', name: 'image', widget: 'image', required: false, hint: 'Main product photo shown on shop page and product page' },
+          { 
+            label: 'Product Gallery (Additional Images)', 
+            name: 'gallery', 
+            widget: 'list', 
+            required: false,
+            hint: 'Upload additional photos. These will appear as thumbnails on the product page.',
+            fields: [
+              { label: 'Image', name: 'image', widget: 'image' }
+            ]
+          },
           { label: 'Description', name: 'description', widget: 'text', hint: '2-4 sentences describing the product' },
           { label: '⭐ Featured on Homepage Slider', name: 'featured', widget: 'boolean', default: false, hint: 'Turn ON to show in Top Picks slider' }
         ]
       },
 
       // ============================================
-      // RECENT SALES COLLECTION (NEW)
-      // For social proof notification popup
+      // RECENT SALES COLLECTION
       // ============================================
       {
         name: 'recent_sales',
@@ -101,7 +110,7 @@ CMS.init({
       },
 
       // ============================================
-      // SITE SETTINGS (UPDATED with more fields)
+      // SITE SETTINGS
       // ============================================
       {
         name: 'settings',
