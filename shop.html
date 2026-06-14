@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shop — PhoneYa2 Accessories</title>
-<meta name="description" content="Browse all phone accessories at PhoneYa2. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
+<title>Shop — PhoneYa2-ZM Accessories</title>
+<meta name="description" content="Browse all phone accessories at PhoneYa2-ZM. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
@@ -26,8 +26,10 @@ img{max-width:100%;display:block;}
 @keyframes gradShift{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
 @keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideOutDown{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
 
-/* HEADER */
+/* ── HEADER ── */
 header{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;background:rgba(10,10,20,0.96);backdrop-filter:blur(18px);}
 .header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;}
 .logo{display:flex;align-items:center;gap:10px;}
@@ -40,14 +42,14 @@ nav a:hover,nav a.active{color:white;}
 .btn-order-header{background:var(--grad-green);color:white;font-weight:600;font-size:13px;padding:8px 16px;border-radius:100px;display:flex;align-items:center;gap:6px;transition:transform 0.2s,box-shadow 0.2s;}
 .btn-order-header:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(37,211,102,0.4);}
 .hamburger{display:none;background:none;border:none;color:white;font-size:22px;cursor:pointer;}
-.rainbow-streak{position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);background-size:200% 100%;animation:gradShift 4s linear infinite;}
+.rainbow-streak{position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);background-size:200%;animation:gradShift 4s linear infinite;}
 .mobile-nav{display:none;position:fixed;top:64px;left:0;right:0;z-index:190;background:rgba(10,10,20,0.98);backdrop-filter:blur(20px);padding:24px;flex-direction:column;gap:4px;}
 .mobile-nav.open{display:flex;}
 .mobile-nav a{color:rgba(255,255,255,0.85);font-size:16px;font-weight:500;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
 .mobile-nav a:last-of-type{border-bottom:none;}
 .mobile-nav .btn-wa-mobile{margin-top:16px;background:var(--grad-green);color:white;font-weight:700;padding:14px;border-radius:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;}
 
-/* SHOP HERO */
+/* ── SHOP HERO ── */
 .shop-hero{background:var(--dark);padding:96px 24px 48px;position:relative;overflow:hidden;margin-top:64px;}
 .shop-hero-orb1{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,107,0.2),transparent 70%);top:-100px;right:-100px;pointer-events:none;}
 .shop-hero-orb2{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(84,160,255,0.15),transparent 70%);bottom:-80px;left:-60px;pointer-events:none;}
@@ -55,8 +57,38 @@ nav a:hover,nav a.active{color:white;}
 .shop-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.2rem);color:white;margin-bottom:12px;}
 .shop-hero p{color:rgba(255,255,255,0.55);font-size:16px;}
 .shop-hero p span{color:rgba(255,255,255,0.8);}
+.section-tag{display:inline-block;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:4px;}
 
-/* FILTER BAR */
+/* ── TRUST STRIP ── */
+.trust-strip{background:white;border-bottom:1px solid rgba(0,0,0,0.06);padding:12px 24px;}
+.trust-strip-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
+.trust-badge-item{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--text);padding:6px 14px;border-radius:100px;background:var(--light);border:1px solid rgba(0,0,0,0.06);white-space:nowrap;}
+.trust-badge-item.green i{color:#16a34a;}
+.trust-badge-item.blue i{color:var(--c5);}
+.trust-badge-item.orange i{color:#f97316;}
+.trust-badge-item.purple i{color:var(--c6);}
+.trust-divider{width:1px;height:20px;background:rgba(0,0,0,0.1);}
+
+/* ── HOW TO ORDER ── */
+.how-to-order-shop{background:var(--light);border-bottom:1px solid rgba(0,0,0,0.06);padding:0 24px;}
+.how-to-inner-shop{max-width:1280px;margin:0 auto;}
+.how-to-header-shop{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:16px 0;user-select:none;}
+.how-to-header-shop h3{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;color:var(--text);}
+.how-to-chevron-shop{font-size:12px;color:var(--muted);transition:transform 0.3s;}
+.how-to-body-shop{overflow:hidden;max-height:0;transition:max-height 0.4s ease;}
+.how-to-body-shop.open{max-height:500px;}
+.how-to-steps-shop{padding:0 0 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.how-step-shop{display:flex;align-items:flex-start;gap:10px;background:white;border-radius:12px;padding:14px;}
+.step-num-sm{width:28px;height:28px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:white;flex-shrink:0;}
+.step-content-sm strong{display:block;font-size:13px;font-weight:700;margin-bottom:2px;}
+.step-content-sm span{font-size:12px;color:var(--muted);line-height:1.4;}
+.payment-chips-sm{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.pay-chip{font-size:10px;font-weight:600;padding:2px 7px;border-radius:100px;}
+.pay-chip.airtel{background:rgba(255,0,0,0.08);color:#dc2626;border:1px solid rgba(255,0,0,0.15);}
+.pay-chip.mtn{background:rgba(254,202,57,0.15);color:#92400e;border:1px solid rgba(254,202,57,0.3);}
+.pay-chip.cash{background:rgba(22,163,74,0.08);color:#16a34a;border:1px solid rgba(22,163,74,0.2);}
+
+/* ── FILTER BAR ── */
 .filter-bar{position:sticky;top:64px;z-index:90;background:white;border-bottom:1px solid rgba(0,0,0,0.07);padding:0 24px;}
 .filter-bar-inner{max-width:1280px;margin:0 auto;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;padding:12px 0;}
 .filter-bar-inner::-webkit-scrollbar{display:none;}
@@ -66,18 +98,17 @@ nav a:hover,nav a.active{color:white;}
 .filter-pill.active{background:var(--dark);border-color:var(--dark);color:white;}
 .filter-pill .count{font-size:11px;opacity:0.7;}
 
-/* SHOP TOP BAR */
+/* ── SHOP TOP BAR ── */
 .shop-topbar{max-width:1280px;margin:0 auto;padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .products-count{color:var(--muted);font-size:14px;}
 .products-count strong{color:var(--text);}
 .sort-select{border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;background:white;cursor:pointer;outline:none;}
-.sort-select:focus{border-color:var(--c5);}
 
-/* PRODUCTS GRID */
+/* ── PRODUCTS GRID ── */
 .products-section{max-width:1280px;margin:0 auto;padding:24px;}
 .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;}
 
-/* SKELETON */
+/* ── SKELETON ── */
 .skeleton-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06);}
 .skeleton-img{height:200px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;}
 .skeleton-body{padding:16px;}
@@ -86,31 +117,54 @@ nav a:hover,nav a.active{color:white;}
 .skeleton-line.shorter{width:40%;}
 .skeleton-btn{height:38px;border-radius:10px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;margin-top:4px;}
 
-/* PRODUCT CARDS */
+/* ── PRODUCT CARDS ── */
 .product-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.07);cursor:pointer;transition:transform 0.25s,box-shadow 0.25s;position:relative;animation:fadeIn 0.4s ease forwards;}
 .product-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(0,0,0,0.14);}
 .product-card-img{height:200px;width:100%;object-fit:cover;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--muted);}
 .product-card-img img{width:100%;height:100%;object-fit:cover;}
+
+/* Category + stock badge */
 .cat-badge{position:absolute;top:12px;left:12px;z-index:2;color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;}
+.stock-badge{position:absolute;top:12px;right:12px;z-index:2;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;text-transform:none;letter-spacing:0;}
+.stock-in{background:rgba(22,163,74,0.12);color:#16a34a;border:1px solid rgba(22,163,74,0.25);}
+.stock-low{background:rgba(249,115,22,0.12);color:#ea580c;border:1px solid rgba(249,115,22,0.3);}
+.stock-out{background:rgba(107,114,128,0.12);color:#6b7280;border:1px solid rgba(107,114,128,0.25);}
+
 .product-card-body{padding:16px;}
 .product-cat-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;}
 .product-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px;line-height:1.3;}
 .product-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.product-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.product-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
-.btn-wa-card{background:var(--grad-green);color:white;font-weight:600;font-size:12px;padding:8px 14px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;}
-.btn-wa-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(37,211,102,0.4);}
 
-/* EMPTY STATE */
+/* Price with sale support */
+.price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.product-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
+.product-price-original{font-size:0.85rem;color:var(--muted);text-decoration:line-through;font-weight:400;}
+.save-badge{font-size:10px;font-weight:700;color:#ea580c;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);padding:2px 7px;border-radius:100px;}
+
+/* Price drop banner on card */
+.price-drop-banner{background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.15);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:11px;color:#c2410c;font-weight:600;display:flex;align-items:center;gap:5px;}
+
+.btn-wa-card{width:100%;background:var(--grad-green);color:white;font-weight:600;font-size:13px;padding:10px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform 0.2s,box-shadow 0.2s;}
+.btn-wa-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(37,211,102,0.4);}
+.btn-notify{width:100%;background:rgba(107,114,128,0.08);color:var(--muted);font-weight:600;font-size:13px;padding:10px;border-radius:10px;border:1.5px solid rgba(107,114,128,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-notify:hover{background:rgba(107,114,128,0.14);}
+
+/* Empty state */
 .empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;}
 .empty-state .emoji{font-size:4rem;margin-bottom:16px;}
 .empty-state h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:8px;}
 .empty-state p{color:var(--muted);font-size:14px;}
 
-/* SECTION TAG */
-.section-tag{display:inline-block;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:4px;}
+/* ── SALES NOTIFICATION ── */
+.sales-notif{position:fixed;bottom:88px;left:16px;z-index:300;background:white;border-radius:14px;padding:12px 14px;box-shadow:0 4px 24px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.07);max-width:280px;display:flex;align-items:center;gap:10px;animation:slideInUp 0.4s ease forwards;}
+.sales-notif.hiding{animation:slideOutDown 0.4s ease forwards;}
+.sales-notif-icon{width:38px;height:38px;border-radius:10px;background:var(--grad-green);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.sales-notif-text{flex:1;min-width:0;}
+.sales-notif-text strong{display:block;font-size:12px;font-weight:700;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sales-notif-text span{font-size:11px;color:var(--muted);}
+.sales-notif-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;flex-shrink:0;line-height:1;}
 
-/* FOOTER */
+/* ── FOOTER ── */
 footer{background:var(--dark);padding:64px 24px 0;}
 .footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
 .footer-brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:white;margin-bottom:10px;}
@@ -124,12 +178,12 @@ footer{background:var(--dark);padding:64px 24px 0;}
 .footer-links a:hover{color:white;}
 .footer-contact-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
 .footer-contact-item i{color:rgba(255,255,255,0.4);font-size:13px;margin-top:2px;flex-shrink:0;}
-.footer-contact-item span,.footer-contact-item a{color:rgba(255,255,255,0.55);font-size:13px;line-height:1.5;}
+.footer-contact-item span,.footer-contact-item a{color:rgba(255,255,255,0.55);font-size:13px;}
 .footer-contact-item a:hover{color:white;}
 .footer-bottom{max-width:1280px;margin:40px auto 0;padding:20px 0;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .footer-bottom-left,.footer-bottom-right{color:rgba(255,255,255,0.3);font-size:12px;}
 
-/* BOTTOM NAV */
+/* ── BOTTOM NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;z-index:200;background:rgba(255,255,255,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(0,0,0,0.06);box-shadow:0 -4px 20px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-around;}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:500;cursor:pointer;text-decoration:none;flex:1;padding:6px 0;transition:color 0.2s;}
 .bnav-item i{font-size:20px;transition:transform 0.2s;}
@@ -139,18 +193,10 @@ footer{background:var(--dark);padding:64px 24px 0;}
 .bnav-order i{font-size:22px;}
 .bnav-order:hover{transform:translateY(-2px);}
 
-@media(max-width:900px){nav{display:none;}.hamburger{display:block;}.footer-grid{grid-template-columns:repeat(2,1fr);}}
+iframe[src*="tawk.to"]{bottom:70px !important;}
+@media(max-width:900px){nav{display:none;}.hamburger{display:block;}.footer-grid{grid-template-columns:repeat(2,1fr);}.how-to-steps-shop{grid-template-columns:1fr;}.trust-divider{display:none;}}
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;}}
 </style>
-  <!-- Open Graph / Social Media Share Image -->
-<meta property="og:title" content="PhoneYa2 - Phone Accessories Lusaka" />
-<meta property="og:description" content="Premium phone cases, chargers, cables, earphones & power banks. Same-day delivery. Order on WhatsApp." />
-<meta property="og:image" content="https://i.ibb.co/9kLWNskg/In-Shot-20260612-151904742-1.jpg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://phoneya2.netlify.app/" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary_large_image" />
 </head>
 <body>
 
@@ -159,14 +205,14 @@ footer{background:var(--dark);padding:64px 24px 0;}
   <div class="header-inner">
     <a href="index.html" class="logo">
       <div class="logo-icon">📱</div>
-      <div class="logo-text"><div class="brand">PhoneYa2</div><div class="sub">Accessories</div></div>
+      <div class="logo-text"><div class="brand">PhoneYa2-ZM</div><div class="sub">Accessories</div></div>
     </a>
     <nav>
       <a href="index.html">Home</a>
       <a href="shop.html" class="active">Shop</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2." target="_blank" class="btn-order-header"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
+      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="btn-order-header"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
     </nav>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </div>
@@ -177,7 +223,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
   <a href="shop.html">Shop</a>
   <a href="about.html">About</a>
   <a href="contact.html">Contact</a>
-  <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2." target="_blank" class="btn-wa-mobile"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
+  <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="btn-wa-mobile"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
 </div>
 
 <!-- SHOP HERO -->
@@ -190,6 +236,53 @@ footer{background:var(--dark);padding:64px 24px 0;}
     <p><span>Genuine products</span> · <span>Fast delivery</span> · <span>WhatsApp ordering</span></p>
   </div>
 </section>
+
+<!-- TRUST BADGES STRIP (Challenge 2) -->
+<div class="trust-strip">
+  <div class="trust-strip-inner">
+    <div class="trust-badge-item green"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Products</div>
+    <div class="trust-divider"></div>
+    <div class="trust-badge-item blue"><i class="fa-solid fa-truck-fast"></i> Same-Day Delivery Lusaka</div>
+    <div class="trust-divider"></div>
+    <div class="trust-badge-item orange"><i class="fa-solid fa-rotate-left"></i> 7-Day Returns</div>
+    <div class="trust-divider"></div>
+    <div class="trust-badge-item purple"><i class="fa-brands fa-whatsapp"></i> Order via WhatsApp</div>
+  </div>
+</div>
+
+<!-- HOW TO ORDER (Challenge 5) — collapsible on shop page -->
+<div class="how-to-order-shop">
+  <div class="how-to-inner-shop">
+    <div class="how-to-header-shop" onclick="toggleHowToShop()">
+      <h3><i class="fa-solid fa-circle-question" style="color:var(--c5);"></i> How do I order? (tap to expand)</h3>
+      <i class="fa-solid fa-chevron-down how-to-chevron-shop" id="how-to-chevron-shop"></i>
+    </div>
+    <div class="how-to-body-shop" id="how-to-body-shop">
+      <div class="how-to-steps-shop">
+        <div class="how-step-shop">
+          <div class="step-num-sm">1</div>
+          <div class="step-content-sm"><strong>Find your product</strong><span>Browse by category using the filters below.</span></div>
+        </div>
+        <div class="how-step-shop">
+          <div class="step-num-sm">2</div>
+          <div class="step-content-sm"><strong>Tap "Order" button</strong><span>A pre-filled WhatsApp message opens automatically.</span></div>
+        </div>
+        <div class="how-step-shop">
+          <div class="step-num-sm">3</div>
+          <div class="step-content-sm"><strong>Just press send</strong><span>We reply quickly to confirm stock &amp; delivery fee.</span></div>
+        </div>
+        <div class="how-step-shop">
+          <div class="step-num-sm">4</div>
+          <div class="step-content-sm"><strong>Pay your way</strong><span>Choose from:<br><span class="payment-chips-sm"><span class="pay-chip airtel">Airtel Money</span><span class="pay-chip mtn">MTN Money</span><span class="pay-chip cash">Cash on Delivery</span></span></span></div>
+        </div>
+        <div class="how-step-shop">
+          <div class="step-num-sm">5</div>
+          <div class="step-content-sm"><strong>Receive your order 🎉</strong><span>Same-day delivery across Lusaka for orders before 3pm.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- FILTER BAR -->
 <div class="filter-bar">
@@ -216,15 +309,13 @@ footer{background:var(--dark);padding:64px 24px 0;}
     <option value="price-asc">Price: Low to High</option>
     <option value="price-desc">Price: High to Low</option>
     <option value="name-asc">Name: A–Z</option>
+    <option value="stock-first">In Stock First</option>
   </select>
 </div>
 
 <!-- PRODUCTS GRID -->
 <div class="products-section">
   <div class="products-grid" id="products-grid">
-    <!-- Skeleton -->
-    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
-    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
     <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
     <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
     <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line shorter"></div><div class="skeleton-btn"></div></div></div>
@@ -238,7 +329,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
 <footer>
   <div class="footer-grid">
     <div>
-      <div class="footer-brand-name">PhoneYa2 📱</div>
+      <div class="footer-brand-name">PhoneYa2-ZM 📱</div>
       <p class="footer-tagline">Lusaka's Most Trusted Phone Accessories Store. Genuine products, fast delivery, personal service.</p>
       <div class="footer-socials">
         <a href="https://wa.me/260979603741" target="_blank" class="social-btn"><i class="fa-brands fa-whatsapp"></i></a>
@@ -249,9 +340,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
     </div>
     <div>
       <div class="footer-col-title">Quick Links</div>
-      <div class="footer-links">
-        <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="about.html">About</a><a href="contact.html">Contact</a>
-      </div>
+      <div class="footer-links"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
     </div>
     <div>
       <div class="footer-col-title">Categories</div>
@@ -291,35 +380,31 @@ if (window.netlifyIdentity) {
 }
 
 const DEMO_PRODUCTS = [
-  { slug:'clear-slim-case', title:'Clear Slim Case', price:85, category:'case', featured:true, image:'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80&auto=format&fit=crop', description:'Ultra-thin transparent back case. Premium TPU material. Compatible with wireless charging.' },
-  { slug:'shockproof-armor-case', title:'Shockproof Armor Case', price:130, category:'case', featured:false, image:'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80&auto=format&fit=crop', description:'Military-grade drop protection. Dual-layer TPU and PC shell. Air cushion corners.' },
-  { slug:'leather-wallet-case', title:'Leather Wallet Case', price:175, category:'case', featured:false, image:'https://images.unsplash.com/photo-1603713780744-d8c9af4e2eed?w=400&q=80&auto=format&fit=crop', description:'Premium leather flip case with 3 card slots. Magnetic closure. Full 360 protection.' },
-  { slug:'20w-usb-c-charger', title:'20W USB-C Fast Charger', price:150, category:'charger', featured:true, image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&auto=format&fit=crop', description:'GaN fast charger for iPhone and Android. Ultra-compact design. Includes USB-C cable.' },
-  { slug:'65w-pd-charger', title:'65W PD Triple Port Charger', price:280, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1618440718493-fb0c7af63b77?w=400&q=80&auto=format&fit=crop', description:'Charge laptop, phone and tablet simultaneously. Three ports. Foldable plug.' },
-  { slug:'wireless-charger-pad', title:'15W Wireless Charger Pad', price:220, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=400&q=80&auto=format&fit=crop', description:'Qi-certified 15W wireless charging. Anti-slip surface. LED indicator ring.' },
-  { slug:'braided-usb-c-cable', title:'Braided USB-C Cable 1.5m', price:60, category:'cable', featured:true, image:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80&auto=format&fit=crop', description:'Nylon braided 100W fast-charge cable. Reinforced connectors. 1.5 metre length.' },
-  { slug:'lightning-cable', title:'MFi Lightning Cable 1.2m', price:75, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1600490036275-25de35e6bfc5?w=400&q=80&auto=format&fit=crop', description:'Apple MFi certified Lightning cable. Braided design. 1.2m length.' },
-  { slug:'3-in-1-cable', title:'3-in-1 Charging Cable', price:95, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1601944179066-29786cb9d32a?w=400&q=80&auto=format&fit=crop', description:'USB-C, Lightning and Micro-USB in one cable. Never carry multiple cables again.' },
-  { slug:'tws-wireless-earbuds', title:'TWS Wireless Earbuds', price:380, category:'earphone', featured:true, image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop', description:'Active noise cancellation. 20-hour total battery. IPX5 water resistant. Bluetooth 5.3.' },
-  { slug:'bass-earphones', title:'Bass Boost Wired Earphones', price:120, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80&auto=format&fit=crop', description:'Deep bass wired earphones with in-line mic. 3.5mm jack. All-day comfort.' },
-  { slug:'sport-earphones', title:'Sport Hook Earphones', price:160, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&q=80&auto=format&fit=crop', description:'Sweat-proof sport earphones with secure ear hooks. IPX4 rating.' },
-  { slug:'10000mah-powerbank', title:'10000mAh Power Bank', price:420, category:'powerbank', featured:true, image:'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=400&q=80&auto=format&fit=crop', description:'Dual USB output. Charges phone 2-3 times. Slim pocket-friendly design.' },
-  { slug:'20000mah-powerbank', title:'20000mAh Power Bank', price:680, category:'powerbank', featured:false, image:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80&auto=format&fit=crop', description:'High capacity with USB-C fast input, dual USB-A output and digital display.' },
-  { slug:'tempered-glass', title:'9H Tempered Glass Protector', price:45, category:'protector', featured:true, image:'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&q=80&auto=format&fit=crop', description:'9H hardness. Anti-scratch. Bubble-free installation kit included.' },
-  { slug:'privacy-screen-protector', title:'Privacy Screen Protector', price:80, category:'protector', featured:false, image:'https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=400&q=80&auto=format&fit=crop', description:'Anti-spy privacy filter. 9H hardness. Matte anti-glare finish.' },
-  { slug:'android-smartphone', title:'Android Smartphone 64GB', price:2200, category:'phone', featured:true, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80&auto=format&fit=crop', description:'Dual SIM. 64GB storage. 4G LTE. Long battery life. Perfect for everyday use.' },
-  { slug:'selfie-ring-light', title:'Selfie Ring Light Clip', price:95, category:'other', featured:false, image:'https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=400&q=80&auto=format&fit=crop', description:'Universal clip-on LED ring light. 3 brightness levels. USB rechargeable.' }
+  { slug:'clear-slim-case', title:'Clear Slim Case', price:85, original_price:0, stock:12, category:'case', featured:true, image:'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80&auto=format&fit=crop', description:'Ultra-thin transparent back case. Premium TPU material. Compatible with wireless charging.' },
+  { slug:'shockproof-armor-case', title:'Shockproof Armor Case', price:130, original_price:160, stock:4, category:'case', featured:false, image:'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80&auto=format&fit=crop', description:'Military-grade drop protection. Dual-layer TPU and PC shell. Air cushion corners.' },
+  { slug:'leather-wallet-case', title:'Leather Wallet Case', price:175, original_price:0, stock:8, category:'case', featured:false, image:'https://images.unsplash.com/photo-1603713780744-d8c9af4e2eed?w=400&q=80&auto=format&fit=crop', description:'Premium leather flip case with 3 card slots. Magnetic closure. Full 360 protection.' },
+  { slug:'20w-usb-c-charger', title:'20W USB-C Fast Charger', price:150, original_price:0, stock:20, category:'charger', featured:true, image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&auto=format&fit=crop', description:'GaN fast charger for iPhone and Android. Ultra-compact design. Includes USB-C cable.' },
+  { slug:'65w-pd-charger', title:'65W PD Triple Port Charger', price:280, original_price:320, stock:3, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1618440718493-fb0c7af63b77?w=400&q=80&auto=format&fit=crop', description:'Charge laptop, phone and tablet simultaneously. Three ports. Foldable plug.' },
+  { slug:'wireless-charger-pad', title:'15W Wireless Charger Pad', price:220, original_price:0, stock:7, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=400&q=80&auto=format&fit=crop', description:'Qi-certified 15W wireless charging. Anti-slip surface. LED indicator ring.' },
+  { slug:'braided-usb-c-cable', title:'Braided USB-C Cable 1.5m', price:60, original_price:0, stock:25, category:'cable', featured:true, image:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80&auto=format&fit=crop', description:'Nylon braided 100W fast-charge cable. Reinforced connectors. 1.5 metre length.' },
+  { slug:'lightning-cable', title:'MFi Lightning Cable 1.2m', price:75, original_price:0, stock:15, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1600490036275-25de35e6bfc5?w=400&q=80&auto=format&fit=crop', description:'Apple MFi certified Lightning cable. Braided design. 1.2m length.' },
+  { slug:'3-in-1-cable', title:'3-in-1 Charging Cable', price:95, original_price:0, stock:10, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1601944179066-29786cb9d32a?w=400&q=80&auto=format&fit=crop', description:'USB-C, Lightning and Micro-USB in one cable. Never carry multiple cables again.' },
+  { slug:'tws-wireless-earbuds', title:'TWS Wireless Earbuds', price:380, original_price:450, stock:2, category:'earphone', featured:true, image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop', description:'Active noise cancellation. 20-hour total battery. IPX5 water resistant. Bluetooth 5.3.' },
+  { slug:'bass-earphones', title:'Bass Boost Wired Earphones', price:120, original_price:0, stock:18, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80&auto=format&fit=crop', description:'Deep bass wired earphones with in-line mic. 3.5mm jack. All-day comfort.' },
+  { slug:'sport-earphones', title:'Sport Hook Earphones', price:160, original_price:0, stock:0, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&q=80&auto=format&fit=crop', description:'Sweat-proof sport earphones with secure ear hooks. IPX4 rating.' },
+  { slug:'10000mah-powerbank', title:'10000mAh Power Bank', price:420, original_price:0, stock:9, category:'powerbank', featured:true, image:'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=400&q=80&auto=format&fit=crop', description:'Dual USB output. Charges phone 2-3 times. Slim pocket-friendly design.' },
+  { slug:'20000mah-powerbank', title:'20000mAh Power Bank', price:680, original_price:750, stock:5, category:'powerbank', featured:false, image:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80&auto=format&fit=crop', description:'High capacity with USB-C fast input, dual USB-A output and digital display.' },
+  { slug:'tempered-glass', title:'9H Tempered Glass Protector', price:45, original_price:0, stock:30, category:'protector', featured:true, image:'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&q=80&auto=format&fit=crop', description:'9H hardness. Anti-scratch. Bubble-free installation kit included.' },
+  { slug:'privacy-screen-protector', title:'Privacy Screen Protector', price:80, original_price:0, stock:11, category:'protector', featured:false, image:'https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=400&q=80&auto=format&fit=crop', description:'Anti-spy privacy filter. 9H hardness. Matte anti-glare finish.' },
+  { slug:'android-smartphone', title:'Android Smartphone 64GB', price:2200, original_price:2500, stock:3, category:'phone', featured:true, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80&auto=format&fit=crop', description:'Dual SIM. 64GB storage. 4G LTE. Long battery life. Perfect for everyday use.' },
+  { slug:'selfie-ring-light', title:'Selfie Ring Light Clip', price:95, original_price:0, stock:14, category:'other', featured:false, image:'https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=400&q=80&auto=format&fit=crop', description:'Universal clip-on LED ring light. 3 brightness levels. USB rechargeable.' }
 ];
 
 const CAT_COLORS = {
-  case: 'linear-gradient(135deg,#54a0ff,#5f27cd)',
-  charger: 'linear-gradient(135deg,#feca57,#ff6b6b)',
-  cable: 'linear-gradient(135deg,#48dbfb,#54a0ff)',
-  earphone: 'linear-gradient(135deg,#ff9ff3,#ff6b6b)',
-  powerbank: 'linear-gradient(135deg,#5f27cd,#48dbfb)',
-  protector: 'linear-gradient(135deg,#48dbfb,#ff9ff3)',
-  phone: 'linear-gradient(135deg,#ff6b6b,#5f27cd)',
-  other: 'linear-gradient(135deg,#feca57,#48dbfb)'
+  case:'linear-gradient(135deg,#54a0ff,#5f27cd)', charger:'linear-gradient(135deg,#feca57,#ff6b6b)',
+  cable:'linear-gradient(135deg,#48dbfb,#54a0ff)', earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',
+  powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)', protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',
+  phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)', other:'linear-gradient(135deg,#feca57,#48dbfb)'
 };
 
 function parseFrontmatter(text, slug) {
@@ -327,10 +412,11 @@ function parseFrontmatter(text, slug) {
   if (!match) return null;
   const out = { slug };
   match[1].split('\n').forEach(line => {
-    const m = line.match(/^(\w+):\s*"?([^"]*)"?\s*$/);
+    const m = line.match(/^([\w_]+):\s*"?([^"]*)"?\s*$/);
     if (!m) return;
     const [, key, val] = m;
-    if (key === 'price') out[key] = parseFloat(val) || 0;
+    if (key === 'price' || key === 'original_price') out[key] = parseFloat(val) || 0;
+    else if (key === 'stock') out[key] = parseInt(val) || 0;
     else if (key === 'featured') out[key] = val.trim() === 'true';
     else out[key] = val.trim();
   });
@@ -348,16 +434,56 @@ async function fetchAllProducts() {
   return fetched.length ? fetched : DEMO_PRODUCTS;
 }
 
-let allProducts = [];
-let activeCategory = 'all';
-const gridEl = document.getElementById('products-grid');
-const countEl = document.getElementById('product-count');
-const sortEl = document.getElementById('sort-select');
+// Challenge 1 — Stock status
+function getStockStatus(stock) {
+  const s = parseInt(stock) || 0;
+  if (s === 0) return { label:'Out of Stock', cls:'stock-out', order:false };
+  if (s <= 5) return { label:`Only ${s} left!`, cls:'stock-low', order:true };
+  return { label:'In Stock', cls:'stock-in', order:true };
+}
+
+// Challenge 4 — Price drop
+function priceDrop(price, original_price) {
+  const op = parseFloat(original_price) || 0;
+  const p = parseFloat(price) || 0;
+  return op > p ? { hasDrop:true, save: Math.round(op - p), original: op } : { hasDrop:false };
+}
 
 function getCatLabel(cat) {
   const map = { case:'Case', charger:'Charger', cable:'Cable', earphone:'Earphone', powerbank:'Power Bank', protector:'Protector', phone:'Phone', other:'Other' };
   return map[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'Other');
 }
+
+// Hamburger
+const ham = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+if (ham && mobileNav) {
+  ham.addEventListener('click', () => {
+    mobileNav.classList.toggle('open');
+    ham.querySelector('i').className = mobileNav.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+  });
+}
+
+// How to order toggle
+window.toggleHowToShop = function() {
+  const body = document.getElementById('how-to-body-shop');
+  const chev = document.getElementById('how-to-chevron-shop');
+  if (!body || !chev) return;
+  body.classList.toggle('open');
+  chev.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+};
+
+// Notify me
+window.notifyMe = function(title) {
+  const msg = encodeURIComponent(`Hi! I'd like to be notified when "${title}" is back in stock. Please add me to the waiting list.`);
+  window.open(`https://wa.me/260979603741?text=${msg}`, '_blank');
+};
+
+let allProducts = [];
+let activeCategory = 'all';
+const gridEl = document.getElementById('products-grid');
+const countEl = document.getElementById('product-count');
+const sortEl = document.getElementById('sort-select');
 
 function renderProducts() {
   let filtered = activeCategory === 'all' ? [...allProducts] : allProducts.filter(p => p.category === activeCategory);
@@ -365,13 +491,14 @@ function renderProducts() {
   if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
   else if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
   else if (sort === 'name-asc') filtered.sort((a,b) => a.title.localeCompare(b.title));
+  else if (sort === 'stock-first') filtered.sort((a,b) => (parseInt(b.stock)||0) - (parseInt(a.stock)||0));
 
   if (countEl) countEl.textContent = filtered.length;
   if (!gridEl) return;
   gridEl.innerHTML = '';
 
   if (!filtered.length) {
-    gridEl.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div><h3>No products found</h3><p>Try a different category or <a href="https://wa.me/260979603741" target="_blank" style="color:var(--green)">ask us on WhatsApp</a> for what you need.</p></div>`;
+    gridEl.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div><h3>No products found</h3><p>Try a different category or <a href="https://wa.me/260979603741" target="_blank" style="color:var(--green)">ask us on WhatsApp</a>.</p></div>`;
     return;
   }
 
@@ -380,18 +507,34 @@ function renderProducts() {
     card.className = 'product-card';
     card.style.animationDelay = (i * 0.04) + 's';
     const bg = CAT_COLORS[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
+    const stock = getStockStatus(p.stock !== undefined ? p.stock : 10);
+    const drop = priceDrop(p.price, p.original_price);
+    const catLabel = getCatLabel(p.category);
     const waMsg = encodeURIComponent(`Hi! I'd like to order: ${p.title} – ZMW ${p.price}. Is it available?`);
+
+    const priceSection = drop.hasDrop
+      ? `<div class="price-row"><div class="product-price">ZMW ${p.price.toLocaleString()}</div><div class="product-price-original">ZMW ${drop.original.toLocaleString()}</div><div class="save-badge">Save ZMW ${drop.save}</div></div>`
+      : `<div class="price-row"><div class="product-price">ZMW ${(p.price||0).toLocaleString()}</div></div>`;
+
+    const priceBanner = drop.hasDrop
+      ? `<div class="price-drop-banner"><i class="fa-solid fa-fire"></i> Price dropped — save ZMW ${drop.save}!</div>`
+      : '';
+
+    const orderBtn = stock.order
+      ? `<a href="https://wa.me/260979603741?text=${waMsg}" target="_blank" class="btn-wa-card" onclick="event.stopPropagation()"><i class="fa-brands fa-whatsapp"></i> Order</a>`
+      : `<button class="btn-notify" onclick="event.stopPropagation();notifyMe('${p.title.replace(/'/g,"\\'")}')"><i class="fa-regular fa-bell"></i> Notify When Available</button>`;
+
     card.innerHTML = `
-      <div class="cat-badge" style="background:${bg}">${getCatLabel(p.category)}</div>
+      <div class="cat-badge" style="background:${bg}">${catLabel}</div>
+      <div class="stock-badge ${stock.cls}">${stock.label}</div>
       <div class="product-card-img">${p.image ? `<img src="${p.image}" alt="${p.title}" loading="lazy">` : '📱'}</div>
       <div class="product-card-body">
-        <div class="product-cat-label">${getCatLabel(p.category)}</div>
+        <div class="product-cat-label">${catLabel}</div>
         <div class="product-name">${p.title}</div>
         <div class="product-desc">${p.description || ''}</div>
-        <div class="product-footer">
-          <div class="product-price">ZMW ${p.price.toLocaleString()}</div>
-          <a href="https://wa.me/260979603741?text=${waMsg}" target="_blank" class="btn-wa-card" onclick="event.stopPropagation()"><i class="fa-brands fa-whatsapp"></i> Order</a>
-        </div>
+        ${priceBanner}
+        ${priceSection}
+        ${orderBtn}
       </div>`;
     card.addEventListener('click', () => { window.location.href = `product.html?id=${p.slug}`; });
     gridEl.appendChild(card);
@@ -408,7 +551,6 @@ function updateCounts() {
   });
 }
 
-// Filter pills
 document.querySelectorAll('.filter-pill').forEach(pill => {
   pill.addEventListener('click', () => {
     document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
@@ -421,8 +563,7 @@ document.querySelectorAll('.filter-pill').forEach(pill => {
 if (sortEl) sortEl.addEventListener('change', renderProducts);
 
 // Check URL param
-const urlParams = new URLSearchParams(window.location.search);
-const urlCat = urlParams.get('cat');
+const urlCat = new URLSearchParams(window.location.search).get('cat');
 if (urlCat) {
   document.querySelectorAll('.filter-pill').forEach(p => {
     p.classList.remove('active');
@@ -431,75 +572,49 @@ if (urlCat) {
   activeCategory = urlCat;
 }
 
-// Hamburger
-const ham = document.getElementById('hamburger');
-const mobileNav = document.getElementById('mobile-nav');
-if (ham && mobileNav) {
-  ham.addEventListener('click', () => {
-    mobileNav.classList.toggle('open');
-    ham.querySelector('i').className = mobileNav.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
-  });
+// Sales notification (Challenge 3) — same logic as homepage
+const FALLBACK_SALES = [
+  { product:'Braided USB-C Cable', city:'Lusaka', time:'1 hour ago', active:true },
+  { product:'TWS Wireless Earbuds', city:'Lusaka', time:'3 hours ago', active:true },
+  { product:'20W USB-C Fast Charger', city:'Lusaka', time:'yesterday', active:true },
+  { product:'10000mAh Power Bank', city:'Lusaka', time:'yesterday', active:true }
+];
+
+async function showSalesNotif() {
+  if (sessionStorage.getItem('salesNotifDismissed')) return;
+  let sales = FALLBACK_SALES;
+  try {
+    const res = await fetch('/content/settings/recent-sales.json');
+    if (res.ok) { const d = await res.json(); if (d.sales && d.sales.length) sales = d.sales; }
+  } catch(e) {}
+  const active = sales.filter(s => s.active !== false);
+  if (!active.length) return;
+  const pick = active[Math.floor(Math.random() * active.length)];
+  const notif = document.createElement('div');
+  notif.className = 'sales-notif'; notif.id = 'sales-notif';
+  notif.innerHTML = `<div class="sales-notif-icon">🛍️</div><div class="sales-notif-text"><strong>Someone just ordered ${pick.product}</strong><span>from ${pick.city} · ${pick.time}</span></div><button class="sales-notif-close" onclick="dismissNotif()" aria-label="Close">✕</button>`;
+  document.body.appendChild(notif);
+  setTimeout(() => dismissNotif(), 6000);
 }
 
-// Load products
+window.dismissNotif = function() {
+  const n = document.getElementById('sales-notif');
+  if (!n) return;
+  n.classList.add('hiding');
+  sessionStorage.setItem('salesNotifDismissed', '1');
+  setTimeout(() => n.remove(), 400);
+};
+
+// Load everything
 fetchAllProducts().then(products => {
   allProducts = products;
   updateCounts();
   renderProducts();
+  setTimeout(showSalesNotif, 10000);
 });
-  // Fetch products from CMS and display them
-async function loadProducts() {
-  try {
-    const res = await fetch('/content/products/index.json');
-    if (!res.ok) throw new Error('No products yet');
-    
-    const files = await res.json();
-    const products = await Promise.all(files.map(async (file) => {
-      const productRes = await fetch(`/content/products/${file}`);
-      const text = await productRes.text();
-      
-      return {
-        title: text.match(/title:\s*(.+)/)?.[1]?.trim() || 'Product',
-        price: parseInt(text.match(/price:\s*(\d+)/)?.[1] || '0'),
-        category: text.match(/category:\s*(.+)/)?.[1]?.trim() || 'other',
-        image: text.match(/image:\s*(.+)/)?.[1]?.trim() || '',
-        description: text.match(/description:\s*(.+)/)?.[1]?.trim() || ''
-      };
-    }));
-    
-    displayProducts(products);
-    
-  } catch(error) {
-    console.log('No products in CMS yet. Add them in /admin/');
-    document.getElementById('productsGrid').innerHTML = '<div style="text-align:center;padding:40px">No products yet. <a href="/admin/">Add products in CMS</a></div>';
-  }
-}
-
-function displayProducts(products) {
-  const grid = document.getElementById('productsGrid');
-  if (!products.length) {
-    grid.innerHTML = '<div style="text-align:center;padding:40px">No products found.</div>';
-    return;
-  }
-  
-  grid.innerHTML = products.map(p => `
-    <div class="product-card">
-      <div class="product-img-wrap">
-        ${p.image ? `<img src="${p.image}" alt="${p.title}">` : '<div class="product-img-placeholder">📱</div>'}
-      </div>
-      <div class="product-info">
-        <div class="product-name">${p.title}</div>
-        <div class="product-price">ZMW ${p.price.toLocaleString()}</div>
-        <a href="https://wa.me/260979603741?text=I'm%20interested%20in%20${encodeURIComponent(p.title)}" class="order-btn">Order on WhatsApp</a>
-      </div>
-    </div>
-  `).join('');
-}
-
-// Call the function when page loads
-loadProducts();
 </script>
-  <!--Start of Tawk.to Script-->
+
+<!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
