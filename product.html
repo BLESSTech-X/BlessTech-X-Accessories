@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">Product — PhoneYa2-ZM Accessories</title>
-<meta name="description" id="page-desc" content="View product details at PhoneYa2-ZM Accessories, Lusaka's most trusted phone accessories store.">
-<meta property="og:title" id="og-title" content="Product — PhoneYa2-ZM">
+<meta name="description" id="page-desc" content="Genuine phone accessories. Same-day delivery in Lusaka, Zambia.">
+<meta property="og:title" id="og-title" content="PhoneYa2-ZM Accessories">
 <meta property="og:description" id="og-desc" content="Genuine phone accessories. Same-day delivery in Lusaka.">
 <meta property="og:image" id="og-image" content="">
-<meta property="og:url" content="">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -24,7 +23,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);overflow-x:hidden;padding-bottom:70px;}
-h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;}
 a{text-decoration:none;color:inherit;}
 img{max-width:100%;display:block;}
 
@@ -32,10 +31,11 @@ img{max-width:100%;display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 @keyframes popIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
 @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
-@keyframes toastIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-@keyframes toastOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideOutDown{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── HEADER ── */
+/* HEADER */
 header{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;background:rgba(10,10,20,0.96);backdrop-filter:blur(18px);}
 .header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;}
 .logo{display:flex;align-items:center;gap:10px;}
@@ -45,8 +45,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;background:rg
 nav.desk{display:flex;align-items:center;gap:28px;}
 nav.desk a{color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;transition:color 0.2s;}
 nav.desk a:hover,nav.desk a.active{color:white;}
-.btn-wa-nav{background:var(--grad-green);color:white;font-weight:600;font-size:13px;padding:8px 16px;border-radius:100px;display:flex;align-items:center;gap:6px;transition:transform 0.2s,box-shadow 0.2s;}
-.btn-wa-nav:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(37,211,102,0.4);}
+.btn-wa-nav{background:var(--grad-green);color:white;font-weight:600;font-size:13px;padding:8px 16px;border-radius:100px;display:flex;align-items:center;gap:6px;transition:transform 0.2s;}
+.btn-wa-nav:hover{transform:translateY(-2px);}
 .hamburger{display:none;background:none;border:none;color:white;font-size:22px;cursor:pointer;}
 .rainbow-streak{position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);background-size:200%;animation:gradShift 4s linear infinite;}
 .mob-nav{display:none;position:fixed;top:64px;left:0;right:0;z-index:190;background:rgba(10,10,20,0.98);backdrop-filter:blur(20px);padding:24px;flex-direction:column;}
@@ -55,78 +55,63 @@ nav.desk a:hover,nav.desk a.active{color:white;}
 .mob-nav a:last-of-type{border-bottom:none;}
 .mob-wa{margin-top:20px;background:var(--grad-green);color:white;font-weight:700;padding:15px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;}
 
-/* ── BREADCRUMB ── */
+/* BREADCRUMB */
 .breadcrumb{max-width:1280px;margin:0 auto;padding:80px 24px 0;}
 .breadcrumb-inner{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);flex-wrap:wrap;}
 .breadcrumb-inner a{color:var(--muted);transition:color 0.2s;}
 .breadcrumb-inner a:hover{color:var(--text);}
 .breadcrumb-inner i{font-size:10px;}
 
-/* ── MAIN PRODUCT LAYOUT ── */
+/* LOADING STATE */
+.loading-state{text-align:center;padding:80px 24px;color:var(--muted);}
+.loading-state .spinner{width:36px;height:36px;border:3px solid rgba(0,0,0,0.1);border-top-color:var(--c5);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 16px;}
+
+/* PRODUCT LAYOUT */
 .product-detail{max-width:1280px;margin:0 auto;padding:20px 24px 48px;}
 .product-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
 
-/* ── IMAGE GALLERY ── */
+/* GALLERY */
 .gallery-wrap{position:sticky;top:80px;}
 .main-image-box{
   position:relative;border-radius:20px;overflow:hidden;background:white;
   box-shadow:0 4px 28px rgba(0,0,0,0.1);aspect-ratio:1;cursor:zoom-in;
-  animation:fadeIn 0.5s ease forwards;
 }
 .main-image-box img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;display:block;}
-.main-image-box:hover img{transform:scale(1.05);}
+.main-image-box:hover img{transform:scale(1.04);}
 .main-image-box.zoomed{cursor:zoom-out;}
 .main-image-box.zoomed img{transform:scale(1.8);}
-.img-zoom-hint{
-  position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.5);
-  color:white;font-size:11px;padding:5px 10px;border-radius:100px;
-  display:flex;align-items:center;gap:4px;pointer-events:none;transition:opacity 0.3s;
-}
-.main-image-box:hover .img-zoom-hint{opacity:0;}
-.cat-pill-overlay{
-  position:absolute;top:14px;left:14px;color:white;font-size:11px;font-weight:700;
-  padding:5px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;z-index:2;
-}
-.gallery-prev,.gallery-next{
-  position:absolute;top:50%;transform:translateY(-50%);z-index:3;
-  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.9);
-  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:13px;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,0.15);
-  transition:all 0.2s;
-}
+.img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--light);}
+.cat-pill-img{position:absolute;top:14px;left:14px;color:white;font-size:11px;font-weight:700;padding:5px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;z-index:2;}
+.zoom-hint{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.5);color:white;font-size:11px;padding:5px 10px;border-radius:100px;display:flex;align-items:center;gap:4px;pointer-events:none;transition:opacity 0.3s;}
+.main-image-box:hover .zoom-hint{opacity:0;}
+.gallery-prev,.gallery-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,0.15);transition:all 0.2s;}
 .gallery-prev{left:10px;}
 .gallery-next{right:10px;}
 .gallery-prev:hover,.gallery-next:hover{background:white;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
 
-/* Thumbnails */
+/* THUMBNAILS */
 .thumbs-row{display:flex;gap:10px;margin-top:12px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;padding-bottom:4px;}
 .thumbs-row::-webkit-scrollbar{display:none;}
-.thumb{
-  width:72px;height:72px;border-radius:12px;overflow:hidden;flex-shrink:0;
-  border:2.5px solid transparent;cursor:pointer;transition:all 0.2s;background:white;
-}
+.thumb{width:72px;height:72px;border-radius:12px;overflow:hidden;flex-shrink:0;border:2.5px solid transparent;cursor:pointer;transition:all 0.2s;background:white;}
 .thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--light);}
 .thumb.active{border-color:var(--c5);box-shadow:0 0 0 2px rgba(84,160,255,0.25);}
 .thumb:hover{border-color:rgba(84,160,255,0.5);}
-.thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--light);}
+.thumb-caption{font-size:11px;color:var(--muted);margin-top:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:72px;}
 
-/* Action buttons row on image */
+/* IMAGE ACTION ROW */
 .img-action-row{display:flex;gap:8px;margin-top:12px;}
-.img-action-btn{
-  flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,0,0,0.09);
-  background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
-  font-size:13px;font-weight:600;color:var(--text);transition:all 0.2s;font-family:'DM Sans',sans-serif;
-}
-.img-action-btn:hover{background:var(--light);border-color:rgba(0,0,0,0.15);}
+.img-action-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,0,0,0.09);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;color:var(--text);transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.img-action-btn:hover{background:var(--light);}
 .img-action-btn.wished{color:var(--c1);border-color:rgba(255,107,107,0.3);background:rgba(255,107,107,0.05);}
 .img-action-btn i{font-size:15px;}
 
-/* ── PRODUCT INFO ── */
+/* PRODUCT INFO */
 .product-info{animation:fadeIn 0.5s 0.1s ease both;}
 .prod-cat-label{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
 .prod-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);line-height:1.15;margin-bottom:12px;}
 
-/* Rating row */
+/* RATING */
 .rating-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .stars{display:flex;gap:2px;}
 .stars i{color:var(--c2);font-size:14px;}
@@ -134,145 +119,113 @@ nav.desk a:hover,nav.desk a.active{color:white;}
 .rating-count{color:var(--muted);font-size:13px;}
 .sold-badge{background:rgba(84,160,255,0.1);color:var(--c5);font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;border:1px solid rgba(84,160,255,0.2);}
 
-/* Price */
-.price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;}
-.prod-price{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
-.price-note{font-size:12px;color:var(--muted);}
+/* PRICE DROP BANNER */
+.price-drop-banner{background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#c2410c;font-weight:600;display:flex;align-items:center;gap:7px;}
 
-/* Stock + feature pills */
-.in-stock{display:inline-flex;align-items:center;gap:6px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);color:#16a34a;font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;margin-bottom:16px;}
+/* PRICE */
+.price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.prod-price{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
+.prod-price-orig{font-size:1.1rem;color:var(--muted);text-decoration:line-through;font-weight:400;}
+.save-badge{font-size:12px;font-weight:700;color:#ea580c;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);padding:3px 10px;border-radius:100px;}
+
+/* STOCK BADGE */
+.stock-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;margin-bottom:16px;}
+.stock-in{background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);color:#16a34a;}
+.stock-low{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);color:#ea580c;}
+.stock-out{background:rgba(107,114,128,0.1);border:1px solid rgba(107,114,128,0.25);color:var(--muted);}
+
+/* FEATURE PILLS */
 .feature-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
 .fpill{background:white;border:1.5px solid rgba(0,0,0,0.07);font-size:12px;font-weight:500;padding:6px 12px;border-radius:100px;color:var(--text);}
 
-/* Color / variant selector */
-.variants-block{margin-bottom:20px;}
-.variants-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;}
-.color-swatches{display:flex;gap:8px;flex-wrap:wrap;}
-.color-swatch{
-  width:32px;height:32px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;
-  transition:all 0.2s;position:relative;
-}
-.color-swatch.active{border-color:var(--c5);box-shadow:0 0 0 3px rgba(84,160,255,0.2);}
-.color-swatch::after{content:'';position:absolute;inset:2px;border-radius:50%;background:inherit;}
+/* ORDER NOTE */
+.order-note-block{background:rgba(84,160,255,0.07);border:1px solid rgba(84,160,255,0.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--text);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.order-note-block i{color:var(--c5);font-size:14px;margin-top:1px;flex-shrink:0;}
 
-/* Quantity selector */
+/* QUANTITY */
 .qty-block{display:flex;align-items:center;gap:16px;margin-bottom:24px;}
 .qty-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
-.qty-control{display:flex;align-items:center;gap:0;background:white;border:1.5px solid rgba(0,0,0,0.1);border-radius:12px;overflow:hidden;}
+.qty-control{display:flex;align-items:center;background:white;border:1.5px solid rgba(0,0,0,0.1);border-radius:12px;overflow:hidden;}
 .qty-btn{width:38px;height:38px;border:none;background:none;cursor:pointer;font-size:16px;color:var(--text);transition:background 0.2s;display:flex;align-items:center;justify-content:center;}
 .qty-btn:hover{background:var(--light);}
 .qty-num{min-width:36px;text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.qty-total{font-size:13px;color:var(--muted);}
 
-/* Description */
+/* DESCRIPTION */
 .desc-block{background:white;border-radius:16px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,0,0,0.05);}
-.desc-block h4{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;}
+.desc-block h4{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;}
 .desc-text{font-size:15px;line-height:1.75;color:var(--text);}
 .desc-text.clamped{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .desc-toggle{background:none;border:none;color:var(--c5);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;padding:0;font-family:'DM Sans',sans-serif;}
 
-/* Specs list */
-.specs-block{background:white;border-radius:16px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,0,0,0.05);}
-.specs-block h4{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px;}
-.specs-list{list-style:none;display:flex;flex-direction:column;gap:0;}
-.spec-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:14px;}
-.spec-row:last-child{border-bottom:none;}
-.spec-key{color:var(--muted);}
-.spec-val{font-weight:600;text-align:right;}
+/* HOW TO ORDER — collapsible */
+.how-to-block{background:white;border-radius:16px;margin-bottom:20px;border:1px solid rgba(0,0,0,0.05);overflow:hidden;}
+.how-to-block-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none;}
+.how-to-block-header h4{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;}
+.how-to-chev{font-size:12px;color:var(--muted);transition:transform 0.3s;}
+.how-to-block-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease;}
+.how-to-block-body.open{max-height:400px;}
+.how-to-steps-mini{padding:0 20px 20px;display:flex;flex-direction:column;gap:10px;}
+.how-step-mini{display:flex;align-items:flex-start;gap:10px;}
+.step-dot{width:22px;height:22px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:white;flex-shrink:0;margin-top:1px;}
+.step-mini-text{font-size:13px;color:var(--text);line-height:1.5;}
+.step-mini-text strong{display:block;font-weight:700;font-size:13px;margin-bottom:1px;}
+.pay-chips-mini{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.pay-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;}
+.pay-chip.airtel{background:rgba(255,0,0,0.08);color:#dc2626;border:1px solid rgba(255,0,0,0.15);}
+.pay-chip.mtn{background:rgba(254,202,57,0.15);color:#92400e;border:1px solid rgba(254,202,57,0.3);}
+.pay-chip.cash{background:rgba(22,163,74,0.08);color:#16a34a;border:1px solid rgba(22,163,74,0.2);}
 
-/* CTA Buttons */
+/* CTA BUTTONS */
 .cta-stack{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
 .btn-wa-order{background:var(--grad-green);color:white;font-weight:700;font-size:16px;padding:17px 24px;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;}
 .btn-wa-order:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(37,211,102,0.55);}
-.btn-wa-order .qty-txt{font-size:12px;opacity:0.8;font-weight:400;}
+.btn-wa-notify{background:rgba(107,114,128,0.08);color:var(--muted);font-weight:700;font-size:15px;padding:15px 24px;border-radius:14px;border:1.5px solid rgba(107,114,128,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-wa-notify:hover{background:rgba(107,114,128,0.14);}
 .btn-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .btn-secondary{background:white;border:1.5px solid rgba(0,0,0,0.1);color:var(--text);font-weight:600;font-size:14px;padding:12px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
 .btn-secondary:hover{background:var(--light);}
-.btn-secondary.active-wish{color:var(--c1);border-color:rgba(255,107,107,0.3);}
+.btn-secondary.wished{color:var(--c1);border-color:rgba(255,107,107,0.3);}
 
-/* Share row */
+/* SHARE ROW */
 .share-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .share-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
 .share-btns{display:flex;gap:8px;flex-wrap:wrap;}
-.share-btn{
-  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
-  padding:7px 14px;border-radius:100px;border:none;cursor:pointer;transition:all 0.2s;
-  font-family:'DM Sans',sans-serif;
-}
+.share-btn{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;border:none;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
 .share-wa{background:rgba(37,211,102,0.12);color:#128c7e;border:1px solid rgba(37,211,102,0.25);}
 .share-wa:hover{background:rgba(37,211,102,0.22);}
 .share-fb{background:rgba(24,119,242,0.1);color:#1877f2;border:1px solid rgba(24,119,242,0.2);}
 .share-fb:hover{background:rgba(24,119,242,0.18);}
-.share-tw{background:rgba(0,0,0,0.06);color:#000;border:1px solid rgba(0,0,0,0.1);}
-.share-tw:hover{background:rgba(0,0,0,0.1);}
 .share-copy{background:rgba(84,160,255,0.1);color:var(--c5);border:1px solid rgba(84,160,255,0.2);}
 .share-copy:hover{background:rgba(84,160,255,0.18);}
 
-/* Trust grid */
+/* TRUST GRID */
 .trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
 .trust-card{background:white;border-radius:12px;padding:14px 10px;text-align:center;border:1px solid rgba(0,0,0,0.05);}
 .trust-card .t-icon{font-size:1.4rem;margin-bottom:6px;}
 .trust-card .t-label{font-size:11px;font-weight:700;color:var(--text);}
 .trust-card .t-sub{font-size:10px;color:var(--muted);margin-top:2px;}
 
-/* Back button */
-.btn-back{display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid rgba(0,0,0,0.09);color:var(--text);font-weight:600;font-size:13px;padding:10px 18px;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+/* BACK BUTTON */
+.btn-back{display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid rgba(0,0,0,0.09);color:var(--text);font-weight:600;font-size:13px;padding:10px 18px;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-top:8px;font-family:'DM Sans',sans-serif;}
 .btn-back:hover{background:var(--light);}
 
-/* ── REVIEWS SECTION ── */
-.reviews-section{max-width:1280px;margin:0 auto;padding:0 24px 40px;}
-.section-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:8px;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;}
-.reviews-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-.reviews-header h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;}
-.reviews-summary{display:flex;align-items:center;gap:16px;margin-bottom:28px;background:white;border-radius:16px;padding:20px 24px;border:1px solid rgba(0,0,0,0.05);flex-wrap:wrap;}
-.big-rating{font-family:'Syne',sans-serif;font-weight:800;font-size:3.5rem;line-height:1;}
-.rating-breakdown{flex:1;min-width:160px;}
-.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.rating-bar-row:last-child{margin-bottom:0;}
-.bar-label{font-size:12px;color:var(--muted);width:14px;text-align:right;flex-shrink:0;}
-.bar-track{flex:1;height:6px;background:rgba(0,0,0,0.06);border-radius:3px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:3px;background:var(--c2);transition:width 0.6s ease;}
-.bar-count{font-size:11px;color:var(--muted);width:20px;flex-shrink:0;}
-.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
-.review-card{background:white;border-radius:16px;padding:20px;border:1px solid rgba(0,0,0,0.06);transition:transform 0.2s,box-shadow 0.2s;}
-.review-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);}
-.review-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
-.reviewer{display:flex;align-items:center;gap:10px;}
-.reviewer-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:white;flex-shrink:0;}
-.reviewer-name{font-weight:700;font-size:14px;}
-.reviewer-date{font-size:11px;color:var(--muted);}
-.review-stars{display:flex;gap:1px;}
-.review-stars i{font-size:12px;color:var(--c2);}
-.review-text{font-size:14px;color:var(--muted);line-height:1.6;}
-.verified-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#16a34a;font-weight:600;margin-top:8px;}
-.write-review-btn{background:white;border:1.5px solid rgba(0,0,0,0.1);color:var(--text);font-weight:600;font-size:13px;padding:10px 18px;border-radius:10px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
-.write-review-btn:hover{background:var(--light);}
-
-/* ── RELATED PRODUCTS ── */
-.related-section{max-width:1280px;margin:0 auto;padding:0 24px 60px;}
-.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:20px;}
-.rel-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);cursor:pointer;transition:transform 0.25s,box-shadow 0.25s;}
-.rel-card:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,0.12);}
-.rel-img{height:160px;width:100%;object-fit:cover;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
-.rel-img img{width:100%;height:100%;object-fit:cover;}
-.rel-body{padding:12px;}
-.rel-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;line-height:1.3;}
-.rel-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
-
-/* ── LIGHTBOX ── */
+/* LIGHTBOX */
 .lightbox{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;padding:20px;}
 .lightbox.open{display:flex;}
-.lightbox-img{max-width:90vw;max-height:88vh;border-radius:12px;object-fit:contain;animation:popIn 0.3s ease;}
+.lightbox-img{max-width:90vw;max-height:85vh;border-radius:12px;object-fit:contain;animation:popIn 0.3s ease;}
+.lightbox-caption{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:13px;text-align:center;padding:6px 16px;background:rgba(0,0,0,0.5);border-radius:100px;white-space:nowrap;}
 .lightbox-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
 .lightbox-close:hover{background:rgba(255,255,255,0.25);}
 .lightbox-prev,.lightbox-next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
 .lightbox-prev{left:16px;}
 .lightbox-next{right:16px;}
 .lightbox-prev:hover,.lightbox-next:hover{background:rgba(255,255,255,0.25);}
-.lightbox-counter{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.6);font-size:13px;}
+.lightbox-counter{position:absolute;top:16px;left:16px;color:rgba(255,255,255,0.6);font-size:13px;background:rgba(0,0,0,0.4);padding:4px 12px;border-radius:100px;}
 
-/* ── SHARE SHEET ── */
-.share-sheet-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;}
-.share-sheet-overlay.open{display:flex;}
+/* SHARE SHEET */
+.share-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;}
+.share-overlay.open{display:flex;}
 .share-sheet{background:white;border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;animation:slideUp 0.3s ease;}
 .share-sheet h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:20px;}
 .share-sheet-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
@@ -281,28 +234,45 @@ nav.desk a:hover,nav.desk a.active{color:white;}
 .share-opt-icon{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;transition:transform 0.2s;}
 .share-opt-icon:hover{transform:scale(1.1);}
 .share-opt span{font-size:11px;font-weight:600;color:var(--text);}
-.share-link-box{display:flex;gap:8px;}
+.share-link-row{display:flex;gap:8px;}
 .share-link-input{flex:1;border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--muted);background:var(--light);outline:none;}
-.btn-copy-link{background:var(--dark);color:white;font-weight:600;font-size:13px;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
-.btn-copy-link:hover{background:var(--dark2);}
+.btn-copy{background:var(--dark);color:white;font-weight:600;font-size:13px;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+.btn-copy:hover{background:var(--dark2);}
 
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:600;
-  background:var(--dark);color:white;font-size:13px;font-weight:500;
-  padding:10px 20px;border-radius:100px;display:flex;align-items:center;gap:8px;
-  pointer-events:none;opacity:0;white-space:nowrap;
-}
-.toast.show{animation:toastIn 0.3s ease forwards;}
-.toast.hide{animation:toastOut 0.3s ease forwards;}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:600;background:var(--dark);color:white;font-size:13px;font-weight:500;padding:10px 20px;border-radius:100px;display:flex;align-items:center;gap:8px;pointer-events:none;opacity:0;white-space:nowrap;transition:opacity 0.3s;}
+.toast.show{opacity:1;}
 
-/* ── NOT FOUND ── */
+/* RELATED PRODUCTS */
+.related-section{max-width:1280px;margin:0 auto;padding:0 24px 60px;}
+.section-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:8px;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:16px;}
+.rel-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);cursor:pointer;transition:transform 0.25s,box-shadow 0.25s;position:relative;}
+.rel-card:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,0.12);}
+.rel-img{height:160px;width:100%;object-fit:cover;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.rel-img img{width:100%;height:100%;object-fit:cover;}
+.rel-stock{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;}
+.rel-body{padding:12px;}
+.rel-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;line-height:1.3;}
+.rel-price-row{display:flex;align-items:baseline;gap:6px;}
+.rel-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
+.rel-price-orig{font-size:0.8rem;color:var(--muted);text-decoration:line-through;}
+
+/* NOT FOUND */
 .not-found{max-width:600px;margin:60px auto;padding:40px 24px;text-align:center;}
 .not-found .emoji{font-size:4rem;margin-bottom:16px;}
 .not-found h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:12px;}
 .not-found p{color:var(--muted);margin-bottom:24px;}
 
-/* ── FOOTER ── */
+/* SALES NOTIF */
+.sales-notif{position:fixed;bottom:88px;left:16px;z-index:300;background:white;border-radius:14px;padding:12px 14px;box-shadow:0 4px 24px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.07);max-width:280px;display:flex;align-items:center;gap:10px;animation:slideInUp 0.4s ease forwards;}
+.sales-notif.hiding{animation:slideOutDown 0.4s ease forwards;}
+.sales-notif-icon{width:38px;height:38px;border-radius:10px;background:var(--grad-green);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.sales-notif-text strong{display:block;font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+.sales-notif-text span{font-size:11px;color:var(--muted);}
+.sales-notif-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;flex-shrink:0;}
+
+/* FOOTER */
 footer{background:var(--dark);padding:64px 24px 0;}
 .footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
 .footer-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:white;margin-bottom:10px;}
@@ -321,7 +291,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
 .footer-bottom{max-width:1280px;margin:40px auto 0;padding:20px 0;border-top:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 .footer-bottom span{color:rgba(255,255,255,0.28);font-size:12px;}
 
-/* ── BOTTOM NAV ── */
+/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;z-index:200;background:rgba(255,255,255,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(0,0,0,0.06);box-shadow:0 -4px 20px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-around;}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:500;text-decoration:none;flex:1;padding:6px 0;transition:color 0.2s;}
 .bnav-item i{font-size:20px;transition:transform 0.2s;}
@@ -331,8 +301,9 @@ footer{background:var(--dark);padding:64px 24px 0;}
 .bnav-order i{font-size:22px;}
 .bnav-order:hover{transform:translateY(-2px);}
 
+iframe[src*="tawk.to"]{bottom:70px !important;}
 @media(max-width:900px){nav.desk{display:none;}.hamburger{display:block;}.product-layout{grid-template-columns:1fr;}.gallery-wrap{position:static;}.footer-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.trust-grid{grid-template-columns:repeat(3,1fr);}.reviews-grid{grid-template-columns:1fr;}.btn-row-2{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.trust-grid{grid-template-columns:repeat(3,1fr);}.btn-row-2{grid-template-columns:1fr 1fr;}.share-options{grid-template-columns:repeat(4,1fr);}}
 </style>
 </head>
 <body>
@@ -343,10 +314,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
   <div class="header-inner">
     <a href="index.html" class="logo">
       <div class="logo-icon">📱</div>
-      <div>
-        <div class="logo-brand">PhoneYa2-ZM</div>
-        <div class="logo-sub">Accessories</div>
-      </div>
+      <div><div class="logo-brand">PhoneYa2-ZM</div><div class="logo-sub">Accessories</div></div>
     </a>
     <nav class="desk">
       <a href="index.html">Home</a>
@@ -380,23 +348,10 @@ footer{background:var(--dark);padding:64px 24px 0;}
 
 <!-- PRODUCT DETAIL -->
 <div class="product-detail" id="product-detail">
-  <div style="text-align:center;padding:80px 0;color:var(--muted);">
-    <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:12px;display:block;"></i>
+  <div class="loading-state">
+    <div class="spinner"></div>
     Loading product...
   </div>
-</div>
-
-<!-- REVIEWS -->
-<div class="reviews-section" id="reviews-section" style="display:none;">
-  <div class="reviews-header">
-    <div>
-      <div class="section-tag">Customer Feedback</div>
-      <h2>Reviews & Ratings</h2>
-    </div>
-    <button class="write-review-btn" id="write-review-btn"><i class="fa-solid fa-pen"></i> Write a Review</button>
-  </div>
-  <div class="reviews-summary" id="reviews-summary"></div>
-  <div class="reviews-grid" id="reviews-grid"></div>
 </div>
 
 <!-- RELATED PRODUCTS -->
@@ -459,25 +414,26 @@ footer{background:var(--dark);padding:64px 24px 0;}
   <button class="lightbox-close" id="lb-close"><i class="fa-solid fa-xmark"></i></button>
   <button class="lightbox-prev" id="lb-prev"><i class="fa-solid fa-chevron-left"></i></button>
   <img id="lb-img" src="" alt="">
+  <div class="lightbox-caption" id="lb-caption"></div>
   <button class="lightbox-next" id="lb-next"><i class="fa-solid fa-chevron-right"></i></button>
   <div class="lightbox-counter" id="lb-counter">1 / 1</div>
 </div>
 
 <!-- SHARE SHEET -->
-<div class="share-sheet-overlay" id="share-sheet-overlay">
+<div class="share-overlay" id="share-overlay">
   <div class="share-sheet">
     <button class="share-sheet-close" id="share-sheet-close"><i class="fa-solid fa-xmark"></i></button>
     <h3>Share This Product</h3>
     <div class="share-options" id="share-options"></div>
-    <div class="share-link-box">
+    <div class="share-link-row">
       <input type="text" class="share-link-input" id="share-link-input" readonly>
-      <button class="btn-copy-link" id="btn-copy-link"><i class="fa-solid fa-copy"></i> Copy</button>
+      <button class="btn-copy" id="btn-copy-link">Copy</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast"><i class="fa-solid fa-check"></i> <span id="toast-msg">Copied!</span></div>
+<div class="toast" id="toast"><i class="fa-solid fa-check"></i> <span id="toast-msg">Done!</span></div>
 
 <script>
 if (window.netlifyIdentity) {
@@ -496,26 +452,26 @@ if (ham && mobNav) {
   });
 }
 
-// ── DEMO PRODUCTS ──
+// ── DEMO PRODUCTS (fallback only — real data loads from CMS .md files) ──
 const DEMO_PRODUCTS = [
-  { slug:'clear-slim-case', title:'Clear Slim Case', price:85, category:'case', featured:true, image:'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=800&q=85&auto=format&fit=crop', description:'Ultra-thin transparent back case crafted from premium TPU material that shows off your phone\'s original design. Military-grade corners protect against drops while remaining incredibly slim. Fully compatible with wireless charging and precise cutouts for all ports and buttons.' },
-  { slug:'shockproof-armor-case', title:'Shockproof Armor Case', price:130, category:'case', featured:false, image:'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800&q=85&auto=format&fit=crop', description:'Military-grade drop protection with a dual-layer design combining hard PC shell and soft TPU inner lining. Air cushion corners absorb impact from drops up to 2 metres. Raised lip protects screen and camera.' },
-  { slug:'leather-wallet-case', title:'Leather Wallet Case', price:175, category:'case', featured:false, image:'https://images.unsplash.com/photo-1603713780744-d8c9af4e2eed?w=800&q=85&auto=format&fit=crop', description:'Premium PU leather flip case with 3 card slots and a cash pocket. Strong magnetic closure. Full 360-degree protection with a built-in kickstand for hands-free viewing.' },
-  { slug:'20w-usb-c-charger', title:'20W USB-C Fast Charger', price:150, category:'charger', featured:true, image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=85&auto=format&fit=crop', description:'Compact GaN fast charger supporting Power Delivery 3.0. Charges your phone to 50% in just 30 minutes. Ultra-compact design. Includes a 1m USB-C cable in the box.' },
-  { slug:'65w-pd-charger', title:'65W PD Triple Port Charger', price:280, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1618440718493-fb0c7af63b77?w=800&q=85&auto=format&fit=crop', description:'Power your laptop, phone, and tablet all at once with three ports delivering up to 65W total output. GaN technology keeps it cool and compact. Compatible with MacBook, iPad, iPhone, and all USB-C laptops.' },
-  { slug:'wireless-charger-pad', title:'15W Wireless Charger Pad', price:220, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=800&q=85&auto=format&fit=crop', description:'Qi-certified 15W wireless charging pad. Anti-slip silicone surface. LED indicator ring glows when charging. Works through cases up to 3mm thick.' },
-  { slug:'braided-usb-c-cable', title:'Braided USB-C Cable 1.5m', price:60, category:'cable', featured:true, image:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=85&auto=format&fit=crop', description:'Premium nylon braided USB-C cable rated for 100W fast charging. Double-braided nylon resists tangling. Withstands over 30,000 bends. Reinforced aluminium connectors.' },
-  { slug:'lightning-cable', title:'MFi Lightning Cable 1.2m', price:75, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1600490036275-25de35e6bfc5?w=800&q=85&auto=format&fit=crop', description:'Apple MFi certified Lightning cable. Supports fast charging with 18W+ adapter. Durable braided design. 1.2m length for comfortable everyday use.' },
-  { slug:'3-in-1-cable', title:'3-in-1 Charging Cable', price:95, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1601944179066-29786cb9d32a?w=800&q=85&auto=format&fit=crop', description:'USB-C, Lightning and Micro-USB tips in a single retractable cable. Supports fast charging. Perfect for households with mixed devices.' },
-  { slug:'tws-wireless-earbuds', title:'TWS Wireless Earbuds', price:380, category:'earphone', featured:true, image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=85&auto=format&fit=crop', description:'True wireless earbuds with active noise cancellation blocking up to 25dB. Crystal-clear calls with dual mics. 20-hour total battery life. IPX5 water resistance. Bluetooth 5.3.' },
-  { slug:'bass-earphones', title:'Bass Boost Wired Earphones', price:120, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=85&auto=format&fit=crop', description:'Deep punchy bass from 10mm dynamic drivers. In-line mic and remote. Ergonomic ear tips in three sizes. 3.5mm jack compatible with all devices.' },
-  { slug:'sport-earphones', title:'Sport Hook Earphones', price:160, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=85&auto=format&fit=crop', description:'Flexible ear hooks keep them locked during any workout. IPX4 sweat and splash resistance. 9mm drivers and in-line mic. Tangle-free flat cable.' },
-  { slug:'10000mah-powerbank', title:'10000mAh Power Bank', price:420, category:'powerbank', featured:true, image:'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=800&q=85&auto=format&fit=crop', description:'Compact 10000mAh power bank charges most smartphones 2–3 times. Dual USB-A outputs. 18W fast charge input. LED indicator shows remaining battery level.' },
-  { slug:'20000mah-powerbank', title:'20000mAh Power Bank', price:680, category:'powerbank', featured:false, image:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=85&auto=format&fit=crop', description:'20000mAh for long days and load-shedding. USB-C PD input, dual USB-A outputs with 22.5W fast charging. Digital LED display shows exact remaining percentage.' },
-  { slug:'tempered-glass', title:'9H Tempered Glass Protector', price:45, category:'protector', featured:true, image:'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800&q=85&auto=format&fit=crop', description:'9H hardness tempered glass with 99.9% light transmission. Bubble-free installation kit included with cleaning cloth, dust sticker, and alignment guide.' },
-  { slug:'privacy-screen-protector', title:'Privacy Screen Protector', price:80, category:'protector', featured:false, image:'https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=800&q=85&auto=format&fit=crop', description:'Anti-spy filter blocking side-angle viewing beyond 30 degrees. 9H hardness. Matte anti-glare finish. Same easy bubble-free installation.' },
-  { slug:'android-smartphone', title:'Android Smartphone 64GB', price:2200, category:'phone', featured:true, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=85&auto=format&fit=crop', description:'Reliable dual-SIM Android with 64GB storage. 4G LTE. 4000mAh battery. 13MP rear camera. 12-month warranty. Full Zambian network compatibility.' },
-  { slug:'selfie-ring-light', title:'Selfie Ring Light Clip', price:95, category:'other', featured:false, image:'https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=800&q=85&auto=format&fit=crop', description:'Universal clip-on LED ring light for any device. Three colour temperatures, three brightness levels. USB rechargeable. Perfect for TikTok and video calls.' }
+  { slug:'clear-slim-case', title:'Clear Slim Case', price:85, original_price:0, stock:12, category:'case', featured:true, image:'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Ultra-thin transparent back case crafted from premium TPU material.', order_note:'Message us your phone model to confirm compatibility.' },
+  { slug:'shockproof-armor-case', title:'Shockproof Armor Case', price:130, original_price:160, stock:4, category:'case', featured:false, image:'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Military-grade drop protection with dual-layer design.', order_note:'' },
+  { slug:'leather-wallet-case', title:'Leather Wallet Case', price:175, original_price:0, stock:8, category:'case', featured:false, image:'https://images.unsplash.com/photo-1603713780744-d8c9af4e2eed?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Premium PU leather flip case with 3 card slots.', order_note:'' },
+  { slug:'20w-usb-c-charger', title:'20W USB-C Fast Charger', price:150, original_price:0, stock:20, category:'charger', featured:true, image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Compact GaN fast charger supporting Power Delivery 3.0.', order_note:'Includes 1m USB-C cable.' },
+  { slug:'65w-pd-charger', title:'65W PD Triple Port Charger', price:280, original_price:320, stock:3, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1618440718493-fb0c7af63b77?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Power your laptop, phone, and tablet all at once.', order_note:'' },
+  { slug:'wireless-charger-pad', title:'15W Wireless Charger Pad', price:220, original_price:0, stock:7, category:'charger', featured:false, image:'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Qi-certified 15W wireless charging pad.', order_note:'' },
+  { slug:'braided-usb-c-cable', title:'Braided USB-C Cable 1.5m', price:60, original_price:0, stock:25, category:'cable', featured:true, image:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Premium nylon braided USB-C cable rated for 100W fast charging.', order_note:'' },
+  { slug:'lightning-cable', title:'MFi Lightning Cable 1.2m', price:75, original_price:0, stock:15, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1600490036275-25de35e6bfc5?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Apple MFi certified Lightning cable.', order_note:'' },
+  { slug:'3-in-1-cable', title:'3-in-1 Charging Cable', price:95, original_price:0, stock:10, category:'cable', featured:false, image:'https://images.unsplash.com/photo-1601944179066-29786cb9d32a?w=800&q=85&auto=format&fit=crop', gallery:[], description:'USB-C, Lightning, and Micro-USB in one cable.', order_note:'' },
+  { slug:'tws-wireless-earbuds', title:'TWS Wireless Earbuds', price:380, original_price:450, stock:2, category:'earphone', featured:true, image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=85&auto=format&fit=crop', gallery:[], description:'True wireless earbuds with active noise cancellation.', order_note:'' },
+  { slug:'bass-earphones', title:'Bass Boost Wired Earphones', price:120, original_price:0, stock:18, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Deep punchy bass from 10mm dynamic drivers.', order_note:'' },
+  { slug:'sport-earphones', title:'Sport Hook Earphones', price:160, original_price:0, stock:0, category:'earphone', featured:false, image:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Stay-secure sport earphones for workouts.', order_note:'' },
+  { slug:'10000mah-powerbank', title:'10000mAh Power Bank', price:420, original_price:0, stock:9, category:'powerbank', featured:true, image:'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Compact 10000mAh power bank.', order_note:'' },
+  { slug:'20000mah-powerbank', title:'20000mAh Power Bank', price:680, original_price:750, stock:5, category:'powerbank', featured:false, image:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=85&auto=format&fit=crop', gallery:[], description:'High-capacity 20000mAh power bank.', order_note:'' },
+  { slug:'tempered-glass', title:'9H Tempered Glass Protector', price:45, original_price:0, stock:30, category:'protector', featured:true, image:'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Premium 9H hardness tempered glass.', order_note:'Tell us your phone model when ordering.' },
+  { slug:'privacy-screen-protector', title:'Privacy Screen Protector', price:80, original_price:0, stock:11, category:'protector', featured:false, image:'https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Anti-spy privacy filter.', order_note:'' },
+  { slug:'android-smartphone', title:'Android Smartphone 64GB', price:2200, original_price:2500, stock:3, category:'phone', featured:true, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Reliable dual-SIM Android smartphone with 64GB storage.', order_note:'Includes charger, cable, earphones, screen protector and case.' },
+  { slug:'selfie-ring-light', title:'Selfie Ring Light Clip', price:95, original_price:0, stock:14, category:'other', featured:false, image:'https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=800&q=85&auto=format&fit=crop', gallery:[], description:'Universal clip-on LED ring light.', order_note:'' }
 ];
 
 const CAT_COLORS = {
@@ -526,28 +482,72 @@ const CAT_COLORS = {
 };
 const CAT_LABELS = { case:'Case', charger:'Charger', cable:'Cable', earphone:'Earphone', powerbank:'Power Bank', protector:'Protector', phone:'Phone', other:'Other' };
 
+// ── FRONTMATTER PARSER — handles gallery list, order_note, stock, original_price ──
 function parseFrontmatter(text, slug) {
   const match = text.match(/^---\s*\n([\s\S]*?)\n---/);
   if (!match) return null;
-  const out = { slug };
-  match[1].split('\n').forEach(line => {
-    const m = line.match(/^(\w+):\s*"?([^"]*)"?\s*$/);
+  const raw = match[1];
+  const out = { slug, gallery: [] };
+
+  // Parse gallery list block (multi-line YAML list)
+  const galleryMatch = raw.match(/^gallery:\s*\n((?:[ \t]*[-\w\s:/"'.]*\n)*)/m);
+  if (galleryMatch) {
+    const galleryBlock = galleryMatch[1];
+    const entries = galleryBlock.split(/(?=^[ \t]*-[ \t]*image:)/m).filter(e => e.trim());
+    entries.forEach(entry => {
+      const imgM = entry.match(/image:\s*["']?([^"'\n]+)["']?/);
+      const capM = entry.match(/caption:\s*["']?([^"'\n]+)["']?/);
+      if (imgM) {
+        out.gallery.push({
+          image: imgM[1].trim(),
+          caption: capM ? capM[1].trim() : ''
+        });
+      }
+    });
+  }
+
+  // Parse all scalar fields
+  const lines = raw.split('\n');
+  let inGallery = false;
+  lines.forEach(line => {
+    if (line.match(/^gallery:/)) { inGallery = true; return; }
+    if (inGallery && (line.match(/^[a-z]/) || line === '')) { inGallery = false; }
+    if (inGallery) return;
+    const m = line.match(/^([\w_]+):\s*["']?([^"'\n]*)["']?\s*$/);
     if (!m) return;
     const [, key, val] = m;
-    if (key === 'price') out[key] = parseFloat(val) || 0;
-    else if (key === 'featured') out[key] = val.trim() === 'true';
-    else out[key] = val.trim();
+    const v = val.trim();
+    if (key === 'price' || key === 'original_price') out[key] = parseFloat(v) || 0;
+    else if (key === 'stock') out[key] = parseInt(v) || 0;
+    else if (key === 'featured') out[key] = v === 'true';
+    else out[key] = v;
   });
   return out;
 }
 
+async function fetchAllProducts() {
+  const slugs = ['clear-slim-case','shockproof-armor-case','leather-wallet-case','20w-usb-c-charger','65w-pd-charger','wireless-charger-pad','braided-usb-c-cable','lightning-cable','3-in-1-cable','tws-wireless-earbuds','bass-earphones','sport-earphones','10000mah-powerbank','20000mah-powerbank','tempered-glass','privacy-screen-protector','android-smartphone','selfie-ring-light'];
+  const results = await Promise.allSettled(slugs.map(s => fetch(`/content/products/${s}.md`).then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null)));
+  const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+  return fetched.length ? fetched : DEMO_PRODUCTS;
+}
+
+// ── HELPERS ──
+function getStockStatus(stock) {
+  const s = parseInt(stock) || 0;
+  if (s === 0) return { label:'Out of Stock', cls:'stock-out', canOrder:false };
+  if (s <= 5) return { label:`Only ${s} left!`, cls:'stock-low', canOrder:true };
+  return { label:'In Stock', cls:'stock-in', canOrder:true };
+}
+
+function getCatLabel(cat) { return CAT_LABELS[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'Other'); }
+
 // ── STATE ──
 let currentQty = 1;
-let isWishlisted = false;
 let currentGalleryIdx = 0;
-let galleryImages = [];
+let galleryImages = []; // [{src, caption}]
 let currentProduct = null;
-let allProducts = DEMO_PRODUCTS;
+let isWishlisted = false;
 
 // ── TOAST ──
 function showToast(msg) {
@@ -555,54 +555,60 @@ function showToast(msg) {
   const tm = document.getElementById('toast-msg');
   if (!t || !tm) return;
   tm.textContent = msg;
-  t.classList.remove('hide');
   t.classList.add('show');
-  setTimeout(() => { t.classList.remove('show'); t.classList.add('hide'); }, 2200);
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
 // ── WISHLIST ──
-function getWishlist() { try { return JSON.parse(localStorage.getItem('phoneya2_wishlist') || '[]'); } catch(e) { return []; } }
-function saveWishlist(list) { try { localStorage.setItem('phoneya2_wishlist', JSON.stringify(list)); } catch(e) {} }
-function toggleWishlist(slug, title) {
+function getWishlist() { try { return JSON.parse(localStorage.getItem('py2_wishlist') || '[]'); } catch(e) { return []; } }
+function saveWishlist(l) { try { localStorage.setItem('py2_wishlist', JSON.stringify(l)); } catch(e) {} }
+function toggleWishlist(slug) {
   let list = getWishlist();
   const idx = list.indexOf(slug);
   if (idx === -1) { list.push(slug); showToast('❤️ Added to wishlist'); isWishlisted = true; }
   else { list.splice(idx, 1); showToast('Removed from wishlist'); isWishlisted = false; }
   saveWishlist(list);
-  updateWishlistBtn();
+  updateWishBtns();
 }
-function updateWishlistBtn() {
-  const btns = document.querySelectorAll('.wish-toggle-btn');
-  btns.forEach(btn => {
-    const icon = btn.querySelector('i');
-    if (isWishlisted) {
-      btn.classList.add('wished','active-wish');
-      if (icon) { icon.classList.remove('fa-regular'); icon.classList.add('fa-solid'); }
-      btn.innerHTML = `<i class="fa-solid fa-heart"></i> Saved`;
-    } else {
-      btn.classList.remove('wished','active-wish');
-      btn.innerHTML = `<i class="fa-regular fa-heart"></i> Save`;
-    }
+function updateWishBtns() {
+  document.querySelectorAll('.wish-btn').forEach(btn => {
+    btn.classList.toggle('wished', isWishlisted);
+    btn.innerHTML = isWishlisted ? '<i class="fa-solid fa-heart"></i> Saved' : '<i class="fa-regular fa-heart"></i> Save';
   });
 }
 
 // ── GALLERY ──
 function setMainImage(idx) {
+  if (!galleryImages.length) return;
   currentGalleryIdx = idx;
   const mainImg = document.getElementById('main-img');
-  const mainBox = document.getElementById('main-img-box');
+  const imgBox = document.getElementById('main-img-box');
   if (mainImg && galleryImages[idx]) {
-    mainImg.src = galleryImages[idx];
+    mainImg.src = galleryImages[idx].src;
     mainImg.alt = currentProduct ? currentProduct.title : '';
   }
-  // Update thumbnails
+  if (imgBox) imgBox.classList.remove('zoomed');
   document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
-  // Remove zoom
-  if (mainBox) mainBox.classList.remove('zoomed');
   // Update lightbox
-  document.getElementById('lb-img').src = galleryImages[idx] || '';
-  document.getElementById('lb-counter').textContent = `${idx + 1} / ${galleryImages.length}`;
+  const lbImg = document.getElementById('lb-img');
+  const lbCap = document.getElementById('lb-caption');
+  const lbCount = document.getElementById('lb-counter');
+  if (lbImg) lbImg.src = galleryImages[idx].src;
+  if (lbCap) lbCap.textContent = galleryImages[idx].caption || '';
+  if (lbCount) lbCount.textContent = `${idx + 1} / ${galleryImages.length}`;
 }
+
+window.handleImgClick = function(e) {
+  if (e.target.closest('.gallery-prev') || e.target.closest('.gallery-next')) return;
+  const box = document.getElementById('main-img-box');
+  if (box) box.classList.toggle('zoomed');
+};
+
+// Lightbox
+document.getElementById('lb-close')?.addEventListener('click', () => { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; });
+document.getElementById('lb-prev')?.addEventListener('click', () => { setMainImage((currentGalleryIdx - 1 + galleryImages.length) % galleryImages.length); document.getElementById('lb-img').src = galleryImages[currentGalleryIdx].src; });
+document.getElementById('lb-next')?.addEventListener('click', () => { setMainImage((currentGalleryIdx + 1) % galleryImages.length); document.getElementById('lb-img').src = galleryImages[currentGalleryIdx].src; });
+document.getElementById('lightbox')?.addEventListener('click', e => { if (e.target === e.currentTarget) { e.currentTarget.classList.remove('open'); document.body.style.overflow = ''; } });
 
 function openLightbox(idx) {
   setMainImage(idx);
@@ -610,49 +616,33 @@ function openLightbox(idx) {
   document.body.style.overflow = 'hidden';
 }
 
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('lb-close').addEventListener('click', closeLightbox);
-document.getElementById('lb-prev').addEventListener('click', () => { openLightbox((currentGalleryIdx - 1 + galleryImages.length) % galleryImages.length); });
-document.getElementById('lb-next').addEventListener('click', () => { openLightbox((currentGalleryIdx + 1) % galleryImages.length); });
-document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLightbox(); });
-
-// ── SHARE ──
-function openShareSheet() {
-  const overlay = document.getElementById('share-sheet-overlay');
-  const linkInput = document.getElementById('share-link-input');
-  if (overlay) overlay.classList.add('open');
-  if (linkInput) linkInput.value = window.location.href;
-  document.body.style.overflow = 'hidden';
-}
-
-function closeShareSheet() {
-  document.getElementById('share-sheet-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('share-sheet-close').addEventListener('click', closeShareSheet);
-document.getElementById('share-sheet-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShareSheet(); });
-document.getElementById('btn-copy-link').addEventListener('click', () => {
-  const input = document.getElementById('share-link-input');
-  if (input) { navigator.clipboard.writeText(input.value).catch(() => {}); }
-  showToast('🔗 Link copied!');
-  closeShareSheet();
+// Share sheet
+document.getElementById('share-sheet-close')?.addEventListener('click', () => { document.getElementById('share-overlay').classList.remove('open'); document.body.style.overflow = ''; });
+document.getElementById('share-overlay')?.addEventListener('click', e => { if (e.target === e.currentTarget) { e.currentTarget.classList.remove('open'); document.body.style.overflow = ''; } });
+document.getElementById('btn-copy-link')?.addEventListener('click', () => {
+  const inp = document.getElementById('share-link-input');
+  if (inp) { navigator.clipboard.writeText(inp.value).catch(() => {}); showToast('🔗 Link copied!'); document.getElementById('share-overlay').classList.remove('open'); document.body.style.overflow = ''; }
 });
+
+window.openShareSheet = function() {
+  const overlay = document.getElementById('share-overlay');
+  const inp = document.getElementById('share-link-input');
+  if (overlay) overlay.classList.add('open');
+  if (inp) inp.value = window.location.href;
+  document.body.style.overflow = 'hidden';
+  if (currentProduct) buildShareOptions(currentProduct);
+};
 
 function buildShareOptions(p) {
   const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent(`Check out this product at PhoneYa2-ZM: ${p.title} – ZMW ${p.price}. Order on WhatsApp!`);
+  const text = encodeURIComponent(`Check this out at PhoneYa2-ZM: ${p.title} – ZMW ${p.price}`);
   const container = document.getElementById('share-options');
   if (!container) return;
   const opts = [
-    { label: 'WhatsApp', icon: 'fa-brands fa-whatsapp', bg: '#25d366', href: `https://wa.me/?text=${text}%20${url}` },
-    { label: 'Facebook', icon: 'fa-brands fa-facebook-f', bg: '#1877f2', href: `https://www.facebook.com/sharer/sharer.php?u=${url}` },
-    { label: 'X / Twitter', icon: 'fa-brands fa-x-twitter', bg: '#000', href: `https://twitter.com/intent/tweet?text=${text}&url=${url}` },
-    { label: 'Copy Link', icon: 'fa-solid fa-link', bg: 'var(--c5)', action: 'copy' }
+    { label:'WhatsApp', icon:'fa-brands fa-whatsapp', bg:'#25d366', href:`https://wa.me/?text=${text}%20${url}` },
+    { label:'Facebook', icon:'fa-brands fa-facebook-f', bg:'#1877f2', href:`https://www.facebook.com/sharer/sharer.php?u=${url}` },
+    { label:'X / Twitter', icon:'fa-brands fa-x-twitter', bg:'#000', href:`https://twitter.com/intent/tweet?text=${text}&url=${url}` },
+    { label:'Copy Link', icon:'fa-solid fa-link', bg:'var(--c5)', action:'copy' }
   ];
   container.innerHTML = '';
   opts.forEach(o => {
@@ -660,81 +650,120 @@ function buildShareOptions(p) {
     div.className = 'share-opt';
     div.innerHTML = `<div class="share-opt-icon" style="background:${o.bg}"><i class="${o.icon}"></i></div><span>${o.label}</span>`;
     div.addEventListener('click', () => {
-      if (o.action === 'copy') {
-        navigator.clipboard.writeText(window.location.href).catch(() => {});
-        showToast('🔗 Link copied!');
-        closeShareSheet();
-      } else {
-        window.open(o.href, '_blank', 'noopener');
-        closeShareSheet();
-      }
+      if (o.action === 'copy') { navigator.clipboard.writeText(window.location.href).catch(() => {}); showToast('🔗 Link copied!'); }
+      else window.open(o.href, '_blank', 'noopener');
+      document.getElementById('share-overlay').classList.remove('open');
+      document.body.style.overflow = '';
     });
     container.appendChild(div);
   });
 }
 
-// ── BUILD GALLERY IMAGES ──
-function buildGalleryImages(p) {
-  // Generate multiple related views by applying different crop params to same image
-  const base = p.image ? p.image.split('?')[0] : null;
-  if (!base) return [null];
-  return [
-    base + '?w=800&q=85&auto=format&fit=crop',
-    base + '?w=800&q=85&auto=format&fit=crop&crop=entropy',
-    base + '?w=800&q=85&auto=format&fit=crop&crop=faces',
-    base + '?w=800&q=85&auto=format&fit=crop&sat=-20',
-  ].filter(Boolean);
+// How to order toggle
+window.toggleHowTo = function() {
+  const body = document.getElementById('how-to-body');
+  const chev = document.getElementById('how-to-chev');
+  if (!body || !chev) return;
+  body.classList.toggle('open');
+  chev.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+};
+
+// Quantity
+window.changeQty = function(delta) {
+  currentQty = Math.max(1, Math.min(99, currentQty + delta));
+  const disp = document.getElementById('qty-display');
+  const total = document.getElementById('qty-total');
+  const btn = document.getElementById('btn-wa-main');
+  const note = document.getElementById('qty-note');
+  if (disp) disp.textContent = currentQty;
+  if (currentProduct) {
+    if (total) total.innerHTML = `Total: <strong>ZMW ${(currentProduct.price * currentQty).toLocaleString()}</strong>`;
+    const waMsg = buildWAMsg(currentProduct, currentQty);
+    if (btn) btn.href = `https://wa.me/260979603741?text=${waMsg}`;
+    if (note) note.textContent = currentQty > 1 ? `(×${currentQty})` : '';
+  }
+};
+
+function buildWAMsg(p, qty) {
+  let msg = `Hi! I'd like to order: *${p.title}* – ZMW ${p.price}`;
+  if (qty > 1) msg += ` × ${qty} = ZMW ${p.price * qty}`;
+  if (p.order_note) msg += `\n\nNote: ${p.order_note}`;
+  msg += `. Is it available?`;
+  return encodeURIComponent(msg);
 }
 
-// ── BUILD SPECS ──
-function buildSpecs(p) {
-  const specMap = {
-    case: [['Material','Premium TPU / PC'],['Compatibility','Universal fit'],['Wireless Charging','✅ Compatible'],['Weight','30g approx.'],['Warranty','7-day return']],
-    charger: [['Output Power', p.title.includes('65W') ? '65W max' : p.title.includes('15W') ? '15W Qi wireless' : '20W PD'],['Standard','USB Power Delivery'],['Ports', p.title.includes('Triple') ? '3 ports' : '1 port'],['Compatibility','iPhone & Android'],['Warranty','7-day return']],
-    cable: [['Length', p.title.includes('1.5m') ? '1.5 metres' : p.title.includes('1.2m') ? '1.2 metres' : 'Varies'],['Rating', p.title.includes('100W') ? '100W' : '60W'],['Material','Nylon braided'],['Compatibility','Universal'],['Warranty','7-day return']],
-    earphone: [['Driver','10mm dynamic'],['Connectivity', p.title.includes('Wireless') || p.title.includes('TWS') ? 'Bluetooth 5.3' : '3.5mm jack'],['Mic','Built-in'],['Battery', p.title.includes('TWS') ? '20hr total' : 'N/A'],['Warranty','7-day return']],
-    powerbank: [['Capacity', p.title.includes('20000') ? '20,000mAh' : '10,000mAh'],['Output','USB-A × 2'],['Fast Charge','18W / 22.5W'],['Input','USB-C PD'],['Warranty','7-day return']],
-    protector: [['Hardness','9H tempered glass'],['Coverage','Full-face'],['Thickness','0.33mm'],['Installation','Bubble-free kit'],['Warranty','7-day return']],
-    phone: [['Storage','64GB internal'],['SIM','Dual SIM'],['Network','4G LTE'],['Battery','4000mAh'],['Warranty','12 months']],
-    other: [['Type','Accessory'],['Power','USB rechargeable'],['Compatibility','Universal'],['Warranty','7-day return']]
-  };
-  return specMap[p.category] || specMap.other;
-}
+// Description toggle
+window.toggleDesc = function() {
+  const dt = document.getElementById('desc-text');
+  const tog = document.getElementById('desc-toggle');
+  if (!dt || !tog) return;
+  if (dt.classList.contains('clamped')) { dt.classList.remove('clamped'); tog.textContent = 'Read less ↑'; }
+  else { dt.classList.add('clamped'); tog.textContent = 'Read more ↓'; }
+};
 
 // ── RENDER PRODUCT ──
 function renderProduct(p) {
   currentProduct = p;
-  galleryImages = buildGalleryImages(p);
-  const waNum = '260979603741';
-  const bg = CAT_COLORS[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
-  const catLabel = CAT_LABELS[p.category] || 'Other';
-  const specs = buildSpecs(p);
   const wishlist = getWishlist();
   isWishlisted = wishlist.includes(p.slug);
+  const catLabel = getCatLabel(p.category);
+  const bg = CAT_COLORS[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
+  const stock = getStockStatus(p.stock !== undefined ? p.stock : 10);
+  const op = parseFloat(p.original_price) || 0;
+  const hasDrop = op > p.price;
+  const save = hasDrop ? Math.round(op - p.price) : 0;
+  const waMsg = buildWAMsg(p, 1);
+
+  // Build gallery array: main image first, then gallery images from CMS
+  galleryImages = [];
+  if (p.image) galleryImages.push({ src: p.image, caption: p.title });
+  if (p.gallery && p.gallery.length) {
+    p.gallery.forEach(g => {
+      if (g.image) galleryImages.push({ src: g.image, caption: g.caption || '' });
+    });
+  }
+  // If no images at all, use a placeholder
+  if (!galleryImages.length) galleryImages.push({ src: '', caption: '' });
 
   // Update page meta
-  const titleEl = document.getElementById('page-title');
-  if (titleEl) titleEl.textContent = `${p.title} — PhoneYa2-ZM`;
+  const setMeta = (id, val) => { const el = document.getElementById(id); if (el) { if (el.tagName === 'META') el.content = val; else el.textContent = val; } };
+  document.getElementById('page-title').textContent = `${p.title} — PhoneYa2-ZM`;
+  document.getElementById('page-desc').content = p.description || '';
+  document.getElementById('og-title').content = `${p.title} – ZMW ${p.price} | PhoneYa2-ZM`;
+  document.getElementById('og-desc').content = p.description || '';
+  if (galleryImages[0].src) document.getElementById('og-image').content = galleryImages[0].src;
   const bcEl = document.getElementById('bc-name');
   if (bcEl) bcEl.textContent = p.title;
-  const ogT = document.getElementById('og-title');
-  if (ogT) ogT.content = `${p.title} – ZMW ${p.price} | PhoneYa2-ZM`;
-  const ogD = document.getElementById('og-desc');
-  if (ogD) ogD.content = p.description || 'Genuine phone accessories in Lusaka.';
-  const ogI = document.getElementById('og-image');
-  if (ogI && p.image) ogI.content = p.image;
 
-  // Build thumbnails HTML
+  // Thumbnails HTML
   const thumbsHTML = galleryImages.map((img, i) => `
-    <div class="thumb ${i === 0 ? 'active' : ''}" onclick="setMainImage(${i})">
-      ${img ? `<img src="${img}" alt="View ${i+1}" loading="lazy">` : '<div class="thumb-placeholder">📱</div>'}
+    <div>
+      <div class="thumb ${i === 0 ? 'active' : ''}" onclick="setMainImage(${i}); event.stopPropagation();">
+        ${img.src ? `<img src="${img.src}" alt="${img.caption || p.title}" loading="lazy">` : '<div class="thumb-placeholder">📱</div>'}
+      </div>
+      ${img.caption ? `<div class="thumb-caption">${img.caption}</div>` : ''}
     </div>`).join('');
 
-  // Build specs HTML
-  const specsHTML = specs.map(s => `
-    <li class="spec-row"><span class="spec-key">${s[0]}</span><span class="spec-val">${s[1]}</span></li>`).join('');
+  // Price HTML
+  const priceHTML = hasDrop
+    ? `<div class="price-row"><div class="prod-price">ZMW ${(p.price||0).toLocaleString()}</div><div class="prod-price-orig">ZMW ${op.toLocaleString()}</div><div class="save-badge">Save ZMW ${save}</div></div>`
+    : `<div class="price-row"><div class="prod-price">ZMW ${(p.price||0).toLocaleString()}</div></div>`;
 
-  const waMsg = (qty) => encodeURIComponent(`Hi! I'd like to order: *${p.title}* – ZMW ${p.price}${qty > 1 ? ` × ${qty} = ZMW ${p.price * qty}` : ''}. Is it available?`);
+  // Drop banner
+  const dropBanner = hasDrop
+    ? `<div class="price-drop-banner"><i class="fa-solid fa-fire"></i> Price dropped from ZMW ${op.toLocaleString()} to ZMW ${p.price.toLocaleString()} — save ZMW ${save}!</div>`
+    : '';
+
+  // Order note
+  const orderNoteHTML = p.order_note
+    ? `<div class="order-note-block"><i class="fa-solid fa-circle-info"></i> ${p.order_note}</div>`
+    : '';
+
+  // Main CTA
+  const mainCTA = stock.canOrder
+    ? `<a href="https://wa.me/260979603741?text=${waMsg}" target="_blank" class="btn-wa-order" id="btn-wa-main"><i class="fa-brands fa-whatsapp" style="font-size:1.3rem;"></i> Order on WhatsApp <span id="qty-note" style="font-size:12px;opacity:0.8;"></span></a>`
+    : `<button class="btn-wa-notify" onclick="notifyMe('${p.title.replace(/'/g,"\\'")}')"><i class="fa-regular fa-bell"></i> Notify Me When Back in Stock</button>`;
+
   const wishIcon = isWishlisted ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
   const wishText = isWishlisted ? 'Saved' : 'Save';
 
@@ -743,51 +772,49 @@ function renderProduct(p) {
 
   detailEl.innerHTML = `
     <div class="product-layout">
-      <!-- GALLERY -->
+
+      <!-- GALLERY COLUMN -->
       <div class="gallery-wrap">
-        <div class="main-image-box" id="main-img-box" onclick="handleMainImgClick(event)">
-          ${galleryImages[0] ? `<img id="main-img" src="${galleryImages[0]}" alt="${p.title}">` : '<div class="product-image-placeholder">📱</div>'}
-          <div class="cat-pill-overlay" style="background:${bg}">${catLabel}</div>
-          <button class="gallery-prev" onclick="event.stopPropagation();setMainImage((currentGalleryIdx-1+galleryImages.length)%galleryImages.length)"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="gallery-next" onclick="event.stopPropagation();setMainImage((currentGalleryIdx+1)%galleryImages.length)"><i class="fa-solid fa-chevron-right"></i></button>
-          <div class="img-zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Click to zoom</div>
+        <div class="main-image-box" id="main-img-box" onclick="handleImgClick(event)">
+          ${galleryImages[0].src
+            ? `<img id="main-img" src="${galleryImages[0].src}" alt="${p.title}">`
+            : '<div class="img-placeholder">📱</div>'}
+          <div class="cat-pill-img" style="background:${bg}">${catLabel}</div>
+          ${galleryImages.length > 1 ? `
+            <button class="gallery-prev" onclick="event.stopPropagation();setMainImage((currentGalleryIdx-1+galleryImages.length)%galleryImages.length)"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="gallery-next" onclick="event.stopPropagation();setMainImage((currentGalleryIdx+1)%galleryImages.length)"><i class="fa-solid fa-chevron-right"></i></button>
+          ` : ''}
+          <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Click to zoom</div>
         </div>
-        <div class="thumbs-row">${thumbsHTML}</div>
+
+        ${galleryImages.length > 1 ? `<div class="thumbs-row">${thumbsHTML}</div>` : ''}
+
         <div class="img-action-row">
-          <button class="img-action-btn wish-toggle-btn ${isWishlisted ? 'wished' : ''}" onclick="toggleWishlist('${p.slug}','${p.title.replace(/'/g,"\\'")}')">
-            <i class="${wishIcon}"></i> ${wishText}
-          </button>
-          <button class="img-action-btn" onclick="openLightbox(currentGalleryIdx)">
-            <i class="fa-solid fa-expand"></i> Full Screen
-          </button>
-          <button class="img-action-btn" onclick="openShareSheet()">
-            <i class="fa-solid fa-share-nodes"></i> Share
-          </button>
+          <button class="img-action-btn" onclick="openLightbox(currentGalleryIdx)"><i class="fa-solid fa-expand"></i> Full Screen</button>
+          <button class="img-action-btn wish-btn ${isWishlisted ? 'wished' : ''}" onclick="toggleWishlist('${p.slug}')">${isWishlisted ? '<i class="fa-solid fa-heart"></i> Saved' : '<i class="fa-regular fa-heart"></i> Save'}</button>
+          <button class="img-action-btn" onclick="openShareSheet()"><i class="fa-solid fa-share-nodes"></i> Share</button>
         </div>
       </div>
 
-      <!-- INFO -->
+      <!-- INFO COLUMN -->
       <div class="product-info">
         <div class="prod-cat-label">${catLabel}</div>
         <h1 class="prod-title">${p.title}</h1>
 
         <div class="rating-row">
-          <div class="stars">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star-half-stroke"></i>
-          </div>
+          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
           <span class="rating-num">4.8</span>
           <span class="rating-count">(24 reviews)</span>
           <span class="sold-badge">50+ sold</span>
         </div>
 
-        <div class="price-row">
-          <div class="prod-price">ZMW ${(p.price || 0).toLocaleString()}</div>
-          <span class="price-note">Delivery from ZMW 20</span>
-        </div>
+        ${dropBanner}
+        ${priceHTML}
 
-        <div class="in-stock"><i class="fa-solid fa-circle-check"></i> In Stock — Ready to Ship</div>
+        <div class="stock-pill ${stock.cls}">
+          ${stock.cls === 'stock-in' ? '<i class="fa-solid fa-circle-check"></i>' : stock.cls === 'stock-low' ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-ban"></i>'}
+          ${stock.label}
+        </div>
 
         <div class="feature-pills">
           <span class="fpill">✅ 100% Genuine</span>
@@ -796,182 +823,77 @@ function renderProduct(p) {
           <span class="fpill">💬 WhatsApp Support</span>
         </div>
 
-        <!-- Quantity -->
+        ${orderNoteHTML}
+
+        <!-- QUANTITY (only if can order) -->
+        ${stock.canOrder ? `
         <div class="qty-block">
           <span class="qty-label">Quantity</span>
           <div class="qty-control">
-            <button class="qty-btn" id="qty-minus" onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
+            <button class="qty-btn" onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
             <span class="qty-num" id="qty-display">1</span>
-            <button class="qty-btn" id="qty-plus" onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
+            <button class="qty-btn" onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
           </div>
-          <span style="font-size:13px;color:var(--muted);" id="qty-total">Total: <strong>ZMW ${(p.price||0).toLocaleString()}</strong></span>
-        </div>
+          <span class="qty-total" id="qty-total">Total: <strong>ZMW ${(p.price||0).toLocaleString()}</strong></span>
+        </div>` : ''}
 
-        <!-- CTA Buttons -->
+        <!-- CTA BUTTONS -->
         <div class="cta-stack">
-          <a href="https://wa.me/${waNum}?text=${waMsg(1)}" target="_blank" class="btn-wa-order" id="btn-wa-main">
-            <i class="fa-brands fa-whatsapp" style="font-size:1.3rem;"></i>
-            Order on WhatsApp <span class="qty-txt" id="btn-qty-txt"></span>
-          </a>
+          ${mainCTA}
           <div class="btn-row-2">
-            <button class="btn-secondary wish-toggle-btn ${isWishlisted ? 'active-wish' : ''}" onclick="toggleWishlist('${p.slug}','${p.title.replace(/'/g,"\\'")}')">
-              <i class="${wishIcon}"></i> ${wishText}
-            </button>
-            <button class="btn-secondary" onclick="openShareSheet()">
-              <i class="fa-solid fa-share-nodes"></i> Share
-            </button>
+            <button class="btn-secondary wish-btn ${isWishlisted ? 'wished' : ''}" onclick="toggleWishlist('${p.slug}')">${isWishlisted ? '<i class="fa-solid fa-heart"></i> Saved' : '<i class="fa-regular fa-heart"></i> Save'}</button>
+            <button class="btn-secondary" onclick="openShareSheet()"><i class="fa-solid fa-share-nodes"></i> Share</button>
           </div>
         </div>
 
-        <!-- Share row -->
+        <!-- SHARE ROW -->
         <div class="share-row">
           <span class="share-label">Share:</span>
           <div class="share-btns">
-            <button class="share-btn share-wa" onclick="window.open('https://wa.me/?text=${encodeURIComponent(`${p.title} – ZMW ${p.price} at PhoneYa2-ZM: `)}'+encodeURIComponent(window.location.href),'_blank')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button class="share-btn share-wa" onclick="window.open('https://wa.me/?text='+encodeURIComponent('${p.title} – ZMW ${p.price} at PhoneYa2-ZM: ')+encodeURIComponent(window.location.href),'_blank')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
             <button class="share-btn share-fb" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href),'_blank')"><i class="fa-brands fa-facebook-f"></i> Facebook</button>
             <button class="share-btn share-copy" onclick="navigator.clipboard.writeText(window.location.href);showToast('🔗 Link copied!')"><i class="fa-solid fa-link"></i> Copy Link</button>
           </div>
         </div>
 
-        <!-- Description -->
+        <!-- DESCRIPTION -->
         <div class="desc-block">
           <h4>Description</h4>
           <div class="desc-text clamped" id="desc-text">${p.description || 'No description available.'}</div>
           <button class="desc-toggle" id="desc-toggle" onclick="toggleDesc()">Read more ↓</button>
         </div>
 
-        <!-- Specs -->
-        <div class="specs-block">
-          <h4>Product Specifications</h4>
-          <ul class="specs-list">${specsHTML}</ul>
+        <!-- HOW TO ORDER -->
+        <div class="how-to-block">
+          <div class="how-to-block-header" onclick="toggleHowTo()">
+            <h4><i class="fa-brands fa-whatsapp" style="color:var(--green);"></i> How to Order</h4>
+            <i class="fa-solid fa-chevron-down how-to-chev" id="how-to-chev"></i>
+          </div>
+          <div class="how-to-block-body" id="how-to-body">
+            <div class="how-to-steps-mini">
+              <div class="how-step-mini"><div class="step-dot">1</div><div class="step-mini-text"><strong>Tap "Order on WhatsApp"</strong>A message is pre-filled with this product's name and price.</div></div>
+              <div class="how-step-mini"><div class="step-dot">2</div><div class="step-mini-text"><strong>Just press Send</strong>We reply quickly to confirm availability and delivery fee.</div></div>
+              <div class="how-step-mini"><div class="step-dot">3</div><div class="step-mini-text"><strong>Choose how to pay</strong><div class="pay-chips-mini"><span class="pay-chip airtel">Airtel Money</span><span class="pay-chip mtn">MTN Money</span><span class="pay-chip cash">Cash on Delivery</span></div></div></div>
+              <div class="how-step-mini"><div class="step-dot">4</div><div class="step-mini-text"><strong>Receive your order 🎉</strong>Same-day delivery across Lusaka for orders before 3pm.</div></div>
+            </div>
+          </div>
         </div>
 
-        <!-- Trust grid -->
+        <!-- TRUST GRID -->
         <div class="trust-grid">
           <div class="trust-card"><div class="t-icon">🔒</div><div class="t-label">Secure Order</div><div class="t-sub">via WhatsApp</div></div>
-          <div class="trust-card"><div class="t-icon">⭐</div><div class="t-label">4.9★ Rating</div><div class="t-sub">500+ reviews</div></div>
+          <div class="trust-card"><div class="t-icon">⭐</div><div class="t-label">4.9★ Rating</div><div class="t-sub">500+ customers</div></div>
           <div class="trust-card"><div class="t-icon">🔄</div><div class="t-label">7-Day Return</div><div class="t-sub">Hassle-free</div></div>
         </div>
 
         <a href="shop.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Shop</a>
       </div>
     </div>`;
-
-  // Build share options
-  buildShareOptions(p);
-
-  // Setup qty logic
-  window.changeQty = function(delta) {
-    currentQty = Math.max(1, Math.min(99, currentQty + delta));
-    const display = document.getElementById('qty-display');
-    const total = document.getElementById('qty-total');
-    const btnWa = document.getElementById('btn-wa-main');
-    const btnQtyTxt = document.getElementById('btn-qty-txt');
-    if (display) display.textContent = currentQty;
-    if (total) total.innerHTML = `Total: <strong>ZMW ${(p.price * currentQty).toLocaleString()}</strong>`;
-    if (btnWa) btnWa.href = `https://wa.me/${waNum}?text=${waMsg(currentQty)}`;
-    if (btnQtyTxt) btnQtyTxt.textContent = currentQty > 1 ? `(×${currentQty})` : '';
-  };
 }
-
-// ── ZOOM HANDLER ──
-window.handleMainImgClick = function(e) {
-  const box = document.getElementById('main-img-box');
-  if (!box) return;
-  if (box.classList.contains('zoomed')) {
-    box.classList.remove('zoomed');
-  } else {
-    // If clicked on navigation buttons, don't zoom
-    if (e.target.closest('.gallery-prev') || e.target.closest('.gallery-next')) return;
-    box.classList.add('zoomed');
-  }
-};
-
-// ── DESCRIPTION TOGGLE ──
-window.toggleDesc = function() {
-  const dt = document.getElementById('desc-text');
-  const tog = document.getElementById('desc-toggle');
-  if (!dt || !tog) return;
-  if (dt.classList.contains('clamped')) {
-    dt.classList.remove('clamped');
-    tog.textContent = 'Read less ↑';
-  } else {
-    dt.classList.add('clamped');
-    tog.textContent = 'Read more ↓';
-  }
-};
-
-// ── REVIEWS ──
-const SAMPLE_REVIEWS = [
-  { name:'Chanda M.', rating:5, date:'2 weeks ago', text:'Excellent quality! The case fits perfectly and feels premium. Delivery was same day as promised. Very happy with my purchase.', color:'#ff6b6b' },
-  { name:'Bupe K.', rating:5, date:'1 month ago', text:'Ordered the power bank and it charges my phone multiple times. Great value for money. Barack responded on WhatsApp instantly!', color:'#5f27cd' },
-  { name:'Mwila T.', rating:4, date:'3 weeks ago', text:'Good product, exactly as described. Packaging was neat and delivery was fast. Would definitely order again from PhoneYa2-ZM.', color:'#48dbfb' },
-  { name:'Nalwimba Z.', rating:5, date:'5 days ago', text:'The earbuds have amazing sound quality. ANC works really well. Best purchase I\'ve made this year!', color:'#25d366' },
-  { name:'Sinkamba L.', rating:4, date:'2 months ago', text:'Very genuine products unlike the fakes sold elsewhere in Lusaka. Fast delivery and helpful service on WhatsApp.', color:'#feca57' },
-  { name:'Phiri O.', rating:5, date:'1 week ago', text:'Quick delivery, genuine product, fair price. PhoneYa2-ZM is now my go-to shop for accessories. Highly recommend!', color:'#54a0ff' }
-];
-
-function renderReviews() {
-  const section = document.getElementById('reviews-section');
-  const grid = document.getElementById('reviews-grid');
-  const summary = document.getElementById('reviews-summary');
-  if (!section || !grid || !summary) return;
-  section.style.display = 'block';
-
-  // Summary
-  const ratingBars = [5,4,3,2,1].map(n => {
-    const count = SAMPLE_REVIEWS.filter(r => r.rating === n).length;
-    const pct = Math.round((count / SAMPLE_REVIEWS.length) * 100);
-    return `<div class="rating-bar-row">
-      <span class="bar-label">${n}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-      <span class="bar-count">${count}</span>
-    </div>`;
-  }).join('');
-
-  summary.innerHTML = `
-    <div style="text-align:center;">
-      <div class="big-rating">4.8</div>
-      <div class="stars" style="display:flex;gap:2px;justify-content:center;margin:6px 0;">
-        <i class="fa-solid fa-star" style="color:var(--c2);font-size:16px;"></i>
-        <i class="fa-solid fa-star" style="color:var(--c2);font-size:16px;"></i>
-        <i class="fa-solid fa-star" style="color:var(--c2);font-size:16px;"></i>
-        <i class="fa-solid fa-star" style="color:var(--c2);font-size:16px;"></i>
-        <i class="fa-solid fa-star-half-stroke" style="color:var(--c2);font-size:16px;"></i>
-      </div>
-      <div style="color:var(--muted);font-size:13px;">24 reviews</div>
-    </div>
-    <div class="rating-breakdown">${ratingBars}</div>`;
-
-  // Cards
-  grid.innerHTML = '';
-  SAMPLE_REVIEWS.forEach(r => {
-    const stars = Array(5).fill(0).map((_, i) => `<i class="fa-solid fa-star" style="${i < r.rating ? 'color:var(--c2)' : 'color:#e5e7eb'};font-size:12px;"></i>`).join('');
-    const card = document.createElement('div');
-    card.className = 'review-card';
-    card.innerHTML = `
-      <div class="review-top">
-        <div class="reviewer">
-          <div class="reviewer-avatar" style="background:${r.color}">${r.name[0]}</div>
-          <div><div class="reviewer-name">${r.name}</div><div class="reviewer-date">${r.date}</div></div>
-        </div>
-        <div class="review-stars">${stars}</div>
-      </div>
-      <p class="review-text">${r.text}</p>
-      <div class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Purchase</div>`;
-    grid.appendChild(card);
-  });
-}
-
-document.getElementById('write-review-btn')?.addEventListener('click', () => {
-  if (!currentProduct) return;
-  const msg = encodeURIComponent(`Hi! I'd like to leave a review for: ${currentProduct.title}. My rating: ⭐⭐⭐⭐⭐`);
-  window.open(`https://wa.me/260979603741?text=${msg}`, '_blank');
-});
 
 // ── RELATED PRODUCTS ──
-function renderRelated(products, currentSlug, category) {
-  const related = products.filter(p => p.category === category && p.slug !== currentSlug).slice(0, 4);
+function renderRelated(allProducts, currentSlug, category) {
+  const related = allProducts.filter(p => p.category === category && p.slug !== currentSlug).slice(0, 4);
   if (!related.length) return;
   const sec = document.getElementById('related-section');
   const grid = document.getElementById('related-grid');
@@ -979,13 +901,20 @@ function renderRelated(products, currentSlug, category) {
   sec.style.display = 'block';
   grid.innerHTML = '';
   related.forEach(p => {
+    const stock = getStockStatus(p.stock !== undefined ? p.stock : 10);
+    const op = parseFloat(p.original_price) || 0;
+    const hasDrop = op > p.price;
     const card = document.createElement('div');
     card.className = 'rel-card';
     card.innerHTML = `
+      <div class="rel-stock ${stock.cls}">${stock.label}</div>
       <div class="rel-img">${p.image ? `<img src="${p.image}" alt="${p.title}" loading="lazy">` : '📱'}</div>
       <div class="rel-body">
         <div class="rel-name">${p.title}</div>
-        <div class="rel-price">ZMW ${(p.price||0).toLocaleString()}</div>
+        <div class="rel-price-row">
+          <div class="rel-price">ZMW ${(p.price||0).toLocaleString()}</div>
+          ${hasDrop ? `<div class="rel-price-orig">ZMW ${op.toLocaleString()}</div>` : ''}
+        </div>
       </div>`;
     card.addEventListener('click', () => { window.location.href = `product.html?id=${p.slug}`; });
     grid.appendChild(card);
@@ -995,48 +924,96 @@ function renderRelated(products, currentSlug, category) {
 // ── NOT FOUND ──
 function renderNotFound(slug) {
   const el = document.getElementById('product-detail');
-  if (el) el.innerHTML = `
-    <div class="not-found">
-      <div class="emoji">🔍</div>
-      <h2>Product Not Found</h2>
-      <p>We couldn't find the product "${slug || 'unknown'}". It may have been removed or the link is incorrect.</p>
-      <a href="shop.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Shop</a>
-    </div>`;
+  if (el) el.innerHTML = `<div class="not-found"><div class="emoji">🔍</div><h2>Product Not Found</h2><p>We couldn't find "${slug || 'this product'}". It may have been removed or the link is incorrect.</p><a href="shop.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Shop</a></div>`;
 }
 
-// ── LOAD ──
+// ── NOTIFY ME ──
+window.notifyMe = function(title) {
+  const msg = encodeURIComponent(`Hi! I'd like to be notified when "${title}" is back in stock. Please add me to your waiting list.`);
+  window.open(`https://wa.me/260979603741?text=${msg}`, '_blank');
+};
+
+// ── SALES NOTIFICATION ──
+const FALLBACK_SALES = [
+  { product:'Clear Slim Case', city:'Lusaka', time:'2 hours ago', active:true },
+  { product:'20W USB-C Fast Charger', city:'Lusaka', time:'4 hours ago', active:true },
+  { product:'TWS Wireless Earbuds', city:'Lusaka', time:'yesterday', active:true },
+  { product:'10000mAh Power Bank', city:'Lusaka', time:'2 days ago', active:true }
+];
+async function showSalesNotif() {
+  if (sessionStorage.getItem('py2_notif_dismissed')) return;
+  let sales = FALLBACK_SALES;
+  try {
+    const res = await fetch('/content/settings/recent-sales.json');
+    if (res.ok) { const d = await res.json(); if (d.sales && d.sales.length) sales = d.sales; }
+  } catch(e) {}
+  const active = sales.filter(s => s.active !== false);
+  if (!active.length) return;
+  const pick = active[Math.floor(Math.random() * active.length)];
+  const n = document.createElement('div');
+  n.className = 'sales-notif'; n.id = 'sales-notif';
+  n.innerHTML = `<div class="sales-notif-icon">🛍️</div><div class="sales-notif-text"><strong>Someone ordered ${pick.product}</strong><span>from ${pick.city} · ${pick.time}</span></div><button class="sales-notif-close" onclick="dismissNotif()">✕</button>`;
+  document.body.appendChild(n);
+  setTimeout(() => dismissNotif(), 6000);
+}
+window.dismissNotif = function() {
+  const n = document.getElementById('sales-notif');
+  if (!n) return;
+  n.classList.add('hiding');
+  sessionStorage.setItem('py2_notif_dismissed', '1');
+  setTimeout(() => n.remove(), 400);
+};
+
+// ── MAIN LOAD ──
 async function loadProduct() {
-  const params = new URLSearchParams(window.location.search);
-  const slug = params.get('id');
+  const slug = new URLSearchParams(window.location.search).get('id');
   if (!slug) { renderNotFound(''); return; }
 
   let product = null;
+  let allProducts = DEMO_PRODUCTS;
 
-  // Try CMS first
+  // Try fetching this product's .md file from CMS
   try {
     const res = await fetch(`/content/products/${slug}.md`);
-    if (res.ok) { const text = await res.text(); product = parseFrontmatter(text, slug); }
+    if (res.ok) {
+      const text = await res.text();
+      product = parseFrontmatter(text, slug);
+    }
   } catch(e) {}
 
-  // Fallback to demo
+  // Fallback to demo array
   if (!product) product = DEMO_PRODUCTS.find(p => p.slug === slug) || null;
   if (!product) { renderNotFound(slug); return; }
 
   renderProduct(product);
-  renderReviews();
 
-  // Load all products for related
+  // Load all products for related section
   try {
-    const slugs = ['clear-slim-case','shockproof-armor-case','leather-wallet-case','20w-usb-c-charger','65w-pd-charger','wireless-charger-pad','braided-usb-c-cable','lightning-cable','3-in-1-cable','tws-wireless-earbuds','bass-earphones','sport-earphones','10000mah-powerbank','20000mah-powerbank','tempered-glass','privacy-screen-protector','android-smartphone','selfie-ring-light'];
-    const results = await Promise.allSettled(slugs.map(s => fetch(`/content/products/${s}.md`).then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null)));
-    const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
-    allProducts = fetched.length ? fetched : DEMO_PRODUCTS;
+    const fetched = await fetchAllProducts();
+    if (fetched.length) allProducts = fetched;
   } catch(e) {}
 
   renderRelated(allProducts, slug, product.category);
+
+  // Sales notification after 10 seconds
+  setTimeout(showSalesNotif, 10000);
 }
 
 loadProduct();
 </script>
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6a2c122c6dd5c81c3273637b/1jqu2dvv6';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
 </body>
 </html>
