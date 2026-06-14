@@ -24,10 +24,12 @@ CMS.init({
     },
     media_folder: 'assets/images/uploads',
     public_folder: '/assets/images/uploads',
+
     collections: [
-      // ============================================
-      // PRODUCTS COLLECTION (WITH GALLERY)
-      // ============================================
+
+      // ============================================================
+      // 1. PRODUCTS — full control over every product on the site
+      // ============================================================
       {
         name: 'products',
         label: '📦 Products',
@@ -36,32 +38,50 @@ CMS.init({
         create: true,
         delete: true,
         slug: '{{slug}}',
-        summary: '{{fields.title}} — ZMW {{fields.price}} {{#if fields.featured}}⭐{{/if}}',
+        summary: '{{fields.title}} — ZMW {{fields.price}} | Stock: {{fields.stock}} {{#if fields.featured}}⭐{{/if}}',
+        sortable_fields: ['title', 'price', 'category', 'stock'],
         fields: [
-          { label: 'Product Name', name: 'title', widget: 'string', hint: 'Full product name shown on site' },
-          { label: 'Price (ZMW)', name: 'price', widget: 'number', value_type: 'int', min: 0, hint: 'Current selling price' },
-          { 
-            label: 'Original Price (ZMW)', 
-            name: 'original_price', 
-            widget: 'number', 
-            value_type: 'int', 
-            min: 0, 
-            default: 0, 
-            hint: 'Leave 0 if no discount. If higher than price, shows crossed-out original + SAVE badge' 
+
+          {
+            label: 'Product Name',
+            name: 'title',
+            widget: 'string',
+            hint: 'Full product name shown on site and in WhatsApp order messages'
           },
-          { 
-            label: 'Stock Quantity', 
-            name: 'stock', 
-            widget: 'number', 
-            value_type: 'int', 
-            default: 10, 
-            min: 0, 
-            hint: 'Number of units available. 0 = Out of Stock, 1-5 = Low Stock badge' 
+
+          {
+            label: 'Sale Price (ZMW)',
+            name: 'price',
+            widget: 'number',
+            value_type: 'int',
+            min: 0,
+            hint: 'Current selling price in Zambian Kwacha'
           },
-          { 
-            label: 'Category', 
-            name: 'category', 
-            widget: 'select', 
+
+          {
+            label: 'Original Price (ZMW) — leave 0 if no discount',
+            name: 'original_price',
+            widget: 'number',
+            value_type: 'int',
+            min: 0,
+            default: 0,
+            hint: 'Set ONLY if item is on sale. Must be higher than Sale Price. A "Price Dropped 🔥" banner appears automatically. Leave 0 for normal pricing.'
+          },
+
+          {
+            label: 'Stock Quantity',
+            name: 'stock',
+            widget: 'number',
+            value_type: 'int',
+            min: 0,
+            default: 10,
+            hint: 'Units you currently have. Auto-calculates badge: 0 = Out of Stock (gray) | 1–5 = Low Stock — Only X left! (orange) | 6+ = In Stock (green). Update after every sale.'
+          },
+
+          {
+            label: 'Category',
+            name: 'category',
+            widget: 'select',
             options: [
               { label: '📱 Phone Cases', value: 'case' },
               { label: '⚡ Chargers', value: 'charger' },
@@ -73,77 +93,384 @@ CMS.init({
               { label: '✨ Other Accessories', value: 'other' }
             ]
           },
-          { label: 'Main Product Image', name: 'image', widget: 'image', required: false, hint: 'Main product photo shown on shop page and product page' },
-          { 
-            label: 'Product Gallery (Additional Images)', 
-            name: 'gallery', 
-            widget: 'list', 
+
+          {
+            label: 'Main Product Image',
+            name: 'image',
+            widget: 'image',
             required: false,
-            hint: 'Upload additional photos. These will appear as thumbnails on the product page.',
+            hint: 'The primary photo shown on the shop page and at the top of the product page. Minimum 800×800px recommended.'
+          },
+
+          {
+            label: 'Product Gallery (Extra Photos)',
+            name: 'gallery',
+            widget: 'list',
+            required: false,
+            hint: 'Add more photos of the product — different angles, colours, in use. These appear as clickable thumbnails on the product page.',
             fields: [
-              { label: 'Image', name: 'image', widget: 'image' }
+              {
+                label: 'Photo',
+                name: 'image',
+                widget: 'image',
+                hint: 'Upload a product photo'
+              },
+              {
+                label: 'Caption (optional)',
+                name: 'caption',
+                widget: 'string',
+                required: false,
+                hint: 'e.g. "Back view" or "Available in Black"'
+              }
             ]
           },
-          { label: 'Description', name: 'description', widget: 'text', hint: '2-4 sentences describing the product' },
-          { label: '⭐ Featured on Homepage Slider', name: 'featured', widget: 'boolean', default: false, hint: 'Turn ON to show in Top Picks slider' }
+
+          {
+            label: 'Description',
+            name: 'description',
+            widget: 'text',
+            hint: '2–4 sentences. Describe what the product does, why it is good, and what makes it worth buying. This appears on the shop card and product detail page.'
+          },
+
+          {
+            label: 'WhatsApp Order Note (optional)',
+            name: 'order_note',
+            widget: 'string',
+            required: false,
+            hint: 'Extra info added to the WhatsApp order message. e.g. "Available in Black, White, and Blue" — customers will see this when they tap Order.'
+          },
+
+          {
+            label: '⭐ Feature on Homepage Slider?',
+            name: 'featured',
+            widget: 'boolean',
+            default: false,
+            hint: 'Turn ON to show this product in the Top Picks slider on the homepage. Keep to 6–8 products maximum for best results.'
+          }
         ]
       },
 
-      // ============================================
-      // RECENT SALES COLLECTION
-      // ============================================
-      {
-        name: 'recent_sales',
-        label: '🛍️ Recent Sales',
-        label_singular: 'Sale',
-        folder: 'content/settings',
-        create: true,
-        delete: true,
-        slug: 'recent-sales',
-        summary: '{{fields.product}} - {{fields.city}}',
-        fields: [
-          { label: 'Product Name', name: 'product', widget: 'string', hint: 'e.g. Clear Slim Case' },
-          { label: 'City', name: 'city', widget: 'string', default: 'Lusaka', hint: 'Customer location' },
-          { label: 'Time Ago', name: 'time', widget: 'string', default: '2 hours ago', hint: 'e.g. 2 hours ago, yesterday, 3 days ago' },
-          { label: 'Active', name: 'active', widget: 'boolean', default: true, hint: 'Uncheck to hide this sale' }
-        ]
-      },
-
-      // ============================================
-      // SITE SETTINGS
-      // ============================================
+      // ============================================================
+      // 2. SITE SETTINGS — homepage, contact, about, sitewide
+      // ============================================================
       {
         name: 'settings',
         label: '⚙️ Site Settings',
         files: [
+
+          // --- Homepage ---
           {
-            label: 'Homepage Content',
+            label: '🏠 Homepage Content',
             name: 'homepage',
             file: 'content/settings/homepage.json',
             fields: [
-              { label: 'Hero Line 1 (white text)', name: 'hero_line1', widget: 'string', default: "Lusaka's Best" },
-              { label: 'Hero Line 2 (rainbow text)', name: 'hero_line2', widget: 'string', default: 'Phone Accessories' },
-              { label: 'Hero Subtitle', name: 'hero_sub', widget: 'text', default: 'Premium cases, chargers, cables & more. Same-day delivery across Lusaka.' },
-              { label: 'Stat 1 (e.g. 500+)', name: 'stat1', widget: 'string', default: '500+' },
-              { label: 'Stat 2 (e.g. 1,200+)', name: 'stat2', widget: 'string', default: '1,200+' },
-              { label: 'Stat 3 (e.g. Same Day)', name: 'stat3', widget: 'string', default: 'Same Day' },
-              { label: 'Stat 4 (e.g. 4.9★)', name: 'stat4', widget: 'string', default: '4.9★' }
+              {
+                label: 'Hero — Line 1 (white text)',
+                name: 'hero_line1',
+                widget: 'string',
+                default: "Lusaka's Best",
+                hint: 'First line of the big hero heading — shown in plain white'
+              },
+              {
+                label: 'Hero — Line 2 (rainbow gradient)',
+                name: 'hero_line2',
+                widget: 'string',
+                default: 'Phone Accessories',
+                hint: 'Second line — shown with the animated rainbow gradient effect'
+              },
+              {
+                label: 'Hero — Subtitle Paragraph',
+                name: 'hero_sub',
+                widget: 'text',
+                default: 'Premium cases, chargers, cables & more. Genuine products, same-day delivery across Lusaka.',
+                hint: 'The smaller paragraph text beneath the hero heading'
+              },
+              {
+                label: 'Stat 1 — Number',
+                name: 'stat1',
+                widget: 'string',
+                default: '500+',
+                hint: 'Displayed above "Happy Customers" e.g. 500+, 750+'
+              },
+              {
+                label: 'Stat 2 — Number',
+                name: 'stat2',
+                widget: 'string',
+                default: '1,200+',
+                hint: 'Displayed above "Products Sold"'
+              },
+              {
+                label: 'Stat 3 — Text',
+                name: 'stat3',
+                widget: 'string',
+                default: 'Same Day',
+                hint: 'Displayed above "Delivery in Lusaka"'
+              },
+              {
+                label: 'Stat 4 — Rating',
+                name: 'stat4',
+                widget: 'string',
+                default: '4.9★',
+                hint: 'Displayed above "Customer Rating"'
+              },
+              {
+                label: 'Promo Banner — Heading',
+                name: 'promo_heading',
+                widget: 'string',
+                default: "Ready to Order? It's Easy on WhatsApp 💬",
+                required: false,
+                hint: 'The big heading inside the dark promo banner section'
+              },
+              {
+                label: 'Promo Banner — Subtext',
+                name: 'promo_sub',
+                widget: 'text',
+                default: "Browse the shop, pick what you need, and send us a message. We'll confirm your order and deliver to your door.",
+                required: false,
+                hint: 'The smaller text inside the promo banner'
+              }
             ]
           },
+
+          // --- Contact ---
           {
-            label: 'Contact Information',
+            label: '📞 Contact Information',
             name: 'contact',
             file: 'content/settings/contact.json',
             fields: [
-              { label: 'WhatsApp Number (digits only)', name: 'whatsapp', widget: 'string', default: '260979603741' },
-              { label: 'Phone Number (display)', name: 'phone', widget: 'string', default: '+260 979 603 741' },
-              { label: 'Email', name: 'email', widget: 'string', default: 'singbless89@gmail.com' },
-              { label: 'Location', name: 'location', widget: 'string', default: 'Lusaka, Zambia' },
-              { label: 'Business Hours', name: 'hours', widget: 'string', default: 'Mon–Sat, 8am – 7pm' }
+              {
+                label: 'WhatsApp Number (digits only — no + or spaces)',
+                name: 'whatsapp',
+                widget: 'string',
+                default: '260979603741',
+                hint: 'Used in wa.me links. No + sign, no spaces. e.g. 260979603741'
+              },
+              {
+                label: 'Phone Number (how it appears to visitors)',
+                name: 'phone',
+                widget: 'string',
+                default: '+260 979 603 741',
+                hint: 'Shown on the contact page and footer. Can include spaces.'
+              },
+              {
+                label: 'Email Address',
+                name: 'email',
+                widget: 'string',
+                default: 'singbless89@gmail.com'
+              },
+              {
+                label: 'Location / Address',
+                name: 'location',
+                widget: 'string',
+                default: 'Lusaka, Zambia'
+              },
+              {
+                label: 'Business Hours',
+                name: 'hours',
+                widget: 'string',
+                default: 'Mon–Sat, 8am – 7pm',
+                hint: 'Shown in footer and contact page'
+              },
+              {
+                label: 'Facebook Page URL',
+                name: 'facebook',
+                widget: 'string',
+                required: false,
+                hint: 'Full URL e.g. https://facebook.com/phoneya2zm'
+              },
+              {
+                label: 'Instagram Profile URL',
+                name: 'instagram',
+                widget: 'string',
+                required: false,
+                hint: 'Full URL e.g. https://instagram.com/phoneya2zm'
+              },
+              {
+                label: 'TikTok Profile URL',
+                name: 'tiktok',
+                widget: 'string',
+                required: false,
+                hint: 'Full URL e.g. https://tiktok.com/@phoneya2zm'
+              }
+            ]
+          },
+
+          // --- About Page ---
+          {
+            label: '📖 About Page',
+            name: 'about',
+            file: 'content/settings/about.json',
+            fields: [
+              {
+                label: 'Hero — Line 1',
+                name: 'hero_line1',
+                widget: 'string',
+                default: 'Built for Zambia.'
+              },
+              {
+                label: 'Hero — Line 2 (gradient)',
+                name: 'hero_line2',
+                widget: 'string',
+                default: 'Built with Purpose.'
+              },
+              {
+                label: 'Hero — Subtitle',
+                name: 'hero_sub',
+                widget: 'text',
+                default: 'We started PhoneYa2-ZM to make quality phone accessories accessible to every Zambian.'
+              },
+              {
+                label: 'Story — Section Heading',
+                name: 'story_heading',
+                widget: 'string',
+                default: 'From Lusaka, for Lusaka'
+              },
+              {
+                label: 'Story — Paragraph 1',
+                name: 'story_p1',
+                widget: 'text',
+                default: 'PhoneYa2-ZM Accessories was born out of frustration — the frustration of walking into a store and being sold fake chargers, cheap cases that crack in a week, and cables that stop working after a month.'
+              },
+              {
+                label: 'Story — Paragraph 2',
+                name: 'story_p2',
+                widget: 'text',
+                default: 'We built PhoneYa2-ZM on a simple promise: every product we sell is genuine, every price is fair, and every customer gets the kind of personal attention you\'d get from a trusted friend.'
+              },
+              {
+                label: 'Story — Paragraph 3',
+                name: 'story_p3',
+                widget: 'text',
+                default: 'Today we serve hundreds of customers across Lusaka through WhatsApp, delivering the same day and standing behind every product we sell.'
+              },
+              {
+                label: 'Owner — Full Name',
+                name: 'owner_name',
+                widget: 'string',
+                default: 'Barack Blessings'
+              },
+              {
+                label: 'Owner — Role / Title',
+                name: 'owner_role',
+                widget: 'string',
+                default: 'Co-Founder & CEO'
+              },
+              {
+                label: 'Owner — Bio',
+                name: 'owner_bio',
+                widget: 'text',
+                default: 'Barack leads the vision and operations at PhoneYa2-ZM, personally ensuring every product meets the quality standard he\'d expect for himself.'
+              },
+              {
+                label: 'Co-Founder — Full Name',
+                name: 'cofounder_name',
+                widget: 'string',
+                default: 'Sylvester Mwila'
+              },
+              {
+                label: 'Co-Founder — Role / Title',
+                name: 'cofounder_role',
+                widget: 'string',
+                default: 'Co-Founder & Operations'
+              },
+              {
+                label: 'Co-Founder — Bio',
+                name: 'cofounder_bio',
+                widget: 'text',
+                default: 'Sylvester keeps the wheels turning — from logistics and supplier relations to customer fulfilment.'
+              }
+            ]
+          },
+
+          // --- Recent Sales Notifications ---
+          {
+            label: '🔔 Recent Sales Notifications',
+            name: 'recent_sales',
+            file: 'content/settings/recent-sales.json',
+            hint: 'These appear as small social proof popups (bottom-left corner). Add ONLY real completed orders. One shows per session, randomly picked from active entries.',
+            fields: [
+              {
+                label: 'Sales List',
+                name: 'sales',
+                widget: 'list',
+                hint: 'Each entry is a real order you completed. Only "Active" ones can appear. Max 15 entries recommended.',
+                fields: [
+                  {
+                    label: 'Product Ordered',
+                    name: 'product',
+                    widget: 'string',
+                    hint: 'Exactly what the customer ordered. e.g. Clear Slim Case, 20W Charger'
+                  },
+                  {
+                    label: 'Customer City',
+                    name: 'city',
+                    widget: 'string',
+                    default: 'Lusaka',
+                    hint: 'Where the customer was. Usually Lusaka.'
+                  },
+                  {
+                    label: 'Time Description',
+                    name: 'time',
+                    widget: 'string',
+                    default: '2 hours ago',
+                    hint: 'How long ago this was ordered. e.g. 1 hour ago, yesterday, 3 days ago. Update regularly to keep it fresh.'
+                  },
+                  {
+                    label: 'Show this notification?',
+                    name: 'active',
+                    widget: 'boolean',
+                    default: true,
+                    hint: 'Turn OFF to hide this entry without deleting it'
+                  }
+                ]
+              }
+            ]
+          },
+
+          // --- Site-Wide ---
+          {
+            label: '🌐 Site-Wide Settings',
+            name: 'sitewide',
+            file: 'content/settings/sitewide.json',
+            fields: [
+              {
+                label: 'Business Name',
+                name: 'business_name',
+                widget: 'string',
+                default: 'PhoneYa2-ZM Accessories'
+              },
+              {
+                label: 'Site Tagline',
+                name: 'tagline',
+                widget: 'string',
+                default: "Lusaka's Most Trusted Phone Accessories Store"
+              },
+              {
+                label: 'Footer Copyright Name',
+                name: 'copyright_name',
+                widget: 'string',
+                default: 'Barack Blessings'
+              },
+              {
+                label: 'Footer Sign-Off Message',
+                name: 'signoff',
+                widget: 'string',
+                default: 'Jesus loves you. ❤️',
+                hint: 'Shown in the bottom-right of the footer on every page'
+              },
+              {
+                label: 'Default WhatsApp Message',
+                name: 'wa_default_msg',
+                widget: 'string',
+                default: 'Hi! I want to order from PhoneYa2-ZM.',
+                hint: 'Pre-filled message when someone taps the main Order Now button'
+              }
             ]
           }
+
         ]
       }
+
     ]
   }
 });
