@@ -1,12 +1,19 @@
 ---
-title: Selfie Ring Light Clip
+title: Classic Earpods
 price: 250
-category: other
-image: /assets/images/uploads/1000066485.jpg
-description: Universal clip-on LED ring light that attaches to any smartphone,
-  tablet, or laptop screen in seconds. Three adjustable colour temperatures —
-  warm, cool, and natural daylight — with three brightness levels each. USB
-  rechargeable with a 2-hour battery life per charge. Perfect for video calls,
-  TikTok content, and selfies in low light.
+original_price: 0
+stock: 50
+category: earphone
+image: /assets/images/uploads/1000070573.png
+gallery:
+  - image: /assets/images/uploads/1000070571.png
+  - image: /assets/images/uploads/1000070573.png
+description: |-
+  Apple AirPods – Seamless iOS integration, spatial audio. Pro models add ANC.
+  Samsung Galaxy Buds – Great with Android, comfortable fit. Pro has good ANC.
+  Sony WF-1000XM – Industry-leading noise cancellation, superb sound.
+  Xiaomi Buds – Budget-friendly, decent sound, basic features.
+  Infinix Buds – Affordable, AI translation (new model), low latency for gaming.
+  Nothing Ear – Transparent design, good sound, unique look.
 featured: true
 ---
