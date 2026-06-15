@@ -1,5 +1,5 @@
 ---
-title: iPhone X
+title: iPhone x
 price: 3500
 original_price: 0
 stock: 10
