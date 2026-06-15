@@ -4,12 +4,11 @@ price: 1900
 original_price: 0
 stock: 200
 category: phone
-image: /assets/images/uploads/1000070543.png
+image: /assets/images/uploads/1000070567.png
 gallery:
   - image: /assets/images/uploads/1000070559.png
   - image: /assets/images/uploads/1000070601.png
   - image: /assets/images/uploads/1000070567.png
-  - image: /assets/images/uploads/1000070550.png
 description: |-
   5s: Touch ID, 64-bit A7
   · 6/6 Plus: Bigger screens, Apple Pay
