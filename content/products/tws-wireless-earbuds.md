@@ -1,8 +1,22 @@
 ---
-title: "TWS Wireless Earbuds"
-price: 380
-category: "earphone"
-image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=85&auto=format&fit=crop"
-description: "True wireless earbuds with active noise cancellation that blocks out up to 25dB of ambient sound. Crystal-clear call quality with dual microphones. 20-hour total battery life with the charging case. IPX5 sweat and water resistance makes them perfect for workouts. Bluetooth 5.3 for a stable, low-latency connection up to 10 metres."
+title: INFINIX NOTE 50 PRO
+price: 3500
+original_price: 3550
+stock: 4
+category: phone
+image: /assets/images/uploads/1000070622.png
+gallery:
+  - image: /assets/images/uploads/1000070620.png
+  - image: /assets/images/uploads/1000070603.png
+description: >-
+  Powerful & premium mid-ranger. Features a 6.78" 3D curved AMOLED with 144Hz
+  refresh rate, ArmorAlloy™ metal frame (IP54, drop-resistant), and 50MP OIS
+  main camera + 32MP selfie. Powered by Helio G100 Ultimate with up to 16GB RAM.
+  5200mAh battery with insane 90W wired (0-100% in ~38 mins) and 30W wireless
+  charging. Runs Android 15 with AI assistant (Folax). Includes JBL-tuned dual
+  speakers.
+
+
+  High-speed charging, smooth display, and rugged design at a competitive price.
 featured: true
 ---
