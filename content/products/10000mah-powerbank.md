@@ -8,8 +8,6 @@ image: /assets/images/uploads/1000071268.png
 gallery:
   - image: /assets/images/uploads/1000071270.png
   - image: /assets/images/uploads/1000070977.png
-description: |-
-  Dual cameras with Portrait Mode.
-  A10 Fusion chip.
+description: Dual cameras with Portrait Mode.
 featured: true
 ---
