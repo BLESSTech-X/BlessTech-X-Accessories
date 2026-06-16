@@ -10,8 +10,6 @@ gallery:
   - image: /assets/images/uploads/1000070977.png
 description: |-
   Dual cameras with Portrait Mode.
-  No headphone jack.
-  IP67 water-resistant.
   A10 Fusion chip.
 featured: true
 ---
