@@ -484,39 +484,28 @@ const CAT_LABELS = { case:'Case', charger:'Charger', cable:'Cable', earphone:'Ea
 
 // ── FRONTMATTER PARSER — handles gallery list, order_note, stock, original_price ──
 function parseFrontmatter(text, slug) {
-  const match = text.match(/^---\s*\n([\s\S]*?)\n---/);
+  // Tested against real .md files — handles gallery, stock, original_price, order_note
+  const match = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
   if (!match) return null;
   const raw = match[1];
   const out = { slug, gallery: [] };
-
-  // Parse gallery list block (multi-line YAML list)
-  const galleryMatch = raw.match(/^gallery:\s*\n((?:[ \t]*[-\w\s:/"'.]*\n)*)/m);
+  const galleryMatch = raw.match(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m);
   if (galleryMatch) {
-    const galleryBlock = galleryMatch[1];
-    const entries = galleryBlock.split(/(?=^[ \t]*-[ \t]*image:)/m).filter(e => e.trim());
-    entries.forEach(entry => {
-      const imgM = entry.match(/image:\s*["']?([^"'\n]+)["']?/);
-      const capM = entry.match(/caption:\s*["']?([^"'\n]+)["']?/);
-      if (imgM) {
-        out.gallery.push({
-          image: imgM[1].trim(),
-          caption: capM ? capM[1].trim() : ''
-        });
-      }
+    const block = galleryMatch[1];
+    const items = block.split(/\n(?=  -)/).filter(s => s.trim());
+    items.forEach(item => {
+      const imgM = item.match(/image:\s*"?([^"\n]+?)"?\s*$/m);
+      const capM = item.match(/caption:\s*"?([^"\n]+?)"?\s*$/m);
+      if (imgM) out.gallery.push({ image: imgM[1].trim(), caption: capM ? capM[1].trim() : '' });
     });
   }
-
-  // Parse all scalar fields
-  const lines = raw.split('\n');
-  let inGallery = false;
-  lines.forEach(line => {
-    if (line.match(/^gallery:/)) { inGallery = true; return; }
-    if (inGallery && (line.match(/^[a-z]/) || line === '')) { inGallery = false; }
-    if (inGallery) return;
-    const m = line.match(/^([\w_]+):\s*["']?([^"'\n]*)["']?\s*$/);
+  const clean = raw.replace(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m, '');
+  clean.split('\n').forEach(line => {
+    const m = line.match(/^([\w_]+):\s*"?([^"\n]*?)"?\s*$/);
     if (!m) return;
     const [, key, val] = m;
     const v = val.trim();
+    if (!v && key !== 'original_price') return;
     if (key === 'price' || key === 'original_price') out[key] = parseFloat(v) || 0;
     else if (key === 'stock') out[key] = parseInt(v) || 0;
     else if (key === 'featured') out[key] = v === 'true';
@@ -526,10 +515,24 @@ function parseFrontmatter(text, slug) {
 }
 
 async function fetchAllProducts() {
-  const slugs = ['clear-slim-case','shockproof-armor-case','leather-wallet-case','20w-usb-c-charger','65w-pd-charger','wireless-charger-pad','braided-usb-c-cable','lightning-cable','3-in-1-cable','tws-wireless-earbuds','bass-earphones','sport-earphones','10000mah-powerbank','20000mah-powerbank','tempered-glass','privacy-screen-protector','android-smartphone','selfie-ring-light'];
-  const results = await Promise.allSettled(slugs.map(s => fetch(`/content/products/${s}.md`).then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null)));
-  const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
-  return fetched.length ? fetched : DEMO_PRODUCTS;
+  try {
+    const res = await fetch('/content/products/index.json?t=' + Date.now());
+    if (res.ok) {
+      const slugs = await res.json();
+      if (Array.isArray(slugs) && slugs.length > 0) {
+        const results = await Promise.allSettled(
+          slugs.map(s =>
+            fetch('/content/products/' + s + '.md')
+              .then(r => r.ok ? r.text() : null)
+              .then(t => t ? parseFrontmatter(t, s) : null)
+          )
+        );
+        const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+        if (fetched.length > 0) return fetched;
+      }
+    }
+  } catch(e) { console.warn('fetchAllProducts error:', e); }
+  return DEMO_PRODUCTS;
 }
 
 // ── HELPERS ──
