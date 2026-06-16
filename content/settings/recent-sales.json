@@ -1,0 +1,15 @@
+{
+  "_comment": "Edit this file to update the recent sales notifications. Add your real orders here. Set 'active' to false to hide an entry. Keep max 10-15 entries.",
+  "sales": [
+    { "product": "Clear Slim Case", "city": "Lusaka", "time": "2 hours ago", "active": true },
+    { "product": "20W USB-C Fast Charger", "city": "Lusaka", "time": "4 hours ago", "active": true },
+    { "product": "TWS Wireless Earbuds", "city": "Lusaka", "time": "yesterday", "active": true },
+    { "product": "10000mAh Power Bank", "city": "Lusaka", "time": "yesterday", "active": true },
+    { "product": "Braided USB-C Cable", "city": "Lusaka", "time": "2 days ago", "active": true },
+    { "product": "Shockproof Armor Case", "city": "Lusaka", "time": "2 days ago", "active": true },
+    { "product": "9H Tempered Glass", "city": "Lusaka", "time": "3 days ago", "active": true },
+    { "product": "Android Smartphone 64GB", "city": "Lusaka", "time": "3 days ago", "active": true },
+    { "product": "15W Wireless Charger Pad", "city": "Lusaka", "time": "4 days ago", "active": true },
+    { "product": "Sport Hook Earphones", "city": "Lusaka", "time": "this week", "active": true }
+  ]
+}
