@@ -408,30 +408,56 @@ const CAT_COLORS = {
 };
 
 function parseFrontmatter(text, slug) {
-  const match = text.match(/^---\s*\n([\s\S]*?)\n---/);
+  // Tested against real .md files — handles gallery, stock, original_price, order_note
+  const match = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
   if (!match) return null;
-  const out = { slug };
-  match[1].split('\n').forEach(line => {
-    const m = line.match(/^([\w_]+):\s*"?([^"]*)"?\s*$/);
+  const raw = match[1];
+  const out = { slug, gallery: [] };
+  const galleryMatch = raw.match(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m);
+  if (galleryMatch) {
+    const block = galleryMatch[1];
+    const items = block.split(/\n(?=  -)/).filter(s => s.trim());
+    items.forEach(item => {
+      const imgM = item.match(/image:\s*"?([^"\n]+?)"?\s*$/m);
+      const capM = item.match(/caption:\s*"?([^"\n]+?)"?\s*$/m);
+      if (imgM) out.gallery.push({ image: imgM[1].trim(), caption: capM ? capM[1].trim() : '' });
+    });
+  }
+  const clean = raw.replace(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m, '');
+  clean.split('\n').forEach(line => {
+    const m = line.match(/^([\w_]+):\s*"?([^"\n]*?)"?\s*$/);
     if (!m) return;
     const [, key, val] = m;
-    if (key === 'price' || key === 'original_price') out[key] = parseFloat(val) || 0;
-    else if (key === 'stock') out[key] = parseInt(val) || 0;
-    else if (key === 'featured') out[key] = val.trim() === 'true';
-    else out[key] = val.trim();
+    const v = val.trim();
+    if (!v && key !== 'original_price') return;
+    if (key === 'price' || key === 'original_price') out[key] = parseFloat(v) || 0;
+    else if (key === 'stock') out[key] = parseInt(v) || 0;
+    else if (key === 'featured') out[key] = v === 'true';
+    else out[key] = v;
   });
   return out;
 }
 
+// Reads index.json (rebuilt on every Netlify deploy) so new CMS products always appear.
 async function fetchAllProducts() {
   try {
-    const indexRes = await fetch('/content/products/index.json');
-    if (indexRes.ok) return await indexRes.json();
+    const res = await fetch('/content/products/index.json?t=' + Date.now());
+    if (res.ok) {
+      const slugs = await res.json();
+      if (Array.isArray(slugs) && slugs.length > 0) {
+        const results = await Promise.allSettled(
+          slugs.map(s =>
+            fetch('/content/products/' + s + '.md')
+              .then(r => r.ok ? r.text() : null)
+              .then(t => t ? parseFrontmatter(t, s) : null)
+          )
+        );
+        const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+        if (fetched.length > 0) return fetched;
+      }
+    }
   } catch(e) {}
-  const slugs = ['clear-slim-case','shockproof-armor-case','leather-wallet-case','20w-usb-c-charger','65w-pd-charger','wireless-charger-pad','braided-usb-c-cable','lightning-cable','3-in-1-cable','tws-wireless-earbuds','bass-earphones','sport-earphones','10000mah-powerbank','20000mah-powerbank','tempered-glass','privacy-screen-protector','android-smartphone','selfie-ring-light'];
-  const results = await Promise.allSettled(slugs.map(s => fetch(`/content/products/${s}.md`).then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null)));
-  const fetched = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
-  return fetched.length ? fetched : DEMO_PRODUCTS;
+  return DEMO_PRODUCTS;
 }
 
 // Challenge 1 — Stock status
