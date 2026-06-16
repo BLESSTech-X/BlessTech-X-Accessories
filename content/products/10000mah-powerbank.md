@@ -1,8 +1,17 @@
 ---
-title: Headsets
-price: 250
-category: other
-image: https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=800&q=85&auto=format&fit=crop
-description: Quality sound,Long lasting experience.Making you Young forever
+title: "iPhone 7 plus "
+price: 2950
+original_price: 3000
+stock: 3
+category: phone
+image: /assets/images/uploads/1000071268.png
+gallery:
+  - image: /assets/images/uploads/1000071270.png
+  - image: /assets/images/uploads/1000070977.png
+description: |-
+  Dual cameras with Portrait Mode.
+  No headphone jack.
+  IP67 water-resistant.
+  A10 Fusion chip.
 featured: true
 ---
