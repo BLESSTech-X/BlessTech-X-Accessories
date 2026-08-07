@@ -1,6 +1,6 @@
 ---
 title: iPhone 13 128GB
-price: 7500
+price: 8800
 original_price: 0
 stock: 10
 category: phone
