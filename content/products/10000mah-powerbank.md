@@ -1,7 +1,7 @@
 ---
 title: "iPhone 7 plus "
-price: 2950
-original_price: 3000
+price: 2000
+original_price: 0
 stock: 3
 category: phone
 image: /assets/images/uploads/1000071268.png
