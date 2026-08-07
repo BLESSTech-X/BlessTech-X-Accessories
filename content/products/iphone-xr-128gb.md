@@ -7,6 +7,7 @@ category: phone
 image: /assets/images/uploads/image_2026-08-07_225818836.png
 gallery:
   - image: /assets/images/uploads/image_2026-08-07_231039366.png
+  - image: /assets/images/uploads/whatsapp-image-2026-08-07-at-22.17.50.jpeg
 description: 128GB storage, available in multiple clean colors. 🔋 Fully
   functional and in good condition for everyday use. 🚚 Order now with fast
   delivery in Lusaka!
