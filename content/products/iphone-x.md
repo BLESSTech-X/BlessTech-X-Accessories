@@ -1,6 +1,6 @@
 ---
 title: iPhone x
-price: 3500
+price: 2700
 original_price: 0
 stock: 10
 category: phone
