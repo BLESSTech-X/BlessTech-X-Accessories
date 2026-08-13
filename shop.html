@@ -30,29 +30,55 @@ img{max-width:100%;display:block;}
 @keyframes slideOutDown{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
 
 /* RAINBOW */
-.rainbow-streak{position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);background-size:200%;animation:gradShift 4s linear infinite;}
-
-/* HEADER */
-header{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;background:rgba(10,10,20,.96);backdrop-filter:blur(18px);}
-.header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:38px;height:38px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:18px;color:white;flex-shrink:0;}
-.logo-text .brand{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:white;line-height:1.1;}
-.logo-text .sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.45);}
-nav.desk{display:flex;align-items:center;gap:28px;}
-nav.desk a{color:rgba(255,255,255,.8);font-size:14px;font-weight:500;transition:color .2s;}
-nav.desk a:hover,nav.desk a.active{color:white;}
-.btn-order-hdr{background:var(--grad-green);color:white;font-weight:600;font-size:13px;padding:8px 16px;border-radius:100px;display:flex;align-items:center;gap:6px;transition:transform .2s;}
-.btn-order-hdr:hover{transform:translateY(-2px);}
-.hamburger{display:none;background:none;border:none;color:white;font-size:22px;cursor:pointer;}
-.mob-nav{display:none;position:fixed;top:64px;left:0;right:0;z-index:190;background:rgba(10,10,20,.98);backdrop-filter:blur(20px);padding:24px;flex-direction:column;}
+/* ═══ UNIFIED HEADER ═══════════════════════════════════════ */
+.top-header{background:var(--white);border-bottom:1px solid var(--border,#e8e8e8);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.07);}
+.top-header-inner{max-width:1280px;margin:0 auto;padding:0 16px;height:68px;display:flex;align-items:center;gap:16px;}
+.logo-wrap{flex-shrink:0;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-img{height:48px;width:48px;object-fit:contain;border-radius:10px;flex-shrink:0;}
+.logo-text-block{display:flex;flex-direction:column;line-height:1;}
+.logo-brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#1a1a2e;}
+.logo-brand-name span{color:#ff6000;}
+.logo-brand-sub{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;}
+.header-search{flex:1;min-width:0;max-width:520px;}
+.search-box{display:flex;border:2px solid #ff6000;border-radius:8px;overflow:hidden;height:42px;}
+.search-box input{flex:1;border:none;outline:none;padding:0 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:#1a1a2e;background:white;min-width:0;}
+.search-box input::placeholder{color:#aaa;}
+.search-box button{background:#ff6000;border:none;color:white;padding:0 18px;cursor:pointer;font-size:15px;flex-shrink:0;transition:background .2s;}
+.search-box button:hover{background:#e55400;}
+.desk-nav{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto;}
+.dnav-link{font-size:14px;font-weight:500;color:#6b7280;padding:7px 12px;border-radius:8px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.dnav-link:hover,.dnav-link.active{color:#1a1a2e;background:#f2f3f7;}
+.dnav-order{background:#ff6000;color:white;font-weight:700;font-size:13px;padding:8px 16px;border-radius:8px;display:flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap;transition:transform .2s,box-shadow .2s;flex-shrink:0;margin-left:4px;}
+.dnav-order:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,96,0,.4);}
+.hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1a2e;padding:6px;}
+/* Cat nav */
+.cat-nav{background:white;border-bottom:1px solid #e8e8e8;}
+.cat-nav-inner{max-width:1280px;margin:0 auto;padding:0 16px;display:flex;align-items:center;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;}
+.cat-nav-inner::-webkit-scrollbar{display:none;}
+.cat-nav-item{display:flex;align-items:center;gap:6px;padding:10px 14px;font-size:13px;font-weight:500;color:#6b7280;white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;text-decoration:none;flex-shrink:0;}
+.cat-nav-item:hover,.cat-nav-item.active{color:#ff6000;border-bottom-color:#ff6000;background:rgba(255,96,0,.04);}
+/* Mobile nav drawer */
+.mob-nav{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:rgba(0,0,0,.5);}
 .mob-nav.open{display:flex;}
-.mob-nav a{color:rgba(255,255,255,.85);font-size:16px;font-weight:500;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);}
-.mob-nav a:last-of-type{border-bottom:none;}
-.mob-wa{margin-top:20px;background:var(--grad-green);color:white;font-weight:700;padding:15px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.mob-nav-panel{width:280px;background:white;height:100%;overflow-y:auto;animation:slideInLeft .28s ease;}
+@keyframes slideInLeft{from{transform:translateX(-100%);}to{transform:translateX(0);}}
+.mob-nav-hdr{background:#0a0a14;padding:20px 16px 16px;display:flex;align-items:center;justify-content:space-between;}
+.mob-nav-hdr img{height:40px;border-radius:6px;}
+.mob-nav-hdr-text{display:flex;flex-direction:column;}
+.mob-nav-hdr-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:white;}
+.mob-nav-hdr-sub{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;}
+.mob-nav-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;}
+.mob-nav-links{padding:8px 0;}
+.mob-nav-links a{display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:15px;font-weight:500;color:#1a1a2e;border-bottom:1px solid #f5f5f5;text-decoration:none;transition:background .15s;}
+.mob-nav-links a:hover{background:#fff8f4;}
+.mob-nav-links a i{width:20px;color:#ff6000;font-size:14px;}
+.mob-nav-links a.active{color:#ff6000;background:#fff8f4;}
+.mob-nav-wa{margin:16px;background:linear-gradient(135deg,#128c7e,#25d366);color:white;font-weight:700;padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;text-decoration:none;}
+@media(max-width:900px){.desk-nav{display:none;}.hamburger{display:block;}.header-search{max-width:none;}}
+@media(max-width:600px){.header-search{display:none;}}
 
 /* SHOP HERO */
-.shop-hero{background:var(--dark);padding:96px 24px 48px;position:relative;overflow:hidden;margin-top:64px;}
+.shop-hero{background:var(--dark);padding:40px 24px 40px;position:relative;overflow:hidden;margin-top:0;}
 .shop-hero-orb1{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,107,.2),transparent 70%);top:-100px;right:-100px;pointer-events:none;}
 .shop-hero-orb2{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(84,160,255,.15),transparent 70%);bottom:-80px;left:-60px;pointer-events:none;}
 .shop-hero-inner{max-width:1280px;margin:0 auto;position:relative;z-index:1;}
@@ -202,33 +228,77 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 </head>
 <body>
 
-<header>
-  <div class="rainbow-streak"></div>
-  <div class="header-inner">
-    <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2-ZM" style="height:40px;width:40px;object-fit:contain;border-radius:8px;"
-           onerror="this.style.display='none'">
-      <div><div class="brand">PhoneYa2<span style="color:#ff6000">-ZM</span></div><div class="sub">Accessories</div></div>
-    </a>
-    <nav class="desk">
-      <a href="index.html">Home</a>
-      <a href="shop.html" class="active">Shop</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="btn-order-hdr"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
-    </nav>
+<!-- UNIFIED HEADER -->
+<div class="top-header">
+  <div class="top-header-inner">
     <button class="hamburger" id="hamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <a href="index.html" class="logo-wrap">
+      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
+           alt="PhoneYa2-ZM Accessories" class="logo-img"
+           onerror="this.style.display='none'">
+      <div class="logo-text-block">
+        <div class="logo-brand-name">PhoneYa2<span>-ZM</span></div>
+        <div class="logo-brand-sub">Accessories</div>
+      </div>
+    </a>
+    <div class="header-search">
+      <div class="search-box">
+        <input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products">
+        <button onclick="doHeaderSearch()" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+    </div>
+    <nav class="desk-nav">
+      <a href="index.html" class="dnav-link">Home</a>
+      <a href="shop.html" class="dnav-link active">Shop</a>
+      <a href="about.html" class="dnav-link">About</a>
+      <a href="contact.html" class="dnav-link">Contact</a>
+      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" rel="noopener" class="dnav-order"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
+    </nav>
   </div>
-</header>
-
-<div class="mob-nav" id="mob-nav">
-  <a href="index.html">Home</a>
-  <a href="shop.html">Shop</a>
-  <a href="about.html">About</a>
-  <a href="contact.html">Contact</a>
-  <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
 </div>
+
+<!-- CAT NAV STRIP -->
+<div class="cat-nav">
+  <div class="cat-nav-inner">
+    <a href="shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store"></i> All Products</a>
+    <a href="shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen"></i> Cases</a>
+    <a href="shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt"></i> Chargers</a>
+    <a href="shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug"></i> Cables</a>
+    <a href="shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones"></i> Earphones</a>
+    <a href="shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full"></i> Power Banks</a>
+    <a href="shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved"></i> Protectors</a>
+    <a href="shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile"></i> Phones</a>
+    <a href="about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info"></i> About Us</a>
+  </div>
+</div>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mob-nav" id="mob-nav" role="dialog" aria-modal="true">
+  <div class="mob-nav-panel">
+    <div class="mob-nav-hdr">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
+             alt="PhoneYa2-ZM" style="height:36px;border-radius:6px;" onerror="this.style.display='none'">
+        <div class="mob-nav-hdr-text">
+          <div class="mob-nav-hdr-brand">PhoneYa2-ZM</div>
+          <div class="mob-nav-hdr-sub">Accessories</div>
+        </div>
+      </div>
+      <button class="mob-nav-close" id="mob-nav-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="padding:12px 16px;border-bottom:1px solid #f0f0f0;">
+      <div class="search-box"><input type="text" id="mob-search" placeholder="Search products…" autocomplete="off"><button onclick="doHeaderSearch(true)" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+    </div>
+    <div class="mob-nav-links">
+      <a href="index.html" class=""><i class="fa-solid fa-house"></i> Home</a>
+        <a href="shop.html" class=" active"><i class="fa-solid fa-bag-shopping"></i> Shop</a>
+        <a href="about.html" class=""><i class="fa-solid fa-circle-info"></i> About</a>
+        <a href="contact.html" class=""><i class="fa-solid fa-envelope"></i> Contact</a>
+    </div>
+    <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
+  </div>
+</div>
+
 
 <!-- SHOP HERO -->
 <section class="shop-hero">
