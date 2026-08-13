@@ -6,5 +6,5 @@ stock: 50
 category: earphone
 image: /assets/images/uploads/1000152692.jpg
 description: New Stock.Durable.Original
-featured: false
+featured: true
 ---
