@@ -45,10 +45,8 @@ button{font-family:'DM Sans',sans-serif;}
 /* ═══════════════════════════════════════════
    ANNOUNCEMENT BAR
 ═══════════════════════════════════════════ */
-.announce-bar{background:var(--dark);padding:8px 16px;text-align:center;font-size:12px;color:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
-.announce-bar strong{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
-.announce-close{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:14px;margin-left:8px;}
 
+.announce-bar strong{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
 /* ═══════════════════════════════════════════
    TOP HEADER (Alibaba-style)
 ═══════════════════════════════════════════ */
@@ -71,14 +69,12 @@ button{font-family:'DM Sans',sans-serif;}
 .search-box button{background:var(--orange);border:none;color:white;padding:0 20px;cursor:pointer;font-size:15px;flex-shrink:0;transition:background .2s;}
 .search-box button:hover{background:#e55400;}
 
-/* Header actions */
-.header-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto;}
-.hdr-act{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:8px;cursor:pointer;transition:background .2s;text-decoration:none;color:var(--text);border:none;background:none;white-space:nowrap;}
-.hdr-act:hover{background:var(--light);}
-.hdr-act i{font-size:18px;color:var(--muted);}
-.hdr-act span{font-size:11px;color:var(--muted);}
-.hdr-act.wa i{color:var(--green);}
-.hdr-act.wa span{color:var(--green);}
+/* Desktop nav */
+.desk-nav{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto;}
+.dnav-link{font-size:14px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:8px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.dnav-link:hover,.dnav-link.active{color:var(--text);background:var(--light);}
+.dnav-order{background:var(--orange);color:white;font-weight:700;font-size:13px;padding:8px 16px;border-radius:8px;display:flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap;transition:transform .2s,box-shadow .2s;flex-shrink:0;}
+.dnav-order:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,96,0,.4);}
 .hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text);padding:6px;}
 
 /* ═══════════════════════════════════════════
@@ -190,16 +186,16 @@ button{font-family:'DM Sans',sans-serif;}
 .scroll-btns{display:flex;gap:6px;}
 .scroll-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);transition:all .2s;}
 .scroll-btn:hover{background:var(--orange);color:white;border-color:var(--orange);}
-.section-body{padding:14px 18px;overflow:hidden;}
+.section-body{padding:14px 18px;overflow:visible;}
 
 /* Horizontal scroll track */
-.h-track-wrap{overflow:hidden;width:100%;}
-.h-track{display:flex;gap:12px;transition:transform .4s cubic-bezier(.4,0,.2,1);will-change:transform;}
+.h-track-wrap{overflow:hidden;width:100%;position:relative;}
+.h-track{display:flex;gap:12px;transition:transform .4s cubic-bezier(.4,0,.2,1);will-change:transform;min-height:220px;align-items:stretch;}
 
 /* ═══════════════════════════════════════════
    PRODUCT CARDS — Alibaba compact style
 ═══════════════════════════════════════════ */
-.pc{width:clamp(150px,calc(50vw - 28px),200px);flex-shrink:0;background:white;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;border:1px solid #f0f0f0;position:relative;}
+.pc{width:180px;flex-shrink:0;background:white;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;border:1px solid #f0f0f0;position:relative;}
 .pc:hover{box-shadow:0 8px 24px rgba(0,0,0,.12);transform:translateY(-4px);}
 .pc-img{height:160px;background:var(--light);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
 .pc-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
@@ -354,12 +350,13 @@ footer{background:var(--dark);padding:48px 16px 0;margin-top:8px;}
   .cat-showcase-side{display:none;}
   .stats-banner{grid-template-columns:repeat(2,1fr);}
   .header-search{display:none;}
-  .header-actions .hdr-act:not(.wa){display:none;}
+  .desk-nav{display:none;}
   .hamburger{display:block;}
   .howto-steps-grid{grid-template-columns:repeat(2,1fr);}
   .hero-side{display:none;}
   /* Carousel on mobile */
-  .pc{width:clamp(140px,44vw,180px);}
+  .pc{width:160px;}
+  .pc-featured{width:200px;}
   .section-body{padding:12px;}
   /* Hero content padding */
   .hero-slide-content{padding:24px 20px;}
@@ -379,10 +376,10 @@ footer{background:var(--dark);padding:48px 16px 0;margin-top:8px;}
   .promo-banners{grid-template-columns:1fr;}
   .stats-banner{grid-template-columns:repeat(2,1fr);}
   .footer-grid{grid-template-columns:1fr;}
-  .announce-bar{font-size:11px;padding:7px 12px;}
   /* Cards fill nicely on small phones */
-  .pc{width:clamp(130px,42vw,160px);}
-  .pc-img{height:130px;}
+  .pc{width:148px;}
+  .pc-featured{width:180px;}
+  .pc-img{height:140px;}
   /* Hero */
   .hero-banner{min-height:280px;}
   .hero-cta-row{flex-direction:column;align-items:flex-start;}
@@ -397,24 +394,76 @@ footer{background:var(--dark);padding:48px 16px 0;margin-top:8px;}
   .trust-item{padding:10px 12px;}
 }
 iframe[src*="tawk.to"]{bottom:70px !important;}
+
+/* NEW / DEAL BADGES */
+.new-badge{background:linear-gradient(135deg,#5f27cd,#54a0ff);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;}
+.deal-badge{background:linear-gradient(135deg,#ff6b6b,#feca57);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* FEATURED PRODUCT CARD — wider, used in New Arrivals / Deals */
+.pc-featured{width:220px;flex-shrink:0;background:white;border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .25s,transform .25s;border:1px solid #f0f0f0;position:relative;}
+.pc-featured:hover{box-shadow:0 10px 32px rgba(0,0,0,.14);transform:translateY(-5px);}
+.pc-featured .pc-img{height:200px;}
+.pc-featured .pc-body{padding:14px 12px;}
+.pc-featured .pc-name{font-size:14px;-webkit-line-clamp:2;}
+.pc-featured .pc-price{font-size:17px;}
+.pc-featured .pc-wa{padding:9px;font-size:12px;}
+
+/* TESTIMONIALS */
+.testimonials-section{background:white;border-radius:14px;border:1px solid var(--border,#e8e8e8);margin-bottom:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:16px 18px 20px;}
+.testi-card{background:#fafafa;border-radius:12px;padding:18px 16px;border:1px solid #f0f0f0;position:relative;}
+.testi-card::before{content:'"';position:absolute;top:10px;right:14px;font-size:3rem;color:#ff6000;opacity:.15;font-family:Georgia,serif;line-height:1;}
+.testi-stars{display:flex;gap:2px;margin-bottom:10px;}
+.testi-stars i{color:#feca57;font-size:13px;}
+.testi-text{font-size:13px;color:#444;line-height:1.6;margin-bottom:12px;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:10px;}
+.testi-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ff6b6b,#feca57);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+.testi-name{font-weight:700;font-size:13px;color:#1a1a2e;}
+.testi-loc{font-size:11px;color:#6b7280;}
+
+/* WHY US MINI ROW */
+.why-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.why-card-mini{background:white;border-radius:12px;padding:20px 16px;border:1px solid var(--border,#e8e8e8);text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .2s,box-shadow .2s;}
+.why-card-mini:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.why-icon-big{font-size:2rem;margin-bottom:10px;}
+.why-title-mini{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#1a1a2e;margin-bottom:6px;}
+.why-desc-mini{font-size:12px;color:#6b7280;line-height:1.5;}
+
+/* NEWSLETTER / WA JOIN CTA */
+.join-cta{background:linear-gradient(135deg,#0a0a14 0%,#1a1a3e 100%);border-radius:14px;padding:40px 32px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.join-cta-orb{position:absolute;border-radius:50%;pointer-events:none;}
+.join-cta-orb.a{width:300px;height:300px;background:radial-gradient(circle,rgba(255,96,0,.2),transparent 70%);top:-80px;left:-60px;}
+.join-cta-orb.b{width:250px;height:250px;background:radial-gradient(circle,rgba(84,160,255,.15),transparent 70%);bottom:-60px;right:-40px;}
+.join-cta-txt{position:relative;z-index:1;max-width:480px;}
+.join-cta-txt h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.3rem,2.5vw,1.8rem);color:white;margin-bottom:10px;}
+.join-cta-txt p{color:rgba(255,255,255,.6);font-size:14px;line-height:1.6;}
+.join-cta-btn{position:relative;z-index:1;background:linear-gradient(135deg,#128c7e,#25d366);color:white;font-weight:700;font-size:15px;padding:16px 28px;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;gap:10px;white-space:nowrap;box-shadow:0 4px 20px rgba(37,211,102,.4);transition:transform .2s,box-shadow .2s;text-decoration:none;flex-shrink:0;}
+.join-cta-btn:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(37,211,102,.55);}
+
+@media(max-width:768px){
+  .testi-grid{grid-template-columns:1fr;}
+  .why-row{grid-template-columns:1fr;}
+  .join-cta{padding:28px 20px;}
+}
+@media(max-width:480px){
+  .testi-grid{grid-template-columns:1fr;}
+  .why-row{grid-template-columns:1fr;}
+}
+
 </style>
 </head>
 <body>
 
-<!-- ANNOUNCEMENT BAR -->
-<div class="announce-bar" id="announce-bar">
-  <span>🎉 <strong>Same-Day Delivery in Lusaka</strong> — Order before 3pm. Free delivery on orders over ZMW 500!</span>
-  <button class="announce-close" onclick="document.getElementById('announce-bar').style.display='none'" aria-label="Close">✕</button>
-</div>
+
 
 <!-- TOP HEADER -->
+<!-- UNIFIED HEADER -->
 <div class="top-header">
   <div class="top-header-inner">
     <button class="hamburger" id="hamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
     <a href="index.html" class="logo-wrap">
       <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2-ZM Accessories"
-           class="logo-img"
+           alt="PhoneYa2-ZM Accessories" class="logo-img"
            onerror="this.style.display='none'">
       <div class="logo-text-block">
         <div class="logo-brand-name">PhoneYa2<span>-ZM</span></div>
@@ -424,35 +473,31 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     <div class="header-search">
       <div class="search-box">
         <input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products">
-        <button onclick="doSearch()" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button onclick="doHeaderSearch()" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
     </div>
-    <div class="header-actions">
-      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" rel="noopener" class="hdr-act wa">
-        <i class="fa-brands fa-whatsapp"></i><span>Order</span>
-      </a>
-      <a href="shop.html" class="hdr-act">
-        <i class="fa-solid fa-bag-shopping"></i><span>Shop</span>
-      </a>
-      <a href="contact.html" class="hdr-act">
-        <i class="fa-solid fa-envelope"></i><span>Contact</span>
-      </a>
-    </div>
+    <nav class="desk-nav">
+      <a href="index.html" class="dnav-link active">Home</a>
+      <a href="shop.html" class="dnav-link">Shop</a>
+      <a href="about.html" class="dnav-link">About</a>
+      <a href="contact.html" class="dnav-link">Contact</a>
+      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" rel="noopener" class="dnav-order"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
+    </nav>
   </div>
 </div>
 
-<!-- CATEGORY NAV STRIP -->
+<!-- CAT NAV STRIP -->
 <div class="cat-nav">
   <div class="cat-nav-inner">
-    <a href="shop.html?cat=all"       class="cat-nav-item active"><i class="fa-solid fa-store"></i> All Products</a>
-    <a href="shop.html?cat=case"      class="cat-nav-item"><i class="fa-solid fa-mobile-screen"></i> Cases</a>
-    <a href="shop.html?cat=charger"   class="cat-nav-item"><i class="fa-solid fa-bolt"></i> Chargers</a>
-    <a href="shop.html?cat=cable"     class="cat-nav-item"><i class="fa-solid fa-plug"></i> Cables</a>
-    <a href="shop.html?cat=earphone"  class="cat-nav-item"><i class="fa-solid fa-headphones"></i> Earphones</a>
+    <a href="shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store"></i> All Products</a>
+    <a href="shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen"></i> Cases</a>
+    <a href="shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt"></i> Chargers</a>
+    <a href="shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug"></i> Cables</a>
+    <a href="shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones"></i> Earphones</a>
     <a href="shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full"></i> Power Banks</a>
     <a href="shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved"></i> Protectors</a>
-    <a href="shop.html?cat=phone"     class="cat-nav-item"><i class="fa-solid fa-mobile"></i> Phones</a>
-    <a href="about.html"              class="cat-nav-item"><i class="fa-solid fa-circle-info"></i> About Us</a>
+    <a href="shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile"></i> Phones</a>
+    <a href="about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info"></i> About Us</a>
   </div>
 </div>
 
@@ -460,27 +505,24 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 <div class="mob-nav" id="mob-nav" role="dialog" aria-modal="true">
   <div class="mob-nav-panel">
     <div class="mob-nav-hdr">
-      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2-ZM"
-           onerror="this.style.display='none'">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
+             alt="PhoneYa2-ZM" style="height:36px;border-radius:6px;" onerror="this.style.display='none'">
+        <div class="mob-nav-hdr-text">
+          <div class="mob-nav-hdr-brand">PhoneYa2-ZM</div>
+          <div class="mob-nav-hdr-sub">Accessories</div>
+        </div>
+      </div>
       <button class="mob-nav-close" id="mob-nav-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <!-- Mobile search -->
     <div style="padding:12px 16px;border-bottom:1px solid #f0f0f0;">
-      <div class="search-box"><input type="text" id="mob-search" placeholder="Search products…"><button onclick="doSearch(true)" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+      <div class="search-box"><input type="text" id="mob-search" placeholder="Search products…" autocomplete="off"><button onclick="doHeaderSearch(true)" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></div>
     </div>
     <div class="mob-nav-links">
-      <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
-      <a href="shop.html"><i class="fa-solid fa-bag-shopping"></i> All Products</a>
-      <a href="shop.html?cat=case"><i class="fa-solid fa-mobile-screen"></i> Cases</a>
-      <a href="shop.html?cat=charger"><i class="fa-solid fa-bolt"></i> Chargers</a>
-      <a href="shop.html?cat=cable"><i class="fa-solid fa-plug"></i> Cables</a>
-      <a href="shop.html?cat=earphone"><i class="fa-solid fa-headphones"></i> Earphones</a>
-      <a href="shop.html?cat=powerbank"><i class="fa-solid fa-battery-full"></i> Power Banks</a>
-      <a href="shop.html?cat=protector"><i class="fa-solid fa-shield-halved"></i> Screen Protectors</a>
-      <a href="shop.html?cat=phone"><i class="fa-solid fa-mobile"></i> Phones</a>
-      <a href="about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
-      <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+      <a href="index.html" class=" active"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="shop.html" class=""><i class="fa-solid fa-bag-shopping"></i> Shop</a>
+        <a href="about.html" class=""><i class="fa-solid fa-circle-info"></i> About</a>
+        <a href="contact.html" class=""><i class="fa-solid fa-envelope"></i> Contact</a>
     </div>
     <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
   </div>
@@ -623,6 +665,47 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
+  <!-- NEW ARRIVALS -->
+  <div class="section-card" id="new-arrivals-section">
+    <div class="section-hdr">
+      <div class="sec-hdr-left">
+        <h2>🆕 New Arrivals</h2>
+        <span class="new-badge">Just Landed</span>
+      </div>
+      <div class="sec-hdr-right">
+        <a href="shop.html" class="view-all-link">See All <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="scroll-btns">
+          <button class="scroll-btn" onclick="scrollTrack('new-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('new-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="h-track-wrap"><div class="h-track" id="new-track"></div></div>
+    </div>
+  </div>
+
+  <!-- FEATURED — DEALS OF THE DAY -->
+  <div class="section-card" id="deals-section">
+    <div class="section-hdr">
+      <div class="sec-hdr-left">
+        <h2>🔥 Deals of the Day</h2>
+        <span class="deal-badge">Best Savings</span>
+      </div>
+      <div class="sec-hdr-right">
+        <a href="shop.html" class="view-all-link">See All <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="scroll-btns">
+          <button class="scroll-btn" onclick="scrollTrack('deals-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('deals-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="h-track-wrap"><div class="h-track" id="deals-track"></div></div>
+    </div>
+  </div>
+
+
   <!-- PROMO BANNERS ROW -->
   <div class="promo-banners">
     <a href="shop.html?cat=charger" class="promo-banner" style="text-decoration:none">
@@ -744,6 +827,63 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
       <div class="pay-chip pc-c"><i class="fa-solid fa-money-bill"></i> Cash on Delivery</div>
     </div>
   </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="testimonials-section">
+    <div class="section-hdr">
+      <div class="sec-hdr-left"><h2>💬 What Our Customers Say</h2></div>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="testi-text">I ordered a case and charger in the morning and they delivered to my house by 2pm. Amazing service, will definitely order again!</p>
+        <div class="testi-author"><div class="testi-avatar">C</div><div><div class="testi-name">Chanda M.</div><div class="testi-loc">Lusaka, Zambia</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="testi-text">The earbuds are genuine quality — I was worried about fakes but these are perfect. The WhatsApp ordering is so easy, I love it.</p>
+        <div class="testi-author"><div class="testi-avatar">M</div><div><div class="testi-name">Mutale K.</div><div class="testi-loc">Lusaka, Zambia</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+        <p class="testi-text">Power bank is great, lasted through load shedding the whole week. PhoneYa2 is now my go-to for all phone accessories in Lusaka.</p>
+        <div class="testi-author"><div class="testi-avatar">B</div><div><div class="testi-name">Bwalya T.</div><div class="testi-loc">Lusaka, Zambia</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY CHOOSE US (mini cards) -->
+  <div class="why-row">
+    <div class="why-card-mini">
+      <div class="why-icon-big">🛡️</div>
+      <div class="why-title-mini">100% Genuine Products</div>
+      <div class="why-desc-mini">Every item is authentic and sourced from trusted suppliers. No fakes, ever.</div>
+    </div>
+    <div class="why-card-mini">
+      <div class="why-icon-big">🚀</div>
+      <div class="why-title-mini">Same-Day Delivery</div>
+      <div class="why-desc-mini">Order before 3pm and we deliver across Lusaka the same day.</div>
+    </div>
+    <div class="why-card-mini">
+      <div class="why-icon-big">💬</div>
+      <div class="why-title-mini">Personal WhatsApp Service</div>
+      <div class="why-desc-mini">Order, ask questions, and track delivery — all on WhatsApp. Fast replies guaranteed.</div>
+    </div>
+  </div>
+
+  <!-- JOIN CTA -->
+  <div class="join-cta">
+    <div class="join-cta-orb a"></div>
+    <div class="join-cta-orb b"></div>
+    <div class="join-cta-txt">
+      <h2>Ready to Order? It Takes 30 Seconds 👋</h2>
+      <p>Browse the shop, tap any product, and a pre-filled WhatsApp message opens automatically. Just press send — we do the rest. Same-day delivery across Lusaka.</p>
+    </div>
+    <a href="https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20browse%20your%20products." target="_blank" rel="noopener" class="join-cta-btn">
+      <i class="fa-brands fa-whatsapp" style="font-size:1.3rem"></i> Chat With Us Now
+    </a>
+  </div>
+
 
   <!-- STATS BANNER -->
   <div class="stats-banner">
@@ -880,6 +1020,98 @@ async function fetchAllProducts() {
   if(!products.length) throw new Error('No products parsed');
   return products;
 }
+
+// ─── Build featured/wide product card (New Arrivals, Deals) ─────────────────
+function buildFeaturedCard(p) {
+  const st  = stockStatus(p.stock);
+  const op  = parseFloat(p.original_price) || 0;
+  const hasDrop = op > p.price;
+  const disc = hasDrop ? Math.round(((op - p.price) / op) * 100) : 0;
+
+  const div = document.createElement('div');
+  div.className = 'pc pc-featured';
+  div.setAttribute('role', 'article');
+  div.setAttribute('aria-label', p.title);
+
+  // Image element — built via DOM to avoid quote escaping
+  const imgWrap = document.createElement('div');
+  imgWrap.className = 'pc-img';
+
+  if (hasDrop) {
+    const discBadge = document.createElement('div');
+    discBadge.className = 'pc-discount';
+    discBadge.textContent = '-' + disc + '%';
+    imgWrap.appendChild(discBadge);
+  } else if (p.featured) {
+    const newBadge = document.createElement('div');
+    newBadge.className = 'pc-discount';
+    newBadge.style.background = 'linear-gradient(135deg,#5f27cd,#54a0ff)';
+    newBadge.textContent = 'New';
+    imgWrap.appendChild(newBadge);
+  }
+
+  const stockBadge = document.createElement('div');
+  stockBadge.className = 'pc-stock-badge ' + st.cls;
+  stockBadge.textContent = st.label;
+  imgWrap.appendChild(stockBadge);
+
+  if (p.image) {
+    const img = document.createElement('img');
+    img.src = p.image;
+    img.alt = p.title;
+    img.loading = 'lazy';
+    img.onerror = function() { this.parentElement.textContent = '📱'; };
+    imgWrap.appendChild(img);
+  } else {
+    imgWrap.textContent = '📱';
+  }
+  div.appendChild(imgWrap);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'pc-body';
+
+  const name = document.createElement('div');
+  name.className = 'pc-name';
+  name.textContent = p.title;
+  body.appendChild(name);
+
+  const priceRow = document.createElement('div');
+  priceRow.className = 'pc-price-row';
+  const priceEl = document.createElement('div');
+  priceEl.className = 'pc-price';
+  priceEl.textContent = 'ZMW ' + (p.price || 0).toLocaleString();
+  priceRow.appendChild(priceEl);
+  if (hasDrop) {
+    const origEl = document.createElement('div');
+    origEl.className = 'pc-orig';
+    origEl.textContent = 'ZMW ' + op.toLocaleString();
+    priceRow.appendChild(origEl);
+  }
+  body.appendChild(priceRow);
+
+  if (st.canOrder) {
+    const btn = document.createElement('a');
+    btn.href = waMsg(p);
+    btn.target = '_blank';
+    btn.rel = 'noopener';
+    btn.className = 'pc-wa';
+    btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Order on WhatsApp';
+    btn.addEventListener('click', e => e.stopPropagation());
+    body.appendChild(btn);
+  } else {
+    const btn = document.createElement('button');
+    btn.className = 'pc-notify';
+    btn.innerHTML = '<i class="fa-regular fa-bell"></i> Notify Me';
+    btn.addEventListener('click', e => { e.stopPropagation(); notifyMe(p.title); });
+    body.appendChild(btn);
+  }
+
+  div.appendChild(body);
+  div.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
+  return div;
+}
+
 
 // ─── Build product card (compact Alibaba style) ───────────────────────────────
 function buildCard(p) {
@@ -1049,12 +1281,14 @@ document.getElementById('mob-nav').addEventListener('click',e=>{
 });
 
 // ─── Search ───────────────────────────────────────────────────────────────────
-window.doSearch = function(mobile) {
-  const q=(document.getElementById(mobile?'mob-search':'main-search')?.value||'').trim();
-  if(q) window.location.href='shop.html?q='+encodeURIComponent(q);
+window.doHeaderSearch = function(mobile) {
+  const q = (document.getElementById(mobile ? 'mob-search' : 'main-search')?.value || '').trim();
+  if (q) window.location.href = 'shop.html?q=' + encodeURIComponent(q);
 };
-document.getElementById('main-search')?.addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch(); });
-document.getElementById('mob-search')?.addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch(true); });
+// Keep old name as alias so any remaining calls still work
+window.doSearch = window.doHeaderSearch;
+document.getElementById('main-search')?.addEventListener('keydown', e => { if (e.key === 'Enter') doHeaderSearch(); });
+document.getElementById('mob-search')?.addEventListener('keydown',  e => { if (e.key === 'Enter') doHeaderSearch(true); });
 
 // ─── Sales notification ───────────────────────────────────────────────────────
 async function showSalesNotif() {
@@ -1102,52 +1336,52 @@ async function init() {
 
   allProducts = products;
 
-  // Flash sale = products with a discount, sorted by biggest saving
-  const flashProds = products
-    .filter(p=>parseFloat(p.original_price)>p.price)
-    .sort((a,b)=>(b.original_price-b.price)-(a.original_price-a.price));
-  // If not enough sale products, pad with low-stock products
-  const flashFull = flashProds.length >= 4
-    ? flashProds
-    : [...flashProds, ...products.filter(p=>p.stock<=5&&p.stock>0).slice(0,4-flashProds.length)];
-
-  // Flash track
-  const flashTrack = document.getElementById('flash-track');
-  if (flashTrack) {
-    flashTrack.innerHTML = '';
-    (flashFull.length ? flashFull : products).slice(0,8).forEach(p=>flashTrack.appendChild(buildCard(p)));
+  // Helper — safely populate a track, clear skeletons first
+  function fillTrack(id, items, cardFn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    if (!items.length) { el.innerHTML = '<p style="padding:20px;color:#aaa;font-size:13px">No products yet.</p>'; return; }
+    items.forEach(p => { try { el.appendChild(cardFn(p)); } catch(e) { console.warn('Card error', p.slug, e); } });
   }
 
-  // Flash side panel (top 3 sale items)
+  // Flash sale
+  const flashProds = products.filter(p => parseFloat(p.original_price) > p.price)
+    .sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price));
+  const flashFull = flashProds.length >= 2 ? flashProds
+    : [...flashProds, ...products.filter(p => p.stock > 0 && p.stock <= 5 && parseFloat(p.original_price) <= p.price).slice(0, 8 - flashProds.length)];
+  fillTrack('flash-track', (flashFull.length ? flashFull : products).slice(0, 8), buildCard);
+
+  // Side panels
   const flashSide = document.getElementById('flash-side');
-  if (flashSide) {
-    flashSide.innerHTML = '';
-    (flashFull.length ? flashFull : products).slice(0,3).forEach(p=>flashSide.appendChild(buildSideRow(p)));
-  }
-
-  // Featured side panel (featured products)
+  if (flashSide) { flashSide.innerHTML = ''; (flashFull.length ? flashFull : products).slice(0,3).forEach(p => flashSide.appendChild(buildSideRow(p))); }
   const featSide = document.getElementById('featured-side');
   if (featSide) {
     featSide.innerHTML = '';
-    const featured = products.filter(p=>p.featured);
-    (featured.length ? featured : products).slice(0,3).forEach(p=>featSide.appendChild(buildSideRow(p)));
+    const feat = products.filter(p => p.featured);
+    (feat.length ? feat : products).slice(0,3).forEach(p => featSide.appendChild(buildSideRow(p)));
   }
 
-  // JFY track (all products shuffled)
-  const jfyTrack = document.getElementById('jfy-track');
-  if (jfyTrack) {
-    jfyTrack.innerHTML = '';
-    const shuffled = [...products].sort(()=>Math.random()-.5);
-    shuffled.forEach(p=>jfyTrack.appendChild(buildCard(p)));
-  }
+  // Just For You — all products shuffled
+  fillTrack('jfy-track', [...products].sort(() => Math.random() - .5), buildCard);
 
-  // Category showcase — default to 'case'
+  // New Arrivals — featured first, then others, newest feel
+  const newProds = [...products].sort((a,b) => (b.featured?1:0)-(a.featured?1:0)).slice(0, 8);
+  fillTrack('new-track', newProds, buildFeaturedCard);
+
+  // Deals of the Day — on-sale products first, then low stock
+  const saleProds = products.filter(p => parseFloat(p.original_price) > p.price)
+    .sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price));
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price));
+  fillTrack('deals-track', ([...saleProds, ...lowStock].length ? [...saleProds, ...lowStock] : products).slice(0, 8), buildFeaturedCard);
+
+  // Category showcase
   renderCsGrid('case');
 
-  // Sales notif after 9s
-  setTimeout(showSalesNotif,9000);
+  // Sales notif
+  setTimeout(showSalesNotif, 9000);
 
-  // Auto-scroll the flash and jfy carousels
+  // Auto-scroll carousels
   startCarouselAuto();
 }
 
@@ -1155,6 +1389,8 @@ function startCarouselAuto() {
   const configs = [
     { id: 'flash-track', interval: 3500 },
     { id: 'jfy-track',   interval: 4200 },
+    { id: 'new-track',   interval: 3800 },
+    { id: 'deals-track', interval: 4000 },
   ];
   configs.forEach(({ id, interval }) => {
     let auto = setInterval(() => {
