@@ -1,6 +1,8 @@
 ---
 title: Privacy Screen Protector
 price: 120
+original_price: 0
+stock: 100
 category: protector
 image: /assets/images/uploads/1000066528.jpg
 description: Anti-spy privacy filter that blocks side-angle viewing beyond 30
