@@ -210,8 +210,8 @@ button{font-family:'DM Sans',sans-serif;}
 .pc-price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
 .pc-price{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--orange);}
 .pc-orig{font-size:11px;color:var(--muted);text-decoration:line-through;}
-.pc-wa{width:100%;background:var(--grad-green);color:white;font-weight:600;font-size:11px;padding:7px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:transform .2s;text-decoration:none;}
-.pc-wa:hover{transform:translateY(-1px);}
+.pc-wa{width:100%;background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;font-weight:700;font-size:11px;padding:8px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:transform .2s,box-shadow .2s;text-decoration:none;}
+.pc-wa:hover{transform:translateY(-2px);box-shadow:0 3px 12px rgba(255,96,0,.4);}
 .pc-notify{width:100%;background:rgba(107,114,128,.08);color:var(--muted);font-weight:600;font-size:11px;padding:7px;border-radius:7px;border:1px solid rgba(107,114,128,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
 
 /* ═══════════════════════════════════════════
@@ -964,7 +964,17 @@ if (window.netlifyIdentity) {
   });
 }
 
-const WA = '260979603741';
+const FORM_BASE  = 'https://docs.google.com/forms/d/e/1FAIpQLSfNBtX9pIa9a9dNgKqRLJMiYP3auB282dW8TrqGenw8DI6fmw/viewform?usp=pp_url';
+const FORM_ENTRY = 'entry.1497396155';
+const WA         = '260979603741';
+
+// Build Google Form URL with product name + price pre-filled
+function orderUrl(p, qty) {
+  qty = qty || 1;
+  let detail = (p.title || 'Product') + ' – ZMW ' + (p.price || 0);
+  if (qty > 1) detail += ' (×' + qty + ', Total: ZMW ' + (p.price * qty) + ')';
+  return FORM_BASE + '&' + FORM_ENTRY + '=' + encodeURIComponent(detail);
+}
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
@@ -1092,11 +1102,11 @@ function buildFeaturedCard(p) {
 
   if (st.canOrder) {
     const btn = document.createElement('a');
-    btn.href = waMsg(p);
+    btn.href = orderUrl(p);
     btn.target = '_blank';
     btn.rel = 'noopener';
     btn.className = 'pc-wa';
-    btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Order on WhatsApp';
+    btn.innerHTML = '<i class="fa-solid fa-clipboard-list"></i> Order Now';
     btn.addEventListener('click', e => e.stopPropagation());
     body.appendChild(btn);
   } else {
@@ -1123,7 +1133,7 @@ function buildCard(p) {
     ? '<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'📱\'">'
     : '📱';
   const btn = st.canOrder
-    ? '<a href="'+waMsg(p)+'" target="_blank" rel="noopener" class="pc-wa" onclick="event.stopPropagation()"><i class="fa-brands fa-whatsapp"></i> Order</a>'
+    ? '<a href="'+orderUrl(p)+'" target="_blank" rel="noopener" class="pc-wa" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>'
     : '<button class="pc-notify" onclick="event.stopPropagation();notifyMe(\''+escHtml(p.title).replace(/'/g,"\\'")+'\')" ><i class="fa-regular fa-bell"></i> Notify Me</button>';
   const div = document.createElement('div');
   div.className='pc';
