@@ -226,6 +226,14 @@ footer{background:var(--dark);padding:64px 24px 0;}
 iframe[src*="tawk.to"]{bottom:70px !important;}
 @media(max-width:900px){nav.desk{display:none;}.hamburger{display:block;}.footer-grid{grid-template-columns:repeat(2,1fr);}.howto-mini-steps{grid-template-columns:1fr;}.tdiv{display:none;}}
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.trust-strip-inner{gap:6px;}}
+
+/* ── PRODUCT CARD SHARE ROW ── */
+.card-share-row{display:flex;gap:6px;margin-top:8px;}
+.card-share-btn{flex:1;background:none;border:1.5px solid rgba(0,0,0,.08);border-radius:8px;padding:7px 6px;font-size:11px;font-weight:600;color:#6b7280;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.card-share-btn:hover{background:#f0fdf4;border-color:#25d366;color:#128c7e;}
+.card-copy-btn:hover{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8;}
+.card-share-btn i{font-size:12px;}
+
 </style>
 </head>
 <body>
@@ -521,6 +529,49 @@ function notifyMe(title) {
 let allProducts = [], activeCat = 'all', searchQuery = '', loadFailed = false;
 
 // ─── Render ───────────────────────────────────────────────────────────────
+// ─── Product Sharing ─────────────────────────────────────────────────────────
+// Builds a clean shareable URL for a product and opens WhatsApp with rich message
+function shareProduct(p) {
+  const productUrl = window.location.origin + '/product.html?id=' + p.slug;
+  const waText = encodeURIComponent(
+    '👋 Check this out at PhoneYa2-ZM:\n\n' +
+    '*' + p.title + '*\n' +
+    'Price: *ZMW ' + p.price + '*\n' +
+    (p.description ? p.description.slice(0, 80) + '...\n' : '') +
+    '\n🔗 ' + productUrl + '\n\n' +
+    'Same-day delivery in Lusaka! 🚀'
+  );
+  window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
+}
+
+// Copy product link to clipboard with toast feedback
+function copyProductLink(slug, event) {
+  if (event) event.stopPropagation();
+  const url = window.location.origin + '/product.html?id=' + slug;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).catch(() => legacyCopy(url));
+  } else { legacyCopy(url); }
+  showShareToast('🔗 Link copied!');
+}
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+function showShareToast(msg) {
+  let t = document.getElementById('share-toast');
+  if (!t) {
+    t = document.createElement('div'); t.id = 'share-toast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#0a0a14;color:white;padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;display:flex;align-items:center;gap:8px;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+
 function renderGrid() {
   const grid = document.getElementById('products-grid');
   const countEl = document.getElementById('prod-count');
@@ -587,6 +638,10 @@ function renderGrid() {
         '<div class="pcard-name">'+escHtml(p.title)+'</div>'+
         '<div class="pcard-desc">'+escHtml(p.description||'')+'</div>'+
         dropBanner + priceRow + btn +
+        '<div class="card-share-row">'+
+          '<button class="card-share-btn" onclick="event.stopPropagation();shareProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i> Share</button>'+
+          '<button class="card-share-btn card-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link"><i class="fa-solid fa-link"></i> Copy Link</button>'+
+        '</div>'+
       '</div>';
     card.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
     grid.appendChild(card);
@@ -697,6 +752,9 @@ window.dismissNotif = function() {
 async function loadShop() {
   try {
     allProducts = await fetchAllProducts();
+    // Build a slug→product lookup map for share functions
+    window.allProductsMap = {};
+    allProducts.forEach(p => { window.allProductsMap[p.slug] = p; });
     updateCounts();
     renderGrid();
     setTimeout(showSalesNotif, 10000);
