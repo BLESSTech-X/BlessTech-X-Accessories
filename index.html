@@ -450,6 +450,14 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   .why-row{grid-template-columns:1fr;}
 }
 
+
+/* ── CAROUSEL CARD SHARE ROW ── */
+.pc-share-row{display:flex;gap:5px;margin-top:7px;}
+.pc-share-btn{flex:1;background:none;border:1.5px solid rgba(0,0,0,.08);border-radius:7px;padding:6px 5px;font-size:10px;font-weight:600;color:#6b7280;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.pc-share-btn:hover{background:#f0fdf4;border-color:#25d366;color:#128c7e;}
+.pc-copy-btn{flex:0 0 34px;}
+.pc-copy-btn:hover{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8;}
+
 </style>
 </head>
 <body>
@@ -977,6 +985,45 @@ function orderUrl(p, qty) {
 }
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
 
+// ─── Product Sharing ─────────────────────────────────────────────────────────
+function shareProduct(p) {
+  if (!p) return;
+  const productUrl = window.location.origin + '/product.html?id=' + p.slug;
+  const waText = encodeURIComponent(
+    '👋 Check this out at PhoneYa2-ZM:\n\n' +
+    '*' + p.title + '*\n' +
+    'Price: *ZMW ' + p.price + '*\n' +
+    (p.description ? p.description.slice(0, 80) + '...\n' : '') +
+    '\n🔗 ' + productUrl + '\n\n' +
+    'Same-day delivery in Lusaka! 🚀'
+  );
+  window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
+}
+function copyProductLink(slug, event) {
+  if (event) event.stopPropagation();
+  const url = window.location.origin + '/product.html?id=' + slug;
+  if (navigator.clipboard) { navigator.clipboard.writeText(url).catch(() => legacyCopy(url)); }
+  else { legacyCopy(url); }
+  showShareToast('🔗 Link copied!');
+}
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+function showShareToast(msg) {
+  let t = document.getElementById('share-toast');
+  if (!t) {
+    t = document.createElement('div'); t.id = 'share-toast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#0a0a14;color:white;padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer); t._timer = setTimeout(() => { t.style.opacity='0'; }, 2500);
+}
+
 // ─── Utilities ───────────────────────────────────────────────────────────────
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function waMsg(p) {
@@ -1117,6 +1164,14 @@ function buildFeaturedCard(p) {
     body.appendChild(btn);
   }
 
+  // Share row
+  const shareRow = document.createElement('div');
+  shareRow.className = 'pc-share-row';
+  shareRow.innerHTML =
+    '<button class="pc-share-btn" onclick="event.stopPropagation();(function(s){var p=allProducts.find(function(x){return x.slug===s;});if(p)shareProduct(p);})(\'' + p.slug + '\')" aria-label="Share"><i class="fa-brands fa-whatsapp"></i> Share</button>' +
+    '<button class="pc-share-btn pc-copy-btn" onclick="event.stopPropagation();copyProductLink(\'' + p.slug + '\',event)" aria-label="Copy link" title="Copy link"><i class="fa-solid fa-link"></i></button>';
+  body.appendChild(shareRow);
+
   div.appendChild(body);
   div.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
   return div;
@@ -1152,6 +1207,10 @@ function buildCard(p) {
         (hasDrop?'<div class="pc-orig">ZMW '+op.toLocaleString()+'</div>':'')+
       '</div>'+
       btn+
+      '<div class="pc-share-row">'+
+        '<button class="pc-share-btn" onclick="event.stopPropagation();shareProduct(allProducts.find(x=>x.slug===\''+p.slug+'\'))" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i> Share</button>'+
+        '<button class="pc-share-btn pc-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link"><i class="fa-solid fa-link"></i></button>'+
+      '</div>'+
     '</div>';
   div.addEventListener('click',()=>{ window.location.href='product.html?id='+p.slug; });
   return div;
