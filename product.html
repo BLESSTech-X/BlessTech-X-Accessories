@@ -321,6 +321,8 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 }
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.trust-grid{grid-template-columns:repeat(3,1fr);}.btn-row-2{grid-template-columns:1fr 1fr;}}
 </style>
+<!-- Vercel Web Analytics -->
+<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 </head>
 <body>
 
@@ -924,7 +926,7 @@ window.dismissNotif = function() {
   setTimeout(()=>n.remove(), 400);
 };
 
-// ─── Main load ────────────────────────────────────────────────────────────────
+// ─── Main load ────��───────────────────────────────────────────────────────────
 async function loadProductPage() {
   const slug = new URLSearchParams(window.location.search).get('id');
   if (!slug) { renderNotFound(''); return; }
