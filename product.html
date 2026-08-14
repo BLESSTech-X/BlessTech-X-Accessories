@@ -635,7 +635,11 @@ window.openShareSheet = function() {
   const overlay = document.getElementById('share-overlay');
   const input = document.getElementById('share-link-input');
   overlay.classList.add('open');
-  if (input) input.value = window.location.href;
+  // Use the clean product URL (not current URL which may have extra params)
+  const productUrl = currentProd
+    ? window.location.origin + '/product.html?id=' + currentProd.slug
+    : window.location.href;
+  if (input) input.value = productUrl;
   document.body.style.overflow = 'hidden';
   buildShareOpts();
 };
@@ -649,13 +653,24 @@ document.getElementById('btn-copy-link').addEventListener('click', () => {
 });
 function buildShareOpts() {
   if (!currentProd) return;
-  const url = encodeURIComponent(window.location.href);
-  const txt = encodeURIComponent('Check this out at PhoneYa2-ZM: '+currentProd.title+' – ZMW '+currentProd.price);
+  // Use the clean product URL so the preview shows this specific product
+  const productUrl = window.location.origin + '/product.html?id=' + currentProd.slug;
+  const encodedUrl = encodeURIComponent(productUrl);
+  // WhatsApp message: rich format with product details
+  const waText = encodeURIComponent(
+    '👋 Check this out at PhoneYa2-ZM:\n\n' +
+    '*' + currentProd.title + '*\n' +
+    'Price: *ZMW ' + currentProd.price + '*\n' +
+    (currentProd.description ? currentProd.description.slice(0,80) + '...\n' : '') +
+    '\n🔗 ' + productUrl + '\n\n' +
+    'Same-day delivery in Lusaka! 🚀'
+  );
+  const txt = encodeURIComponent(currentProd.title + ' – ZMW ' + currentProd.price + ' at PhoneYa2-ZM');
   const opts = [
-    {lbl:'WhatsApp',icon:'fa-brands fa-whatsapp',bg:'#25d366',href:'https://wa.me/?text='+txt+'%20'+url},
-    {lbl:'Facebook',icon:'fa-brands fa-facebook-f',bg:'#1877f2',href:'https://www.facebook.com/sharer/sharer.php?u='+url},
-    {lbl:'X / Twitter',icon:'fa-brands fa-x-twitter',bg:'#000',href:'https://twitter.com/intent/tweet?text='+txt+'&url='+url},
-    {lbl:'Copy Link',icon:'fa-solid fa-link',bg:'var(--c5)',action:'copy'}
+    {lbl:'WhatsApp',  icon:'fa-brands fa-whatsapp',   bg:'#25d366', href:'https://wa.me/?text='+waText},
+    {lbl:'Facebook',  icon:'fa-brands fa-facebook-f',  bg:'#1877f2', href:'https://www.facebook.com/sharer/sharer.php?u='+encodedUrl},
+    {lbl:'X / Twitter',icon:'fa-brands fa-x-twitter', bg:'#000',    href:'https://twitter.com/intent/tweet?text='+txt+'&url='+encodedUrl},
+    {lbl:'Copy Link', icon:'fa-solid fa-link',         bg:'var(--c5)',action:'copy', copyUrl: productUrl}
   ];
   const container = document.getElementById('share-opts');
   container.innerHTML = '';
@@ -663,7 +678,7 @@ function buildShareOpts() {
     const d = document.createElement('div'); d.className='share-opt';
     d.innerHTML='<div class="so-icon" style="background:'+o.bg+'"><i class="'+o.icon+'"></i></div><span class="so-lbl">'+o.lbl+'</span>';
     d.addEventListener('click', () => {
-      if (o.action==='copy') { navigator.clipboard.writeText(window.location.href).catch(()=>{}); showToast('🔗 Link copied!'); }
+      if (o.action==='copy') { const copyUrl = o.copyUrl || window.location.href; navigator.clipboard.writeText(copyUrl).catch(()=>{ try { const ta=document.createElement('textarea'); ta.value=copyUrl; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } catch(e){} }); showToast('🔗 Link copied!'); }
       else window.open(o.href,'_blank','noopener');
       document.getElementById('share-overlay').classList.remove('open');
       document.body.style.overflow='';
@@ -735,12 +750,40 @@ function renderProduct(p) {
   if (!galleryImages.length) galleryImages.push({src:'', caption:''});
   galIdx = 0;
 
-  // Update page metadata
-  document.getElementById('page-title').textContent = p.title + ' — PhoneYa2-ZM';
-  document.getElementById('page-desc').content = p.description || '';
-  document.getElementById('og-title').content = p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM';
-  document.getElementById('og-desc').content = p.description || '';
-  if (galleryImages[0].src) document.getElementById('og-image').content = galleryImages[0].src;
+  // ── Update ALL meta tags so shared links show the product, not generic site ──
+  const productUrl = window.location.origin + '/product.html?id=' + p.slug;
+  const productImg = galleryImages[0].src || 'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg';
+
+  // Page title + description
+  document.getElementById('page-title').textContent = p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM';
+  const descEl = document.getElementById('page-desc');
+  if (descEl) descEl.content = (p.description || '') + ' Same-day delivery in Lusaka.';
+
+  // Open Graph (Facebook, WhatsApp link preview, LinkedIn)
+  const setMeta = (id, val) => { const el=document.getElementById(id); if(el) el.content=val; };
+  setMeta('og-title',  p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM');
+  setMeta('og-desc',   (p.description||'Genuine phone accessory from PhoneYa2-ZM.') + ' Same-day delivery in Lusaka, Zambia.');
+  setMeta('og-image',  productImg);
+  // og:url — critical: tells crawlers the canonical URL of this product
+  let ogUrl = document.getElementById('og-url');
+  if (!ogUrl) {
+    ogUrl = document.createElement('meta');
+    ogUrl.setAttribute('property', 'og:url');
+    ogUrl.id = 'og-url';
+    document.head.appendChild(ogUrl);
+  }
+  ogUrl.content = productUrl;
+
+  // Twitter Card
+  setMeta('twitter-title', p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM');
+  setMeta('twitter-desc',  p.description || 'Shop phone accessories at PhoneYa2-ZM, Lusaka.');
+  setMeta('twitter-image', productImg);
+
+  // Push the clean product URL to browser history (so copy/paste URL is shareable)
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({ slug: p.slug }, p.title, '/product.html?id=' + p.slug);
+  }
+
   const bcEl = document.getElementById('bc-name'); if (bcEl) bcEl.textContent = p.title;
 
   // Thumbnails HTML
