@@ -4,14 +4,10 @@ const CACHE_NAME = 'phoneya2-v1';
 // Files to cache
 const urlsToCache = [
   '/',
-  '/shop.html',
   '/index.html',
-  '/style.css',
-  '/script.js',
-  '/order.html',
+  '/shop.html',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icon-512x512.png'
 ];
 
 // Install event - cache files
