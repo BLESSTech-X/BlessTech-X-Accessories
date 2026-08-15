@@ -1531,5 +1531,42 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+  <script>
+// Share functionality
+function shareApp() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'PhoneYa2',
+      text: 'Quality refurbished phones and accessories in Lusaka',
+      url: 'https://phoneya2-accessories.vercel.app'
+    }).catch(err => console.log('Share canceled'));
+  } else {
+    navigator.clipboard.writeText('https://phoneya2-accessories.vercel.app');
+    alert('Link copied to clipboard! Share it with friends.');
+  }
+}
+
+// Install functionality
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log('Install prompt ready');
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    alert('To add PhoneYa2 to your home screen:\n\nAndroid Chrome: Tap menu (⋮) → "Install app"\n\niPhone Safari: Tap Share → "Add to Home Screen"');
+  }
+}
+</script>
 </body>
 </html>
