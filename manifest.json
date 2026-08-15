@@ -2,7 +2,7 @@
   "name": "PhoneYa2",
   "short_name": "PhoneYa2",
   "description": "Quality refurbished phones and accessories in Lusaka",
-  "start_url": "https://phoneya2-accessories.vercel.app/",
+  "/splash.html": "https://phoneya2-accessories.vercel.app/",
   "display": "standalone",
   "background_color": "#0d0d0d",
   "theme_color": "#25D366",
