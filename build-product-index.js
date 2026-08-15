@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-// This script runs during Netlify build to generate content/products/index.json
-// It scans the content/products/ folder and lists all .md slugs
-// Netlify runs this automatically on every deploy via netlify.toml
-
 const fs = require('fs');
 const path = require('path');
 
