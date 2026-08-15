@@ -1,0 +1,27 @@
+backend:
+  name: github
+  repo: BLESSTech-X/phoneya2-accessories
+  branch: main
+  site_domain: https://phoneya2-accessories.vercel.app
+
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "products"
+    label: "Products"
+    folder: "content/products"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Price", name: "price", widget: "number" }
+      - { label: "Original Price", name: "originalPrice", widget: "number", required: false }
+      - { label: "Category", name: "category", widget: "select", options: ["Phone", "Case", "Charger", "Cable", "Earbuds", "Power Bank", "Protector"] }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Gallery", name: "gallery", widget: "image", required: false }
+      - { label: "Stock Status", name: "stockStatus", widget: "select", options: ["In Stock", "Low Stock", "Sold Out"] }
+      - { label: "Condition", name: "condition", widget: "select", options: ["Pre-owned", "Boxed", "New"] }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
