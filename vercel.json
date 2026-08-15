@@ -20,3 +20,8 @@
     { "source": "/admin", "destination": "/admin/index.html" }
   ]
 }
+{
+  "routes": [
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
