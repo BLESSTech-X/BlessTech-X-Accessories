@@ -1,6 +1,6 @@
 // ─── PhoneYa2 Service Worker ─────────────────────────────────────────────────
 // Version: bump this number any time you want to force a cache refresh
-const VERSION   = 'phoneya2-v1';
+const VERSION   = 'phoneya2-v2';
 const CACHE     = VERSION;
 
 // Files that get cached on first install (the app shell)
@@ -11,8 +11,7 @@ const PRECACHE = [
   '/shop.html',
   '/product.html',
   '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/icon-512x512.png',
 ];
 
 // ─── INSTALL ─────────────────────────────────────────────────────────────────
@@ -21,7 +20,10 @@ const PRECACHE = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE)
-      .then(cache => cache.addAll(PRECACHE))
+      .then(cache => {
+        console.log('[SW] Pre-caching app shell');
+        return cache.addAll(PRECACHE);
+      })
       .then(() => self.skipWaiting()) // activate immediately, don't wait
   );
 });
