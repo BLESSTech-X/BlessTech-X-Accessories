@@ -1,5 +1,5 @@
 ---
-title: " iPhone 12 128 GB "
+title: " iPhone 12 plus 128 GB "
 price: 4700
 original_price: 4750
 stock: 998
