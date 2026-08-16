@@ -1098,6 +1098,48 @@ window.addEventListener('appinstalled', () => {
 });
 </script>
 <!-- ── End PWA ─────────────────────────────────────────────────────────── -->
+  <script>
+// ─── HIDE INSTALL BAR IF ALREADY INSTALLED ──────────────────────────────
+(function() {
+  const installBar = document.getElementById('pwa-install-bar');
+  if (!installBar) return;
+
+  // 1. If already installed (standalone mode)
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    installBar.style.display = 'none';
+    return;
+  }
+
+  // 2. If user dismissed it before in this session
+  if (sessionStorage.getItem('pwa-dismissed')) {
+    installBar.style.display = 'none';
+    return;
+  }
+
+  // 3. If already installed via Chrome (check for appinstalled event)
+  // The appinstalled event will hide it automatically (see below)
+})();
+
+// ─── APPINSTALLED EVENT ──────────────────────────────────────────────────
+window.addEventListener('appinstalled', () => {
+  const installBar = document.getElementById('pwa-install-bar');
+  if (installBar) installBar.style.display = 'none';
+  sessionStorage.setItem('pwa-dismissed', '1');
+  console.log('[PWA] App installed — install bar hidden');
+});
+
+// ─── DISMISS BUTTON ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const dismissBtn = document.getElementById('pwa-dismiss-btn');
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', function() {
+      const installBar = document.getElementById('pwa-install-bar');
+      if (installBar) installBar.style.display = 'none';
+      sessionStorage.setItem('pwa-dismissed', '1');
+    });
+  }
+});
+</script>
 
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
