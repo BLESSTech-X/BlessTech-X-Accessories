@@ -2,49 +2,19 @@
   "name": "PhoneYa2-ZM Accessories",
   "short_name": "PhoneYa2",
   "description": "Lusaka's best phone accessories. Cases, chargers, cables, earphones & more. Order on WhatsApp.",
-  "start_url": "/",
+  "start_url": "/splash.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#25d366",
   "background_color": "#0d0d0d",
   "lang": "en",
-  "categories": [
-    "shopping",
-    "lifestyle"
-  ],
   "icons": [
     {
       "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Shop Now",
-      "short_name": "Shop",
-      "description": "Browse all phone accessories",
-      "url": "/shop.html",
-      "icons": [
-        {
-          "src": "/icon-512x512.png",
-          "sizes": "512x512"
-        }
-      ]
-    },
-    {
-      "name": "Order on WhatsApp",
-      "short_name": "Order",
-      "description": "Order directly on WhatsApp",
-      "url": "https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM.",
-      "icons": [
-        {
-          "src": "/icon-512x512.png",
-          "sizes": "512x512"
-        }
-      ]
     }
   ]
 }
