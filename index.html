@@ -12,6 +12,15 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg">
+<meta name="theme-color" content="#ff6000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhoneYa2">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
@@ -458,12 +467,16 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 .pc-copy-btn{flex:0 0 34px;}
 .pc-copy-btn:hover{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8;}
 
+
+/* ── PWA ACTION BAR ── */
+.pwa-action-bar{display:flex;gap:12px;justify-content:center;align-items:center;padding:14px 16px;background:white;border-bottom:1px solid #e8e8e8;flex-wrap:wrap;}
+.pwa-share-btn{background:#1a365d;color:white;border:none;padding:11px 24px;border-radius:100px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.pwa-share-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.2);}
+.pwa-install-btn-bar{background:#25d366;color:white;border:none;padding:11px 24px;border-radius:100px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(37,211,102,.4);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.pwa-install-btn-bar:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,211,102,.5);}
+@media(max-width:480px){.pwa-action-bar{padding:10px 12px;}.pwa-share-btn,.pwa-install-btn-bar{font-size:13px;padding:9px 18px;}}
+
 </style>
-  <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#25D366">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 
@@ -540,19 +553,16 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
   </div>
 </div>
-  <!-- PWA Install & Share Buttons -->
-<div style="display: flex; gap: 15px; justify-content: center; margin: 30px auto; flex-wrap: wrap; max-width: 1200px; padding: 0 20px;">
-  
-  <!-- Share Button -->
-  <button onclick="shareApp()" style="background: #1a365d; border: none; padding: 12px 24px; border-radius: 50px; font-weight: bold; color: white; cursor: pointer; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-    📤 Download PhoneYa2
+
+
+<!-- PWA SHARE + INSTALL BUTTONS -->
+<div class="pwa-action-bar" id="pwa-action-bar">
+  <button class="pwa-share-btn" onclick="shareApp()" aria-label="Share PhoneYa2">
+    <i class="fa-solid fa-share-nodes"></i> Share PhoneYa2
   </button>
-  
-  <!-- Install Button -->
-  <button onclick="installApp()" style="background: #25D366; border: none; padding: 12px 24px; border-radius: 50px; font-weight: bold; color: white; cursor: pointer; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-    📲 Add to Home Screen
+  <button class="pwa-install-btn-bar" id="pwa-install-bar-btn" onclick="installApp()" aria-label="Add to Home Screen" style="display:none">
+    <i class="fa-solid fa-mobile-screen-button"></i> Add to Home Screen
   </button>
-  
 </div>
 
 <!-- ═══ MAIN CONTENT ═══ -->
@@ -1358,6 +1368,59 @@ function renderCsGrid(cat) {
 })();
 
 // ─── Hamburger ────────────────────────────────────────────────────────────────
+// ─── PWA Share + Install functions ──────────────────────────────────────────
+window.shareApp = function() {
+  const shareData = {
+    title: 'PhoneYa2-ZM Accessories',
+    text: "Check out PhoneYa2-ZM — Lusaka's best phone accessories! Cases, chargers, earphones & more. Same-day delivery. 🚀",
+    url:  'https://phoneya2-accessories.vercel.app/'
+  };
+  if (navigator.share) {
+    // Native share sheet (Android/iOS)
+    navigator.share(shareData).catch(() => {});
+  } else {
+    // Fallback: copy link + open WhatsApp
+    const waText = encodeURIComponent(shareData.text + ' ' + shareData.url);
+    window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
+  }
+};
+
+window.installApp = function() {
+  if (window._installPrompt) {
+    window._installPrompt.prompt();
+    window._installPrompt.userChoice.then(result => {
+      if (result.outcome === 'accepted') {
+        const btn = document.getElementById('pwa-install-bar-btn');
+        if (btn) btn.style.display = 'none';
+      }
+      window._installPrompt = null;
+    });
+  } else {
+    // Already installed or not supported — give instructions
+    alert('To install:\n\nAndroid: tap the menu (⋮) in Chrome → "Add to Home Screen"\niPhone: tap Share (↑) in Safari → "Add to Home Screen"');
+  }
+};
+
+// Show install button in action bar when browser is ready
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  window._installPrompt = e;
+  const btn = document.getElementById('pwa-install-bar-btn');
+  if (btn) btn.style.display = 'flex';
+  // Also hide the floating bottom install bar (already handled separately)
+  const floatingBar = document.getElementById('pwa-install-bar');
+  if (floatingBar && !sessionStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => { floatingBar.style.display = 'flex'; }, 4000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwa-install-bar-btn');
+  if (btn) btn.style.display = 'none';
+  window._installPrompt = null;
+  console.log('[PWA] Installed successfully');
+});
+
 document.getElementById('hamburger').addEventListener('click',()=>{
   document.getElementById('mob-nav').classList.add('open');
 });
@@ -1424,52 +1487,115 @@ async function init() {
 
   allProducts = products;
 
-  // Helper — safely populate a track, clear skeletons first
+  // ── Helper: safely populate any track ──────────────────────────────────────
+  // Clears existing content (incl. skeletons), renders each card,
+  // catches per-card errors so one bad product never breaks the whole section.
   function fillTrack(id, items, cardFn) {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerHTML = '';
-    if (!items.length) { el.innerHTML = '<p style="padding:20px;color:#aaa;font-size:13px">No products yet.</p>'; return; }
-    items.forEach(p => { try { el.appendChild(cardFn(p)); } catch(e) { console.warn('Card error', p.slug, e); } });
+    if (!items.length) {
+      el.innerHTML = '<p style="padding:20px;color:#aaa;font-size:13px">No products yet — check back soon!</p>';
+      return;
+    }
+    items.forEach(p => {
+      try { el.appendChild(cardFn(p)); }
+      catch(e) { console.warn('[PhoneYa2] Card error:', p.slug, e); }
+    });
   }
 
-  // Flash sale
-  const flashProds = products.filter(p => parseFloat(p.original_price) > p.price)
-    .sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price));
-  const flashFull = flashProds.length >= 2 ? flashProds
-    : [...flashProds, ...products.filter(p => p.stock > 0 && p.stock <= 5 && parseFloat(p.original_price) <= p.price).slice(0, 8 - flashProds.length)];
-  fillTrack('flash-track', (flashFull.length ? flashFull : products).slice(0, 8), buildCard);
+  // ── Utility: shuffle an array in-place (Fisher-Yates) ─────────────────────
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
 
-  // Side panels
+  // ── FLASH SALE ─────────────────────────────────────────────────────────────
+  // Shows products with a real discount (original_price > price), biggest
+  // savings first. Pads with low-stock items if fewer than 4 sale items.
+  const onSale   = products
+    .filter(p => parseFloat(p.original_price) > p.price)
+    .sort((a,b) => {
+      const savA = ((a.original_price - a.price) / a.original_price) * 100;
+      const savB = ((b.original_price - b.price) / b.original_price) * 100;
+      return savB - savA; // highest % off first
+    });
+  const lowStockPad = products
+    .filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price));
+  const flashList = onSale.length >= 4
+    ? onSale
+    : [...onSale, ...lowStockPad].slice(0, 8);
+  fillTrack('flash-track', (flashList.length ? flashList : products).slice(0, 8), buildCard);
+
+  // ── SIDE PANELS ────────────────────────────────────────────────────────────
   const flashSide = document.getElementById('flash-side');
-  if (flashSide) { flashSide.innerHTML = ''; (flashFull.length ? flashFull : products).slice(0,3).forEach(p => flashSide.appendChild(buildSideRow(p))); }
+  if (flashSide) {
+    flashSide.innerHTML = '';
+    (flashList.length ? flashList : products).slice(0, 3)
+      .forEach(p => flashSide.appendChild(buildSideRow(p)));
+  }
   const featSide = document.getElementById('featured-side');
   if (featSide) {
     featSide.innerHTML = '';
-    const feat = products.filter(p => p.featured);
-    (feat.length ? feat : products).slice(0,3).forEach(p => featSide.appendChild(buildSideRow(p)));
+    const featured = products.filter(p => p.featured);
+    (featured.length ? featured : products).slice(0, 3)
+      .forEach(p => featSide.appendChild(buildSideRow(p)));
   }
 
-  // Just For You — all products shuffled
-  fillTrack('jfy-track', [...products].sort(() => Math.random() - .5), buildCard);
+  // ── NEW ARRIVALS ───────────────────────────────────────────────────────────
+  // Uses the slug order from index.json (newest files added appear last in
+  // the sorted list — alphabetical — so we reverse for a "newest" feel).
+  // Featured products are boosted to the top.
+  // When you add a product in the CMS, it appears here after the next deploy.
+  const newArrivals = [...products]
+    .sort((a, b) => {
+      // Featured products first
+      if (b.featured && !a.featured) return 1;
+      if (a.featured && !b.featured) return -1;
+      // Then by slug alphabetically reversed (recent additions tend to be
+      // later in the alphabet when sequentially named)
+      return b.slug.localeCompare(a.slug);
+    })
+    .slice(0, 8);
+  fillTrack('new-track', newArrivals, buildFeaturedCard);
 
-  // New Arrivals — featured first, then others, newest feel
-  const newProds = [...products].sort((a,b) => (b.featured?1:0)-(a.featured?1:0)).slice(0, 8);
-  fillTrack('new-track', newProds, buildFeaturedCard);
+  // ── DEALS OF THE DAY ───────────────────────────────────────────────────────
+  // On-sale items first (biggest absolute saving), then low-stock items.
+  // Shuffled slightly so it feels fresh on every visit.
+  const dealsList = [
+    ...onSale.sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price)),
+    ...products.filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price))
+  ];
+  // Add random in-stock products to pad if not enough deals
+  if (dealsList.length < 4) {
+    const inStock = shuffle(products.filter(p => p.stock > 5 && !dealsList.find(d => d.slug === p.slug)));
+    dealsList.push(...inStock.slice(0, 8 - dealsList.length));
+  }
+  fillTrack('deals-track', dealsList.slice(0, 8), buildFeaturedCard);
 
-  // Deals of the Day — on-sale products first, then low stock
-  const saleProds = products.filter(p => parseFloat(p.original_price) > p.price)
-    .sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price));
-  const lowStock = products.filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price));
-  fillTrack('deals-track', ([...saleProds, ...lowStock].length ? [...saleProds, ...lowStock] : products).slice(0, 8), buildFeaturedCard);
+  // ── JUST FOR YOU ───────────────────────────────────────────────────────────
+  // Fully shuffled on every page load — feels different every time.
+  fillTrack('jfy-track', shuffle(products), buildCard);
 
-  // Category showcase
+  // ── CATEGORY SHOWCASE ──────────────────────────────────────────────────────
   renderCsGrid('case');
 
-  // Sales notif
+  // ── SHOW INSTALL BUTTON if browser says site is installable ───────────────
+  // The beforeinstallprompt event fires asynchronously; the button is shown
+  // there. We also check here in case it already fired before this ran.
+  if (window._installPrompt) {
+    const installBarBtn = document.getElementById('pwa-install-bar-btn');
+    if (installBarBtn) installBarBtn.style.display = 'flex';
+  }
+
+  // Sales notif after 9s
   setTimeout(showSalesNotif, 9000);
 
-  // Auto-scroll carousels
+  // Auto-scroll all carousels
   startCarouselAuto();
 }
 
@@ -1518,6 +1644,75 @@ function startCarouselAuto() {
 init();
 </script>
 
+
+<!-- ── PWA: Service Worker + Install Button ──────────────────────────── -->
+<div id="pwa-install-bar" style="display:none;position:fixed;bottom:75px;left:50%;transform:translateX(-50%);z-index:400;background:#0a0a14;color:white;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);max-width:calc(100vw - 32px);animation:slideInUp .4s ease;">
+  <img src="/icons/icon-72.png" alt="" style="width:36px;height:36px;border-radius:8px;" onerror="this.style.display='none'">
+  <div style="flex:1;min-width:0;">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">Install PhoneYa2 App</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);">Add to home screen for quick access</div>
+  </div>
+  <button id="pwa-install-btn" style="background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;font-weight:700;font-size:12px;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;">Install</button>
+  <button id="pwa-dismiss-btn" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;">✕</button>
+</div>
+
+<div id="pwa-update-bar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;" onclick="applyUpdate()">
+  🔄 New version available — tap to update
+</div>
+
+<script>
+// ─── Service Worker Registration ─────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('[PWA] Service worker registered');
+
+        // Check for updates on every page load
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version ready — show update bar
+              document.getElementById('pwa-update-bar').style.display = 'block';
+              window._newSW = newSW;
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('[PWA] SW registration failed:', err));
+
+    // Reload page after new SW activates
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  });
+}
+
+function applyUpdate() {
+  if (window._newSW) {
+    window._newSW.postMessage('skipWaiting');
+  }
+}
+
+// ─── Floating install bar (bottom of screen) ─────────────────────────────────
+(function() {
+  const installBar = document.getElementById('pwa-install-bar');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const dismissBtn = document.getElementById('pwa-dismiss-btn');
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', () => {
+      if (installBar) installBar.style.display = 'none';
+      sessionStorage.setItem('pwa-dismissed', '1');
+    });
+  }
+  if (installBtn) {
+    installBtn.addEventListener('click', () => { window.installApp && window.installApp(); });
+  }
+})();
+</script>
+<!-- ── End PWA ─────────────────────────────────────────────────────────── -->
+
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
@@ -1531,56 +1726,5 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
-  <!-- Service Worker Registration -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js')
-      .then(function(registration) {
-        console.log('Service Worker registered successfully:', registration);
-      })
-      .catch(function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-  });
-}
-</script>
-  <script>
-// Share functionality
-function shareApp() {
-  if (navigator.share) {
-    navigator.share({
-      title: 'PhoneYa2',
-      text: 'Quality refurbished phones and accessories in Lusaka',
-      url: 'https://phoneya2-accessories.vercel.app'
-    }).catch(err => console.log('Share canceled'));
-  } else {
-    navigator.clipboard.writeText('https://phoneya2-accessories.vercel.app');
-    alert('Link copied to clipboard! Share it with friends.');
-  }
-}
-
-// Install functionality
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  console.log('Install prompt ready');
-});
-
-function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      }
-      deferredPrompt = null;
-    });
-  } else {
-    alert('To add PhoneYa2 to your home screen:\n\nAndroid Chrome: Tap menu (⋮) → "Install app"\n\niPhone Safari: Tap Share → "Add to Home Screen"');
-  }
-}
-</script>
 </body>
 </html>
