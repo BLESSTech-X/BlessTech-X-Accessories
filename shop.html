@@ -4,7 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop — PhoneYa2-ZM Accessories</title>
-<meta name="description" content="Browse all phone accessories at PhoneYa2-ZM. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
+<meta name="description"
+<meta name="theme-color" content="#ff6000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhoneYa2">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png"> content="Browse all phone accessories at PhoneYa2-ZM. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
@@ -235,11 +242,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 .card-share-btn i{font-size:12px;}
 
 </style>
-  <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#25D366">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 
@@ -772,6 +774,103 @@ async function loadShop() {
 loadShop();
 </script>
 
+
+<!-- ── PWA: Service Worker + Install Button ──────────────────────────── -->
+<div id="pwa-install-bar" style="display:none;position:fixed;bottom:75px;left:50%;transform:translateX(-50%);z-index:400;background:#0a0a14;color:white;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);max-width:calc(100vw - 32px);animation:slideInUp .4s ease;">
+  <img src="/icons/icon-72.png" alt="" style="width:36px;height:36px;border-radius:8px;" onerror="this.style.display='none'">
+  <div style="flex:1;min-width:0;">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">Install PhoneYa2 App</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);">Add to home screen for quick access</div>
+  </div>
+  <button id="pwa-install-btn" style="background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;font-weight:700;font-size:12px;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;">Install</button>
+  <button id="pwa-dismiss-btn" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;">✕</button>
+</div>
+
+<div id="pwa-update-bar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;" onclick="applyUpdate()">
+  🔄 New version available — tap to update
+</div>
+
+<script>
+// ─── Service Worker Registration ─────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('[PWA] Service worker registered');
+
+        // Check for updates on every page load
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version ready — show update bar
+              document.getElementById('pwa-update-bar').style.display = 'block';
+              window._newSW = newSW;
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('[PWA] SW registration failed:', err));
+
+    // Reload page after new SW activates
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  });
+}
+
+function applyUpdate() {
+  if (window._newSW) {
+    window._newSW.postMessage('skipWaiting');
+  }
+}
+
+// ─── Install Prompt ───────────────────────────────────────────────────────────
+let _installPrompt = null;
+const installBar  = document.getElementById('pwa-install-bar');
+const installBtn  = document.getElementById('pwa-install-btn');
+const dismissBtn  = document.getElementById('pwa-dismiss-btn');
+
+// Capture the browser's install event
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _installPrompt = e;
+  // Only show if user hasn't dismissed before
+  if (!sessionStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => {
+      if (installBar) installBar.style.display = 'flex';
+    }, 3000); // wait 3s before showing
+  }
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!_installPrompt) return;
+    _installPrompt.prompt();
+    const { outcome } = await _installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      if (installBar) installBar.style.display = 'none';
+    }
+    _installPrompt = null;
+  });
+}
+
+if (dismissBtn) {
+  dismissBtn.addEventListener('click', () => {
+    if (installBar) installBar.style.display = 'none';
+    sessionStorage.setItem('pwa-dismissed', '1');
+  });
+}
+
+// Hide install bar if already installed
+window.addEventListener('appinstalled', () => {
+  if (installBar) installBar.style.display = 'none';
+  _installPrompt = null;
+  console.log('[PWA] App installed');
+});
+</script>
+<!-- ── End PWA ─────────────────────────────────────────────────────────── -->
+
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
@@ -785,19 +884,5 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
-  <!-- Service Worker Registration -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js')
-      .then(function(registration) {
-        console.log('Service Worker registered successfully:', registration);
-      })
-      .catch(function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-  });
-}
-</script>
 </body>
 </html>
