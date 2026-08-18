@@ -467,6 +467,15 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 .pc-copy-btn:hover{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8;}
 
 
+/* ── PWA ACTION BAR ── */
+.pwa-action-bar{display:flex;gap:12px;justify-content:center;align-items:center;padding:14px 16px;background:white;border-bottom:1px solid #e8e8e8;flex-wrap:wrap;}
+.pwa-share-btn{background:#1a365d;color:white;border:none;padding:11px 24px;border-radius:100px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.pwa-share-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.2);}
+.pwa-install-btn-bar{background:#25d366;color:white;border:none;padding:11px 24px;border-radius:100px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(37,211,102,.4);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.pwa-install-btn-bar:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,211,102,.5);}
+@media(max-width:480px){.pwa-action-bar{padding:10px 12px;}.pwa-share-btn,.pwa-install-btn-bar{font-size:13px;padding:9px 18px;}}
+
+
 /* ── FULL-SCREEN PRODUCT SHOWCASE ─────────────────────────────────────────── */
 .showcase-section{position:relative;width:100%;height:92vh;min-height:520px;max-height:800px;overflow:hidden;margin-bottom:16px;border-radius:16px;background:#0a0a14;cursor:pointer;}
 .showcase-slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;pointer-events:none;}
@@ -1546,6 +1555,51 @@ window.shareApp = function() {
   }
 };
 
+window.installApp = function() {
+  if (window._installPrompt) {
+    window._installPrompt.prompt();
+    window._installPrompt.userChoice.then(result => {
+      if (result.outcome === 'accepted') {
+        const btn = document.getElementById('pwa-install-bar-btn');
+        if (btn) btn.style.display = 'none';
+      }
+      window._installPrompt = null;
+    });
+  } else {
+    // Already installed or not supported — give instructions
+    alert('To install:\n\nAndroid: tap the menu (⋮) in Chrome → "Add to Home Screen"\niPhone: tap Share (↑) in Safari → "Add to Home Screen"');
+  }
+};
+
+// Show install button in action bar when browser is ready
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  window._installPrompt = e;
+  const btn = document.getElementById('pwa-install-bar-btn');
+  if (btn) btn.style.display = 'flex';
+  // Also hide the floating bottom install bar (already handled separately)
+  const floatingBar = document.getElementById('pwa-install-bar');
+  if (floatingBar && !sessionStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => { floatingBar.style.display = 'flex'; }, 4000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwa-install-bar-btn');
+  if (btn) btn.style.display = 'none';
+  window._installPrompt = null;
+  console.log('[PWA] Installed successfully');
+});
+
+document.getElementById('hamburger').addEventListener('click',()=>{
+  document.getElementById('mob-nav').classList.add('open');
+});
+document.getElementById('mob-nav-close').addEventListener('click',()=>{
+  document.getElementById('mob-nav').classList.remove('open');
+});
+document.getElementById('mob-nav').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) e.currentTarget.classList.remove('open');
+});
 
 // ─── Search ───────────────────────────────────────────────────────────────────
 window.doHeaderSearch = function(mobile) {
@@ -1900,41 +1954,6 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
-
-<!-- ── Offline cache service worker (alongside Progressier) ──────────── -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then(function(reg) {
-        console.log('[SW] Registered, scope:', reg.scope);
-        // Listen for updates
-        reg.addEventListener('updatefound', function() {
-          const newSW = reg.installing;
-          if (!newSW) return;
-          newSW.addEventListener('statechange', function() {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              // Show update bar if it exists
-              const bar = document.getElementById('pwa-update-bar');
-              if (bar) bar.style.display = 'block';
-              window._newSW = newSW;
-            }
-          });
-        });
-      })
-      .catch(function(err) { console.warn('[SW] Registration failed:', err); });
-
-    navigator.serviceWorker.addEventListener('controllerchange', function() {
-      window.location.reload();
-    });
-  });
-}
-
-function applyUpdate() {
-  if (window._newSW) window._newSW.postMessage('skipWaiting');
-}
-</script>
-</div>
 
 </body>
 </html>
