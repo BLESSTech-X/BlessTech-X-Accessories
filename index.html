@@ -1641,24 +1641,24 @@ function buildShowcase(prods) {
       : 'https://wa.me/260979603741?text=' + encodeURIComponent('Hi! I want to order: ' + p.title + ' – ZMW ' + p.price);
 
     // Build slide
-    const slide = document.createElement('div');
-    slide.className = 'showcase-slide' + (i === 0 ? ' active' : '');
-    slide.innerHTML =
-      '<img class="showcase-img" src="' + escHtml(imgSrc) + '" alt="' + escHtml(p.title) + '" loading="' + (i < 2 ? 'eager' : 'lazy') + '" onerror="this.src='https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg'">' +
-      '<div class="showcase-overlay"></div>' +
-      '<div class="showcase-content">' +
-        '<div class="showcase-cat">' + escHtml(cat) + '</div>' +
-        '<h2 class="showcase-title">' + escHtml(p.title) + '</h2>' +
-        '<div class="showcase-price-row">' +
-          '<div class="showcase-price">ZMW ' + (p.price || 0).toLocaleString() + '</div>' +
-          (hasDrop ? '<div class="showcase-orig">ZMW ' + op.toLocaleString() + '</div><div class="showcase-save">Save ZMW ' + Math.round(op - p.price) + '</div>' : '') +
-        '</div>' +
-        '<div class="showcase-desc">' + escHtml(p.description || '') + '</div>' +
-        '<div class="showcase-ctas">' +
-          '<a href="' + orderLink + '" target="_blank" rel="noopener" class="showcase-order-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>' +
-          '<a href="product.html?id=' + p.slug + '" class="showcase-view-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-eye"></i> View Details</a>' +
-        '</div>' +
-      '</div>';
+const slide = document.createElement('div');
+slide.className = 'showcase-slide' + (i === 0 ? ' active' : '');
+slide.innerHTML =
+  '<img class="showcase-img" src="' + escHtml(imgSrc) + '" alt="' + escHtml(p.title) + '" loading="' + (i < 2 ? 'eager' : 'lazy') + '" onerror="this.onerror=null;this.src=\'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg\'">' +
+  '<div class="showcase-overlay"></div>' +
+  '<div class="showcase-content">' +
+    '<div class="showcase-cat">' + escHtml(cat) + '</div>' +
+    '<h2 class="showcase-title">' + escHtml(p.title) + '</h2>' +
+    '<div class="showcase-price-row">' +
+      '<div class="showcase-price">ZMW ' + (p.price || 0).toLocaleString() + '</div>' +
+      (hasDrop ? '<div class="showcase-orig">ZMW ' + op.toLocaleString() + '</div><div class="showcase-save">Save ZMW ' + Math.round(op - p.price) + '</div>' : '') +
+    '</div>' +
+    '<div class="showcase-desc">' + escHtml(p.description || '') + '</div>' +
+    '<div class="showcase-ctas">' +
+      '<a href="' + orderLink + '" target="_blank" rel="noopener" class="showcase-order-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>' +
+      '<a href="product.html?id=' + p.slug + '" class="showcase-view-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-eye"></i> View Details</a>' +
+    '</div>' +
+  '</div>';
 
     // Click the slide (not the buttons) → go to product page
     slide.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
