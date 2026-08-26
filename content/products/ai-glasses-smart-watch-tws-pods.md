@@ -1,7 +1,7 @@
 ---
 title: Ai Glasses,Smart Watch,TWS pods,
-price: 190
-original_price: 200
+price: 250
+original_price: 300
 stock: 50
 category: other
 image: /assets/images/uploads/1000153631.jpg
