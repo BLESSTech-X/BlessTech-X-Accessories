@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Dashboard — PhoneYa2</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ── LOGIN SCREEN ─────────────────────────────────────────────────────────── */
+#loginScreen { position:fixed; inset:0; background:var(--navy); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
+.login-card  { background:white; border-radius:20px; padding:36px 32px; max-width:380px; width:100%; text-align:center; }
+.login-card .login-icon { font-size:2.5rem; margin-bottom:12px; }
+.login-card h2 { margin-bottom:6px; }
+.login-card p  { color:var(--muted); font-size:14px; margin-bottom:24px; }
+
+/* ── DASHBOARD LAYOUT ────────────────────────────────────────────────────── */
+.dash-wrap { max-width:900px; margin:0 auto; padding:28px 20px 80px; }
+.dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.dash-avatar { width:56px; height:56px; border-radius:50%; background:var(--grad-o); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:white; flex-shrink:0; }
+.dash-name   { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; }
+.dash-code   { font-size:13px; color:rgba(255,255,255,.5); margin-top:2px; }
+.dash-spacer { flex:1; }
+.dash-logout { background:none; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.5); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
+.dash-logout:hover { border-color:rgba(255,255,255,.3); color:white; }
+
+/* ── REFERRAL BOX ────────────────────────────────────────────────────────── */
+.ref-box { background:linear-gradient(135deg,#0d2010,#0a3518); border-radius:var(--r2); padding:22px 24px; margin-bottom:20px; border:1px solid rgba(37,211,102,.2); }
+.ref-label { font-size:11px; font-weight:700; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.ref-url   { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 14px; }
+.ref-url span { flex:1; font-size:13px; color:white; font-family:monospace; word-break:break-all; }
+.ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
+/* ── TABS ────────────────────────────────────────────────────────────────── */
+.tab-bar   { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+.tab-btn   { padding:11px 16px; font-size:14px; font-weight:600; color:var(--muted); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; margin-bottom:-1px; }
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--orange); border-bottom-color:var(--orange); }
+.tab-pane  { display:none; }
+.tab-pane.active { display:block; }
+
+/* ── PRODUCT CARDS ───────────────────────────────────────────────────────── */
+.product-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+.prod-card { background:white; border:1px solid var(--border); border-radius:var(--r); padding:18px 16px; }
+.prod-card-icon { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#fff8f4,#ffe0cc); display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-bottom:12px; }
+.prod-name  { font-weight:700; font-size:14px; color:var(--text); margin-bottom:4px; }
+.prod-price { font-size:13px; color:var(--muted); margin-bottom:8px; }
+.prod-comm  { font-size:13px; font-weight:800; color:#16a34a; margin-bottom:12px; }
+.promo-text { background:var(--light); border-radius:8px; padding:10px 12px; font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; cursor:text; }
+
+/* ── LEAD FORM ───────────────────────────────────────────────────────────── */
+.lead-status-badge { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; padding:4px 10px; border-radius:100px; }
+.ls-interested { background:#fef9c3; color:#854d0e; }
+.ls-purchased  { background:#f0fdf4; color:#15803d; }
+.ls-lost       { background:#fef2f2; color:#b91c1c; }
+.ls-followup   { background:#f3e8ff; color:#7e22ce; }
+
+/* ── COMMISSION HISTORY ──────────────────────────────────────────────────── */
+.sale-row { display:flex; align-items:center; gap:14px; padding:13px 0; border-bottom:1px solid var(--border); }
+.sale-row:last-child { border-bottom:none; }
+.sale-icon { width:36px; height:36px; border-radius:10px; background:var(--light); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.sale-prod { flex:1; font-weight:600; font-size:14px; }
+.sale-date { font-size:12px; color:var(--muted); }
+.sale-comm { font-weight:800; color:#16a34a; font-size:15px; }
+.sale-status-badge { font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; }
+
+@media(max-width:600px){ .product-grid{ grid-template-columns:1fr 1fr; } .dash-hdr{ flex-direction:column; align-items:flex-start; } }
+@media(max-width:400px){ .product-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ─────────────────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🔑</div>
+    <h2>Agent Login</h2>
+    <p>Enter your Agent Code to access your dashboard. You received this when your application was approved.</p>
+    <div class="field">
+      <label class="label">Agent Code</label>
+      <input type="text" class="input" id="codeInput" placeholder="e.g. PY001"
+             oninput="this.value=this.value.toUpperCase()"
+             onkeydown="if(event.key==='Enter') doAgentLogin()">
+      <div class="err-msg" id="loginErr">Agent code not found. Check your WhatsApp message from PhoneYa2.</div>
+    </div>
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doAgentLogin()">
+      <i class="fas fa-right-to-bracket"></i> Access Dashboard
+    </button>
+    <div class="divider" style="margin:20px 0;"></div>
+    <p style="font-size:13px;color:var(--muted);">Don't have a code yet?</p>
+    <a href="apply.html" class="btn btn-outline btn-full btn-sm" style="margin-top:8px;">Apply to become an agent</a>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
+<div id="dashApp" style="display:none;">
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div><div class="nav-brand">PhoneYa2<span>-ZM</span></div></div>
+    </a>
+    <span class="nav-badge">Agent Network</span>
+    <div class="nav-spacer"></div>
+    <span id="nav-agent-code" style="font-size:13px;color:rgba(255,255,255,.4);"></span>
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <!-- Agent header -->
+  <div class="dash-hdr">
+    <div class="dash-avatar" id="dashAvatar">?</div>
+    <div>
+      <div class="dash-name" id="dashName">Loading…</div>
+      <div class="dash-code" id="dashCodeLabel"></div>
+    </div>
+    <div class="dash-spacer"></div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Status</div>
+      <span class="badge badge-green">Active Agent</span>
+    </div>
+    <button class="dash-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-grid" style="margin-bottom:20px;" id="agentStats">
+    <div class="stat-card"><div class="stat-value" id="st-sales">0</div><div class="stat-label">Sales This Month</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-comm" style="color:#16a34a;">ZMW 0</div><div class="stat-label">Commission Earned</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-leads">0</div><div class="stat-label">Active Leads</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-pending" style="color:var(--yellow);">ZMW 0</div><div class="stat-label">Pending Commission</div></div>
+  </div>
+
+  <!-- Referral link box -->
+  <div class="ref-box">
+    <div class="ref-label">Your Personal Referral Link</div>
+    <div class="ref-url">
+      <i class="fas fa-link" style="color:var(--green);flex-shrink:0;"></i>
+      <span id="refUrl">—</span>
+    </div>
+    <div class="ref-btns">
+      <button class="btn btn-green btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy Link</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefNative()"><i class="fas fa-share-nodes"></i> Share</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showAgentTab('products',this)">Products</button>
+    <button class="tab-btn" onclick="showAgentTab('leads',this)">My Leads</button>
+    <button class="tab-btn" onclick="showAgentTab('sales',this)">Commission</button>
+    <button class="tab-btn" onclick="showAgentTab('leaderboard',this)">Leaderboard</button>
+  </div>
+
+  <!-- PRODUCTS TAB -->
+  <div class="tab-pane active" id="agent-tab-products">
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">For each product, copy the ready-made promotional message to share with your customers.</p>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+
+  <!-- LEADS TAB -->
+  <div class="tab-pane" id="agent-tab-leads">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">My Leads</h3>
+      <button class="btn btn-primary btn-sm" onclick="openAddLead()"><i class="fas fa-plus"></i> Register New Lead</button>
+    </div>
+    <div id="leadsContent"></div>
+  </div>
+
+  <!-- COMMISSION TAB -->
+  <div class="tab-pane" id="agent-tab-sales">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
+      <h3 style="margin-bottom:4px;">Commission History</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Your confirmed and pending commissions are listed below.</p>
+      <div id="commHistory"></div>
+    </div>
+    <div style="margin-top:16px;background:linear-gradient(135deg,#0d2010,#0a3518);border-radius:var(--r);padding:18px 20px;border:1px solid rgba(37,211,102,.2);">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Commission Rates</div>
+      <div id="commRates"></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div class="tab-pane" id="agent-tab-leaderboard">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
+        <h3>Top Agents This Month</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Compete with other agents. The top agents win monthly bonuses.</p>
+      </div>
+      <div id="agentLeaderboard"></div>
+    </div>
+  </div>
+
+</div><!-- /dash-wrap -->
+</div><!-- /dashApp -->
+
+<!-- ── ADD LEAD MODAL ─────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="leadModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Register New Lead</h3>
+      <button class="modal-close" onclick="closeLeadModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Register a customer who is interested in buying. This helps you track your pipeline and ensures you get credited for the sale.</p>
+      <div class="field">
+        <label class="label">Customer Name <span class="req">*</span></label>
+        <input type="text" class="input" id="l-name" placeholder="e.g. Mary Phiri">
+        <div class="err-msg" id="l-name-err">Required.</div>
+      </div>
+      <div class="field">
+        <label class="label">Customer WhatsApp <span class="req">*</span></label>
+        <input type="tel" class="input" id="l-wa" placeholder="+260 9XX XXX XXX">
+        <div class="err-msg" id="l-wa-err">Required.</div>
+      </div>
+      <div class="field">
+        <label class="label">Product Interested In <span class="req">*</span></label>
+        <select class="select" id="l-product">
+          <option value="">Select product…</option>
+        </select>
+        <div class="err-msg" id="l-product-err">Required.</div>
+      </div>
+      <div class="field">
+        <label class="label">Expected Purchase Date</label>
+        <input type="date" class="input" id="l-date">
+      </div>
+      <div class="field">
+        <label class="label">Notes</label>
+        <textarea class="textarea" id="l-notes" rows="3" placeholder="Any notes about this customer…"></textarea>
+      </div>
+      <div id="leadError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="leadErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn btn-outline btn-full" onclick="closeLeadModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="saveleadBtn" onclick="saveLead()">
+          <i class="fas fa-plus"></i> Register Lead
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+let agentData  = null;
+let agentLeads = [];
+let agentSales = [];
+let allSales   = [];
+
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+async function doAgentLogin() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  if (!code) return;
+  const btn = document.getElementById('loginBtn');
+  setLoading(btn, true, 'Checking…');
+  document.getElementById('loginErr').classList.remove('show');
+
+  try {
+    const agent = await db.getOne('agents', `agent_code=eq.${code}&active=eq.true`);
+    if (!agent) throw new Error('Not found');
+    sessionStorage.setItem('agent_code', code);
+    localStorage.setItem('agent_code', code);
+    agentData = agent;
+    bootDashboard();
+  } catch(e) {
+    document.getElementById('loginErr').classList.add('show');
+    setLoading(btn, false, '<i class="fas fa-right-to-bracket"></i> Access Dashboard');
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('agent_code');
+  localStorage.removeItem('agent_code');
+  location.reload();
+}
+
+async function bootDashboard() {
+  document.getElementById('loginScreen').style.display  = 'none';
+  document.getElementById('dashApp').style.display       = 'block';
+  document.getElementById('nav-agent-code').textContent  = agentData.agent_code;
+  document.getElementById('dashAvatar').textContent      = agentData.full_name[0].toUpperCase();
+  document.getElementById('dashName').textContent        = agentData.full_name;
+  document.getElementById('dashCodeLabel').textContent   = agentData.agent_id + ' · ' + agentData.agent_code;
+  document.getElementById('refUrl').textContent          = agentData.referral_url || `${CONFIG.siteUrl}/?ref=${agentData.agent_code}`;
+
+  await loadAgentData();
+  renderProducts();
+  renderCommRates();
+}
+
+async function loadAgentData() {
+  try {
+    [agentLeads, agentSales, allSales] = await Promise.all([
+      db.getAll('leads', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' }),
+      db.getAll('sales', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' }),
+      db.getAll('sales', { order: 'created_at.desc' }),
+    ]);
+    updateAgentStats();
+    renderLeads();
+    renderCommHistory();
+    renderLeaderboard();
+  } catch(e) { toast('⚠️  Could not load data: ' + e.message); }
+}
+
+function updateAgentStats() {
+  const now      = new Date();
+  const thisMonth = agentSales.filter(s => new Date(s.created_at).getMonth() === now.getMonth());
+  const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = agentSales.filter(s => s.status === 'pending');
+  const totalComm = confirmed.reduce((s, x) => s + (x.commission||0), 0);
+  const pendComm  = pending.reduce((s, x) => s + (x.commission||0), 0);
+  const activeLeads = agentLeads.filter(l => l.status === 'interested' || l.status === 'followup');
+
+  document.getElementById('st-sales').textContent   = thisMonth.length;
+  document.getElementById('st-comm').textContent    = fmtMoney(totalComm);
+  document.getElementById('st-leads').textContent   = activeLeads.length;
+  document.getElementById('st-pending').textContent = fmtMoney(pendComm);
+}
+
+// ── REFERRAL LINK ─────────────────────────────────────────────────────────────
+function copyRefLink() {
+  const url = agentData.referral_url || `${CONFIG.siteUrl}/?ref=${agentData.agent_code}`;
+  copyToClipboard(url);
+  toast('✅ Referral link copied!');
+}
+
+function shareRefWa() {
+  const url = agentData.referral_url || `${CONFIG.siteUrl}/?ref=${agentData.agent_code}`;
+  const msg = `📱 *PhoneYa2-ZM Accessories — Lusaka's Best Phone Accessories!*\n\nCases, chargers, earphones, power banks & more.\n✅ Genuine products\n🚀 Same-day delivery in Lusaka\n💬 Order directly on WhatsApp\n\n🛒 Shop now: ${url}\n\n_Delivered to your door in Lusaka_`;
+  window.open(waLink(msg), '_blank');
+}
+
+function shareRefNative() {
+  const url = agentData.referral_url || `${CONFIG.siteUrl}/?ref=${agentData.agent_code}`;
+  if (navigator.share) {
+    navigator.share({ title:'PhoneYa2-ZM Accessories', text:'Genuine phone accessories in Lusaka. Same-day delivery.', url });
+  } else { copyRefLink(); }
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+const PROD_ICONS = { 'Phone Case':'📱', 'Charger':'⚡', 'Earphones':'🎧', 'Power Bank':'🔋', 'Smart Watch':'⌚', 'Cable':'🔌', 'Other':'📦' };
+
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  const refUrl = agentData.referral_url || `${CONFIG.siteUrl}/?ref=${agentData.agent_code}`;
+
+  grid.innerHTML = CONFIG.products.map((p, i) => {
+    const promoText = `📱 *${p.name}* — ZMW ${p.price.toLocaleString()}\n\n✅ Genuine product\n🚀 Same-day delivery in Lusaka\n💬 Order on WhatsApp\n\n🛒 ${refUrl}`;
+    const icon = PROD_ICONS[p.category] || '📦';
+    return `
+      <div class="prod-card">
+        <div class="prod-card-icon">${icon}</div>
+        <div class="prod-name">${esc(p.name)}</div>
+        <div class="prod-price">Sells for ${fmtMoney(p.price)}</div>
+        <div class="prod-comm"><i class="fas fa-coins"></i> You earn +${fmtMoney(p.commission)}</div>
+        <div class="promo-text" id="pt-${i}" onclick="selectPromo(${i})">${esc(promoText)}</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="copyPromo(${i}, \`${promoText.replace(/`/g,"'")}\`)">
+            <i class="fas fa-copy"></i> Copy Promo
+          </button>
+          <button class="btn btn-green btn-sm" onclick="sharePromoWa(\`${promoText.replace(/`/g,"'")}\`)">
+            <i class="fab fa-whatsapp"></i>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Also populate product select in lead modal
+  const sel = document.getElementById('l-product');
+  sel.innerHTML = '<option value="">Select product…</option>' +
+    CONFIG.products.map(p => `<option value="${esc(p.name)}">${esc(p.name)} — ${fmtMoney(p.price)}</option>`).join('');
+}
+
+function selectPromo(i) {
+  const el = document.getElementById('pt-' + i);
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+}
+
+function copyPromo(i, text) {
+  copyToClipboard(text);
+  toast('✅ Promotional message copied!');
+}
+
+function sharePromoWa(text) {
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+// ── LEADS ─────────────────────────────────────────────────────────────────────
+const STATUS_CLASS = { interested:'ls-interested', purchased:'ls-purchased', lost:'ls-lost', followup:'ls-followup' };
+const STATUS_ICON  = { interested:'🟡', purchased:'🟢', lost:'🔴', followup:'🔵' };
+
+function renderLeads() {
+  const el = document.getElementById('leadsContent');
+  if (!agentLeads.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🎯</div><h3>No leads yet</h3><p>Register your first lead when a customer expresses interest.</p></div>';
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Lead ID</th><th>Customer</th><th>Product</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>${agentLeads.map(l => `
+      <tr>
+        <td><code style="font-size:12px;color:var(--muted);">${esc(l.lead_id)}</code></td>
+        <td style="font-weight:600;">${esc(l.customer_name)}</td>
+        <td style="font-size:13px;">${esc(l.product)}</td>
+        <td><span class="lead-status-badge ${STATUS_CLASS[l.status]||''}">${STATUS_ICON[l.status]||''} ${esc(l.status)}</span></td>
+        <td style="font-size:12px;color:var(--muted);">${fmtDate(l.created_at)}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <select class="select" style="font-size:12px;padding:4px 8px;border-radius:6px;width:auto;" onchange="updateLeadStatus('${esc(l.id)}', this.value)">
+            <option value="interested"  ${l.status==='interested'?'selected':''}>🟡 Interested</option>
+            <option value="followup"   ${l.status==='followup'?'selected':''}>🔵 Follow-up</option>
+            <option value="purchased"  ${l.status==='purchased'?'selected':''}>🟢 Purchased</option>
+            <option value="lost"       ${l.status==='lost'?'selected':''}>🔴 Lost</option>
+          </select>
+          <a href="https://wa.me/${l.customer_wa?.replace(/\D/g,'')}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i></a>
+        </td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+async function updateLeadStatus(id, status) {
+  try {
+    await db.update('leads', `id=eq.${id}`, { status });
+    toast('✅ Lead status updated');
+    await loadAgentData();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function openAddLead() {
+  document.getElementById('leadModal').classList.add('open');
+  document.getElementById('leadError').style.display = 'none';
+  ['l-name','l-wa','l-product','l-date','l-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+function closeLeadModal() { document.getElementById('leadModal').classList.remove('open'); }
+
+async function saveLead() {
+  const name    = document.getElementById('l-name').value.trim();
+  const wa      = document.getElementById('l-wa').value.trim();
+  const product = document.getElementById('l-product').value;
+  let ok = true;
+
+  [['l-name-err', !name], ['l-wa-err', !wa], ['l-product-err', !product]].forEach(([eid, bad]) => {
+    document.getElementById(eid).classList.toggle('show', bad);
+    document.getElementById(eid.replace('-err','')).classList.toggle('error', bad);
+    if (bad) ok = false;
+  });
+  if (!ok) return;
+
+  const btn = document.getElementById('saveleadBtn');
+  setLoading(btn, true, 'Saving…');
+  document.getElementById('leadError').style.display = 'none';
+
+  try {
+    const n      = await db.nextId('leads');
+    const leadId = makeLeadId(n);
+    await db.insert('leads', {
+      lead_id:       leadId,
+      agent_code:    agentData.agent_code,
+      customer_name: name,
+      customer_wa:   wa,
+      product:       product,
+      notes:         document.getElementById('l-notes').value.trim(),
+      expected_date: document.getElementById('l-date').value || null,
+      status:        'interested',
+    });
+    closeLeadModal();
+    toast('✅ Lead registered: ' + leadId);
+    await loadAgentData();
+  } catch(e) {
+    document.getElementById('leadErrText').textContent = e.message;
+    document.getElementById('leadError').style.display = 'flex';
+    setLoading(btn, false, '<i class="fas fa-plus"></i> Register Lead');
+  }
+}
+
+// ── COMMISSION HISTORY ────────────────────────────────────────────────────────
+function renderCommHistory() {
+  const el = document.getElementById('commHistory');
+  if (!agentSales.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px 0;"><div class="empty-icon">💰</div><h3>No sales yet</h3><p>Your commission history will appear here once your first sale is confirmed.</p></div>';
+    return;
+  }
+  el.innerHTML = agentSales.map(s => {
+    const confirmed = s.status === 'confirmed' || s.status === 'paid';
+    return `<div class="sale-row">
+      <div class="sale-icon">📦</div>
+      <div>
+        <div class="sale-prod">${esc(s.product)}</div>
+        <div class="sale-date">${fmtDate(s.created_at)}</div>
+      </div>
+      <span class="sale-status-badge" style="${confirmed ? 'background:#f0fdf4;color:#15803d;' : 'background:#fef9c3;color:#854d0e;'}">${esc(s.status)}</span>
+      <div class="sale-comm">${confirmed ? '+' : '~'}${fmtMoney(s.commission)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCommRates() {
+  const el = document.getElementById('commRates');
+  el.innerHTML = CONFIG.products.map(p =>
+    `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07);">
+      <span style="color:rgba(255,255,255,.7);">${esc(p.name)}</span>
+      <strong style="color:var(--green);">+${fmtMoney(p.commission)}</strong>
+    </div>`).join('');
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────────
+async function renderLeaderboard() {
+  const el = document.getElementById('agentLeaderboard');
+  const medals = ['🥇','🥈','🥉'];
+  const byAgent = {};
+  allSales.forEach(s => {
+    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales:0, revenue:0 };
+    byAgent[s.agent_code].sales++;
+    byAgent[s.agent_code].revenue += (s.amount||0);
+  });
+  const ranked = Object.entries(byAgent)
+    .map(([code, d]) => ({ code, ...d }))
+    .sort((a,b) => b.revenue - a.revenue);
+
+  if (!ranked.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">🏆</div><h3>No sales yet</h3><p>Be the first to record a sale!</p></div>';
+    return;
+  }
+
+  el.innerHTML = ranked.map((r, i) => {
+    const isMe = r.code === agentData.agent_code;
+    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);${isMe?'background:linear-gradient(90deg,#fff8f4,white);':''}">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">
+        ${i < 3 ? medals[i] : i+1}
+      </div>
+      <div style="flex:1;font-weight:${isMe?800:600};font-size:14px;">
+        ${isMe ? '⭐ You' : esc(r.code)}
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-right:12px;">${r.sales} sale${r.sales!==1?'s':''}</div>
+      <div style="font-weight:800;color:var(--orange);">${fmtMoney(r.revenue)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showAgentTab(name, btn) {
+  document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('agent-tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const code = agentCode();
+  if (code) {
+    const agent = await db.getOne('agents', `agent_code=eq.${code}&active=eq.true`).catch(() => null);
+    if (agent) {
+      agentData = agent;
+      bootDashboard();
+    }
+  }
+});
+</script>
+</body>
+</html>

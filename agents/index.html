@@ -1,1 +1,314 @@
-placeholder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhoneYa2 Sales Agent Network — Turn Your Network Into Income</title>
+<meta name="description" content="Become a PhoneYa2 Sales Agent in Lusaka. Earn commission on every sale. Apply today — it takes 3 minutes.">
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.hero {
+  background: var(--navy);
+  padding: 80px 0 72px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-orb-a {
+  position: absolute; width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle,rgba(255,96,0,.18),transparent 65%);
+  top: -120px; left: -80px; pointer-events: none;
+}
+.hero-orb-b {
+  position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle,rgba(37,211,102,.12),transparent 65%);
+  bottom: -80px; right: -60px; pointer-events: none;
+}
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: 0 auto; padding: 0 20px;
+  display: grid; grid-template-columns: 1fr 420px; gap: 56px; align-items: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 100px; padding: 6px 14px; margin-bottom: 20px;
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,.75);
+}
+.hero-eyebrow i { color: var(--green); }
+.hero h1 { color: white; margin-bottom: 16px; }
+.hero h1 em { font-style: normal; color: var(--orange2); }
+.hero-sub { color: rgba(255,255,255,.6); font-size: 16px; max-width: 480px; margin-bottom: 32px; line-height: 1.7; }
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-stats { display: flex; gap: 24px; margin-top: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,.08); }
+.hero-stat-val { font-family:'Syne',sans-serif; font-size: 1.8rem; font-weight: 800; color: white; }
+.hero-stat-lbl { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 2px; }
+
+/* ── EARNINGS CARD ───────────────────────────────────────────────────────── */
+.earnings-card {
+  background: white; border-radius: 20px; padding: 28px 24px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.25);
+}
+.earnings-card h3 { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .5px; font-family:'DM Sans',sans-serif; }
+.product-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.product-row:last-child { border-bottom: none; }
+.product-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#fff8f4,#ffe4cc); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.product-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
+.product-price { font-size: 13px; color: var(--muted); }
+.product-comm { font-size: 13px; font-weight: 800; color: #16a34a; }
+.earnings-footer { margin-top: 16px; background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+.earnings-footer-text { font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.5; }
+.earnings-footer-text strong { color: white; }
+
+/* ── HOW IT WORKS ────────────────────────────────────────────────────────── */
+.how-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+.how-step { text-align: center; padding: 28px 20px; background: white; border-radius: var(--r2); border: 1px solid var(--border); position: relative; }
+.how-step-num { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; background: var(--orange); color: white; border-radius: 50%; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.how-icon { font-size: 2.2rem; margin-bottom: 12px; }
+.how-title { font-size: 15px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+.how-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.how-connector { display: none; }
+
+/* ── COMMISSION TABLE ────────────────────────────────────────────────────── */
+.comm-table-wrap { background: white; border-radius: var(--r2); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+
+/* ── TESTIMONIAL STRIP ───────────────────────────────────────────────────── */
+.testi-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testi-card { background: white; border-radius: var(--r2); padding: 22px 20px; border: 1px solid var(--border); }
+.testi-stars { color: #f59e0b; font-size: 13px; margin-bottom: 10px; }
+.testi-text { font-size: 14px; color: var(--text); line-height: 1.65; margin-bottom: 14px; font-style: italic; }
+.testi-author { font-weight: 700; font-size: 13px; }
+.testi-role { font-size: 12px; color: var(--muted); }
+
+/* ── CTA BANNER ──────────────────────────────────────────────────────────── */
+.cta-banner { background: var(--navy); border-radius: 20px; padding: 48px 40px; text-align: center; position: relative; overflow: hidden; }
+.cta-banner-orb { position: absolute; border-radius: 50%; pointer-events: none; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media(max-width:900px) { .hero-inner { grid-template-columns: 1fr; } .earnings-card { display: none; } .how-grid { grid-template-columns: repeat(2,1fr); } .testi-strip { grid-template-columns: 1fr; } }
+@media(max-width:600px) { .how-grid { grid-template-columns: 1fr; } .hero-stats { flex-wrap: wrap; gap: 16px; } }
+</style>
+</head>
+<body>
+
+<div id="nav-wrap"></div>
+
+<!-- ── HERO ─────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-orb-a"></div>
+  <div class="hero-orb-b"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <i class="fas fa-handshake"></i>
+        Official Agent Programme · Lusaka, Zambia
+      </div>
+      <h1>Turn Your Network<br>Into <em>Real Income</em></h1>
+      <p class="hero-sub">Join the PhoneYa2-ZM Sales Agent Network. Share genuine phone accessories with your contacts and earn commission on every confirmed sale — no upfront cost, no stock to hold.</p>
+      <div class="hero-btns">
+        <a href="apply.html" class="btn btn-primary btn-lg">
+          <i class="fas fa-pen-to-square"></i> Apply Now — Free
+        </a>
+        <a href="#how" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);">
+          How it works <i class="fas fa-arrow-down"></i>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val">ZMW 40</div>
+          <div class="hero-stat-lbl">Per Smart Watch sale</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,.1);"></div>
+        <div>
+          <div class="hero-stat-val">0%</div>
+          <div class="hero-stat-lbl">Upfront cost to join</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,.1);"></div>
+        <div>
+          <div class="hero-stat-val">Same Day</div>
+          <div class="hero-stat-lbl">Delivery for your customers</div>
+        </div>
+      </div>
+    </div>
+    <!-- Earnings card (desktop only) -->
+    <div class="earnings-card">
+      <h3>What you earn per sale</h3>
+      <div class="product-row">
+        <div class="product-icon">📱</div>
+        <div class="product-name">Phone Case</div>
+        <div class="product-price">ZMW 85+</div>
+        <div class="product-comm">+ZMW 15</div>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">⚡</div>
+        <div class="product-name">Charger</div>
+        <div class="product-price">ZMW 150</div>
+        <div class="product-comm">+ZMW 20</div>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">🎧</div>
+        <div class="product-name">Earphones</div>
+        <div class="product-price">ZMW 380</div>
+        <div class="product-comm">+ZMW 25</div>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">🔋</div>
+        <div class="product-name">Power Bank</div>
+        <div class="product-price">ZMW 420</div>
+        <div class="product-comm">+ZMW 30</div>
+      </div>
+      <div class="product-row">
+        <div class="product-icon">⌚</div>
+        <div class="product-name">Smart Watch</div>
+        <div class="product-price">ZMW 400</div>
+        <div class="product-comm">+ZMW 40</div>
+      </div>
+      <div class="earnings-footer">
+        <i class="fas fa-calculator" style="color:var(--green);font-size:1.2rem;flex-shrink:0;"></i>
+        <div class="earnings-footer-text">
+          Sell <strong>10 items/month</strong> and earn <strong>ZMW 200–400</strong> in commission — on top of whatever you already do.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ───────────────────────────────────────────────────────── -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-hdr">
+      <h2>How It Works</h2>
+      <p>From application to earning commission — the whole process is simple and runs on WhatsApp.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <div class="how-icon">📝</div>
+        <div class="how-title">Apply Online</div>
+        <div class="how-desc">Fill in the 3-step application. Takes about 3 minutes. No fee, no documents needed upfront.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <div class="how-icon">✅</div>
+        <div class="how-title">Get Approved</div>
+        <div class="how-desc">We review your application and send your Agent ID, Agent Code, and your personal referral link.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <div class="how-icon">📤</div>
+        <div class="how-title">Share &amp; Sell</div>
+        <div class="how-desc">Share your referral link on WhatsApp, Facebook, TikTok. Customers order and PhoneYa2 delivers.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">4</div>
+        <div class="how-icon">💰</div>
+        <div class="how-title">Earn Commission</div>
+        <div class="how-desc">Every confirmed sale earns you commission. Track everything on your personal Agent Dashboard.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMMISSION TABLE ───────────────────────────────────────────────────── -->
+<section class="section-sm" style="background:white;">
+  <div class="container">
+    <div class="section-hdr">
+      <h2>Commission Rates</h2>
+      <p>Fixed commissions per confirmed sale. No negotiation, no ambiguity.</p>
+    </div>
+    <div class="comm-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Selling Price</th>
+            <th style="color:#16a34a;">Your Commission</th>
+            <th class="hide-mobile">If you sell 10/month</th>
+          </tr>
+        </thead>
+        <tbody id="commTable"></tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px;text-align:center;">Commission is paid after PhoneYa2 confirms the sale and delivery. Payment via mobile money.</p>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ───────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="section-hdr">
+      <h2>What Our Agents Say</h2>
+    </div>
+    <div class="testi-strip">
+      <div class="testi-card">
+        <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <p class="testi-text">"I shared my referral link on WhatsApp status and got 3 orders in the first week. The products are genuine so my contacts trust me."</p>
+        <div class="testi-author">Chanda M.</div>
+        <div class="testi-role">Agent since 2025 · Lusaka</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <p class="testi-text">"I'm a student and this fits my schedule perfectly. I spend maybe 30 minutes a day sharing products and I've earned ZMW 340 this month."</p>
+        <div class="testi-author">Mutale K.</div>
+        <div class="testi-role">Agent since 2025 · Lusaka</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i></div>
+        <p class="testi-text">"The dashboard shows me exactly what I've earned and what's pending. It feels like a real business, not just selling on WhatsApp."</p>
+        <div class="testi-author">Bwalya T.</div>
+        <div class="testi-role">Agent since 2024 · Lusaka</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ─────────────────────────────────────────────────────────── -->
+<section class="section-sm">
+  <div class="container">
+    <div class="cta-banner">
+      <div class="cta-banner-orb" style="width:350px;height:350px;background:radial-gradient(circle,rgba(255,96,0,.2),transparent 65%);top:-80px;left:-60px;"></div>
+      <div class="cta-banner-orb" style="width:280px;height:280px;background:radial-gradient(circle,rgba(37,211,102,.15),transparent 65%);bottom:-60px;right:-40px;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🚀</div>
+        <h2 style="color:white;margin-bottom:10px;">Ready to Start Earning?</h2>
+        <p style="color:rgba(255,255,255,.6);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto;">The application takes 3 minutes. Once approved you get your Agent ID, referral link, and can start selling immediately.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="apply.html" class="btn btn-primary btn-lg">
+            <i class="fas fa-pen-to-square"></i> Apply Now — Free
+          </a>
+          <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20become%20a%20PhoneYa2%20Sales%20Agent." target="_blank" rel="noopener" class="btn btn-green btn-lg">
+            <i class="fab fa-whatsapp"></i> Ask on WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <strong>PhoneYa2-ZM Agent Network</strong> · A <a href="https://blesstech-x.vercel.app" target="_blank">BLESSTech-X</a> Programme ·
+  <a href="admin.html">Admin</a>
+</footer>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+document.getElementById('nav-wrap').innerHTML = buildNav('public');
+
+// Populate commission table
+const tbody = document.getElementById('commTable');
+CONFIG.products.forEach(p => {
+  const monthly = p.commission * 10;
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr onclick="window.location='apply.html'" style="cursor:pointer;">
+      <td style="font-weight:600;">${esc(p.name)}</td>
+      <td style="color:var(--muted);">${fmtMoney(p.price)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(p.commission)}</td>
+      <td class="hide-mobile" style="color:var(--orange);font-weight:700;">${fmtMoney(monthly)}</td>
+    </tr>`);
+});
+</script>
+</body>
+</html>

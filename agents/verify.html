@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Agent — PhoneYa2</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+.verify-wrap { max-width: 480px; margin: 60px auto; padding: 0 20px 80px; text-align: center; }
+.verify-card { background: white; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow2); overflow: hidden; }
+.verify-hdr  { background: var(--navy); padding: 28px 24px; }
+.verify-hdr h2 { font-size: 1rem; color: rgba(255,255,255,.55); font-weight: 600; margin-bottom: 4px; font-family: 'DM Sans',sans-serif; }
+.verify-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(37,211,102,.15); border: 1px solid rgba(37,211,102,.35); border-radius: 14px; padding: 12px 20px; margin-top: 12px; }
+.verify-badge i { color: var(--green); font-size: 1.3rem; }
+.verify-badge span { color: white; font-weight: 800; font-size: 15px; }
+.verify-body { padding: 28px 24px; }
+.verify-row  { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.verify-row:last-child { border-bottom: none; }
+.verify-lbl  { color: var(--muted); font-weight: 600; }
+.verify-val  { color: var(--text); font-weight: 700; }
+.not-found-card { background: white; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); padding: 40px 32px; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div><div class="nav-brand">PhoneYa2<span>-ZM</span></div></div>
+    </a>
+    <span class="nav-badge">Agent Verification</span>
+  </div>
+</nav>
+
+<div class="verify-wrap">
+
+  <!-- Loading state -->
+  <div id="loadingState" style="padding:60px 0;text-align:center;">
+    <div class="spinner dark" style="margin:0 auto 16px;width:32px;height:32px;"></div>
+    <p style="color:var(--muted);font-size:14px;">Verifying agent…</p>
+  </div>
+
+  <!-- Verified state -->
+  <div id="verifiedState" style="display:none;">
+    <div class="verify-card">
+      <div class="verify-hdr">
+        <h2>PhoneYa2-ZM Authorised Sales Agent</h2>
+        <div class="verify-badge">
+          <i class="fas fa-circle-check"></i>
+          <span>VERIFIED ✓</span>
+        </div>
+      </div>
+      <div class="verify-body">
+        <div class="verify-row">
+          <div class="verify-lbl">Full Name</div>
+          <div class="verify-val" id="v-name">—</div>
+        </div>
+        <div class="verify-row">
+          <div class="verify-lbl">Agent ID</div>
+          <div class="verify-val" id="v-agent-id">—</div>
+        </div>
+        <div class="verify-row">
+          <div class="verify-lbl">Agent Code</div>
+          <div class="verify-val" id="v-code">—</div>
+        </div>
+        <div class="verify-row">
+          <div class="verify-lbl">Location</div>
+          <div class="verify-val" id="v-location">—</div>
+        </div>
+        <div class="verify-row">
+          <div class="verify-lbl">Agent Since</div>
+          <div class="verify-val" id="v-joined">—</div>
+        </div>
+        <div class="verify-row">
+          <div class="verify-lbl">Status</div>
+          <div class="verify-val"><span class="badge badge-green"><i class="fas fa-circle-check"></i> Active</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;background:linear-gradient(135deg,#0d2010,#0a3518);border-radius:var(--r);padding:18px 20px;border:1px solid rgba(37,211,102,.2);text-align:left;">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">This person is authorised to sell on behalf of PhoneYa2-ZM</div>
+      <p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.65;">Verified agents promote PhoneYa2 products and earn commission on confirmed sales. Orders are fulfilled directly by PhoneYa2-ZM. If you have a concern about this agent, contact us on WhatsApp.</p>
+      <a href="https://wa.me/260979603741?text=Hi%20PhoneYa2!%20I%20have%20a%20question%20about%20one%20of%20your%20agents." target="_blank" rel="noopener" class="btn btn-green btn-sm" style="margin-top:14px;">
+        <i class="fab fa-whatsapp"></i> Contact PhoneYa2
+      </a>
+    </div>
+    <div style="margin-top:20px;">
+      <a href="https://phoneya2-accessories.vercel.app" class="btn btn-primary btn-full">
+        <i class="fas fa-store"></i> Shop PhoneYa2 Products
+      </a>
+    </div>
+  </div>
+
+  <!-- Not found state -->
+  <div id="notFoundState" style="display:none;">
+    <div class="not-found-card">
+      <div style="font-size:3rem;margin-bottom:16px;">⚠️</div>
+      <h2 style="margin-bottom:8px;">Agent Not Found</h2>
+      <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px;">We could not find a verified PhoneYa2 agent matching this ID. The agent may be inactive, or the link may be incorrect.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">If you believe this is an error, contact PhoneYa2 directly:</p>
+      <a href="https://wa.me/260979603741?text=Hi%20PhoneYa2!%20I%20am%20trying%20to%20verify%20an%20agent%20and%20could%20not%20find%20them." target="_blank" rel="noopener" class="btn btn-green btn-full">
+        <i class="fab fa-whatsapp"></i> Contact PhoneYa2 on WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- Manual lookup -->
+  <div style="margin-top:28px;">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Look up a different agent:</p>
+    <div style="display:flex;gap:8px;">
+      <input type="text" class="input" id="lookupInput" placeholder="Enter Agent ID (e.g. PYA-0001) or Code (PY001)"
+             oninput="this.value=this.value.toUpperCase()" style="flex:1;">
+      <button class="btn btn-primary btn-sm" onclick="doLookup()"><i class="fas fa-search"></i></button>
+    </div>
+  </div>
+
+</div><!-- /verify-wrap -->
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+async function verify(query) {
+  if (!query) { showNotFound(); return; }
+  document.getElementById('loadingState').style.display  = 'block';
+  document.getElementById('verifiedState').style.display = 'none';
+  document.getElementById('notFoundState').style.display = 'none';
+
+  try {
+    // Try agent_id first, then agent_code
+    let agent = await db.getOne('agents', `agent_id=eq.${encodeURIComponent(query)}&active=eq.true`);
+    if (!agent) {
+      agent = await db.getOne('agents', `agent_code=eq.${encodeURIComponent(query)}&active=eq.true`);
+    }
+    if (!agent) throw new Error('Not found');
+
+    document.getElementById('v-name').textContent     = agent.full_name;
+    document.getElementById('v-agent-id').textContent = agent.agent_id;
+    document.getElementById('v-code').textContent      = agent.agent_code;
+    document.getElementById('v-location').textContent  = agent.location || 'Lusaka, Zambia';
+    document.getElementById('v-joined').textContent    = fmtDate(agent.joined_at);
+
+    document.getElementById('loadingState').style.display  = 'none';
+    document.getElementById('verifiedState').style.display = 'block';
+  } catch(e) {
+    showNotFound();
+  }
+}
+
+function showNotFound() {
+  document.getElementById('loadingState').style.display  = 'none';
+  document.getElementById('verifiedState').style.display = 'none';
+  document.getElementById('notFoundState').style.display = 'block';
+}
+
+function doLookup() {
+  const q = document.getElementById('lookupInput').value.trim();
+  if (!q) return;
+  window.location.href = `verify.html?id=${encodeURIComponent(q)}`;
+}
+
+document.getElementById('lookupInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLookup();
+});
+
+// Auto-verify from URL ?id=PYA-0001
+const params = new URLSearchParams(window.location.search);
+const id     = params.get('id') || params.get('code') || '';
+if (id) {
+  verify(id.toUpperCase());
+} else {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('notFoundState').style.display = 'block';
+}
+</script>
+</body>
+</html>
