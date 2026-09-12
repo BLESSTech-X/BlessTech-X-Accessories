@@ -37,7 +37,7 @@
 <!-- Decap CMS — loaded from CDN, no install needed -->
 <script>window.CMS_MANUAL_INIT = true;</script>
 <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"
-        onload="initCMS()"
+        onload="onCmsScriptLoaded()"
         onerror="showError()"></script>
 
 <script>
@@ -52,6 +52,29 @@ function showError() {
     <button onclick="location.reload()" style="margin-top:20px;background:#ff6000;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer;">Retry</button>`;
 }
 
+// This admin page is deployed to two places from the same repo:
+//   - phoneya2.netlify.app        -> should use Netlify Identity / Git Gateway
+//   - phoneya2-accessories.vercel.app -> should use the GitHub backend + OAuth proxy
+// Decap CMS gets ONE config object at init time, so the choice is made here,
+// at runtime, based on the hostname the admin page is actually served from.
+function isNetlifyHost() {
+  return window.location.hostname.endsWith('.netlify.app');
+}
+
+// On the Netlify host we need the Netlify Identity widget loaded before
+// CMS.init() runs, so Git Gateway has something to authenticate against.
+function onCmsScriptLoaded() {
+  if (isNetlifyHost()) {
+    const s = document.createElement('script');
+    s.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
+    s.onload = initCMS;
+    s.onerror = initCMS; // still init CMS even if the widget CDN hiccups
+    document.head.appendChild(s);
+  } else {
+    initCMS();
+  }
+}
+
 function initCMS() {
   // Hide loading screen once CMS loads
   setTimeout(() => {
@@ -59,17 +82,40 @@ function initCMS() {
     if (ls) ls.style.display = 'none';
   }, 800);
 
-  CMS.init({
-    config: {
-      // ─── BACKEND ────────────────────────────────────────────────────────────
-      // Uses GitHub API directly — no Netlify needed.
-      // Customers log in with their GitHub account.
-      backend: {
+  const onNetlify = isNetlifyHost();
+
+  // ─── BACKEND ──────────────────────────────────────────────────────────────
+  // Netlify (phoneya2.netlify.app): Netlify Identity handles login, Git
+  // Gateway performs the git writes on the user's behalf — no GitHub OAuth
+  // app or proxy needed.
+  // Vercel (phoneya2-accessories.vercel.app): there is no Netlify Identity
+  // service on this domain, so the CMS talks to GitHub directly, using a
+  // public OAuth proxy to complete the GitHub login handshake.
+  const backend = onNetlify
+    ? {
+        name: 'git-gateway',
+        branch: 'main'
+      }
+    : {
         name: 'github',
-        repo: 'BLESSTech-X/BlessTech-X-Accessories', // ← CHANGE THIS (see instructions below)
+        repo: 'BLESSTech-X/phoneya2-accessories',
         branch: 'main',
         base_url: 'https://sveltia-cms-auth.pages.dev' // Free OAuth proxy — works with Vercel
-      },
+      };
+
+  if (onNetlify && window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', user => {
+      if (!user) {
+        window.netlifyIdentity.on('login', () => {
+          document.location.href = '/admin/';
+        });
+      }
+    });
+  }
+
+  CMS.init({
+    config: {
+      backend,
 
       // ─── MEDIA ──────────────────────────────────────────────────────────────
       // Product images are stored in this folder in your GitHub repo
