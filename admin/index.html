@@ -59,17 +59,25 @@ function initCMS() {
     if (ls) ls.style.display = 'none';
   }, 800);
 
-  CMS.init({
-    config: {
-      // ─── BACKEND ────────────────────────────────────────────────────────────
-      // Uses GitHub API directly — no Netlify needed.
-      // Customers log in with their GitHub account.
-      backend: {
+  // ─── BACKEND (chosen by hostname) ──────────────────────────────────────────
+  // On *.netlify.app → Netlify Identity + Git Gateway (no OAuth proxy needed).
+  // Everywhere else (e.g. Vercel) → GitHub backend via an OAuth proxy.
+  const isNetlify = window.location.hostname.endsWith('.netlify.app');
+  const backend = isNetlify
+    ? {
+        name: 'git-gateway',
+        branch: 'main'
+      }
+    : {
         name: 'github',
-        repo: 'BLESSTech-X/BlessTech-X-Accessories', // ← CHANGE THIS (see instructions below)
+        repo: 'BLESSTech-X/phoneya2-accessories',
         branch: 'main',
         base_url: 'https://sveltia-cms-auth.pages.dev' // Free OAuth proxy — works with Vercel
-      },
+      };
+
+  CMS.init({
+    config: {
+      backend,
 
       // ─── MEDIA ──────────────────────────────────────────────────────────────
       // Product images are stored in this folder in your GitHub repo
