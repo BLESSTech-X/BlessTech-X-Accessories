@@ -1,9 +1,12 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: BLESSTech-X/BlessTech-X-Accessories
   branch: main
+  base_url: https://sveltia-cms-auth.singbless89.workers.dev
+  auth_endpoint: /auth
 
-media_folder: "public/images/uploads"
-public_folder: "/images/uploads"
+media_folder: "assets/images/uploads"
+public_folder: "/assets/images/uploads"
 
 collections:
   - name: "products"
