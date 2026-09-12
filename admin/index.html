@@ -4,37 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>Content Manager</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <title>PhoneYa2 Admin</title>
+  <link rel="cms-config-url" href="/admin/config.yml" />
 </head>
 <body>
-  <!-- Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-
-  <script>
-    // Netlify Identity Integration
-    const netlifyIdentity = window.netlifyIdentity;
-
-    // On init, check if user is logged in
-    netlifyIdentity.on('init', (user) => {
-      if (!user) {
-        // User is not logged in, open the login modal
-        netlifyIdentity.open();
-      }
-    });
-
-    // On login, redirect to the CMS
-    netlifyIdentity.on('login', () => {
-      window.location.href = '/admin/';
-    });
-
-    // On logout, redirect to homepage
-    netlifyIdentity.on('logout', () => {
-      window.location.href = '/';
-    });
-
-    // Initialize Netlify Identity
-    netlifyIdentity.init();
-  </script>
 </body>
 </html>
