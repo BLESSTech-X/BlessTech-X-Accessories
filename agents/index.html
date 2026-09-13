@@ -29,6 +29,7 @@
   position: relative; z-index: 1;
   max-width: 1100px; margin: 0 auto; padding: 0 20px;
   display: grid; grid-template-columns: 1fr 420px; gap: 56px; align-items: center;
+  min-width: 0; overflow: hidden;
 }
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
@@ -86,8 +87,36 @@
 .cta-banner-orb { position: absolute; border-radius: 50%; pointer-events: none; }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
-@media(max-width:900px) { .hero-inner { grid-template-columns: 1fr; } .earnings-card { display: none; } .how-grid { grid-template-columns: repeat(2,1fr); } .testi-strip { grid-template-columns: 1fr; } }
-@media(max-width:600px) { .how-grid { grid-template-columns: 1fr; } .hero-stats { flex-wrap: wrap; gap: 16px; } }
+/* Prevent any fixed-width element causing horizontal scroll */
+html, body { overflow-x: hidden; max-width: 100%; }
+* { min-width: 0; }
+
+@media(max-width:900px) {
+  .hero-inner         { grid-template-columns: 1fr; gap: 32px; }
+  .earnings-card      { display: none; }
+  .how-grid           { grid-template-columns: repeat(2,1fr); }
+  .testi-strip        { grid-template-columns: 1fr; }
+  .hero h1            { font-size: clamp(1.6rem, 5vw, 2.4rem); }
+  .hero-sub           { font-size: 15px; }
+}
+@media(max-width:600px) {
+  .hero               { padding: 48px 0 40px; }
+  .hero-inner         { padding: 0 16px; }
+  .how-grid           { grid-template-columns: 1fr; gap: 28px; }
+  .hero-stats         { flex-wrap: wrap; gap: 16px; }
+  .hero-btns          { flex-direction: column; }
+  .hero-btns .btn     { width: 100%; justify-content: center; }
+  .cta-banner         { padding: 32px 20px; }
+  .section-hdr h2     { font-size: 1.4rem; }
+}
+@media(max-width:480px) {
+  .hero-stat-val      { font-size: 1.4rem; }
+  .hero-stats         { gap: 12px 20px; }
+  .how-step           { padding: 22px 16px; }
+  .comm-table-wrap td,
+  .comm-table-wrap th { padding: 10px 12px; font-size: 13px; }
+  .testi-card         { padding: 18px 16px; }
+}
 </style>
 </head>
 <body>

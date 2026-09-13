@@ -46,7 +46,50 @@
 .rank-name { flex: 1; font-weight: 700; font-size: 14px; }
 .rank-sales { font-size: 13px; color: var(--muted); }
 .rank-rev { font-weight: 800; color: var(--orange); font-size: 14px; }
-@media(max-width:900px){ .admin-layout { grid-template-columns: 1fr; } .sidebar { display: none; } .detail-grid { grid-template-columns: 1fr; } }
+/* MOBILE FIXES */
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+
+/* Mobile top nav replaces sidebar */
+.mobile-admin-tabs {
+  display: none;
+  overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
+  padding: 10px 16px; background: white;
+  border-bottom: 1px solid var(--border); gap: 6px;
+}
+.mobile-admin-tabs::-webkit-scrollbar { display: none; }
+.mob-tab-btn {
+  flex-shrink: 0; padding: 7px 14px; border-radius: 100px;
+  border: 1.5px solid var(--border); background: white;
+  font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
+  white-space: nowrap; transition: all .2s;
+}
+.mob-tab-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
+
+@media(max-width:900px) {
+  .admin-layout         { grid-template-columns: 1fr; }
+  .sidebar              { display: none; }
+  .mobile-admin-tabs    { display: flex; }
+  .admin-main           { padding: 16px; }
+  .detail-grid          { grid-template-columns: 1fr; }
+  .filter-row           { flex-wrap: wrap; }
+  .search-box           { width: 100%; max-width: 100%; }
+  .action-bar           { flex-wrap: wrap; }
+  .action-bar .btn      { flex: 1; min-width: 120px; justify-content: center; }
+  th.hide-mobile, td.hide-mobile { display: none; }
+}
+@media(max-width:600px) {
+  .stat-grid            { grid-template-columns: 1fr 1fr; }
+  .page-hdr             { flex-direction: column; align-items: flex-start; }
+  .rank-row             { gap: 8px; padding: 11px 12px; }
+  .rank-name            { font-size: 13px; }
+  table                 { font-size: 13px; }
+  th, td                { padding: 10px 10px; }
+}
+@media(max-width:400px) {
+  .stat-grid            { grid-template-columns: 1fr; }
+  .filter-pill          { font-size: 12px; padding: 5px 12px; }
+}
 </style>
 </head>
 <body>
@@ -81,6 +124,15 @@
     <button class="btn-ghost" style="color:rgba(255,255,255,.5);" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
   </div>
 </nav>
+
+<!-- Mobile tab bar (replaces sidebar on small screens) -->
+<div class="mobile-admin-tabs" id="mobileAdminTabs">
+  <button class="mob-tab-btn active" onclick="showTab('applications');setMobTab(this)">Applications</button>
+  <button class="mob-tab-btn" onclick="showTab('agents');setMobTab(this)">Agents</button>
+  <button class="mob-tab-btn" onclick="showTab('leads');setMobTab(this)">Leads</button>
+  <button class="mob-tab-btn" onclick="showTab('sales');setMobTab(this)">Sales</button>
+  <button class="mob-tab-btn" onclick="showTab('leaderboard');setMobTab(this)">Leaderboard</button>
+</div>
 
 <div class="admin-layout">
   <!-- Sidebar -->
@@ -510,6 +562,11 @@ function renderLeaderboard() {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
+function setMobTab(btn) {
+  document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 function showTab(name) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');

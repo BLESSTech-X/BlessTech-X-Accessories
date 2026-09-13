@@ -21,7 +21,21 @@
 .review-row:last-child { border-bottom: none; }
 .review-lbl  { font-weight: 600; min-width: 140px; color: var(--muted); flex-shrink: 0; }
 .review-val  { color: var(--text); }
-@media(max-width:580px){ .form-card{ padding: 24px 18px; } }
+/* MOBILE FIXES */
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+@media(max-width:580px) {
+  .form-card    { padding: 20px 16px; }
+  .apply-wrap   { padding: 20px 16px 80px; }
+  .steps        { gap: 0; }
+  .step-label   { display: none; }  /* hide text labels, keep circles */
+  .step-line    { min-width: 14px; }
+  .step-nav     { flex-direction: column-reverse; gap: 10px; }
+  .step-nav .btn { width: 100%; justify-content: center; }
+}
+@media(max-width:400px) {
+  .step-num     { width: 26px; height: 26px; font-size: 12px; }
+}
 </style>
 </head>
 <body>

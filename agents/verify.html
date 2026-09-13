@@ -20,6 +20,26 @@
 .verify-lbl  { color: var(--muted); font-weight: 600; }
 .verify-val  { color: var(--text); font-weight: 700; }
 .not-found-card { background: white; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); padding: 40px 32px; }
+
+/* MOBILE FIXES */
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+
+@media(max-width:540px) {
+  .verify-wrap        { margin: 24px auto; padding: 0 14px 60px; }
+  .verify-hdr         { padding: 20px 16px; }
+  .verify-hdr h2      { font-size: 13px; }
+  .verify-badge       { padding: 10px 14px; }
+  .verify-badge span  { font-size: 13px; }
+  .verify-body        { padding: 18px 16px; }
+  .verify-row         { font-size: 13px; padding: 9px 0; flex-direction: column; gap: 2px; }
+  .verify-lbl         { font-size: 11px; text-transform: uppercase; letter-spacing: .3px; }
+  .not-found-card     { padding: 28px 18px; }
+}
+@media(max-width:380px) {
+  .verify-badge i     { font-size: 1rem; }
+  .verify-badge span  { font-size: 12px; }
+}
 </style>
 </head>
 <body>
