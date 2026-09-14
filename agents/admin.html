@@ -85,6 +85,9 @@ html, body { overflow-x: hidden; }
   .rank-name            { font-size: 13px; }
   table                 { font-size: 13px; }
   th, td                { padding: 10px 10px; }
+  /* Add sale form — stack to single column on mobile */
+  #addSaleForm > div[style*="grid"] { grid-template-columns: 1fr !important; }
+  #agentDetailGrid { grid-template-columns: 1fr !important; }
 }
 @media(max-width:400px) {
   .stat-grid            { grid-template-columns: 1fr; }
@@ -201,10 +204,44 @@ html, body { overflow-x: hidden; }
 
     <!-- AGENTS TAB -->
     <div class="tab-pane" id="tab-agents">
-      <div class="page-hdr"><h2>Active Agents</h2></div>
+      <div class="page-hdr">
+        <h2>Agents</h2>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span id="agentCount" style="font-size:13px;color:var(--muted);"></span>
+          <div style="display:flex;gap:6px;">
+            <button class="filter-pill active" data-af="all"     onclick="setAgentFilter('all',this)">All</button>
+            <button class="filter-pill"         data-af="active"  onclick="setAgentFilter('active',this)">Active</button>
+            <button class="filter-pill"         data-af="inactive" onclick="setAgentFilter('inactive',this)">Inactive</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENT DETAIL PANEL (expands when agent row is clicked) -->
+      <div id="agentDetailPanel" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div id="agentDetailName" style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;"></div>
+            <div id="agentDetailMeta" style="font-size:13px;color:var(--muted);margin-top:2px;"></div>
+          </div>
+          <button class="btn-ghost" onclick="closeAgentDetail()"><i class="fas fa-xmark"></i> Close</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;" id="agentDetailGrid"></div>
+        <div style="background:var(--light);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Referral Link</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <code id="agentDetailRef" style="font-size:13px;flex:1;word-break:break-all;"></code>
+            <button class="btn btn-outline btn-sm" onclick="copyAgentRef()"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;" id="agentDetailActions"></div>
+      </div>
+
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Agent ID</th><th>Code</th><th>Name</th><th>Location</th><th>Referral Link</th><th>Status</th><th>Joined</th></tr></thead>
+          <thead><tr>
+            <th>Agent ID</th><th>Code</th><th>Name</th><th>Location</th>
+            <th>Sales</th><th>Commission</th><th>Status</th><th>Joined</th>
+          </tr></thead>
           <tbody id="agentTable"></tbody>
         </table>
       </div>
@@ -225,11 +262,80 @@ html, body { overflow-x: hidden; }
     <div class="tab-pane" id="tab-sales">
       <div class="page-hdr">
         <h2>Sales</h2>
-        <div id="totalSalesVal" style="font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--orange);font-weight:800;"></div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div id="totalSalesVal" style="font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--orange);font-weight:800;"></div>
+          <button class="btn btn-primary btn-sm" onclick="openAddSale()">
+            <i class="fas fa-plus"></i> Record Sale
+          </button>
+        </div>
       </div>
+
+      <!-- ADD SALE INLINE FORM -->
+      <div id="addSaleForm" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <h3 style="font-size:1rem;">Record a New Sale</h3>
+          <button class="btn-ghost" onclick="closeAddSale()"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="field">
+            <label class="label">Agent Code <span class="req">*</span></label>
+            <select class="select" id="sale-agent">
+              <option value="">Select agent…</option>
+            </select>
+            <div class="err-msg" id="sale-agent-err">Required.</div>
+          </div>
+          <div class="field">
+            <label class="label">Product <span class="req">*</span></label>
+            <select class="select" id="sale-product">
+              <option value="">Select product…</option>
+            </select>
+            <div class="err-msg" id="sale-product-err">Required.</div>
+          </div>
+          <div class="field">
+            <label class="label">Sale Amount (ZMW) <span class="req">*</span></label>
+            <input type="number" class="input" id="sale-amount" placeholder="e.g. 150" min="1">
+            <div class="err-msg" id="sale-amount-err">Required.</div>
+          </div>
+          <div class="field">
+            <label class="label">Commission (ZMW) <span class="req">*</span></label>
+            <input type="number" class="input" id="sale-commission" placeholder="Auto-filled when product selected" min="0"
+              style="background:#fffbf8;">
+            <div class="hint">Auto-calculated. Edit only if different.</div>
+          </div>
+          <div class="field">
+            <label class="label">Status</label>
+            <select class="select" id="sale-status">
+              <option value="confirmed">✅ Confirmed</option>
+              <option value="pending">🟡 Pending</option>
+              <option value="paid">💰 Paid</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label">Notes (optional)</label>
+            <input type="text" class="input" id="sale-notes" placeholder="Any extra details…">
+          </div>
+        </div>
+        <div id="addSaleError" class="alert alert-error" style="display:none;">
+          <i class="fas fa-circle-exclamation"></i><span id="addSaleErrText"></span>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="closeAddSale()">Cancel</button>
+          <button class="btn btn-primary" id="saveSaleBtn" onclick="saveSale()">
+            <i class="fas fa-check"></i> Save Sale
+          </button>
+          <button class="btn btn-green btn-sm" id="saveSaleWaBtn" onclick="saveSale(true)" title="Save and notify agent on WhatsApp">
+            <i class="fab fa-whatsapp"></i> Save &amp; Notify Agent
+          </button>
+        </div>
+      </div>
+
+      <!-- SALES TABLE -->
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Sale ID</th><th>Agent</th><th>Product</th><th>Amount</th><th>Commission</th><th>Status</th><th>Date</th></tr></thead>
+          <thead><tr>
+            <th>Sale ID</th><th>Agent</th><th>Product</th>
+            <th>Amount</th><th>Commission</th><th>Status</th><th>Date</th><th>Actions</th>
+          </tr></thead>
           <tbody id="salesTable"></tbody>
         </table>
       </div>
@@ -485,19 +591,120 @@ async function rejectApp() {
 }
 
 // ── AGENTS TABLE ──────────────────────────────────────────────────────────────
+// Agent filter
+let agentFilter = 'all';
+let selectedAgent = null;
+
+function setAgentFilter(f, btn) {
+  agentFilter = f;
+  document.querySelectorAll('[data-af]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAgents();
+}
+
 function renderAgents() {
+  const list = allAgents.filter(a => {
+    if (agentFilter === 'active')   return a.active;
+    if (agentFilter === 'inactive') return !a.active;
+    return true;
+  });
+  const countEl = document.getElementById('agentCount');
+  if (countEl) countEl.textContent = list.length + ' agent' + (list.length !== 1 ? 's' : '');
+
   const tbody = document.getElementById('agentTable');
-  if (!allAgents.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">No agents yet.</td></tr>'; return; }
-  tbody.innerHTML = allAgents.map(a => `
-    <tr>
-      <td><code style="color:var(--orange);">${esc(a.agent_id)}</code></td>
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No agents found.</td></tr>';
+    return;
+  }
+
+  // Calculate sales stats per agent
+  const agentStats = {};
+  allSales.forEach(s => {
+    if (!agentStats[s.agent_code]) agentStats[s.agent_code] = { count:0, commission:0 };
+    agentStats[s.agent_code].count++;
+    agentStats[s.agent_code].commission += (s.commission || 0);
+  });
+
+  tbody.innerHTML = list.map(a => {
+    const stats = agentStats[a.agent_code] || { count:0, commission:0 };
+    return `<tr onclick="openAgentDetail('${esc(a.agent_code)}')" style="cursor:pointer;">
+      <td><code style="color:var(--orange);font-size:13px;">${esc(a.agent_id)}</code></td>
       <td><strong>${esc(a.agent_code)}</strong></td>
       <td>${esc(a.full_name)}</td>
       <td style="color:var(--muted);font-size:13px;">${esc(a.location||'—')}</td>
-      <td><button class="btn-ghost btn-sm" onclick="copyToClipboard('${esc(a.referral_url)}');toast('Copied!')"><i class="fas fa-link"></i> Copy</button></td>
+      <td style="font-weight:700;">${stats.count}</td>
+      <td style="color:#16a34a;font-weight:700;">${stats.commission ? fmtMoney(stats.commission) : '—'}</td>
       <td><span class="${a.active ? 'pill-approved' : 'pill-rejected'}">${a.active ? 'Active' : 'Inactive'}</span></td>
       <td style="color:var(--muted);font-size:12px;">${fmtDate(a.joined_at)}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
+}
+
+function openAgentDetail(code) {
+  selectedAgent = allAgents.find(a => a.agent_code === code);
+  if (!selectedAgent) return;
+  const a = selectedAgent;
+  const panel = document.getElementById('agentDetailPanel');
+
+  document.getElementById('agentDetailName').textContent = a.full_name;
+  document.getElementById('agentDetailMeta').textContent = a.agent_id + ' · ' + a.agent_code + ' · Joined ' + fmtDate(a.joined_at);
+
+  const stats = (() => {
+    const s = allSales.filter(x => x.agent_code === a.agent_code);
+    return { count: s.length, revenue: s.reduce((t,x)=>t+(x.amount||0),0), commission: s.reduce((t,x)=>t+(x.commission||0),0) };
+  })();
+
+  document.getElementById('agentDetailGrid').innerHTML = [
+    ['Phone',      a.phone],
+    ['WhatsApp',   a.whatsapp],
+    ['Location',   a.location || '—'],
+    ['Total Sales',stats.count + ' sale' + (stats.count!==1?'s':'')],
+    ['Revenue',    stats.revenue ? fmtMoney(stats.revenue) : '—'],
+    ['Commission', stats.commission ? fmtMoney(stats.commission) : '—'],
+  ].map(([l,v]) => `<div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">${esc(l)}</div><div style="font-size:14px;font-weight:600;">${esc(v)}</div></div>`).join('');
+
+  document.getElementById('agentDetailRef').textContent = a.referral_url || '';
+
+  const actions = document.getElementById('agentDetailActions');
+  actions.innerHTML = `
+    <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Just checking in from PhoneYa2-ZM. How are your sales going? Remember your referral link: ' + (a.referral_url||''))}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Message Agent</a>
+    <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="recordSaleForAgent('${esc(a.agent_code)}')"><i class="fas fa-plus"></i> Record Sale</button>
+    ${a.active
+      ? `<button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="toggleAgent('${esc(a.agent_code)}',false)"><i class="fas fa-ban"></i> Deactivate</button>`
+      : `<button class="btn btn-sm" style="background:rgba(22,163,74,.1);color:#15803d;border:1px solid rgba(22,163,74,.2);" onclick="toggleAgent('${esc(a.agent_code)}',true)"><i class="fas fa-check"></i> Reactivate</button>`
+    }`;
+
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeAgentDetail() {
+  document.getElementById('agentDetailPanel').style.display = 'none';
+  selectedAgent = null;
+}
+
+function copyAgentRef() {
+  if (selectedAgent) { copyToClipboard(selectedAgent.referral_url || ''); toast('✅ Referral link copied!'); }
+}
+
+async function toggleAgent(code, activate) {
+  if (!confirm((activate ? 'Reactivate' : 'Deactivate') + ' agent ' + code + '?')) return;
+  try {
+    await db.update('agents', `agent_code=eq.${code}`, { active: activate });
+    toast(activate ? '✅ Agent reactivated' : '⚠️  Agent deactivated');
+    await loadAll();
+    closeAgentDetail();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function recordSaleForAgent(code) {
+  // Close agent panel, open sales tab with agent pre-selected
+  closeAgentDetail();
+  showTab('sales');
+  document.querySelectorAll('.mob-tab-btn').forEach(b => {
+    if (b.textContent.trim() === 'Sales') { b.classList.add('active'); } else { b.classList.remove('active'); }
+  });
+  openAddSale(code);
 }
 
 // ── LEADS TABLE ───────────────────────────────────────────────────────────────
@@ -518,21 +725,180 @@ function renderLeads() {
 }
 
 // ── SALES TABLE ───────────────────────────────────────────────────────────────
+// ── ADD SALE FORM LOGIC ──────────────────────────────────────────────────────
+function openAddSale(preselectedCode) {
+  const form = document.getElementById('addSaleForm');
+  form.style.display = 'block';
+  document.getElementById('addSaleError').style.display = 'none';
+
+  // Populate agent dropdown from loaded agents
+  const agentSel = document.getElementById('sale-agent');
+  agentSel.innerHTML = '<option value="">Select agent…</option>' +
+    allAgents.filter(a => a.active).map(a =>
+      `<option value="${esc(a.agent_code)}" ${a.agent_code === preselectedCode ? 'selected' : ''}>${esc(a.full_name)} (${esc(a.agent_code)})</option>`
+    ).join('');
+
+  // Populate product dropdown from CONFIG
+  const prodSel = document.getElementById('sale-product');
+  prodSel.innerHTML = '<option value="">Select product…</option>' +
+    CONFIG.products.map(p =>
+      `<option value="${esc(p.name)}" data-price="${p.price}" data-comm="${p.commission}">${esc(p.name)} — ${fmtMoney(p.price)}</option>`
+    ).join('');
+
+  // Auto-fill commission when product changes
+  prodSel.onchange = () => {
+    const opt = prodSel.options[prodSel.selectedIndex];
+    if (opt && opt.dataset.price) {
+      document.getElementById('sale-amount').value     = opt.dataset.price;
+      document.getElementById('sale-commission').value = opt.dataset.comm;
+    }
+  };
+
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeAddSale() {
+  document.getElementById('addSaleForm').style.display = 'none';
+  // Reset all fields
+  ['sale-agent','sale-product','sale-status'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.selectedIndex = 0;
+  });
+  ['sale-amount','sale-commission','sale-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+async function saveSale(notifyAgent) {
+  const agentCode    = document.getElementById('sale-agent').value;
+  const productName  = document.getElementById('sale-product').value;
+  const amount       = parseInt(document.getElementById('sale-amount').value);
+  const commission   = parseInt(document.getElementById('sale-commission').value);
+  const status       = document.getElementById('sale-status').value;
+  const notes        = document.getElementById('sale-notes').value.trim();
+
+  let ok = true;
+  [['sale-agent-err',   !agentCode],
+   ['sale-product-err', !productName],
+   ['sale-amount-err',  !amount || isNaN(amount)]].forEach(([eid, bad]) => {
+    document.getElementById(eid).classList.toggle('show', bad);
+    if (bad) ok = false;
+  });
+  if (!ok) return;
+
+  const btn    = document.getElementById('saveSaleBtn');
+  const btnWa  = document.getElementById('saveSaleWaBtn');
+  const errDiv = document.getElementById('addSaleError');
+  errDiv.style.display = 'none';
+  setLoading(btn, true, 'Saving…');
+  if (btnWa) btnWa.disabled = true;
+
+  try {
+    const n      = await db.nextId('sales');
+    const saleId = makeSaleId(n);
+
+    await db.insert('sales', {
+      sale_id:    saleId,
+      agent_code: agentCode,
+      product:    productName,
+      amount:     amount,
+      commission: commission || 0,
+      status:     status,
+      notes:      notes || null,
+      confirmed_at: status === 'confirmed' || status === 'paid' ? new Date().toISOString() : null,
+    });
+
+    toast('✅ Sale ' + saleId + ' recorded');
+
+    // Notify agent on WhatsApp if requested
+    if (notifyAgent) {
+      const agent = allAgents.find(a => a.agent_code === agentCode);
+      if (agent) {
+        const msg = `Hi ${agent.full_name.split(' ')[0]}! 🎉
+
+Your sale has been confirmed:
+
+*Product:* ${productName}
+*Sale Amount:* ${fmtMoney(amount)}
+*Your Commission:* +${fmtMoney(commission || 0)}
+*Status:* ${status}
+*Sale ID:* ${saleId}
+
+Check your Agent Dashboard for full details.
+
+Thank you — keep selling! 🚀`;
+        window.open(waLink(msg), '_blank');
+      }
+    }
+
+    closeAddSale();
+    await loadAll();
+  } catch(e) {
+    document.getElementById('addSaleErrText').textContent = e.message || 'Could not save sale.';
+    errDiv.style.display = 'flex';
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save Sale');
+    if (btnWa) btnWa.disabled = false;
+  }
+}
+
+// ── RENDER SALES ─────────────────────────────────────────────────────────────
 function renderSales() {
   const tbody = document.getElementById('salesTable');
   const total = allSales.reduce((s,x) => s + (x.amount||0), 0);
-  document.getElementById('totalSalesVal').textContent = total ? `Total: ${fmtMoney(total)}` : '';
-  if (!allSales.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">No sales yet.</td></tr>'; return; }
-  tbody.innerHTML = allSales.map(s => `
-    <tr>
+  const totalComm = allSales.reduce((s,x) => s + (x.commission||0), 0);
+  const valEl = document.getElementById('totalSalesVal');
+  if (valEl) valEl.textContent = total ? `Revenue: ${fmtMoney(total)} · Commission: ${fmtMoney(totalComm)}` : '';
+  if (!allSales.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No sales yet. Click "Record Sale" to add one.</td></tr>'; return; }
+  tbody.innerHTML = allSales.map(s => {
+    const statusClass = s.status === 'confirmed' || s.status === 'paid' ? 'approved' : 'pending';
+    const agent = allAgents.find(a => a.agent_code === s.agent_code);
+    return `<tr>
       <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
-      <td><strong>${esc(s.agent_code)}</strong></td>
-      <td>${esc(s.product)}</td>
+      <td>
+        <strong>${esc(s.agent_code)}</strong>
+        ${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}
+      </td>
+      <td style="font-size:13px;">${esc(s.product)}</td>
       <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
-      <td style="color:#16a34a;font-weight:700;">+${fmtMoney(s.commission)}</td>
-      <td><span class="pill-${s.status === 'confirmed' ? 'approved' : s.status === 'paid' ? 'approved' : 'pending'}">${esc(s.status)}</span></td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td>
+        <select class="select" style="font-size:12px;padding:4px 8px;border-radius:6px;width:auto;min-width:110px;"
+                onchange="updateSaleStatus('${esc(s.id)}','${esc(s.agent_code)}',this.value,'${esc(s.product)}',${s.commission||0})">
+          <option value="pending"   ${s.status==='pending'   ?'selected':''}>🟡 Pending</option>
+          <option value="confirmed" ${s.status==='confirmed' ?'selected':''}>✅ Confirmed</option>
+          <option value="paid"      ${s.status==='paid'      ?'selected':''}>💰 Paid</option>
+        </select>
+      </td>
       <td style="color:var(--muted);font-size:12px;">${fmtDate(s.created_at)}</td>
-    </tr>`).join('');
+      <td>
+        <div style="display:flex;gap:5px;">
+          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' (' + s.product + ') has been ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. Thank you! 🎉')}" target="_blank" class="btn-ghost btn-sm" title="Notify agent"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
+          <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="deleteSale('${esc(s.id)}','${esc(s.sale_id)}')" title="Delete sale"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateSaleStatus(id, agentCode, status, product, commission) {
+  try {
+    const updates = { status };
+    if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
+    await db.update('sales', \`id=eq.\${id}\`, updates);
+    toast('✅ Status updated to ' + status);
+    await loadAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function deleteSale(id, saleId) {
+  if (!confirm('Delete sale ' + saleId + '? This cannot be undone.')) return;
+  try {
+    await db.query('sales', { method: 'DELETE', filter: \`id=eq.\${id}\` });
+    toast('🗑️  Sale deleted');
+    await loadAll();
+  } catch(e) { toast('Error: ' + e.message); }
 }
 
 // ── LEADERBOARD ───────────────────────────────────────────────────────────────
