@@ -85,7 +85,6 @@ html, body { overflow-x: hidden; }
   .rank-name            { font-size: 13px; }
   table                 { font-size: 13px; }
   th, td                { padding: 10px 10px; }
-  /* Add sale form — stack to single column on mobile */
   #addSaleForm > div[style*="grid"] { grid-template-columns: 1fr !important; }
   #agentDetailGrid { grid-template-columns: 1fr !important; }
 }
@@ -130,11 +129,11 @@ html, body { overflow-x: hidden; }
 
 <!-- Mobile tab bar (replaces sidebar on small screens) -->
 <div class="mobile-admin-tabs" id="mobileAdminTabs">
-  <button class="mob-tab-btn active" onclick="showTab('applications');setMobTab(this)">Applications</button>
-  <button class="mob-tab-btn" onclick="showTab('agents');setMobTab(this)">Agents</button>
-  <button class="mob-tab-btn" onclick="showTab('leads');setMobTab(this)">Leads</button>
-  <button class="mob-tab-btn" onclick="showTab('sales');setMobTab(this)">Sales</button>
-  <button class="mob-tab-btn" onclick="showTab('leaderboard');setMobTab(this)">Leaderboard</button>
+  <button class="mob-tab-btn active" onclick="showTab('applications', this)">Applications</button>
+  <button class="mob-tab-btn" onclick="showTab('agents', this)">Agents</button>
+  <button class="mob-tab-btn" onclick="showTab('leads', this)">Leads</button>
+  <button class="mob-tab-btn" onclick="showTab('sales', this)">Sales</button>
+  <button class="mob-tab-btn" onclick="showTab('leaderboard', this)">Leaderboard</button>
 </div>
 
 <div class="admin-layout">
@@ -144,11 +143,11 @@ html, body { overflow-x: hidden; }
       <div>PhoneYa2<span>-ZM</span></div>
       <small>Agent Network</small>
     </div>
-    <div class="nav-item active" onclick="showTab('applications')"><i class="fas fa-file-lines"></i> Applications</div>
-    <div class="nav-item" onclick="showTab('agents')"><i class="fas fa-users"></i> Active Agents</div>
-    <div class="nav-item" onclick="showTab('leads')"><i class="fas fa-bullseye"></i> Leads</div>
-    <div class="nav-item" onclick="showTab('sales')"><i class="fas fa-chart-line"></i> Sales</div>
-    <div class="nav-item" onclick="showTab('leaderboard')"><i class="fas fa-trophy"></i> Leaderboard</div>
+    <div class="nav-item active" onclick="showTab('applications', this)"><i class="fas fa-file-lines"></i> Applications</div>
+    <div class="nav-item" onclick="showTab('agents', this)"><i class="fas fa-users"></i> Active Agents</div>
+    <div class="nav-item" onclick="showTab('leads', this)"><i class="fas fa-bullseye"></i> Leads</div>
+    <div class="nav-item" onclick="showTab('sales', this)"><i class="fas fa-chart-line"></i> Sales</div>
+    <div class="nav-item" onclick="showTab('leaderboard', this)"><i class="fas fa-trophy"></i> Leaderboard</div>
     <div style="position:absolute;bottom:20px;left:0;right:0;padding:0 20px;">
       <a href="index.html" class="btn-ghost" style="width:100%;justify-content:center;color:rgba(255,255,255,.4);"><i class="fas fa-arrow-left"></i> Public Site</a>
     </div>
@@ -548,10 +547,10 @@ async function confirmApprove() {
   document.getElementById('approveError').style.display = 'none';
 
   try {
-    const n         = await db.nextId('applications'); // reuse counter
+    const n         = await db.nextId('applications');
     const agentId   = makeAgentId(n);
     const agentCode = makeAgentCode(n);
-    const refUrl    = `${CONFIG.siteUrl}/?ref=${agentCode}`;
+    const refUrl    = `${CONFIG.agentSiteUrl}/?ref=${agentCode}`;
 
     await db.insert('agents', {
       app_id:       currentApp.app_id,
@@ -591,7 +590,6 @@ async function rejectApp() {
 }
 
 // ── AGENTS TABLE ──────────────────────────────────────────────────────────────
-// Agent filter
 let agentFilter = 'all';
 let selectedAgent = null;
 
@@ -617,7 +615,6 @@ function renderAgents() {
     return;
   }
 
-  // Calculate sales stats per agent
   const agentStats = {};
   allSales.forEach(s => {
     if (!agentStats[s.agent_code]) agentStats[s.agent_code] = { count:0, commission:0 };
@@ -698,20 +695,15 @@ async function toggleAgent(code, activate) {
 }
 
 function recordSaleForAgent(code) {
-  // Close agent panel, open sales tab with agent pre-selected
   closeAgentDetail();
   showTab('sales');
-  document.querySelectorAll('.mob-tab-btn').forEach(b => {
-    if (b.textContent.trim() === 'Sales') { b.classList.add('active'); } else { b.classList.remove('active'); }
-  });
   openAddSale(code);
 }
 
 // ── LEADS TABLE ───────────────────────────────────────────────────────────────
 function renderLeads() {
   const tbody = document.getElementById('leadsTable');
-  const statusColor = { interested:'var(--yellow)', purchased:'#16a34a', lost:'var(--red)', followup:'var(--purple)' };
-  const statusIcon  = { interested:'🟡', purchased:'🟢', lost:'🔴', followup:'🔵' };
+  const statusIcon = { interested:'🟡', purchased:'🟢', lost:'🔴', followup:'🔵' };
   if (!allLeads.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">No leads yet.</td></tr>'; return; }
   tbody.innerHTML = allLeads.map(l => `
     <tr>
@@ -724,28 +716,24 @@ function renderLeads() {
     </tr>`).join('');
 }
 
-// ── SALES TABLE ───────────────────────────────────────────────────────────────
-// ── ADD SALE FORM LOGIC ──────────────────────────────────────────────────────
+// ── ADD SALE FORM ─────────────────────────────────────────────────────────────
 function openAddSale(preselectedCode) {
   const form = document.getElementById('addSaleForm');
   form.style.display = 'block';
   document.getElementById('addSaleError').style.display = 'none';
 
-  // Populate agent dropdown from loaded agents
   const agentSel = document.getElementById('sale-agent');
   agentSel.innerHTML = '<option value="">Select agent…</option>' +
     allAgents.filter(a => a.active).map(a =>
       `<option value="${esc(a.agent_code)}" ${a.agent_code === preselectedCode ? 'selected' : ''}>${esc(a.full_name)} (${esc(a.agent_code)})</option>`
     ).join('');
 
-  // Populate product dropdown from CONFIG
   const prodSel = document.getElementById('sale-product');
   prodSel.innerHTML = '<option value="">Select product…</option>' +
     CONFIG.products.map(p =>
       `<option value="${esc(p.name)}" data-price="${p.price}" data-comm="${p.commission}">${esc(p.name)} — ${fmtMoney(p.price)}</option>`
     ).join('');
 
-  // Auto-fill commission when product changes
   prodSel.onchange = () => {
     const opt = prodSel.options[prodSel.selectedIndex];
     if (opt && opt.dataset.price) {
@@ -759,7 +747,6 @@ function openAddSale(preselectedCode) {
 
 function closeAddSale() {
   document.getElementById('addSaleForm').style.display = 'none';
-  // Reset all fields
   ['sale-agent','sale-product','sale-status'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.selectedIndex = 0;
@@ -811,7 +798,6 @@ async function saveSale(notifyAgent) {
 
     toast('✅ Sale ' + saleId + ' recorded');
 
-    // Notify agent on WhatsApp if requested
     if (notifyAgent) {
       const agent = allAgents.find(a => a.agent_code === agentCode);
       if (agent) {
@@ -852,7 +838,6 @@ function renderSales() {
   if (valEl) valEl.textContent = total ? `Revenue: ${fmtMoney(total)} · Commission: ${fmtMoney(totalComm)}` : '';
   if (!allSales.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No sales yet. Click "Record Sale" to add one.</td></tr>'; return; }
   tbody.innerHTML = allSales.map(s => {
-    const statusClass = s.status === 'confirmed' || s.status === 'paid' ? 'approved' : 'pending';
     const agent = allAgents.find(a => a.agent_code === s.agent_code);
     return `<tr>
       <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
@@ -865,7 +850,7 @@ function renderSales() {
       <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
       <td>
         <select class="select" style="font-size:12px;padding:4px 8px;border-radius:6px;width:auto;min-width:110px;"
-                onchange="updateSaleStatus('${esc(s.id)}','${esc(s.agent_code)}',this.value,'${esc(s.product)}',${s.commission||0})">
+                onchange="updateSaleStatus('${esc(s.id)}', this.value)">
           <option value="pending"   ${s.status==='pending'   ?'selected':''}>🟡 Pending</option>
           <option value="confirmed" ${s.status==='confirmed' ?'selected':''}>✅ Confirmed</option>
           <option value="paid"      ${s.status==='paid'      ?'selected':''}>💰 Paid</option>
@@ -882,11 +867,11 @@ function renderSales() {
   }).join('');
 }
 
-async function updateSaleStatus(id, agentCode, status, product, commission) {
+async function updateSaleStatus(id, status) {
   try {
     const updates = { status };
     if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
-    await db.update('sales', \`id=eq.\${id}\`, updates);
+    await db.update('sales', `id=eq.${id}`, updates);
     toast('✅ Status updated to ' + status);
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
@@ -895,7 +880,7 @@ async function updateSaleStatus(id, agentCode, status, product, commission) {
 async function deleteSale(id, saleId) {
   if (!confirm('Delete sale ' + saleId + '? This cannot be undone.')) return;
   try {
-    await db.query('sales', { method: 'DELETE', filter: \`id=eq.\${id}\` });
+    await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` });
     toast('🗑️  Sale deleted');
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
@@ -904,7 +889,6 @@ async function deleteSale(id, saleId) {
 // ── LEADERBOARD ───────────────────────────────────────────────────────────────
 function renderLeaderboard() {
   const medals = ['🥇','🥈','🥉'];
-  // Aggregate sales per agent
   const byAgent = {};
   allSales.forEach(s => {
     if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales: 0, revenue: 0, commission: 0 };
@@ -928,16 +912,17 @@ function renderLeaderboard() {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-function setMobTab(btn) {
-  document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function showTab(name) {
+function showTab(name, btn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  if (btn) {
+    if (btn.classList.contains('nav-item')) btn.classList.add('active');
+    if (btn.classList.contains('mob-tab-btn')) {
+      document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
 }
 
 // Initial load if already logged in
