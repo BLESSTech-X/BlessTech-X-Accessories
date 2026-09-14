@@ -15,8 +15,8 @@ const CONFIG = {
   brandName:    'PhoneYa2-ZM',
   parentBrand:  'BLESSTech-X',
   waNumber:     '260979603741',
-  siteUrl:      'https://phoneya2.netlify.app',
-  agentSiteUrl: 'https://phoneya2.netlify.app/agents', // subfolder deployment
+  siteUrl:      'https://phoneya2-agents.singbless89.workers.dev',
+  agentSiteUrl: 'https://phoneya2-agents.singbless89.workers.dev', // subfolder deployment
   logoUrl:      'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg',
 
   // Commission rates per product (ZMW)
