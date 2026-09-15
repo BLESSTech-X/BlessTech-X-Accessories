@@ -240,36 +240,10 @@ tbody tr:hover { background: #fffbf8; }
 /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
 @media(max-width:768px) {
   .section { padding: 48px 0; }
-  .nav-link:not(.nav-link-agent):not(.nav-cta) { display: none; }
+  .nav-link { display: none; }
   .hide-mobile { display: none !important; }
 }
 
-/* Agent Login link — always visible on all screen sizes */
-.nav-link-agent {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 5px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255,255,255,.85) !important;
-  transition: background .2s, border-color .2s;
-}
-.nav-link-agent:hover,
-.nav-link-agent.active {
-  background: rgba(255,255,255,.15) !important;
-  border-color: rgba(255,255,255,.3);
-  color: white !important;
-}
-.nav-link-agent i { font-size: 12px; }
-
-@media(max-width:360px) {
-  .nav-link-agent span.nav-agent-text { display: none; }
-  .nav-cta span.nav-apply-text        { display: none; }
-}
 @media(max-width:480px) {
   h1 { font-size: 1.7rem; }
   .btn-lg { font-size: 15px; padding: 14px 24px; }

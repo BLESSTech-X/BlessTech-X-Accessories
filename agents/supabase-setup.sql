@@ -79,18 +79,14 @@ insert into counters (name, value) values
 on conflict (name) do nothing;
 
 -- ── ROW LEVEL SECURITY ───────────────────────────────────────────────────────
+-- Allow anon read/write on all tables (admin auth handled in JS)
+-- For production you'd add proper RLS policies
+
 alter table applications enable row level security;
 alter table agents       enable row level security;
 alter table leads        enable row level security;
 alter table sales        enable row level security;
 alter table counters     enable row level security;
-
--- Drop existing policies first (safe to re-run)
-drop policy if exists "anon_all_applications" on applications;
-drop policy if exists "anon_all_agents"       on agents;
-drop policy if exists "anon_all_leads"        on leads;
-drop policy if exists "anon_all_sales"        on sales;
-drop policy if exists "anon_all_counters"     on counters;
 
 -- Allow full anon access (the anon key is used for all operations)
 -- You should tighten this in production

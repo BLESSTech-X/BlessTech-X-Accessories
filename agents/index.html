@@ -117,6 +117,80 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .comm-table-wrap th { padding: 10px 12px; font-size: 13px; }
   .testi-card         { padding: 18px 16px; }
 }
+
+/* ── AGENT PORTAL SECTION ────────────────────────────────────────────────── */
+.agent-portal-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  max-width: 820px;
+  margin: 0 auto;
+}
+.ap-card {
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: transform .25s, box-shadow .25s;
+}
+.ap-card:hover { transform: translateY(-4px); }
+.ap-card-login {
+  background: linear-gradient(135deg,#1a0840,#2d1a5e);
+  border: 1px solid rgba(139,92,246,.3);
+  box-shadow: 0 8px 32px rgba(139,92,246,.2);
+}
+.ap-card-login:hover { box-shadow: 0 16px 48px rgba(139,92,246,.35); }
+.ap-card-apply {
+  background: linear-gradient(135deg,#1a0800,#3d1500);
+  border: 1px solid rgba(255,96,0,.3);
+  box-shadow: 0 8px 32px rgba(255,96,0,.2);
+}
+.ap-card-apply:hover { box-shadow: 0 16px 48px rgba(255,96,0,.35); }
+.ap-card-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  width: 200px; height: 200px; top: -60px; right: -40px;
+}
+.ap-orb-purple { background: radial-gradient(circle,rgba(139,92,246,.25),transparent 65%); }
+.ap-orb-orange { background: radial-gradient(circle,rgba(255,96,0,.2),transparent 65%); }
+.ap-card-inner { padding: 28px 24px; position: relative; z-index: 1; }
+.ap-emoji  { font-size: 2.2rem; margin-bottom: 10px; }
+.ap-label  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.ap-card-login .ap-label { color: rgba(139,92,246,.8); }
+.ap-card-apply .ap-label { color: rgba(255,150,60,.85); }
+.ap-title  { font-size: 1.3rem; font-weight: 800; color: white; margin-bottom: 10px; line-height: 1.2; }
+.ap-desc   { font-size: 13px; color: rgba(255,255,255,.58); line-height: 1.65; margin-bottom: 20px; }
+.ap-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-weight: 800; font-size: 14px; padding: 13px 20px; border-radius: 10px;
+  text-decoration: none; transition: opacity .2s, transform .15s; margin-bottom: 12px;
+}
+.ap-btn:hover { opacity: .88; transform: translateY(-1px); text-decoration: none; }
+.ap-btn-purple {
+  background: linear-gradient(135deg,#7c3aed,#a855f7);
+  color: white; box-shadow: 0 4px 16px rgba(124,58,237,.4);
+}
+.ap-btn-orange {
+  background: linear-gradient(135deg,#ff6000,#ff9f43);
+  color: white; box-shadow: 0 4px 16px rgba(255,96,0,.4);
+}
+.ap-hint { font-size: 11px; color: rgba(255,255,255,.3); text-align: center; }
+.ap-hint code { background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 4px; color: rgba(255,255,255,.5); font-size: 11px; }
+
+/* Divider between the two cards */
+.ap-divider { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.ap-divider-line { width: 1px; height: 60px; background: rgba(255,255,255,.1); }
+.ap-divider-text { font-size: 11px; font-weight: 800; color: rgba(255,255,255,.25); letter-spacing: 2px; }
+
+@media(max-width:700px) {
+  .agent-portal-wrap { grid-template-columns: 1fr; gap: 16px; }
+  .ap-divider { flex-direction: row; }
+  .ap-divider-line { width: 60px; height: 1px; }
+}
+@media(max-width:480px) {
+  .ap-card-inner { padding: 22px 18px; }
+  .ap-title { font-size: 1.15rem; }
+}
+
 </style>
 </head>
 <body>
@@ -199,6 +273,58 @@ html, body { overflow-x: hidden; max-width: 100%; }
           Sell <strong>10 items/month</strong> and earn <strong>ZMW 200–400</strong> in commission — on top of whatever you already do.
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AGENT LOGIN PORTAL ─────────────────────────────────────────────────── -->
+<section class="section-sm" id="agent-portal" style="background:linear-gradient(135deg,#0a0a1a 0%,#1a1040 100%);padding:48px 0;">
+  <div class="container">
+    <div class="agent-portal-wrap">
+      <!-- Already an agent card -->
+      <div class="ap-card ap-card-login">
+        <div class="ap-card-orb ap-orb-purple"></div>
+        <div class="ap-card-inner">
+          <div class="ap-emoji">🔑</div>
+          <div class="ap-label">Already an Agent?</div>
+          <h3 class="ap-title">Agent Dashboard</h3>
+          <p class="ap-desc">Log in with your Agent Code to view your commission, manage leads, and share your referral link.</p>
+          <a href="agent.html" class="ap-btn ap-btn-purple">
+            <i class="fas fa-right-to-bracket"></i> Open Agent Dashboard
+          </a>
+          <div class="ap-hint">Your code looks like: <code>PY001</code></div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="ap-divider">
+        <div class="ap-divider-line"></div>
+        <div class="ap-divider-text">OR</div>
+        <div class="ap-divider-line"></div>
+      </div>
+
+      <!-- New application card -->
+      <div class="ap-card ap-card-apply">
+        <div class="ap-card-orb ap-orb-orange"></div>
+        <div class="ap-card-inner">
+          <div class="ap-emoji">🚀</div>
+          <div class="ap-label">Not an agent yet?</div>
+          <h3 class="ap-title">Apply in 3 Minutes</h3>
+          <p class="ap-desc">Join the PhoneYa2 agent network. No upfront cost, no stock to hold. Earn commission on every sale.</p>
+          <a href="apply.html" class="ap-btn ap-btn-orange">
+            <i class="fas fa-pen-to-square"></i> Apply Now — It's Free
+          </a>
+          <div class="ap-hint">Approved agents get their ID within 1–3 days</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verify link -->
+    <div style="text-align:center;margin-top:24px;">
+      <a href="verify.html" style="font-size:13px;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;"
+         onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">
+        <i class="fas fa-shield-halved"></i> Verify an agent's ID
+      </a>
     </div>
   </div>
 </section>

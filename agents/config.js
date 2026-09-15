@@ -3,20 +3,21 @@
 // ═══════════════════════════════════════════════════════════════════════
 
 // ── SUPABASE CONFIG ──────────────────────────────────────────────────────────
-const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
-const SB_KEY  = 'sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei';
+// Replace these with your actual Supabase project values
+// Found at: supabase.com → your project → Settings → API
+const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';           // e.g. https://xxxx.supabase.co
+const SB_KEY  = 'sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei';      // long anon/public key
 
 // ── ADMIN CONFIG ─────────────────────────────────────────────────────────────
-// ⚠️ CHANGE THIS to your own strong password before saving!
-const ADMIN_PASSWORD = 'blesstech2026admin';
+window.ADMIN_PASSWORD = 'blesstech2026admin';  // Change this immediately after setup
 
 // ── BUSINESS CONFIG ──────────────────────────────────────────────────────────
 const CONFIG = {
   brandName:    'PhoneYa2-ZM',
   parentBrand:  'BLESSTech-X',
   waNumber:     '260979603741',
-  siteUrl:      'https://phoneya2-agents.singbless89.workers.dev',
-  agentSiteUrl: 'https://phoneya2-agents.singbless89.workers.dev', // subfolder deployment
+  siteUrl:      'https://phoneya2-accessories.vercel.app',
+  agentSiteUrl: 'https://phoneya2-accessories.vercel.app/agents', // or same domain /agents/
   logoUrl:      'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg',
 
   // Commission rates per product (ZMW)
@@ -90,7 +91,9 @@ const db = {
   },
 
   async nextId(counter) {
-    // Fetch current counter, increment by 1, save back, return new value
+    // Increment counter and return new value
+    const rows = await this.query(counter + '_seq', { method: 'POST', body: {}, prefer: 'return=representation' });
+    // Simpler: fetch then update
     const row = await this.getOne('counters', `name=eq.${counter}`);
     const next = (row?.value || 0) + 1;
     await this.update('counters', `name=eq.${counter}`, { value: next });
@@ -207,9 +210,8 @@ function buildNav(active) {
       </a>
       <span class="nav-badge">Agent Network</span>
       <div class="nav-spacer"></div>
-      <a href="index.html"  class="nav-link ${active==='public'?'active':''}">Home</a>
-      <a href="apply.html"  class="nav-link ${active==='apply'?'active':''}">Apply</a>
-      <a href="agent.html"  class="nav-link ${active==='agent'?'active':''}">Agent Login</a>
+      <a href="index.html"  class="nav-link ${active==='public'?'active':''} hide-mobile">Home</a>
+      <a href="apply.html"  class="nav-link ${active==='apply'?'active':''} hide-mobile">Apply</a>
       <a href="apply.html"  class="nav-cta">Apply Now</a>
     </div>
   </nav>`;
