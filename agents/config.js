@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════
 // PhoneYa2 Agent Network — Shared Config & Utilities
+// Tier-based commission system (no products)
 // ═══════════════════════════════════════════════════════════════════════
 
 // ── SUPABASE CONFIG ──────────────────────────────────────────────────────────
@@ -21,45 +22,66 @@ const CONFIG = {
 
   logoUrl:      'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg',
 
-  // Commission rates per category (kept for reference / fallback)
-  commissions: {
-    'Phone Case':       15,
-    'Charger':          20,
-    'Earphones':        25,
-    'Power Bank':       30,
-    'Cable':            10,
-    'Smart Watch':      40,
-    'Refurbished Phone':150,
-    'Other':            15,
-  },
-
-  // Products — percentage commission model
-  // commission_percent = % of sale amount the agent earns
-  // Example: ZMW 400 watch × 10% = ZMW 40 commission
-  products: [
-    { name: 'Clear Slim Case',        price: 85,   commission_percent: 18, category: 'Phone Case' },
-    { name: '20W USB-C Charger',      price: 150,  commission_percent: 13, category: 'Charger' },
-    { name: 'TWS Wireless Earbuds',   price: 380,  commission_percent: 7,  category: 'Earphones' },
-    { name: '10000mAh Power Bank',    price: 420,  commission_percent: 7,  category: 'Power Bank' },
-    { name: 'Smart Watch 10-in-1',    price: 400,  commission_percent: 10, category: 'Smart Watch' },
-    { name: 'USB-C Braided Cable',    price: 65,   commission_percent: 15, category: 'Cable' },
-    { name: 'Shockproof Case',        price: 120,  commission_percent: 13, category: 'Phone Case' },
-    { name: '9H Tempered Glass',      price: 45,   commission_percent: 22, category: 'Phone Case' },
+  // Fallback tiers (used if Supabase fetch fails — should match DB)
+  fallbackTiers: [
+    { min_amount: 1,    max_amount: 100,  percentage: 10 },
+    { min_amount: 101,  max_amount: 500,  percentage: 8  },
+    { min_amount: 501,  max_amount: 1000, percentage: 6  },
+    { min_amount: 1001, max_amount: 5000, percentage: 4  },
+    { min_amount: 5001, max_amount: null, percentage: 3  },
   ],
 };
 
-// ── COMMISSION CALCULATOR ────────────────────────────────────────────────────
-// Commission = unit_price × quantity × commission_percent / 100
-// Rounded to nearest whole ZMW
-function calcCommission(unitPrice, quantity, percent) {
-  const raw = (Number(unitPrice) || 0) * (Number(quantity) || 0) * (Number(percent) || 0) / 100;
-  return Math.round(raw);
+// ── COMMISSION TIERS (loaded from Supabase) ──────────────────────────────────
+// The `commission_tiers` table in Supabase stores:
+//   { id, min_amount, max_amount (nullable), percentage, label, active }
+//
+// This global holds the current tier list — call `loadTiers()` to populate it.
+let COMMISSION_TIERS = [];
+
+// Fetch tiers from Supabase. Call this on every page that needs the calculator.
+async function loadTiers() {
+  try {
+    const rows = await db.getAll('commission_tiers', { filter: 'active=eq.true', order: 'min_amount.asc' });
+    if (rows && rows.length) {
+      COMMISSION_TIERS = rows;
+    } else {
+      COMMISSION_TIERS = CONFIG.fallbackTiers;
+    }
+  } catch (e) {
+    console.warn('Could not load tiers from Supabase — using fallback.', e);
+    COMMISSION_TIERS = CONFIG.fallbackTiers;
+  }
+  return COMMISSION_TIERS;
 }
 
-// Total sale amount = unit_price × quantity
-function calcAmount(unitPrice, quantity) {
-  return (Number(unitPrice) || 0) * (Number(quantity) || 0);
+// ── COMMISSION CALCULATOR ────────────────────────────────────────────────────
+// Given a sale amount (ZMW), find the matching tier and return:
+//   { percentage, commission, tier }
+// Returns { percentage: 0, commission: 0, tier: null } if amount <= 0 or no tier matches.
+function calcCommissionFromAmount(amount) {
+  const amt = Number(amount) || 0;
+  if (amt <= 0 || !COMMISSION_TIERS.length) {
+    return { percentage: 0, commission: 0, tier: null };
+  }
+  // Tiers are sorted by min_amount ascending. Find the first matching range.
+  const tier = COMMISSION_TIERS.find(t => {
+    const min = Number(t.min_amount) || 0;
+    const max = t.max_amount === null || t.max_amount === undefined ? Infinity : Number(t.max_amount);
+    return amt >= min && amt <= max;
+  });
+  if (!tier) return { percentage: 0, commission: 0, tier: null };
+  const pct = Number(tier.percentage) || 0;
+  return {
+    percentage: pct,
+    commission: Math.round(amt * pct / 100),
+    tier,
+  };
 }
+
+// Convenience wrappers
+function getCommissionPercent(amount) { return calcCommissionFromAmount(amount).percentage; }
+function calcCommission(amount)       { return calcCommissionFromAmount(amount).commission; }
 
 // ── SUPABASE API HELPER ──────────────────────────────────────────────────────
 const db = {
@@ -97,6 +119,10 @@ const db = {
     return this.query(table, { method: 'PATCH', filter, body: data, prefer: 'return=representation', select: '*' });
   },
 
+  async remove(table, filter) {
+    return this.query(table, { method: 'DELETE', filter });
+  },
+
   async getOne(table, filter) {
     const rows = await this.query(table, { filter, limit: 1 });
     return rows?.[0] || null;
@@ -106,12 +132,24 @@ const db = {
     return this.query(table, opts);
   },
 
-  // Sequential ID counter — uses only the `counters` table
   async nextId(counter) {
     const row = await this.getOne('counters', `name=eq.${counter}`);
     const next = (row?.value || 0) + 1;
     await this.update('counters', `name=eq.${counter}`, { value: next });
     return next;
+  },
+
+  async logAudit(entity_type, entity_id, action, performed_by, previous_state, new_state, notes) {
+    try {
+      await this.insert('audit_log', {
+        entity_type, entity_id, action, performed_by,
+        previous_state: previous_state ? JSON.stringify(previous_state) : null,
+        new_state:      new_state      ? JSON.stringify(new_state)      : null,
+        notes: notes || null,
+      });
+    } catch (e) {
+      console.warn('Audit log failed:', e);
+    }
   },
 };
 
@@ -214,7 +252,6 @@ function requireAgent() {
 // Desktop: Home | Apply | Agent Login | [Apply Now]
 // Mobile: [Agent Login] [Apply Now]  (two buttons side-by-side)
 function buildNav(active) {
-  // active: 'public' | 'apply' | 'admin' | 'agent'
   return `
   <nav class="navbar">
     <div class="navbar-inner">
@@ -239,14 +276,8 @@ function buildNav(active) {
 }
 
 // ── PDF HELPER — Sales Statement ─────────────────────────────────────────────
-// Requires jsPDF + jspdf-autotable loaded via CDN on the page:
-//   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-//   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-//
-// Usage:
-//   makeSalesStatementPdf({ agentName, agentId, agentCode, period, sales })
-//
-// Each `sales` item should have: { sale_id, created_at, product, quantity, amount, commission, status }
+// Requires jsPDF + jspdf-autotable via CDN.
+// Sales items shape: { sale_id, created_at, customer_name, amount, commission, commission_pct, status }
 function makeSalesStatementPdf(opts = {}) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) {
@@ -259,11 +290,10 @@ function makeSalesStatementPdf(opts = {}) {
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
 
-  // ── Header bar ──
-  doc.setFillColor(10, 10, 26);            // navy
+  // Header bar
+  doc.setFillColor(10, 10, 26);
   doc.rect(0, 0, pageW, 70, 'F');
 
-  // Brand text
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
@@ -271,10 +301,10 @@ function makeSalesStatementPdf(opts = {}) {
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.setTextColor(255, 159, 67);          // orange
+  doc.setTextColor(255, 159, 67);
   doc.text('Agent Network · Sales Statement', 40, 50);
 
-  // ── Statement info ──
+  // Statement info
   let y = 100;
   doc.setTextColor(26, 26, 46);
   doc.setFont('helvetica', 'bold');
@@ -296,13 +326,13 @@ function makeSalesStatementPdf(opts = {}) {
   doc.text(`Generated: ${new Date().toLocaleString('en-ZM')}`, 40, y);
   y += 24;
 
-  // ── Sales table ──
+  // Sales table — no product column anymore
   const rows = sales.map(s => [
     s.sale_id || '—',
     fmtDate(s.created_at),
-    s.product || '—',
-    String(s.quantity || 1),
+    s.customer_name || '—',
     fmtMoney(s.amount || 0),
+    (s.commission_pct != null ? s.commission_pct + '%' : '—'),
     fmtMoney(s.commission || 0),
     (s.status || '—').toString(),
   ]);
@@ -316,25 +346,25 @@ function makeSalesStatementPdf(opts = {}) {
 
   doc.autoTable({
     startY: y,
-    head: [['Sale ID', 'Date', 'Product', 'Qty', 'Amount', 'Commission', 'Status']],
+    head: [['Sale ID', 'Date', 'Customer', 'Amount', 'Rate', 'Commission', 'Status']],
     body: rows.length ? rows : [['—', '—', 'No sales for this period', '—', '—', '—', '—']],
     theme: 'grid',
     styles: { fontSize: 9, cellPadding: 6, textColor: [26, 26, 46] },
     headStyles: { fillColor: [255, 96, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [249, 250, 251] },
     columnStyles: {
-      0: { cellWidth: 70 },
-      1: { cellWidth: 70 },
+      0: { cellWidth: 65 },
+      1: { cellWidth: 65 },
       2: { cellWidth: 'auto' },
-      3: { cellWidth: 35, halign: 'center' },
-      4: { cellWidth: 70, halign: 'right' },
+      3: { cellWidth: 70, halign: 'right' },
+      4: { cellWidth: 45, halign: 'center' },
       5: { cellWidth: 70, halign: 'right' },
       6: { cellWidth: 60, halign: 'center' },
     },
     margin: { left: 40, right: 40 },
   });
 
-  // ── Totals block ──
+  // Totals block
   let ty = doc.lastAutoTable.finalY + 24;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
@@ -352,7 +382,7 @@ function makeSalesStatementPdf(opts = {}) {
   doc.setTextColor(245, 158, 11);
   doc.text(`Pending commission: ${fmtMoney(totals.pending)}`, 40, ty);
 
-  // ── Footer on all pages ──
+  // Footer
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
@@ -364,7 +394,6 @@ function makeSalesStatementPdf(opts = {}) {
     doc.text(`Page ${i} of ${pageCount}`, pageW - 40, pageH - 24, { align: 'right' });
   }
 
-  // ── Save ──
   const filename = `PhoneYa2-Statement-${agentCode || 'All'}-${new Date().toISOString().slice(0,10)}.pdf`;
   doc.save(filename);
 }
