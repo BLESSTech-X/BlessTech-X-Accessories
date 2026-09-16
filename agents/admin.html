@@ -44,10 +44,8 @@
 .rank-name { flex: 1; font-weight: 700; font-size: 14px; }
 .rank-sales { font-size: 13px; color: var(--muted); }
 .rank-rev { font-weight: 800; color: var(--orange); font-size: 14px; }
-
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
-
 .mobile-admin-tabs {
   display: none;
   overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
@@ -63,6 +61,19 @@ html, body { overflow-x: hidden; }
 }
 .mob-tab-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
 .mob-tab-btn .badge-count { margin-left: 5px; background: var(--orange); color: white; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; }
+
+/* Tier editor */
+.tier-row {
+  display: grid;
+  grid-template-columns: 100px 100px 100px 1fr 60px;
+  gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.tier-row input { padding: 8px 10px; font-size: 14px; }
+.tier-row .tier-range-display { font-size: 13px; color: var(--muted); font-family: monospace; }
+@media(max-width:700px) {
+  .tier-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tier-row .tier-range-display { grid-column: 1 / -1; }
+}
 
 @media(max-width:900px) {
   .admin-layout         { grid-template-columns: 1fr; }
@@ -129,6 +140,7 @@ html, body { overflow-x: hidden; }
   <button class="mob-tab-btn" onclick="showTab('sales', this)">Sales</button>
   <button class="mob-tab-btn" onclick="showTab('pending', this)">Pending <span class="badge-count" id="mobPendCount" style="display:none;">0</span></button>
   <button class="mob-tab-btn" onclick="showTab('leaderboard', this)">Leaderboard</button>
+  <button class="mob-tab-btn" onclick="showTab('settings', this)">Settings</button>
 </div>
 
 <div class="admin-layout">
@@ -146,6 +158,7 @@ html, body { overflow-x: hidden; }
       <span class="badge-count" id="sidePendCount" style="display:none;">0</span>
     </div>
     <div class="nav-item" onclick="showTab('leaderboard', this)"><i class="fas fa-trophy"></i> Leaderboard</div>
+    <div class="nav-item" onclick="showTab('settings', this)"><i class="fas fa-gear"></i> Settings</div>
     <div style="position:absolute;bottom:20px;left:0;right:0;padding:0 20px;">
       <a href="index.html" class="btn-ghost" style="width:100%;justify-content:center;color:rgba(255,255,255,.4);"><i class="fas fa-arrow-left"></i> Public Site</a>
     </div>
@@ -276,23 +289,35 @@ html, body { overflow-x: hidden; }
           <button class="btn-ghost" onclick="closeAddSale()"><i class="fas fa-xmark"></i></button>
         </div>
         <div class="sale-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-          <div class="field">
+          <div class="field" style="grid-column:1/-1;">
             <label class="label">Agent Code <span class="req">*</span></label>
             <select class="select" id="sale-agent"><option value="">Select agent…</option></select>
             <div class="err-msg" id="sale-agent-err">Required.</div>
           </div>
           <div class="field">
-            <label class="label">Product <span class="req">*</span></label>
-            <select class="select" id="sale-product"><option value="">Select product…</option></select>
-            <div class="err-msg" id="sale-product-err">Required.</div>
+            <label class="label">Product Sold <span class="req">*</span></label>
+            <input type="text" class="input" id="sale-product" placeholder="e.g. TWS Earbuds">
+          </div>
+          <div class="field">
+            <label class="label">Quantity <span class="req">*</span></label>
+            <input type="number" class="input" id="sale-qty" value="1" min="1">
           </div>
           <div class="field">
             <label class="label">Unit Price (ZMW) <span class="req">*</span></label>
             <input type="number" class="input" id="sale-unit-price" placeholder="e.g. 150" min="1">
           </div>
           <div class="field">
-            <label class="label">Quantity <span class="req">*</span></label>
-            <input type="number" class="input" id="sale-qty" value="1" min="1">
+            <label class="label">Total Amount</label>
+            <input type="text" class="input input-calc" id="sale-amount-calc" readonly value="ZMW 0">
+          </div>
+          <div class="field">
+            <label class="label">Commission %</label>
+            <input type="text" class="input input-calc" id="sale-comm-pct" readonly value="0%">
+            <div class="hint" id="sale-tier-hint">Tier based on total amount.</div>
+          </div>
+          <div class="field">
+            <label class="label">Commission (ZMW)</label>
+            <input type="text" class="input input-calc" id="sale-comm-calc" readonly value="ZMW 0">
           </div>
           <div class="field">
             <label class="label">Customer Name <span class="req">*</span></label>
@@ -301,18 +326,6 @@ html, body { overflow-x: hidden; }
           <div class="field">
             <label class="label">Customer Phone <span class="req">*</span></label>
             <input type="tel" class="input" id="sale-cust-phone" placeholder="+260...">
-          </div>
-          <div class="field">
-            <label class="label">Commission %</label>
-            <input type="number" class="input" id="sale-comm-pct" min="0" max="100" step="0.5" placeholder="Auto-filled">
-          </div>
-          <div class="field">
-            <label class="label">Calculated Commission</label>
-            <input type="text" class="input input-calc" id="sale-comm-calc" readonly value="ZMW 0">
-          </div>
-          <div class="field">
-            <label class="label">Total Sale Amount</label>
-            <input type="text" class="input input-calc" id="sale-amount-calc" readonly value="ZMW 0">
           </div>
           <div class="field">
             <label class="label">Status</label>
@@ -341,7 +354,7 @@ html, body { overflow-x: hidden; }
         <table>
           <thead><tr>
             <th>Sale ID</th><th>Agent</th><th>Product</th><th class="hide-mobile">Qty</th>
-            <th>Amount</th><th>Commission</th><th>Status</th><th class="hide-mobile">Date</th><th>Actions</th>
+            <th>Amount</th><th>Comm.</th><th>Status</th><th class="hide-mobile">Date</th><th>Actions</th>
           </tr></thead>
           <tbody id="salesTable"></tbody>
         </table>
@@ -370,6 +383,34 @@ html, body { overflow-x: hidden; }
       <div class="page-hdr"><h2>Sales Leaderboard</h2></div>
       <div class="card" style="padding:0;overflow:hidden;">
         <div id="leaderboard"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab-pane" id="tab-settings">
+      <div class="page-hdr">
+        <h2>Commission Tiers</h2>
+        <button class="btn btn-primary btn-sm" onclick="addTier()"><i class="fas fa-plus"></i> Add Tier</button>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">
+        The system calculates agent commission from the total sale amount. Enter the range (ZMW) and the percentage. Higher amounts typically earn a lower percentage — but more ZMW overall.
+      </p>
+      <div class="card" style="padding:16px 20px;">
+        <div class="tier-row" style="font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;">
+          <div>Min (ZMW)</div>
+          <div>Max (ZMW)</div>
+          <div>Percent %</div>
+          <div class="hide-mobile">Range preview</div>
+          <div></div>
+        </div>
+        <div id="tierList"></div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="saveTiersBtn" onclick="saveTiers()"><i class="fas fa-check"></i> Save Changes</button>
+        <button class="btn btn-outline" onclick="loadTiersIntoEditor()"><i class="fas fa-undo"></i> Reset</button>
+      </div>
+      <div id="tiersMsg" class="alert alert-success" style="display:none;margin-top:16px;">
+        <i class="fas fa-circle-check"></i><span>Commission tiers saved.</span>
       </div>
     </div>
 
@@ -430,7 +471,7 @@ function doLogin() {
     sessionStorage.setItem('btx_admin', 'yes');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
-    loadAll();
+    initAdmin();
   } else {
     document.getElementById('loginErr').classList.add('show');
   }
@@ -440,11 +481,16 @@ function doLogout() {
   location.reload();
 }
 
+async function initAdmin() {
+  await loadTiers();
+  await loadAll();
+}
+
 (function() {
   if (adminLoggedIn()) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
-    loadAll();
+    initAdmin();
   }
 })();
 
@@ -618,6 +664,7 @@ async function confirmApprove() {
     });
 
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, { status: 'approved' });
+    await db.logAudit('application', currentApp.app_id, 'approved', 'admin', { status: 'pending' }, { status: 'approved' }, 'Agent code: ' + agentCode);
 
     closeModal();
     toast('✅ Agent created: ' + agentCode);
@@ -636,6 +683,7 @@ async function rejectApp() {
   if (!currentApp || !confirm('Reject this application? This cannot be undone.')) return;
   try {
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, { status: 'rejected' });
+    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin', { status: 'pending' }, { status: 'rejected' });
     toast('Application rejected');
     loadAll();
     closeDetail();
@@ -752,6 +800,7 @@ async function toggleAgent(code, activate) {
   if (!confirm((activate ? 'Reactivate' : 'Deactivate') + ' agent ' + code + '?')) return;
   try {
     await db.update('agents', `agent_code=eq.${code}`, { active: activate });
+    await db.logAudit('agent', code, activate ? 'reactivated' : 'deactivated', 'admin', null, { active: activate });
     toast(activate ? '✅ Agent reactivated' : '⚠️  Agent deactivated');
     await loadAll();
     closeAgentDetail();
@@ -807,10 +856,10 @@ function renderSales() {
         <strong>${esc(s.agent_code)}</strong>
         ${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}
       </td>
-      <td style="font-size:13px;">${esc(s.product)}</td>
+      <td style="font-size:13px;">${esc(s.product || '—')}</td>
       <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
       <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
-      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}<div style="font-size:10px;color:var(--muted);font-weight:600;">${s.commission_pct || s.commission_percent || '—'}%</div></td>
       <td>
         <select class="select" style="font-size:12px;padding:4px 8px;border-radius:6px;width:auto;min-width:110px;"
                 onchange="updateSaleStatus('${esc(s.id)}', this.value)">
@@ -822,7 +871,7 @@ function renderSales() {
       <td class="hide-mobile" style="color:var(--muted);font-size:12px;">${fmtDate(s.created_at)}</td>
       <td>
         <div style="display:flex;gap:5px;">
-          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' (' + s.product + ') is ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. Thank you! 🎉')}" target="_blank" class="btn-ghost btn-sm" title="Notify agent"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
+          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' (' + (s.product || 'sale') + ') is ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. Thank you! 🎉')}" target="_blank" class="btn-ghost btn-sm" title="Notify agent"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
           <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="deleteSale('${esc(s.id)}','${esc(s.sale_id)}')" title="Delete"><i class="fas fa-trash"></i></button>
         </div>
       </td>
@@ -835,6 +884,7 @@ async function updateSaleStatus(id, status) {
     const updates = { status };
     if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
     await db.update('sales', `id=eq.${id}`, updates);
+    await db.logAudit('sale', id, 'status_changed', 'admin', null, { status });
     toast('✅ Status updated to ' + status);
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
@@ -861,22 +911,7 @@ function openAddSale(preselectedCode) {
       `<option value="${esc(a.agent_code)}" ${a.agent_code === preselectedCode ? 'selected' : ''}>${esc(a.full_name)} (${esc(a.agent_code)})</option>`
     ).join('');
 
-  const prodSel = document.getElementById('sale-product');
-  prodSel.innerHTML = '<option value="">Select product…</option>' +
-    CONFIG.products.map(p =>
-      `<option value="${esc(p.name)}" data-price="${p.price}" data-pct="${p.commission_percent}">${esc(p.name)} — ${fmtMoney(p.price)}</option>`
-    ).join('');
-
-  prodSel.onchange = () => {
-    const opt = prodSel.options[prodSel.selectedIndex];
-    if (opt && opt.dataset.price) {
-      document.getElementById('sale-unit-price').value = opt.dataset.price;
-      document.getElementById('sale-comm-pct').value   = opt.dataset.pct;
-      recalcSale();
-    }
-  };
-
-  ['sale-unit-price','sale-qty','sale-comm-pct'].forEach(id => {
+  ['sale-unit-price','sale-qty'].forEach(id => {
     document.getElementById(id).oninput = recalcSale;
   });
 
@@ -884,54 +919,66 @@ function openAddSale(preselectedCode) {
 }
 
 function recalcSale() {
-  const unit  = Number(document.getElementById('sale-unit-price').value) || 0;
-  const qty   = Number(document.getElementById('sale-qty').value) || 0;
-  const pct   = Number(document.getElementById('sale-comm-pct').value) || 0;
-  const amount = calcAmount(unit, qty);
-  const comm   = calcCommission(unit, qty, pct);
+  const unit = Number(document.getElementById('sale-unit-price').value) || 0;
+  const qty  = Number(document.getElementById('sale-qty').value) || 0;
+  const amount = unit * qty;
+
+  const { percentage, commission, tier } = calcCommissionFromAmount(amount);
+
   document.getElementById('sale-amount-calc').value = fmtMoney(amount);
-  document.getElementById('sale-comm-calc').value   = fmtMoney(comm);
+  document.getElementById('sale-comm-pct').value    = percentage + '%';
+  document.getElementById('sale-comm-calc').value   = fmtMoney(commission);
+
+  const hintEl = document.getElementById('sale-tier-hint');
+  if (tier) {
+    const maxLabel = tier.max_amount === null || tier.max_amount === undefined ? '+' : '–' + tier.max_amount;
+    hintEl.textContent = `Tier: ZMW ${tier.min_amount}${maxLabel} → ${percentage}%`;
+  } else if (amount > 0) {
+    hintEl.textContent = '⚠️  No matching tier — check your Settings tab.';
+  } else {
+    hintEl.textContent = 'Tier based on total amount.';
+  }
 }
 
 function closeAddSale() {
   document.getElementById('addSaleForm').style.display = 'none';
-  ['sale-agent','sale-product','sale-status'].forEach(id => {
+  ['sale-agent','sale-status'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.selectedIndex = 0;
   });
-  ['sale-unit-price','sale-qty','sale-comm-pct','sale-cust-name','sale-cust-phone','sale-notes'].forEach(id => {
+  ['sale-product','sale-unit-price','sale-qty','sale-cust-name','sale-cust-phone','sale-notes'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
   document.getElementById('sale-qty').value = '1';
   document.getElementById('sale-amount-calc').value = 'ZMW 0';
+  document.getElementById('sale-comm-pct').value = '0%';
   document.getElementById('sale-comm-calc').value = 'ZMW 0';
+  document.getElementById('sale-tier-hint').textContent = 'Tier based on total amount.';
 }
 
 async function saveSale(notifyAgent) {
   const agentCode    = document.getElementById('sale-agent').value;
-  const productName  = document.getElementById('sale-product').value;
-  const unitPrice    = Number(document.getElementById('sale-unit-price').value);
+  const productName  = document.getElementById('sale-product').value.trim();
   const quantity     = Number(document.getElementById('sale-qty').value) || 1;
-  const commissionPct= Number(document.getElementById('sale-comm-pct').value) || 0;
+  const unitPrice    = Number(document.getElementById('sale-unit-price').value);
   const customerName = document.getElementById('sale-cust-name').value.trim();
   const customerPhone= document.getElementById('sale-cust-phone').value.trim();
   const status       = document.getElementById('sale-status').value;
   const notes        = document.getElementById('sale-notes').value.trim();
 
   let ok = true;
-  [['sale-agent-err',   !agentCode],
-   ['sale-product-err', !productName]].forEach(([eid, bad]) => {
-    document.getElementById(eid).classList.toggle('show', bad);
-    if (bad) ok = false;
-  });
-  if (!unitPrice) { toast('⚠️  Unit price required'); ok = false; }
-  if (!customerName) { toast('⚠️  Customer name required'); ok = false; }
-  if (!customerPhone){ toast('⚠️  Customer phone required'); ok = false; }
+  if (!agentCode)      { document.getElementById('sale-agent-err').classList.add('show'); ok = false; }
+  else                 { document.getElementById('sale-agent-err').classList.remove('show'); }
+  if (!productName)    { toast('⚠️  Product name required'); ok = false; }
+  if (!unitPrice)      { toast('⚠️  Unit price required'); ok = false; }
+  if (!customerName)   { toast('⚠️  Customer name required'); ok = false; }
+  if (!customerPhone)  { toast('⚠️  Customer phone required'); ok = false; }
   if (!ok) return;
 
-  const amount     = calcAmount(unitPrice, quantity);
-  const commission = calcCommission(unitPrice, quantity, commissionPct);
+  const amount = unitPrice * quantity;
+  const { percentage, commission, tier } = calcCommissionFromAmount(amount);
+  if (!tier) { toast('⚠️  No commission tier matches this amount'); return; }
 
   const btn    = document.getElementById('saveSaleBtn');
   const btnWa  = document.getElementById('saveSaleWaBtn');
@@ -948,10 +995,10 @@ async function saveSale(notifyAgent) {
       sale_id:            saleId,
       agent_code:         agentCode,
       product:            productName,
-      unit_price:         unitPrice,
       quantity:           quantity,
+      unit_price:         unitPrice,
       amount:             amount,
-      commission_percent: commissionPct,
+      commission_pct:     percentage,
       commission:         commission,
       customer_name:      customerName,
       customer_phone:     customerPhone,
@@ -963,6 +1010,8 @@ async function saveSale(notifyAgent) {
       confirmed_at:       status === 'confirmed' || status === 'paid' ? new Date().toISOString() : null,
     });
 
+    await db.logAudit('sale', saleId, 'created_by_admin', 'admin', null, { amount, commission, status });
+
     toast('✅ Sale ' + saleId + ' recorded');
 
     if (notifyAgent) {
@@ -970,16 +1019,14 @@ async function saveSale(notifyAgent) {
       if (agent) {
         const msg = `Hi ${agent.full_name.split(' ')[0]}! 🎉
 
-Your sale has been confirmed:
+Your sale has been recorded:
 
 *Product:* ${productName}
 *Quantity:* ${quantity}
 *Sale Amount:* ${fmtMoney(amount)}
-*Your Commission:* +${fmtMoney(commission)}
+*Your Commission:* +${fmtMoney(commission)} (${percentage}%)
 *Status:* ${status}
 *Sale ID:* ${saleId}
-
-Check your Agent Dashboard for full details.
 
 Thank you — keep selling! 🚀`;
         window.open(waLink(msg), '_blank');
@@ -1010,10 +1057,10 @@ function renderPending() {
     return `<tr>
       <td><code style="font-size:12px;color:var(--orange);">${esc(s.sale_id)}</code></td>
       <td><strong>${esc(s.agent_code)}</strong>${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}</td>
-      <td style="font-size:13px;">${esc(s.product)}</td>
+      <td style="font-size:13px;">${esc(s.product || '—')}</td>
       <td style="font-weight:700;">${s.quantity || 1}</td>
       <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
-      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}<div style="font-size:10px;color:var(--muted);font-weight:600;">${s.commission_pct || '—'}%</div></td>
       <td class="hide-mobile" style="font-size:12px;">${esc(s.customer_name || '—')}<br><span style="color:var(--muted);">${esc(s.customer_phone || '')}</span></td>
       <td>
         <div style="display:flex;gap:5px;flex-wrap:wrap;">
@@ -1033,6 +1080,7 @@ async function approvePending(id, saleId) {
       confirmed_by: 'admin',
       confirmed_at: new Date().toISOString(),
     });
+    await db.logAudit('sale', saleId, 'approved', 'admin', { status: 'pending' }, { status: 'confirmed' });
     toast('✅ Sale ' + saleId + ' approved');
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
@@ -1060,6 +1108,7 @@ async function confirmRejectSale() {
       rejected_at: new Date().toISOString(),
       rejection_reason: reason,
     });
+    await db.logAudit('sale', currentRejectSaleId, 'rejected', 'admin', null, { reason });
     toast('🚫 Sale rejected');
     closeRejectSale();
     await loadAll();
@@ -1096,13 +1145,13 @@ function renderLeaderboard() {
 function downloadAllSalesPdf() {
   if (!allSales.length) { toast('⚠️  No sales to download'); return; }
   const sales = allSales.map(s => ({
-    sale_id:    s.sale_id,
-    created_at: s.created_at,
-    product:    s.product,
-    quantity:   s.quantity || 1,
-    amount:     s.amount,
-    commission: s.commission,
-    status:     s.status,
+    sale_id:        s.sale_id,
+    created_at:     s.created_at,
+    customer_name:  s.customer_name,
+    amount:         s.amount,
+    commission_pct: s.commission_pct || s.commission_percent,
+    commission:     s.commission,
+    status:         s.status,
   }));
   makeSalesStatementPdf({
     agentName: 'All Agents',
@@ -1116,13 +1165,13 @@ function downloadAgentPdf(agentCode) {
   const agent = allAgents.find(a => a.agent_code === agentCode);
   if (!agent) return;
   const sales = allSales.filter(s => s.agent_code === agentCode).map(s => ({
-    sale_id:    s.sale_id,
-    created_at: s.created_at,
-    product:    s.product,
-    quantity:   s.quantity || 1,
-    amount:     s.amount,
-    commission: s.commission,
-    status:     s.status,
+    sale_id:        s.sale_id,
+    created_at:     s.created_at,
+    customer_name:  s.customer_name,
+    amount:         s.amount,
+    commission_pct: s.commission_pct || s.commission_percent,
+    commission:     s.commission,
+    status:         s.status,
   }));
   if (!sales.length) { toast('⚠️  No sales for this agent'); return; }
   makeSalesStatementPdf({
@@ -1133,6 +1182,100 @@ function downloadAgentPdf(agentCode) {
     sales,
   });
   toast('📄 Statement downloading…');
+}
+
+// ── TIER EDITOR (Settings tab) ────────────────────────────────────────────────
+function loadTiersIntoEditor() {
+  const list = document.getElementById('tierList');
+  const tiers = COMMISSION_TIERS.length ? COMMISSION_TIERS : CONFIG.fallbackTiers;
+  list.innerHTML = tiers
+    .sort((a,b) => Number(a.min_amount) - Number(b.min_amount))
+    .map((t, i) => tierRowHtml(t, i)).join('');
+  updateRangePreviews();
+}
+
+function tierRowHtml(t, i) {
+  return `
+    <div class="tier-row" data-tier-row="${i}">
+      <input type="number" class="input" value="${t.min_amount ?? ''}" data-field="min_amount" min="0">
+      <input type="number" class="input" value="${t.max_amount ?? ''}" data-field="max_amount" placeholder="∞" min="0">
+      <input type="number" class="input" value="${t.percentage ?? ''}" data-field="percentage" min="0" max="100" step="0.5">
+      <div class="tier-range-display" data-preview></div>
+      <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);" onclick="removeTier(this)"><i class="fas fa-trash"></i></button>
+    </div>`;
+}
+
+function addTier() {
+  const list = document.getElementById('tierList');
+  const i = list.children.length;
+  list.insertAdjacentHTML('beforeend', tierRowHtml({ min_amount: '', max_amount: '', percentage: '' }, i));
+}
+
+function removeTier(btn) {
+  const row = btn.closest('.tier-row');
+  if (row) row.remove();
+}
+
+function updateRangePreviews() {
+  document.querySelectorAll('#tierList .tier-row').forEach(row => {
+    const min = row.querySelector('[data-field="min_amount"]').value;
+    const max = row.querySelector('[data-field="max_amount"]').value;
+    const pct = row.querySelector('[data-field="percentage"]').value;
+    const prev = row.querySelector('[data-preview]');
+    if (min || pct) {
+      prev.textContent = `ZMW ${min || 0}${max ? ' – ' + max : '+'} → ${pct || 0}%`;
+    } else {
+      prev.textContent = '';
+    }
+  });
+}
+
+async function saveTiers() {
+  const rows = [...document.querySelectorAll('#tierList .tier-row')];
+  const tiers = [];
+
+  for (const row of rows) {
+    const min  = Number(row.querySelector('[data-field="min_amount"]').value);
+    const maxV = row.querySelector('[data-field="max_amount"]').value;
+    const max  = maxV === '' ? null : Number(maxV);
+    const pct  = Number(row.querySelector('[data-field="percentage"]').value);
+
+    if (!min || !pct) continue; // skip empty rows
+    if (max !== null && max < min) { toast('⚠️  Max cannot be less than Min'); return; }
+    tiers.push({ min_amount: min, max_amount: max, percentage: pct, active: true });
+  }
+
+  if (!tiers.length) { toast('⚠️  No tiers to save'); return; }
+
+  const btn = document.getElementById('saveTiersBtn');
+  setLoading(btn, true, 'Saving…');
+
+  try {
+    // Delete existing tiers, then insert new ones
+    const existing = await db.getAll('commission_tiers');
+    for (const t of existing) {
+      await db.remove('commission_tiers', `id=eq.${t.id}`);
+    }
+    for (const t of tiers) {
+      await db.insert('commission_tiers', {
+        min_amount: t.min_amount,
+        max_amount: t.max_amount,
+        percentage: t.percentage,
+        active:     true,
+      });
+    }
+
+    await db.logAudit('tier', 'all', 'tier_set_updated', 'admin', null, { count: tiers.length });
+
+    await loadTiers();
+    document.getElementById('tiersMsg').style.display = 'flex';
+    toast('✅ Tiers saved');
+    setTimeout(() => document.getElementById('tiersMsg').style.display = 'none', 3000);
+  } catch (e) {
+    toast('Error: ' + e.message);
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save Changes');
+  }
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
@@ -1148,10 +1291,17 @@ function showTab(name, btn) {
     if (btn.classList.contains('nav-item')) btn.classList.add('active');
     else if (btn.classList.contains('mob-tab-btn')) btn.classList.add('active');
   }
+
+  if (name === 'settings') loadTiersIntoEditor();
 }
 
-// Initial load if already logged in
-if (adminLoggedIn()) loadAll();
+// Attach preview updates on input
+document.addEventListener('input', e => {
+  if (e.target.matches('#tierList input')) updateRangePreviews();
+});
+
+// Initial load
+if (adminLoggedIn()) initAdmin();
 </script>
 </body>
 </html>
