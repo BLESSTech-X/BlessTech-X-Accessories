@@ -1,0 +1,43 @@
+{
+  "name": "PhoneYa2-ZM Agent Network",
+  "short_name": "PhoneYa2 Agents",
+  "description": "Sales agent dashboard for PhoneYa2-ZM. Track sales, commission, and payouts.",
+  "start_url": "./agent.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a1a",
+  "theme_color": "#ff6000",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Sales",
+      "short_name": "Sales",
+      "url": "./agent.html?tab=sales"
+    },
+    {
+      "name": "Submit Sale",
+      "short_name": "New Sale",
+      "url": "./agent.html?action=submit"
+    }
+  ]
+}
