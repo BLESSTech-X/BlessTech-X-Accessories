@@ -901,7 +901,7 @@ async function updateSaleStatus(id, agentCode, status, product, commission) {
   try {
     const updates = { status };
     if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
-    await db.update('sales', \`id=eq.\${id}\`, updates);
+    await db.update('sales', `id=eq.${id}`, updates);
     toast('✅ Status updated to ' + status);
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
@@ -910,7 +910,7 @@ async function updateSaleStatus(id, agentCode, status, product, commission) {
 async function deleteSale(id, saleId) {
   if (!confirm('Delete sale ' + saleId + '? This cannot be undone.')) return;
   try {
-    await db.query('sales', { method: 'DELETE', filter: \`id=eq.\${id}\` });
+    await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` });
     toast('🗑️  Sale deleted');
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }

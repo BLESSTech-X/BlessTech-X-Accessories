@@ -1,5 +1,19 @@
 # PhoneYa2 Agent Network — Complete Setup Guide
 
+## ⚠️ Changelog — this package
+
+- **Fixed a critical bug in `admin.html`:** `updateSaleStatus()` and `deleteSale()` had
+  escaped backticks (`` \` `` instead of `` ` ``) in their Supabase filter strings. That's
+  invalid JavaScript outside of a string, so it broke the entire inline `<script>` block —
+  meaning **nothing in the admin panel worked** (login, tabs, loading data, approvals,
+  everything), not just those two functions. Verified fixed by parsing the script with Node
+  before and after.
+- **Scope check (Bucket A only):** every file in this package was scanned for payment-gateway
+  code, email-provider integrations, cron/scheduled jobs, server-side functions, and
+  ownership/shareholder/NRC/multi-level-commission content. None found. Everything here runs
+  on plain HTML + vanilla JS + Supabase REST calls, with `wa.me` click-to-chat links only
+  (no WhatsApp Business API).
+
 ## What You Built
 
 A full sales agent management system with 6 pages:
@@ -65,7 +79,7 @@ const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 4. Also change the admin password while you're there:
 
 ```javascript
-const ADMIN_PASSWORD = 'your-new-secure-password';
+window.ADMIN_PASSWORD = 'your-new-secure-password';
 ```
 
 Save the file.
@@ -133,6 +147,13 @@ You have two options:
 1. Go to `verify.html?id=PYA-0001`
 2. The agent's verified details should appear
 
+### Test 5: Sales & leaderboard (admin)
+1. Go to `admin.html` → **Sales** tab → **Record Sale**
+2. Pick an agent and product, save it
+3. Change its status dropdown from Pending → Confirmed — should update without error
+4. Delete the test sale using the trash icon — should remove cleanly
+5. Check the **Leaderboard** tab reflects it
+
 ---
 
 ## STEP 5 — Customise Your Products and Commission Rates
@@ -166,11 +187,13 @@ products: [
 
 When an agent refers a customer and PhoneYa2 confirms the sale:
 
-1. Go to `admin.html` → **Sales** tab
-2. Add the sale manually (or build a button — coming in V2)
-3. The agent's commission automatically shows on their dashboard
+1. Go to `admin.html` → **Sales** tab → **Record Sale**
+2. Pick the agent and product (amount and commission auto-fill from `config.js`, editable)
+3. Save — optionally use **Save & Notify Agent** to open a pre-filled WhatsApp message
+4. Move the status dropdown from Pending → Confirmed → Paid as the sale progresses; the
+   agent's commission on their dashboard updates automatically from this table
 
-In V2 this will be automated — agents will register the lead, you confirm the sale, commission calculates itself.
+This is fully manual by design (Bucket A scope) — no payment API triggers anything.
 
 ---
 
@@ -191,15 +214,26 @@ agents/
 
 ---
 
-## V2 Features (Build Next)
+## Deliberately Excluded From This Build
 
-- [ ] Email notifications on application received / approved
-- [ ] Automatic commission calculation when admin confirms a sale
-- [ ] Agent certificate PDF (downloadable from agent dashboard)
-- [ ] WhatsApp API integration (automatic approval messages)
-- [ ] Monthly leaderboard reset + top agent recognition post
-- [ ] Referral tracking on the PhoneYa2 shop (read `?ref=PY001` from URL)
-- [ ] Agent photo/avatar upload
+These were named in the full ecosystem spec but are out of scope for this build. They're
+noted here as future concepts only — nothing below has been implemented, and the code makes
+no assumptions that it exists:
+
+**Needs an external service or server-side code (V2+):**
+- Automated email notifications
+- WhatsApp Business API / automatic messages (this build only uses `wa.me` click-to-chat links)
+- Payment gateway integration (MTN Money, Airtel Money, Zamtel Money APIs) — payouts are
+  recorded manually by admin, never processed automatically
+- Scheduled/cron jobs (e.g. auto-generated monthly statements)
+- Supabase Edge Functions or any other serverless functions
+
+**Not a software problem — needs a business/legal decision first:**
+- Ownership / shareholding / shareholder tracking
+- Formal legal agreements or share transfer
+- NRC / identity document collection
+- Multi-level commission or pyramid-style referral rewards
+- Team / agent-recruitment commission structures
 
 ---
 
@@ -225,6 +259,7 @@ Then when a customer orders, you can read `localStorage.getItem('py2_ref')` to k
 - For V2, use Supabase Auth for proper admin login
 - The Supabase anon key is public by design — it can only do what your RLS policies allow
 - Never commit your `config.js` with real keys to a public GitHub repo — use Vercel environment variables instead
+- `admin.html` is linked from the public site footer — anyone can find the login screen (it's still password-gated, just discoverable). Consider an unlisted path if that matters to you.
 
 ---
 
@@ -233,7 +268,9 @@ Then when a customer orders, you can read `localStorage.getItem('py2_ref')` to k
 If something breaks, check:
 1. **Supabase SQL ran correctly** — go to Table Editor and confirm you see the tables
 2. **config.js has correct URL and key** — copy again from Supabase Settings → API
-3. **Browser console** (F12 → Console) — error messages are shown there
+3. **Browser console** (F12 → Console) — error messages are shown there. A blank admin panel
+   that never gets past the login screen (or that logs in but shows nothing) usually means a
+   JavaScript syntax error somewhere in the page — check the console for `SyntaxError`.
 4. **RLS policies** — if data won't save, the policies from the SQL setup may not have run
 
 Contact Barack on WhatsApp: +260 979 603 741
