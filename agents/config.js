@@ -3,24 +3,25 @@
 // ═══════════════════════════════════════════════════════════════════════
 
 // ── SUPABASE CONFIG ──────────────────────────────────────────────────────────
-// Replace these with your actual Supabase project values
-// Found at: supabase.com → your project → Settings → API
-const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';           // e.g. https://xxxx.supabase.co
-const SB_KEY  = 'sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei';      // long anon/public key
+const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
+const SB_KEY  = 'sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei';
 
 // ── ADMIN CONFIG ─────────────────────────────────────────────────────────────
-window.ADMIN_PASSWORD = 'blesstech2026admin';  // Change this immediately after setup
+window.ADMIN_PASSWORD = 'blesstech2026admin';  // Change this after setup
 
 // ── BUSINESS CONFIG ──────────────────────────────────────────────────────────
 const CONFIG = {
   brandName:    'PhoneYa2-ZM',
   parentBrand:  'BLESSTech-X',
   waNumber:     '260979603741',
-  siteUrl:      'https://phoneya2-accessories.vercel.app',
-  agentSiteUrl: 'https://phoneya2-accessories.vercel.app/agents', // or same domain /agents/
+
+  // URLs — agent network on Cloudflare, shop on Vercel
+  siteUrl:      'https://phoneya2-accessories.vercel.app',        // shop
+  agentSiteUrl: 'https://phoneya2-agents.singbless89.workers.dev', // agent network
+
   logoUrl:      'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg',
 
-  // Commission rates per product (ZMW)
+  // Commission rates per category (kept for reference / fallback)
   commissions: {
     'Phone Case':       15,
     'Charger':          20,
@@ -32,18 +33,33 @@ const CONFIG = {
     'Other':            15,
   },
 
-  // Products with selling prices
+  // Products — percentage commission model
+  // commission_percent = % of sale amount the agent earns
+  // Example: ZMW 400 watch × 10% = ZMW 40 commission
   products: [
-    { name: 'Clear Slim Case',        price: 85,   commission: 15, category: 'Phone Case' },
-    { name: '20W USB-C Charger',      price: 150,  commission: 20, category: 'Charger' },
-    { name: 'TWS Wireless Earbuds',   price: 380,  commission: 25, category: 'Earphones' },
-    { name: '10000mAh Power Bank',    price: 420,  commission: 30, category: 'Power Bank' },
-    { name: 'Smart Watch 10-in-1',    price: 400,  commission: 40, category: 'Smart Watch' },
-    { name: 'USB-C Braided Cable',    price: 65,   commission: 10, category: 'Cable' },
-    { name: 'Shockproof Case',        price: 120,  commission: 15, category: 'Phone Case' },
-    { name: '9H Tempered Glass',      price: 45,   commission: 10, category: 'Phone Case' },
+    { name: 'Clear Slim Case',        price: 85,   commission_percent: 18, category: 'Phone Case' },
+    { name: '20W USB-C Charger',      price: 150,  commission_percent: 13, category: 'Charger' },
+    { name: 'TWS Wireless Earbuds',   price: 380,  commission_percent: 7,  category: 'Earphones' },
+    { name: '10000mAh Power Bank',    price: 420,  commission_percent: 7,  category: 'Power Bank' },
+    { name: 'Smart Watch 10-in-1',    price: 400,  commission_percent: 10, category: 'Smart Watch' },
+    { name: 'USB-C Braided Cable',    price: 65,   commission_percent: 15, category: 'Cable' },
+    { name: 'Shockproof Case',        price: 120,  commission_percent: 13, category: 'Phone Case' },
+    { name: '9H Tempered Glass',      price: 45,   commission_percent: 22, category: 'Phone Case' },
   ],
 };
+
+// ── COMMISSION CALCULATOR ────────────────────────────────────────────────────
+// Commission = unit_price × quantity × commission_percent / 100
+// Rounded to nearest whole ZMW
+function calcCommission(unitPrice, quantity, percent) {
+  const raw = (Number(unitPrice) || 0) * (Number(quantity) || 0) * (Number(percent) || 0) / 100;
+  return Math.round(raw);
+}
+
+// Total sale amount = unit_price × quantity
+function calcAmount(unitPrice, quantity) {
+  return (Number(unitPrice) || 0) * (Number(quantity) || 0);
+}
 
 // ── SUPABASE API HELPER ──────────────────────────────────────────────────────
 const db = {
@@ -90,10 +106,8 @@ const db = {
     return this.query(table, opts);
   },
 
+  // Sequential ID counter — uses only the `counters` table
   async nextId(counter) {
-    // Increment counter and return new value
-    const rows = await this.query(counter + '_seq', { method: 'POST', body: {}, prefer: 'return=representation' });
-    // Simpler: fetch then update
     const row = await this.getOne('counters', `name=eq.${counter}`);
     const next = (row?.value || 0) + 1;
     await this.update('counters', `name=eq.${counter}`, { value: next });
@@ -123,7 +137,7 @@ function fmtDate(d) {
 }
 
 function fmtMoney(n) {
-  return 'ZMW ' + Number(n).toLocaleString();
+  return 'ZMW ' + Number(n || 0).toLocaleString();
 }
 
 function toast(msg, duration = 3000) {
@@ -197,6 +211,8 @@ function requireAgent() {
 }
 
 // ── NAVBAR BUILDER ───────────────────────────────────────────────────────────
+// Desktop: Home | Apply | Agent Login | [Apply Now]
+// Mobile: [Agent Login] [Apply Now]  (two buttons side-by-side)
 function buildNav(active) {
   // active: 'public' | 'apply' | 'admin' | 'agent'
   return `
@@ -208,11 +224,147 @@ function buildNav(active) {
           <div class="nav-brand">PhoneYa2<span>-ZM</span></div>
         </div>
       </a>
-      <span class="nav-badge">Agent Network</span>
+      <span class="nav-badge hide-mobile">Agent Network</span>
       <div class="nav-spacer"></div>
-      <a href="index.html"  class="nav-link ${active==='public'?'active':''} hide-mobile">Home</a>
-      <a href="apply.html"  class="nav-link ${active==='apply'?'active':''} hide-mobile">Apply</a>
-      <a href="apply.html"  class="nav-cta">Apply Now</a>
+      <a href="index.html"  class="nav-link hide-mobile ${active==='public'?'active':''}">Home</a>
+      <a href="apply.html"  class="nav-link hide-mobile ${active==='apply'?'active':''}">Apply</a>
+      <a href="agent.html"  class="nav-btn-outline">
+        <i class="fa-solid fa-user-tie"></i> <span class="hide-xs">Agent </span>Login
+      </a>
+      <a href="apply.html"  class="nav-cta">
+        <i class="fa-solid fa-rocket"></i> Apply Now
+      </a>
     </div>
   </nav>`;
+}
+
+// ── PDF HELPER — Sales Statement ─────────────────────────────────────────────
+// Requires jsPDF + jspdf-autotable loaded via CDN on the page:
+//   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+//   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+//
+// Usage:
+//   makeSalesStatementPdf({ agentName, agentId, agentCode, period, sales })
+//
+// Each `sales` item should have: { sale_id, created_at, product, quantity, amount, commission, status }
+function makeSalesStatementPdf(opts = {}) {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) {
+    toast('⚠️ PDF library not loaded');
+    return;
+  }
+
+  const { agentName, agentId, agentCode, period, sales = [] } = opts;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+
+  // ── Header bar ──
+  doc.setFillColor(10, 10, 26);            // navy
+  doc.rect(0, 0, pageW, 70, 'F');
+
+  // Brand text
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('PhoneYa2-ZM', 40, 32);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(255, 159, 67);          // orange
+  doc.text('Agent Network · Sales Statement', 40, 50);
+
+  // ── Statement info ──
+  let y = 100;
+  doc.setTextColor(26, 26, 46);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('SALES STATEMENT', 40, y);
+  y += 20;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(107, 114, 128);
+  if (agentName) doc.text(`Agent: ${agentName}`, 40, y);
+  y += 14;
+  if (agentId)   doc.text(`Agent ID: ${agentId}`, 40, y);
+  y += 14;
+  if (agentCode) doc.text(`Agent Code: ${agentCode}`, 40, y);
+  y += 14;
+  doc.text(`Period: ${period || 'All time'}`, 40, y);
+  y += 14;
+  doc.text(`Generated: ${new Date().toLocaleString('en-ZM')}`, 40, y);
+  y += 24;
+
+  // ── Sales table ──
+  const rows = sales.map(s => [
+    s.sale_id || '—',
+    fmtDate(s.created_at),
+    s.product || '—',
+    String(s.quantity || 1),
+    fmtMoney(s.amount || 0),
+    fmtMoney(s.commission || 0),
+    (s.status || '—').toString(),
+  ]);
+
+  const totals = sales.reduce((acc, s) => {
+    acc.amount += Number(s.amount || 0);
+    if (s.status === 'confirmed' || s.status === 'paid') acc.confirmed += Number(s.commission || 0);
+    if (s.status === 'pending') acc.pending += Number(s.commission || 0);
+    return acc;
+  }, { amount: 0, confirmed: 0, pending: 0 });
+
+  doc.autoTable({
+    startY: y,
+    head: [['Sale ID', 'Date', 'Product', 'Qty', 'Amount', 'Commission', 'Status']],
+    body: rows.length ? rows : [['—', '—', 'No sales for this period', '—', '—', '—', '—']],
+    theme: 'grid',
+    styles: { fontSize: 9, cellPadding: 6, textColor: [26, 26, 46] },
+    headStyles: { fillColor: [255, 96, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [249, 250, 251] },
+    columnStyles: {
+      0: { cellWidth: 70 },
+      1: { cellWidth: 70 },
+      2: { cellWidth: 'auto' },
+      3: { cellWidth: 35, halign: 'center' },
+      4: { cellWidth: 70, halign: 'right' },
+      5: { cellWidth: 70, halign: 'right' },
+      6: { cellWidth: 60, halign: 'center' },
+    },
+    margin: { left: 40, right: 40 },
+  });
+
+  // ── Totals block ──
+  let ty = doc.lastAutoTable.finalY + 24;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(26, 26, 46);
+  doc.text('Summary', 40, ty);
+  ty += 16;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text(`Total sales amount: ${fmtMoney(totals.amount)}`, 40, ty);
+  ty += 14;
+  doc.setTextColor(22, 163, 74);
+  doc.text(`Confirmed commission: ${fmtMoney(totals.confirmed)}`, 40, ty);
+  ty += 14;
+  doc.setTextColor(245, 158, 11);
+  doc.text(`Pending commission: ${fmtMoney(totals.pending)}`, 40, ty);
+
+  // ── Footer on all pages ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(229, 231, 235);
+    doc.line(40, pageH - 40, pageW - 40, pageH - 40);
+    doc.setFontSize(8);
+    doc.setTextColor(107, 114, 128);
+    doc.text('PhoneYa2-ZM · Smart Choices. Better Connection.', 40, pageH - 24);
+    doc.text(`Page ${i} of ${pageCount}`, pageW - 40, pageH - 24, { align: 'right' });
+  }
+
+  // ── Save ──
+  const filename = `PhoneYa2-Statement-${agentCode || 'All'}-${new Date().toISOString().slice(0,10)}.pdf`;
+  doc.save(filename);
 }
