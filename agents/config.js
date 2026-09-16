@@ -528,3 +528,33 @@ function makeCertificatePdf(opts) {
 
   doc.save(`PhoneYa2-Certificate-${agent.agent_code}.pdf`);
 }
+// ── PWA REGISTRATION ─────────────────────────────────────────────────────
+// Register service worker + manifest link on every page
+(function registerPWA() {
+  if (typeof document === 'undefined') return;
+
+  // Add manifest link to head if missing
+  if (!document.querySelector('link[rel="manifest"]')) {
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = './manifest.json';
+    document.head.appendChild(link);
+  }
+
+  // Add theme-color meta
+  if (!document.querySelector('meta[name="theme-color"]')) {
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = '#ff6000';
+    document.head.appendChild(meta);
+  }
+
+  // Register service worker
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+        .then(reg => console.log('✅ Service worker registered'))
+        .catch(err => console.warn('Service worker registration failed:', err));
+    });
+  }
+})();
