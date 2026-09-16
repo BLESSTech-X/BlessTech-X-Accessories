@@ -50,12 +50,11 @@
   box-shadow: 0 24px 64px rgba(0,0,0,.25);
 }
 .earnings-card h3 { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .5px; font-family:'DM Sans',sans-serif; }
-.product-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.product-row:last-child { border-bottom: none; }
-.product-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#fff8f4,#ffe4cc); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-.product-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
-.product-price { font-size: 13px; color: var(--muted); }
-.product-comm { font-size: 13px; font-weight: 800; color: #16a34a; }
+.tier-example-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.tier-example-row:last-child { border-bottom: none; }
+.tier-example-range { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
+.tier-example-pct { font-size: 13px; font-weight: 800; color: var(--orange); }
+.tier-example-comm { font-size: 13px; color: var(--muted); }
 .earnings-footer { margin-top: 16px; background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
 .earnings-footer-text { font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.5; }
 .earnings-footer-text strong { color: white; }
@@ -200,8 +199,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
       </div>
       <div class="hero-stats">
         <div>
-          <div class="hero-stat-val" id="heroStatWatch">ZMW 40</div>
-          <div class="hero-stat-lbl">Per Smart Watch sale</div>
+          <div class="hero-stat-val" id="heroStatMax">10%</div>
+          <div class="hero-stat-lbl">Top commission rate</div>
         </div>
         <div style="width:1px;background:rgba(255,255,255,.1);"></div>
         <div>
@@ -217,12 +216,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
     </div>
     <!-- Earnings card (desktop only) -->
     <div class="earnings-card">
-      <h3>What you earn per sale</h3>
+      <h3>Commission tiers at a glance</h3>
       <div id="earningsRows"></div>
       <div class="earnings-footer">
         <i class="fas fa-calculator" style="color:var(--green);font-size:1.2rem;flex-shrink:0;"></i>
         <div class="earnings-footer-text" id="earningsFooterText">
-          Sell <strong>10 items/month</strong> and earn <strong>ZMW 200–400</strong> in commission — on top of whatever you already do.
+          Commission is calculated from the total sale amount.
         </div>
       </div>
     </div>
@@ -239,7 +238,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
           <div class="ap-emoji">🔑</div>
           <div class="ap-label">Already an Agent?</div>
           <h3 class="ap-title">Agent Dashboard</h3>
-          <p class="ap-desc">Log in with your Agent Code to view your commission, manage leads, and share your referral link.</p>
+          <p class="ap-desc">Log in with your Agent Code to submit sales, track commission, and share your referral link.</p>
           <a href="agent.html" class="ap-btn ap-btn-purple">
             <i class="fas fa-right-to-bracket"></i> Open Agent Dashboard
           </a>
@@ -317,17 +316,17 @@ html, body { overflow-x: hidden; max-width: 100%; }
 <section class="section-sm" style="background:white;">
   <div class="container">
     <div class="section-hdr">
-      <h2>Commission Rates</h2>
-      <p>Commission is a percentage of the sale value. The more you sell, the more you earn.</p>
+      <h2>Commission Tiers</h2>
+      <p>The larger the sale, the more you earn. Here's how commission is calculated.</p>
     </div>
     <div class="comm-table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Product</th>
-            <th>Selling Price</th>
-            <th style="color:#16a34a;">Your Commission</th>
-            <th class="hide-mobile">If you sell 10/month</th>
+            <th>Sale Amount</th>
+            <th>Commission %</th>
+            <th style="color:#16a34a;">You Earn</th>
+            <th class="hide-mobile">Example</th>
           </tr>
         </thead>
         <tbody id="commTable"></tbody>
@@ -400,54 +399,70 @@ html, body { overflow-x: hidden; max-width: 100%; }
 <script>
 document.getElementById('nav-wrap').innerHTML = buildNav('public');
 
-// Product icons
-const PROD_ICONS = { 'Phone Case':'📱', 'Charger':'⚡', 'Earphones':'🎧', 'Power Bank':'🔋', 'Smart Watch':'⌚', 'Cable':'🔌', 'Other':'📦' };
+// ── LOAD TIERS AND RENDER ────────────────────────────────────────────────────
+(async function() {
+  await loadTiers();
 
-// Update hero stat with actual smart watch commission
-const watch = CONFIG.products.find(p => p.name.toLowerCase().includes('smart watch'));
-if (watch) {
-  const watchComm = calcCommission(watch.price, 1, watch.commission_percent);
-  document.getElementById('heroStatWatch').textContent = fmtMoney(watchComm);
-}
+  // ── Hero stat: top commission rate ────────────────────────────────────────
+  if (COMMISSION_TIERS.length) {
+    const maxPct = Math.max(...COMMISSION_TIERS.map(t => Number(t.percentage)));
+    document.getElementById('heroStatMax').textContent = maxPct + '%';
+  }
 
-// Populate earnings card (desktop only) — top 5 products
-const earningsRows = document.getElementById('earningsRows');
-if (earningsRows) {
-  CONFIG.products.slice(0, 5).forEach(p => {
-    const comm = calcCommission(p.price, 1, p.commission_percent);
-    const icon = PROD_ICONS[p.category] || '📦';
-    earningsRows.insertAdjacentHTML('beforeend', `
-      <div class="product-row">
-        <div class="product-icon">${icon}</div>
-        <div class="product-name">${esc(p.name)}</div>
-        <div class="product-price">${fmtMoney(p.price)}</div>
-        <div class="product-comm">+${fmtMoney(comm)}</div>
-      </div>`);
-  });
-}
+  // ── Earnings card (desktop) — show tier table ─────────────────────────────
+  const earningsRows = document.getElementById('earningsRows');
+  if (earningsRows && COMMISSION_TIERS.length) {
+    const sorted = [...COMMISSION_TIERS].sort((a,b) => Number(a.min_amount) - Number(b.min_amount));
+    sorted.forEach(t => {
+      const range = t.max_amount === null || t.max_amount === undefined
+        ? `ZMW ${t.min_amount}+`
+        : `ZMW ${t.min_amount} – ${t.max_amount}`;
+      earningsRows.insertAdjacentHTML('beforeend', `
+        <div class="tier-example-row">
+          <div class="tier-example-range">${range}</div>
+          <div class="tier-example-pct">${t.percentage}%</div>
+        </div>`);
+    });
+  }
 
-// Populate commission table
-const tbody = document.getElementById('commTable');
-CONFIG.products.forEach(p => {
-  const comm   = calcCommission(p.price, 1, p.commission_percent);
-  const monthly = comm * 10;
-  tbody.insertAdjacentHTML('beforeend', `
-    <tr onclick="window.location='apply.html'" style="cursor:pointer;">
-      <td style="font-weight:600;">${esc(p.name)}</td>
-      <td style="color:var(--muted);">${fmtMoney(p.price)}</td>
-      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(comm)} <span style="font-size:11px;color:var(--muted);font-weight:600;">(${p.commission_percent}%)</span></td>
-      <td class="hide-mobile" style="color:var(--orange);font-weight:700;">${fmtMoney(monthly)}</td>
-    </tr>`);
-});
+  // ── Commission tiers table (main) ─────────────────────────────────────────
+  const tbody = document.getElementById('commTable');
+  if (COMMISSION_TIERS.length) {
+    const sorted = [...COMMISSION_TIERS].sort((a,b) => Number(a.min_amount) - Number(b.min_amount));
+    sorted.forEach(t => {
+      const range = t.max_amount === null || t.max_amount === undefined
+        ? `ZMW ${t.min_amount} – ∞`
+        : `ZMW ${t.min_amount} – ${t.max_amount}`;
 
-// Update earnings footer text with realistic monthly range
-if (CONFIG.products.length) {
-  const avgComm = CONFIG.products.reduce((s, p) => s + calcCommission(p.price, 1, p.commission_percent), 0) / CONFIG.products.length;
-  const low  = Math.round(avgComm * 10 / 100) * 100;
-  const high = Math.round(avgComm * 20 / 100) * 100;
-  document.getElementById('earningsFooterText').innerHTML =
-    `Sell <strong>10 items/month</strong> and earn <strong>${fmtMoney(low)}–${fmtMoney(high)}</strong> in commission — on top of whatever you already do.`;
-}
+      // Pick an example amount inside the range
+      const minA = Number(t.min_amount);
+      const maxA = t.max_amount === null || t.max_amount === undefined ? minA * 2 : Number(t.max_amount);
+      const exampleAmount = Math.round((minA + maxA) / 2) || minA;
+      const exampleComm = Math.round(exampleAmount * Number(t.percentage) / 100);
+
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr style="cursor:default;">
+          <td style="font-weight:600;">${range}</td>
+          <td style="color:var(--orange);font-weight:800;">${t.percentage}%</td>
+          <td style="color:#16a34a;font-weight:800;">
+            ${fmtMoney(exampleComm)}
+          </td>
+          <td class="hide-mobile" style="color:var(--muted);font-size:13px;">
+            Sell ${fmtMoney(exampleAmount)} → earn ${fmtMoney(exampleComm)}
+          </td>
+        </tr>`);
+    });
+
+    // Update the footer text with a realistic example
+    const avgPct = COMMISSION_TIERS.reduce((s, t) => s + Number(t.percentage), 0) / COMMISSION_TIERS.length;
+    const low = Math.round(500 * avgPct / 100);
+    const high = Math.round(2000 * avgPct / 100);
+    document.getElementById('earningsFooterText').innerHTML =
+      `Sell <strong>ZMW 500–2,000/month</strong> and earn roughly <strong>${fmtMoney(low)}–${fmtMoney(high)}</strong> in commission — on top of whatever you already do.`;
+  } else {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;">Commission tiers loading…</td></tr>';
+  }
+})();
 </script>
 </body>
 </html>
