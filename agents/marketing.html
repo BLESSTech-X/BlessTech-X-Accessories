@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Library — PhoneYa2 Agent Network</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+.mk-wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+.mk-hero { text-align: center; margin-bottom: 32px; }
+.mk-hero-icon { font-size: 3rem; margin-bottom: 8px; }
+.mk-hero h1 { font-size: 1.6rem; margin-bottom: 8px; }
+.mk-hero p { color: var(--muted); font-size: 14px; max-width: 520px; margin: 0 auto; }
+
+.mk-tabs {
+  display: flex; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
+}
+.mk-tabs::-webkit-scrollbar { display: none; }
+.mk-tab {
+  flex-shrink: 0;
+  padding: 11px 16px; font-size: 14px; font-weight: 600; color: var(--muted);
+  border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all .2s; margin-bottom: -1px; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.mk-tab:hover { color: var(--text); }
+.mk-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+.mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+.mk-card {
+  background: white; border: 1px solid var(--border); border-radius: var(--r2);
+  padding: 20px 22px; display: flex; flex-direction: column;
+}
+.mk-card-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 800; padding: 3px 9px;
+  border-radius: 100px; text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 12px; align-self: flex-start;
+}
+.tag-caption { background: rgba(255,96,0,.12); color: var(--orange); border: 1px solid rgba(255,96,0,.25); }
+.tag-script  { background: rgba(139,92,246,.12); color: #7c3aed; border: 1px solid rgba(139,92,246,.25); }
+.tag-faq     { background: rgba(37,99,235,.12); color: #2563eb; border: 1px solid rgba(37,99,235,.25); }
+.tag-brand   { background: rgba(37,211,102,.12); color: #16a34a; border: 1px solid rgba(37,211,102,.25); }
+.tag-poster  { background: rgba(245,158,11,.12); color: #92400e; border: 1px solid rgba(245,158,11,.25); }
+.tag-video   { background: rgba(239,68,68,.12); color: #b91c1c; border: 1px solid rgba(239,68,68,.25); }
+
+.mk-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 10px; }
+.mk-content {
+  background: var(--light); border-radius: var(--r); padding: 14px 16px;
+  font-size: 13px; color: var(--muted); line-height: 1.65;
+  white-space: pre-wrap; word-break: break-word;
+  flex: 1; margin-bottom: 14px;
+  max-height: 200px; overflow-y: auto;
+}
+.mk-media {
+  width: 100%; border-radius: var(--r); margin-bottom: 14px;
+  max-height: 240px; object-fit: cover;
+}
+.mk-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.mk-actions .btn { flex: 1; min-width: 110px; justify-content: center; }
+
+.mk-empty { text-align: center; padding: 60px 24px; }
+.mk-empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.mk-empty h3 { font-size: 1.1rem; margin-bottom: 6px; }
+.mk-empty p { font-size: 14px; color: var(--muted); }
+
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+
+@media(max-width:600px) {
+  .mk-wrap { padding: 16px 14px 60px; }
+  .mk-grid { grid-template-columns: 1fr; }
+  .mk-hero h1 { font-size: 1.35rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="nav-wrap"></div>
+
+<div class="mk-wrap">
+
+  <div class="mk-hero">
+    <div class="mk-hero-icon">📢</div>
+    <h1>Marketing Library</h1>
+    <p>Ready-to-use captions, scripts, and answers. Copy and share to start selling.</p>
+  </div>
+
+  <div class="mk-tabs" id="mkTabs">
+    <button class="mk-tab active" onclick="filterByCategory('all', this)">All</button>
+    <button class="mk-tab" onclick="filterByCategory('caption', this)">Captions</button>
+    <button class="mk-tab" onclick="filterByCategory('script', this)">Scripts</button>
+    <button class="mk-tab" onclick="filterByCategory('faq', this)">FAQs</button>
+    <button class="mk-tab" onclick="filterByCategory('poster', this)">Posters</button>
+    <button class="mk-tab" onclick="filterByCategory('video', this)">Videos</button>
+    <button class="mk-tab" onclick="filterByCategory('brand', this)">Brand</button>
+  </div>
+
+  <div id="mkContent"></div>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+document.getElementById('nav-wrap').innerHTML = buildNav('agent');
+
+let allMaterials = [];
+let currentCategory = 'all';
+
+// ── AUTH CHECK ───────────────────────────────────────────────────────────
+// Only agents can access the marketing library
+const code = agentCode();
+if (!code) {
+  window.location.href = 'agent.html';
+}
+
+// ── LOAD ─────────────────────────────────────────────────────────────────
+async function loadMarketing() {
+  try {
+    allMaterials = await db.getAll('marketing_materials', {
+      filter: 'active=eq.true',
+      order: 'sort_order.asc',
+    });
+    renderMarketing();
+  } catch (e) {
+    toast('⚠️  Could not load marketing: ' + e.message);
+    document.getElementById('mkContent').innerHTML = `
+      <div class="mk-empty">
+        <div class="mk-empty-icon">⚠️</div>
+        <h3>Could not load library</h3>
+        <p>${esc(e.message)}</p>
+      </div>`;
+  }
+}
+
+function filterByCategory(cat, btn) {
+  currentCategory = cat;
+  document.querySelectorAll('.mk-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMarketing();
+}
+
+const CATEGORY_LABELS = {
+  caption: { label: 'Caption',  cls: 'tag-caption', icon: 'fa-comment' },
+  script:  { label: 'Script',   cls: 'tag-script',  icon: 'fa-scroll' },
+  faq:     { label: 'FAQ',      cls: 'tag-faq',     icon: 'fa-circle-question' },
+  brand:   { label: 'Brand',    cls: 'tag-brand',   icon: 'fa-palette' },
+  poster:  { label: 'Poster',   cls: 'tag-poster',  icon: 'fa-image' },
+  video:   { label: 'Video',    cls: 'tag-video',   icon: 'fa-play' },
+};
+
+function renderMarketing() {
+  const el = document.getElementById('mkContent');
+  const list = currentCategory === 'all'
+    ? allMaterials
+    : allMaterials.filter(m => m.category === currentCategory);
+
+  if (!list.length) {
+    el.innerHTML = `
+      <div class="mk-empty">
+        <div class="mk-empty-icon">📭</div>
+        <h3>Nothing here yet</h3>
+        <p>Check back soon for new materials.</p>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="mk-grid">${list.map(m => {
+    const meta = CATEGORY_LABELS[m.category] || { label: m.category, cls: 'tag-caption', icon: 'fa-file' };
+    const contentBlock = m.content
+      ? `<div class="mk-content">${esc(m.content)}</div>`
+      : '';
+    const mediaBlock = m.file_url
+      ? (m.category === 'video'
+          ? `<video class="mk-media" controls src="${esc(m.file_url)}"></video>`
+          : `<img class="mk-media" src="${esc(m.file_url)}" alt="${esc(m.title)}" onerror="this.style.display='none'">`)
+      : '';
+
+    return `
+      <div class="mk-card">
+        <span class="mk-card-tag ${meta.cls}"><i class="fas ${meta.icon}"></i> ${meta.label}</span>
+        <div class="mk-title">${esc(m.title)}</div>
+        ${mediaBlock}
+        ${contentBlock}
+        <div class="mk-actions">
+          ${m.content ? `<button class="btn btn-primary btn-sm" onclick="copyMaterial('${esc(m.id)}')"><i class="fas fa-copy"></i> Copy</button>` : ''}
+          ${m.content ? `<button class="btn btn-green btn-sm" onclick="shareWhatsApp('${esc(m.id)}')"><i class="fab fa-whatsapp"></i> Share</button>` : ''}
+          ${m.file_url && m.category !== 'video' ? `<a href="${esc(m.file_url)}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Open</a>` : ''}
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function getMaterial(id) {
+  return allMaterials.find(m => m.id === id);
+}
+
+function copyMaterial(id) {
+  const m = getMaterial(id);
+  if (!m || !m.content) return;
+  copyToClipboard(m.content);
+  toast('✅ Copied');
+  logReferralEvent(agentCode() || 'unknown', 'material_copied', { material_id: m.material_id });
+}
+
+function shareWhatsApp(id) {
+  const m = getMaterial(id);
+  if (!m || !m.content) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(m.content), '_blank');
+  logReferralEvent(agentCode() || 'unknown', 'material_shared', { material_id: m.material_id });
+}
+
+loadMarketing();
+</script>
+</body>
+</html>
