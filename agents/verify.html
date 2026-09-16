@@ -21,7 +21,6 @@
 .verify-val  { color: var(--text); font-weight: 700; }
 .not-found-card { background: white; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); padding: 40px 32px; }
 
-/* MOBILE FIXES */
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
 
@@ -43,24 +42,15 @@ html, body { overflow-x: hidden; }
 </style>
 </head>
 <body>
-<nav class="navbar">
-  <div class="navbar-inner">
-    <a href="index.html" class="nav-logo">
-      <div><div class="nav-brand">PhoneYa2<span>-ZM</span></div></div>
-    </a>
-    <span class="nav-badge">Agent Verification</span>
-  </div>
-</nav>
+<div id="nav-wrap"></div>
 
 <div class="verify-wrap">
 
-  <!-- Loading state -->
   <div id="loadingState" style="padding:60px 0;text-align:center;">
     <div class="spinner dark" style="margin:0 auto 16px;width:32px;height:32px;"></div>
     <p style="color:var(--muted);font-size:14px;">Verifying agent…</p>
   </div>
 
-  <!-- Verified state -->
   <div id="verifiedState" style="display:none;">
     <div class="verify-card">
       <div class="verify-hdr">
@@ -111,7 +101,6 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- Not found state -->
   <div id="notFoundState" style="display:none;">
     <div class="not-found-card">
       <div style="font-size:3rem;margin-bottom:16px;">⚠️</div>
@@ -124,7 +113,6 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- Manual lookup -->
   <div style="margin-top:28px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Look up a different agent:</p>
     <div style="display:flex;gap:8px;">
@@ -134,12 +122,20 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-</div><!-- /verify-wrap -->
+  <div style="margin-top:24px;">
+    <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;">
+      <i class="fas fa-arrow-left"></i> Back to Agent Network
+    </a>
+  </div>
+
+</div>
 
 <div id="toast"></div>
 
 <script src="config.js"></script>
 <script>
+document.getElementById('nav-wrap').innerHTML = buildNav('public');
+
 async function verify(query) {
   if (!query) { showNotFound(); return; }
   document.getElementById('loadingState').style.display  = 'block';
@@ -147,7 +143,6 @@ async function verify(query) {
   document.getElementById('notFoundState').style.display = 'none';
 
   try {
-    // Try agent_id first, then agent_code
     let agent = await db.getOne('agents', `agent_id=eq.${encodeURIComponent(query)}&active=eq.true`);
     if (!agent) {
       agent = await db.getOne('agents', `agent_code=eq.${encodeURIComponent(query)}&active=eq.true`);
@@ -183,7 +178,6 @@ document.getElementById('lookupInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') doLookup();
 });
 
-// Auto-verify from URL ?id=PYA-0001
 const params = new URLSearchParams(window.location.search);
 const id     = params.get('id') || params.get('code') || '';
 if (id) {
