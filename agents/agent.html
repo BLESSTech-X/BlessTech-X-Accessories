@@ -42,6 +42,31 @@
 .tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
 .tier-row-display:last-child { border-bottom:none; }
 
+/* Statement preview card */
+.stmt-preview {
+  background: white; border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 20px; margin-bottom: 16px;
+}
+.stmt-preview-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.stmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.stmt-cell { text-align: center; padding: 10px 6px; }
+.stmt-cell-val { font-family: 'Syne',sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* Month selector grid */
+.month-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;
+}
+.month-btn {
+  padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: white; cursor: pointer; transition: all .2s;
+  text-align: center; font-family: 'DM Sans',sans-serif;
+}
+.month-btn:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
+.month-btn.active { background: var(--orange); border-color: var(--orange); color: white; }
+.month-btn .mb-name { font-size: 13px; font-weight: 700; }
+.month-btn .mb-year { font-size: 11px; opacity: .6; margin-top: 2px; }
+
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
 
@@ -59,9 +84,11 @@ html, body { overflow-x: hidden; }
   .dash-hdr           { flex-direction: column; align-items: flex-start; }
   .stat-grid          { grid-template-columns: 1fr 1fr; }
   #submitSaleModal .sale-grid { grid-template-columns: 1fr !important; }
+  .stmt-grid          { grid-template-columns: 1fr 1fr; }
 }
 @media(max-width:400px) {
   .dash-name          { font-size: 1rem; }
+  .month-grid         { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -147,7 +174,8 @@ html, body { overflow-x: hidden; }
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Submitted Sales</h3>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-outline btn-sm" onclick="downloadMyStatementPdf()"><i class="fas fa-file-pdf"></i> Download Statement</button>
+        <button class="btn btn-outline btn-sm" onclick="openStatement()"><i class="fas fa-file-pdf"></i> Monthly Statement</button>
+        <button class="btn btn-outline btn-sm" onclick="downloadMyStatementPdf()"><i class="fas fa-download"></i> All Sales PDF</button>
         <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
       </div>
     </div>
@@ -261,6 +289,30 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
+<!-- MONTHLY STATEMENT MODAL -->
+<div class="modal-overlay" id="statementModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Monthly Statement</h3>
+      <button class="modal-close" onclick="closeStatement()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Pick a month to see your sales summary for that period.</p>
+
+      <div class="month-grid" id="monthGrid"></div>
+
+      <div id="stmtPreview"></div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-outline btn-full" onclick="closeStatement()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="downloadStmtBtn" onclick="downloadMonthlyStatement()" disabled>
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="config.js"></script>
@@ -268,8 +320,9 @@ html, body { overflow-x: hidden; }
 let agentData  = null;
 let agentSales = [];
 let allSales   = [];
+let selectedMonth = null; // { year, month, label, sales }
 
-// ── AUTH ─────────────────────────────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────────────────────────────
 async function doAgentLogin() {
   const code = document.getElementById('codeInput').value.trim().toUpperCase();
   if (!code) return;
@@ -325,7 +378,10 @@ async function loadAgentData() {
 
 function updateAgentStats() {
   const now      = new Date();
-  const thisMonth = agentSales.filter(s => new Date(s.created_at).getMonth() === now.getMonth());
+  const thisMonth = agentSales.filter(s => {
+    const d = new Date(s.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
   const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
   const pending   = agentSales.filter(s => s.status === 'pending');
   const totalComm = confirmed.reduce((s, x) => s + (x.commission||0), 0);
@@ -338,7 +394,7 @@ function updateAgentStats() {
   document.getElementById('st-revenue').textContent = fmtMoney(revenue);
 }
 
-// ── REFERRAL LINK ─────────────────────────────────────────────────────────────
+// ── REFERRAL ─────────────────────────────────────────────────────────────
 function copyRefLink() {
   const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
   copyToClipboard(url);
@@ -358,7 +414,7 @@ function shareRefNative() {
   } else { copyRefLink(); }
 }
 
-// ── SUBMIT SALE ───────────────────────────────────────────────────────────────
+// ── SUBMIT SALE ──────────────────────────────────────────────────────────
 function openSubmitSale() {
   document.getElementById('submitSaleModal').classList.add('open');
   document.getElementById('submitSaleError').style.display = 'none';
@@ -464,7 +520,7 @@ async function submitSale() {
   }
 }
 
-// ── MY SALES LIST ─────────────────────────────────────────────────────────────
+// ── MY SALES LIST ────────────────────────────────────────────────────────
 function renderSales() {
   const el = document.getElementById('salesContent');
   if (!agentSales.length) {
@@ -503,7 +559,7 @@ function renderSales() {
     </tbody></table></div>`;
 }
 
-// ── COMMISSION HISTORY ────────────────────────────────────────────────────────
+// ── COMMISSION HISTORY ───────────────────────────────────────────────────
 function renderCommHistory() {
   const el = document.getElementById('commHistory');
   if (!agentSales.length) {
@@ -532,7 +588,7 @@ function renderCommHistory() {
   }).join('');
 }
 
-// ── TIER RATES DISPLAY ────────────────────────────────────────────────────────
+// ── TIER RATES ───────────────────────────────────────────────────────────
 function renderTierRates() {
   const el = document.getElementById('tierRatesList');
   if (!COMMISSION_TIERS || !COMMISSION_TIERS.length) {
@@ -552,7 +608,6 @@ function renderTierRates() {
       </div>`;
     }).join('');
 
-  // Build an example
   const exampleEl = document.getElementById('tierExample');
   if (COMMISSION_TIERS.length) {
     const samples = [50, 300, 750, 2000, 10000];
@@ -566,7 +621,7 @@ function renderTierRates() {
   }
 }
 
-// ── LEADERBOARD ───────────────────────────────────────────────────────────────
+// ── LEADERBOARD ──────────────────────────────────────────────────────────
 function renderLeaderboard() {
   const el = document.getElementById('agentLeaderboard');
   const medals = ['🥇','🥈','🥉'];
@@ -600,7 +655,7 @@ function renderLeaderboard() {
   }).join('');
 }
 
-// ── PDF ───────────────────────────────────────────────────────────────────────
+// ── ALL SALES PDF ────────────────────────────────────────────────────────
 function downloadMyStatementPdf() {
   if (!agentSales.length) { toast('⚠️  No sales to download'); return; }
   const sales = agentSales.map(s => ({
@@ -622,7 +677,131 @@ function downloadMyStatementPdf() {
   toast('📄 Statement downloading…');
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
+// ── MONTHLY STATEMENT ────────────────────────────────────────────────────
+function openStatement() {
+  // Build the last 12 months
+  const grid = document.getElementById('monthGrid');
+  const now  = new Date();
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({
+      year: d.getFullYear(),
+      month: d.getMonth(),
+      label: d.toLocaleDateString('en-ZM', { month: 'long' }),
+      short: d.toLocaleDateString('en-ZM', { month: 'short' }),
+    });
+  }
+
+  grid.innerHTML = months.map(m => `
+    <button class="month-btn" data-year="${m.year}" data-month="${m.month}" onclick="selectMonth(this, ${m.year}, ${m.month})">
+      <div class="mb-name">${m.short}</div>
+      <div class="mb-year">${m.year}</div>
+    </button>`).join('');
+
+  // Default to current month
+  const currentBtn = grid.querySelector(`[data-year="${months[0].year}"][data-month="${months[0].month}"]`);
+  if (currentBtn) selectMonth(currentBtn, months[0].year, months[0].month);
+
+  document.getElementById('statementModal').classList.add('open');
+}
+
+function selectMonth(btn, year, month) {
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const sales = agentSales.filter(s => {
+    const d = new Date(s.created_at);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+
+  const confirmed = sales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = sales.filter(s => s.status === 'pending');
+  const totalAmount = sales.reduce((t, s) => t + (s.amount || 0), 0);
+  const totalCommConfirmed = confirmed.reduce((t, s) => t + (s.commission || 0), 0);
+  const totalCommPending   = pending.reduce((t, s) => t + (s.commission || 0), 0);
+
+  selectedMonth = {
+    year, month,
+    label: new Date(year, month).toLocaleDateString('en-ZM', { month: 'long', year: 'numeric' }),
+    sales,
+  };
+
+  const preview = document.getElementById('stmtPreview');
+  if (!sales.length) {
+    preview.innerHTML = `
+      <div class="stmt-preview" style="text-align:center;padding:32px 20px;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">📭</div>
+        <div style="font-size:14px;color:var(--muted);">No sales in this month.</div>
+      </div>`;
+    document.getElementById('downloadStmtBtn').disabled = true;
+    return;
+  }
+
+  preview.innerHTML = `
+    <div class="stmt-preview">
+      <div class="stmt-preview-title">${selectedMonth.label} Summary</div>
+      <div class="stmt-grid">
+        <div class="stmt-cell">
+          <div class="stmt-cell-val">${sales.length}</div>
+          <div class="stmt-cell-lbl">Sales</div>
+        </div>
+        <div class="stmt-cell">
+          <div class="stmt-cell-val" style="color:var(--orange);">${fmtMoney(totalAmount)}</div>
+          <div class="stmt-cell-lbl">Revenue</div>
+        </div>
+        <div class="stmt-cell">
+          <div class="stmt-cell-val" style="color:#16a34a;">${fmtMoney(totalCommConfirmed)}</div>
+          <div class="stmt-cell-lbl">Commission</div>
+        </div>
+        <div class="stmt-cell">
+          <div class="stmt-cell-val" style="color:var(--yellow);">${fmtMoney(totalCommPending)}</div>
+          <div class="stmt-cell-lbl">Pending</div>
+        </div>
+        <div class="stmt-cell">
+          <div class="stmt-cell-val">${sales.filter(s => s.status === 'confirmed' || s.status === 'paid').length}</div>
+          <div class="stmt-cell-lbl">Confirmed</div>
+        </div>
+        <div class="stmt-cell">
+          <div class="stmt-cell-val">${sales.filter(s => s.status === 'pending').length}</div>
+          <div class="stmt-cell-lbl">Awaiting</div>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('downloadStmtBtn').disabled = false;
+}
+
+function closeStatement() {
+  document.getElementById('statementModal').classList.remove('open');
+  selectedMonth = null;
+}
+
+function downloadMonthlyStatement() {
+  if (!selectedMonth || !selectedMonth.sales.length) return;
+
+  const sales = selectedMonth.sales.map(s => ({
+    sale_id:        s.sale_id,
+    created_at:     s.created_at,
+    customer_name:  s.customer_name,
+    amount:         s.amount,
+    commission_pct: s.commission_pct || s.commission_percent,
+    commission:     s.commission,
+    status:         s.status,
+  }));
+
+  makeSalesStatementPdf({
+    agentName: agentData.full_name,
+    agentId:   agentData.agent_id,
+    agentCode: agentData.agent_code,
+    period:    selectedMonth.label,
+    sales,
+  });
+
+  toast('📄 Monthly statement downloading…');
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────
 function showAgentTab(name, btn) {
   document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('agent-tab-' + name);
@@ -631,7 +810,7 @@ function showAgentTab(name, btn) {
   if (btn) btn.classList.add('active');
 }
 
-// ── BOOT ──────────────────────────────────────────────────────────────────────
+// ── BOOT ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const code = agentCode();
   if (code) {
