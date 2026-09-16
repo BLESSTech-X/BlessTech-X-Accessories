@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-/* ── HERO ─────────────────────────────────────────────────────────────────── */
 .hero {
   background: var(--navy);
   padding: 80px 0 72px;
@@ -46,7 +45,6 @@
 .hero-stat-val { font-family:'Syne',sans-serif; font-size: 1.8rem; font-weight: 800; color: white; }
 .hero-stat-lbl { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 2px; }
 
-/* ── EARNINGS CARD ───────────────────────────────────────────────────────── */
 .earnings-card {
   background: white; border-radius: 20px; padding: 28px 24px;
   box-shadow: 0 24px 64px rgba(0,0,0,.25);
@@ -62,19 +60,15 @@
 .earnings-footer-text { font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.5; }
 .earnings-footer-text strong { color: white; }
 
-/* ── HOW IT WORKS ────────────────────────────────────────────────────────── */
 .how-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
 .how-step { text-align: center; padding: 28px 20px; background: white; border-radius: var(--r2); border: 1px solid var(--border); position: relative; }
 .how-step-num { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; background: var(--orange); color: white; border-radius: 50%; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 .how-icon { font-size: 2.2rem; margin-bottom: 12px; }
 .how-title { font-size: 15px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
 .how-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-.how-connector { display: none; }
 
-/* ── COMMISSION TABLE ────────────────────────────────────────────────────── */
 .comm-table-wrap { background: white; border-radius: var(--r2); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
 
-/* ── TESTIMONIAL STRIP ───────────────────────────────────────────────────── */
 .testi-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
 .testi-card { background: white; border-radius: var(--r2); padding: 22px 20px; border: 1px solid var(--border); }
 .testi-stars { color: #f59e0b; font-size: 13px; margin-bottom: 10px; }
@@ -82,12 +76,9 @@
 .testi-author { font-weight: 700; font-size: 13px; }
 .testi-role { font-size: 12px; color: var(--muted); }
 
-/* ── CTA BANNER ──────────────────────────────────────────────────────────── */
 .cta-banner { background: var(--navy); border-radius: 20px; padding: 48px 40px; text-align: center; position: relative; overflow: hidden; }
 .cta-banner-orb { position: absolute; border-radius: 50%; pointer-events: none; }
 
-/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
-/* Prevent any fixed-width element causing horizontal scroll */
 html, body { overflow-x: hidden; max-width: 100%; }
 * { min-width: 0; }
 
@@ -118,7 +109,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .testi-card         { padding: 18px 16px; }
 }
 
-/* ── AGENT PORTAL SECTION ────────────────────────────────────────────────── */
 .agent-portal-wrap {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -165,18 +155,10 @@ html, body { overflow-x: hidden; max-width: 100%; }
   text-decoration: none; transition: opacity .2s, transform .15s; margin-bottom: 12px;
 }
 .ap-btn:hover { opacity: .88; transform: translateY(-1px); text-decoration: none; }
-.ap-btn-purple {
-  background: linear-gradient(135deg,#7c3aed,#a855f7);
-  color: white; box-shadow: 0 4px 16px rgba(124,58,237,.4);
-}
-.ap-btn-orange {
-  background: linear-gradient(135deg,#ff6000,#ff9f43);
-  color: white; box-shadow: 0 4px 16px rgba(255,96,0,.4);
-}
+.ap-btn-purple { background: linear-gradient(135deg,#7c3aed,#a855f7); color: white; box-shadow: 0 4px 16px rgba(124,58,237,.4); }
+.ap-btn-orange { background: linear-gradient(135deg,#ff6000,#ff9f43); color: white; box-shadow: 0 4px 16px rgba(255,96,0,.4); }
 .ap-hint { font-size: 11px; color: rgba(255,255,255,.3); text-align: center; }
 .ap-hint code { background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 4px; color: rgba(255,255,255,.5); font-size: 11px; }
-
-/* Divider between the two cards */
 .ap-divider { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .ap-divider-line { width: 1px; height: 60px; background: rgba(255,255,255,.1); }
 .ap-divider-text { font-size: 11px; font-weight: 800; color: rgba(255,255,255,.25); letter-spacing: 2px; }
@@ -190,14 +172,13 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .ap-card-inner { padding: 22px 18px; }
   .ap-title { font-size: 1.15rem; }
 }
-
 </style>
 </head>
 <body>
 
 <div id="nav-wrap"></div>
 
-<!-- ── HERO ─────────────────────────────────────────────────────────────────── -->
+<!-- HERO -->
 <section class="hero">
   <div class="hero-orb-a"></div>
   <div class="hero-orb-b"></div>
@@ -219,7 +200,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
       </div>
       <div class="hero-stats">
         <div>
-          <div class="hero-stat-val">ZMW 40</div>
+          <div class="hero-stat-val" id="heroStatWatch">ZMW 40</div>
           <div class="hero-stat-lbl">Per Smart Watch sale</div>
         </div>
         <div style="width:1px;background:rgba(255,255,255,.1);"></div>
@@ -237,39 +218,10 @@ html, body { overflow-x: hidden; max-width: 100%; }
     <!-- Earnings card (desktop only) -->
     <div class="earnings-card">
       <h3>What you earn per sale</h3>
-      <div class="product-row">
-        <div class="product-icon">📱</div>
-        <div class="product-name">Phone Case</div>
-        <div class="product-price">ZMW 85+</div>
-        <div class="product-comm">+ZMW 15</div>
-      </div>
-      <div class="product-row">
-        <div class="product-icon">⚡</div>
-        <div class="product-name">Charger</div>
-        <div class="product-price">ZMW 150</div>
-        <div class="product-comm">+ZMW 20</div>
-      </div>
-      <div class="product-row">
-        <div class="product-icon">🎧</div>
-        <div class="product-name">Earphones</div>
-        <div class="product-price">ZMW 380</div>
-        <div class="product-comm">+ZMW 25</div>
-      </div>
-      <div class="product-row">
-        <div class="product-icon">🔋</div>
-        <div class="product-name">Power Bank</div>
-        <div class="product-price">ZMW 420</div>
-        <div class="product-comm">+ZMW 30</div>
-      </div>
-      <div class="product-row">
-        <div class="product-icon">⌚</div>
-        <div class="product-name">Smart Watch</div>
-        <div class="product-price">ZMW 400</div>
-        <div class="product-comm">+ZMW 40</div>
-      </div>
+      <div id="earningsRows"></div>
       <div class="earnings-footer">
         <i class="fas fa-calculator" style="color:var(--green);font-size:1.2rem;flex-shrink:0;"></i>
-        <div class="earnings-footer-text">
+        <div class="earnings-footer-text" id="earningsFooterText">
           Sell <strong>10 items/month</strong> and earn <strong>ZMW 200–400</strong> in commission — on top of whatever you already do.
         </div>
       </div>
@@ -277,11 +229,10 @@ html, body { overflow-x: hidden; max-width: 100%; }
   </div>
 </section>
 
-<!-- ── AGENT LOGIN PORTAL ─────────────────────────────────────────────────── -->
+<!-- AGENT LOGIN PORTAL -->
 <section class="section-sm" id="agent-portal" style="background:linear-gradient(135deg,#0a0a1a 0%,#1a1040 100%);padding:48px 0;">
   <div class="container">
     <div class="agent-portal-wrap">
-      <!-- Already an agent card -->
       <div class="ap-card ap-card-login">
         <div class="ap-card-orb ap-orb-purple"></div>
         <div class="ap-card-inner">
@@ -296,14 +247,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
         </div>
       </div>
 
-      <!-- Divider -->
       <div class="ap-divider">
         <div class="ap-divider-line"></div>
         <div class="ap-divider-text">OR</div>
         <div class="ap-divider-line"></div>
       </div>
 
-      <!-- New application card -->
       <div class="ap-card ap-card-apply">
         <div class="ap-card-orb ap-orb-orange"></div>
         <div class="ap-card-inner">
@@ -319,7 +268,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
       </div>
     </div>
 
-    <!-- Verify link -->
     <div style="text-align:center;margin-top:24px;">
       <a href="verify.html" style="font-size:13px;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;"
          onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">
@@ -329,7 +277,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   </div>
 </section>
 
-<!-- ── HOW IT WORKS ───────────────────────────────────────────────────────── -->
+<!-- HOW IT WORKS -->
 <section class="section" id="how">
   <div class="container">
     <div class="section-hdr">
@@ -365,12 +313,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
   </div>
 </section>
 
-<!-- ── COMMISSION TABLE ───────────────────────────────────────────────────── -->
+<!-- COMMISSION TABLE -->
 <section class="section-sm" style="background:white;">
   <div class="container">
     <div class="section-hdr">
       <h2>Commission Rates</h2>
-      <p>Fixed commissions per confirmed sale. No negotiation, no ambiguity.</p>
+      <p>Commission is a percentage of the sale value. The more you sell, the more you earn.</p>
     </div>
     <div class="comm-table-wrap">
       <table>
@@ -389,7 +337,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   </div>
 </section>
 
-<!-- ── TESTIMONIALS ───────────────────────────────────────────────────────── -->
+<!-- TESTIMONIALS -->
 <section class="section">
   <div class="container">
     <div class="section-hdr">
@@ -418,7 +366,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   </div>
 </section>
 
-<!-- ── CTA BANNER ─────────────────────────────────────────────────────────── -->
+<!-- CTA BANNER -->
 <section class="section-sm">
   <div class="container">
     <div class="cta-banner">
@@ -452,18 +400,54 @@ html, body { overflow-x: hidden; max-width: 100%; }
 <script>
 document.getElementById('nav-wrap').innerHTML = buildNav('public');
 
+// Product icons
+const PROD_ICONS = { 'Phone Case':'📱', 'Charger':'⚡', 'Earphones':'🎧', 'Power Bank':'🔋', 'Smart Watch':'⌚', 'Cable':'🔌', 'Other':'📦' };
+
+// Update hero stat with actual smart watch commission
+const watch = CONFIG.products.find(p => p.name.toLowerCase().includes('smart watch'));
+if (watch) {
+  const watchComm = calcCommission(watch.price, 1, watch.commission_percent);
+  document.getElementById('heroStatWatch').textContent = fmtMoney(watchComm);
+}
+
+// Populate earnings card (desktop only) — top 5 products
+const earningsRows = document.getElementById('earningsRows');
+if (earningsRows) {
+  CONFIG.products.slice(0, 5).forEach(p => {
+    const comm = calcCommission(p.price, 1, p.commission_percent);
+    const icon = PROD_ICONS[p.category] || '📦';
+    earningsRows.insertAdjacentHTML('beforeend', `
+      <div class="product-row">
+        <div class="product-icon">${icon}</div>
+        <div class="product-name">${esc(p.name)}</div>
+        <div class="product-price">${fmtMoney(p.price)}</div>
+        <div class="product-comm">+${fmtMoney(comm)}</div>
+      </div>`);
+  });
+}
+
 // Populate commission table
 const tbody = document.getElementById('commTable');
 CONFIG.products.forEach(p => {
-  const monthly = p.commission * 10;
+  const comm   = calcCommission(p.price, 1, p.commission_percent);
+  const monthly = comm * 10;
   tbody.insertAdjacentHTML('beforeend', `
     <tr onclick="window.location='apply.html'" style="cursor:pointer;">
       <td style="font-weight:600;">${esc(p.name)}</td>
       <td style="color:var(--muted);">${fmtMoney(p.price)}</td>
-      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(p.commission)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(comm)} <span style="font-size:11px;color:var(--muted);font-weight:600;">(${p.commission_percent}%)</span></td>
       <td class="hide-mobile" style="color:var(--orange);font-weight:700;">${fmtMoney(monthly)}</td>
     </tr>`);
 });
+
+// Update earnings footer text with realistic monthly range
+if (CONFIG.products.length) {
+  const avgComm = CONFIG.products.reduce((s, p) => s + calcCommission(p.price, 1, p.commission_percent), 0) / CONFIG.products.length;
+  const low  = Math.round(avgComm * 10 / 100) * 100;
+  const high = Math.round(avgComm * 20 / 100) * 100;
+  document.getElementById('earningsFooterText').innerHTML =
+    `Sell <strong>10 items/month</strong> and earn <strong>${fmtMoney(low)}–${fmtMoney(high)}</strong> in commission — on top of whatever you already do.`;
+}
 </script>
 </body>
 </html>
