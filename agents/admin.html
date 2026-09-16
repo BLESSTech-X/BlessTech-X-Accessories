@@ -6,6 +6,8 @@
 <title>Admin — PhoneYa2 Agent Network</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 .admin-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 60px); }
 .sidebar { background: var(--navy); padding: 24px 0; position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; }
@@ -17,14 +19,13 @@
 .nav-item:hover { color: white; background: rgba(255,255,255,.05); }
 .nav-item.active { color: white; background: rgba(255,96,0,.12); border-left-color: var(--orange); }
 .nav-item i { width: 18px; text-align: center; }
+.nav-item .badge-count { margin-left: auto; background: var(--orange); color: white; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 100px; }
 .admin-main { padding: 28px 32px; }
 .page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .page-hdr h2 { font-size: 1.3rem; }
 .tab-pane { display: none; }
 .tab-pane.active { display: block; }
 .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.filter-pill { padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; color: var(--muted); }
-.filter-pill.active, .filter-pill:hover { border-color: var(--orange); color: var(--orange); background: rgba(255,96,0,.05); }
 .search-box { flex: 1; min-width: 200px; max-width: 320px; display: flex; background: white; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
 .search-box input { flex: 1; border: none; outline: none; padding: 8px 14px; font-size: 14px; font-family: 'DM Sans',sans-serif; }
 .search-box i { padding: 10px 12px; color: var(--muted); }
@@ -34,23 +35,19 @@
 .detail-field small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
 .detail-field p { font-size: 14px; color: var(--text); line-height: 1.5; }
 .action-bar { display: flex; gap: 10px; flex-wrap: wrap; }
-/* Login screen */
 #loginScreen { position: fixed; inset: 0; background: var(--navy); z-index: 999; display: flex; align-items: center; justify-content: center; }
 .login-card { background: white; border-radius: 20px; padding: 40px 36px; max-width: 380px; width: 100%; text-align: center; }
 .login-card h2 { margin-bottom: 6px; }
 .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-/* Leaderboard */
 .rank-row { display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-bottom: 1px solid var(--border); }
 .rank-num { font-family: 'Syne',sans-serif; font-weight: 800; font-size: 1rem; width: 28px; text-align: center; }
-.rank-medal { font-size: 1.2rem; }
 .rank-name { flex: 1; font-weight: 700; font-size: 14px; }
 .rank-sales { font-size: 13px; color: var(--muted); }
 .rank-rev { font-weight: 800; color: var(--orange); font-size: 14px; }
-/* MOBILE FIXES */
+
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
 
-/* Mobile top nav replaces sidebar */
 .mobile-admin-tabs {
   display: none;
   overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
@@ -65,6 +62,7 @@ html, body { overflow-x: hidden; }
   white-space: nowrap; transition: all .2s;
 }
 .mob-tab-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
+.mob-tab-btn .badge-count { margin-left: 5px; background: var(--orange); color: white; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; }
 
 @media(max-width:900px) {
   .admin-layout         { grid-template-columns: 1fr; }
@@ -81,12 +79,10 @@ html, body { overflow-x: hidden; }
 @media(max-width:600px) {
   .stat-grid            { grid-template-columns: 1fr 1fr; }
   .page-hdr             { flex-direction: column; align-items: flex-start; }
-  .rank-row             { gap: 8px; padding: 11px 12px; }
   .rank-name            { font-size: 13px; }
   table                 { font-size: 13px; }
   th, td                { padding: 10px 10px; }
-  /* Add sale form — stack to single column on mobile */
-  #addSaleForm > div[style*="grid"] { grid-template-columns: 1fr !important; }
+  #addSaleForm .sale-grid { grid-template-columns: 1fr !important; }
   #agentDetailGrid { grid-template-columns: 1fr !important; }
 }
 @media(max-width:400px) {
@@ -97,7 +93,7 @@ html, body { overflow-x: hidden; }
 </head>
 <body>
 
-<!-- ── LOGIN SCREEN ─────────────────────────────────────────────────────────── -->
+<!-- LOGIN SCREEN -->
 <div id="loginScreen" style="display:flex;">
   <div class="login-card">
     <div style="font-size:2.5rem;margin-bottom:12px;">🔐</div>
@@ -109,60 +105,62 @@ html, body { overflow-x: hidden; }
       <div class="err-msg" id="loginErr" style="text-align:center;">Incorrect password. Try again.</div>
     </div>
     <button class="btn btn-primary btn-full" onclick="doLogin()"><i class="fas fa-lock-open"></i> Login</button>
-    <div style="margin-top:16px;font-size:12px;color:var(--muted);">Default password: <code>blesstech2026admin</code><br>Change in config.js immediately after setup.</div>
   </div>
 </div>
 
-<!-- ── MAIN ADMIN ───────────────────────────────────────────────────────────── -->
+<!-- MAIN ADMIN -->
 <div id="adminApp" style="display:none;">
 <nav class="navbar">
   <div class="navbar-inner">
     <div class="nav-logo">
-      <div>
-        <div class="nav-brand">PhoneYa2<span>-ZM</span> Admin</div>
-      </div>
+      <div><div class="nav-brand">PhoneYa2<span>-ZM</span> Admin</div></div>
     </div>
     <div class="nav-spacer"></div>
-    <span style="font-size:13px;color:rgba(255,255,255,.45);">Admin Panel</span>
+    <span style="font-size:13px;color:rgba(255,255,255,.45);" class="hide-mobile">Admin Panel</span>
     <button class="btn-ghost" style="color:rgba(255,255,255,.5);" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
   </div>
 </nav>
 
-<!-- Mobile tab bar (replaces sidebar on small screens) -->
+<!-- Mobile tab bar -->
 <div class="mobile-admin-tabs" id="mobileAdminTabs">
-  <button class="mob-tab-btn active" onclick="showTab('applications');setMobTab(this)">Applications</button>
-  <button class="mob-tab-btn" onclick="showTab('agents');setMobTab(this)">Agents</button>
-  <button class="mob-tab-btn" onclick="showTab('leads');setMobTab(this)">Leads</button>
-  <button class="mob-tab-btn" onclick="showTab('sales');setMobTab(this)">Sales</button>
-  <button class="mob-tab-btn" onclick="showTab('leaderboard');setMobTab(this)">Leaderboard</button>
+  <button class="mob-tab-btn active" onclick="showTab('applications', this)">Applications</button>
+  <button class="mob-tab-btn" onclick="showTab('agents', this)">Agents</button>
+  <button class="mob-tab-btn" onclick="showTab('leads', this)">Leads</button>
+  <button class="mob-tab-btn" onclick="showTab('sales', this)">Sales</button>
+  <button class="mob-tab-btn" onclick="showTab('pending', this)">Pending <span class="badge-count" id="mobPendCount" style="display:none;">0</span></button>
+  <button class="mob-tab-btn" onclick="showTab('leaderboard', this)">Leaderboard</button>
 </div>
 
 <div class="admin-layout">
-  <!-- Sidebar -->
   <div class="sidebar">
     <div class="sidebar-logo">
       <div>PhoneYa2<span>-ZM</span></div>
       <small>Agent Network</small>
     </div>
-    <div class="nav-item active" onclick="showTab('applications')"><i class="fas fa-file-lines"></i> Applications</div>
-    <div class="nav-item" onclick="showTab('agents')"><i class="fas fa-users"></i> Active Agents</div>
-    <div class="nav-item" onclick="showTab('leads')"><i class="fas fa-bullseye"></i> Leads</div>
-    <div class="nav-item" onclick="showTab('sales')"><i class="fas fa-chart-line"></i> Sales</div>
-    <div class="nav-item" onclick="showTab('leaderboard')"><i class="fas fa-trophy"></i> Leaderboard</div>
+    <div class="nav-item active" onclick="showTab('applications', this)"><i class="fas fa-file-lines"></i> Applications</div>
+    <div class="nav-item" onclick="showTab('agents', this)"><i class="fas fa-users"></i> Active Agents</div>
+    <div class="nav-item" onclick="showTab('leads', this)"><i class="fas fa-bullseye"></i> Leads</div>
+    <div class="nav-item" onclick="showTab('sales', this)"><i class="fas fa-chart-line"></i> Sales</div>
+    <div class="nav-item" onclick="showTab('pending', this)">
+      <i class="fas fa-hourglass-half"></i> Pending Sales
+      <span class="badge-count" id="sidePendCount" style="display:none;">0</span>
+    </div>
+    <div class="nav-item" onclick="showTab('leaderboard', this)"><i class="fas fa-trophy"></i> Leaderboard</div>
     <div style="position:absolute;bottom:20px;left:0;right:0;padding:0 20px;">
       <a href="index.html" class="btn-ghost" style="width:100%;justify-content:center;color:rgba(255,255,255,.4);"><i class="fas fa-arrow-left"></i> Public Site</a>
     </div>
   </div>
 
-  <!-- Main content -->
   <div class="admin-main">
 
-    <!-- STATS ROW -->
+    <!-- STATS -->
     <div class="stat-grid" id="adminStats" style="margin-bottom:24px;">
       <div class="stat-card"><div class="stat-value" id="s-total">—</div><div class="stat-label">Total Applications</div></div>
-      <div class="stat-card"><div class="stat-value" id="s-pending" style="color:var(--yellow);">—</div><div class="stat-label">Pending Review</div></div>
+      <div class="stat-card"><div class="stat-value" id="s-pending" style="color:var(--yellow);">—</div><div class="stat-label">Pending Applications</div></div>
       <div class="stat-card"><div class="stat-value" id="s-approved" style="color:#16a34a;">—</div><div class="stat-label">Approved Agents</div></div>
       <div class="stat-card"><div class="stat-value" id="s-sales">—</div><div class="stat-label">Total Sales</div></div>
+      <div class="stat-card"><div class="stat-value" id="s-pend-sales" style="color:var(--orange);">—</div><div class="stat-label">Pending Sales</div></div>
+      <div class="stat-card"><div class="stat-value" id="s-revenue" style="color:#16a34a;">—</div><div class="stat-label">Total Revenue</div></div>
     </div>
 
     <!-- APPLICATIONS TAB -->
@@ -183,13 +181,10 @@ html, body { overflow-x: hidden; }
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr>
-            <th>App ID</th><th>Name</th><th>Location</th><th>Network</th><th>Applied</th><th>Status</th>
-          </tr></thead>
+          <thead><tr><th>App ID</th><th>Name</th><th>Location</th><th>Network</th><th>Applied</th><th>Status</th></tr></thead>
           <tbody id="appTable"></tbody>
         </table>
       </div>
-      <!-- Application detail panel -->
       <div class="app-detail" id="appDetail">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
           <h3 id="detail-name">Application Detail</h3>
@@ -198,7 +193,6 @@ html, body { overflow-x: hidden; }
         <div id="detail-body"></div>
         <div class="divider"></div>
         <div class="action-bar" id="detail-actions"></div>
-        <div id="detail-msg" style="margin-top:12px;"></div>
       </div>
     </div>
 
@@ -209,14 +203,13 @@ html, body { overflow-x: hidden; }
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <span id="agentCount" style="font-size:13px;color:var(--muted);"></span>
           <div style="display:flex;gap:6px;">
-            <button class="filter-pill active" data-af="all"     onclick="setAgentFilter('all',this)">All</button>
-            <button class="filter-pill"         data-af="active"  onclick="setAgentFilter('active',this)">Active</button>
-            <button class="filter-pill"         data-af="inactive" onclick="setAgentFilter('inactive',this)">Inactive</button>
+            <button class="filter-pill active" data-af="all" onclick="setAgentFilter('all',this)">All</button>
+            <button class="filter-pill" data-af="active" onclick="setAgentFilter('active',this)">Active</button>
+            <button class="filter-pill" data-af="inactive" onclick="setAgentFilter('inactive',this)">Inactive</button>
           </div>
         </div>
       </div>
 
-      <!-- AGENT DETAIL PANEL (expands when agent row is clicked) -->
       <div id="agentDetailPanel" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
           <div>
@@ -225,7 +218,7 @@ html, body { overflow-x: hidden; }
           </div>
           <button class="btn-ghost" onclick="closeAgentDetail()"><i class="fas fa-xmark"></i> Close</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;" id="agentDetailGrid"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;" id="agentDetailGrid"></div>
         <div style="background:var(--light);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;">
           <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Referral Link</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -239,8 +232,8 @@ html, body { overflow-x: hidden; }
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Agent ID</th><th>Code</th><th>Name</th><th>Location</th>
-            <th>Sales</th><th>Commission</th><th>Status</th><th>Joined</th>
+            <th>Agent ID</th><th>Code</th><th>Name</th><th class="hide-mobile">Location</th>
+            <th>Sales</th><th>Commission</th><th>Status</th><th class="hide-mobile">Joined</th>
           </tr></thead>
           <tbody id="agentTable"></tbody>
         </table>
@@ -263,44 +256,63 @@ html, body { overflow-x: hidden; }
       <div class="page-hdr">
         <h2>Sales</h2>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <div id="totalSalesVal" style="font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--orange);font-weight:800;"></div>
-          <button class="btn btn-primary btn-sm" onclick="openAddSale()">
-            <i class="fas fa-plus"></i> Record Sale
-          </button>
+          <div id="totalSalesVal" style="font-family:'Syne',sans-serif;font-size:1rem;color:var(--orange);font-weight:800;"></div>
+          <button class="btn btn-outline btn-sm" onclick="downloadAllSalesPdf()"><i class="fas fa-file-pdf"></i> Download PDF</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddSale()"><i class="fas fa-plus"></i> Record Sale</button>
         </div>
       </div>
 
-      <!-- ADD SALE INLINE FORM -->
+      <div class="filter-row">
+        <button class="filter-pill active" data-sf="all" onclick="setSaleFilter('all',this)">All</button>
+        <button class="filter-pill" data-sf="pending" onclick="setSaleFilter('pending',this)">Pending</button>
+        <button class="filter-pill" data-sf="confirmed" onclick="setSaleFilter('confirmed',this)">Confirmed</button>
+        <button class="filter-pill" data-sf="paid" onclick="setSaleFilter('paid',this)">Paid</button>
+      </div>
+
+      <!-- ADD SALE FORM -->
       <div id="addSaleForm" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
           <h3 style="font-size:1rem;">Record a New Sale</h3>
           <button class="btn-ghost" onclick="closeAddSale()"><i class="fas fa-xmark"></i></button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="sale-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div class="field">
             <label class="label">Agent Code <span class="req">*</span></label>
-            <select class="select" id="sale-agent">
-              <option value="">Select agent…</option>
-            </select>
+            <select class="select" id="sale-agent"><option value="">Select agent…</option></select>
             <div class="err-msg" id="sale-agent-err">Required.</div>
           </div>
           <div class="field">
             <label class="label">Product <span class="req">*</span></label>
-            <select class="select" id="sale-product">
-              <option value="">Select product…</option>
-            </select>
+            <select class="select" id="sale-product"><option value="">Select product…</option></select>
             <div class="err-msg" id="sale-product-err">Required.</div>
           </div>
           <div class="field">
-            <label class="label">Sale Amount (ZMW) <span class="req">*</span></label>
-            <input type="number" class="input" id="sale-amount" placeholder="e.g. 150" min="1">
-            <div class="err-msg" id="sale-amount-err">Required.</div>
+            <label class="label">Unit Price (ZMW) <span class="req">*</span></label>
+            <input type="number" class="input" id="sale-unit-price" placeholder="e.g. 150" min="1">
           </div>
           <div class="field">
-            <label class="label">Commission (ZMW) <span class="req">*</span></label>
-            <input type="number" class="input" id="sale-commission" placeholder="Auto-filled when product selected" min="0"
-              style="background:#fffbf8;">
-            <div class="hint">Auto-calculated. Edit only if different.</div>
+            <label class="label">Quantity <span class="req">*</span></label>
+            <input type="number" class="input" id="sale-qty" value="1" min="1">
+          </div>
+          <div class="field">
+            <label class="label">Customer Name <span class="req">*</span></label>
+            <input type="text" class="input" id="sale-cust-name" placeholder="Customer full name">
+          </div>
+          <div class="field">
+            <label class="label">Customer Phone <span class="req">*</span></label>
+            <input type="tel" class="input" id="sale-cust-phone" placeholder="+260...">
+          </div>
+          <div class="field">
+            <label class="label">Commission %</label>
+            <input type="number" class="input" id="sale-comm-pct" min="0" max="100" step="0.5" placeholder="Auto-filled">
+          </div>
+          <div class="field">
+            <label class="label">Calculated Commission</label>
+            <input type="text" class="input input-calc" id="sale-comm-calc" readonly value="ZMW 0">
+          </div>
+          <div class="field">
+            <label class="label">Total Sale Amount</label>
+            <input type="text" class="input input-calc" id="sale-amount-calc" readonly value="ZMW 0">
           </div>
           <div class="field">
             <label class="label">Status</label>
@@ -310,7 +322,7 @@ html, body { overflow-x: hidden; }
               <option value="paid">💰 Paid</option>
             </select>
           </div>
-          <div class="field">
+          <div class="field" style="grid-column:1/-1;">
             <label class="label">Notes (optional)</label>
             <input type="text" class="input" id="sale-notes" placeholder="Any extra details…">
           </div>
@@ -320,38 +332,50 @@ html, body { overflow-x: hidden; }
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
           <button class="btn btn-outline btn-sm" onclick="closeAddSale()">Cancel</button>
-          <button class="btn btn-primary" id="saveSaleBtn" onclick="saveSale()">
-            <i class="fas fa-check"></i> Save Sale
-          </button>
-          <button class="btn btn-green btn-sm" id="saveSaleWaBtn" onclick="saveSale(true)" title="Save and notify agent on WhatsApp">
-            <i class="fab fa-whatsapp"></i> Save &amp; Notify Agent
-          </button>
+          <button class="btn btn-primary" id="saveSaleBtn" onclick="saveSale()"><i class="fas fa-check"></i> Save Sale</button>
+          <button class="btn btn-green btn-sm" id="saveSaleWaBtn" onclick="saveSale(true)"><i class="fab fa-whatsapp"></i> Save &amp; Notify</button>
         </div>
       </div>
 
-      <!-- SALES TABLE -->
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Sale ID</th><th>Agent</th><th>Product</th>
-            <th>Amount</th><th>Commission</th><th>Status</th><th>Date</th><th>Actions</th>
+            <th>Sale ID</th><th>Agent</th><th>Product</th><th class="hide-mobile">Qty</th>
+            <th>Amount</th><th>Commission</th><th>Status</th><th class="hide-mobile">Date</th><th>Actions</th>
           </tr></thead>
           <tbody id="salesTable"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- PENDING SALES TAB -->
+    <div class="tab-pane" id="tab-pending">
+      <div class="page-hdr">
+        <h2>Pending Sales</h2>
+        <p style="font-size:13px;color:var(--muted);margin:0;">Sales submitted by agents — awaiting your approval.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Sale ID</th><th>Agent</th><th>Product</th><th>Qty</th>
+            <th>Amount</th><th>Commission</th><th class="hide-mobile">Customer</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="pendingTable"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- LEADERBOARD TAB -->
     <div class="tab-pane" id="tab-leaderboard">
-      <div class="page-hdr"><h2>Agent Leaderboard</h2></div>
+      <div class="page-hdr"><h2>Sales Leaderboard</h2></div>
       <div class="card" style="padding:0;overflow:hidden;">
         <div id="leaderboard"></div>
       </div>
     </div>
 
-  </div><!-- /admin-main -->
-</div><!-- /admin-layout -->
-</div><!-- /adminApp -->
+  </div>
+</div>
+</div>
 
 <div id="toast"></div>
 
@@ -364,22 +388,33 @@ html, body { overflow-x: hidden; }
     </div>
     <div class="modal-body">
       <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">This will create an active agent account and generate their Agent ID, Code, and referral link.</p>
-      <div class="field">
-        <label class="label">Application ID</label>
-        <input type="text" class="input" id="m-app-id" readonly style="background:var(--light);">
-      </div>
-      <div class="field">
-        <label class="label">Applicant Name</label>
-        <input type="text" class="input" id="m-name" readonly style="background:var(--light);">
-      </div>
-      <div id="approveError" class="alert alert-error" style="display:none;">
-        <i class="fas fa-circle-exclamation"></i><span id="approveErrText"></span>
-      </div>
+      <div class="field"><label class="label">Application ID</label><input type="text" class="input" id="m-app-id" readonly style="background:var(--light);"></div>
+      <div class="field"><label class="label">Applicant Name</label><input type="text" class="input" id="m-name" readonly style="background:var(--light);"></div>
+      <div id="approveError" class="alert alert-error" style="display:none;"><i class="fas fa-circle-exclamation"></i><span id="approveErrText"></span></div>
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn btn-outline btn-full" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-green btn-full" id="confirmApproveBtn" onclick="confirmApprove()">
-          <i class="fas fa-check"></i> Confirm Approval
-        </button>
+        <button class="btn btn-green btn-full" id="confirmApproveBtn" onclick="confirmApprove()"><i class="fas fa-check"></i> Confirm Approval</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject sale modal -->
+<div class="modal-overlay" id="rejectSaleModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Reject Sale</h3>
+      <button class="modal-close" onclick="closeRejectSale()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Please explain why this sale is being rejected. The agent will see this reason.</p>
+      <div class="field">
+        <label class="label">Reason for rejection <span class="req">*</span></label>
+        <textarea class="textarea" id="rejectReason" placeholder="e.g. Customer payment not verified"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline btn-full" onclick="closeRejectSale()">Cancel</button>
+        <button class="btn btn-full" style="background:var(--red);color:white;" id="confirmRejectSaleBtn" onclick="confirmRejectSale()"><i class="fas fa-xmark"></i> Confirm Reject</button>
       </div>
     </div>
   </div>
@@ -389,23 +424,15 @@ html, body { overflow-x: hidden; }
 <script>
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 function doLogin() {
-  const p    = document.getElementById('adminPass').value.trim();
-  const pass = window.ADMIN_PASSWORD || 'blesstech2026admin'; // fallback
+  const p = document.getElementById('adminPass').value.trim();
+  const pass = window.ADMIN_PASSWORD || 'blesstech2026admin';
   if (p === pass) {
     sessionStorage.setItem('btx_admin', 'yes');
-    // Hide login screen
-    const ls = document.getElementById('loginScreen');
-    if (ls) ls.style.display = 'none';
-    // Show admin app
-    const app = document.getElementById('adminApp');
-    if (app) { app.style.display = 'block'; app.style.visibility = 'visible'; }
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
     loadAll();
   } else {
-    const errEl = document.getElementById('loginErr');
-    if (errEl) errEl.classList.add('show');
-    // Shake the input
-    const input = document.getElementById('adminPass');
-    if (input) { input.style.borderColor = 'var(--red)'; setTimeout(() => { input.style.borderColor = ''; }, 1500); }
+    document.getElementById('loginErr').classList.add('show');
   }
 }
 function doLogout() {
@@ -413,24 +440,20 @@ function doLogout() {
   location.reload();
 }
 
-// Show login screen if not authenticated
 (function() {
-  const ls  = document.getElementById('loginScreen');
-  const app = document.getElementById('adminApp');
   if (adminLoggedIn()) {
-    if (ls)  ls.style.display  = 'none';
-    if (app) { app.style.display = 'block'; app.style.visibility = 'visible'; }
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
     loadAll();
-  } else {
-    if (ls)  ls.style.display  = 'flex';
-    if (app) app.style.display = 'none';
   }
 })();
 
-// ── DATA ──────────────────────────────────────────────────────────────────────
+// ── DATA ─────────────────────────────────────────────────────────────────────
 let allApps = [], allAgents = [], allLeads = [], allSales = [];
 let currentFilter = 'all';
 let currentApp = null;
+let saleFilter = 'all';
+let currentRejectSaleId = null;
 
 async function loadAll() {
   try {
@@ -445,7 +468,9 @@ async function loadAll() {
     renderAgents();
     renderLeads();
     renderSales();
+    renderPending();
     renderLeaderboard();
+    updatePendingBadge();
   } catch(e) {
     toast('⚠️  Could not load data: ' + e.message);
   }
@@ -456,6 +481,18 @@ function updateStats() {
   document.getElementById('s-pending').textContent  = allApps.filter(a=>a.status==='pending').length;
   document.getElementById('s-approved').textContent = allAgents.length;
   document.getElementById('s-sales').textContent    = allSales.length;
+  const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent').length;
+  document.getElementById('s-pend-sales').textContent = pend;
+  const revenue = allSales.reduce((t,s) => t + (s.amount || 0), 0);
+  document.getElementById('s-revenue').textContent = fmtMoney(revenue);
+}
+
+function updatePendingBadge() {
+  const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent').length;
+  const side = document.getElementById('sidePendCount');
+  const mob  = document.getElementById('mobPendCount');
+  if (side) { side.textContent = pend; side.style.display = pend ? 'inline-block' : 'none'; }
+  if (mob)  { mob.textContent  = pend; mob.style.display  = pend ? 'inline-block' : 'none'; }
 }
 
 // ── APPLICATIONS ─────────────────────────────────────────────────────────────
@@ -485,7 +522,7 @@ function filterApps() {
 
 function setFilter(status, btn) {
   currentFilter = status;
-  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.filter-pill[data-status]').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   filterApps();
 }
@@ -563,10 +600,10 @@ async function confirmApprove() {
   document.getElementById('approveError').style.display = 'none';
 
   try {
-    const n         = await db.nextId('applications'); // reuse counter
+    const n         = await db.nextId('applications');
     const agentId   = makeAgentId(n);
     const agentCode = makeAgentCode(n);
-    const refUrl    = `${CONFIG.siteUrl}/?ref=${agentCode}`;
+    const refUrl    = `${CONFIG.agentSiteUrl}/?ref=${agentCode}`;
 
     await db.insert('agents', {
       app_id:       currentApp.app_id,
@@ -605,8 +642,7 @@ async function rejectApp() {
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── AGENTS TABLE ──────────────────────────────────────────────────────────────
-// Agent filter
+// ── AGENTS ────────────────────────────────────────────────────────────────────
 let agentFilter = 'all';
 let selectedAgent = null;
 
@@ -632,7 +668,6 @@ function renderAgents() {
     return;
   }
 
-  // Calculate sales stats per agent
   const agentStats = {};
   allSales.forEach(s => {
     if (!agentStats[s.agent_code]) agentStats[s.agent_code] = { count:0, commission:0 };
@@ -646,11 +681,11 @@ function renderAgents() {
       <td><code style="color:var(--orange);font-size:13px;">${esc(a.agent_id)}</code></td>
       <td><strong>${esc(a.agent_code)}</strong></td>
       <td>${esc(a.full_name)}</td>
-      <td style="color:var(--muted);font-size:13px;">${esc(a.location||'—')}</td>
+      <td class="hide-mobile" style="color:var(--muted);font-size:13px;">${esc(a.location||'—')}</td>
       <td style="font-weight:700;">${stats.count}</td>
       <td style="color:#16a34a;font-weight:700;">${stats.commission ? fmtMoney(stats.commission) : '—'}</td>
       <td><span class="${a.active ? 'pill-approved' : 'pill-rejected'}">${a.active ? 'Active' : 'Inactive'}</span></td>
-      <td style="color:var(--muted);font-size:12px;">${fmtDate(a.joined_at)}</td>
+      <td class="hide-mobile" style="color:var(--muted);font-size:12px;">${fmtDate(a.joined_at)}</td>
     </tr>`;
   }).join('');
 }
@@ -666,24 +701,35 @@ function openAgentDetail(code) {
 
   const stats = (() => {
     const s = allSales.filter(x => x.agent_code === a.agent_code);
-    return { count: s.length, revenue: s.reduce((t,x)=>t+(x.amount||0),0), commission: s.reduce((t,x)=>t+(x.commission||0),0) };
+    const confirmed = s.filter(x => x.status === 'confirmed' || x.status === 'paid');
+    const pending = s.filter(x => x.status === 'pending');
+    return {
+      count: s.length,
+      revenue: s.reduce((t,x)=>t+(x.amount||0),0),
+      commission: confirmed.reduce((t,x)=>t+(x.commission||0),0),
+      pending: pending.reduce((t,x)=>t+(x.commission||0),0),
+    };
   })();
 
   document.getElementById('agentDetailGrid').innerHTML = [
-    ['Phone',      a.phone],
-    ['WhatsApp',   a.whatsapp],
-    ['Location',   a.location || '—'],
-    ['Total Sales',stats.count + ' sale' + (stats.count!==1?'s':'')],
-    ['Revenue',    stats.revenue ? fmtMoney(stats.revenue) : '—'],
-    ['Commission', stats.commission ? fmtMoney(stats.commission) : '—'],
+    ['Phone',        a.phone],
+    ['WhatsApp',     a.whatsapp],
+    ['Location',     a.location || '—'],
+    ['Total Sales',  stats.count + ' sale' + (stats.count!==1?'s':'')],
+    ['Revenue',      stats.revenue ? fmtMoney(stats.revenue) : '—'],
+    ['Commission',   stats.commission ? fmtMoney(stats.commission) : '—'],
+    ['Pending',      stats.pending ? fmtMoney(stats.pending) : '—'],
+    ['Status',       a.active ? 'Active' : 'Inactive'],
+    ['Joined',       fmtDate(a.joined_at)],
   ].map(([l,v]) => `<div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">${esc(l)}</div><div style="font-size:14px;font-weight:600;">${esc(v)}</div></div>`).join('');
 
   document.getElementById('agentDetailRef').textContent = a.referral_url || '';
 
   const actions = document.getElementById('agentDetailActions');
   actions.innerHTML = `
-    <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Just checking in from PhoneYa2-ZM. How are your sales going? Remember your referral link: ' + (a.referral_url||''))}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Message Agent</a>
+    <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Just checking in from PhoneYa2-ZM. How are your sales going? Remember your referral link: ' + (a.referral_url||''))}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Message</a>
     <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="recordSaleForAgent('${esc(a.agent_code)}')"><i class="fas fa-plus"></i> Record Sale</button>
+    <button class="btn btn-outline btn-sm" onclick="downloadAgentPdf('${esc(a.agent_code)}')"><i class="fas fa-file-pdf"></i> Statement PDF</button>
     ${a.active
       ? `<button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="toggleAgent('${esc(a.agent_code)}',false)"><i class="fas fa-ban"></i> Deactivate</button>`
       : `<button class="btn btn-sm" style="background:rgba(22,163,74,.1);color:#15803d;border:1px solid rgba(22,163,74,.2);" onclick="toggleAgent('${esc(a.agent_code)}',true)"><i class="fas fa-check"></i> Reactivate</button>`
@@ -713,20 +759,15 @@ async function toggleAgent(code, activate) {
 }
 
 function recordSaleForAgent(code) {
-  // Close agent panel, open sales tab with agent pre-selected
   closeAgentDetail();
-  showTab('sales');
-  document.querySelectorAll('.mob-tab-btn').forEach(b => {
-    if (b.textContent.trim() === 'Sales') { b.classList.add('active'); } else { b.classList.remove('active'); }
-  });
+  showTab('sales', null);
   openAddSale(code);
 }
 
-// ── LEADS TABLE ───────────────────────────────────────────────────────────────
+// ── LEADS ─────────────────────────────────────────────────────────────────────
 function renderLeads() {
   const tbody = document.getElementById('leadsTable');
-  const statusColor = { interested:'var(--yellow)', purchased:'#16a34a', lost:'var(--red)', followup:'var(--purple)' };
-  const statusIcon  = { interested:'🟡', purchased:'🟢', lost:'🔴', followup:'🔵' };
+  const statusIcon = { interested:'🟡', purchased:'🟢', lost:'🔴', followup:'🔵' };
   if (!allLeads.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">No leads yet.</td></tr>'; return; }
   tbody.innerHTML = allLeads.map(l => `
     <tr>
@@ -739,68 +780,158 @@ function renderLeads() {
     </tr>`).join('');
 }
 
-// ── SALES TABLE ───────────────────────────────────────────────────────────────
-// ── ADD SALE FORM LOGIC ──────────────────────────────────────────────────────
+// ── SALES ─────────────────────────────────────────────────────────────────────
+function setSaleFilter(f, btn) {
+  saleFilter = f;
+  document.querySelectorAll('.filter-pill[data-sf]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSales();
+}
+
+function renderSales() {
+  const tbody = document.getElementById('salesTable');
+  const filtered = saleFilter === 'all' ? allSales : allSales.filter(s => s.status === saleFilter);
+
+  const total = allSales.reduce((s,x) => s + (x.amount||0), 0);
+  const totalComm = allSales.reduce((s,x) => s + (x.commission||0), 0);
+  const valEl = document.getElementById('totalSalesVal');
+  if (valEl) valEl.textContent = total ? `${fmtMoney(total)} revenue · ${fmtMoney(totalComm)} comm.` : '';
+
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">No sales found. Click "Record Sale" to add one.</td></tr>'; return; }
+
+  tbody.innerHTML = filtered.map(s => {
+    const agent = allAgents.find(a => a.agent_code === s.agent_code);
+    return `<tr>
+      <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
+      <td>
+        <strong>${esc(s.agent_code)}</strong>
+        ${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}
+      </td>
+      <td style="font-size:13px;">${esc(s.product)}</td>
+      <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
+      <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td>
+        <select class="select" style="font-size:12px;padding:4px 8px;border-radius:6px;width:auto;min-width:110px;"
+                onchange="updateSaleStatus('${esc(s.id)}', this.value)">
+          <option value="pending"   ${s.status==='pending'   ?'selected':''}>🟡 Pending</option>
+          <option value="confirmed" ${s.status==='confirmed' ?'selected':''}>✅ Confirmed</option>
+          <option value="paid"      ${s.status==='paid'      ?'selected':''}>💰 Paid</option>
+        </select>
+      </td>
+      <td class="hide-mobile" style="color:var(--muted);font-size:12px;">${fmtDate(s.created_at)}</td>
+      <td>
+        <div style="display:flex;gap:5px;">
+          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' (' + s.product + ') is ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. Thank you! 🎉')}" target="_blank" class="btn-ghost btn-sm" title="Notify agent"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
+          <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="deleteSale('${esc(s.id)}','${esc(s.sale_id)}')" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateSaleStatus(id, status) {
+  try {
+    const updates = { status };
+    if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
+    await db.update('sales', `id=eq.${id}`, updates);
+    toast('✅ Status updated to ' + status);
+    await loadAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function deleteSale(id, saleId) {
+  if (!confirm('Delete sale ' + saleId + '? This cannot be undone.')) return;
+  try {
+    await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` });
+    toast('🗑️  Sale deleted');
+    await loadAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── ADD SALE ─────────────────────────────────────────────────────────────────
 function openAddSale(preselectedCode) {
   const form = document.getElementById('addSaleForm');
   form.style.display = 'block';
   document.getElementById('addSaleError').style.display = 'none';
 
-  // Populate agent dropdown from loaded agents
   const agentSel = document.getElementById('sale-agent');
   agentSel.innerHTML = '<option value="">Select agent…</option>' +
     allAgents.filter(a => a.active).map(a =>
       `<option value="${esc(a.agent_code)}" ${a.agent_code === preselectedCode ? 'selected' : ''}>${esc(a.full_name)} (${esc(a.agent_code)})</option>`
     ).join('');
 
-  // Populate product dropdown from CONFIG
   const prodSel = document.getElementById('sale-product');
   prodSel.innerHTML = '<option value="">Select product…</option>' +
     CONFIG.products.map(p =>
-      `<option value="${esc(p.name)}" data-price="${p.price}" data-comm="${p.commission}">${esc(p.name)} — ${fmtMoney(p.price)}</option>`
+      `<option value="${esc(p.name)}" data-price="${p.price}" data-pct="${p.commission_percent}">${esc(p.name)} — ${fmtMoney(p.price)}</option>`
     ).join('');
 
-  // Auto-fill commission when product changes
   prodSel.onchange = () => {
     const opt = prodSel.options[prodSel.selectedIndex];
     if (opt && opt.dataset.price) {
-      document.getElementById('sale-amount').value     = opt.dataset.price;
-      document.getElementById('sale-commission').value = opt.dataset.comm;
+      document.getElementById('sale-unit-price').value = opt.dataset.price;
+      document.getElementById('sale-comm-pct').value   = opt.dataset.pct;
+      recalcSale();
     }
   };
+
+  ['sale-unit-price','sale-qty','sale-comm-pct'].forEach(id => {
+    document.getElementById(id).oninput = recalcSale;
+  });
 
   form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function recalcSale() {
+  const unit  = Number(document.getElementById('sale-unit-price').value) || 0;
+  const qty   = Number(document.getElementById('sale-qty').value) || 0;
+  const pct   = Number(document.getElementById('sale-comm-pct').value) || 0;
+  const amount = calcAmount(unit, qty);
+  const comm   = calcCommission(unit, qty, pct);
+  document.getElementById('sale-amount-calc').value = fmtMoney(amount);
+  document.getElementById('sale-comm-calc').value   = fmtMoney(comm);
+}
+
 function closeAddSale() {
   document.getElementById('addSaleForm').style.display = 'none';
-  // Reset all fields
   ['sale-agent','sale-product','sale-status'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.selectedIndex = 0;
   });
-  ['sale-amount','sale-commission','sale-notes'].forEach(id => {
+  ['sale-unit-price','sale-qty','sale-comm-pct','sale-cust-name','sale-cust-phone','sale-notes'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  document.getElementById('sale-qty').value = '1';
+  document.getElementById('sale-amount-calc').value = 'ZMW 0';
+  document.getElementById('sale-comm-calc').value = 'ZMW 0';
 }
 
 async function saveSale(notifyAgent) {
   const agentCode    = document.getElementById('sale-agent').value;
   const productName  = document.getElementById('sale-product').value;
-  const amount       = parseInt(document.getElementById('sale-amount').value);
-  const commission   = parseInt(document.getElementById('sale-commission').value);
+  const unitPrice    = Number(document.getElementById('sale-unit-price').value);
+  const quantity     = Number(document.getElementById('sale-qty').value) || 1;
+  const commissionPct= Number(document.getElementById('sale-comm-pct').value) || 0;
+  const customerName = document.getElementById('sale-cust-name').value.trim();
+  const customerPhone= document.getElementById('sale-cust-phone').value.trim();
   const status       = document.getElementById('sale-status').value;
   const notes        = document.getElementById('sale-notes').value.trim();
 
   let ok = true;
   [['sale-agent-err',   !agentCode],
-   ['sale-product-err', !productName],
-   ['sale-amount-err',  !amount || isNaN(amount)]].forEach(([eid, bad]) => {
+   ['sale-product-err', !productName]].forEach(([eid, bad]) => {
     document.getElementById(eid).classList.toggle('show', bad);
     if (bad) ok = false;
   });
+  if (!unitPrice) { toast('⚠️  Unit price required'); ok = false; }
+  if (!customerName) { toast('⚠️  Customer name required'); ok = false; }
+  if (!customerPhone){ toast('⚠️  Customer phone required'); ok = false; }
   if (!ok) return;
+
+  const amount     = calcAmount(unitPrice, quantity);
+  const commission = calcCommission(unitPrice, quantity, commissionPct);
 
   const btn    = document.getElementById('saveSaleBtn');
   const btnWa  = document.getElementById('saveSaleWaBtn');
@@ -814,19 +945,26 @@ async function saveSale(notifyAgent) {
     const saleId = makeSaleId(n);
 
     await db.insert('sales', {
-      sale_id:    saleId,
-      agent_code: agentCode,
-      product:    productName,
-      amount:     amount,
-      commission: commission || 0,
-      status:     status,
-      notes:      notes || null,
-      confirmed_at: status === 'confirmed' || status === 'paid' ? new Date().toISOString() : null,
+      sale_id:            saleId,
+      agent_code:         agentCode,
+      product:            productName,
+      unit_price:         unitPrice,
+      quantity:           quantity,
+      amount:             amount,
+      commission_percent: commissionPct,
+      commission:         commission,
+      customer_name:      customerName,
+      customer_phone:     customerPhone,
+      status:             status,
+      notes:              notes || null,
+      submitted_by:       'admin',
+      submitted_at:       new Date().toISOString(),
+      confirmed_by:       status === 'confirmed' || status === 'paid' ? 'admin' : null,
+      confirmed_at:       status === 'confirmed' || status === 'paid' ? new Date().toISOString() : null,
     });
 
     toast('✅ Sale ' + saleId + ' recorded');
 
-    // Notify agent on WhatsApp if requested
     if (notifyAgent) {
       const agent = allAgents.find(a => a.agent_code === agentCode);
       if (agent) {
@@ -835,8 +973,9 @@ async function saveSale(notifyAgent) {
 Your sale has been confirmed:
 
 *Product:* ${productName}
+*Quantity:* ${quantity}
 *Sale Amount:* ${fmtMoney(amount)}
-*Your Commission:* +${fmtMoney(commission || 0)}
+*Your Commission:* +${fmtMoney(commission)}
 *Status:* ${status}
 *Sale ID:* ${saleId}
 
@@ -858,70 +997,81 @@ Thank you — keep selling! 🚀`;
   }
 }
 
-// ── RENDER SALES ─────────────────────────────────────────────────────────────
-function renderSales() {
-  const tbody = document.getElementById('salesTable');
-  const total = allSales.reduce((s,x) => s + (x.amount||0), 0);
-  const totalComm = allSales.reduce((s,x) => s + (x.commission||0), 0);
-  const valEl = document.getElementById('totalSalesVal');
-  if (valEl) valEl.textContent = total ? `Revenue: ${fmtMoney(total)} · Commission: ${fmtMoney(totalComm)}` : '';
-  if (!allSales.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No sales yet. Click "Record Sale" to add one.</td></tr>'; return; }
-  tbody.innerHTML = allSales.map(s => {
-    const statusClass = s.status === 'confirmed' || s.status === 'paid' ? 'approved' : 'pending';
+// ── PENDING SALES ─────────────────────────────────────────────────────────────
+function renderPending() {
+  const tbody = document.getElementById('pendingTable');
+  const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent');
+  if (!pend.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No pending sales. 🎉</td></tr>';
+    return;
+  }
+  tbody.innerHTML = pend.map(s => {
     const agent = allAgents.find(a => a.agent_code === s.agent_code);
     return `<tr>
-      <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
-      <td>
-        <strong>${esc(s.agent_code)}</strong>
-        ${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}
-      </td>
+      <td><code style="font-size:12px;color:var(--orange);">${esc(s.sale_id)}</code></td>
+      <td><strong>${esc(s.agent_code)}</strong>${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}</td>
       <td style="font-size:13px;">${esc(s.product)}</td>
+      <td style="font-weight:700;">${s.quantity || 1}</td>
       <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
       <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td class="hide-mobile" style="font-size:12px;">${esc(s.customer_name || '—')}<br><span style="color:var(--muted);">${esc(s.customer_phone || '')}</span></td>
       <td>
-        <select class="select" style="font-size:12px;padding:4px 8px;border-radius:6px;width:auto;min-width:110px;"
-                onchange="updateSaleStatus('${esc(s.id)}','${esc(s.agent_code)}',this.value,'${esc(s.product)}',${s.commission||0})">
-          <option value="pending"   ${s.status==='pending'   ?'selected':''}>🟡 Pending</option>
-          <option value="confirmed" ${s.status==='confirmed' ?'selected':''}>✅ Confirmed</option>
-          <option value="paid"      ${s.status==='paid'      ?'selected':''}>💰 Paid</option>
-        </select>
-      </td>
-      <td style="color:var(--muted);font-size:12px;">${fmtDate(s.created_at)}</td>
-      <td>
-        <div style="display:flex;gap:5px;">
-          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' (' + s.product + ') has been ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. Thank you! 🎉')}" target="_blank" class="btn-ghost btn-sm" title="Notify agent"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
-          <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="deleteSale('${esc(s.id)}','${esc(s.sale_id)}')" title="Delete sale"><i class="fas fa-trash"></i></button>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <button class="btn btn-green btn-sm" onclick="approvePending('${esc(s.id)}','${esc(s.sale_id)}')"><i class="fas fa-check"></i> Approve</button>
+          <button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="openRejectSale('${esc(s.id)}','${esc(s.sale_id)}')"><i class="fas fa-xmark"></i></button>
         </div>
       </td>
     </tr>`;
   }).join('');
 }
 
-async function updateSaleStatus(id, agentCode, status, product, commission) {
+async function approvePending(id, saleId) {
+  if (!confirm('Approve sale ' + saleId + '? The agent will earn the commission.')) return;
   try {
-    const updates = { status };
-    if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
-    await db.update('sales', `id=eq.${id}`, updates);
-    toast('✅ Status updated to ' + status);
+    await db.update('sales', `id=eq.${id}`, {
+      status: 'confirmed',
+      confirmed_by: 'admin',
+      confirmed_at: new Date().toISOString(),
+    });
+    toast('✅ Sale ' + saleId + ' approved');
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-async function deleteSale(id, saleId) {
-  if (!confirm('Delete sale ' + saleId + '? This cannot be undone.')) return;
+function openRejectSale(id, saleId) {
+  currentRejectSaleId = id;
+  document.getElementById('rejectReason').value = '';
+  document.getElementById('rejectSaleModal').classList.add('open');
+  document.getElementById('rejectSaleModal').dataset.saleId = saleId;
+}
+function closeRejectSale() {
+  document.getElementById('rejectSaleModal').classList.remove('open');
+  currentRejectSaleId = null;
+}
+async function confirmRejectSale() {
+  const reason = document.getElementById('rejectReason').value.trim();
+  if (!reason) { toast('⚠️  Please enter a reason'); return; }
+  const btn = document.getElementById('confirmRejectSaleBtn');
+  setLoading(btn, true, 'Rejecting…');
   try {
-    await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` });
-    toast('🗑️  Sale deleted');
+    await db.update('sales', `id=eq.${currentRejectSaleId}`, {
+      status: 'rejected',
+      rejected_by: 'admin',
+      rejected_at: new Date().toISOString(),
+      rejection_reason: reason,
+    });
+    toast('🚫 Sale rejected');
+    closeRejectSale();
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
+  finally { setLoading(btn, false, '<i class="fas fa-xmark"></i> Confirm Reject'); }
 }
 
 // ── LEADERBOARD ───────────────────────────────────────────────────────────────
 function renderLeaderboard() {
   const medals = ['🥇','🥈','🥉'];
-  // Aggregate sales per agent
   const byAgent = {};
-  allSales.forEach(s => {
+  allSales.filter(s => s.status === 'confirmed' || s.status === 'paid').forEach(s => {
     if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales: 0, revenue: 0, commission: 0 };
     byAgent[s.agent_code].sales++;
     byAgent[s.agent_code].revenue    += (s.amount || 0);
@@ -932,7 +1082,7 @@ function renderLeaderboard() {
     .sort((a,b) => b.revenue - a.revenue);
 
   const el = document.getElementById('leaderboard');
-  if (!ranked.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><h3>No sales yet</h3><p>The leaderboard updates as agents record sales.</p></div>'; return; }
+  if (!ranked.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><h3>No confirmed sales yet</h3><p>The leaderboard updates as agents record sales.</p></div>'; return; }
   el.innerHTML = ranked.map((r, i) => `
     <div class="rank-row" style="${i === 0 ? 'background:linear-gradient(90deg,#fff8f4,white);' : ''}">
       <div class="rank-num" style="color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
@@ -942,17 +1092,62 @@ function renderLeaderboard() {
     </div>`).join('');
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
-function setMobTab(btn) {
-  document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+// ── PDF DOWNLOADS ─────────────────────────────────────────────────────────────
+function downloadAllSalesPdf() {
+  if (!allSales.length) { toast('⚠️  No sales to download'); return; }
+  const sales = allSales.map(s => ({
+    sale_id:    s.sale_id,
+    created_at: s.created_at,
+    product:    s.product,
+    quantity:   s.quantity || 1,
+    amount:     s.amount,
+    commission: s.commission,
+    status:     s.status,
+  }));
+  makeSalesStatementPdf({
+    agentName: 'All Agents',
+    period:    'All time',
+    sales,
+  });
+  toast('📄 PDF downloading…');
 }
 
-function showTab(name) {
+function downloadAgentPdf(agentCode) {
+  const agent = allAgents.find(a => a.agent_code === agentCode);
+  if (!agent) return;
+  const sales = allSales.filter(s => s.agent_code === agentCode).map(s => ({
+    sale_id:    s.sale_id,
+    created_at: s.created_at,
+    product:    s.product,
+    quantity:   s.quantity || 1,
+    amount:     s.amount,
+    commission: s.commission,
+    status:     s.status,
+  }));
+  if (!sales.length) { toast('⚠️  No sales for this agent'); return; }
+  makeSalesStatementPdf({
+    agentName: agent.full_name,
+    agentId:   agent.agent_id,
+    agentCode: agent.agent_code,
+    period:    'All time',
+    sales,
+  });
+  toast('📄 Statement downloading…');
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(name, btn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  const pane = document.getElementById('tab-' + name);
+  if (pane) pane.classList.add('active');
+
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
+
+  if (btn) {
+    if (btn.classList.contains('nav-item')) btn.classList.add('active');
+    else if (btn.classList.contains('mob-tab-btn')) btn.classList.add('active');
+  }
 }
 
 // Initial load if already logged in
