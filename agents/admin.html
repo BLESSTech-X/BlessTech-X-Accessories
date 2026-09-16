@@ -46,19 +46,9 @@
 .rank-rev { font-weight: 800; color: var(--orange); font-size: 14px; }
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
-.mobile-admin-tabs {
-  display: none;
-  overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
-  padding: 10px 16px; background: white;
-  border-bottom: 1px solid var(--border); gap: 6px;
-}
+.mobile-admin-tabs { display: none; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; padding: 10px 16px; background: white; border-bottom: 1px solid var(--border); gap: 6px; }
 .mobile-admin-tabs::-webkit-scrollbar { display: none; }
-.mob-tab-btn {
-  flex-shrink: 0; padding: 7px 14px; border-radius: 100px;
-  border: 1.5px solid var(--border); background: white;
-  font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
-  white-space: nowrap; transition: all .2s;
-}
+.mob-tab-btn { flex-shrink: 0; padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--border); background: white; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .2s; }
 .mob-tab-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
 .mob-tab-btn .badge-count { margin-left: 5px; background: var(--orange); color: white; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; }
 .tier-row { display: grid; grid-template-columns: 100px 100px 100px 1fr 60px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
@@ -91,6 +81,58 @@ html, body { overflow-x: hidden; }
 .campaign-card.active { border-color: rgba(37,211,102,.4); background: linear-gradient(135deg,#f0fdf4,white); }
 .content-item { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; }
 .content-item-tag { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+
+/* ── AGENT PHOTO in detail panel ────────────────────────────────────────── */
+.agent-photo-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--light);
+  border: 3px solid var(--border);
+  flex-shrink: 0;
+}
+.agent-photo-fallback-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#ff6000,#ff9f43);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Syne',sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  border: 3px solid var(--border);
+  flex-shrink: 0;
+}
+.agent-photo-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--light);
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+.agent-photo-fallback-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#ff6000,#ff9f43);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Syne',sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
 @media(max-width:700px) {
   .tier-row { grid-template-columns: 1fr 1fr; gap: 8px; }
   .tier-row .tier-range-display { grid-column: 1 / -1; }
@@ -256,11 +298,15 @@ html, body { overflow-x: hidden; }
           </div>
         </div>
       </div>
+
       <div id="agentDetailPanel" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-          <div>
-            <div id="agentDetailName" style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;"></div>
-            <div id="agentDetailMeta" style="font-size:13px;color:var(--muted);margin-top:2px;"></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:16px;">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div id="agentDetailPhoto"></div>
+            <div>
+              <div id="agentDetailName" style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;"></div>
+              <div id="agentDetailMeta" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+            </div>
           </div>
           <button class="btn-ghost" onclick="closeAgentDetail()"><i class="fas fa-xmark"></i> Close</button>
         </div>
@@ -275,10 +321,11 @@ html, body { overflow-x: hidden; }
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;" id="agentDetailActions"></div>
       </div>
+
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Agent ID</th><th>Code</th><th>Name</th><th class="hide-mobile">Location</th>
+            <th class="hide-mobile"></th><th>Agent ID</th><th>Code</th><th>Name</th><th class="hide-mobile">Location</th>
             <th>Sales</th><th>Commission</th><th>Status</th><th class="hide-mobile">Joined</th>
           </tr></thead>
           <tbody id="agentTable"></tbody>
@@ -455,7 +502,7 @@ html, body { overflow-x: hidden; }
         <button class="btn btn-primary btn-sm" onclick="openCampaignForm()"><i class="fas fa-plus"></i> New Campaign</button>
       </div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
-        Campaigns temporarily boost the commission percentage for all sales made during the campaign window. Agents see the campaign on their dashboard.
+        Campaigns temporarily boost the commission percentage for all sales made during the campaign window.
       </p>
       <div id="campaignForm" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
@@ -836,6 +883,25 @@ function updateFlagBadge() {
   });
 }
 
+// ── PHOTO RENDERING HELPERS ──────────────────────────────────────────────
+function renderAgentPhotoMini(agent) {
+  if (agent.profile_photo_url) {
+    return `<img src="${esc(agent.profile_photo_url)}" class="agent-photo-mini" alt=""
+      onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='inline-flex');">
+      <span class="agent-photo-fallback-mini" style="display:none;">${(agent.full_name || '?')[0].toUpperCase()}</span>`;
+  }
+  return `<span class="agent-photo-fallback-mini">${(agent.full_name || '?')[0].toUpperCase()}</span>`;
+}
+
+function renderAgentPhotoLarge(agent) {
+  if (agent.profile_photo_url) {
+    return `<img src="${esc(agent.profile_photo_url)}" class="agent-photo-large" alt=""
+      onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='flex');">
+      <div class="agent-photo-fallback-large" style="display:none;">${(agent.full_name || '?')[0].toUpperCase()}</div>`;
+  }
+  return `<div class="agent-photo-fallback-large">${(agent.full_name || '?')[0].toUpperCase()}</div>`;
+}
+
 // APPLICATIONS
 function renderApps(apps) {
   const list = (apps || allApps).filter(a => currentFilter === 'all' || a.status === currentFilter);
@@ -1007,7 +1073,6 @@ async function confirmApprove() {
       reviewed_by: 'admin', reviewed_at: new Date().toISOString(),
     });
     await db.logAudit('application', currentApp.app_id, 'approved', 'admin', { status: currentApp.status }, { status: 'approved', agent_code: agentCode });
-    // Notify agent
     await createNotification(agentCode, '🎉 Welcome to PhoneYa2', `Your agent account is active. Your code is ${agentCode}. Log in at ${CONFIG.agentSiteUrl}/agent.html`, 'success', 'agent.html');
     closeModal(); toast('✅ Agent created: ' + agentCode);
     loadAll(); closeDetail();
@@ -1048,7 +1113,7 @@ function renderAgents() {
   const countEl = document.getElementById('agentCount');
   if (countEl) countEl.textContent = list.length + ' agent' + (list.length !== 1 ? 's' : '');
   const tbody = document.getElementById('agentTable');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No agents.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">No agents.</td></tr>'; return; }
   const agentStats = {};
   allSales.forEach(s => {
     if (!agentStats[s.agent_code]) agentStats[s.agent_code] = { count: 0, commission: 0 };
@@ -1058,6 +1123,7 @@ function renderAgents() {
   tbody.innerHTML = list.map(a => {
     const stats = agentStats[a.agent_code] || { count: 0, commission: 0 };
     return `<tr onclick="openAgentDetail('${esc(a.agent_code)}')" style="cursor:pointer;">
+      <td class="hide-mobile" style="width:40px;">${renderAgentPhotoMini(a)}</td>
       <td><code style="color:var(--orange);font-size:13px;">${esc(a.agent_id)}</code></td>
       <td><strong>${esc(a.agent_code)}</strong></td>
       <td>${esc(a.full_name)}</td>
@@ -1069,12 +1135,18 @@ function renderAgents() {
     </tr>`;
   }).join('');
 }
+
 async function openAgentDetail(code) {
   selectedAgent = allAgents.find(a => a.agent_code === code);
   if (!selectedAgent) return;
   const a = selectedAgent;
+
+  // Photo
+  document.getElementById('agentDetailPhoto').innerHTML = renderAgentPhotoLarge(a);
+
   document.getElementById('agentDetailName').textContent = a.full_name;
   document.getElementById('agentDetailMeta').textContent = a.agent_id + ' · ' + a.agent_code + ' · Joined ' + fmtDate(a.joined_at);
+
   const stats = (() => {
     const s = allSales.filter(x => x.agent_code === a.agent_code);
     const confirmed = s.filter(x => x.status === 'confirmed' || x.status === 'paid');
@@ -1086,6 +1158,7 @@ async function openAgentDetail(code) {
       pending: pending.reduce((t,x)=>t+(x.commission||0),0),
     };
   })();
+
   document.getElementById('agentDetailGrid').innerHTML = [
     ['Phone', a.phone], ['WhatsApp', a.whatsapp], ['Location', a.location || '—'],
     ['Total Sales', stats.count + ' sale' + (stats.count!==1?'s':'')],
@@ -1110,11 +1183,13 @@ async function openAgentDetail(code) {
   document.getElementById('agentDetailRef').textContent = a.referral_url || '';
   const actions = document.getElementById('agentDetailActions');
   actions.innerHTML = `
+    <a href="profile.html?id=${esc(a.agent_id)}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-user"></i> View Public Profile</a>
     <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Just checking in from PhoneYa2-ZM.')}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Message</a>
     <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="recordSaleForAgent('${esc(a.agent_code)}')"><i class="fas fa-plus"></i> Record Sale</button>
     <button class="btn btn-outline btn-sm" onclick="downloadAgentPdf('${esc(a.agent_code)}')"><i class="fas fa-file-pdf"></i> Statement</button>
     <button class="btn btn-outline btn-sm" onclick="issueIdCard('${esc(a.agent_code)}')"><i class="fas fa-id-card"></i> ID Card</button>
     <button class="btn btn-outline btn-sm" onclick="issueCertificate('${esc(a.agent_code)}')"><i class="fas fa-award"></i> Certificate</button>
+    ${a.profile_photo_url ? `<button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="removeAgentPhoto('${esc(a.agent_code)}')"><i class="fas fa-trash"></i> Remove Photo</button>` : ''}
     ${a.active
       ? `<button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="toggleAgent('${esc(a.agent_code)}',false)"><i class="fas fa-ban"></i> Deactivate</button>`
       : `<button class="btn btn-sm" style="background:rgba(22,163,74,.1);color:#15803d;border:1px solid rgba(22,163,74,.2);" onclick="toggleAgent('${esc(a.agent_code)}',true)"><i class="fas fa-check"></i> Reactivate</button>`
@@ -1124,6 +1199,7 @@ async function openAgentDetail(code) {
 }
 function closeAgentDetail() { document.getElementById('agentDetailPanel').style.display = 'none'; selectedAgent = null; }
 function copyAgentRef() { if (selectedAgent) { copyToClipboard(selectedAgent.referral_url || ''); toast('✅ Copied'); } }
+
 async function toggleAgent(code, activate) {
   if (!confirm((activate ? 'Reactivate' : 'Deactivate') + ' agent ' + code + '?')) return;
   try {
@@ -1133,12 +1209,25 @@ async function toggleAgent(code, activate) {
     await loadAll(); closeAgentDetail();
   } catch(e) { toast('Error: ' + e.message); }
 }
+
+async function removeAgentPhoto(code) {
+  if (!confirm('Remove this agent\'s profile photo?')) return;
+  try {
+    const a = allAgents.find(x => x.agent_code === code);
+    await deleteAgentPhoto(code, a ? a.profile_photo_url : null);
+    await loadAll();
+    if (a) { a.profile_photo_url = null; }
+    openAgentDetail(code);
+    toast('✅ Photo removed');
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
 function recordSaleForAgent(code) { closeAgentDetail(); showTab('sales', null); openAddSale(code); }
-function issueIdCard(code) {
+async function issueIdCard(code) {
   const agent = allAgents.find(a => a.agent_code === code);
   if (!agent) return;
-  makeIdCardPdf(agent);
-  toast('🎫 ID Card downloading…');
+  toast('🎫 Generating ID card…');
+  await makeIdCardPdf(agent);
 }
 function issueCertificate(code) {
   const agent = allAgents.find(a => a.agent_code === code);
@@ -1295,7 +1384,6 @@ async function saveSale(notifyAgent) {
     const agent = allAgents.find(a => a.agent_code === agentCode);
     if (agent) await checkFraud(saleRecord, agent);
     await db.logAudit('sale', saleId, 'created_by_admin', 'admin', null, { amount, commission, status });
-    // Notify agent
     if (agent) {
       await createNotification(agentCode, '💰 New sale recorded', `${productName} · ${fmtMoney(amount)} · Your commission: +${fmtMoney(commission)}`, 'success', 'agent.html');
     }
@@ -1345,7 +1433,7 @@ async function approvePending(id, saleId, agentCode) {
     const sale = allSales.find(s => s.id === id);
     if (sale) await upsertCustomer(sale);
     await db.logAudit('sale', saleId, 'approved', 'admin', { status: 'pending' }, { status: 'confirmed' });
-    await createNotification(agentCode, '✅ Sale approved', `Your sale ${saleId} has been approved. Commission is now in your available balance.`, 'success');
+    await createNotification(agentCode, '✅ Sale approved', `Your sale ${saleId} has been approved. Commission is now available.`, 'success');
     toast('✅ Approved'); await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
@@ -1493,122 +1581,6 @@ function renderLeaderboard() {
     </div>`).join('');
 }
 
-// REPORTS
-function setReportFilter(f, btn) {
-  reportFilter = f;
-  document.querySelectorAll('.filter-pill[data-rf]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderReports();
-}
-function getReportRange() {
-  const now = new Date();
-  if (reportFilter === 'month') return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: now, label: 'This Month' };
-  if (reportFilter === 'last_month') return { from: new Date(now.getFullYear(), now.getMonth()-1, 1), to: new Date(now.getFullYear(), now.getMonth(), 0), label: 'Last Month' };
-  if (reportFilter === 'year') return { from: new Date(now.getFullYear(), 0, 1), to: now, label: 'This Year' };
-  return { from: new Date(0), to: now, label: 'All Time' };
-}
-function renderReports() {
-  const range = getReportRange();
-  const sales = allSales.filter(s => { const d = new Date(s.created_at); return d >= range.from && d <= range.to; });
-  const confirmed = sales.filter(s => s.status === 'confirmed' || s.status === 'paid');
-  const pending = sales.filter(s => s.status === 'pending');
-  const totalRevenue = sales.reduce((t,s) => t + (s.amount || 0), 0);
-  const totalComm = confirmed.reduce((t,s) => t + (s.commission || 0), 0);
-  const pendingComm = pending.reduce((t,s) => t + (s.commission || 0), 0);
-  const byAgent = {};
-  sales.forEach(s => {
-    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { count: 0, revenue: 0 };
-    byAgent[s.agent_code].count++;
-    byAgent[s.agent_code].revenue += (s.amount || 0);
-  });
-  const ranked = Object.entries(byAgent).map(([code, d]) => ({ code, ...d, name: allAgents.find(a=>a.agent_code===code)?.full_name || code })).sort((a,b) => b.revenue - a.revenue);
-  document.getElementById('reportsContent').innerHTML = `
-    <div class="report-card">
-      <h3 style="font-size:1rem;margin-bottom:12px;">${range.label}</h3>
-      <div class="report-row"><span class="report-lbl">Total Sales</span><span class="report-val">${sales.length}</span></div>
-      <div class="report-row"><span class="report-lbl">Total Revenue</span><span class="report-val" style="color:var(--orange);">${fmtMoney(totalRevenue)}</span></div>
-      <div class="report-row"><span class="report-lbl">Confirmed Commission</span><span class="report-val" style="color:#16a34a;">${fmtMoney(totalComm)}</span></div>
-      <div class="report-row"><span class="report-lbl">Pending Commission</span><span class="report-val" style="color:var(--yellow);">${fmtMoney(pendingComm)}</span></div>
-      <div class="report-row"><span class="report-lbl">Active Agents</span><span class="report-val">${ranked.length}</span></div>
-    </div>
-    <div class="report-card">
-      <h3 style="font-size:1rem;margin-bottom:12px;">Top Agents</h3>
-      ${ranked.length ? ranked.slice(0, 10).map((r, i) => `
-        <div class="report-row">
-          <span class="report-lbl">${i+1}. ${esc(r.name)} <code style="background:var(--light);padding:1px 5px;border-radius:4px;font-size:11px;">${esc(r.code)}</code></span>
-          <span class="report-val">${r.count} sales · ${fmtMoney(r.revenue)}</span>
-        </div>
-      `).join('') : '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No sales.</div>'}
-    </div>`;
-}
-
-// AUDIT
-function setAuditFilter(f, btn) {
-  auditFilter = f;
-  document.querySelectorAll('.filter-pill[data-audit]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderAudit();
-}
-function renderAudit() {
-  const el = document.getElementById('auditList');
-  const q = (document.getElementById('auditSearch')?.value || '').toLowerCase();
-  let list = allAudit;
-  if (auditFilter !== 'all') list = list.filter(a => a.entity_type === auditFilter);
-  if (q) list = list.filter(a => (a.action || '').toLowerCase().includes(q) || (a.entity_id || '').toLowerCase().includes(q) || (a.notes || '').toLowerCase().includes(q));
-  if (!list.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;">No records.</div>'; return; }
-  const icons = { application: 'fa-file-lines', agent: 'fa-user-tie', sale: 'fa-chart-line', payout: 'fa-money-bill-transfer', tier: 'fa-sliders', campaign: 'fa-bullhorn', training: 'fa-graduation-cap', payment_method: 'fa-credit-card', flag: 'fa-triangle-exclamation' };
-  el.innerHTML = list.map(a => {
-    const color = a.action.includes('approve') || a.action.includes('paid') ? 'green'
-                : a.action.includes('reject') || a.action.includes('deactivat') ? 'red'
-                : a.action.includes('creat') || a.action.includes('submitt') ? 'blue'
-                : 'orange';
-    return `<div class="audit-item">
-      <div class="audit-icon ${color}"><i class="fas ${icons[a.entity_type] || 'fa-circle'}"></i></div>
-      <div class="audit-body">
-        <div class="audit-title">${esc((a.action || '').replace(/_/g, ' '))} <span style="color:var(--muted);font-weight:400;">on ${esc(a.entity_type)}</span> ${a.entity_id ? `<code>${esc(a.entity_id)}</code>` : ''}</div>
-        <div class="audit-meta">${fmtDateTime(a.created_at)} · by <strong>${esc(a.performed_by || 'system')}</strong>${a.notes ? '<br>' + esc(a.notes) : ''}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// FLAGS
-function renderFlags() {
-  const el = document.getElementById('flagsList');
-  if (!allFlags.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;">No flags. 🎉</div>'; return; }
-  el.innerHTML = allFlags.map(f => {
-    const statusColor = f.status === 'open' ? 'background:#fef2f2;color:#991b1b;'
-                      : f.status === 'cleared' ? 'background:#f0fdf4;color:#15803d;'
-                      : 'background:#fef9c3;color:#854d0e;';
-    const labels = { self_purchase: '🚨 Self-purchase attempt', duplicate_customer_24h: '⚠️  Duplicate customer', rapid_submission: '⚡ Rapid submission' };
-    return `<div class="card" style="margin-bottom:12px;padding:18px 20px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-        <div style="font-weight:800;font-size:14px;">${labels[f.flag_type] || esc(f.flag_type)}</div>
-        <span class="sale-status-badge" style="${statusColor}">${esc(f.status)}</span>
-      </div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.6;">
-        <strong>Agent:</strong> ${esc(f.agent_code || '—')}<br>
-        <strong>Sale:</strong> ${esc(f.sale_id || '—')}<br>
-        <strong>Detected:</strong> ${fmtDateTime(f.created_at)}<br>
-        <strong>Details:</strong> ${esc(JSON.stringify(f.details || {}))}
-      </div>
-      ${f.status === 'open' ? `
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-green btn-sm" onclick="resolveFlag('${esc(f.id)}','cleared')"><i class="fas fa-check"></i> Clear</button>
-          <button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="resolveFlag('${esc(f.id)}','confirmed')"><i class="fas fa-xmark"></i> Confirm Fraud</button>
-        </div>` : ''}
-    </div>`;
-  }).join('');
-}
-async function resolveFlag(id, status) {
-  if (!confirm('Mark as ' + status + '?')) return;
-  try {
-    await db.update('fraud_flags', `id=eq.${id}`, { status, reviewed_by: 'admin', reviewed_at: new Date().toISOString() });
-    await db.logAudit('flag', id, status === 'cleared' ? 'cleared' : 'confirmed_fraud', 'admin');
-    toast('✅ ' + status); await loadFlags();
-  } catch(e) { toast('Error: ' + e.message); }
-}
-
 // CAMPAIGNS
 function renderCampaigns() {
   const el = document.getElementById('campaignList');
@@ -1704,7 +1676,7 @@ async function deleteCampaign(id) {
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// CONTENT (Marketing + Training + Agreement)
+// CONTENT
 function setContentFilter(f, btn) {
   contentFilter = f;
   document.querySelectorAll('.filter-pill[data-cf]').forEach(b => b.classList.remove('active'));
@@ -1717,9 +1689,7 @@ function renderContent() {
   if (contentFilter === 'marketing') list = allMaterials;
   else if (contentFilter === 'training') list = allModules;
   else list = allAgreements;
-
   if (!list.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;">No items.</div>'; return; }
-
   const tagColors = {
     caption: 'background:rgba(255,96,0,.12);color:var(--orange);',
     script: 'background:rgba(139,92,246,.12);color:#7c3aed;',
@@ -1728,10 +1698,8 @@ function renderContent() {
     poster: 'background:rgba(245,158,11,.12);color:#92400e;',
     video: 'background:rgba(239,68,68,.12);color:#b91c1c;',
   };
-
   el.innerHTML = list.map(item => {
-    let title = '', subtitle = '', body = '', tag = '';
-
+    let title = '', body = '', tag = '';
     if (contentFilter === 'marketing') {
       title = item.title;
       tag = `<span class="content-item-tag" style="${tagColors[item.category] || ''}">${esc(item.category)}</span>`;
@@ -1745,7 +1713,6 @@ function renderContent() {
       tag = `<span class="content-item-tag" style="${item.active ? 'background:rgba(37,211,102,.12);color:#16a34a;' : 'background:var(--light);color:var(--muted);'}">${item.active ? 'Active' : 'Inactive'}</span>`;
       body = item.content ? item.content.substring(0, 200) + '…' : '';
     }
-
     return `<div class="content-item">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;min-width:0;">
