@@ -21,14 +21,14 @@
 .dash-avatar { width:56px; height:56px; border-radius:50%; background:var(--grad-o); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:white; flex-shrink:0; }
 .dash-name   { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; }
 .dash-code   { font-size:13px; color:rgba(255,255,255,.5); margin-top:2px; }
-.dash-spacer { flex:1; }
+.dash-spacer { flex:1; min-width:8px; }
 .dash-logout { background:none; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.5); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
 .dash-logout:hover { border-color:rgba(255,255,255,.3); color:white; }
 
-.notif-btn { position:relative; background:none; border:1px solid rgba(255,255,255,.15); color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.notif-btn { position:relative; background:none; border:1px solid rgba(255,255,255,.15); color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
 .notif-btn:hover { border-color:var(--orange); background:rgba(255,96,0,.15); }
 .notif-badge { position:absolute; top:-4px; right:-4px; background:var(--orange); color:white; font-size:10px; font-weight:800; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 5px; }
-.notif-dropdown { position:absolute; top:48px; right:0; width:340px; max-height:400px; overflow-y:auto; background:white; border:1px solid var(--border); border-radius:var(--r2); box-shadow:0 12px 40px rgba(0,0,0,.15); z-index:200; display:none; }
+.notif-dropdown { position:absolute; top:48px; right:0; width:340px; max-width:calc(100vw - 28px); max-height:400px; overflow-y:auto; background:white; border:1px solid var(--border); border-radius:var(--r2); box-shadow:0 12px 40px rgba(0,0,0,.15); z-index:200; display:none; }
 .notif-dropdown.open { display:block; }
 .notif-item { padding:14px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; }
 .notif-item:hover { background:var(--light); }
@@ -42,7 +42,7 @@
 .wallet-card { background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(37,211,102,.25); }
 .wallet-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.wallet-val { font-family: 'Syne',sans-serif; font-size: 1.3rem; font-weight: 800; color: white; line-height: 1; margin-bottom: 4px; }
+.wallet-val { font-family: 'DM Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
 .wallet-lbl-sm { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
 
 /* CAMPAIGN BANNER */
@@ -61,60 +61,146 @@
 .ref-box { background:linear-gradient(135deg,#0d2010,#0a3518); border-radius:var(--r2); padding:22px 24px; margin-bottom:20px; border:1px solid rgba(37,211,102,.2); }
 .ref-label { font-size:11px; font-weight:700; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
 .ref-url   { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 14px; }
-.ref-url span { flex:1; font-size:13px; color:white; font-family:monospace; word-break:break-all; }
+.ref-url span { flex:1; font-size:13px; color:white; font-family: ui-monospace, Menlo, monospace; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
 .ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
 
-.tab-bar   { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none; }
+/* ── TAB BAR — BULLETPROOF ──────────────────────────────────────────────── */
+.tab-bar {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+}
 .tab-bar::-webkit-scrollbar { display: none; }
-.tab-btn   { padding:11px 16px; font-size:14px; font-weight:600; color:var(--muted); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; margin-bottom:-1px; white-space:nowrap; }
-.tab-btn:hover { color:var(--text); }
-.tab-btn.active { color:var(--orange); border-bottom-color:var(--orange); }
+
+.tab-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0 !important;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s, background .2s;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  line-height: 1.2;
+  min-height: 44px;
+  text-align: center;
+  min-width: 0;
+  border-radius: 6px 6px 0 0;
+}
+.tab-btn i { font-size: 12px; flex-shrink: 0; line-height: 1; }
+.tab-btn:hover { color: var(--text); background: rgba(0,0,0,.02); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); background: rgba(255,96,0,.04); }
+
+@media(max-width:600px) {
+  .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; }
+  .tab-btn i { font-size: 11px; }
+}
+@media(max-width:400px) {
+  .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; }
+  .tab-btn i { font-size: 10px; }
+}
+
 .tab-pane  { display:none; }
 .tab-pane.active { display:block; }
 
-.sale-status-badge { font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; }
+.sale-status-badge { font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; white-space:nowrap; display:inline-block; }
 .tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
 .tier-row-display:last-child { border-bottom:none; }
 
 /* Perf grid */
 .perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
 .perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
-.perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); }
-.perf-val { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; line-height:1; margin-bottom:6px; }
+.perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
+.perf-val { font-family:'DM Sans',sans-serif; font-size:1.4rem; font-weight:800; line-height:1.1; margin-bottom:6px; word-break: break-word; }
 .perf-lbl { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
 
-/* Marketing + Training embedded cards */
+/* Marketing cards */
 .content-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
-.mk-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:18px 20px; display:flex; flex-direction:column; }
-.mk-card-tag { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; align-self:flex-start; }
+.mk-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:18px 20px; display:flex; flex-direction:column; min-width: 0; }
+.mk-card-tag { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; align-self:flex-start; white-space: nowrap; }
 .tag-caption { background:rgba(255,96,0,.12); color:var(--orange); border:1px solid rgba(255,96,0,.25); }
 .tag-script  { background:rgba(139,92,246,.12); color:#7c3aed; border:1px solid rgba(139,92,246,.25); }
 .tag-faq     { background:rgba(37,99,235,.12); color:#2563eb; border:1px solid rgba(37,99,235,.25); }
 .tag-brand   { background:rgba(37,211,102,.12); color:#16a34a; border:1px solid rgba(37,211,102,.25); }
 .tag-poster  { background:rgba(245,158,11,.12); color:#92400e; border:1px solid rgba(245,158,11,.25); }
 .tag-video   { background:rgba(239,68,68,.12); color:#b91c1c; border:1px solid rgba(239,68,68,.25); }
-.mk-title { font-weight:800; font-size:15px; color:var(--text); margin-bottom:10px; }
+.mk-title { font-weight:800; font-size:15px; color:var(--text); margin-bottom:10px; word-break: break-word; }
 .mk-content { background:var(--light); border-radius:var(--r); padding:14px 16px; font-size:13px; color:var(--muted); line-height:1.65; white-space:pre-wrap; word-break:break-word; flex:1; margin-bottom:14px; max-height:200px; overflow-y:auto; }
 .mk-actions { display:flex; gap:8px; flex-wrap:wrap; }
 .mk-actions .btn { flex:1; min-width:100px; justify-content:center; }
 
-/* Training cards */
-.tr-progress-wrap { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+/* ── TRAINING — CLEAN PROGRESS DISPLAY ─────────────────────────────────── */
+.tr-progress-wrap {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  min-width: 0;
+  width: 100%;
+}
+.tr-progress-wrap > * { min-width: 0; }
 .tr-progress-info { flex: 1; min-width: 200px; }
-.tr-progress-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.tr-progress-val { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 8px; }
-.tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; }
+.tr-progress-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.tr-progress-val {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+.tr-progress-sub {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; width: 100%; }
 .tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
+
 .tr-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.tr-module { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; cursor: pointer; }
+.tr-module { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; cursor: pointer; min-width: 0; }
 .tr-module:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: var(--shadow); }
 .tr-module.done { background: #f0fdf4; border-color: #bbf7d0; }
-.tr-num { width: 40px; height: 40px; border-radius: 50%; background: var(--light); color: var(--muted); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+.tr-num { width: 40px; height: 40px; border-radius: 50%; background: var(--light); color: var(--muted); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 14px; flex-shrink: 0; }
 .tr-module.done .tr-num { background: #16a34a; color: white; }
 .tr-body { flex: 1; min-width: 0; }
-.tr-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 4px; }
-.tr-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; }
-.tr-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-left: auto; flex-shrink: 0; align-self: flex-start; }
+.tr-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 4px; word-break: break-word; }
+.tr-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; word-break: break-word; }
+.tr-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-left: auto; flex-shrink: 0; align-self: flex-start; white-space: nowrap; }
 .tr-status.done { background: #f0fdf4; color: #15803d; }
 .tr-status.todo { background: #fff7ed; color: #c2410c; }
 
@@ -130,7 +216,7 @@
 .stmt-preview-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
 .stmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .stmt-cell { text-align: center; padding: 10px 6px; }
-.stmt-cell-val { font-family: 'Syne',sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stmt-cell-val { font-family: 'DM Sans',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
 .stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
 
 html, body { overflow-x: hidden; }
@@ -141,12 +227,10 @@ html, body { overflow-x: hidden; }
   .dash-hdr { padding: 18px 16px; gap: 12px; }
   .ref-box { padding: 16px; }
   .ref-url { padding: 8px 10px; }
-  .ref-url span { font-size: 12px; word-break: break-all; }
+  .ref-url span { font-size: 12px; }
   .ref-btns { flex-wrap: wrap; }
   .ref-btns .btn { font-size: 12px; padding: 8px 12px; }
-  .tab-btn { white-space: nowrap; padding: 10px 12px; font-size: 13px; }
   .wallet-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
-  .notif-dropdown { width: calc(100vw - 28px); right: -14px; }
   .content-grid { grid-template-columns: 1fr; }
 }
 @media(max-width:600px) {
@@ -159,6 +243,7 @@ html, body { overflow-x: hidden; }
 @media(max-width:400px) {
   .dash-name { font-size: 1rem; }
   .month-grid { grid-template-columns: repeat(2, 1fr); }
+  .wallet-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
 }
 </style>
 </head>
@@ -226,13 +311,8 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- CAMPAIGN BANNER -->
   <div id="campaignBanner"></div>
-
-  <!-- LEVEL CARD -->
   <div class="level-card" id="levelCard"></div>
-
-  <!-- WALLET -->
   <div class="wallet-card" id="walletCard"></div>
 
   <div class="stat-grid" style="margin-bottom:20px;">
@@ -257,16 +337,15 @@ html, body { overflow-x: hidden; }
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="showAgentTab('sales',this)">My Sales</button>
-    <button class="tab-btn" onclick="showAgentTab('commission',this)">Commission</button>
-    <button class="tab-btn" onclick="showAgentTab('performance',this)">Performance</button>
-    <button class="tab-btn" onclick="showAgentTab('marketing',this)">Marketing</button>
-    <button class="tab-btn" onclick="showAgentTab('training',this)">Training</button>
-    <button class="tab-btn" onclick="showAgentTab('tiers',this)">Rates</button>
-    <button class="tab-btn" onclick="showAgentTab('leaderboard',this)">Leaderboard</button>
+    <button class="tab-btn active" onclick="showAgentTab('sales',this)"><i class="fas fa-chart-line"></i> Sales</button>
+    <button class="tab-btn" onclick="showAgentTab('commission',this)"><i class="fas fa-coins"></i> Commission</button>
+    <button class="tab-btn" onclick="showAgentTab('performance',this)"><i class="fas fa-chart-bar"></i> Stats</button>
+    <button class="tab-btn" onclick="showAgentTab('marketing',this)"><i class="fas fa-bullhorn"></i> Promo</button>
+    <button class="tab-btn" onclick="showAgentTab('training',this)"><i class="fas fa-graduation-cap"></i> Learn</button>
+    <button class="tab-btn" onclick="showAgentTab('tiers',this)"><i class="fas fa-percent"></i> Rates</button>
+    <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
   </div>
 
-  <!-- SALES -->
   <div class="tab-pane active" id="agent-tab-sales">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Submitted Sales</h3>
@@ -279,7 +358,6 @@ html, body { overflow-x: hidden; }
     <div id="salesContent"></div>
   </div>
 
-  <!-- COMMISSION -->
   <div class="tab-pane" id="agent-tab-commission">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">Commission History</h3>
@@ -288,17 +366,15 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- PERFORMANCE -->
   <div class="tab-pane" id="agent-tab-performance">
     <div id="performanceContent"></div>
   </div>
 
-  <!-- MARKETING -->
   <div class="tab-pane" id="agent-tab-marketing">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">Marketing Library</h3>
     </div>
-    <div class="filter-row" id="marketingTabs">
+    <div class="filter-row" id="marketingTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
       <button class="filter-pill active" data-mc="all" onclick="filterMarketing('all',this)">All</button>
       <button class="filter-pill" data-mc="caption" onclick="filterMarketing('caption',this)">Captions</button>
       <button class="filter-pill" data-mc="script" onclick="filterMarketing('script',this)">Scripts</button>
@@ -310,13 +386,11 @@ html, body { overflow-x: hidden; }
     <div id="marketingContent"></div>
   </div>
 
-  <!-- TRAINING -->
   <div class="tab-pane" id="agent-tab-training">
     <div class="tr-progress-wrap" id="trProgress"></div>
     <div class="tr-list" id="trList"></div>
   </div>
 
-  <!-- RATES -->
   <div class="tab-pane" id="agent-tab-tiers">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">How Your Commission is Calculated</h3>
@@ -332,7 +406,6 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- LEADERBOARD -->
   <div class="tab-pane" id="agent-tab-leaderboard">
     <div class="card" style="padding:0;overflow:hidden;">
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
@@ -455,7 +528,7 @@ html, body { overflow-x: hidden; }
     </div>
     <div class="modal-body">
       <div id="modVideo"></div>
-      <div style="background:var(--light);border-radius:var(--r);padding:20px 22px;font-size:14px;line-height:1.75;white-space:pre-wrap;margin-bottom:18px;" id="modContent"></div>
+      <div style="background:var(--light);border-radius:var(--r);padding:20px 22px;font-size:14px;line-height:1.75;white-space:pre-wrap;margin-bottom:18px;word-break:break-word;" id="modContent"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-outline btn-full" onclick="closeModule()">Close</button>
         <button class="btn btn-green btn-full" id="markDoneBtn" onclick="markModuleDone()">
@@ -595,7 +668,6 @@ function updateAgentStats() {
   document.getElementById('st-revenue').textContent = fmtMoney(revenue);
 }
 
-// ── LEVEL ────────────────────────────────────────────────────────────────
 function renderLevel() {
   const totalSales = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid').length;
   const revenue    = agentSales.reduce((t,s) => t + (s.amount||0), 0);
@@ -631,7 +703,6 @@ function renderLevel() {
   `;
 }
 
-// ── WALLET (display only — no payout button) ─────────────────────────────
 function renderWallet() {
   const w = myWallet || { total_earned:0, pending:0, available:0, paid:0 };
   document.getElementById('walletCard').innerHTML = `
@@ -648,7 +719,6 @@ function renderWallet() {
   `;
 }
 
-// ── REFERRAL ─────────────────────────────────────────────────────────────
 function copyRefLink() {
   const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
   copyToClipboard(url);
@@ -667,7 +737,6 @@ function shareRefNative() {
   else copyRefLink();
 }
 
-// ── QR ───────────────────────────────────────────────────────────────────
 function openQrModal() {
   const verifyUrl = `${CONFIG.agentSiteUrl}/verify.html?id=${agentData.agent_id}`;
   document.getElementById('qrCode').innerHTML = '';
@@ -681,7 +750,6 @@ function copyQrUrl() {
   toast('✅ Copied');
 }
 
-// ── SUBMIT SALE ──────────────────────────────────────────────────────────
 function openSubmitSale() {
   document.getElementById('submitSaleModal').classList.add('open');
   document.getElementById('submitSaleError').style.display = 'none';
@@ -772,7 +840,6 @@ async function submitSale() {
   }
 }
 
-// ── SALES LIST ───────────────────────────────────────────────────────────
 function renderSales() {
   const el = document.getElementById('salesContent');
   if (!agentSales.length) {
@@ -801,7 +868,6 @@ function renderSales() {
     </tbody></table></div>`;
 }
 
-// ── COMMISSION ───────────────────────────────────────────────────────────
 function renderCommHistory() {
   const el = document.getElementById('commHistory');
   if (!agentSales.length) {
@@ -820,17 +886,16 @@ function renderCommHistory() {
     const commColor = rejected ? 'var(--red)' : confirmed ? '#16a34a' : 'var(--yellow)';
     return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border);">
       <div style="width:36px;height:36px;border-radius:10px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">💰</div>
-      <div style="flex:1;">
-        <div style="font-weight:600;font-size:14px;">${esc(s.product || 'Sale')}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:14px;word-break:break-word;">${esc(s.product || 'Sale')}</div>
         <div style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)} · ${fmtMoney(s.amount)}${s.commission_pct ? ' · ' + s.commission_pct + '%' : ''}</div>
       </div>
       <span class="sale-status-badge" style="${badgeStyle}">${esc(s.status)}</span>
-      <div style="font-weight:800;color:${commColor};font-size:15px;">${prefix}${fmtMoney(s.commission)}</div>
+      <div style="font-weight:800;color:${commColor};font-size:15px;flex-shrink:0;">${prefix}${fmtMoney(s.commission)}</div>
     </div>`;
   }).join('');
 }
 
-// ── PERFORMANCE ──────────────────────────────────────────────────────────
 function renderPerformance() {
   const el = document.getElementById('performanceContent');
   const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
@@ -870,12 +935,11 @@ function renderPerformance() {
   `;
 }
 
-// ── MARKETING ────────────────────────────────────────────────────────────
 async function loadMarketing() {
   try {
     allMaterials = await db.getAll('marketing_materials', { filter: 'active=eq.true', order: 'sort_order.asc' });
     renderMarketing();
-  } catch(e) { toast('⚠️  Could not load marketing: ' + e.message); }
+  } catch(e) { toast('⚠️  ' + e.message); }
 }
 
 function filterMarketing(cat, btn) {
@@ -937,14 +1001,13 @@ function shareWhatsApp(id) {
   logReferralEvent(agentData.agent_code, 'material_shared', { material_id: m.material_id });
 }
 
-// ── TRAINING ─────────────────────────────────────────────────────────────
 async function loadTraining() {
   try {
     allModules = await db.getAll('training_modules', { filter: 'active=eq.true', order: 'module_number.asc' });
     const progress = await db.getAll('training_progress', { filter: `agent_code=eq.${agentData.agent_code}&completed=eq.true` });
     completedModuleIds = new Set(progress.map(p => p.module_id));
     renderTraining();
-  } catch(e) { toast('⚠️  Could not load training: ' + e.message); }
+  } catch(e) { toast('⚠️  ' + e.message); }
 }
 
 function renderTraining() {
@@ -956,12 +1019,13 @@ function renderTraining() {
   progEl.innerHTML = `
     <div class="tr-progress-info">
       <div class="tr-progress-label">Your Progress</div>
-      <div class="tr-progress-val">${completed} of ${total} modules</div>
+      <div class="tr-progress-val">${completed} / ${total}</div>
+      <div class="tr-progress-sub">modules completed</div>
       <div class="tr-progress-bar"><div class="tr-progress-fill" style="width:${pct}%;"></div></div>
     </div>
     ${completed === total && total > 0
-      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;"><i class="fas fa-award"></i> Certificate Unlocked</div>`
-      : `<div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);">${pct}%</div>`}
+      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;"><i class="fas fa-award"></i> Certificate Unlocked</div>`
+      : `<div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);flex-shrink:0;">${pct}%</div>`}
   `;
 
   const listEl = document.getElementById('trList');
@@ -1020,7 +1084,6 @@ async function markModuleDone() {
   } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark as Complete'); }
 }
 
-// ── TIER RATES ───────────────────────────────────────────────────────────
 function renderTierRates() {
   const el = document.getElementById('tierRatesList');
   if (!COMMISSION_TIERS.length) { el.innerHTML = '<div style="opacity:.5;">Loading…</div>'; return; }
@@ -1039,7 +1102,6 @@ function renderTierRates() {
   }).join('');
 }
 
-// ── LEADERBOARD ──────────────────────────────────────────────────────────
 function renderLeaderboard() {
   const el = document.getElementById('agentLeaderboard');
   const medals = ['🥇','🥈','🥉'];
@@ -1057,15 +1119,14 @@ function renderLeaderboard() {
   el.innerHTML = ranked.map((r, i) => {
     const isMe = r.code === agentData.agent_code;
     return `<div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);${isMe?'background:linear-gradient(90deg,#fff8f4,white);':''}">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
-      <div style="flex:1;font-weight:${isMe?800:600};font-size:14px;">${isMe ? '⭐ You' : esc(r.code)}</div>
-      <div style="font-size:13px;color:var(--muted);margin-right:12px;">${r.sales} sale${r.sales!==1?'s':''}</div>
-      <div style="font-weight:800;color:var(--orange);">${fmtMoney(r.revenue)}</div>
+      <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;flex-shrink:0;color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
+      <div style="flex:1;min-width:0;font-weight:${isMe?800:600};font-size:14px;word-break:break-word;">${isMe ? '⭐ You' : esc(r.code)}</div>
+      <div style="font-size:13px;color:var(--muted);margin-right:12px;flex-shrink:0;">${r.sales} sale${r.sales!==1?'s':''}</div>
+      <div style="font-weight:800;color:var(--orange);flex-shrink:0;">${fmtMoney(r.revenue)}</div>
     </div>`;
   }).join('');
 }
 
-// ── NOTIFICATIONS ────────────────────────────────────────────────────────
 function toggleNotifications(e) {
   e.stopPropagation();
   document.getElementById('notifDropdown').classList.toggle('open');
@@ -1106,7 +1167,6 @@ async function markAllRead(e) {
   } catch(e) {}
 }
 
-// ── PDF ──────────────────────────────────────────────────────────────────
 function downloadMyStatementPdf() {
   if (!agentSales.length) { toast('⚠️  No sales'); return; }
   const sales = agentSales.map(s => ({
@@ -1117,7 +1177,6 @@ function downloadMyStatementPdf() {
   toast('📄 Downloading…');
 }
 
-// ── MONTHLY STATEMENT ────────────────────────────────────────────────────
 function openStatement() {
   const grid = document.getElementById('monthGrid');
   const now = new Date();
@@ -1182,7 +1241,6 @@ function downloadMonthlyStatement() {
   toast('📄 Downloading…');
 }
 
-// ── TABS ─────────────────────────────────────────────────────────────────
 function showAgentTab(name, btn) {
   document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('agent-tab-' + name);
@@ -1191,7 +1249,6 @@ function showAgentTab(name, btn) {
   if (btn) btn.classList.add('active');
 }
 
-// ── BOOT ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const code = agentCode();
   if (code) {
