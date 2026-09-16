@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Centre — PhoneYa2 Agent Network</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+.tr-wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+.tr-hero { text-align: center; margin-bottom: 32px; }
+.tr-hero-icon { font-size: 3rem; margin-bottom: 8px; }
+.tr-hero h1 { font-size: 1.6rem; margin-bottom: 8px; }
+.tr-hero p { color: var(--muted); font-size: 14px; max-width: 520px; margin: 0 auto; }
+
+/* Progress bar */
+.tr-progress-wrap {
+  background: white; border: 1px solid var(--border); border-radius: var(--r2);
+  padding: 20px 22px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.tr-progress-info { flex: 1; min-width: 200px; }
+.tr-progress-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.tr-progress-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 8px; }
+.tr-progress-val span { font-size: 1rem; color: var(--muted); font-weight: 600; }
+.tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; }
+.tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
+.tr-progress-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white; font-size: 12px; font-weight: 800;
+  padding: 8px 16px; border-radius: 100px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+
+/* Module list */
+.tr-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+.tr-module {
+  background: white; border: 1px solid var(--border); border-radius: var(--r2);
+  padding: 20px 22px; display: flex; gap: 16px; align-items: flex-start;
+  transition: all .2s; cursor: pointer;
+}
+.tr-module:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: var(--shadow); }
+.tr-module.done { background: #f0fdf4; border-color: #bbf7d0; }
+
+.tr-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--light); color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+  flex-shrink: 0;
+}
+.tr-module.done .tr-num { background: #16a34a; color: white; }
+
+.tr-body { flex: 1; min-width: 0; }
+.tr-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 4px; }
+.tr-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.tr-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-left: auto; flex-shrink: 0; align-self: flex-start; }
+.tr-status.done { background: #f0fdf4; color: #15803d; }
+.tr-status.todo { background: #fff7ed; color: #c2410c; }
+
+/* Module detail modal */
+.mod-content {
+  background: var(--light); border-radius: var(--r);
+  padding: 20px 22px; font-size: 14px; color: var(--text);
+  line-height: 1.75; white-space: pre-wrap;
+  margin-bottom: 18px;
+}
+.mod-video { width: 100%; border-radius: var(--r); margin-bottom: 18px; }
+
+@media(max-width:600px) {
+  .tr-wrap { padding: 16px 14px 60px; }
+  .tr-hero h1 { font-size: 1.35rem; }
+  .tr-progress-wrap { padding: 16px; gap: 12px; }
+  .tr-progress-val { font-size: 1.3rem; }
+  .tr-module { padding: 16px 16px; gap: 12px; }
+  .tr-num { width: 36px; height: 36px; font-size: 13px; }
+  .tr-title { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div id="nav-wrap"></div>
+
+<div class="tr-wrap">
+
+  <div class="tr-hero">
+    <div class="tr-hero-icon">🎓</div>
+    <h1>Training Centre</h1>
+    <p>Learn how to sell PhoneYa2 products professionally. Complete each module to unlock your Certificate.</p>
+  </div>
+
+  <div class="tr-progress-wrap" id="trProgress"></div>
+
+  <div class="tr-list" id="trList"></div>
+
+</div>
+
+<!-- MODULE MODAL -->
+<div class="modal-overlay" id="moduleModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3 id="modTitle">Module</h3>
+      <button class="modal-close" onclick="closeModule()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="modVideo"></div>
+      <div class="mod-content" id="modContent"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-full" onclick="closeModule()">Close</button>
+        <button class="btn btn-green btn-full" id="markDoneBtn" onclick="markModuleDone()">
+          <i class="fas fa-circle-check"></i> Mark as Complete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+document.getElementById('nav-wrap').innerHTML = buildNav('agent');
+
+let allModules = [];
+let completedIds = new Set();
+let currentModule = null;
+
+const code = agentCode();
+if (!code) {
+  window.location.href = 'agent.html';
+}
+
+// ── LOAD ─────────────────────────────────────────────────────────────────
+async function loadTraining() {
+  try {
+    [allModules] = await Promise.all([
+      db.getAll('training_modules', { filter: 'active=eq.true', order: 'module_number.asc' }),
+    ]);
+
+    // Load progress
+    const progress = await db.getAll('training_progress', { filter: `agent_code=eq.${code}&completed=eq.true` });
+    completedIds = new Set(progress.map(p => p.module_id));
+
+    renderTraining();
+  } catch (e) {
+    toast('⚠️  ' + e.message);
+    document.getElementById('trList').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <h3>Could not load training</h3>
+        <p>${esc(e.message)}</p>
+      </div>`;
+  }
+}
+
+function renderTraining() {
+  renderProgress();
+  renderList();
+}
+
+function renderProgress() {
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedIds.has(m.id)).length;
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+
+  const el = document.getElementById('trProgress');
+  const earnedCertificate = total > 0 && completed === total;
+
+  el.innerHTML = `
+    <div class="tr-progress-info">
+      <div class="tr-progress-label">Your Progress</div>
+      <div class="tr-progress-val">${completed} <span>of ${total} modules</span></div>
+      <div class="tr-progress-bar"><div class="tr-progress-fill" style="width:${pct}%;"></div></div>
+    </div>
+    ${earnedCertificate
+      ? `<div class="tr-progress-badge"><i class="fas fa-award"></i> Certificate Unlocked</div>`
+      : `<div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--orange);">${pct}%</div>`}
+  `;
+}
+
+function renderList() {
+  const el = document.getElementById('trList');
+  if (!allModules.length) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📚</div>
+        <h3>No training modules yet</h3>
+        <p>Check back soon.</p>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = allModules.map(m => {
+    const done = completedIds.has(m.id);
+    return `
+      <div class="tr-module ${done ? 'done' : ''}" onclick="openModule('${esc(m.id)}')">
+        <div class="tr-num">${done ? '<i class="fas fa-check"></i>' : m.module_number}</div>
+        <div class="tr-body">
+          <div class="tr-title">${esc(m.title)}</div>
+          <div class="tr-desc">${esc(m.description || '')}</div>
+        </div>
+        <div class="tr-status ${done ? 'done' : 'todo'}">${done ? '✓ Done' : 'Start'}</div>
+      </div>`;
+  }).join('');
+}
+
+function openModule(id) {
+  const m = allModules.find(x => x.id === id);
+  if (!m) return;
+  currentModule = m;
+
+  document.getElementById('modTitle').textContent = `Module ${m.module_number}: ${m.title}`;
+  document.getElementById('modContent').textContent = m.content || 'No content yet.';
+
+  const videoEl = document.getElementById('modVideo');
+  if (m.video_url) {
+    videoEl.innerHTML = `<video class="mod-video" controls src="${esc(m.video_url)}"></video>`;
+  } else {
+    videoEl.innerHTML = '';
+  }
+
+  const done = completedIds.has(m.id);
+  const btn = document.getElementById('markDoneBtn');
+  if (done) {
+    btn.innerHTML = '<i class="fas fa-check"></i> Already Completed';
+    btn.disabled = true;
+    btn.classList.add('loading');
+  } else {
+    btn.innerHTML = '<i class="fas fa-circle-check"></i> Mark as Complete';
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+
+  document.getElementById('moduleModal').classList.add('open');
+}
+
+function closeModule() {
+  document.getElementById('moduleModal').classList.remove('open');
+  currentModule = null;
+}
+
+async function markModuleDone() {
+  if (!currentModule) return;
+  const btn = document.getElementById('markDoneBtn');
+  setLoading(btn, true, 'Saving…');
+
+  try {
+    // Check if a progress row already exists
+    const existing = await db.getOne('training_progress', `agent_code=eq.${code}&module_id=eq.${currentModule.id}`);
+
+    if (existing) {
+      await db.update('training_progress', `id=eq.${existing.id}`, {
+        completed: true,
+        completed_at: new Date().toISOString(),
+      });
+    } else {
+      await db.insert('training_progress', {
+        agent_code: code,
+        module_id: currentModule.id,
+        completed: true,
+        completed_at: new Date().toISOString(),
+      });
+    }
+
+    completedIds.add(currentModule.id);
+    await db.logAudit('training', currentModule.id, 'completed', code);
+
+    // Check if all modules are now complete
+    const newCompletedCount = allModules.filter(m => completedIds.has(m.id)).length;
+    if (newCompletedCount === allModules.length) {
+      // Create a notification for the agent
+      try {
+        await createNotification(code, '🎓 Certificate Unlocked',
+          'You completed all training modules. Contact PhoneYa2 to receive your certificate.',
+          'success');
+      } catch (e) {}
+    }
+
+    toast('✅ Module complete');
+    closeModule();
+    renderTraining();
+  } catch (e) {
+    toast('Error: ' + e.message);
+    setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark as Complete');
+  }
+}
+
+loadTraining();
+</script>
+</body>
+</html>
