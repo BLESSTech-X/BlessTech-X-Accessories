@@ -83,8 +83,6 @@ function calcAgentLevel(totalSales, totalRevenue) {
   return { current, next, progress };
 }
 
-// ── ACTIVE CAMPAIGN CHECK ────────────────────────────────────────────────
-// Returns the active campaign (if any) for a given date
 async function getActiveCampaign(date) {
   try {
     const d = date ? new Date(date) : new Date();
@@ -158,6 +156,135 @@ const db = {
     } catch (e) {}
   },
 };
+
+// ── PHOTO UPLOAD (with client-side compression) ──────────────────────────
+// Compresses an image File to a small JPEG Blob (~200 KB max).
+// Returns a Promise<Blob>.
+function compressImage(file, maxDim = 800, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    if (!file) return reject(new Error('No file provided'));
+    if (!file.type || !file.type.startsWith('image/')) {
+      return reject(new Error('Please select an image file'));
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        // Scale down so the largest dimension is maxDim
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        // White background (in case original is transparent)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error('Compression failed')),
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => reject(new Error('Could not read image'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// Uploads a photo for an agent. Returns the public URL.
+async function uploadAgentPhoto(file, agentCode) {
+  if (!agentCode) throw new Error('Agent code required');
+
+  // Compress the file first
+  const blob = await compressImage(file);
+
+  // Build a unique filename with timestamp (so cache busts when they re-upload)
+  const filename = `${agentCode}/photo-${Date.now()}.jpg`;
+  const uploadUrl = `${SB_URL}/storage/v1/object/agent-photos/${filename}`;
+
+  const res = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'image/jpeg',
+      'x-upsert': 'true',
+      'cache-control': 'public, max-age=31536000',
+    },
+    body: blob,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Upload failed: ${res.status}`);
+  }
+
+  // Public URL (Supabase Storage public bucket URL pattern)
+  const publicUrl = `${SB_URL}/storage/v1/object/public/agent-photos/${filename}`;
+
+  // Save to the agent's record
+  await db.update('agents', `agent_code=eq.${agentCode}`, {
+    profile_photo_url: publicUrl,
+    photo_updated_at: new Date().toISOString(),
+  });
+
+  // Audit log
+  await db.logAudit('agent', agentCode, 'photo_uploaded', agentCode, null, { url: publicUrl });
+
+  return publicUrl;
+}
+
+// Delete an agent's photo (removes file from storage + clears DB field)
+async function deleteAgentPhoto(agentCode, currentPhotoUrl) {
+  if (!agentCode) throw new Error('Agent code required');
+
+  // Extract the storage path from the URL if provided
+  if (currentPhotoUrl && currentPhotoUrl.includes('/agent-photos/')) {
+    const path = currentPhotoUrl.split('/agent-photos/')[1];
+    if (path) {
+      try {
+        await fetch(`${SB_URL}/storage/v1/object/agent-photos/${path}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+          },
+        });
+      } catch (e) { /* ignore storage delete errors */ }
+    }
+  }
+
+  // Clear DB field
+  await db.update('agents', `agent_code=eq.${agentCode}`, {
+    profile_photo_url: null,
+    photo_updated_at: new Date().toISOString(),
+  });
+
+  await db.logAudit('agent', agentCode, 'photo_deleted', agentCode);
+}
+
+// Helper — returns an <img> tag or initials avatar, whichever is appropriate
+function renderAvatar(agent, size = 56, extraClass = '') {
+  const s = Number(size) || 56;
+  if (agent && agent.profile_photo_url) {
+    return `<img src="${esc(agent.profile_photo_url)}" alt="${esc(agent.full_name || 'Agent')}"
+      class="${extraClass}"
+      style="width:${s}px;height:${s}px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#eee;"
+      onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='flex');">
+      <div class="${extraClass}" style="display:none;width:${s}px;height:${s}px;border-radius:50%;background:linear-gradient(135deg,#ff6000,#ff9f43);align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:${Math.round(s*0.42)}px;flex-shrink:0;">${(agent.full_name || '?')[0].toUpperCase()}</div>`;
+  }
+  return `<div class="${extraClass}" style="width:${s}px;height:${s}px;border-radius:50%;background:linear-gradient(135deg,#ff6000,#ff9f43);display:flex;align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:${Math.round(s*0.42)}px;flex-shrink:0;">${(agent && agent.full_name ? agent.full_name[0].toUpperCase() : '?')}</div>`;
+}
 
 // ── WALLET ───────────────────────────────────────────────────────────────
 async function recalcWallet(agentCode) {
@@ -411,21 +538,18 @@ function makeSalesStatementPdf(opts = {}) {
   doc.save(`PhoneYa2-Statement-${agentCode || 'All'}-${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
-// ── PDF — ID CARD ────────────────────────────────────────────────────────
-function makeIdCardPdf(agent) {
+// ── PDF — ID CARD (with photo) ───────────────────────────────────────────
+async function makeIdCardPdf(agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
+
   const doc = new jsPDF({ unit: 'pt', format: [240, 380], orientation: 'portrait' });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
 
-  // Front card
   doc.setFillColor(10, 10, 26); doc.rect(0, 0, W, H, 'F');
-
-  // Top strip
   doc.setFillColor(255, 96, 0); doc.rect(0, 0, W, 6, 'F');
 
-  // Brand
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
   doc.text('PhoneYa2-ZM', W / 2, 40, { align: 'center' });
@@ -433,28 +557,38 @@ function makeIdCardPdf(agent) {
   doc.setTextColor(255, 159, 67);
   doc.text('SALES ASSISTANT ID CARD', W / 2, 54, { align: 'center' });
 
-  // Avatar circle
-  doc.setFillColor(255, 96, 0);
-  doc.circle(W / 2, 110, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
-  doc.text((agent.full_name || '?')[0].toUpperCase(), W / 2, 122, { align: 'center' });
+  // Try to add the photo
+  let photoAdded = false;
+  if (agent.profile_photo_url) {
+    try {
+      const img = await loadImageAsDataUrl(agent.profile_photo_url);
+      if (img) {
+        // Photo is 60pt wide, centered
+        doc.addImage(img, 'JPEG', W / 2 - 30, 80, 60, 60, undefined, 'FAST');
+        photoAdded = true;
+      }
+    } catch (e) { /* ignore */ }
+  }
+  if (!photoAdded) {
+    // Fallback circle with initial
+    doc.setFillColor(255, 96, 0);
+    doc.circle(W / 2, 110, 30, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
+    doc.text((agent.full_name || '?')[0].toUpperCase(), W / 2, 122, { align: 'center' });
+  }
 
-  // Name
-  doc.setTextColor(255, 255, 255); doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255); doc.setFontSize(14); doc.setFont('helvetica', 'bold');
   doc.text(agent.full_name || 'Agent', W / 2, 175, { align: 'center' });
 
-  // Role
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
   doc.setTextColor(255, 159, 67);
   doc.text('Sales Assistant', W / 2, 192, { align: 'center' });
 
-  // Details
   doc.setTextColor(200, 200, 220); doc.setFontSize(9);
   doc.text('Agent ID:  ' + (agent.agent_id || '—'), W / 2, 220, { align: 'center' });
   doc.text('Agent Code:  ' + (agent.agent_code || '—'), W / 2, 235, { align: 'center' });
   doc.text('Status:  ACTIVE', W / 2, 250, { align: 'center' });
 
-  // QR placeholder text
   doc.setFillColor(245, 245, 250); doc.roundedRect(W / 2 - 35, 265, 70, 70, 6, 6, 'F');
   doc.setTextColor(150, 150, 170); doc.setFontSize(8);
   doc.text('QR Code', W / 2, 302, { align: 'center' });
@@ -468,6 +602,26 @@ function makeIdCardPdf(agent) {
   doc.save(`PhoneYa2-ID-${agent.agent_code}.pdf`);
 }
 
+// Helper to load remote image as data URL (for jsPDF)
+function loadImageAsDataUrl(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      } catch (e) { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 // ── PDF — CERTIFICATE ────────────────────────────────────────────────────
 function makeCertificatePdf(opts) {
   const { jsPDF } = window.jspdf || {};
@@ -477,13 +631,11 @@ function makeCertificatePdf(opts) {
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
 
-  // Border
   doc.setDrawColor(255, 96, 0); doc.setLineWidth(6);
   doc.rect(20, 20, W - 40, H - 40);
   doc.setDrawColor(10, 10, 26); doc.setLineWidth(1);
   doc.rect(30, 30, W - 60, H - 60);
 
-  // Navy header bar
   doc.setFillColor(10, 10, 26); doc.rect(30, 30, W - 60, 70, 'F');
   doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
   doc.text('PhoneYa2-ZM', 60, 70);
@@ -491,33 +643,25 @@ function makeCertificatePdf(opts) {
   doc.setTextColor(255, 159, 67);
   doc.text('Agent Network · Certificate', 60, 88);
 
-  // Title
   doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(38);
   doc.text(title || 'Certificate', W / 2, 180, { align: 'center' });
 
-  // Subtitle
   doc.setFont('helvetica', 'normal'); doc.setFontSize(14);
   doc.setTextColor(107, 114, 128);
   doc.text(subtitle || 'Proudly awarded to', W / 2, 215, { align: 'center' });
 
-  // Agent name
   doc.setFont('helvetica', 'bold'); doc.setFontSize(30);
   doc.setTextColor(255, 96, 0);
   doc.text(agent.full_name || 'Agent', W / 2, 265, { align: 'center' });
 
-  // Line
   doc.setDrawColor(229, 231, 235); doc.setLineWidth(1);
   doc.line(W / 2 - 200, 285, W / 2 + 200, 285);
 
-  // Details
   doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
   doc.setTextColor(107, 114, 128);
   doc.text(`Agent ID: ${agent.agent_id || '—'}`, W / 2, 305, { align: 'center' });
-
-  // Date
   doc.text(date || new Date().toLocaleDateString('en-ZM'), W / 2, 340, { align: 'center' });
 
-  // Signature line
   doc.setDrawColor(26, 26, 46); doc.setLineWidth(1);
   doc.line(120, H - 90, 320, H - 90);
   doc.setFontSize(10);
@@ -528,28 +672,22 @@ function makeCertificatePdf(opts) {
 
   doc.save(`PhoneYa2-Certificate-${agent.agent_code}.pdf`);
 }
+
 // ── PWA REGISTRATION ─────────────────────────────────────────────────────
-// Register service worker + manifest link on every page
 (function registerPWA() {
   if (typeof document === 'undefined') return;
-
-  // Add manifest link to head if missing
   if (!document.querySelector('link[rel="manifest"]')) {
     const link = document.createElement('link');
     link.rel = 'manifest';
     link.href = './manifest.json';
     document.head.appendChild(link);
   }
-
-  // Add theme-color meta
   if (!document.querySelector('meta[name="theme-color"]')) {
     const meta = document.createElement('meta');
     meta.name = 'theme-color';
     meta.content = '#ff6000';
     document.head.appendChild(meta);
   }
-
-  // Register service worker
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./service-worker.js', { scope: './' })
