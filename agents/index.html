@@ -193,6 +193,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
         <a href="apply.html" class="btn btn-primary btn-lg">
           <i class="fas fa-pen-to-square"></i> Apply Now — Free
         </a>
+        <a href="check.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);">
+          <i class="fas fa-search"></i> Check Application
+        </a>
         <a href="#how" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);">
           How it works <i class="fas fa-arrow-down"></i>
         </a>
@@ -267,7 +270,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
       </div>
     </div>
 
-    <div style="text-align:center;margin-top:24px;">
+    <div style="text-align:center;margin-top:24px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
+      <a href="check.html" style="font-size:13px;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;"
+         onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">
+        <i class="fas fa-search"></i> Check your application
+      </a>
       <a href="verify.html" style="font-size:13px;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;"
          onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">
         <i class="fas fa-shield-halved"></i> Verify an agent's ID
@@ -434,7 +441,6 @@ document.getElementById('nav-wrap').innerHTML = buildNav('public');
         ? `ZMW ${t.min_amount} – ∞`
         : `ZMW ${t.min_amount} – ${t.max_amount}`;
 
-      // Pick an example amount inside the range
       const minA = Number(t.min_amount);
       const maxA = t.max_amount === null || t.max_amount === undefined ? minA * 2 : Number(t.max_amount);
       const exampleAmount = Math.round((minA + maxA) / 2) || minA;
@@ -453,7 +459,6 @@ document.getElementById('nav-wrap').innerHTML = buildNav('public');
         </tr>`);
     });
 
-    // Update the footer text with a realistic example
     const avgPct = COMMISSION_TIERS.reduce((s, t) => s + Number(t.percentage), 0) / COMMISSION_TIERS.length;
     const low = Math.round(500 * avgPct / 100);
     const high = Math.round(2000 * avgPct / 100);
