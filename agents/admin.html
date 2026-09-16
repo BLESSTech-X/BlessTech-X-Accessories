@@ -62,7 +62,6 @@ html, body { overflow-x: hidden; }
 .mob-tab-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
 .mob-tab-btn .badge-count { margin-left: 5px; background: var(--orange); color: white; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; }
 
-/* Tier editor */
 .tier-row {
   display: grid;
   grid-template-columns: 100px 100px 100px 1fr 60px;
@@ -70,11 +69,26 @@ html, body { overflow-x: hidden; }
 }
 .tier-row input { padding: 8px 10px; font-size: 14px; }
 .tier-row .tier-range-display { font-size: 13px; color: var(--muted); font-family: monospace; }
+
+/* Status history */
+.history-item {
+  display: flex; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.history-item:last-child { border-bottom: none; }
+.history-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.history-body { flex: 1; font-size: 13px; }
+.history-title { font-weight: 700; margin-bottom: 2px; }
+.history-meta { font-size: 11px; color: var(--muted); }
+
 @media(max-width:700px) {
   .tier-row { grid-template-columns: 1fr 1fr; gap: 8px; }
   .tier-row .tier-range-display { grid-column: 1 / -1; }
 }
-
 @media(max-width:900px) {
   .admin-layout         { grid-template-columns: 1fr; }
   .sidebar              { display: none; }
@@ -104,7 +118,6 @@ html, body { overflow-x: hidden; }
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen" style="display:flex;">
   <div class="login-card">
     <div style="font-size:2.5rem;margin-bottom:12px;">🔐</div>
@@ -119,7 +132,6 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
-<!-- MAIN ADMIN -->
 <div id="adminApp" style="display:none;">
 <nav class="navbar">
   <div class="navbar-inner">
@@ -132,11 +144,9 @@ html, body { overflow-x: hidden; }
   </div>
 </nav>
 
-<!-- Mobile tab bar -->
 <div class="mobile-admin-tabs" id="mobileAdminTabs">
   <button class="mob-tab-btn active" onclick="showTab('applications', this)">Applications</button>
   <button class="mob-tab-btn" onclick="showTab('agents', this)">Agents</button>
-  <button class="mob-tab-btn" onclick="showTab('leads', this)">Leads</button>
   <button class="mob-tab-btn" onclick="showTab('sales', this)">Sales</button>
   <button class="mob-tab-btn" onclick="showTab('pending', this)">Pending <span class="badge-count" id="mobPendCount" style="display:none;">0</span></button>
   <button class="mob-tab-btn" onclick="showTab('leaderboard', this)">Leaderboard</button>
@@ -151,7 +161,6 @@ html, body { overflow-x: hidden; }
     </div>
     <div class="nav-item active" onclick="showTab('applications', this)"><i class="fas fa-file-lines"></i> Applications</div>
     <div class="nav-item" onclick="showTab('agents', this)"><i class="fas fa-users"></i> Active Agents</div>
-    <div class="nav-item" onclick="showTab('leads', this)"><i class="fas fa-bullseye"></i> Leads</div>
     <div class="nav-item" onclick="showTab('sales', this)"><i class="fas fa-chart-line"></i> Sales</div>
     <div class="nav-item" onclick="showTab('pending', this)">
       <i class="fas fa-hourglass-half"></i> Pending Sales
@@ -166,10 +175,9 @@ html, body { overflow-x: hidden; }
 
   <div class="admin-main">
 
-    <!-- STATS -->
     <div class="stat-grid" id="adminStats" style="margin-bottom:24px;">
       <div class="stat-card"><div class="stat-value" id="s-total">—</div><div class="stat-label">Total Applications</div></div>
-      <div class="stat-card"><div class="stat-value" id="s-pending" style="color:var(--yellow);">—</div><div class="stat-label">Pending Applications</div></div>
+      <div class="stat-card"><div class="stat-value" id="s-pending" style="color:var(--yellow);">—</div><div class="stat-label">Awaiting Review</div></div>
       <div class="stat-card"><div class="stat-value" id="s-approved" style="color:#16a34a;">—</div><div class="stat-label">Approved Agents</div></div>
       <div class="stat-card"><div class="stat-value" id="s-sales">—</div><div class="stat-label">Total Sales</div></div>
       <div class="stat-card"><div class="stat-value" id="s-pend-sales" style="color:var(--orange);">—</div><div class="stat-label">Pending Sales</div></div>
@@ -188,7 +196,8 @@ html, body { overflow-x: hidden; }
           <input type="text" placeholder="Search by name or ID…" id="appSearch" oninput="filterApps()">
         </div>
         <button class="filter-pill active" data-status="all" onclick="setFilter('all',this)">All</button>
-        <button class="filter-pill" data-status="pending"  onclick="setFilter('pending',this)">Pending</button>
+        <button class="filter-pill" data-status="pending" onclick="setFilter('pending',this)">Submitted</button>
+        <button class="filter-pill" data-status="under_review" onclick="setFilter('under_review',this)">In Review</button>
         <button class="filter-pill" data-status="approved" onclick="setFilter('approved',this)">Approved</button>
         <button class="filter-pill" data-status="rejected" onclick="setFilter('rejected',this)">Rejected</button>
       </div>
@@ -253,17 +262,6 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- LEADS TAB -->
-    <div class="tab-pane" id="tab-leads">
-      <div class="page-hdr"><h2>All Leads</h2></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Lead ID</th><th>Agent</th><th>Customer</th><th>Product</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody id="leadsTable"></tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- SALES TAB -->
     <div class="tab-pane" id="tab-sales">
       <div class="page-hdr">
@@ -282,7 +280,6 @@ html, body { overflow-x: hidden; }
         <button class="filter-pill" data-sf="paid" onclick="setSaleFilter('paid',this)">Paid</button>
       </div>
 
-      <!-- ADD SALE FORM -->
       <div id="addSaleForm" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
           <h3 style="font-size:1rem;">Record a New Sale</h3>
@@ -420,7 +417,6 @@ html, body { overflow-x: hidden; }
 
 <div id="toast"></div>
 
-<!-- Approve modal -->
 <div class="modal-overlay" id="approveModal">
   <div class="modal-box">
     <div class="modal-hdr">
@@ -440,7 +436,6 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
-<!-- Reject sale modal -->
 <div class="modal-overlay" id="rejectSaleModal">
   <div class="modal-box">
     <div class="modal-hdr">
@@ -463,7 +458,31 @@ html, body { overflow-x: hidden; }
 
 <script src="config.js"></script>
 <script>
-// ── AUTH ─────────────────────────────────────────────────────────────────────
+// ── STATUS DEFINITIONS ────────────────────────────────────────────────────
+const APP_STATUSES = [
+  { code: 'pending',                   label: 'Submitted',              cls: 'yellow', icon: 'fa-paper-plane' },
+  { code: 'under_review',              label: 'Under Review',           cls: 'blue',   icon: 'fa-magnifying-glass' },
+  { code: 'shortlisted',               label: 'Shortlisted',            cls: 'blue',   icon: 'fa-list-check' },
+  { code: 'interview',                 label: 'Interview Stage',        cls: 'blue',   icon: 'fa-comments' },
+  { code: 'more_information_required', label: 'More Information Needed',cls: 'blue',   icon: 'fa-circle-question' },
+  { code: 'trial_period',              label: 'Trial Period',           cls: 'blue',   icon: 'fa-flask' },
+  { code: 'approved',                  label: 'Approved',               cls: 'green',  icon: 'fa-circle-check' },
+  { code: 'active',                    label: 'Active',                 cls: 'green',  icon: 'fa-bolt' },
+  { code: 'rejected',                  label: 'Not Approved',           cls: 'red',    icon: 'fa-circle-xmark' },
+  { code: 'inactive',                  label: 'Inactive',               cls: 'red',    icon: 'fa-circle-pause' },
+  { code: 'suspended',                 label: 'Suspended',              cls: 'red',    icon: 'fa-ban' }
+];
+
+function statusInfo(code) {
+  return APP_STATUSES.find(s => s.code === code) || APP_STATUSES[0];
+}
+
+function statusBadge(code) {
+  const s = statusInfo(code);
+  return `<span class="pill-${s.cls === 'blue' ? 'pending' : s.cls}">${s.label}</span>`;
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
 function doLogin() {
   const p = document.getElementById('adminPass').value.trim();
   const pass = window.ADMIN_PASSWORD || 'blesstech2026admin';
@@ -494,8 +513,8 @@ async function initAdmin() {
   }
 })();
 
-// ── DATA ─────────────────────────────────────────────────────────────────────
-let allApps = [], allAgents = [], allLeads = [], allSales = [];
+// ── DATA ──────────────────────────────────────────────────────────────────
+let allApps = [], allAgents = [], allSales = [];
 let currentFilter = 'all';
 let currentApp = null;
 let saleFilter = 'all';
@@ -503,16 +522,14 @@ let currentRejectSaleId = null;
 
 async function loadAll() {
   try {
-    [allApps, allAgents, allLeads, allSales] = await Promise.all([
+    [allApps, allAgents, allSales] = await Promise.all([
       db.getAll('applications', { order: 'created_at.desc' }),
       db.getAll('agents',       { order: 'joined_at.desc' }),
-      db.getAll('leads',        { order: 'created_at.desc' }),
       db.getAll('sales',        { order: 'created_at.desc' }),
     ]);
     updateStats();
     renderApps();
     renderAgents();
-    renderLeads();
     renderSales();
     renderPending();
     renderLeaderboard();
@@ -524,7 +541,7 @@ async function loadAll() {
 
 function updateStats() {
   document.getElementById('s-total').textContent    = allApps.length;
-  document.getElementById('s-pending').textContent  = allApps.filter(a=>a.status==='pending').length;
+  document.getElementById('s-pending').textContent  = allApps.filter(a => a.status === 'pending' || a.status === 'under_review').length;
   document.getElementById('s-approved').textContent = allAgents.length;
   document.getElementById('s-sales').textContent    = allSales.length;
   const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent').length;
@@ -541,7 +558,7 @@ function updatePendingBadge() {
   if (mob)  { mob.textContent  = pend; mob.style.display  = pend ? 'inline-block' : 'none'; }
 }
 
-// ── APPLICATIONS ─────────────────────────────────────────────────────────────
+// ── APPLICATIONS ─────────────────────────────────────────────────────────
 function renderApps(apps) {
   const list = (apps || allApps).filter(a => currentFilter === 'all' || a.status === currentFilter);
   const tbody = document.getElementById('appTable');
@@ -553,7 +570,7 @@ function renderApps(apps) {
       <td>${esc(a.location)}</td>
       <td style="font-size:12px;color:var(--muted);">${esc(a.reach||'—')}</td>
       <td style="font-size:12px;color:var(--muted);">${fmtDate(a.created_at)}</td>
-      <td><span class="pill-${a.status}">${a.status}</span></td>
+      <td>${statusBadge(a.status)}</td>
     </tr>`).join('');
 }
 
@@ -581,10 +598,11 @@ function openDetail(appId) {
 
   const isAgent = allAgents.some(ag => ag.app_id === a.app_id);
   const agent   = allAgents.find(ag => ag.app_id === a.app_id);
+  const sInfo   = statusInfo(a.status);
 
   document.getElementById('detail-body').innerHTML = `
     <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
-      <span class="badge badge-${a.status==='pending'?'yellow':a.status==='approved'?'green':'red'}">${a.status}</span>
+      ${statusBadge(a.status)}
       <span style="font-size:13px;color:var(--muted);">Applied ${fmtDate(a.created_at)}</span>
       ${isAgent ? `<span class="badge badge-navy" style="background:var(--navy);color:white;">Agent: ${esc(agent?.agent_id)} · ${esc(agent?.agent_code)}</span>` : ''}
     </div>
@@ -603,24 +621,69 @@ function openDetail(appId) {
         <div class="detail-field" style="margin-top:12px;"><small>Network Size</small><p>${esc(a.reach||'—')}</p></div>
       </div>
     </div>
-    <div class="detail-field" style="margin-top:4px;"><small>Motivation</small><p style="line-height:1.7;">${esc(a.motivation||'—')}</p></div>`;
+    <div class="detail-field" style="margin-top:4px;"><small>Motivation</small><p style="line-height:1.7;">${esc(a.motivation||'—')}</p></div>
+
+    <div class="divider" style="margin:20px 0;"></div>
+
+    <!-- STATUS CHANGE -->
+    <div style="background:var(--light);border-radius:var(--r);padding:18px 20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
+        <i class="fas fa-arrow-right-arrow-left"></i> Change Status
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <select class="select" id="statusSelect" style="flex:1;min-width:200px;">
+          ${APP_STATUSES.map(s => `<option value="${s.code}" ${s.code === a.status ? 'selected' : ''}>${s.label}</option>`).join('')}
+        </select>
+        <input type="text" class="input" id="statusNote" placeholder="Optional note…" style="flex:1;min-width:150px;">
+        <button class="btn btn-primary btn-sm" id="changeStatusBtn" onclick="changeStatus()">
+          <i class="fas fa-check"></i> Update
+        </button>
+      </div>
+    </div>
+
+    <!-- STATUS HISTORY -->
+    <div style="margin-top:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
+        <i class="fas fa-clock-rotate-left"></i> Status History
+      </div>
+      ${renderHistory(a.status_history)}
+    </div>`;
 
   const actions = document.getElementById('detail-actions');
-  if (a.status === 'pending') {
-    actions.innerHTML = `
-      <button class="btn btn-green btn-sm" onclick="openApprove()"><i class="fas fa-check"></i> Approve</button>
-      <button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="rejectApp()"><i class="fas fa-xmark"></i> Reject</button>
-      <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + ', we received your PhoneYa2 agent application (' + a.app_id + '). We are reviewing it and will get back to you soon!')}" target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-whatsapp"></i> Message Applicant</a>`;
-  } else if (a.status === 'approved' && isAgent) {
-    actions.innerHTML = `
-      <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Your PhoneYa2 agent account is active. Agent ID: ' + agent?.agent_id + ', Code: ' + agent?.agent_code)}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Send Agent Details</a>
-      <button class="btn btn-outline btn-sm" onclick="copyToClipboard('${esc(agent?.referral_url)}');toast('Referral link copied!')"><i class="fas fa-link"></i> Copy Referral Link</button>`;
-  } else {
-    actions.innerHTML = `<span style="font-size:14px;color:var(--muted);">No actions available for this status.</span>`;
+  const actionBtns = [];
+  if (a.status === 'pending' || a.status === 'under_review' || a.status === 'shortlisted') {
+    actionBtns.push(`<button class="btn btn-green btn-sm" onclick="openApprove()"><i class="fas fa-check"></i> Approve & Create Agent</button>`);
   }
+  if (a.status !== 'rejected' && a.status !== 'approved' && a.status !== 'active') {
+    actionBtns.push(`<button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="rejectApp()"><i class="fas fa-xmark"></i> Reject</button>`);
+  }
+  actionBtns.push(`<a href="${waLink('Hi ' + a.full_name.split(' ')[0] + ', we received your PhoneYa2 agent application (' + a.app_id + '). We are reviewing it and will get back to you soon!')}" target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-whatsapp"></i> Message Applicant</a>`);
+  actions.innerHTML = actionBtns.join('');
 
   document.getElementById('appDetail').classList.add('open');
   document.getElementById('appDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderHistory(history) {
+  if (!history || !history.length) {
+    return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No status changes yet.</div>';
+  }
+  const sorted = [...history].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+  return sorted.map(h => {
+    const s = statusInfo(h.status);
+    const colors = { yellow: '#fef3c7', blue: '#dbeafe', green: '#dcfce7', red: '#fee2e2' };
+    const textColors = { yellow: '#92400e', blue: '#1e40af', green: '#15803d', red: '#991b1b' };
+    return `
+      <div class="history-item">
+        <div class="history-icon" style="background:${colors[s.cls]};color:${textColors[s.cls]};">
+          <i class="fas ${s.icon}"></i>
+        </div>
+        <div class="history-body">
+          <div class="history-title" style="color:${textColors[s.cls]};">${s.label}</div>
+          <div class="history-meta">${new Date(h.timestamp).toLocaleString('en-ZM')}${h.note ? ' · ' + esc(h.note) : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function closeDetail() {
@@ -628,7 +691,46 @@ function closeDetail() {
   currentApp = null;
 }
 
-// ── APPROVE ───────────────────────────────────────────────────────────────────
+async function changeStatus() {
+  if (!currentApp) return;
+  const newStatus = document.getElementById('statusSelect').value;
+  const note      = document.getElementById('statusNote').value.trim();
+  const btn       = document.getElementById('changeStatusBtn');
+
+  if (newStatus === currentApp.status) { toast('Status unchanged'); return; }
+
+  setLoading(btn, true, 'Updating…');
+
+  try {
+    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
+    history.push({
+      status: newStatus,
+      timestamp: new Date().toISOString(),
+      by: 'admin',
+      note: note || null,
+    });
+
+    await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
+      status: newStatus,
+      status_history: history,
+      reviewed_by: 'admin',
+      reviewed_at: new Date().toISOString(),
+    });
+
+    await db.logAudit('application', currentApp.app_id, 'status_changed', 'admin',
+      { status: currentApp.status }, { status: newStatus, note });
+
+    toast('✅ Status updated to ' + statusInfo(newStatus).label);
+    await loadAll();
+    openDetail(currentApp.app_id);
+  } catch(e) {
+    toast('Error: ' + e.message);
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-check"></i> Update');
+  }
+}
+
+// ── APPROVE ───────────────────────────────────────────────────────────────
 function openApprove() {
   if (!currentApp) return;
   document.getElementById('m-app-id').value = currentApp.app_id;
@@ -663,8 +765,23 @@ async function confirmApprove() {
       active:       true,
     });
 
-    await db.update('applications', `app_id=eq.${currentApp.app_id}`, { status: 'approved' });
-    await db.logAudit('application', currentApp.app_id, 'approved', 'admin', { status: 'pending' }, { status: 'approved' }, 'Agent code: ' + agentCode);
+    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
+    history.push({
+      status: 'approved',
+      timestamp: new Date().toISOString(),
+      by: 'admin',
+      note: 'Approved and agent code ' + agentCode + ' created',
+    });
+
+    await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
+      status: 'approved',
+      status_history: history,
+      reviewed_by: 'admin',
+      reviewed_at: new Date().toISOString(),
+    });
+
+    await db.logAudit('application', currentApp.app_id, 'approved', 'admin',
+      { status: currentApp.status }, { status: 'approved', agent_code: agentCode });
 
     closeModal();
     toast('✅ Agent created: ' + agentCode);
@@ -682,15 +799,26 @@ async function confirmApprove() {
 async function rejectApp() {
   if (!currentApp || !confirm('Reject this application? This cannot be undone.')) return;
   try {
-    await db.update('applications', `app_id=eq.${currentApp.app_id}`, { status: 'rejected' });
-    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin', { status: 'pending' }, { status: 'rejected' });
+    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
+    history.push({ status: 'rejected', timestamp: new Date().toISOString(), by: 'admin' });
+
+    await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
+      status: 'rejected',
+      status_history: history,
+      reviewed_by: 'admin',
+      reviewed_at: new Date().toISOString(),
+    });
+
+    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin',
+      { status: currentApp.status }, { status: 'rejected' });
+
     toast('Application rejected');
     loadAll();
     closeDetail();
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── AGENTS ────────────────────────────────────────────────────────────────────
+// ── AGENTS ────────────────────────────────────────────────────────────────
 let agentFilter = 'all';
 let selectedAgent = null;
 
@@ -813,23 +941,7 @@ function recordSaleForAgent(code) {
   openAddSale(code);
 }
 
-// ── LEADS ─────────────────────────────────────────────────────────────────────
-function renderLeads() {
-  const tbody = document.getElementById('leadsTable');
-  const statusIcon = { interested:'🟡', purchased:'🟢', lost:'🔴', followup:'🔵' };
-  if (!allLeads.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">No leads yet.</td></tr>'; return; }
-  tbody.innerHTML = allLeads.map(l => `
-    <tr>
-      <td><code style="font-size:12px;color:var(--muted);">${esc(l.lead_id)}</code></td>
-      <td><strong>${esc(l.agent_code)}</strong></td>
-      <td>${esc(l.customer_name)}</td>
-      <td style="font-size:13px;">${esc(l.product)}</td>
-      <td>${statusIcon[l.status]||''} <span style="font-size:13px;">${esc(l.status)}</span></td>
-      <td style="color:var(--muted);font-size:12px;">${fmtDate(l.created_at)}</td>
-    </tr>`).join('');
-}
-
-// ── SALES ─────────────────────────────────────────────────────────────────────
+// ── SALES ─────────────────────────────────────────────────────────────────
 function setSaleFilter(f, btn) {
   saleFilter = f;
   document.querySelectorAll('.filter-pill[data-sf]').forEach(b => b.classList.remove('active'));
@@ -899,7 +1011,7 @@ async function deleteSale(id, saleId) {
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── ADD SALE ─────────────────────────────────────────────────────────────────
+// ── ADD SALE ─────────────────────────────────────────────────────────────
 function openAddSale(preselectedCode) {
   const form = document.getElementById('addSaleForm');
   form.style.display = 'block';
@@ -1044,7 +1156,7 @@ Thank you — keep selling! 🚀`;
   }
 }
 
-// ── PENDING SALES ─────────────────────────────────────────────────────────────
+// ── PENDING SALES ────────────────────────────────────────────────────────
 function renderPending() {
   const tbody = document.getElementById('pendingTable');
   const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent');
@@ -1116,7 +1228,7 @@ async function confirmRejectSale() {
   finally { setLoading(btn, false, '<i class="fas fa-xmark"></i> Confirm Reject'); }
 }
 
-// ── LEADERBOARD ───────────────────────────────────────────────────────────────
+// ── LEADERBOARD ──────────────────────────────────────────────────────────
 function renderLeaderboard() {
   const medals = ['🥇','🥈','🥉'];
   const byAgent = {};
@@ -1141,7 +1253,7 @@ function renderLeaderboard() {
     </div>`).join('');
 }
 
-// ── PDF DOWNLOADS ─────────────────────────────────────────────────────────────
+// ── PDF DOWNLOADS ────────────────────────────────────────────────────────
 function downloadAllSalesPdf() {
   if (!allSales.length) { toast('⚠️  No sales to download'); return; }
   const sales = allSales.map(s => ({
@@ -1184,7 +1296,7 @@ function downloadAgentPdf(agentCode) {
   toast('📄 Statement downloading…');
 }
 
-// ── TIER EDITOR (Settings tab) ────────────────────────────────────────────────
+// ── TIER EDITOR (Settings tab) ───────────────────────────────────────────
 function loadTiersIntoEditor() {
   const list = document.getElementById('tierList');
   const tiers = COMMISSION_TIERS.length ? COMMISSION_TIERS : CONFIG.fallbackTiers;
@@ -1240,7 +1352,7 @@ async function saveTiers() {
     const max  = maxV === '' ? null : Number(maxV);
     const pct  = Number(row.querySelector('[data-field="percentage"]').value);
 
-    if (!min || !pct) continue; // skip empty rows
+    if (!min || !pct) continue;
     if (max !== null && max < min) { toast('⚠️  Max cannot be less than Min'); return; }
     tiers.push({ min_amount: min, max_amount: max, percentage: pct, active: true });
   }
@@ -1251,7 +1363,6 @@ async function saveTiers() {
   setLoading(btn, true, 'Saving…');
 
   try {
-    // Delete existing tiers, then insert new ones
     const existing = await db.getAll('commission_tiers');
     for (const t of existing) {
       await db.remove('commission_tiers', `id=eq.${t.id}`);
@@ -1278,7 +1389,7 @@ async function saveTiers() {
   }
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
+// ── TABS ─────────────────────────────────────────────────────────────────
 function showTab(name, btn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('tab-' + name);
@@ -1300,7 +1411,6 @@ document.addEventListener('input', e => {
   if (e.target.matches('#tierList input')) updateRangePreviews();
 });
 
-// Initial load
 if (adminLoggedIn()) initAdmin();
 </script>
 </body>
