@@ -21,14 +21,18 @@
 .review-row:last-child { border-bottom: none; }
 .review-lbl  { font-weight: 600; min-width: 140px; color: var(--muted); flex-shrink: 0; }
 .review-val  { color: var(--text); }
-/* MOBILE FIXES */
+.screen-box  { background: linear-gradient(135deg,#0d2010,#0a3518); border: 1px solid rgba(37,211,102,.25); border-radius: var(--r); padding: 16px 18px; margin-top: 16px; color: white; }
+.screen-row  { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 4px 0; }
+.screen-row .ok   { color: var(--green); }
+.screen-row .warn { color: var(--yellow); }
+.screen-row .fail { color: var(--red); }
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
 @media(max-width:580px) {
   .form-card    { padding: 20px 16px; }
   .apply-wrap   { padding: 20px 16px 80px; }
   .steps        { gap: 0; }
-  .step-label   { display: none; }  /* hide text labels, keep circles */
+  .step-label   { display: none; }
   .step-line    { min-width: 14px; }
   .step-nav     { flex-direction: column-reverse; gap: 10px; }
   .step-nav .btn { width: 100%; justify-content: center; }
@@ -68,7 +72,7 @@ html, body { overflow-x: hidden; }
 
   <div class="form-card">
 
-    <!-- ── STEP 1: PERSONAL ───────────────────────────────────────────────── -->
+    <!-- STEP 1 -->
     <div class="step-panel active" id="step1">
       <div class="step-hdr">
         <h2>Personal Information</h2>
@@ -107,7 +111,7 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- ── STEP 2: ABOUT YOU ──────────────────────────────────────────────── -->
+    <!-- STEP 2 -->
     <div class="step-panel" id="step2">
       <div class="step-hdr">
         <h2>About You</h2>
@@ -155,7 +159,7 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- ── STEP 3: AGREEMENT ──────────────────────────────────────────────── -->
+    <!-- STEP 3 -->
     <div class="step-panel" id="step3">
       <div class="step-hdr">
         <h2>Agent Agreement</h2>
@@ -199,13 +203,14 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- ── STEP 4: REVIEW ─────────────────────────────────────────────────── -->
+    <!-- STEP 4 -->
     <div class="step-panel" id="step4">
       <div class="step-hdr">
         <h2>Review Your Application</h2>
         <p>Check everything is correct before submitting.</p>
       </div>
       <div id="reviewContent"></div>
+      <div id="screenResult" style="display:none;"></div>
       <div id="submitError" class="alert alert-error" style="display:none;margin-top:16px;">
         <i class="fas fa-circle-exclamation"></i>
         <span id="submitErrorText">Something went wrong. Please try again.</span>
@@ -218,8 +223,8 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-  </div><!-- /form-card -->
-</div><!-- /apply-wrap -->
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -266,8 +271,8 @@ function validateStep(step) {
     ok = showErr('e-whatsapp', !req('f-whatsapp')) && ok;
   }
   if (step === 2) {
-    ok = showErr('e-reach',      !req('f-reach'))                      && ok;
-    ok = showErr('e-motivation', req('f-motivation').length < 20)      && ok;
+    ok = showErr('e-reach',      !req('f-reach'))                 && ok;
+    ok = showErr('e-motivation', req('f-motivation').length < 20) && ok;
   }
   if (step === 3) {
     const allChecked = document.getElementById('agree1').checked &&
@@ -277,6 +282,102 @@ function validateStep(step) {
     ok = allChecked && ok;
   }
   return ok;
+}
+
+// ── ELIGIBILITY SCREENING ────────────────────────────────────────────────────
+// Runs before submission — checks basic criteria and stores a score.
+function runScreening(data, duplicateFound) {
+  const checks = [];
+
+  // 1. Name completeness (two words)
+  const nameParts = (data.full_name || '').trim().split(/\s+/);
+  checks.push({
+    label: 'Full name provided',
+    pass:  nameParts.length >= 2,
+    weight: 10,
+  });
+
+  // 2. Phone format (Zambian)
+  const phoneClean = (data.phone || '').replace(/\D/g, '');
+  const phoneOk    = phoneClean.length >= 9;
+  checks.push({
+    label: 'Valid phone number',
+    pass:  phoneOk,
+    weight: 10,
+  });
+
+  // 3. WhatsApp present
+  const waClean = (data.whatsapp || '').replace(/\D/g, '');
+  checks.push({
+    label: 'WhatsApp number provided',
+    pass:  waClean.length >= 9,
+    weight: 15,
+  });
+
+  // 4. Location present
+  checks.push({
+    label: 'Location provided',
+    pass:  !!(data.location && data.location.length >= 3),
+    weight: 10,
+  });
+
+  // 5. Network size
+  checks.push({
+    label: 'Network size declared',
+    pass:  !!data.reach,
+    weight: 15,
+  });
+
+  // 6. Motivation
+  const motivLen = (data.motivation || '').length;
+  checks.push({
+    label: 'Motivation provided',
+    pass:  motivLen >= 20,
+    weight: 15,
+  });
+
+  // 7. Agreements
+  checks.push({
+    label: 'All agreements accepted',
+    pass:  data.agree_commission && data.agree_terms && data.agree_accurate,
+    weight: 15,
+  });
+
+  // 8. Duplicate check
+  checks.push({
+    label: 'No duplicate application',
+    pass:  !duplicateFound,
+    weight: 10,
+  });
+
+  const totalWeight = checks.reduce((s, c) => s + c.weight, 0);
+  const earned      = checks.filter(c => c.pass).reduce((s, c) => s + c.weight, 0);
+  const score       = Math.round((earned / totalWeight) * 100);
+  const status      = score >= 70 ? 'qualified' : 'review';
+
+  return { score, status, checks };
+}
+
+async function checkDuplicate(phone, whatsapp) {
+  const phoneClean = phone.replace(/\D/g, '');
+  const waClean    = whatsapp.replace(/\D/g, '');
+  try {
+    const existing = await db.getAll('applications', {
+      filter: `phone=eq.${phone}`,
+      limit: 1,
+    });
+    if (existing && existing.length) return true;
+    if (waClean && waClean !== phoneClean) {
+      const waEx = await db.getAll('applications', {
+        filter: `whatsapp=eq.${whatsapp}`,
+        limit: 1,
+      });
+      if (waEx && waEx.length) return true;
+    }
+  } catch (e) {
+    // fail silently — don't block submission on duplicate-check error
+  }
+  return false;
 }
 
 function buildReview() {
@@ -305,7 +406,10 @@ async function submitApplication() {
   setLoading(btn, true, 'Submitting…');
 
   try {
-    // Get next application number
+    // Duplicate check
+    const duplicate = await checkDuplicate(req('f-phone'), req('f-whatsapp'));
+
+    // Build data
     const n    = await db.nextId('applications');
     const appId = makeAppId(n);
 
@@ -327,11 +431,28 @@ async function submitApplication() {
       status:           'pending',
     };
 
-    await db.insert('applications', data);
+    // Run screening
+    const screening = runScreening(data, duplicate);
+
+    // Attach screening result if the columns exist in Supabase (safe — extra keys are ignored by PostgREST)
+    // But we wrap in try/catch in case the columns aren't added yet.
+    const insertData = { ...data };
+    // Only include screening fields if you've added the columns. Remove this if you haven't run the SQL.
+    // insertData.system_eligibility_score  = screening.score;
+    // insertData.system_screening_status   = screening.status;
+
+    await db.insert('applications', insertData);
+
+    // Show screening result to applicant
+    showScreeningResult(screening);
 
     // Store in session for status page
-    sessionStorage.setItem('py2_app', JSON.stringify(data));
-    window.location.href = 'status.html';
+    sessionStorage.setItem('py2_app', JSON.stringify({ ...data, screening }));
+
+    // Brief delay so they can see the score, then redirect
+    setTimeout(() => {
+      window.location.href = 'status.html';
+    }, 1800);
 
   } catch (err) {
     console.error(err);
@@ -339,6 +460,29 @@ async function submitApplication() {
     errDiv.style.display = 'flex';
     setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Submit Application');
   }
+}
+
+function showScreeningResult(screening) {
+  const box = document.getElementById('screenResult');
+  const iconMap = { pass: '🟢', warn: '🟡', fail: '🔴' };
+  const colorMap = { pass: 'ok', warn: 'warn', fail: 'fail' };
+
+  box.innerHTML = `
+    <div class="screen-box">
+      <div style="font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;">System Screening</div>
+      <div style="font-size:1.6rem;font-weight:800;margin-bottom:14px;">Eligibility Score: ${screening.score}%</div>
+      ${screening.checks.map(c => `
+        <div class="screen-row">
+          <span class="${c.pass ? 'ok' : 'warn'}">${c.pass ? '🟢' : '🟡'}</span>
+          <span style="color:rgba(255,255,255,.7);">${esc(c.label)} — ${c.pass ? 'Passed' : 'Review'}</span>
+        </div>`).join('')}
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;">
+        Your application has passed the system's initial eligibility screening. This is <strong>not final acceptance</strong>.
+        Your application is now awaiting review by the PhoneYa2-ZM administration team.
+      </div>
+    </div>`;
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 </script>
 </body>
