@@ -46,73 +46,70 @@
 .rank-rev { font-weight: 800; color: var(--orange); font-size: 14px; }
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
-.mobile-admin-tabs {
-  display: none;
-  overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
-  padding: 10px 16px; background: white;
-  border-bottom: 1px solid var(--border); gap: 6px;
-}
+.mobile-admin-tabs { display: none; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; padding: 10px 16px; background: white; border-bottom: 1px solid var(--border); gap: 6px; }
 .mobile-admin-tabs::-webkit-scrollbar { display: none; }
-.mob-tab-btn {
-  flex-shrink: 0; padding: 7px 14px; border-radius: 100px;
-  border: 1.5px solid var(--border); background: white;
-  font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
-  white-space: nowrap; transition: all .2s;
-}
+.mob-tab-btn { flex-shrink: 0; padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--border); background: white; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .2s; }
 .mob-tab-btn.active { background: var(--orange); color: white; border-color: var(--orange); }
 .mob-tab-btn .badge-count { margin-left: 5px; background: var(--orange); color: white; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 100px; }
 
-.tier-row {
-  display: grid;
-  grid-template-columns: 100px 100px 100px 1fr 60px;
-  gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border);
-}
+.tier-row { display: grid; grid-template-columns: 100px 100px 100px 1fr 60px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .tier-row input { padding: 8px 10px; font-size: 14px; }
 .tier-row .tier-range-display { font-size: 13px; color: var(--muted); font-family: monospace; }
 
-/* Status history */
-.history-item {
-  display: flex; gap: 12px; padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-.history-item:last-child { border-bottom: none; }
-.history-icon {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; flex-shrink: 0;
-}
-.history-body { flex: 1; font-size: 13px; }
-.history-title { font-weight: 700; margin-bottom: 2px; }
-.history-meta { font-size: 11px; color: var(--muted); }
+.audit-item { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.audit-item:last-child { border-bottom: none; }
+.audit-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.audit-icon.green  { background: #dcfce7; color: #15803d; }
+.audit-icon.red    { background: #fee2e2; color: #991b1b; }
+.audit-icon.blue   { background: #dbeafe; color: #1e40af; }
+.audit-icon.orange { background: #fed7aa; color: #9a3412; }
+.audit-icon.gray   { background: var(--light); color: var(--muted); }
+.audit-body { flex: 1; }
+.audit-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+.audit-meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.audit-meta code { background: var(--light); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+
+.report-card { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 16px; }
+.report-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.report-row:last-child { border-bottom: none; }
+.report-lbl { color: var(--muted); font-weight: 600; }
+.report-val { font-weight: 800; color: var(--text); }
+
+.search-result-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .15s; }
+.search-result-item:hover { background: var(--light); }
+.search-result-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--light); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.search-result-body { flex: 1; }
+.search-result-title { font-weight: 700; font-size: 14px; }
+.search-result-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 @media(max-width:700px) {
   .tier-row { grid-template-columns: 1fr 1fr; gap: 8px; }
   .tier-row .tier-range-display { grid-column: 1 / -1; }
 }
 @media(max-width:900px) {
-  .admin-layout         { grid-template-columns: 1fr; }
-  .sidebar              { display: none; }
-  .mobile-admin-tabs    { display: flex; }
-  .admin-main           { padding: 16px; }
-  .detail-grid          { grid-template-columns: 1fr; }
-  .filter-row           { flex-wrap: wrap; }
-  .search-box           { width: 100%; max-width: 100%; }
-  .action-bar           { flex-wrap: wrap; }
-  .action-bar .btn      { flex: 1; min-width: 120px; justify-content: center; }
+  .admin-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .mobile-admin-tabs { display: flex; }
+  .admin-main { padding: 16px; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .filter-row { flex-wrap: wrap; }
+  .search-box { width: 100%; max-width: 100%; }
+  .action-bar { flex-wrap: wrap; }
+  .action-bar .btn { flex: 1; min-width: 120px; justify-content: center; }
   th.hide-mobile, td.hide-mobile { display: none; }
 }
 @media(max-width:600px) {
-  .stat-grid            { grid-template-columns: 1fr 1fr; }
-  .page-hdr             { flex-direction: column; align-items: flex-start; }
-  .rank-name            { font-size: 13px; }
-  table                 { font-size: 13px; }
-  th, td                { padding: 10px 10px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .page-hdr { flex-direction: column; align-items: flex-start; }
+  .rank-name { font-size: 13px; }
+  table { font-size: 13px; }
+  th, td { padding: 10px 10px; }
   #addSaleForm .sale-grid { grid-template-columns: 1fr !important; }
   #agentDetailGrid { grid-template-columns: 1fr !important; }
 }
 @media(max-width:400px) {
-  .stat-grid            { grid-template-columns: 1fr; }
-  .filter-pill          { font-size: 12px; padding: 5px 12px; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .filter-pill { font-size: 12px; padding: 5px 12px; }
 }
 </style>
 </head>
@@ -139,7 +136,10 @@ html, body { overflow-x: hidden; }
       <div><div class="nav-brand">PhoneYa2<span>-ZM</span> Admin</div></div>
     </div>
     <div class="nav-spacer"></div>
-    <span style="font-size:13px;color:rgba(255,255,255,.45);" class="hide-mobile">Admin Panel</span>
+    <div class="search-box" style="max-width:280px;">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search anything…" id="globalSearch" oninput="globalSearch()" onfocus="showSearchResults()">
+    </div>
     <button class="btn-ghost" style="color:rgba(255,255,255,.5);" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
   </div>
 </nav>
@@ -148,8 +148,11 @@ html, body { overflow-x: hidden; }
   <button class="mob-tab-btn active" onclick="showTab('applications', this)">Applications</button>
   <button class="mob-tab-btn" onclick="showTab('agents', this)">Agents</button>
   <button class="mob-tab-btn" onclick="showTab('sales', this)">Sales</button>
-  <button class="mob-tab-btn" onclick="showTab('pending', this)">Pending <span class="badge-count" id="mobPendCount" style="display:none;">0</span></button>
-  <button class="mob-tab-btn" onclick="showTab('leaderboard', this)">Leaderboard</button>
+  <button class="mob-tab-btn" onclick="showTab('payouts', this)">Payouts</button>
+  <button class="mob-tab-btn" onclick="showTab('customers', this)">Customers</button>
+  <button class="mob-tab-btn" onclick="showTab('reports', this)">Reports</button>
+  <button class="mob-tab-btn" onclick="showTab('audit', this)">Audit</button>
+  <button class="mob-tab-btn" onclick="showTab('flags', this)">Flags <span class="badge-count" id="mobFlagCount" style="display:none;">0</span></button>
   <button class="mob-tab-btn" onclick="showTab('settings', this)">Settings</button>
 </div>
 
@@ -157,16 +160,18 @@ html, body { overflow-x: hidden; }
   <div class="sidebar">
     <div class="sidebar-logo">
       <div>PhoneYa2<span>-ZM</span></div>
-      <small>Agent Network</small>
+      <small>Admin Panel</small>
     </div>
     <div class="nav-item active" onclick="showTab('applications', this)"><i class="fas fa-file-lines"></i> Applications</div>
-    <div class="nav-item" onclick="showTab('agents', this)"><i class="fas fa-users"></i> Active Agents</div>
+    <div class="nav-item" onclick="showTab('agents', this)"><i class="fas fa-users"></i> Agents</div>
     <div class="nav-item" onclick="showTab('sales', this)"><i class="fas fa-chart-line"></i> Sales</div>
-    <div class="nav-item" onclick="showTab('pending', this)">
-      <i class="fas fa-hourglass-half"></i> Pending Sales
-      <span class="badge-count" id="sidePendCount" style="display:none;">0</span>
-    </div>
+    <div class="nav-item" onclick="showTab('pending', this)"><i class="fas fa-hourglass-half"></i> Pending Sales <span class="badge-count" id="sidePendCount" style="display:none;">0</span></div>
+    <div class="nav-item" onclick="showTab('payouts', this)"><i class="fas fa-money-bill-transfer"></i> Payouts <span class="badge-count" id="sidePayoutCount" style="display:none;">0</span></div>
+    <div class="nav-item" onclick="showTab('customers', this)"><i class="fas fa-address-book"></i> Customers</div>
     <div class="nav-item" onclick="showTab('leaderboard', this)"><i class="fas fa-trophy"></i> Leaderboard</div>
+    <div class="nav-item" onclick="showTab('reports', this)"><i class="fas fa-file-invoice-dollar"></i> Reports</div>
+    <div class="nav-item" onclick="showTab('audit', this)"><i class="fas fa-clock-rotate-left"></i> Audit Log</div>
+    <div class="nav-item" onclick="showTab('flags', this)"><i class="fas fa-triangle-exclamation"></i> Fraud Flags <span class="badge-count" id="sideFlagCount" style="display:none;">0</span></div>
     <div class="nav-item" onclick="showTab('settings', this)"><i class="fas fa-gear"></i> Settings</div>
     <div style="position:absolute;bottom:20px;left:0;right:0;padding:0 20px;">
       <a href="index.html" class="btn-ghost" style="width:100%;justify-content:center;color:rgba(255,255,255,.4);"><i class="fas fa-arrow-left"></i> Public Site</a>
@@ -175,13 +180,22 @@ html, body { overflow-x: hidden; }
 
   <div class="admin-main">
 
+    <!-- GLOBAL SEARCH RESULTS (hidden by default) -->
+    <div id="globalSearchPanel" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:20px;overflow:hidden;">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;">
+        <i class="fas fa-magnifying-glass"></i> Search Results
+      </div>
+      <div id="globalSearchResults"></div>
+    </div>
+
+    <!-- STATS -->
     <div class="stat-grid" id="adminStats" style="margin-bottom:24px;">
       <div class="stat-card"><div class="stat-value" id="s-total">—</div><div class="stat-label">Total Applications</div></div>
       <div class="stat-card"><div class="stat-value" id="s-pending" style="color:var(--yellow);">—</div><div class="stat-label">Awaiting Review</div></div>
       <div class="stat-card"><div class="stat-value" id="s-approved" style="color:#16a34a;">—</div><div class="stat-label">Approved Agents</div></div>
       <div class="stat-card"><div class="stat-value" id="s-sales">—</div><div class="stat-label">Total Sales</div></div>
-      <div class="stat-card"><div class="stat-value" id="s-pend-sales" style="color:var(--orange);">—</div><div class="stat-label">Pending Sales</div></div>
       <div class="stat-card"><div class="stat-value" id="s-revenue" style="color:#16a34a;">—</div><div class="stat-label">Total Revenue</div></div>
+      <div class="stat-card"><div class="stat-value" id="s-payouts" style="color:var(--orange);">—</div><div class="stat-label">Total Paid Out</div></div>
     </div>
 
     <!-- APPLICATIONS TAB -->
@@ -231,7 +245,6 @@ html, body { overflow-x: hidden; }
           </div>
         </div>
       </div>
-
       <div id="agentDetailPanel" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
           <div>
@@ -241,6 +254,7 @@ html, body { overflow-x: hidden; }
           <button class="btn-ghost" onclick="closeAgentDetail()"><i class="fas fa-xmark"></i> Close</button>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;" id="agentDetailGrid"></div>
+        <div id="agentWalletBox" style="background:linear-gradient(135deg,#0d2010,#0a3518);border-radius:var(--r);padding:16px 18px;margin-bottom:20px;border:1px solid rgba(37,211,102,.2);"></div>
         <div style="background:var(--light);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;">
           <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Referral Link</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -250,7 +264,6 @@ html, body { overflow-x: hidden; }
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;" id="agentDetailActions"></div>
       </div>
-
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -272,14 +285,12 @@ html, body { overflow-x: hidden; }
           <button class="btn btn-primary btn-sm" onclick="openAddSale()"><i class="fas fa-plus"></i> Record Sale</button>
         </div>
       </div>
-
       <div class="filter-row">
         <button class="filter-pill active" data-sf="all" onclick="setSaleFilter('all',this)">All</button>
         <button class="filter-pill" data-sf="pending" onclick="setSaleFilter('pending',this)">Pending</button>
         <button class="filter-pill" data-sf="confirmed" onclick="setSaleFilter('confirmed',this)">Confirmed</button>
         <button class="filter-pill" data-sf="paid" onclick="setSaleFilter('paid',this)">Paid</button>
       </div>
-
       <div id="addSaleForm" style="display:none;background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:20px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
           <h3 style="font-size:1rem;">Record a New Sale</h3>
@@ -346,7 +357,6 @@ html, body { overflow-x: hidden; }
           <button class="btn btn-green btn-sm" id="saveSaleWaBtn" onclick="saveSale(true)"><i class="fab fa-whatsapp"></i> Save &amp; Notify</button>
         </div>
       </div>
-
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -375,6 +385,50 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
+    <!-- PAYOUTS TAB -->
+    <div class="tab-pane" id="tab-payouts">
+      <div class="page-hdr">
+        <h2>Payout Requests</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadPayouts()"><i class="fas fa-refresh"></i> Refresh</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-pill active" data-pf="all" onclick="setPayoutFilter('all',this)">All</button>
+        <button class="filter-pill" data-pf="requested" onclick="setPayoutFilter('requested',this)">Requested</button>
+        <button class="filter-pill" data-pf="processing" onclick="setPayoutFilter('processing',this)">Processing</button>
+        <button class="filter-pill" data-pf="paid" onclick="setPayoutFilter('paid',this)">Paid</button>
+        <button class="filter-pill" data-pf="rejected" onclick="setPayoutFilter('rejected',this)">Rejected</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Request</th><th>Agent</th><th>Amount</th><th>Method</th>
+            <th class="hide-mobile">Phone</th><th class="hide-mobile">Requested</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="payoutsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS TAB -->
+    <div class="tab-pane" id="tab-customers">
+      <div class="page-hdr">
+        <h2>Customer Database</h2>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search customer name or phone…" id="custSearch" oninput="filterCustomers()">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Customer</th><th>Phone</th><th class="hide-mobile">Location</th>
+            <th>Purchases</th><th>Total Spent</th><th class="hide-mobile">Introduced By</th><th class="hide-mobile">Last Purchase</th>
+          </tr></thead>
+          <tbody id="customersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- LEADERBOARD TAB -->
     <div class="tab-pane" id="tab-leaderboard">
       <div class="page-hdr"><h2>Sales Leaderboard</h2></div>
@@ -383,31 +437,92 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
+    <!-- REPORTS TAB -->
+    <div class="tab-pane" id="tab-reports">
+      <div class="page-hdr">
+        <h2>Financial Reports</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadReports()"><i class="fas fa-refresh"></i> Refresh</button>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-pill active" data-rf="month" onclick="setReportFilter('month',this)">This Month</button>
+        <button class="filter-pill" data-rf="last_month" onclick="setReportFilter('last_month',this)">Last Month</button>
+        <button class="filter-pill" data-rf="year" onclick="setReportFilter('year',this)">This Year</button>
+        <button class="filter-pill" data-rf="all" onclick="setReportFilter('all',this)">All Time</button>
+      </div>
+
+      <div id="reportsContent"></div>
+    </div>
+
+    <!-- AUDIT LOG TAB -->
+    <div class="tab-pane" id="tab-audit">
+      <div class="page-hdr">
+        <h2>Audit Log</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadAudit()"><i class="fas fa-refresh"></i> Refresh</button>
+      </div>
+      <div class="filter-row">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search action or entity ID…" id="auditSearch" oninput="renderAudit()">
+        </div>
+        <button class="filter-pill active" data-audit="all" onclick="setAuditFilter('all',this)">All</button>
+        <button class="filter-pill" data-audit="application" onclick="setAuditFilter('application',this)">Applications</button>
+        <button class="filter-pill" data-audit="agent" onclick="setAuditFilter('agent',this)">Agents</button>
+        <button class="filter-pill" data-audit="sale" onclick="setAuditFilter('sale',this)">Sales</button>
+        <button class="filter-pill" data-audit="payout" onclick="setAuditFilter('payout',this)">Payouts</button>
+        <button class="filter-pill" data-audit="tier" onclick="setAuditFilter('tier',this)">Tiers</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="auditList"></div>
+      </div>
+    </div>
+
+    <!-- FRAUD FLAGS TAB -->
+    <div class="tab-pane" id="tab-flags">
+      <div class="page-hdr">
+        <h2>Fraud Flags</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadFlags()"><i class="fas fa-refresh"></i> Refresh</button>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+        Sales that triggered automatic suspicion checks. Review each one.
+      </p>
+      <div id="flagsList"></div>
+    </div>
+
     <!-- SETTINGS TAB -->
     <div class="tab-pane" id="tab-settings">
       <div class="page-hdr">
-        <h2>Commission Tiers</h2>
-        <button class="btn btn-primary btn-sm" onclick="addTier()"><i class="fas fa-plus"></i> Add Tier</button>
+        <h2>Settings</h2>
       </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">
-        The system calculates agent commission from the total sale amount. Enter the range (ZMW) and the percentage. Higher amounts typically earn a lower percentage — but more ZMW overall.
-      </p>
-      <div class="card" style="padding:16px 20px;">
+
+      <!-- Commission Tiers -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="font-size:1rem;">Commission Tiers</h3>
+            <p style="font-size:13px;color:var(--muted);margin-top:4px;">Sale amount → commission percentage.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="addTier()"><i class="fas fa-plus"></i> Add Tier</button>
+        </div>
         <div class="tier-row" style="font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;">
-          <div>Min (ZMW)</div>
-          <div>Max (ZMW)</div>
-          <div>Percent %</div>
-          <div class="hide-mobile">Range preview</div>
-          <div></div>
+          <div>Min (ZMW)</div><div>Max (ZMW)</div><div>Percent %</div>
+          <div class="hide-mobile">Preview</div><div></div>
         </div>
         <div id="tierList"></div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" id="saveTiersBtn" onclick="saveTiers()"><i class="fas fa-check"></i> Save Tiers</button>
+          <button class="btn btn-outline btn-sm" onclick="loadTiersIntoEditor()"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+        <div id="tiersMsg" class="alert alert-success" style="display:none;margin-top:12px;">
+          <i class="fas fa-circle-check"></i><span>Saved.</span>
+        </div>
       </div>
-      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-primary" id="saveTiersBtn" onclick="saveTiers()"><i class="fas fa-check"></i> Save Changes</button>
-        <button class="btn btn-outline" onclick="loadTiersIntoEditor()"><i class="fas fa-undo"></i> Reset</button>
-      </div>
-      <div id="tiersMsg" class="alert alert-success" style="display:none;margin-top:16px;">
-        <i class="fas fa-circle-check"></i><span>Commission tiers saved.</span>
+
+      <!-- Payment Methods -->
+      <div class="card">
+        <h3 style="font-size:1rem;margin-bottom:4px;">Payment Methods</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Toggle which methods agents can use for payout requests.</p>
+        <div id="paymentMethodsList"></div>
       </div>
     </div>
 
@@ -445,7 +560,7 @@ html, body { overflow-x: hidden; }
     <div class="modal-body">
       <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Please explain why this sale is being rejected. The agent will see this reason.</p>
       <div class="field">
-        <label class="label">Reason for rejection <span class="req">*</span></label>
+        <label class="label">Reason <span class="req">*</span></label>
         <textarea class="textarea" id="rejectReason" placeholder="e.g. Customer payment not verified"></textarea>
       </div>
       <div style="display:flex;gap:10px;">
@@ -456,9 +571,28 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
+<div class="modal-overlay" id="rejectPayoutModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Reject Payout</h3>
+      <button class="modal-close" onclick="closeRejectPayout()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="label">Reason <span class="req">*</span></label>
+        <textarea class="textarea" id="rejectPayoutReason" placeholder="e.g. Details mismatch"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline btn-full" onclick="closeRejectPayout()">Cancel</button>
+        <button class="btn btn-full" style="background:var(--red);color:white;" id="confirmRejectPayoutBtn" onclick="confirmRejectPayout()"><i class="fas fa-xmark"></i> Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="config.js"></script>
 <script>
-// ── STATUS DEFINITIONS ────────────────────────────────────────────────────
+// ── APP STATUSES ─────────────────────────────────────────────────────────
 const APP_STATUSES = [
   { code: 'pending',                   label: 'Submitted',              cls: 'yellow', icon: 'fa-paper-plane' },
   { code: 'under_review',              label: 'Under Review',           cls: 'blue',   icon: 'fa-magnifying-glass' },
@@ -473,16 +607,14 @@ const APP_STATUSES = [
   { code: 'suspended',                 label: 'Suspended',              cls: 'red',    icon: 'fa-ban' }
 ];
 
-function statusInfo(code) {
-  return APP_STATUSES.find(s => s.code === code) || APP_STATUSES[0];
-}
-
+function statusInfo(code) { return APP_STATUSES.find(s => s.code === code) || APP_STATUSES[0]; }
 function statusBadge(code) {
   const s = statusInfo(code);
-  return `<span class="pill-${s.cls === 'blue' ? 'pending' : s.cls}">${s.label}</span>`;
+  const cls = s.cls === 'blue' ? 'pending' : s.cls;
+  return `<span class="pill-${cls}">${s.label}</span>`;
 }
 
-// ── AUTH ──────────────────────────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────────────────────────────
 function doLogin() {
   const p = document.getElementById('adminPass').value.trim();
   const pass = window.ADMIN_PASSWORD || 'blesstech2026admin';
@@ -503,6 +635,10 @@ function doLogout() {
 async function initAdmin() {
   await loadTiers();
   await loadAll();
+  await loadPayouts();
+  await loadCustomers();
+  await loadFlags();
+  await loadPaymentMethods();
 }
 
 (function() {
@@ -513,12 +649,17 @@ async function initAdmin() {
   }
 })();
 
-// ── DATA ──────────────────────────────────────────────────────────────────
+// ── DATA ─────────────────────────────────────────────────────────────────
 let allApps = [], allAgents = [], allSales = [];
+let allAudit = [], allPayouts = [], allCustomers = [], allFlags = [], allMethods = [];
 let currentFilter = 'all';
 let currentApp = null;
 let saleFilter = 'all';
+let auditFilter = 'all';
+let payoutFilter = 'all';
+let reportFilter = 'month';
 let currentRejectSaleId = null;
+let currentRejectPayoutId = null;
 
 async function loadAll() {
   try {
@@ -534,9 +675,44 @@ async function loadAll() {
     renderPending();
     renderLeaderboard();
     updatePendingBadge();
-  } catch(e) {
-    toast('⚠️  Could not load data: ' + e.message);
-  }
+  } catch(e) { toast('⚠️  ' + e.message); }
+}
+
+async function loadPayouts() {
+  try {
+    allPayouts = await db.getAll('payout_requests', { order: 'requested_at.desc' });
+    renderPayouts();
+    updatePayoutBadge();
+  } catch(e) { console.warn(e); }
+}
+
+async function loadCustomers() {
+  try {
+    allCustomers = await db.getAll('customers', { order: 'created_at.desc' });
+    renderCustomers();
+  } catch(e) { console.warn(e); }
+}
+
+async function loadFlags() {
+  try {
+    allFlags = await db.getAll('fraud_flags', { order: 'created_at.desc' });
+    renderFlags();
+    updateFlagBadge();
+  } catch(e) { console.warn(e); }
+}
+
+async function loadAudit() {
+  try {
+    allAudit = await db.getAll('audit_log', { order: 'created_at.desc', limit: 200 });
+    renderAudit();
+  } catch(e) { console.warn(e); }
+}
+
+async function loadPaymentMethods() {
+  try {
+    allMethods = await db.getAll('payment_methods', { order: 'sort_order.asc' });
+    renderPaymentMethods();
+  } catch(e) { console.warn(e); }
 }
 
 function updateStats() {
@@ -544,18 +720,30 @@ function updateStats() {
   document.getElementById('s-pending').textContent  = allApps.filter(a => a.status === 'pending' || a.status === 'under_review').length;
   document.getElementById('s-approved').textContent = allAgents.length;
   document.getElementById('s-sales').textContent    = allSales.length;
-  const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent').length;
-  document.getElementById('s-pend-sales').textContent = pend;
   const revenue = allSales.reduce((t,s) => t + (s.amount || 0), 0);
   document.getElementById('s-revenue').textContent = fmtMoney(revenue);
+  const paidOut = allPayouts.filter(p => p.status === 'paid').reduce((t,p) => t + p.amount, 0);
+  document.getElementById('s-payouts').textContent = fmtMoney(paidOut);
 }
 
 function updatePendingBadge() {
   const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent').length;
-  const side = document.getElementById('sidePendCount');
-  const mob  = document.getElementById('mobPendCount');
-  if (side) { side.textContent = pend; side.style.display = pend ? 'inline-block' : 'none'; }
-  if (mob)  { mob.textContent  = pend; mob.style.display  = pend ? 'inline-block' : 'none'; }
+  ['sidePendCount','mobPendCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = pend; el.style.display = pend ? 'inline-block' : 'none'; }
+  });
+}
+function updatePayoutBadge() {
+  const pend = allPayouts.filter(p => p.status === 'requested').length;
+  const el = document.getElementById('sidePayoutCount');
+  if (el) { el.textContent = pend; el.style.display = pend ? 'inline-block' : 'none'; }
+}
+function updateFlagBadge() {
+  const open = allFlags.filter(f => f.status === 'open').length;
+  ['sideFlagCount','mobFlagCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = open; el.style.display = open ? 'inline-block' : 'none'; }
+  });
 }
 
 // ── APPLICATIONS ─────────────────────────────────────────────────────────
@@ -595,10 +783,8 @@ function openDetail(appId) {
   if (!currentApp) return;
   const a = currentApp;
   document.getElementById('detail-name').textContent = a.full_name + ' — ' + a.app_id;
-
   const isAgent = allAgents.some(ag => ag.app_id === a.app_id);
   const agent   = allAgents.find(ag => ag.app_id === a.app_id);
-  const sInfo   = statusInfo(a.status);
 
   document.getElementById('detail-body').innerHTML = `
     <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
@@ -622,10 +808,7 @@ function openDetail(appId) {
       </div>
     </div>
     <div class="detail-field" style="margin-top:4px;"><small>Motivation</small><p style="line-height:1.7;">${esc(a.motivation||'—')}</p></div>
-
     <div class="divider" style="margin:20px 0;"></div>
-
-    <!-- STATUS CHANGE -->
     <div style="background:var(--light);border-radius:var(--r);padding:18px 20px;">
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
         <i class="fas fa-arrow-right-arrow-left"></i> Change Status
@@ -640,8 +823,6 @@ function openDetail(appId) {
         </button>
       </div>
     </div>
-
-    <!-- STATUS HISTORY -->
     <div style="margin-top:20px;">
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
         <i class="fas fa-clock-rotate-left"></i> Status History
@@ -650,15 +831,15 @@ function openDetail(appId) {
     </div>`;
 
   const actions = document.getElementById('detail-actions');
-  const actionBtns = [];
+  const btns = [];
   if (a.status === 'pending' || a.status === 'under_review' || a.status === 'shortlisted') {
-    actionBtns.push(`<button class="btn btn-green btn-sm" onclick="openApprove()"><i class="fas fa-check"></i> Approve & Create Agent</button>`);
+    btns.push(`<button class="btn btn-green btn-sm" onclick="openApprove()"><i class="fas fa-check"></i> Approve & Create Agent</button>`);
   }
   if (a.status !== 'rejected' && a.status !== 'approved' && a.status !== 'active') {
-    actionBtns.push(`<button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="rejectApp()"><i class="fas fa-xmark"></i> Reject</button>`);
+    btns.push(`<button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="rejectApp()"><i class="fas fa-xmark"></i> Reject</button>`);
   }
-  actionBtns.push(`<a href="${waLink('Hi ' + a.full_name.split(' ')[0] + ', we received your PhoneYa2 agent application (' + a.app_id + '). We are reviewing it and will get back to you soon!')}" target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-whatsapp"></i> Message Applicant</a>`);
-  actions.innerHTML = actionBtns.join('');
+  btns.push(`<a href="${waLink('Hi ' + a.full_name.split(' ')[0] + ', we received your PhoneYa2 agent application (' + a.app_id + '). We are reviewing it and will get back to you soon!')}" target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-whatsapp"></i> Message</a>`);
+  actions.innerHTML = btns.join('');
 
   document.getElementById('appDetail').classList.add('open');
   document.getElementById('appDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -674,13 +855,13 @@ function renderHistory(history) {
     const colors = { yellow: '#fef3c7', blue: '#dbeafe', green: '#dcfce7', red: '#fee2e2' };
     const textColors = { yellow: '#92400e', blue: '#1e40af', green: '#15803d', red: '#991b1b' };
     return `
-      <div class="history-item">
-        <div class="history-icon" style="background:${colors[s.cls]};color:${textColors[s.cls]};">
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:${colors[s.cls]};color:${textColors[s.cls]};">
           <i class="fas ${s.icon}"></i>
         </div>
-        <div class="history-body">
-          <div class="history-title" style="color:${textColors[s.cls]};">${s.label}</div>
-          <div class="history-meta">${new Date(h.timestamp).toLocaleString('en-ZM')}${h.note ? ' · ' + esc(h.note) : ''}</div>
+        <div style="flex:1;font-size:13px;">
+          <div style="font-weight:700;color:${textColors[s.cls]};">${s.label}</div>
+          <div style="font-size:11px;color:var(--muted);">${fmtDateTime(h.timestamp)}${h.note ? ' · ' + esc(h.note) : ''}</div>
         </div>
       </div>`;
   }).join('');
@@ -700,15 +881,9 @@ async function changeStatus() {
   if (newStatus === currentApp.status) { toast('Status unchanged'); return; }
 
   setLoading(btn, true, 'Updating…');
-
   try {
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
-    history.push({
-      status: newStatus,
-      timestamp: new Date().toISOString(),
-      by: 'admin',
-      note: note || null,
-    });
+    history.push({ status: newStatus, timestamp: new Date().toISOString(), by: 'admin', note: note || null });
 
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
       status: newStatus,
@@ -730,7 +905,6 @@ async function changeStatus() {
   }
 }
 
-// ── APPROVE ───────────────────────────────────────────────────────────────
 function openApprove() {
   if (!currentApp) return;
   document.getElementById('m-app-id').value = currentApp.app_id;
@@ -738,15 +912,12 @@ function openApprove() {
   document.getElementById('approveError').style.display = 'none';
   document.getElementById('approveModal').classList.add('open');
 }
-function closeModal() {
-  document.getElementById('approveModal').classList.remove('open');
-}
+function closeModal() { document.getElementById('approveModal').classList.remove('open'); }
 
 async function confirmApprove() {
   const btn = document.getElementById('confirmApproveBtn');
   setLoading(btn, true, 'Creating agent…');
   document.getElementById('approveError').style.display = 'none';
-
   try {
     const n         = await db.nextId('applications');
     const agentId   = makeAgentId(n);
@@ -765,19 +936,18 @@ async function confirmApprove() {
       active:       true,
     });
 
-    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
-    history.push({
-      status: 'approved',
-      timestamp: new Date().toISOString(),
-      by: 'admin',
-      note: 'Approved and agent code ' + agentCode + ' created',
+    // Init wallet for this agent
+    await db.insert('wallets', {
+      agent_code: agentCode,
+      total_earned: 0, pending: 0, available: 0, paid: 0,
     });
 
+    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
+    history.push({ status: 'approved', timestamp: new Date().toISOString(), by: 'admin', note: 'Agent code ' + agentCode });
+
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
-      status: 'approved',
-      status_history: history,
-      reviewed_by: 'admin',
-      reviewed_at: new Date().toISOString(),
+      status: 'approved', status_history: history,
+      reviewed_by: 'admin', reviewed_at: new Date().toISOString(),
     });
 
     await db.logAudit('application', currentApp.app_id, 'approved', 'admin',
@@ -787,7 +957,6 @@ async function confirmApprove() {
     toast('✅ Agent created: ' + agentCode);
     loadAll();
     closeDetail();
-
   } catch(e) {
     document.getElementById('approveErrText').textContent = e.message;
     document.getElementById('approveError').style.display = 'flex';
@@ -797,28 +966,22 @@ async function confirmApprove() {
 }
 
 async function rejectApp() {
-  if (!currentApp || !confirm('Reject this application? This cannot be undone.')) return;
+  if (!currentApp || !confirm('Reject this application?')) return;
   try {
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
     history.push({ status: 'rejected', timestamp: new Date().toISOString(), by: 'admin' });
-
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
-      status: 'rejected',
-      status_history: history,
-      reviewed_by: 'admin',
-      reviewed_at: new Date().toISOString(),
+      status: 'rejected', status_history: history,
+      reviewed_by: 'admin', reviewed_at: new Date().toISOString(),
     });
-
-    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin',
-      { status: currentApp.status }, { status: 'rejected' });
-
+    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin', { status: currentApp.status }, { status: 'rejected' });
     toast('Application rejected');
     loadAll();
     closeDetail();
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── AGENTS ────────────────────────────────────────────────────────────────
+// ── AGENTS ───────────────────────────────────────────────────────────────
 let agentFilter = 'all';
 let selectedAgent = null;
 
@@ -831,7 +994,7 @@ function setAgentFilter(f, btn) {
 
 function renderAgents() {
   const list = allAgents.filter(a => {
-    if (agentFilter === 'active')   return a.active;
+    if (agentFilter === 'active') return a.active;
     if (agentFilter === 'inactive') return !a.active;
     return true;
   });
@@ -866,7 +1029,7 @@ function renderAgents() {
   }).join('');
 }
 
-function openAgentDetail(code) {
+async function openAgentDetail(code) {
   selectedAgent = allAgents.find(a => a.agent_code === code);
   if (!selectedAgent) return;
   const a = selectedAgent;
@@ -899,11 +1062,25 @@ function openAgentDetail(code) {
     ['Joined',       fmtDate(a.joined_at)],
   ].map(([l,v]) => `<div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">${esc(l)}</div><div style="font-size:14px;font-weight:600;">${esc(v)}</div></div>`).join('');
 
+  // Wallet box
+  const wallet = await db.getOne('wallets', `agent_code=eq.${code}`).catch(() => null);
+  const w = wallet || { total_earned:0, pending:0, available:0, paid:0 };
+  document.getElementById('agentWalletBox').innerHTML = `
+    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">
+      <i class="fas fa-wallet"></i> Wallet
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div><div style="font-size:11px;color:rgba(255,255,255,.4);">Total Earned</div><div style="font-family:'Syne',sans-serif;font-weight:800;color:white;font-size:1.1rem;">${fmtMoney(w.total_earned)}</div></div>
+      <div><div style="font-size:11px;color:rgba(255,255,255,.4);">Pending</div><div style="font-family:'Syne',sans-serif;font-weight:800;color:#fbbf24;font-size:1.1rem;">${fmtMoney(w.pending)}</div></div>
+      <div><div style="font-size:11px;color:rgba(255,255,255,.4);">Available</div><div style="font-family:'Syne',sans-serif;font-weight:800;color:#4ade80;font-size:1.1rem;">${fmtMoney(w.available)}</div></div>
+      <div><div style="font-size:11px;color:rgba(255,255,255,.4);">Paid</div><div style="font-family:'Syne',sans-serif;font-weight:800;color:#60a5fa;font-size:1.1rem;">${fmtMoney(w.paid)}</div></div>
+    </div>`;
+
   document.getElementById('agentDetailRef').textContent = a.referral_url || '';
 
   const actions = document.getElementById('agentDetailActions');
   actions.innerHTML = `
-    <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Just checking in from PhoneYa2-ZM. How are your sales going? Remember your referral link: ' + (a.referral_url||''))}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Message</a>
+    <a href="${waLink('Hi ' + a.full_name.split(' ')[0] + '! Just checking in from PhoneYa2-ZM. How are your sales going?')}" target="_blank" class="btn btn-green btn-sm"><i class="fab fa-whatsapp"></i> Message</a>
     <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="recordSaleForAgent('${esc(a.agent_code)}')"><i class="fas fa-plus"></i> Record Sale</button>
     <button class="btn btn-outline btn-sm" onclick="downloadAgentPdf('${esc(a.agent_code)}')"><i class="fas fa-file-pdf"></i> Statement PDF</button>
     ${a.active
@@ -921,7 +1098,7 @@ function closeAgentDetail() {
 }
 
 function copyAgentRef() {
-  if (selectedAgent) { copyToClipboard(selectedAgent.referral_url || ''); toast('✅ Referral link copied!'); }
+  if (selectedAgent) { copyToClipboard(selectedAgent.referral_url || ''); toast('✅ Copied'); }
 }
 
 async function toggleAgent(code, activate) {
@@ -929,7 +1106,7 @@ async function toggleAgent(code, activate) {
   try {
     await db.update('agents', `agent_code=eq.${code}`, { active: activate });
     await db.logAudit('agent', code, activate ? 'reactivated' : 'deactivated', 'admin', null, { active: activate });
-    toast(activate ? '✅ Agent reactivated' : '⚠️  Agent deactivated');
+    toast(activate ? '✅ Reactivated' : '⚠️  Deactivated');
     await loadAll();
     closeAgentDetail();
   } catch(e) { toast('Error: ' + e.message); }
@@ -941,7 +1118,7 @@ function recordSaleForAgent(code) {
   openAddSale(code);
 }
 
-// ── SALES ─────────────────────────────────────────────────────────────────
+// ── SALES ────────────────────────────────────────────────────────────────
 function setSaleFilter(f, btn) {
   saleFilter = f;
   document.querySelectorAll('.filter-pill[data-sf]').forEach(b => b.classList.remove('active'));
@@ -952,22 +1129,18 @@ function setSaleFilter(f, btn) {
 function renderSales() {
   const tbody = document.getElementById('salesTable');
   const filtered = saleFilter === 'all' ? allSales : allSales.filter(s => s.status === saleFilter);
-
   const total = allSales.reduce((s,x) => s + (x.amount||0), 0);
   const totalComm = allSales.reduce((s,x) => s + (x.commission||0), 0);
   const valEl = document.getElementById('totalSalesVal');
   if (valEl) valEl.textContent = total ? `${fmtMoney(total)} revenue · ${fmtMoney(totalComm)} comm.` : '';
 
-  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">No sales found. Click "Record Sale" to add one.</td></tr>'; return; }
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">No sales found.</td></tr>'; return; }
 
   tbody.innerHTML = filtered.map(s => {
     const agent = allAgents.find(a => a.agent_code === s.agent_code);
     return `<tr>
       <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
-      <td>
-        <strong>${esc(s.agent_code)}</strong>
-        ${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}
-      </td>
+      <td><strong>${esc(s.agent_code)}</strong>${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}</td>
       <td style="font-size:13px;">${esc(s.product || '—')}</td>
       <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
       <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
@@ -983,8 +1156,8 @@ function renderSales() {
       <td class="hide-mobile" style="color:var(--muted);font-size:12px;">${fmtDate(s.created_at)}</td>
       <td>
         <div style="display:flex;gap:5px;">
-          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' (' + (s.product || 'sale') + ') is ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. Thank you! 🎉')}" target="_blank" class="btn-ghost btn-sm" title="Notify agent"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
-          <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="deleteSale('${esc(s.id)}','${esc(s.sale_id)}')" title="Delete"><i class="fas fa-trash"></i></button>
+          ${agent ? `<a href="${waLink('Hi ' + (agent.full_name.split(' ')[0]) + '! Your sale ' + s.sale_id + ' is ' + s.status + '. Commission: +' + fmtMoney(s.commission||0) + '. 🎉')}" target="_blank" class="btn-ghost btn-sm"><i class="fab fa-whatsapp" style="color:var(--green);"></i></a>` : ''}
+          <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="deleteSale('${esc(s.id)}','${esc(s.sale_id)}')"><i class="fas fa-trash"></i></button>
         </div>
       </td>
     </tr>`;
@@ -996,17 +1169,19 @@ async function updateSaleStatus(id, status) {
     const updates = { status };
     if (status === 'confirmed' || status === 'paid') updates.confirmed_at = new Date().toISOString();
     await db.update('sales', `id=eq.${id}`, updates);
+    const sale = allSales.find(s => s.id === id);
+    if (sale) await recalcWallet(sale.agent_code);
     await db.logAudit('sale', id, 'status_changed', 'admin', null, { status });
-    toast('✅ Status updated to ' + status);
+    toast('✅ Status: ' + status);
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
 
 async function deleteSale(id, saleId) {
-  if (!confirm('Delete sale ' + saleId + '? This cannot be undone.')) return;
+  if (!confirm('Delete sale ' + saleId + '?')) return;
   try {
     await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` });
-    toast('🗑️  Sale deleted');
+    toast('🗑️  Deleted');
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
@@ -1016,17 +1191,12 @@ function openAddSale(preselectedCode) {
   const form = document.getElementById('addSaleForm');
   form.style.display = 'block';
   document.getElementById('addSaleError').style.display = 'none';
-
   const agentSel = document.getElementById('sale-agent');
   agentSel.innerHTML = '<option value="">Select agent…</option>' +
     allAgents.filter(a => a.active).map(a =>
       `<option value="${esc(a.agent_code)}" ${a.agent_code === preselectedCode ? 'selected' : ''}>${esc(a.full_name)} (${esc(a.agent_code)})</option>`
     ).join('');
-
-  ['sale-unit-price','sale-qty'].forEach(id => {
-    document.getElementById(id).oninput = recalcSale;
-  });
-
+  ['sale-unit-price','sale-qty'].forEach(id => { document.getElementById(id).oninput = recalcSale; });
   form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -1034,19 +1204,16 @@ function recalcSale() {
   const unit = Number(document.getElementById('sale-unit-price').value) || 0;
   const qty  = Number(document.getElementById('sale-qty').value) || 0;
   const amount = unit * qty;
-
   const { percentage, commission, tier } = calcCommissionFromAmount(amount);
-
   document.getElementById('sale-amount-calc').value = fmtMoney(amount);
   document.getElementById('sale-comm-pct').value    = percentage + '%';
   document.getElementById('sale-comm-calc').value   = fmtMoney(commission);
-
   const hintEl = document.getElementById('sale-tier-hint');
   if (tier) {
     const maxLabel = tier.max_amount === null || tier.max_amount === undefined ? '+' : '–' + tier.max_amount;
     hintEl.textContent = `Tier: ZMW ${tier.min_amount}${maxLabel} → ${percentage}%`;
   } else if (amount > 0) {
-    hintEl.textContent = '⚠️  No matching tier — check your Settings tab.';
+    hintEl.textContent = '⚠️  No matching tier — check Settings.';
   } else {
     hintEl.textContent = 'Tier based on total amount.';
   }
@@ -1054,13 +1221,9 @@ function recalcSale() {
 
 function closeAddSale() {
   document.getElementById('addSaleForm').style.display = 'none';
-  ['sale-agent','sale-status'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.selectedIndex = 0;
-  });
+  ['sale-agent','sale-status'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
   ['sale-product','sale-unit-price','sale-qty','sale-cust-name','sale-cust-phone','sale-notes'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+    const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('sale-qty').value = '1';
   document.getElementById('sale-amount-calc').value = 'ZMW 0';
@@ -1079,14 +1242,11 @@ async function saveSale(notifyAgent) {
   const status       = document.getElementById('sale-status').value;
   const notes        = document.getElementById('sale-notes').value.trim();
 
-  let ok = true;
-  if (!agentCode)      { document.getElementById('sale-agent-err').classList.add('show'); ok = false; }
-  else                 { document.getElementById('sale-agent-err').classList.remove('show'); }
-  if (!productName)    { toast('⚠️  Product name required'); ok = false; }
-  if (!unitPrice)      { toast('⚠️  Unit price required'); ok = false; }
-  if (!customerName)   { toast('⚠️  Customer name required'); ok = false; }
-  if (!customerPhone)  { toast('⚠️  Customer phone required'); ok = false; }
-  if (!ok) return;
+  if (!agentCode)     { document.getElementById('sale-agent-err').classList.add('show'); return; }
+  if (!productName)   { toast('⚠️  Product required'); return; }
+  if (!unitPrice)     { toast('⚠️  Unit price required'); return; }
+  if (!customerName)  { toast('⚠️  Customer name required'); return; }
+  if (!customerPhone) { toast('⚠️  Customer phone required'); return; }
 
   const amount = unitPrice * quantity;
   const { percentage, commission, tier } = calcCommissionFromAmount(amount);
@@ -1102,51 +1262,36 @@ async function saveSale(notifyAgent) {
   try {
     const n      = await db.nextId('sales');
     const saleId = makeSaleId(n);
+    const saleRecord = {
+      sale_id: saleId, agent_code: agentCode, product: productName,
+      quantity, unit_price: unitPrice, amount,
+      commission_pct: percentage, commission,
+      customer_name: customerName, customer_phone: customerPhone,
+      status, notes: notes || null,
+      submitted_by: 'admin', submitted_at: new Date().toISOString(),
+      confirmed_by: status === 'confirmed' || status === 'paid' ? 'admin' : null,
+      confirmed_at: status === 'confirmed' || status === 'paid' ? new Date().toISOString() : null,
+    };
+    await db.insert('sales', saleRecord);
 
-    await db.insert('sales', {
-      sale_id:            saleId,
-      agent_code:         agentCode,
-      product:            productName,
-      quantity:           quantity,
-      unit_price:         unitPrice,
-      amount:             amount,
-      commission_pct:     percentage,
-      commission:         commission,
-      customer_name:      customerName,
-      customer_phone:     customerPhone,
-      status:             status,
-      notes:              notes || null,
-      submitted_by:       'admin',
-      submitted_at:       new Date().toISOString(),
-      confirmed_by:       status === 'confirmed' || status === 'paid' ? 'admin' : null,
-      confirmed_at:       status === 'confirmed' || status === 'paid' ? new Date().toISOString() : null,
-    });
+    // Wallet + customer + fraud check
+    await recalcWallet(agentCode);
+    await upsertCustomer(saleRecord);
+    const agent = allAgents.find(a => a.agent_code === agentCode);
+    if (agent) await checkFraud(saleRecord, agent);
 
     await db.logAudit('sale', saleId, 'created_by_admin', 'admin', null, { amount, commission, status });
 
     toast('✅ Sale ' + saleId + ' recorded');
 
-    if (notifyAgent) {
-      const agent = allAgents.find(a => a.agent_code === agentCode);
-      if (agent) {
-        const msg = `Hi ${agent.full_name.split(' ')[0]}! 🎉
-
-Your sale has been recorded:
-
-*Product:* ${productName}
-*Quantity:* ${quantity}
-*Sale Amount:* ${fmtMoney(amount)}
-*Your Commission:* +${fmtMoney(commission)} (${percentage}%)
-*Status:* ${status}
-*Sale ID:* ${saleId}
-
-Thank you — keep selling! 🚀`;
-        window.open(waLink(msg), '_blank');
-      }
+    if (notifyAgent && agent) {
+      const msg = `Hi ${agent.full_name.split(' ')[0]}! 🎉\n\nSale recorded:\n*Product:* ${productName}\n*Qty:* ${quantity}\n*Amount:* ${fmtMoney(amount)}\n*Your Commission:* +${fmtMoney(commission)} (${percentage}%)\n*Sale ID:* ${saleId}\n\nKeep selling! 🚀`;
+      window.open(waLink(msg), '_blank');
     }
 
     closeAddSale();
     await loadAll();
+    await loadFlags();
   } catch(e) {
     document.getElementById('addSaleErrText').textContent = e.message || 'Could not save sale.';
     errDiv.style.display = 'flex';
@@ -1172,11 +1317,11 @@ function renderPending() {
       <td style="font-size:13px;">${esc(s.product || '—')}</td>
       <td style="font-weight:700;">${s.quantity || 1}</td>
       <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
-      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}<div style="font-size:10px;color:var(--muted);font-weight:600;">${s.commission_pct || '—'}%</div></td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
       <td class="hide-mobile" style="font-size:12px;">${esc(s.customer_name || '—')}<br><span style="color:var(--muted);">${esc(s.customer_phone || '')}</span></td>
       <td>
         <div style="display:flex;gap:5px;flex-wrap:wrap;">
-          <button class="btn btn-green btn-sm" onclick="approvePending('${esc(s.id)}','${esc(s.sale_id)}')"><i class="fas fa-check"></i> Approve</button>
+          <button class="btn btn-green btn-sm" onclick="approvePending('${esc(s.id)}','${esc(s.sale_id)}','${esc(s.agent_code)}')"><i class="fas fa-check"></i> Approve</button>
           <button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="openRejectSale('${esc(s.id)}','${esc(s.sale_id)}')"><i class="fas fa-xmark"></i></button>
         </div>
       </td>
@@ -1184,16 +1329,18 @@ function renderPending() {
   }).join('');
 }
 
-async function approvePending(id, saleId) {
-  if (!confirm('Approve sale ' + saleId + '? The agent will earn the commission.')) return;
+async function approvePending(id, saleId, agentCode) {
+  if (!confirm('Approve sale ' + saleId + '?')) return;
   try {
     await db.update('sales', `id=eq.${id}`, {
-      status: 'confirmed',
-      confirmed_by: 'admin',
-      confirmed_at: new Date().toISOString(),
+      status: 'confirmed', confirmed_by: 'admin', confirmed_at: new Date().toISOString(),
     });
+    await recalcWallet(agentCode);
+    // Get the sale for customer upsert
+    const sale = allSales.find(s => s.id === id);
+    if (sale) await upsertCustomer(sale);
     await db.logAudit('sale', saleId, 'approved', 'admin', { status: 'pending' }, { status: 'confirmed' });
-    toast('✅ Sale ' + saleId + ' approved');
+    toast('✅ Approved');
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
@@ -1202,7 +1349,6 @@ function openRejectSale(id, saleId) {
   currentRejectSaleId = id;
   document.getElementById('rejectReason').value = '';
   document.getElementById('rejectSaleModal').classList.add('open');
-  document.getElementById('rejectSaleModal').dataset.saleId = saleId;
 }
 function closeRejectSale() {
   document.getElementById('rejectSaleModal').classList.remove('open');
@@ -1210,22 +1356,300 @@ function closeRejectSale() {
 }
 async function confirmRejectSale() {
   const reason = document.getElementById('rejectReason').value.trim();
-  if (!reason) { toast('⚠️  Please enter a reason'); return; }
+  if (!reason) { toast('⚠️  Enter reason'); return; }
   const btn = document.getElementById('confirmRejectSaleBtn');
   setLoading(btn, true, 'Rejecting…');
   try {
+    const sale = allSales.find(s => s.id === currentRejectSaleId);
     await db.update('sales', `id=eq.${currentRejectSaleId}`, {
-      status: 'rejected',
-      rejected_by: 'admin',
-      rejected_at: new Date().toISOString(),
-      rejection_reason: reason,
+      status: 'rejected', rejected_by: 'admin',
+      rejected_at: new Date().toISOString(), rejection_reason: reason,
     });
+    if (sale) await recalcWallet(sale.agent_code);
     await db.logAudit('sale', currentRejectSaleId, 'rejected', 'admin', null, { reason });
-    toast('🚫 Sale rejected');
+    toast('🚫 Rejected');
     closeRejectSale();
     await loadAll();
   } catch(e) { toast('Error: ' + e.message); }
   finally { setLoading(btn, false, '<i class="fas fa-xmark"></i> Confirm Reject'); }
+}
+
+// ── PAYOUTS ──────────────────────────────────────────────────────────────
+function setPayoutFilter(f, btn) {
+  payoutFilter = f;
+  document.querySelectorAll('.filter-pill[data-pf]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPayouts();
+}
+
+function renderPayouts() {
+  const tbody = document.getElementById('payoutsTable');
+  const list = payoutFilter === 'all' ? allPayouts : allPayouts.filter(p => p.status === payoutFilter);
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">No payout requests.</td></tr>';
+    return;
+  }
+  const statusColors = {
+    requested:  'background:#fef9c3;color:#854d0e;',
+    processing: 'background:#dbeafe;color:#1e40af;',
+    paid:       'background:#f0fdf4;color:#15803d;',
+    rejected:   'background:#fef2f2;color:#b91c1c;',
+  };
+  tbody.innerHTML = list.map(p => {
+    const agent = allAgents.find(a => a.agent_code === p.agent_code);
+    return `<tr>
+      <td><code style="font-size:12px;color:var(--orange);">${esc(p.request_id)}</code></td>
+      <td><strong>${esc(p.agent_code)}</strong>${agent ? `<div style="font-size:11px;color:var(--muted);">${esc(agent.full_name)}</div>` : ''}</td>
+      <td style="font-weight:700;">${fmtMoney(p.amount)}</td>
+      <td style="font-size:13px;">${esc(p.method)}</td>
+      <td class="hide-mobile" style="font-size:12px;">${esc(p.phone || '—')}<br><span style="color:var(--muted);">${esc(p.account_name || '')}</span></td>
+      <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${fmtDateTime(p.requested_at)}</td>
+      <td><span class="sale-status-badge" style="${statusColors[p.status]||''}">${esc(p.status)}</span></td>
+      <td>
+        ${p.status === 'requested' || p.status === 'processing' ? `
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <button class="btn btn-green btn-sm" onclick="approvePayout('${esc(p.id)}','${esc(p.request_id)}','${esc(p.agent_code)}',${p.amount})"><i class="fas fa-check"></i> Mark Paid</button>
+            <button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="openRejectPayout('${esc(p.id)}')"><i class="fas fa-xmark"></i></button>
+          </div>
+        ` : `<span style="font-size:12px;color:var(--muted);">${p.processed_at ? fmtDate(p.processed_at) : '—'}</span>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function approvePayout(id, requestId, agentCode, amount) {
+  if (!confirm('Mark ' + requestId + ' as paid? ' + fmtMoney(amount) + ' to ' + agentCode)) return;
+  try {
+    await db.update('payout_requests', `id=eq.${id}`, {
+      status: 'paid', processed_by: 'admin', processed_at: new Date().toISOString(),
+    });
+    const wallet = await db.getOne('wallets', `agent_code=eq.${agentCode}`);
+    if (wallet) {
+      await db.update('wallets', `agent_code=eq.${agentCode}`, {
+        available: Math.max(0, (wallet.available || 0) - amount),
+        paid: (wallet.paid || 0) + amount,
+        updated_at: new Date().toISOString(),
+      });
+    }
+    await db.logAudit('payout', requestId, 'approved', 'admin', { status: 'requested' }, { status: 'paid', amount });
+    toast('✅ Payout marked paid');
+    await loadPayouts();
+    await loadAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+let currentRejectPayoutId = null;
+function openRejectPayout(id) {
+  currentRejectPayoutId = id;
+  document.getElementById('rejectPayoutReason').value = '';
+  document.getElementById('rejectPayoutModal').classList.add('open');
+}
+function closeRejectPayout() {
+  document.getElementById('rejectPayoutModal').classList.remove('open');
+  currentRejectPayoutId = null;
+}
+async function confirmRejectPayout() {
+  const reason = document.getElementById('rejectPayoutReason').value.trim();
+  if (!reason) { toast('⚠️  Enter reason'); return; }
+  const btn = document.getElementById('confirmRejectPayoutBtn');
+  setLoading(btn, true, 'Rejecting…');
+  try {
+    await db.update('payout_requests', `id=eq.${currentRejectPayoutId}`, {
+      status: 'rejected', processed_by: 'admin',
+      processed_at: new Date().toISOString(), rejection_reason: reason,
+    });
+    await db.logAudit('payout', currentRejectPayoutId, 'rejected', 'admin', null, { reason });
+    toast('🚫 Payout rejected');
+    closeRejectPayout();
+    await loadPayouts();
+  } catch(e) { toast('Error: ' + e.message); }
+  finally { setLoading(btn, false, '<i class="fas fa-xmark"></i> Reject'); }
+}
+
+// ── CUSTOMERS ────────────────────────────────────────────────────────────
+function renderCustomers() {
+  const tbody = document.getElementById('customersTable');
+  const q = (document.getElementById('custSearch')?.value || '').toLowerCase();
+  const list = allCustomers.filter(c =>
+    !q || (c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q)
+  );
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">No customers found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td style="font-weight:700;">${esc(c.name || '—')}</td>
+      <td style="font-size:13px;">${esc(c.phone)}</td>
+      <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${esc(c.location || '—')}</td>
+      <td style="font-weight:700;">${c.total_purchases || 0}</td>
+      <td style="color:#16a34a;font-weight:800;">${fmtMoney(c.total_spent || 0)}</td>
+      <td class="hide-mobile"><strong style="color:var(--orange);">${esc(c.introduced_by || '—')}</strong></td>
+      <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${c.last_purchase_at ? fmtDate(c.last_purchase_at) : '—'}</td>
+    </tr>`).join('');
+}
+function filterCustomers() { renderCustomers(); }
+
+// ── REPORTS ──────────────────────────────────────────────────────────────
+function setReportFilter(f, btn) {
+  reportFilter = f;
+  document.querySelectorAll('.filter-pill[data-rf]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReports();
+}
+
+function getReportRange() {
+  const now = new Date();
+  const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (reportFilter === 'month')      return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: now, label: 'This Month' };
+  if (reportFilter === 'last_month') return { from: new Date(now.getFullYear(), now.getMonth()-1, 1), to: new Date(now.getFullYear(), now.getMonth(), 0), label: 'Last Month' };
+  if (reportFilter === 'year')       return { from: new Date(now.getFullYear(), 0, 1), to: now, label: 'This Year' };
+  return { from: new Date(0), to: now, label: 'All Time' };
+}
+
+function renderReports() {
+  const range = getReportRange();
+  const sales = allSales.filter(s => {
+    const d = new Date(s.created_at);
+    return d >= range.from && d <= range.to;
+  });
+  const confirmed = sales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = sales.filter(s => s.status === 'pending');
+
+  const totalRevenue = sales.reduce((t,s) => t + (s.amount || 0), 0);
+  const totalComm    = confirmed.reduce((t,s) => t + (s.commission || 0), 0);
+  const pendingComm  = pending.reduce((t,s) => t + (s.commission || 0), 0);
+
+  // Per-agent breakdown
+  const byAgent = {};
+  sales.forEach(s => {
+    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { count: 0, revenue: 0, commission: 0 };
+    byAgent[s.agent_code].count++;
+    byAgent[s.agent_code].revenue += (s.amount || 0);
+    byAgent[s.agent_code].commission += (s.commission || 0);
+  });
+  const ranked = Object.entries(byAgent)
+    .map(([code, d]) => ({ code, ...d, name: allAgents.find(a=>a.agent_code===code)?.full_name || code }))
+    .sort((a,b) => b.revenue - a.revenue);
+
+  document.getElementById('reportsContent').innerHTML = `
+    <div class="report-card">
+      <h3 style="font-size:1rem;margin-bottom:12px;">${range.label}</h3>
+      <div class="report-row"><span class="report-lbl">Total Sales</span><span class="report-val">${sales.length}</span></div>
+      <div class="report-row"><span class="report-lbl">Total Revenue</span><span class="report-val" style="color:var(--orange);">${fmtMoney(totalRevenue)}</span></div>
+      <div class="report-row"><span class="report-lbl">Confirmed Commission</span><span class="report-val" style="color:#16a34a;">${fmtMoney(totalComm)}</span></div>
+      <div class="report-row"><span class="report-lbl">Pending Commission</span><span class="report-val" style="color:var(--yellow);">${fmtMoney(pendingComm)}</span></div>
+      <div class="report-row"><span class="report-lbl">Active Agents</span><span class="report-val">${ranked.length}</span></div>
+    </div>
+
+    <div class="report-card">
+      <h3 style="font-size:1rem;margin-bottom:12px;">Top Agents</h3>
+      ${ranked.length ? ranked.slice(0, 10).map((r, i) => `
+        <div class="report-row">
+          <span class="report-lbl">${i+1}. ${esc(r.name)} <code style="background:var(--light);padding:1px 5px;border-radius:4px;font-size:11px;">${esc(r.code)}</code></span>
+          <span class="report-val">${r.count} sales · ${fmtMoney(r.revenue)}</span>
+        </div>
+      `).join('') : '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No sales in this period.</div>'}
+    </div>`;
+}
+
+// ── AUDIT LOG ────────────────────────────────────────────────────────────
+function setAuditFilter(f, btn) {
+  auditFilter = f;
+  document.querySelectorAll('.filter-pill[data-audit]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAudit();
+}
+
+function renderAudit() {
+  const el = document.getElementById('auditList');
+  const q = (document.getElementById('auditSearch')?.value || '').toLowerCase();
+  let list = allAudit;
+  if (auditFilter !== 'all') list = list.filter(a => a.entity_type === auditFilter);
+  if (q) list = list.filter(a =>
+    (a.action || '').toLowerCase().includes(q) ||
+    (a.entity_id || '').toLowerCase().includes(q) ||
+    (a.notes || '').toLowerCase().includes(q)
+  );
+
+  if (!list.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;">No audit records.</div>';
+    return;
+  }
+
+  const icons = {
+    application: 'fa-file-lines',
+    agent:       'fa-user-tie',
+    sale:        'fa-chart-line',
+    payout:      'fa-money-bill-transfer',
+    tier:        'fa-sliders',
+  };
+
+  el.innerHTML = list.map(a => {
+    const color = a.action.includes('approve') || a.action.includes('paid') ? 'green'
+                : a.action.includes('reject') || a.action.includes('deactivat') ? 'red'
+                : a.action.includes('creat') || a.action.includes('submitt') ? 'blue'
+                : 'orange';
+    const label = (a.action || '').replace(/_/g, ' ');
+    return `<div class="audit-item">
+      <div class="audit-icon ${color}"><i class="fas ${icons[a.entity_type] || 'fa-circle'}"></i></div>
+      <div class="audit-body">
+        <div class="audit-title">${esc(label)} <span style="color:var(--muted);font-weight:400;">on ${esc(a.entity_type)}</span> ${a.entity_id ? `<code>${esc(a.entity_id)}</code>` : ''}</div>
+        <div class="audit-meta">
+          ${fmtDateTime(a.created_at)} · by <strong>${esc(a.performed_by || 'system')}</strong>
+          ${a.notes ? '<br>' + esc(a.notes) : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── FRAUD FLAGS ──────────────────────────────────────────────────────────
+function renderFlags() {
+  const el = document.getElementById('flagsList');
+  if (!allFlags.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;">No flags. 🎉</div>';
+    return;
+  }
+  el.innerHTML = allFlags.map(f => {
+    const statusColor = f.status === 'open' ? 'background:#fef2f2;color:#991b1b;'
+                      : f.status === 'cleared' ? 'background:#f0fdf4;color:#15803d;'
+                      : 'background:#fef9c3;color:#854d0e;';
+    const flagLabels = {
+      self_purchase: '🚨 Self-purchase attempt',
+      duplicate_customer_24h: '⚠️  Duplicate customer (24h)',
+      rapid_submission: '⚡ Rapid submission',
+    };
+    return `<div class="card" style="margin-bottom:12px;padding:18px 20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+        <div style="font-weight:800;font-size:14px;">${flagLabels[f.flag_type] || esc(f.flag_type)}</div>
+        <span class="sale-status-badge" style="${statusColor}">${esc(f.status)}</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;">
+        <strong>Agent:</strong> ${esc(f.agent_code || '—')}<br>
+        <strong>Sale:</strong> ${esc(f.sale_id || '—')}<br>
+        <strong>Detected:</strong> ${fmtDateTime(f.created_at)}<br>
+        <strong>Details:</strong> ${esc(JSON.stringify(f.details || {}))}
+      </div>
+      ${f.status === 'open' ? `
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-green btn-sm" onclick="resolveFlag('${esc(f.id)}','cleared')"><i class="fas fa-check"></i> Clear</button>
+          <button class="btn btn-sm" style="background:#ef4444;color:white;" onclick="resolveFlag('${esc(f.id)}','confirmed')"><i class="fas fa-xmark"></i> Confirm Fraud</button>
+        </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function resolveFlag(id, status) {
+  if (!confirm('Mark this flag as ' + status + '?')) return;
+  try {
+    await db.update('fraud_flags', `id=eq.${id}`, {
+      status, reviewed_by: 'admin', reviewed_at: new Date().toISOString(),
+    });
+    await db.logAudit('flag', id, status === 'cleared' ? 'cleared' : 'confirmed_fraud', 'admin');
+    toast('✅ Flag ' + status);
+    await loadFlags();
+  } catch(e) { toast('Error: ' + e.message); }
 }
 
 // ── LEADERBOARD ──────────────────────────────────────────────────────────
@@ -1233,17 +1657,16 @@ function renderLeaderboard() {
   const medals = ['🥇','🥈','🥉'];
   const byAgent = {};
   allSales.filter(s => s.status === 'confirmed' || s.status === 'paid').forEach(s => {
-    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales: 0, revenue: 0, commission: 0 };
+    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales: 0, revenue: 0 };
     byAgent[s.agent_code].sales++;
-    byAgent[s.agent_code].revenue    += (s.amount || 0);
-    byAgent[s.agent_code].commission += (s.commission || 0);
+    byAgent[s.agent_code].revenue += (s.amount || 0);
   });
   const ranked = Object.entries(byAgent)
     .map(([code, d]) => ({ code, ...d, name: allAgents.find(a=>a.agent_code===code)?.full_name || code }))
     .sort((a,b) => b.revenue - a.revenue);
 
   const el = document.getElementById('leaderboard');
-  if (!ranked.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><h3>No confirmed sales yet</h3><p>The leaderboard updates as agents record sales.</p></div>'; return; }
+  if (!ranked.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><h3>No confirmed sales yet</h3></div>'; return; }
   el.innerHTML = ranked.map((r, i) => `
     <div class="rank-row" style="${i === 0 ? 'background:linear-gradient(90deg,#fff8f4,white);' : ''}">
       <div class="rank-num" style="color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
@@ -1253,23 +1676,96 @@ function renderLeaderboard() {
     </div>`).join('');
 }
 
+// ── GLOBAL SEARCH ────────────────────────────────────────────────────────
+function showSearchResults() {
+  const panel = document.getElementById('globalSearchPanel');
+  if (document.getElementById('globalSearch').value) panel.style.display = 'block';
+}
+
+function globalSearch() {
+  const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+  const panel = document.getElementById('globalSearchPanel');
+  const results = document.getElementById('globalSearchResults');
+
+  if (!q) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+
+  const hits = [];
+
+  // Agents
+  allAgents.filter(a =>
+    (a.agent_id || '').toLowerCase().includes(q) ||
+    (a.agent_code || '').toLowerCase().includes(q) ||
+    (a.full_name || '').toLowerCase().includes(q) ||
+    (a.phone || '').includes(q) ||
+    (a.whatsapp || '').includes(q)
+  ).slice(0, 5).forEach(a => hits.push({
+    type: 'Agent', icon: 'fa-user-tie', title: a.full_name,
+    meta: `${a.agent_id} · ${a.agent_code} · ${a.phone}`,
+    onclick: `showTab('agents'); setTimeout(() => openAgentDetail('${a.agent_code}'), 100); hideSearch();`
+  }));
+
+  // Applications
+  allApps.filter(a =>
+    (a.app_id || '').toLowerCase().includes(q) ||
+    (a.full_name || '').toLowerCase().includes(q) ||
+    (a.phone || '').includes(q)
+  ).slice(0, 5).forEach(a => hits.push({
+    type: 'Application', icon: 'fa-file-lines', title: a.full_name,
+    meta: `${a.app_id} · ${a.status}`,
+    onclick: `showTab('applications'); setTimeout(() => openDetail('${a.app_id}'), 100); hideSearch();`
+  }));
+
+  // Sales
+  allSales.filter(s =>
+    (s.sale_id || '').toLowerCase().includes(q) ||
+    (s.customer_name || '').toLowerCase().includes(q) ||
+    (s.customer_phone || '').includes(q)
+  ).slice(0, 5).forEach(s => hits.push({
+    type: 'Sale', icon: 'fa-chart-line', title: s.sale_id + ' — ' + (s.customer_name || ''),
+    meta: `${fmtMoney(s.amount)} · ${s.agent_code} · ${s.status}`,
+    onclick: `showTab('sales'); hideSearch();`
+  }));
+
+  // Customers
+  allCustomers.filter(c =>
+    (c.name || '').toLowerCase().includes(q) ||
+    (c.phone || '').includes(q)
+  ).slice(0, 5).forEach(c => hits.push({
+    type: 'Customer', icon: 'fa-address-book', title: c.name || c.phone,
+    meta: `${c.phone} · ${c.total_purchases || 0} purchases`,
+    onclick: `showTab('customers'); hideSearch();`
+  }));
+
+  if (!hits.length) {
+    results.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px;">No results.</div>';
+    return;
+  }
+
+  results.innerHTML = hits.map(h => `
+    <div class="search-result-item" onclick="${h.onclick}">
+      <div class="search-result-icon"><i class="fas ${h.icon}"></i></div>
+      <div class="search-result-body">
+        <div class="search-result-title">${esc(h.title)}</div>
+        <div class="search-result-meta">${esc(h.type)} · ${esc(h.meta)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function hideSearch() {
+  document.getElementById('globalSearchPanel').style.display = 'none';
+  document.getElementById('globalSearch').value = '';
+}
+
 // ── PDF DOWNLOADS ────────────────────────────────────────────────────────
 function downloadAllSalesPdf() {
-  if (!allSales.length) { toast('⚠️  No sales to download'); return; }
+  if (!allSales.length) { toast('⚠️  No sales'); return; }
   const sales = allSales.map(s => ({
-    sale_id:        s.sale_id,
-    created_at:     s.created_at,
-    customer_name:  s.customer_name,
-    amount:         s.amount,
-    commission_pct: s.commission_pct || s.commission_percent,
-    commission:     s.commission,
-    status:         s.status,
+    sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name,
+    amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status,
   }));
-  makeSalesStatementPdf({
-    agentName: 'All Agents',
-    period:    'All time',
-    sales,
-  });
+  makeSalesStatementPdf({ agentName: 'All Agents', period: 'All time', sales });
   toast('📄 PDF downloading…');
 }
 
@@ -1277,31 +1773,22 @@ function downloadAgentPdf(agentCode) {
   const agent = allAgents.find(a => a.agent_code === agentCode);
   if (!agent) return;
   const sales = allSales.filter(s => s.agent_code === agentCode).map(s => ({
-    sale_id:        s.sale_id,
-    created_at:     s.created_at,
-    customer_name:  s.customer_name,
-    amount:         s.amount,
-    commission_pct: s.commission_pct || s.commission_percent,
-    commission:     s.commission,
-    status:         s.status,
+    sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name,
+    amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status,
   }));
-  if (!sales.length) { toast('⚠️  No sales for this agent'); return; }
+  if (!sales.length) { toast('⚠️  No sales'); return; }
   makeSalesStatementPdf({
-    agentName: agent.full_name,
-    agentId:   agent.agent_id,
-    agentCode: agent.agent_code,
-    period:    'All time',
-    sales,
+    agentName: agent.full_name, agentId: agent.agent_id, agentCode: agent.agent_code,
+    period: 'All time', sales,
   });
-  toast('📄 Statement downloading…');
+  toast('📄 Downloading…');
 }
 
-// ── TIER EDITOR (Settings tab) ───────────────────────────────────────────
+// ── TIER EDITOR ──────────────────────────────────────────────────────────
 function loadTiersIntoEditor() {
   const list = document.getElementById('tierList');
   const tiers = COMMISSION_TIERS.length ? COMMISSION_TIERS : CONFIG.fallbackTiers;
-  list.innerHTML = tiers
-    .sort((a,b) => Number(a.min_amount) - Number(b.min_amount))
+  list.innerHTML = tiers.sort((a,b) => Number(a.min_amount) - Number(b.min_amount))
     .map((t, i) => tierRowHtml(t, i)).join('');
   updateRangePreviews();
 }
@@ -1316,77 +1803,72 @@ function tierRowHtml(t, i) {
       <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);" onclick="removeTier(this)"><i class="fas fa-trash"></i></button>
     </div>`;
 }
-
 function addTier() {
   const list = document.getElementById('tierList');
-  const i = list.children.length;
-  list.insertAdjacentHTML('beforeend', tierRowHtml({ min_amount: '', max_amount: '', percentage: '' }, i));
+  list.insertAdjacentHTML('beforeend', tierRowHtml({ min_amount:'', max_amount:'', percentage:'' }, list.children.length));
 }
-
 function removeTier(btn) {
-  const row = btn.closest('.tier-row');
-  if (row) row.remove();
+  const row = btn.closest('.tier-row'); if (row) row.remove();
 }
-
 function updateRangePreviews() {
   document.querySelectorAll('#tierList .tier-row').forEach(row => {
     const min = row.querySelector('[data-field="min_amount"]').value;
     const max = row.querySelector('[data-field="max_amount"]').value;
     const pct = row.querySelector('[data-field="percentage"]').value;
     const prev = row.querySelector('[data-preview]');
-    if (min || pct) {
-      prev.textContent = `ZMW ${min || 0}${max ? ' – ' + max : '+'} → ${pct || 0}%`;
-    } else {
-      prev.textContent = '';
-    }
+    prev.textContent = (min || pct) ? `ZMW ${min || 0}${max ? ' – ' + max : '+'} → ${pct || 0}%` : '';
   });
 }
 
 async function saveTiers() {
   const rows = [...document.querySelectorAll('#tierList .tier-row')];
   const tiers = [];
-
   for (const row of rows) {
     const min  = Number(row.querySelector('[data-field="min_amount"]').value);
     const maxV = row.querySelector('[data-field="max_amount"]').value;
     const max  = maxV === '' ? null : Number(maxV);
     const pct  = Number(row.querySelector('[data-field="percentage"]').value);
-
     if (!min || !pct) continue;
-    if (max !== null && max < min) { toast('⚠️  Max cannot be less than Min'); return; }
+    if (max !== null && max < min) { toast('⚠️  Max < Min'); return; }
     tiers.push({ min_amount: min, max_amount: max, percentage: pct, active: true });
   }
-
-  if (!tiers.length) { toast('⚠️  No tiers to save'); return; }
-
+  if (!tiers.length) { toast('⚠️  No tiers'); return; }
   const btn = document.getElementById('saveTiersBtn');
   setLoading(btn, true, 'Saving…');
-
   try {
     const existing = await db.getAll('commission_tiers');
-    for (const t of existing) {
-      await db.remove('commission_tiers', `id=eq.${t.id}`);
-    }
-    for (const t of tiers) {
-      await db.insert('commission_tiers', {
-        min_amount: t.min_amount,
-        max_amount: t.max_amount,
-        percentage: t.percentage,
-        active:     true,
-      });
-    }
-
+    for (const t of existing) await db.remove('commission_tiers', `id=eq.${t.id}`);
+    for (const t of tiers) await db.insert('commission_tiers', t);
     await db.logAudit('tier', 'all', 'tier_set_updated', 'admin', null, { count: tiers.length });
-
     await loadTiers();
     document.getElementById('tiersMsg').style.display = 'flex';
     toast('✅ Tiers saved');
     setTimeout(() => document.getElementById('tiersMsg').style.display = 'none', 3000);
-  } catch (e) {
-    toast('Error: ' + e.message);
-  } finally {
-    setLoading(btn, false, '<i class="fas fa-check"></i> Save Changes');
-  }
+  } catch (e) { toast('Error: ' + e.message); }
+  finally { setLoading(btn, false, '<i class="fas fa-check"></i> Save Tiers'); }
+}
+
+// ── PAYMENT METHODS ──────────────────────────────────────────────────────
+function renderPaymentMethods() {
+  const el = document.getElementById('paymentMethodsList');
+  if (!allMethods.length) { el.innerHTML = '<div style="color:var(--muted);">No methods.</div>'; return; }
+  el.innerHTML = allMethods.map(m => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="font-weight:700;">${esc(m.name)} <code style="background:var(--light);padding:1px 5px;border-radius:4px;font-size:11px;">${esc(m.code)}</code></div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" ${m.active ? 'checked' : ''} onchange="togglePaymentMethod('${esc(m.id)}', this.checked)" style="width:18px;height:18px;">
+        <span style="font-size:13px;color:var(--muted);">${m.active ? 'Enabled' : 'Disabled'}</span>
+      </label>
+    </div>`).join('');
+}
+
+async function togglePaymentMethod(id, active) {
+  try {
+    await db.update('payment_methods', `id=eq.${id}`, { active });
+    await db.logAudit('payment_method', id, 'toggled', 'admin', null, { active });
+    await loadPaymentMethods();
+    toast(active ? '✅ Enabled' : '⚠️  Disabled');
+  } catch(e) { toast('Error: ' + e.message); }
 }
 
 // ── TABS ─────────────────────────────────────────────────────────────────
@@ -1394,19 +1876,20 @@ function showTab(name, btn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('tab-' + name);
   if (pane) pane.classList.add('active');
-
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
-
   if (btn) {
     if (btn.classList.contains('nav-item')) btn.classList.add('active');
     else if (btn.classList.contains('mob-tab-btn')) btn.classList.add('active');
   }
-
-  if (name === 'settings') loadTiersIntoEditor();
+  if (name === 'settings') { loadTiersIntoEditor(); loadPaymentMethods(); }
+  if (name === 'audit')    loadAudit();
+  if (name === 'payouts')  loadPayouts();
+  if (name === 'customers')loadCustomers();
+  if (name === 'flags')    loadFlags();
+  if (name === 'reports')  renderReports();
 }
 
-// Attach preview updates on input
 document.addEventListener('input', e => {
   if (e.target.matches('#tierList input')) updateRangePreviews();
 });
