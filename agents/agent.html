@@ -18,7 +18,27 @@
 
 .dash-wrap { max-width:900px; margin:0 auto; padding:28px 20px 80px; }
 .dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
-.dash-avatar { width:56px; height:56px; border-radius:50%; background:var(--grad-o); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:white; flex-shrink:0; }
+.dash-avatar-wrap { position:relative; flex-shrink:0; }
+.dash-avatar {
+  width:64px; height:64px; border-radius:50%;
+  background:var(--grad-o);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:white;
+  overflow:hidden;
+  border:2px solid rgba(255,255,255,.2);
+}
+.dash-avatar img { width:100%; height:100%; object-fit:cover; }
+.dash-avatar-edit {
+  position:absolute; bottom:-2px; right:-2px;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--orange); color:white;
+  border:2px solid var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; cursor:pointer;
+  transition:transform .2s;
+}
+.dash-avatar-edit:hover { transform:scale(1.15); }
+
 .dash-name   { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; }
 .dash-code   { font-size:13px; color:rgba(255,255,255,.5); margin-top:2px; }
 .dash-spacer { flex:1; min-width:8px; }
@@ -64,7 +84,7 @@
 .ref-url span { flex:1; font-size:13px; color:white; font-family: ui-monospace, Menlo, monospace; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
 .ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
 
-/* ── TAB BAR — BULLETPROOF ──────────────────────────────────────────────── */
+/* ── TAB BAR ────────────────────────────────────────────────────────────── */
 .tab-bar {
   display: flex !important;
   flex-wrap: nowrap !important;
@@ -147,7 +167,7 @@
 .mk-actions { display:flex; gap:8px; flex-wrap:wrap; }
 .mk-actions .btn { flex:1; min-width:100px; justify-content:center; }
 
-/* ── TRAINING — CLEAN PROGRESS DISPLAY ─────────────────────────────────── */
+/* Training */
 .tr-progress-wrap {
   background: white;
   border: 1px solid var(--border);
@@ -218,6 +238,48 @@
 .stmt-cell { text-align: center; padding: 10px 6px; }
 .stmt-cell-val { font-family: 'DM Sans',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
 .stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* PHOTO MODAL */
+.photo-preview-wrap {
+  width: 140px; height: 140px; margin: 0 auto 20px;
+  border-radius: 50%; overflow: hidden;
+  background: var(--light);
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--border);
+  position: relative;
+}
+.photo-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-preview-placeholder {
+  color: var(--muted); font-size: 3rem;
+}
+.photo-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--r);
+  padding: 24px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 16px;
+}
+.photo-upload-area:hover {
+  border-color: var(--orange);
+  background: rgba(255,96,0,.03);
+}
+.photo-upload-area i {
+  font-size: 2rem;
+  color: var(--orange);
+  margin-bottom: 8px;
+  display: block;
+}
+.photo-upload-area .pua-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.photo-upload-area .pua-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
 
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
@@ -298,14 +360,19 @@ html, body { overflow-x: hidden; }
 <div class="dash-wrap">
 
   <div class="dash-hdr">
-    <div class="dash-avatar" id="dashAvatar">?</div>
+    <div class="dash-avatar-wrap">
+      <div class="dash-avatar" id="dashAvatar">?</div>
+      <div class="dash-avatar-edit" onclick="openPhotoModal()" title="Change photo">
+        <i class="fas fa-camera"></i>
+      </div>
+    </div>
     <div>
       <div class="dash-name" id="dashName">Loading…</div>
       <div class="dash-code" id="dashCodeLabel"></div>
     </div>
     <div class="dash-spacer"></div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <a href="profile.html" class="btn btn-outline btn-sm" target="_blank" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);"><i class="fas fa-id-card"></i> Profile</a>
+      <a href="profile.html?id=" id="profileLink" class="btn btn-outline btn-sm" target="_blank" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);"><i class="fas fa-id-card"></i> Profile</a>
       <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
       <button class="dash-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
     </div>
@@ -482,6 +549,46 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
+<!-- PHOTO MODAL -->
+<div class="modal-overlay" id="photoModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Profile Photo</h3>
+      <button class="modal-close" onclick="closePhotoModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;text-align:center;">
+        Add a clear photo of your face. This will appear on your profile, ID card, and verification page.
+      </p>
+
+      <div class="photo-preview-wrap" id="photoPreviewWrap">
+        <div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>
+      </div>
+
+      <div class="photo-upload-area" onclick="document.getElementById('photoFileInput').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <div class="pua-title">Tap to select a photo</div>
+        <div class="pua-sub">JPG, PNG or WebP · We'll compress it for you</div>
+      </div>
+      <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
+
+      <div id="photoError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="photoErrText"></span>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="closePhotoModal()">Cancel</button>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" id="deletePhotoBtn" onclick="doDeletePhoto()">
+          <i class="fas fa-trash"></i> Remove
+        </button>
+        <button class="btn btn-primary" id="savePhotoBtn" onclick="doSavePhoto()" disabled>
+          <i class="fas fa-check"></i> Save Photo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- STATEMENT MODAL -->
 <div class="modal-overlay" id="statementModal">
   <div class="modal-box">
@@ -555,6 +662,7 @@ let completedModuleIds = new Set();
 let marketingFilter = 'all';
 let currentModule = null;
 let selectedMonth = null;
+let pendingPhotoFile = null;
 
 // ── AUTH ─────────────────────────────────────────────────────────────────
 async function doAgentLogin() {
@@ -587,10 +695,12 @@ async function bootDashboard() {
   document.getElementById('loginScreen').style.display  = 'none';
   document.getElementById('dashApp').style.display       = 'block';
   document.getElementById('nav-agent-code').textContent  = agentData.agent_code;
-  document.getElementById('dashAvatar').textContent      = agentData.full_name[0].toUpperCase();
   document.getElementById('dashName').textContent        = agentData.full_name;
   document.getElementById('dashCodeLabel').textContent   = agentData.agent_id + ' · ' + agentData.agent_code;
   document.getElementById('refUrl').textContent          = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  document.getElementById('profileLink').href            = `profile.html?id=${agentData.agent_id}`;
+
+  renderAvatarHeader();
 
   await loadTiers();
   await loadLevels();
@@ -605,6 +715,109 @@ async function bootDashboard() {
   await loadTraining();
 }
 
+function renderAvatarHeader() {
+  const el = document.getElementById('dashAvatar');
+  if (agentData.profile_photo_url) {
+    el.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="${esc(agentData.full_name)}"
+      onerror="this.style.display='none';this.parentElement.innerHTML='${(agentData.full_name || '?')[0].toUpperCase()}';">`;
+  } else {
+    el.textContent = (agentData.full_name || '?')[0].toUpperCase();
+  }
+}
+
+// ── PHOTO UPLOAD ─────────────────────────────────────────────────────────
+function openPhotoModal() {
+  pendingPhotoFile = null;
+  document.getElementById('photoError').style.display = 'none';
+  document.getElementById('photoFileInput').value = '';
+  document.getElementById('savePhotoBtn').disabled = true;
+
+  // Show current photo if exists
+  const wrap = document.getElementById('photoPreviewWrap');
+  if (agentData.profile_photo_url) {
+    wrap.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="Current photo">`;
+    document.getElementById('deletePhotoBtn').style.display = 'inline-flex';
+  } else {
+    wrap.innerHTML = `<div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>`;
+    document.getElementById('deletePhotoBtn').style.display = 'none';
+  }
+
+  document.getElementById('photoModal').classList.add('open');
+}
+
+function closePhotoModal() {
+  document.getElementById('photoModal').classList.remove('open');
+  pendingPhotoFile = null;
+}
+
+function onPhotoSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  // Validate
+  if (!file.type.startsWith('image/')) {
+    showPhotoErr('Please select an image file.');
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    showPhotoErr('Image too large (max 8 MB before compression).');
+    return;
+  }
+
+  document.getElementById('photoError').style.display = 'none';
+  pendingPhotoFile = file;
+
+  // Preview
+  const wrap = document.getElementById('photoPreviewWrap');
+  const url = URL.createObjectURL(file);
+  wrap.innerHTML = `<img src="${url}" alt="Preview">`;
+
+  // Enable save
+  document.getElementById('savePhotoBtn').disabled = false;
+  document.getElementById('deletePhotoBtn').style.display = 'none';
+}
+
+function showPhotoErr(msg) {
+  document.getElementById('photoErrText').textContent = msg;
+  document.getElementById('photoError').style.display = 'flex';
+}
+
+async function doSavePhoto() {
+  if (!pendingPhotoFile) return;
+  const btn = document.getElementById('savePhotoBtn');
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('photoError').style.display = 'none';
+
+  try {
+    const url = await uploadAgentPhoto(pendingPhotoFile, agentData.agent_code);
+    agentData.profile_photo_url = url;
+    renderAvatarHeader();
+    toast('✅ Photo updated');
+    closePhotoModal();
+  } catch(e) {
+    showPhotoErr(e.message || 'Upload failed');
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save Photo');
+  }
+}
+
+async function doDeletePhoto() {
+  if (!confirm('Remove your profile photo?')) return;
+  const btn = document.getElementById('deletePhotoBtn');
+  setLoading(btn, true, 'Removing…');
+
+  try {
+    await deleteAgentPhoto(agentData.agent_code, agentData.profile_photo_url);
+    agentData.profile_photo_url = null;
+    renderAvatarHeader();
+    toast('✅ Photo removed');
+    closePhotoModal();
+  } catch(e) {
+    showPhotoErr(e.message || 'Failed to remove');
+    setLoading(btn, false, '<i class="fas fa-trash"></i> Remove');
+  }
+}
+
+// ── DATA LOADING ─────────────────────────────────────────────────────────
 async function loadAgentData() {
   try {
     [agentSales, allSales, myWallet] = await Promise.all([
