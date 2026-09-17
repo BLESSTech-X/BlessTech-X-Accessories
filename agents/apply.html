@@ -15,20 +15,20 @@
 .step-hdr h2 { font-size: 1.3rem; margin-bottom: 6px; }
 .step-hdr p  { font-size: 14px; color: var(--muted); }
 .step-nav    { display: flex; align-items: center; justify-content: space-between; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
-.terms-box   { background: var(--light); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; font-size: 13px; color: var(--muted); line-height: 1.7; max-height: 260px; overflow-y: auto; margin-bottom: 20px; white-space: pre-wrap; }
+.terms-box   { background: var(--light); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; font-size: 13px; color: var(--muted); line-height: 1.7; max-height: 220px; overflow-y: auto; margin-bottom: 20px; }
+.terms-box h4{ font-size: 13px; color: var(--text); margin-bottom: 8px; }
 .review-row  { display: flex; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .review-row:last-child { border-bottom: none; }
 .review-lbl  { font-weight: 600; min-width: 140px; color: var(--muted); flex-shrink: 0; }
 .review-val  { color: var(--text); }
-.screen-box  { background: linear-gradient(135deg,#0d2010,#0a3518); border: 1px solid rgba(37,211,102,.25); border-radius: var(--r); padding: 16px 18px; margin-top: 16px; color: white; }
-.screen-row  { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 4px 0; }
+/* MOBILE FIXES */
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
 @media(max-width:580px) {
   .form-card    { padding: 20px 16px; }
   .apply-wrap   { padding: 20px 16px 80px; }
   .steps        { gap: 0; }
-  .step-label   { display: none; }
+  .step-label   { display: none; }  /* hide text labels, keep circles */
   .step-line    { min-width: 14px; }
   .step-nav     { flex-direction: column-reverse; gap: 10px; }
   .step-nav .btn { width: 100%; justify-content: center; }
@@ -68,7 +68,7 @@ html, body { overflow-x: hidden; }
 
   <div class="form-card">
 
-    <!-- STEP 1: PERSONAL -->
+    <!-- ── STEP 1: PERSONAL ───────────────────────────────────────────────── -->
     <div class="step-panel active" id="step1">
       <div class="step-hdr">
         <h2>Personal Information</h2>
@@ -81,28 +81,9 @@ html, body { overflow-x: hidden; }
           <div class="err-msg" id="e-name">Please enter your full name.</div>
         </div>
         <div class="field">
-          <label class="label">Age <span class="req">*</span></label>
-          <input type="number" class="input" id="f-age" placeholder="e.g. 24" min="16" max="99">
-          <div class="err-msg" id="e-age">Please enter your age (16+).</div>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
           <label class="label">Location <span class="req">*</span></label>
-          <input type="text" class="input" id="f-location" placeholder="e.g. Lusaka, Chilenje">
+          <input type="text" class="input" id="f-location" placeholder="e.g. Lusaka, Chilenje" autocomplete="off">
           <div class="err-msg" id="e-location">Please enter your location.</div>
-        </div>
-        <div class="field">
-          <label class="label">Education Level</label>
-          <select class="select" id="f-education">
-            <option value="">Select one…</option>
-            <option value="primary">Primary</option>
-            <option value="secondary">Secondary / Grade 12</option>
-            <option value="certificate">Certificate</option>
-            <option value="diploma">Diploma</option>
-            <option value="degree">Degree</option>
-            <option value="other">Other</option>
-          </select>
         </div>
       </div>
       <div class="field">
@@ -126,7 +107,7 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- STEP 2: ABOUT YOU -->
+    <!-- ── STEP 2: ABOUT YOU ──────────────────────────────────────────────── -->
     <div class="step-panel" id="step2">
       <div class="step-hdr">
         <h2>About You</h2>
@@ -134,11 +115,12 @@ html, body { overflow-x: hidden; }
       </div>
       <div class="field">
         <label class="label">Current Occupation</label>
-        <input type="text" class="input" id="f-occupation" placeholder="e.g. Student, Trader, Teacher">
+        <input type="text" class="input" id="f-occupation" placeholder="e.g. Student, Trader, Teacher, Unemployed">
       </div>
       <div class="field">
         <label class="label">Social Media Platforms You Use</label>
-        <input type="text" class="input" id="f-platforms" placeholder="e.g. WhatsApp, Facebook, TikTok">
+        <input type="text" class="input" id="f-platforms" placeholder="e.g. WhatsApp, Facebook, TikTok, Instagram">
+        <div class="hint">Where you plan to share products with your network.</div>
       </div>
       <div class="field">
         <label class="label">Previous Sales Experience</label>
@@ -163,43 +145,8 @@ html, body { overflow-x: hidden; }
         <div class="err-msg" id="e-reach">Please select your estimated network size.</div>
       </div>
       <div class="field">
-        <label class="label">Hours Available Per Week <span class="req">*</span></label>
-        <select class="select" id="f-hours">
-          <option value="">Select one…</option>
-          <option value="under5">Under 5 hours</option>
-          <option value="5-10">5–10 hours</option>
-          <option value="10-20">10–20 hours</option>
-          <option value="20plus">20+ hours (part-time)</option>
-          <option value="fulltime">Full-time (30+ hours)</option>
-        </select>
-        <div class="err-msg" id="e-hours">Please select your availability.</div>
-      </div>
-      <div class="field">
-        <label class="label">How do you plan to find customers? <span class="req">*</span></label>
-        <textarea class="textarea" id="f-customer-plan" rows="3" placeholder="e.g. Share on WhatsApp status, talk to friends, post on Facebook groups…"></textarea>
-        <div class="err-msg" id="e-customer-plan">Please tell us how you plan to find customers.</div>
-      </div>
-      <div class="field">
-        <label class="label">Referral Source</label>
-        <select class="select" id="f-source">
-          <option value="">Select one…</option>
-          <option value="friend">Friend / family</option>
-          <option value="whatsapp">WhatsApp status</option>
-          <option value="facebook">Facebook</option>
-          <option value="tiktok">TikTok</option>
-          <option value="instagram">Instagram</option>
-          <option value="agent">Referred by an existing agent</option>
-          <option value="other">Other</option>
-        </select>
-        <div class="hint" id="refSourceHint">If referred by an agent, please provide their code below.</div>
-      </div>
-      <div class="field" id="refCodeWrap" style="display:none;">
-        <label class="label">Referring Agent Code</label>
-        <input type="text" class="input" id="f-ref-code" placeholder="e.g. PY001" style="text-transform:uppercase;">
-      </div>
-      <div class="field">
         <label class="label">Why do you want to join? <span class="req">*</span></label>
-        <textarea class="textarea" id="f-motivation" rows="4" placeholder="Tell us why you want to become a PhoneYa2 agent…"></textarea>
+        <textarea class="textarea" id="f-motivation" placeholder="Tell us why you want to become a PhoneYa2 agent and how you plan to sell…" rows="4"></textarea>
         <div class="err-msg" id="e-motivation">Please tell us why you want to join (at least 20 characters).</div>
       </div>
       <div class="step-nav">
@@ -208,14 +155,20 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- STEP 3: AGREEMENT -->
+    <!-- ── STEP 3: AGREEMENT ──────────────────────────────────────────────── -->
     <div class="step-panel" id="step3">
       <div class="step-hdr">
         <h2>Agent Agreement</h2>
         <p>Please read and agree to the terms before submitting.</p>
-        <p style="font-size:12px;color:var(--muted);margin-top:8px;">Version: <span id="agreeVersionLabel">1.0</span></p>
       </div>
-      <div class="terms-box" id="agreementText">Loading agreement…</div>
+      <div class="terms-box">
+        <h4>PhoneYa2-ZM Sales Agent Terms</h4>
+        <p><strong>Commission:</strong> Commission is earned only on confirmed and delivered sales. Rates are as listed on the programme page. Commission is paid via mobile money within 7 days of sale confirmation.</p>
+        <p style="margin-top:10px;"><strong>Your Role:</strong> As an agent, you promote PhoneYa2 products using your referral link and register customer leads. You do not hold stock. PhoneYa2 handles delivery.</p>
+        <p style="margin-top:10px;"><strong>Conduct:</strong> You agree not to misrepresent products, make false claims about prices, or pressure customers. You represent the PhoneYa2 brand and are expected to behave professionally.</p>
+        <p style="margin-top:10px;"><strong>Termination:</strong> PhoneYa2 reserves the right to deactivate any agent who violates these terms, engages in fraud, or brings the brand into disrepute.</p>
+        <p style="margin-top:10px;"><strong>Data:</strong> Your application information is stored securely and used only to manage your agent relationship with PhoneYa2-ZM and BLESSTech-X.</p>
+      </div>
 
       <div class="check-item">
         <input type="checkbox" id="agree1">
@@ -246,14 +199,13 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-    <!-- STEP 4: REVIEW -->
+    <!-- ── STEP 4: REVIEW ─────────────────────────────────────────────────── -->
     <div class="step-panel" id="step4">
       <div class="step-hdr">
         <h2>Review Your Application</h2>
         <p>Check everything is correct before submitting.</p>
       </div>
       <div id="reviewContent"></div>
-      <div id="screenResult" style="display:none;"></div>
       <div id="submitError" class="alert alert-error" style="display:none;margin-top:16px;">
         <i class="fas fa-circle-exclamation"></i>
         <span id="submitErrorText">Something went wrong. Please try again.</span>
@@ -266,8 +218,8 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /form-card -->
+</div><!-- /apply-wrap -->
 
 <div id="toast"></div>
 
@@ -276,25 +228,7 @@ html, body { overflow-x: hidden; }
 document.getElementById('nav-wrap').innerHTML = buildNav('apply');
 
 let currentStep = 1;
-let activeAgreement = null;
 
-// ── LOAD ACTIVE AGREEMENT ────────────────────────────────────────────────
-async function loadAgreement() {
-  try {
-    const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
-    if (agreements && agreements.length) {
-      activeAgreement = agreements[0];
-      document.getElementById('agreementText').textContent = activeAgreement.content;
-      document.getElementById('agreeVersionLabel').textContent = activeAgreement.version;
-    } else {
-      document.getElementById('agreementText').textContent = 'Agreement unavailable. Please contact PhoneYa2 on WhatsApp.';
-    }
-  } catch (e) {
-    document.getElementById('agreementText').textContent = 'Agreement unavailable. Please contact PhoneYa2 on WhatsApp.';
-  }
-}
-
-// ── STEP NAVIGATION ──────────────────────────────────────────────────────
 function goStep(n) {
   if (n > currentStep && !validateStep(currentStep)) return;
   document.getElementById('step' + currentStep).classList.remove('active');
@@ -323,28 +257,17 @@ function showErr(id, show) {
   return !show;
 }
 
-// ── REFERRAL SOURCE TOGGLE ───────────────────────────────────────────────
-document.getElementById('f-source').addEventListener('change', function() {
-  const wrap = document.getElementById('refCodeWrap');
-  if (this.value === 'agent') wrap.style.display = 'block';
-  else { wrap.style.display = 'none'; }
-});
-
-// ── VALIDATION ───────────────────────────────────────────────────────────
 function validateStep(step) {
   let ok = true;
   if (step === 1) {
     ok = showErr('e-name',     !req('f-name'))     && ok;
-    ok = showErr('e-age',      !req('f-age') || Number(req('f-age')) < 16) && ok;
     ok = showErr('e-location', !req('f-location')) && ok;
     ok = showErr('e-phone',    !req('f-phone'))    && ok;
     ok = showErr('e-whatsapp', !req('f-whatsapp')) && ok;
   }
   if (step === 2) {
-    ok = showErr('e-reach',         !req('f-reach'))              && ok;
-    ok = showErr('e-hours',         !req('f-hours'))              && ok;
-    ok = showErr('e-customer-plan', !req('f-customer-plan') || req('f-customer-plan').length < 10) && ok;
-    ok = showErr('e-motivation',    req('f-motivation').length < 20) && ok;
+    ok = showErr('e-reach',      !req('f-reach'))                      && ok;
+    ok = showErr('e-motivation', req('f-motivation').length < 20)      && ok;
   }
   if (step === 3) {
     const allChecked = document.getElementById('agree1').checked &&
@@ -356,77 +279,24 @@ function validateStep(step) {
   return ok;
 }
 
-// ── ELIGIBILITY SCREENING ────────────────────────────────────────────────
-function runScreening(data, duplicateFound) {
-  const checks = [];
-  const nameParts = (data.full_name || '').trim().split(/\s+/);
-  checks.push({ label: 'Full name provided',       pass: nameParts.length >= 2, weight: 10 });
-
-  const age = Number(data.age) || 0;
-  checks.push({ label: 'Age 16+',                  pass: age >= 16, weight: 10 });
-
-  const phoneClean = (data.phone || '').replace(/\D/g, '');
-  checks.push({ label: 'Valid phone number',       pass: phoneClean.length >= 9, weight: 10 });
-
-  const waClean = (data.whatsapp || '').replace(/\D/g, '');
-  checks.push({ label: 'WhatsApp number provided', pass: waClean.length >= 9, weight: 15 });
-
-  checks.push({ label: 'Location provided',        pass: !!(data.location && data.location.length >= 3), weight: 10 });
-  checks.push({ label: 'Network size declared',    pass: !!data.reach, weight: 10 });
-  checks.push({ label: 'Hours availability given', pass: !!data.hours, weight: 5 });
-  checks.push({ label: 'Customer plan provided',   pass: !!(data.customer_plan && data.customer_plan.length >= 10), weight: 10 });
-  checks.push({ label: 'Motivation provided',      pass: (data.motivation || '').length >= 20, weight: 10 });
-  checks.push({ label: 'All agreements accepted',  pass: data.agree_commission && data.agree_terms && data.agree_accurate, weight: 5 });
-  checks.push({ label: 'No duplicate application', pass: !duplicateFound, weight: 5 });
-
-  const totalWeight = checks.reduce((s, c) => s + c.weight, 0);
-  const earned = checks.filter(c => c.pass).reduce((s, c) => s + c.weight, 0);
-  const score = Math.round((earned / totalWeight) * 100);
-  const status = score >= 70 ? 'qualified' : 'review';
-  return { score, status, checks };
-}
-
-async function checkDuplicate(phone, whatsapp) {
-  try {
-    const existing = await db.getAll('applications', { filter: `phone=eq.${phone}`, limit: 1 });
-    if (existing && existing.length) return true;
-    if (whatsapp && whatsapp !== phone) {
-      const waEx = await db.getAll('applications', { filter: `whatsapp=eq.${whatsapp}`, limit: 1 });
-      if (waEx && waEx.length) return true;
-    }
-  } catch (e) {}
-  return false;
-}
-
-// ── REVIEW ───────────────────────────────────────────────────────────────
 function buildReview() {
-  const f = id => document.getElementById(id);
-  const getSel = id => f(id).options[f(id).selectedIndex]?.text || '—';
-
   const rows = [
-    ['Full Name',      req('f-name')],
-    ['Age',            req('f-age')],
-    ['Location',       req('f-location')],
-    ['Education',      getSel('f-education')],
-    ['Phone',          req('f-phone')],
-    ['WhatsApp',       req('f-whatsapp')],
-    ['Email',          req('f-email') || '—'],
-    ['Occupation',     req('f-occupation') || '—'],
-    ['Platforms',      req('f-platforms') || '—'],
-    ['Experience',     getSel('f-experience')],
-    ['Network Size',   getSel('f-reach')],
-    ['Hours/Week',     getSel('f-hours')],
-    ['Customer Plan',  req('f-customer-plan')],
-    ['Referral Source',getSel('f-source')],
-    ['Referring Code', req('f-ref-code') || '—'],
-    ['Motivation',     req('f-motivation')],
+    ['Full Name',         req('f-name')],
+    ['Location',         req('f-location')],
+    ['Phone',            req('f-phone')],
+    ['WhatsApp',         req('f-whatsapp')],
+    ['Email',            req('f-email') || '—'],
+    ['Occupation',       req('f-occupation') || '—'],
+    ['Platforms',        req('f-platforms') || '—'],
+    ['Experience',       document.getElementById('f-experience').options[document.getElementById('f-experience').selectedIndex]?.text || '—'],
+    ['Network Size',     document.getElementById('f-reach').options[document.getElementById('f-reach').selectedIndex]?.text || '—'],
+    ['Motivation',       req('f-motivation')],
   ];
   document.getElementById('reviewContent').innerHTML = rows.map(([l, v]) =>
     `<div class="review-row"><div class="review-lbl">${esc(l)}</div><div class="review-val">${esc(v)}</div></div>`
   ).join('');
 }
 
-// ── SUBMIT ───────────────────────────────────────────────────────────────
 async function submitApplication() {
   const btn = document.getElementById('submitBtn');
   const errDiv = document.getElementById('submitError');
@@ -435,81 +305,41 @@ async function submitApplication() {
   setLoading(btn, true, 'Submitting…');
 
   try {
-    const duplicate = await checkDuplicate(req('f-phone'), req('f-whatsapp'));
-    const n     = await db.nextId('applications');
+    // Get next application number
+    const n    = await db.nextId('applications');
     const appId = makeAppId(n);
 
     const data = {
       app_id:           appId,
       full_name:        req('f-name'),
-      age:              Number(req('f-age')) || null,
       phone:            req('f-phone'),
       whatsapp:         req('f-whatsapp'),
       email:            req('f-email'),
       location:         req('f-location'),
-      education:        req('f-education'),
       occupation:       req('f-occupation'),
       platforms:        req('f-platforms'),
       experience:       req('f-experience'),
       reach:            req('f-reach'),
-      hours:            req('f-hours'),
-      customer_plan:    req('f-customer-plan'),
-      source:           req('f-source'),
-      ref_code:         req('f-ref-code'),
       motivation:       req('f-motivation'),
       agree_commission: document.getElementById('agree1').checked,
       agree_terms:      document.getElementById('agree2').checked,
       agree_accurate:   document.getElementById('agree3').checked,
-      agreement_version:      activeAgreement ? activeAgreement.version : '1.0',
-      agreement_accepted_at:  new Date().toISOString(),
       status:           'pending',
     };
 
-    const screening = runScreening(data, duplicate);
+    await db.insert('applications', data);
 
-    // Try to insert with screening fields (may fail if columns don't exist yet)
-    const insertData = { ...data };
-    try {
-      insertData.system_eligibility_score = screening.score;
-      insertData.system_screening_status  = screening.status;
-    } catch (e) {}
+    // Store in session for status page
+    sessionStorage.setItem('py2_app', JSON.stringify(data));
+    window.location.href = 'status.html';
 
-    await db.insert('applications', insertData);
-
-    showScreeningResult(screening);
-    sessionStorage.setItem('py2_app', JSON.stringify({ ...data, screening }));
-
-    setTimeout(() => { window.location.href = 'status.html'; }, 1800);
   } catch (err) {
     console.error(err);
-    errText.textContent = err.message || 'Could not submit. Please try again.';
+    errText.textContent = err.message || 'Could not submit. Check your connection and try again.';
     errDiv.style.display = 'flex';
     setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Submit Application');
   }
 }
-
-function showScreeningResult(screening) {
-  const box = document.getElementById('screenResult');
-  box.innerHTML = `
-    <div class="screen-box">
-      <div style="font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;">System Screening</div>
-      <div style="font-size:1.6rem;font-weight:800;margin-bottom:14px;">Eligibility Score: ${screening.score}%</div>
-      ${screening.checks.map(c => `
-        <div class="screen-row">
-          <span class="${c.pass ? 'ok' : 'warn'}">${c.pass ? '🟢' : '🟡'}</span>
-          <span style="color:rgba(255,255,255,.7);">${esc(c.label)} — ${c.pass ? 'Passed' : 'Review'}</span>
-        </div>`).join('')}
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;">
-        Your application has passed the system's initial eligibility screening. This is <strong>not final acceptance</strong>.
-        Your application is now awaiting review by the PhoneYa2-ZM administration team.
-      </div>
-    </div>`;
-  box.style.display = 'block';
-  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// ── BOOT ─────────────────────────────────────────────────────────────────
-loadAgreement();
 </script>
 </body>
 </html>
