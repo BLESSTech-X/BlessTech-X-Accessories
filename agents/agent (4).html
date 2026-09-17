@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Dashboard — PhoneYa2</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+#loginScreen { position:fixed; inset:0; background:var(--navy); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
+.login-card  { background:white; border-radius:20px; padding:36px 32px; max-width:380px; width:100%; text-align:center; }
+.login-card .login-icon { font-size:2.5rem; margin-bottom:12px; }
+.login-card h2 { margin-bottom:6px; }
+.login-card p  { color:var(--muted); font-size:14px; margin-bottom:24px; }
+
+.dash-wrap { max-width:900px; margin:0 auto; padding:28px 20px 80px; }
+.dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.dash-avatar-wrap { position:relative; flex-shrink:0; }
+.dash-avatar {
+  width:64px; height:64px; border-radius:50%;
+  background:var(--grad-o);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:white;
+  overflow:hidden;
+  border:2px solid rgba(255,255,255,.2);
+}
+.dash-avatar img { width:100%; height:100%; object-fit:cover; }
+.dash-avatar-edit {
+  position:absolute; bottom:-2px; right:-2px;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--orange); color:white;
+  border:2px solid var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; cursor:pointer;
+  transition:transform .2s;
+}
+.dash-avatar-edit:hover { transform:scale(1.15); }
+
+.dash-name   { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; }
+.dash-code   { font-size:13px; color:rgba(255,255,255,.5); margin-top:2px; }
+.dash-spacer { flex:1; min-width:8px; }
+.dash-logout { background:none; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.5); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
+.dash-logout:hover { border-color:rgba(255,255,255,.3); color:white; }
+
+.notif-btn { position:relative; background:none; border:1px solid rgba(255,255,255,.15); color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+.notif-btn:hover { border-color:var(--orange); background:rgba(255,96,0,.15); }
+.notif-badge { position:absolute; top:-4px; right:-4px; background:var(--orange); color:white; font-size:10px; font-weight:800; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 5px; }
+.notif-dropdown { position:absolute; top:48px; right:0; width:340px; max-width:calc(100vw - 28px); max-height:400px; overflow-y:auto; background:white; border:1px solid var(--border); border-radius:var(--r2); box-shadow:0 12px 40px rgba(0,0,0,.15); z-index:200; display:none; }
+.notif-dropdown.open { display:block; }
+.notif-item { padding:14px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; }
+.notif-item:hover { background:var(--light); }
+.notif-item.unread { background:#f0f9ff; }
+.notif-item:last-child { border-bottom:none; }
+.notif-title { font-weight:700; font-size:13px; margin-bottom:3px; }
+.notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
+.notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
+
+.wallet-card { background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(37,211,102,.25); }
+.wallet-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.wallet-val { font-family: 'DM Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
+.wallet-lbl-sm { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+.campaign-banner { background: linear-gradient(135deg,#7c3aed,#a855f7); border-radius: var(--r2); padding: 20px 24px; margin-bottom: 20px; color: white; }
+.campaign-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: .85; margin-bottom: 6px; }
+.campaign-title { font-family: 'Syne',sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+.campaign-meta { font-size: 13px; opacity: .9; }
+.campaign-dates { font-size: 12px; opacity: .75; margin-top: 8px; }
+
+.level-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:20px 22px; margin-bottom:20px; }
+.level-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:100px; background:linear-gradient(135deg,#7c3aed,#a855f7); color:white; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
+.level-progress-bar { height:8px; background:var(--light); border-radius:100px; overflow:hidden; margin-top:12px; }
+.level-progress-fill { height:100%; background:linear-gradient(90deg,#ff6000,#ff9f43); border-radius:100px; transition:width .5s ease; }
+
+.ref-box { background:linear-gradient(135deg,#0d2010,#0a3518); border-radius:var(--r2); padding:22px 24px; margin-bottom:20px; border:1px solid rgba(37,211,102,.2); }
+.ref-label { font-size:11px; font-weight:700; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.ref-url   { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 14px; }
+.ref-url span { flex:1; font-size:13px; color:white; font-family: ui-monospace, Menlo, monospace; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
+.ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
+.tab-bar { display: flex !important; flex-wrap: nowrap !important; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 0; width: 100%; max-width: 100%; }
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0 !important; padding: 11px 14px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s, background .2s; margin-bottom: -1px; white-space: nowrap; line-height: 1.2; min-height: 44px; text-align: center; min-width: 0; border-radius: 6px 6px 0 0; }
+.tab-btn i { font-size: 12px; flex-shrink: 0; line-height: 1; }
+.tab-btn:hover { color: var(--text); background: rgba(0,0,0,.02); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); background: rgba(255,96,0,.04); }
+@media(max-width:600px) { .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; } .tab-btn i { font-size: 11px; } }
+@media(max-width:400px) { .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; } .tab-btn i { font-size: 10px; } }
+.tab-pane  { display:none; }
+.tab-pane.active { display:block; }
+
+.sale-status-badge { font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; white-space:nowrap; display:inline-block; }
+.tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+.tier-row-display:last-child { border-bottom:none; }
+
+.perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
+.perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
+.perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
+.perf-val { font-family:'DM Sans',sans-serif; font-size:1.4rem; font-weight:800; line-height:1.1; margin-bottom:6px; word-break: break-word; }
+.perf-lbl { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+
+.content-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+.mk-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:18px 20px; display:flex; flex-direction:column; min-width: 0; }
+.mk-card-tag { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; align-self:flex-start; white-space: nowrap; }
+.tag-caption { background:rgba(255,96,0,.12); color:var(--orange); border:1px solid rgba(255,96,0,.25); }
+.tag-script  { background:rgba(139,92,246,.12); color:#7c3aed; border:1px solid rgba(139,92,246,.25); }
+.tag-faq     { background:rgba(37,99,235,.12); color:#2563eb; border:1px solid rgba(37,99,235,.25); }
+.tag-brand   { background:rgba(37,211,102,.12); color:#16a34a; border:1px solid rgba(37,211,102,.25); }
+.tag-poster  { background:rgba(245,158,11,.12); color:#92400e; border:1px solid rgba(245,158,11,.25); }
+.tag-video   { background:rgba(239,68,68,.12); color:#b91c1c; border:1px solid rgba(239,68,68,.25); }
+.mk-title { font-weight:800; font-size:15px; color:var(--text); margin-bottom:10px; word-break: break-word; }
+.mk-content { background:var(--light); border-radius:var(--r); padding:14px 16px; font-size:13px; color:var(--muted); line-height:1.65; white-space:pre-wrap; word-break:break-word; flex:1; margin-bottom:14px; max-height:200px; overflow-y:auto; }
+.mk-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.mk-actions .btn { flex:1; min-width:100px; justify-content:center; }
+
+.tr-progress-wrap { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; min-width: 0; width: 100%; }
+.tr-progress-wrap > * { min-width: 0; }
+.tr-progress-info { flex: 1; min-width: 200px; }
+.tr-progress-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.tr-progress-val { font-family: 'DM Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.tr-progress-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
+.tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; width: 100%; }
+.tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
+.tr-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.tr-module { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; cursor: pointer; min-width: 0; }
+.tr-module:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: var(--shadow); }
+.tr-module.done { background: #f0fdf4; border-color: #bbf7d0; }
+.tr-num { width: 40px; height: 40px; border-radius: 50%; background: var(--light); color: var(--muted); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+.tr-module.done .tr-num { background: #16a34a; color: white; }
+.tr-body { flex: 1; min-width: 0; }
+.tr-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 4px; word-break: break-word; }
+.tr-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; word-break: break-word; }
+.tr-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-left: auto; flex-shrink: 0; align-self: flex-start; white-space: nowrap; }
+.tr-status.done { background: #f0fdf4; color: #15803d; }
+.tr-status.todo { background: #fff7ed; color: #c2410c; }
+
+.month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.month-btn { padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border); background: white; cursor: pointer; transition: all .2s; text-align: center; font-family: 'DM Sans',sans-serif; }
+.month-btn:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
+.month-btn.active { background: var(--orange); border-color: var(--orange); color: white; }
+.month-btn .mb-name { font-size: 13px; font-weight: 700; }
+.month-btn .mb-year { font-size: 11px; opacity: .6; margin-top: 2px; }
+
+.stmt-preview { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 16px; }
+.stmt-preview-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.stmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.stmt-cell { text-align: center; padding: 10px 6px; }
+.stmt-cell-val { font-family: 'DM Sans',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
+.stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+.photo-preview-wrap { width: 140px; height: 140px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: var(--light); display: flex; align-items: center; justify-content: center; border: 3px solid var(--border); position: relative; }
+.photo-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-preview-placeholder { color: var(--muted); font-size: 3rem; }
+.photo-upload-area { border: 2px dashed var(--border); border-radius: var(--r); padding: 24px 20px; text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 16px; }
+.photo-upload-area:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
+.photo-upload-area i { font-size: 2rem; color: var(--orange); margin-bottom: 8px; display: block; }
+.photo-upload-area .pua-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.photo-upload-area .pua-sub { font-size: 12px; color: var(--muted); }
+
+/* ── DOCUMENTS TAB ──────────────────────────────────────────────────────── */
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.doc-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: all .2s;
+  min-width: 0;
+}
+.doc-card:hover {
+  border-color: var(--orange);
+  box-shadow: var(--shadow);
+}
+.doc-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.doc-icon.orange { background: linear-gradient(135deg,#fff8f4,#ffe0cc); color: var(--orange); }
+.doc-icon.green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #16a34a; }
+.doc-icon.purple { background: linear-gradient(135deg,#f3e8ff,#e9d5ff); color: #7c3aed; }
+.doc-icon.blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #2563eb; }
+.doc-icon.yellow { background: linear-gradient(135deg,#fffbeb,#fef3c7); color: #d97706; }
+.doc-body { flex: 1; min-width: 0; }
+.doc-title {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.doc-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.doc-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: 10px;
+}
+.doc-badge.ready     { background: rgba(37,211,102,.12); color: #16a34a; }
+.doc-badge.locked    { background: rgba(107,114,128,.12); color: var(--muted); }
+.doc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--grad-o);
+  color: white;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  width: 100%;
+}
+.doc-btn:hover { opacity: .9; text-decoration: none; }
+.doc-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+
+@media(max-width:700px) {
+  .dash-wrap { padding: 16px 14px 80px; }
+  .dash-hdr { padding: 18px 16px; gap: 12px; }
+  .ref-box { padding: 16px; }
+  .ref-url { padding: 8px 10px; }
+  .ref-url span { font-size: 12px; }
+  .ref-btns { flex-wrap: wrap; }
+  .ref-btns .btn { font-size: 12px; padding: 8px 12px; }
+  .wallet-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .content-grid { grid-template-columns: 1fr; }
+  .doc-grid { grid-template-columns: 1fr; }
+}
+@media(max-width:600px) {
+  .dash-hdr { flex-direction: column; align-items: flex-start; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  #submitSaleModal .sale-grid { grid-template-columns: 1fr !important; }
+  .stmt-grid { grid-template-columns: 1fr 1fr; }
+  .tr-progress-wrap { padding: 16px; gap: 12px; }
+}
+@media(max-width:400px) {
+  .dash-name { font-size: 1rem; }
+  .month-grid { grid-template-columns: repeat(2, 1fr); }
+  .wallet-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🔑</div>
+    <h2>Agent Login</h2>
+    <p>Enter your Agent Code to access your dashboard. You received this when your application was approved.</p>
+    <div class="field">
+      <label class="label">Agent Code</label>
+      <input type="text" class="input" id="codeInput" placeholder="e.g. PY001"
+             oninput="this.value=this.value.toUpperCase()"
+             onkeydown="if(event.key==='Enter') doAgentLogin()">
+      <div class="err-msg" id="loginErr">Agent code not found. Check your WhatsApp message from PhoneYa2.</div>
+    </div>
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doAgentLogin()">
+      <i class="fas fa-right-to-bracket"></i> Access Dashboard
+    </button>
+    <div class="divider" style="margin:20px 0;"></div>
+    <p style="font-size:13px;color:var(--muted);">Don't have a code yet?</p>
+    <a href="apply.html" class="btn btn-outline btn-full btn-sm" style="margin-top:8px;">Apply to become an agent</a>
+  </div>
+</div>
+
+<div id="dashApp" style="display:none;">
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div><div class="nav-brand">PhoneYa2<span>-ZM</span></div></div>
+    </a>
+    <span class="nav-badge hide-mobile">Agent Network</span>
+    <div class="nav-spacer"></div>
+    <span id="nav-agent-code" style="font-size:13px;color:rgba(255,255,255,.4);" class="hide-mobile"></span>
+    <button class="notif-btn" onclick="toggleNotifications(event)">
+      <i class="fas fa-bell"></i>
+      <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+    </button>
+    <div style="position:relative;">
+      <div class="notif-dropdown" id="notifDropdown">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700;font-size:14px;">Notifications</div>
+          <button class="btn-ghost btn-sm" style="font-size:12px;" onclick="markAllRead(event)">Mark all read</button>
+        </div>
+        <div id="notifList"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <div class="dash-hdr">
+    <div class="dash-avatar-wrap">
+      <div class="dash-avatar" id="dashAvatar">?</div>
+      <div class="dash-avatar-edit" onclick="openPhotoModal()" title="Change photo">
+        <i class="fas fa-camera"></i>
+      </div>
+    </div>
+    <div>
+      <div class="dash-name" id="dashName">Loading…</div>
+      <div class="dash-code" id="dashCodeLabel"></div>
+    </div>
+    <div class="dash-spacer"></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <a href="profile.html?id=" id="profileLink" class="btn btn-outline btn-sm" target="_blank" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);"><i class="fas fa-id-card"></i> Profile</a>
+      <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
+      <button class="dash-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </div>
+
+  <div id="campaignBanner"></div>
+  <div class="level-card" id="levelCard"></div>
+  <div class="wallet-card" id="walletCard"></div>
+
+  <div class="stat-grid" style="margin-bottom:20px;">
+    <div class="stat-card"><div class="stat-value" id="st-sales">0</div><div class="stat-label">Sales This Month</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-comm" style="color:#16a34a;">ZMW 0</div><div class="stat-label">Commission Earned</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-pending" style="color:var(--yellow);">ZMW 0</div><div class="stat-label">Pending Commission</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-revenue" style="color:var(--orange);">ZMW 0</div><div class="stat-label">Total Revenue</div></div>
+  </div>
+
+  <div class="ref-box">
+    <div class="ref-label">Your Personal Referral Link</div>
+    <div class="ref-url">
+      <i class="fas fa-link" style="color:var(--green);flex-shrink:0;"></i>
+      <span id="refUrl">—</span>
+    </div>
+    <div class="ref-btns">
+      <button class="btn btn-green btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy Link</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefNative()"><i class="fas fa-share-nodes"></i> Share</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="openQrModal()"><i class="fas fa-qrcode"></i> My QR</button>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showAgentTab('sales',this)"><i class="fas fa-chart-line"></i> Sales</button>
+    <button class="tab-btn" onclick="showAgentTab('commission',this)"><i class="fas fa-coins"></i> Commission</button>
+    <button class="tab-btn" onclick="showAgentTab('performance',this)"><i class="fas fa-chart-bar"></i> Stats</button>
+    <button class="tab-btn" onclick="showAgentTab('marketing',this)"><i class="fas fa-bullhorn"></i> Promo</button>
+    <button class="tab-btn" onclick="showAgentTab('training',this)"><i class="fas fa-graduation-cap"></i> Learn</button>
+    <button class="tab-btn" onclick="showAgentTab('documents',this)"><i class="fas fa-folder-open"></i> Docs</button>
+    <button class="tab-btn" onclick="showAgentTab('tiers',this)"><i class="fas fa-percent"></i> Rates</button>
+    <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
+  </div>
+
+  <div class="tab-pane active" id="agent-tab-sales">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">My Submitted Sales</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="openStatement()"><i class="fas fa-file-pdf"></i> Monthly Statement</button>
+        <button class="btn btn-outline btn-sm" onclick="downloadMyStatementPdf()"><i class="fas fa-download"></i> All Sales PDF</button>
+        <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
+      </div>
+    </div>
+    <div id="salesContent"></div>
+  </div>
+
+  <div class="tab-pane" id="agent-tab-commission">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
+      <h3 style="margin-bottom:4px;">Commission History</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Confirmed and pending commissions from your sales.</p>
+      <div id="commHistory"></div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="agent-tab-performance">
+    <div id="performanceContent"></div>
+  </div>
+
+  <div class="tab-pane" id="agent-tab-marketing">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">Marketing Library</h3>
+    </div>
+    <div class="filter-row" id="marketingTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="filter-pill active" data-mc="all" onclick="filterMarketing('all',this)">All</button>
+      <button class="filter-pill" data-mc="caption" onclick="filterMarketing('caption',this)">Captions</button>
+      <button class="filter-pill" data-mc="script" onclick="filterMarketing('script',this)">Scripts</button>
+      <button class="filter-pill" data-mc="faq" onclick="filterMarketing('faq',this)">FAQs</button>
+      <button class="filter-pill" data-mc="poster" onclick="filterMarketing('poster',this)">Posters</button>
+      <button class="filter-pill" data-mc="video" onclick="filterMarketing('video',this)">Videos</button>
+      <button class="filter-pill" data-mc="brand" onclick="filterMarketing('brand',this)">Brand</button>
+    </div>
+    <div id="marketingContent"></div>
+  </div>
+
+  <div class="tab-pane" id="agent-tab-training">
+    <div class="tr-progress-wrap" id="trProgress"></div>
+    <div class="tr-list" id="trList"></div>
+  </div>
+
+  <!-- DOCUMENTS TAB -->
+  <div class="tab-pane" id="agent-tab-documents">
+    <div style="margin-bottom:16px;">
+      <h3 style="font-size:1rem;margin-bottom:4px;">My Documents</h3>
+      <p style="font-size:13px;color:var(--muted);">Download your official PhoneYa2-ZM documents. All PDFs are branded and ready to share.</p>
+    </div>
+    <div class="doc-grid" id="docGrid"></div>
+  </div>
+
+  <div class="tab-pane" id="agent-tab-tiers">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
+      <h3 style="margin-bottom:4px;">How Your Commission is Calculated</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Your commission is a percentage of the total sale amount.</p>
+      <div style="background:linear-gradient(135deg,#0d2010,#0a3518);border-radius:var(--r);padding:18px 20px;border:1px solid rgba(37,211,102,.2);">
+        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Commission Tiers</div>
+        <div id="tierRatesList" style="color:white;"></div>
+      </div>
+      <div style="margin-top:20px;background:var(--light);border-radius:var(--r);padding:16px 18px;">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Examples</div>
+        <div id="tierExample" style="font-size:14px;color:var(--text);line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="agent-tab-leaderboard">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
+        <h3>Sales Leaderboard</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Top performing agents this period.</p>
+      </div>
+      <div id="agentLeaderboard"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- SUBMIT SALE MODAL -->
+<div class="modal-overlay" id="submitSaleModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Submit a Sale</h3>
+      <button class="modal-close" onclick="closeSubmitSale()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Record a sale you made. PhoneYa2 will verify it.</p>
+      <div class="sale-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="field" style="grid-column:1/-1;">
+          <label class="label">Product Sold <span class="req">*</span></label>
+          <input type="text" class="input" id="s-product" placeholder="e.g. TWS Earbuds">
+        </div>
+        <div class="field">
+          <label class="label">Quantity <span class="req">*</span></label>
+          <input type="number" class="input" id="s-qty" value="1" min="1">
+        </div>
+        <div class="field">
+          <label class="label">Unit Price (ZMW) <span class="req">*</span></label>
+          <input type="number" class="input" id="s-unit-price" placeholder="e.g. 150" min="1">
+        </div>
+        <div class="field">
+          <label class="label">Total Amount</label>
+          <input type="text" class="input input-calc" id="s-amount-calc" readonly value="ZMW 0">
+        </div>
+        <div class="field">
+          <label class="label">Commission Rate</label>
+          <input type="text" class="input input-calc" id="s-comm-pct" readonly value="0%">
+        </div>
+        <div class="field">
+          <label class="label">Your Commission</label>
+          <input type="text" class="input input-calc" id="s-comm-calc" readonly value="ZMW 0">
+        </div>
+        <div class="field">
+          <label class="label">Customer Name <span class="req">*</span></label>
+          <input type="text" class="input" id="s-cust-name" placeholder="Customer full name">
+        </div>
+        <div class="field">
+          <label class="label">Customer Phone <span class="req">*</span></label>
+          <input type="tel" class="input" id="s-cust-phone" placeholder="+260...">
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <label class="label">Notes (optional)</label>
+          <textarea class="textarea" id="s-notes" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="hint" id="s-tier-hint" style="text-align:center;margin-top:4px;">Enter unit price and quantity.</div>
+      <div class="alert alert-info" style="margin-top:12px;">
+        <i class="fas fa-info-circle"></i>
+        <span style="font-size:13px;">Your sale will be <strong>pending approval</strong>.</span>
+      </div>
+      <div id="submitSaleError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="submitSaleErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline btn-full" onclick="closeSubmitSale()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="submitSaleBtn" onclick="submitSale()"><i class="fas fa-paper-plane"></i> Submit Sale</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO MODAL -->
+<div class="modal-overlay" id="photoModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Profile Photo</h3>
+      <button class="modal-close" onclick="closePhotoModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;text-align:center;">
+        Add a clear photo of your face. This will appear on your profile, ID card, and verification page.
+      </p>
+      <div class="photo-preview-wrap" id="photoPreviewWrap">
+        <div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>
+      </div>
+      <div class="photo-upload-area" onclick="document.getElementById('photoFileInput').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <div class="pua-title">Tap to select a photo</div>
+        <div class="pua-sub">JPG, PNG or WebP · We'll compress it for you</div>
+      </div>
+      <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
+      <div id="photoError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="photoErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="closePhotoModal()">Cancel</button>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" id="deletePhotoBtn" onclick="doDeletePhoto()">
+          <i class="fas fa-trash"></i> Remove
+        </button>
+        <button class="btn btn-primary" id="savePhotoBtn" onclick="doSavePhoto()" disabled>
+          <i class="fas fa-check"></i> Save Photo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATEMENT MODAL -->
+<div class="modal-overlay" id="statementModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Monthly Statement</h3>
+      <button class="modal-close" onclick="closeStatement()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Pick a month to see your summary.</p>
+      <div class="month-grid" id="monthGrid"></div>
+      <div id="stmtPreview"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-outline btn-full" onclick="closeStatement()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="downloadStmtBtn" onclick="downloadMonthlyStatement()" disabled>
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>My QR Code</h3>
+      <button class="modal-close" onclick="closeQrModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Customers scan this to verify you as an official PhoneYa2 agent.</p>
+      <div id="qrCode" style="display:flex;justify-content:center;padding:20px;background:white;border-radius:var(--r);"></div>
+      <div style="margin-top:16px;font-size:13px;color:var(--muted);word-break:break-all;" id="qrUrlText"></div>
+      <button class="btn btn-outline btn-full" style="margin-top:16px;" onclick="copyQrUrl()"><i class="fas fa-copy"></i> Copy verification link</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRAINING MODULE MODAL -->
+<div class="modal-overlay" id="moduleModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3 id="modTitle">Module</h3>
+      <button class="modal-close" onclick="closeModule()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="modVideo"></div>
+      <div style="background:var(--light);border-radius:var(--r);padding:20px 22px;font-size:14px;line-height:1.75;white-space:pre-wrap;margin-bottom:18px;word-break:break-word;" id="modContent"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-full" onclick="closeModule()">Close</button>
+        <button class="btn btn-green btn-full" id="markDoneBtn" onclick="markModuleDone()">
+          <i class="fas fa-circle-check"></i> Mark as Complete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+let agentData   = null;
+let agentSales  = [];
+let allSales    = [];
+let myWallet    = null;
+let myNotifs    = [];
+let myReferral  = [];
+let allMaterials = [];
+let allModules = [];
+let completedModuleIds = new Set();
+let marketingFilter = 'all';
+let currentModule = null;
+let selectedMonth = null;
+let pendingPhotoFile = null;
+let myApplication = null;
+let activeAgreement = null;
+
+// ── AUTH ─────────────────────────────────────────────────────────────────
+async function doAgentLogin() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  if (!code) return;
+  const btn = document.getElementById('loginBtn');
+  setLoading(btn, true, 'Checking…');
+  document.getElementById('loginErr').classList.remove('show');
+  try {
+    const agent = await db.getOne('agents', `agent_code=eq.${code}&active=eq.true`);
+    if (!agent) throw new Error('Not found');
+    sessionStorage.setItem('agent_code', code);
+    localStorage.setItem('agent_code', code);
+    agentData = agent;
+    await logReferralEvent(code, 'login');
+    bootDashboard();
+  } catch(e) {
+    document.getElementById('loginErr').classList.add('show');
+    setLoading(btn, false, '<i class="fas fa-right-to-bracket"></i> Access Dashboard');
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('agent_code');
+  localStorage.removeItem('agent_code');
+  location.reload();
+}
+
+async function bootDashboard() {
+  document.getElementById('loginScreen').style.display  = 'none';
+  document.getElementById('dashApp').style.display       = 'block';
+  document.getElementById('nav-agent-code').textContent  = agentData.agent_code;
+  document.getElementById('dashName').textContent        = agentData.full_name;
+  document.getElementById('dashCodeLabel').textContent   = agentData.agent_id + ' · ' + agentData.agent_code;
+  document.getElementById('refUrl').textContent          = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  document.getElementById('profileLink').href            = `profile.html?id=${agentData.agent_id}`;
+
+  renderAvatarHeader();
+
+  await loadTiers();
+  await loadLevels();
+  await loadAgentData();
+  await loadApplicationAndAgreement();
+  renderTierRates();
+  renderLevel();
+  renderWallet();
+  await loadNotifications();
+  await loadReferralStats();
+  await loadCampaignBanner();
+  await loadMarketing();
+  await loadTraining();
+  renderDocuments();
+}
+
+function renderAvatarHeader() {
+  const el = document.getElementById('dashAvatar');
+  if (agentData.profile_photo_url) {
+    el.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="${esc(agentData.full_name)}"
+      onerror="this.style.display='none';this.parentElement.innerHTML='${(agentData.full_name || '?')[0].toUpperCase()}';">`;
+  } else {
+    el.textContent = (agentData.full_name || '?')[0].toUpperCase();
+  }
+}
+
+async function loadApplicationAndAgreement() {
+  try {
+    if (agentData.app_id) {
+      myApplication = await db.getOne('applications', `app_id=eq.${agentData.app_id}`);
+    }
+    const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
+    activeAgreement = (agreements && agreements.length) ? agreements[0] : null;
+  } catch(e) { /* ignore */ }
+}
+
+// ── PHOTO UPLOAD ─────────────────────────────────────────────────────────
+function openPhotoModal() {
+  pendingPhotoFile = null;
+  document.getElementById('photoError').style.display = 'none';
+  document.getElementById('photoFileInput').value = '';
+  document.getElementById('savePhotoBtn').disabled = true;
+  const wrap = document.getElementById('photoPreviewWrap');
+  if (agentData.profile_photo_url) {
+    wrap.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="Current photo">`;
+    document.getElementById('deletePhotoBtn').style.display = 'inline-flex';
+  } else {
+    wrap.innerHTML = `<div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>`;
+    document.getElementById('deletePhotoBtn').style.display = 'none';
+  }
+  document.getElementById('photoModal').classList.add('open');
+}
+function closePhotoModal() {
+  document.getElementById('photoModal').classList.remove('open');
+  pendingPhotoFile = null;
+}
+function onPhotoSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showPhotoErr('Please select an image file.'); return; }
+  if (file.size > 8 * 1024 * 1024) { showPhotoErr('Image too large (max 8 MB).'); return; }
+  document.getElementById('photoError').style.display = 'none';
+  pendingPhotoFile = file;
+  const wrap = document.getElementById('photoPreviewWrap');
+  wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview">`;
+  document.getElementById('savePhotoBtn').disabled = false;
+  document.getElementById('deletePhotoBtn').style.display = 'none';
+}
+function showPhotoErr(msg) {
+  document.getElementById('photoErrText').textContent = msg;
+  document.getElementById('photoError').style.display = 'flex';
+}
+async function doSavePhoto() {
+  if (!pendingPhotoFile) return;
+  const btn = document.getElementById('savePhotoBtn');
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('photoError').style.display = 'none';
+  try {
+    const url = await uploadAgentPhoto(pendingPhotoFile, agentData.agent_code);
+    agentData.profile_photo_url = url;
+    renderAvatarHeader();
+    toast('✅ Photo updated');
+    closePhotoModal();
+  } catch(e) {
+    showPhotoErr(e.message || 'Upload failed');
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save Photo');
+  }
+}
+async function doDeletePhoto() {
+  if (!confirm('Remove your profile photo?')) return;
+  const btn = document.getElementById('deletePhotoBtn');
+  setLoading(btn, true, 'Removing…');
+  try {
+    await deleteAgentPhoto(agentData.agent_code, agentData.profile_photo_url);
+    agentData.profile_photo_url = null;
+    renderAvatarHeader();
+    toast('✅ Photo removed');
+    closePhotoModal();
+  } catch(e) {
+    showPhotoErr(e.message || 'Failed to remove');
+    setLoading(btn, false, '<i class="fas fa-trash"></i> Remove');
+  }
+}
+
+// ── DOCUMENTS TAB ────────────────────────────────────────────────────────
+function renderDocuments() {
+  const el = document.getElementById('docGrid');
+  if (!el) return;
+
+  const trainingDone = allModules.length > 0 && completedModuleIds.size === allModules.length;
+
+  const docs = [
+    {
+      icon: 'fa-id-card', color: 'orange',
+      title: 'Agent ID Card',
+      desc: 'Your official branded PhoneYa2-ZM ID card with your photo and QR code.',
+      badge: 'ready',
+      action: 'downloadIdCard()',
+    },
+    {
+      icon: 'fa-file-invoice-dollar', color: 'green',
+      title: 'Sales Statement (All Time)',
+      desc: 'Complete record of every sale you have submitted and its current status.',
+      badge: 'ready',
+      action: 'downloadMyStatementPdf()',
+    },
+    {
+      icon: 'fa-calendar-days', color: 'blue',
+      title: 'Monthly Statement',
+      desc: 'Pick any month to generate a summary statement for that period.',
+      badge: 'ready',
+      action: 'openStatement()',
+    },
+    {
+      icon: 'fa-certificate', color: 'purple',
+      title: 'Certificate of Participation',
+      desc: 'Official certificate confirming you joined the PhoneYa2-ZM Agent Network.',
+      badge: 'ready',
+      action: 'downloadParticipationCert()',
+    },
+    {
+      icon: 'fa-award', color: 'yellow',
+      title: 'Certificate of Achievement',
+      desc: trainingDone ? 'All training modules complete. Download your certificate.' : 'Complete all training modules to unlock this certificate.',
+      badge: trainingDone ? 'ready' : 'locked',
+      action: trainingDone ? 'downloadAchievementCert()' : 'showTrainingLocked()',
+      disabled: !trainingDone,
+    },
+    {
+      icon: 'fa-envelope-open-text', color: 'orange',
+      title: 'Welcome Letter',
+      desc: 'A personalised welcome letter introducing you as a PhoneYa2-ZM agent.',
+      badge: 'ready',
+      action: 'downloadWelcomeLetter()',
+    },
+    {
+      icon: 'fa-file-signature', color: 'blue',
+      title: 'Application Document',
+      desc: myApplication ? 'Your submitted application, saved as a branded PDF.' : 'Application not found.',
+      badge: myApplication ? 'ready' : 'locked',
+      action: myApplication ? 'downloadApplicationPdf()' : 'showLocked()',
+      disabled: !myApplication,
+    },
+    {
+      icon: 'fa-file-contract', color: 'green',
+      title: 'Agent Agreement',
+      desc: activeAgreement ? `The terms you accepted (v${esc(activeAgreement.version)}).` : 'Terms document not available.',
+      badge: activeAgreement ? 'ready' : 'locked',
+      action: activeAgreement ? 'downloadAgreementPdf()' : 'showLocked()',
+      disabled: !activeAgreement,
+    },
+  ];
+
+  el.innerHTML = docs.map(d => `
+    <div class="doc-card">
+      <div class="doc-icon ${d.color}">
+        <i class="fas ${d.icon}"></i>
+      </div>
+      <div class="doc-body">
+        <div class="doc-title">${esc(d.title)}</div>
+        <div class="doc-desc">${d.desc}</div>
+        <span class="doc-badge ${d.badge}">
+          ${d.badge === 'ready' ? '✓ Ready' : '🔒 Locked'}
+        </span>
+        <button class="doc-btn" ${d.disabled ? 'disabled' : ''} onclick="${d.action}">
+          <i class="fas fa-download"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── DOCUMENT ACTIONS ─────────────────────────────────────────────────────
+async function downloadIdCard() {
+  toast('🎫 Generating ID card…');
+  try { await makeIdCardPdf(agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadParticipationCert() {
+  toast('🏅 Generating certificate…');
+  try { makeParticipationCertificatePdf(agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadAchievementCert() {
+  toast('🏆 Generating certificate…');
+  try {
+    makeCertificatePdf({
+      agent: agentData,
+      title: 'Certificate of Achievement',
+      subtitle: 'Proudly awarded to',
+      date: new Date().toLocaleDateString('en-ZM'),
+    });
+  } catch(e) { toast('Error: ' + e.message); }
+}
+function downloadWelcomeLetter() {
+  toast('📩 Generating welcome letter…');
+  try { makeWelcomeLetterPdf(agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadApplicationPdf() {
+  if (!myApplication) { toast('⚠️  Application not found'); return; }
+  toast('📄 Generating application PDF…');
+  try { makeApplicationPdf(myApplication, agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadAgreementPdf() {
+  if (!activeAgreement) { toast('⚠️  Agreement not found'); return; }
+  toast('📄 Generating agreement PDF…');
+  try { makeAgreementPdf(activeAgreement, agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function showTrainingLocked() {
+  toast('🔒 Complete all training modules to unlock this certificate');
+}
+function showLocked() {
+  toast('🔒 Document not available');
+}
+
+// ── DATA LOADING ─────────────────────────────────────────────────────────
+async function loadAgentData() {
+  try {
+    [agentSales, allSales, myWallet] = await Promise.all([
+      db.getAll('sales', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' }),
+      db.getAll('sales', { order: 'created_at.desc' }),
+      db.getOne('wallets', `agent_code=eq.${agentData.agent_code}`).catch(() => null),
+    ]);
+    updateAgentStats();
+    renderSales();
+    renderCommHistory();
+    renderLeaderboard();
+    renderPerformance();
+  } catch(e) { toast('⚠️  ' + e.message); }
+}
+
+async function loadNotifications() {
+  try {
+    myNotifs = await db.getAll('notifications', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc', limit: 30 });
+    renderNotifications();
+  } catch(e) {}
+}
+
+async function loadReferralStats() {
+  try { myReferral = await db.getAll('referral_events', { filter: `agent_code=eq.${agentData.agent_code}` }); }
+  catch(e) { myReferral = []; }
+}
+
+async function loadCampaignBanner() {
+  const banner = document.getElementById('campaignBanner');
+  try {
+    const campaign = await getActiveCampaign();
+    if (!campaign) { banner.innerHTML = ''; return; }
+    banner.innerHTML = `
+      <div class="campaign-banner">
+        <div class="campaign-label"><i class="fas fa-bullhorn"></i> Active Campaign</div>
+        <div class="campaign-title">${esc(campaign.name)}</div>
+        <div class="campaign-meta">
+          ${campaign.commission_override_pct ? `Commission boosted to <strong>${campaign.commission_override_pct}%</strong>` : ''}
+          ${campaign.bonus_per_sale ? ` + <strong>${fmtMoney(campaign.bonus_per_sale)}</strong> bonus per sale` : ''}
+        </div>
+        <div class="campaign-dates"><i class="fas fa-calendar"></i> ${fmtDate(campaign.start_date)} → ${fmtDate(campaign.end_date)}</div>
+      </div>`;
+  } catch(e) { banner.innerHTML = ''; }
+}
+
+function updateAgentStats() {
+  const now = new Date();
+  const thisMonth = agentSales.filter(s => {
+    const d = new Date(s.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = agentSales.filter(s => s.status === 'pending');
+  const totalComm = confirmed.reduce((s, x) => s + (x.commission||0), 0);
+  const pendComm  = pending.reduce((s, x) => s + (x.commission||0), 0);
+  const revenue   = agentSales.reduce((s, x) => s + (x.amount||0), 0);
+
+  document.getElementById('st-sales').textContent   = thisMonth.length;
+  document.getElementById('st-comm').textContent    = fmtMoney(totalComm);
+  document.getElementById('st-pending').textContent = fmtMoney(pendComm);
+  document.getElementById('st-revenue').textContent = fmtMoney(revenue);
+}
+
+function renderLevel() {
+  const totalSales = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid').length;
+  const revenue    = agentSales.reduce((t,s) => t + (s.amount||0), 0);
+  const { current, next, progress } = calcAgentLevel(totalSales, revenue);
+
+  if (!current) {
+    document.getElementById('levelCard').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;">Level data loading…</div>';
+    return;
+  }
+
+  document.getElementById('levelCard').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Current Level</div>
+        <div class="level-badge"><i class="fas fa-award"></i> ${esc(current.name)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;">${totalSales} sales · ${fmtMoney(revenue)}</div>
+      </div>
+    </div>
+    ${next ? `
+      <div style="margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;">
+          <span>Progress to ${esc(next.name)}</span>
+          <span style="font-weight:700;color:var(--orange);">${progress}%</span>
+        </div>
+        <div class="level-progress-bar"><div class="level-progress-fill" style="width:${progress}%;"></div></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">
+          Needs: ${next.min_sales} sales · ${fmtMoney(next.min_revenue)} revenue
+        </div>
+      </div>
+    ` : `<div style="margin-top:14px;font-size:13px;color:#16a34a;font-weight:700;"><i class="fas fa-circle-check"></i> Top level reached</div>`}
+  `;
+}
+
+function renderWallet() {
+  const w = myWallet || { total_earned:0, pending:0, available:0, paid:0 };
+  document.getElementById('walletCard').innerHTML = `
+    <div class="wallet-lbl"><i class="fas fa-wallet"></i> My Wallet</div>
+    <div class="wallet-grid">
+      <div><div class="wallet-val">${fmtMoney(w.total_earned)}</div><div class="wallet-lbl-sm">Total Earned</div></div>
+      <div><div class="wallet-val" style="color:#fbbf24;">${fmtMoney(w.pending)}</div><div class="wallet-lbl-sm">Pending</div></div>
+      <div><div class="wallet-val" style="color:#4ade80;">${fmtMoney(w.available)}</div><div class="wallet-lbl-sm">Available</div></div>
+      <div><div class="wallet-val" style="color:#60a5fa;">${fmtMoney(w.paid)}</div><div class="wallet-lbl-sm">Paid</div></div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">
+      <i class="fas fa-info-circle"></i> Payouts are processed by PhoneYa2. Contact us on WhatsApp to request a payout of your available balance.
+    </div>
+  `;
+}
+
+function copyRefLink() {
+  const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  copyToClipboard(url);
+  logReferralEvent(agentData.agent_code, 'link_copied');
+  toast('✅ Copied!');
+}
+function shareRefWa() {
+  const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  const msg = `📱 *PhoneYa2-ZM Accessories*\n\nCases, chargers, earphones & more.\n✅ Genuine products\n🚀 Same-day delivery\n\n🛒 Shop: ${url}`;
+  window.open(waLink(msg), '_blank');
+  logReferralEvent(agentData.agent_code, 'whatsapp_share');
+}
+function shareRefNative() {
+  const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  if (navigator.share) navigator.share({ title:'PhoneYa2-ZM', text:'Genuine phone accessories.', url });
+  else copyRefLink();
+}
+
+function openQrModal() {
+  const verifyUrl = `${CONFIG.agentSiteUrl}/verify.html?id=${agentData.agent_id}`;
+  document.getElementById('qrCode').innerHTML = '';
+  new QRCode(document.getElementById('qrCode'), { text: verifyUrl, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.H });
+  document.getElementById('qrUrlText').textContent = verifyUrl;
+  document.getElementById('qrModal').classList.add('open');
+}
+function closeQrModal() { document.getElementById('qrModal').classList.remove('open'); }
+function copyQrUrl() {
+  copyToClipboard(`${CONFIG.agentSiteUrl}/verify.html?id=${agentData.agent_id}`);
+  toast('✅ Copied');
+}
+
+function openSubmitSale() {
+  document.getElementById('submitSaleModal').classList.add('open');
+  document.getElementById('submitSaleError').style.display = 'none';
+  ['s-product','s-unit-price','s-cust-name','s-cust-phone','s-notes'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('s-qty').value = 1;
+  document.getElementById('s-comm-calc').value = 'ZMW 0';
+  document.getElementById('s-comm-pct').value = '0%';
+  document.getElementById('s-amount-calc').value = 'ZMW 0';
+  document.getElementById('s-tier-hint').textContent = 'Enter unit price and quantity.';
+  ['s-unit-price','s-qty'].forEach(id => { document.getElementById(id).oninput = recalcSubmitSale; });
+}
+
+function recalcSubmitSale() {
+  const unit = Number(document.getElementById('s-unit-price').value) || 0;
+  const qty  = Number(document.getElementById('s-qty').value) || 0;
+  const amount = unit * qty;
+  const { percentage, commission, tier } = calcCommissionFromAmount(amount);
+  document.getElementById('s-amount-calc').value = fmtMoney(amount);
+  document.getElementById('s-comm-pct').value    = percentage + '%';
+  document.getElementById('s-comm-calc').value   = fmtMoney(commission);
+  const hintEl = document.getElementById('s-tier-hint');
+  if (tier) {
+    const maxLabel = tier.max_amount === null || tier.max_amount === undefined ? '+' : '–' + tier.max_amount;
+    hintEl.textContent = `Tier: ZMW ${tier.min_amount}${maxLabel} → ${percentage}%`;
+    hintEl.style.color = 'var(--green)';
+  } else if (amount > 0) {
+    hintEl.textContent = '⚠️  No matching tier';
+    hintEl.style.color = 'var(--red)';
+  } else {
+    hintEl.textContent = 'Enter unit price and quantity.';
+    hintEl.style.color = 'var(--muted)';
+  }
+}
+function closeSubmitSale() { document.getElementById('submitSaleModal').classList.remove('open'); }
+
+async function submitSale() {
+  const productName   = document.getElementById('s-product').value.trim();
+  const quantity      = Number(document.getElementById('s-qty').value) || 1;
+  const unitPrice     = Number(document.getElementById('s-unit-price').value);
+  const customerName  = document.getElementById('s-cust-name').value.trim();
+  const customerPhone = document.getElementById('s-cust-phone').value.trim();
+  const notes         = document.getElementById('s-notes').value.trim();
+
+  if (!productName)   { toast('⚠️  Product required'); return; }
+  if (!unitPrice)     { toast('⚠️  Unit price required'); return; }
+  if (!customerName)  { toast('⚠️  Customer name required'); return; }
+  if (!customerPhone) { toast('⚠️  Customer phone required'); return; }
+
+  const amount = unitPrice * quantity;
+  const { percentage, commission, tier } = calcCommissionFromAmount(amount);
+  if (!tier) { toast('⚠️  No tier matches'); return; }
+
+  const btn = document.getElementById('submitSaleBtn');
+  setLoading(btn, true, 'Submitting…');
+  document.getElementById('submitSaleError').style.display = 'none';
+
+  try {
+    const n = await db.nextId('sales');
+    const saleId = makeSaleId(n);
+    const saleRecord = {
+      sale_id: saleId, agent_code: agentData.agent_code, product: productName,
+      quantity, unit_price: unitPrice, amount,
+      commission_pct: percentage, commission,
+      customer_name: customerName, customer_phone: customerPhone,
+      status: 'pending', notes: notes || null,
+      submitted_by: 'agent', submitted_at: new Date().toISOString(),
+    };
+    await db.insert('sales', saleRecord);
+    await db.logAudit('sale', saleId, 'submitted_by_agent', agentData.agent_code, null, { amount, commission });
+    await createNotification(null, 'New sale submitted', `${agentData.full_name} submitted sale ${saleId} for ${fmtMoney(amount)}`, 'sale', 'admin.html');
+    await logReferralEvent(agentData.agent_code, 'sale_submitted', { sale_id: saleId });
+
+    closeSubmitSale();
+    toast('✅ Sale ' + saleId + ' submitted');
+    await loadAgentData();
+    await recalcWallet(agentData.agent_code);
+    myWallet = await db.getOne('wallets', `agent_code=eq.${agentData.agent_code}`);
+    renderWallet();
+    renderLevel();
+    showAgentTab('sales', document.querySelector('.tab-btn'));
+  } catch(e) {
+    document.getElementById('submitSaleErrText').textContent = e.message;
+    document.getElementById('submitSaleError').style.display = 'flex';
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Submit Sale');
+  }
+}
+
+function renderSales() {
+  const el = document.getElementById('salesContent');
+  if (!agentSales.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><h3>No sales yet</h3><p>Submit your first sale to get started.</p></div>';
+    return;
+  }
+  const statusBadge = (s) => {
+    const map = { pending:'background:#fef9c3;color:#854d0e;', confirmed:'background:#f0fdf4;color:#15803d;', rejected:'background:#fef2f2;color:#b91c1c;', paid:'background:#eff6ff;color:#1e40af;' };
+    return `<span class="sale-status-badge" style="${map[s]||''}">${esc(s)}</span>`;
+  };
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr>
+      <th>Sale ID</th><th>Product</th><th class="hide-mobile">Qty</th>
+      <th>Amount</th><th>Comm.</th><th>Status</th><th class="hide-mobile">Date</th>
+    </tr></thead>
+    <tbody>${agentSales.map(s => `
+      <tr>
+        <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
+        <td><strong style="font-size:13px;">${esc(s.product || '—')}</strong>${s.customer_name ? `<div style="font-size:11px;color:var(--muted);">${esc(s.customer_name)}</div>` : ''}</td>
+        <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
+        <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
+        <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}<div style="font-size:10px;color:var(--muted);font-weight:600;">${s.commission_pct || '—'}%</div></td>
+        <td>${statusBadge(s.status)}</td>
+        <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)}</td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function renderCommHistory() {
+  const el = document.getElementById('commHistory');
+  if (!agentSales.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px 0;"><div class="empty-icon">💰</div><h3>No sales yet</h3></div>';
+    return;
+  }
+  el.innerHTML = agentSales.map(s => {
+    const confirmed = s.status === 'confirmed' || s.status === 'paid';
+    const pending   = s.status === 'pending';
+    const rejected  = s.status === 'rejected';
+    const badgeStyle = confirmed ? 'background:#f0fdf4;color:#15803d;'
+                     : pending ? 'background:#fef9c3;color:#854d0e;'
+                     : rejected ? 'background:#fef2f2;color:#b91c1c;'
+                     : 'background:var(--light);color:var(--muted);';
+    const prefix = confirmed ? '+' : pending ? '~' : rejected ? '×' : '';
+    const commColor = rejected ? 'var(--red)' : confirmed ? '#16a34a' : 'var(--yellow)';
+    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border);">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">💰</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:14px;word-break:break-word;">${esc(s.product || 'Sale')}</div>
+        <div style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)} · ${fmtMoney(s.amount)}${s.commission_pct ? ' · ' + s.commission_pct + '%' : ''}</div>
+      </div>
+      <span class="sale-status-badge" style="${badgeStyle}">${esc(s.status)}</span>
+      <div style="font-weight:800;color:${commColor};font-size:15px;flex-shrink:0;">${prefix}${fmtMoney(s.commission)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPerformance() {
+  const el = document.getElementById('performanceContent');
+  const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = agentSales.filter(s => s.status === 'pending');
+  const rejected  = agentSales.filter(s => s.status === 'rejected');
+  const totalRevenue = agentSales.reduce((t,s) => t + (s.amount||0), 0);
+  const totalComm    = confirmed.reduce((t,s) => t + (s.commission||0), 0);
+  const conversion   = agentSales.length ? Math.round((confirmed.length / agentSales.length) * 100) : 0;
+  const linkClicks = myReferral.filter(e => e.event_type === 'link_copied' || e.event_type === 'whatsapp_share').length;
+  const loginCount = myReferral.filter(e => e.event_type === 'login').length;
+  const lastSale = agentSales[0]?.created_at;
+
+  el.innerHTML = `
+    <div class="perf-card">
+      <h3 style="font-size:1rem;margin-bottom:16px;">Performance Overview</h3>
+      <div class="perf-grid">
+        <div class="perf-cell"><div class="perf-val" style="color:var(--orange);">${agentSales.length}</div><div class="perf-lbl">Total Sales</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:#16a34a;">${confirmed.length}</div><div class="perf-lbl">Confirmed</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:var(--yellow);">${pending.length}</div><div class="perf-lbl">Pending</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:var(--red);">${rejected.length}</div><div class="perf-lbl">Rejected</div></div>
+        <div class="perf-cell"><div class="perf-val">${fmtMoney(totalRevenue)}</div><div class="perf-lbl">Revenue</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:#16a34a;">${fmtMoney(totalComm)}</div><div class="perf-lbl">Commission</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:var(--orange);">${conversion}%</div><div class="perf-lbl">Conversion</div></div>
+        <div class="perf-cell"><div class="perf-val">${loginCount}</div><div class="perf-lbl">Logins</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:#7c3aed;">${linkClicks}</div><div class="perf-lbl">Ref Shares</div></div>
+      </div>
+    </div>
+    <div class="perf-card">
+      <h3 style="font-size:1rem;margin-bottom:16px;">Referral Analytics</h3>
+      <div class="perf-grid">
+        <div class="perf-cell"><div class="perf-val">${myReferral.filter(e => e.event_type === 'link_copied').length}</div><div class="perf-lbl">Link Copies</div></div>
+        <div class="perf-cell"><div class="perf-val">${myReferral.filter(e => e.event_type === 'whatsapp_share').length}</div><div class="perf-lbl">WA Shares</div></div>
+        <div class="perf-cell"><div class="perf-val">${myReferral.filter(e => e.event_type === 'sale_submitted').length}</div><div class="perf-lbl">Sales Tracked</div></div>
+      </div>
+      ${lastSale ? `<div style="font-size:12px;color:var(--muted);margin-top:14px;text-align:center;">Last sale: ${fmtDate(lastSale)}</div>` : ''}
+    </div>
+  `;
+}
+
+async function loadMarketing() {
+  try {
+    allMaterials = await db.getAll('marketing_materials', { filter: 'active=eq.true', order: 'sort_order.asc' });
+    renderMarketing();
+  } catch(e) { toast('⚠️  ' + e.message); }
+}
+
+function filterMarketing(cat, btn) {
+  marketingFilter = cat;
+  document.querySelectorAll('[data-mc]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMarketing();
+}
+
+const CAT_LABELS = {
+  caption: { label: 'Caption', cls: 'tag-caption', icon: 'fa-comment' },
+  script:  { label: 'Script',  cls: 'tag-script',  icon: 'fa-scroll' },
+  faq:     { label: 'FAQ',     cls: 'tag-faq',     icon: 'fa-circle-question' },
+  brand:   { label: 'Brand',   cls: 'tag-brand',   icon: 'fa-palette' },
+  poster:  { label: 'Poster',  cls: 'tag-poster',  icon: 'fa-image' },
+  video:   { label: 'Video',   cls: 'tag-video',   icon: 'fa-play' },
+};
+
+function renderMarketing() {
+  const el = document.getElementById('marketingContent');
+  const list = marketingFilter === 'all' ? allMaterials : allMaterials.filter(m => m.category === marketingFilter);
+  if (!list.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">📭</div><h3>Nothing here</h3><p>Check back soon.</p></div>';
+    return;
+  }
+  el.innerHTML = `<div class="content-grid">${list.map(m => {
+    const meta = CAT_LABELS[m.category] || { label: m.category, cls: 'tag-caption', icon: 'fa-file' };
+    const contentBlock = m.content ? `<div class="mk-content">${esc(m.content)}</div>` : '';
+    const mediaBlock = m.file_url
+      ? (m.category === 'video' ? `<video style="width:100%;border-radius:var(--r);margin-bottom:12px;max-height:200px;" controls src="${esc(m.file_url)}"></video>`
+        : `<img style="width:100%;border-radius:var(--r);margin-bottom:12px;max-height:200px;object-fit:cover;" src="${esc(m.file_url)}" onerror="this.style.display='none'">`)
+      : '';
+    return `
+      <div class="mk-card">
+        <span class="mk-card-tag ${meta.cls}"><i class="fas ${meta.icon}"></i> ${meta.label}</span>
+        <div class="mk-title">${esc(m.title)}</div>
+        ${mediaBlock}
+        ${contentBlock}
+        <div class="mk-actions">
+          ${m.content ? `<button class="btn btn-primary btn-sm" onclick="copyMaterial('${esc(m.id)}')"><i class="fas fa-copy"></i> Copy</button>` : ''}
+          ${m.content ? `<button class="btn btn-green btn-sm" onclick="shareWhatsApp('${esc(m.id)}')"><i class="fab fa-whatsapp"></i> Share</button>` : ''}
+          ${m.file_url && m.category !== 'video' ? `<a href="${esc(m.file_url)}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Open</a>` : ''}
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function copyMaterial(id) {
+  const m = allMaterials.find(x => x.id === id);
+  if (!m || !m.content) return;
+  copyToClipboard(m.content);
+  toast('✅ Copied');
+  logReferralEvent(agentData.agent_code, 'material_copied', { material_id: m.material_id });
+}
+function shareWhatsApp(id) {
+  const m = allMaterials.find(x => x.id === id);
+  if (!m || !m.content) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(m.content), '_blank');
+  logReferralEvent(agentData.agent_code, 'material_shared', { material_id: m.material_id });
+}
+
+async function loadTraining() {
+  try {
+    allModules = await db.getAll('training_modules', { filter: 'active=eq.true', order: 'module_number.asc' });
+    const progress = await db.getAll('training_progress', { filter: `agent_code=eq.${agentData.agent_code}&completed=eq.true` });
+    completedModuleIds = new Set(progress.map(p => p.module_id));
+    renderTraining();
+  } catch(e) { toast('⚠️  ' + e.message); }
+}
+
+function renderTraining() {
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+
+  const progEl = document.getElementById('trProgress');
+  progEl.innerHTML = `
+    <div class="tr-progress-info">
+      <div class="tr-progress-label">Your Progress</div>
+      <div class="tr-progress-val">${completed} / ${total}</div>
+      <div class="tr-progress-sub">modules completed</div>
+      <div class="tr-progress-bar"><div class="tr-progress-fill" style="width:${pct}%;"></div></div>
+    </div>
+    ${completed === total && total > 0
+      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;"><i class="fas fa-award"></i> Certificate Unlocked</div>`
+      : `<div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);flex-shrink:0;">${pct}%</div>`}
+  `;
+
+  const listEl = document.getElementById('trList');
+  if (!allModules.length) {
+    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No modules yet</h3></div>';
+    return;
+  }
+  listEl.innerHTML = allModules.map(m => {
+    const done = completedModuleIds.has(m.id);
+    return `<div class="tr-module ${done ? 'done' : ''}" onclick="openModule('${esc(m.id)}')">
+      <div class="tr-num">${done ? '<i class="fas fa-check"></i>' : m.module_number}</div>
+      <div class="tr-body">
+        <div class="tr-title">${esc(m.title)}</div>
+        <div class="tr-desc">${esc(m.description || '')}</div>
+      </div>
+      <div class="tr-status ${done ? 'done' : 'todo'}">${done ? '✓ Done' : 'Start'}</div>
+    </div>`;
+  }).join('');
+}
+
+function openModule(id) {
+  const m = allModules.find(x => x.id === id);
+  if (!m) return;
+  currentModule = m;
+  document.getElementById('modTitle').textContent = `Module ${m.module_number}: ${m.title}`;
+  document.getElementById('modContent').textContent = m.content || 'No content yet.';
+  const videoEl = document.getElementById('modVideo');
+  videoEl.innerHTML = m.video_url ? `<video style="width:100%;border-radius:var(--r);margin-bottom:18px;" controls src="${esc(m.video_url)}"></video>` : '';
+  const done = completedModuleIds.has(m.id);
+  const btn = document.getElementById('markDoneBtn');
+  if (done) { btn.innerHTML = '<i class="fas fa-check"></i> Already Completed'; btn.disabled = true; btn.classList.add('loading'); }
+  else { btn.innerHTML = '<i class="fas fa-circle-check"></i> Mark as Complete'; btn.disabled = false; btn.classList.remove('loading'); }
+  document.getElementById('moduleModal').classList.add('open');
+}
+function closeModule() { document.getElementById('moduleModal').classList.remove('open'); currentModule = null; }
+
+async function markModuleDone() {
+  if (!currentModule) return;
+  const btn = document.getElementById('markDoneBtn');
+  setLoading(btn, true, 'Saving…');
+  try {
+    const existing = await db.getOne('training_progress', `agent_code=eq.${agentData.agent_code}&module_id=eq.${currentModule.id}`);
+    if (existing) {
+      await db.update('training_progress', `id=eq.${existing.id}`, { completed: true, completed_at: new Date().toISOString() });
+    } else {
+      await db.insert('training_progress', { agent_code: agentData.agent_code, module_id: currentModule.id, completed: true, completed_at: new Date().toISOString() });
+    }
+    completedModuleIds.add(currentModule.id);
+    await db.logAudit('training', currentModule.id, 'completed', agentData.agent_code);
+    if (completedModuleIds.size === allModules.length) {
+      await createNotification(agentData.agent_code, '🎓 Certificate Unlocked', 'You completed all training modules. Download your Certificate of Achievement from the Documents tab.', 'success');
+    }
+    toast('✅ Complete');
+    closeModule();
+    renderTraining();
+    renderDocuments();
+  } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark as Complete'); }
+}
+
+function renderTierRates() {
+  const el = document.getElementById('tierRatesList');
+  if (!COMMISSION_TIERS.length) { el.innerHTML = '<div style="opacity:.5;">Loading…</div>'; return; }
+  el.innerHTML = COMMISSION_TIERS.sort((a,b) => Number(a.min_amount) - Number(b.min_amount)).map(t => {
+    const range = t.max_amount === null || t.max_amount === undefined ? `ZMW ${t.min_amount}+` : `ZMW ${t.min_amount} – ${t.max_amount}`;
+    return `<div class="tier-row-display"><span style="color:rgba(255,255,255,.7);">${range}</span><strong style="color:var(--green);">${t.percentage}%</strong></div>`;
+  }).join('');
+
+  const exampleEl = document.getElementById('tierExample');
+  exampleEl.innerHTML = [50, 300, 750, 2000, 10000].map(amt => {
+    const { percentage, commission } = calcCommissionFromAmount(amt);
+    return `<div style="display:flex;justify-content:space-between;padding:4px 0;">
+      <span style="color:var(--muted);">Sale of ${fmtMoney(amt)}</span>
+      <span><strong>${fmtMoney(commission)}</strong> <span style="color:var(--muted);font-size:12px;">(${percentage}%)</span></span>
+    </div>`;
+  }).join('');
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('agentLeaderboard');
+  const medals = ['🥇','🥈','🥉'];
+  const byAgent = {};
+  allSales.filter(s => s.status === 'confirmed' || s.status === 'paid').forEach(s => {
+    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales:0, revenue:0 };
+    byAgent[s.agent_code].sales++;
+    byAgent[s.agent_code].revenue += (s.amount||0);
+  });
+  const ranked = Object.entries(byAgent).map(([code, d]) => ({ code, ...d })).sort((a,b) => b.revenue - a.revenue);
+  if (!ranked.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">🏆</div><h3>No sales yet</h3></div>';
+    return;
+  }
+  el.innerHTML = ranked.map((r, i) => {
+    const isMe = r.code === agentData.agent_code;
+    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);${isMe?'background:linear-gradient(90deg,#fff8f4,white);':''}">
+      <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;flex-shrink:0;color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
+      <div style="flex:1;min-width:0;font-weight:${isMe?800:600};font-size:14px;word-break:break-word;">${isMe ? '⭐ You' : esc(r.code)}</div>
+      <div style="font-size:13px;color:var(--muted);margin-right:12px;flex-shrink:0;">${r.sales} sale${r.sales!==1?'s':''}</div>
+      <div style="font-weight:800;color:var(--orange);flex-shrink:0;">${fmtMoney(r.revenue)}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleNotifications(e) {
+  e.stopPropagation();
+  document.getElementById('notifDropdown').classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('notifDropdown');
+  if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+
+function renderNotifications() {
+  const el = document.getElementById('notifList');
+  const unread = myNotifs.filter(n => !n.read).length;
+  const badge = document.getElementById('notifBadge');
+  if (unread) { badge.textContent = unread; badge.style.display = 'flex'; }
+  else badge.style.display = 'none';
+  if (!myNotifs.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">No notifications.</div>';
+    return;
+  }
+  el.innerHTML = myNotifs.map(n => `
+    <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}')">
+      <div class="notif-title">${esc(n.title)}</div>
+      <div class="notif-msg">${esc(n.message)}</div>
+      <div class="notif-time">${fmtDateTime(n.created_at)}</div>
+    </div>`).join('');
+}
+
+async function markNotifRead(id) {
+  try { await db.update('notifications', `id=eq.${id}`, { read: true }); await loadNotifications(); } catch(e) {}
+}
+async function markAllRead(e) {
+  e.stopPropagation();
+  try {
+    for (const n of myNotifs.filter(x => !x.read)) await db.update('notifications', `id=eq.${n.id}`, { read: true });
+    await loadNotifications();
+    toast('✅ All read');
+  } catch(e) {}
+}
+
+function downloadMyStatementPdf() {
+  if (!agentSales.length) { toast('⚠️  No sales'); return; }
+  const sales = agentSales.map(s => ({
+    sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name,
+    amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status,
+  }));
+  makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: 'All time', sales });
+  toast('📄 Downloading…');
+}
+
+function openStatement() {
+  const grid = document.getElementById('monthGrid');
+  const now = new Date();
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ year: d.getFullYear(), month: d.getMonth(), short: d.toLocaleDateString('en-ZM', { month: 'short' }) });
+  }
+  grid.innerHTML = months.map(m => `
+    <button class="month-btn" data-year="${m.year}" data-month="${m.month}" onclick="selectMonth(this, ${m.year}, ${m.month})">
+      <div class="mb-name">${m.short}</div>
+      <div class="mb-year">${m.year}</div>
+    </button>`).join('');
+  const currentBtn = grid.querySelector(`[data-year="${months[0].year}"][data-month="${months[0].month}"]`);
+  if (currentBtn) selectMonth(currentBtn, months[0].year, months[0].month);
+  document.getElementById('statementModal').classList.add('open');
+}
+
+function selectMonth(btn, year, month) {
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sales = agentSales.filter(s => {
+    const d = new Date(s.created_at);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+  const confirmed = sales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = sales.filter(s => s.status === 'pending');
+  const totalAmount = sales.reduce((t, s) => t + (s.amount || 0), 0);
+  const totalCommConfirmed = confirmed.reduce((t, s) => t + (s.commission || 0), 0);
+  const totalCommPending   = pending.reduce((t, s) => t + (s.commission || 0), 0);
+  selectedMonth = { year, month, label: new Date(year, month).toLocaleDateString('en-ZM', { month: 'long', year: 'numeric' }), sales };
+
+  const preview = document.getElementById('stmtPreview');
+  if (!sales.length) {
+    preview.innerHTML = '<div class="stmt-preview" style="text-align:center;padding:32px 20px;"><div style="font-size:2.5rem;margin-bottom:8px;">📭</div><div style="font-size:14px;color:var(--muted);">No sales.</div></div>';
+    document.getElementById('downloadStmtBtn').disabled = true;
+    return;
+  }
+  preview.innerHTML = `
+    <div class="stmt-preview">
+      <div class="stmt-preview-title">${selectedMonth.label} Summary</div>
+      <div class="stmt-grid">
+        <div class="stmt-cell"><div class="stmt-cell-val">${sales.length}</div><div class="stmt-cell-lbl">Sales</div></div>
+        <div class="stmt-cell"><div class="stmt-cell-val" style="color:var(--orange);">${fmtMoney(totalAmount)}</div><div class="stmt-cell-lbl">Revenue</div></div>
+        <div class="stmt-cell"><div class="stmt-cell-val" style="color:#16a34a;">${fmtMoney(totalCommConfirmed)}</div><div class="stmt-cell-lbl">Commission</div></div>
+        <div class="stmt-cell"><div class="stmt-cell-val" style="color:var(--yellow);">${fmtMoney(totalCommPending)}</div><div class="stmt-cell-lbl">Pending</div></div>
+        <div class="stmt-cell"><div class="stmt-cell-val">${confirmed.length}</div><div class="stmt-cell-lbl">Confirmed</div></div>
+        <div class="stmt-cell"><div class="stmt-cell-val">${pending.length}</div><div class="stmt-cell-lbl">Awaiting</div></div>
+      </div>
+    </div>`;
+  document.getElementById('downloadStmtBtn').disabled = false;
+}
+function closeStatement() { document.getElementById('statementModal').classList.remove('open'); selectedMonth = null; }
+
+function downloadMonthlyStatement() {
+  if (!selectedMonth || !selectedMonth.sales.length) return;
+  const sales = selectedMonth.sales.map(s => ({
+    sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name,
+    amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status,
+  }));
+  makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: selectedMonth.label, sales });
+  toast('📄 Downloading…');
+}
+
+function showAgentTab(name, btn) {
+  document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
+  const pane = document.getElementById('agent-tab-' + name);
+  if (pane) pane.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'documents') renderDocuments();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const code = agentCode();
+  if (code) {
+    const agent = await db.getOne('agents', `agent_code=eq.${code}&active=eq.true`).catch(() => null);
+    if (agent) {
+      agentData = agent;
+      bootDashboard();
+    }
+  }
+});
+</script>
+</body>
+</html>
