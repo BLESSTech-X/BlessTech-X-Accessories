@@ -11,7 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 #loginScreen { position:fixed; inset:0; background:var(--navy); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
-.login-card  { background:white; border-radius:20px; padding:36px 32px; max-width:380px; width:100%; text-align:center; }
+.login-card  { background:white; border-radius:20px; padding:36px 32px; max-width:400px; width:100%; text-align:center; }
 .login-card .login-icon { font-size:2.5rem; margin-bottom:12px; }
 .login-card h2 { margin-bottom:6px; }
 .login-card p  { color:var(--muted); font-size:14px; margin-bottom:24px; }
@@ -19,26 +19,10 @@
 .dash-wrap { max-width:900px; margin:0 auto; padding:28px 20px 80px; }
 .dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
 .dash-avatar-wrap { position:relative; flex-shrink:0; }
-.dash-avatar {
-  width:64px; height:64px; border-radius:50%;
-  background:var(--grad-o);
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:white;
-  overflow:hidden;
-  border:2px solid rgba(255,255,255,.2);
-}
+.dash-avatar { width:64px; height:64px; border-radius:50%; background:var(--grad-o); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:white; overflow:hidden; border:2px solid rgba(255,255,255,.2); }
 .dash-avatar img { width:100%; height:100%; object-fit:cover; }
-.dash-avatar-edit {
-  position:absolute; bottom:-2px; right:-2px;
-  width:24px; height:24px; border-radius:50%;
-  background:var(--orange); color:white;
-  border:2px solid var(--navy);
-  display:flex; align-items:center; justify-content:center;
-  font-size:10px; cursor:pointer;
-  transition:transform .2s;
-}
+.dash-avatar-edit { position:absolute; bottom:-2px; right:-2px; width:24px; height:24px; border-radius:50%; background:var(--orange); color:white; border:2px solid var(--navy); display:flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer; transition:transform .2s; }
 .dash-avatar-edit:hover { transform:scale(1.15); }
-
 .dash-name   { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; }
 .dash-code   { font-size:13px; color:rgba(255,255,255,.5); margin-top:2px; }
 .dash-spacer { flex:1; min-width:8px; }
@@ -58,6 +42,25 @@
 .notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
 .notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
 
+/* TODAY COMMAND CENTRE */
+.today-card {
+  background: linear-gradient(135deg,#1a0840,#2d1a5e);
+  border-radius: var(--r2);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(124,58,237,.3);
+  color: white;
+}
+.today-hello { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+.today-sub { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 16px; }
+.today-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+.today-stat { background: rgba(255,255,255,.07); border-radius: 12px; padding: 14px 12px; text-align: center; border: 1px solid rgba(255,255,255,.1); }
+.today-stat-val { font-family: 'Syne',sans-serif; font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.today-stat-lbl { font-size: 10px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+.today-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.today-actions .btn { flex: 1; min-width: 120px; justify-content: center; }
+
+/* WALLET */
 .wallet-card { background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(37,211,102,.25); }
 .wallet-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -87,6 +90,7 @@
 .tab-btn i { font-size: 12px; flex-shrink: 0; line-height: 1; }
 .tab-btn:hover { color: var(--text); background: rgba(0,0,0,.02); }
 .tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); background: rgba(255,96,0,.04); }
+.tab-btn .badge-mini { background: var(--orange); color: white; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 100px; margin-left: 2px; }
 @media(max-width:600px) { .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; } .tab-btn i { font-size: 11px; } }
 @media(max-width:400px) { .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; } .tab-btn i { font-size: 10px; } }
 .tab-pane  { display:none; }
@@ -96,12 +100,154 @@
 .tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
 .tier-row-display:last-child { border-bottom:none; }
 
-.perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
-.perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
-.perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
-.perf-val { font-family:'DM Sans',sans-serif; font-size:1.4rem; font-weight:800; line-height:1.1; margin-bottom:6px; word-break: break-word; }
-.perf-lbl { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+/* LEADS */
+.lead-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  transition: all .2s;
+}
+.lead-card:hover { border-color: var(--orange); }
+.lead-info { flex: 1; min-width: 200px; }
+.lead-name { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+.lead-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.lead-meta i { width: 14px; color: var(--muted); }
+.lead-status-select {
+  font-size: 12px; padding: 6px 10px; border-radius: 8px;
+  border: 1.5px solid var(--border); background: white; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; min-width: 120px;
+}
+.lead-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
+/* MESSAGES */
+.chat-container {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  min-height: 500px;
+}
+.chat-hdr {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fafafa;
+}
+.chat-hdr-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--grad-o); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.chat-hdr-info { flex: 1; min-width: 0; }
+.chat-hdr-name { font-weight: 800; font-size: 14px; }
+.chat-hdr-sub { font-size: 12px; color: var(--muted); }
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  background: #f8f9fb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.chat-msg {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  position: relative;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+.chat-msg.mine {
+  align-self: flex-end;
+  background: linear-gradient(135deg,#ff6000,#ff9f43);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.chat-msg.theirs {
+  align-self: flex-start;
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+.chat-msg-sender { font-size: 11px; font-weight: 700; margin-bottom: 4px; opacity: .8; }
+.chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; }
+.chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
+.chat-msg-actions button { background: none; border: none; color: inherit; font-size: 11px; cursor: pointer; opacity: .75; padding: 2px 4px; }
+.chat-msg-actions button:hover { opacity: 1; text-decoration: underline; }
+.chat-msg-media { max-width: 100%; border-radius: 10px; margin-top: 6px; display: block; }
+.chat-msg-expires { font-size: 10px; margin-top: 4px; opacity: .7; }
+.chat-input-row {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: white;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.chat-input-row textarea {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  resize: none;
+  max-height: 120px;
+  min-height: 40px;
+  outline: none;
+}
+.chat-input-row textarea:focus { border-color: var(--orange); }
+.chat-send-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--grad-o);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+  transition: opacity .2s;
+}
+.chat-send-btn:hover { opacity: .9; }
+
+/* DOCS */
+.doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.doc-card { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; min-width: 0; }
+.doc-card:hover { border-color: var(--orange); box-shadow: var(--shadow); }
+.doc-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+.doc-icon.orange { background: linear-gradient(135deg,#fff8f4,#ffe0cc); color: var(--orange); }
+.doc-icon.green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #16a34a; }
+.doc-icon.purple { background: linear-gradient(135deg,#f3e8ff,#e9d5ff); color: #7c3aed; }
+.doc-icon.blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #2563eb; }
+.doc-icon.yellow { background: linear-gradient(135deg,#fffbeb,#fef3c7); color: #d97706; }
+.doc-body { flex: 1; min-width: 0; }
+.doc-title { font-weight: 800; font-size: 14px; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+.doc-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+.doc-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 10px; }
+.doc-badge.ready     { background: rgba(37,211,102,.12); color: #16a34a; }
+.doc-badge.locked    { background: rgba(107,114,128,.12); color: var(--muted); }
+.doc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: none; background: var(--grad-o); color: white; cursor: pointer; transition: all .2s; text-decoration: none; width: 100%; }
+.doc-btn:hover { opacity: .9; text-decoration: none; }
+.doc-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* MARKETING */
 .content-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
 .mk-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:18px 20px; display:flex; flex-direction:column; min-width: 0; }
 .mk-card-tag { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; align-self:flex-start; white-space: nowrap; }
@@ -116,11 +262,11 @@
 .mk-actions { display:flex; gap:8px; flex-wrap:wrap; }
 .mk-actions .btn { flex:1; min-width:100px; justify-content:center; }
 
+/* TRAINING */
 .tr-progress-wrap { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; min-width: 0; width: 100%; }
-.tr-progress-wrap > * { min-width: 0; }
 .tr-progress-info { flex: 1; min-width: 200px; }
 .tr-progress-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.tr-progress-val { font-family: 'DM Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.tr-progress-val { font-family: 'DM Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
 .tr-progress-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
 .tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; width: 100%; }
 .tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
@@ -137,110 +283,25 @@
 .tr-status.done { background: #f0fdf4; color: #15803d; }
 .tr-status.todo { background: #fff7ed; color: #c2410c; }
 
+/* PERF */
+.perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
+.perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
+.perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
+.perf-val { font-family:'DM Sans',sans-serif; font-size:1.4rem; font-weight:800; line-height:1.1; margin-bottom:6px; word-break: break-word; }
+.perf-lbl { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+
 .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .month-btn { padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border); background: white; cursor: pointer; transition: all .2s; text-align: center; font-family: 'DM Sans',sans-serif; }
 .month-btn:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
 .month-btn.active { background: var(--orange); border-color: var(--orange); color: white; }
 .month-btn .mb-name { font-size: 13px; font-weight: 700; }
 .month-btn .mb-year { font-size: 11px; opacity: .6; margin-top: 2px; }
-
 .stmt-preview { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 16px; }
 .stmt-preview-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
 .stmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .stmt-cell { text-align: center; padding: 10px 6px; }
 .stmt-cell-val { font-family: 'DM Sans',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
 .stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
-
-.photo-preview-wrap { width: 140px; height: 140px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: var(--light); display: flex; align-items: center; justify-content: center; border: 3px solid var(--border); position: relative; }
-.photo-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-preview-placeholder { color: var(--muted); font-size: 3rem; }
-.photo-upload-area { border: 2px dashed var(--border); border-radius: var(--r); padding: 24px 20px; text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 16px; }
-.photo-upload-area:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
-.photo-upload-area i { font-size: 2rem; color: var(--orange); margin-bottom: 8px; display: block; }
-.photo-upload-area .pua-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-.photo-upload-area .pua-sub { font-size: 12px; color: var(--muted); }
-
-/* ── DOCUMENTS TAB ──────────────────────────────────────────────────────── */
-.doc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
-}
-.doc-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 20px 22px;
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  transition: all .2s;
-  min-width: 0;
-}
-.doc-card:hover {
-  border-color: var(--orange);
-  box-shadow: var(--shadow);
-}
-.doc-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-}
-.doc-icon.orange { background: linear-gradient(135deg,#fff8f4,#ffe0cc); color: var(--orange); }
-.doc-icon.green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #16a34a; }
-.doc-icon.purple { background: linear-gradient(135deg,#f3e8ff,#e9d5ff); color: #7c3aed; }
-.doc-icon.blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #2563eb; }
-.doc-icon.yellow { background: linear-gradient(135deg,#fffbeb,#fef3c7); color: #d97706; }
-.doc-body { flex: 1; min-width: 0; }
-.doc-title {
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--text);
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
-.doc-desc {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-.doc-badge {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 100px;
-  text-transform: uppercase;
-  letter-spacing: .3px;
-  margin-bottom: 10px;
-}
-.doc-badge.ready     { background: rgba(37,211,102,.12); color: #16a34a; }
-.doc-badge.locked    { background: rgba(107,114,128,.12); color: var(--muted); }
-.doc-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-  background: var(--grad-o);
-  color: white;
-  cursor: pointer;
-  transition: all .2s;
-  text-decoration: none;
-  width: 100%;
-}
-.doc-btn:hover { opacity: .9; text-decoration: none; }
-.doc-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
@@ -256,11 +317,11 @@ html, body { overflow-x: hidden; }
   .wallet-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
   .content-grid { grid-template-columns: 1fr; }
   .doc-grid { grid-template-columns: 1fr; }
+  .today-stats { grid-template-columns: 1fr 1fr; }
 }
 @media(max-width:600px) {
   .dash-hdr { flex-direction: column; align-items: flex-start; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
-  #submitSaleModal .sale-grid { grid-template-columns: 1fr !important; }
   .stmt-grid { grid-template-columns: 1fr 1fr; }
   .tr-progress-wrap { padding: 16px; gap: 12px; }
 }
@@ -268,32 +329,42 @@ html, body { overflow-x: hidden; }
   .dash-name { font-size: 1rem; }
   .month-grid { grid-template-columns: repeat(2, 1fr); }
   .wallet-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .today-stats { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ═══════════════════════════════════════════════════════════════════════ -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-icon">🔑</div>
     <h2>Agent Login</h2>
-    <p>Enter your Agent Code to access your dashboard. You received this when your application was approved.</p>
+    <p>Sign in with the email and password you received when your application was approved.</p>
     <div class="field">
-      <label class="label">Agent Code</label>
-      <input type="text" class="input" id="codeInput" placeholder="e.g. PY001"
-             oninput="this.value=this.value.toUpperCase()"
+      <label class="label">Email</label>
+      <input type="email" class="input" id="emailInput" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label class="label">Password</label>
+      <input type="password" class="input" id="passwordInput" placeholder="Your password" autocomplete="current-password"
              onkeydown="if(event.key==='Enter') doAgentLogin()">
-      <div class="err-msg" id="loginErr">Agent code not found. Check your WhatsApp message from PhoneYa2.</div>
+      <div class="err-msg" id="loginErr">Incorrect email or password.</div>
     </div>
     <button class="btn btn-primary btn-full" id="loginBtn" onclick="doAgentLogin()">
-      <i class="fas fa-right-to-bracket"></i> Access Dashboard
+      <i class="fas fa-right-to-bracket"></i> Sign In
     </button>
     <div class="divider" style="margin:20px 0;"></div>
-    <p style="font-size:13px;color:var(--muted);">Don't have a code yet?</p>
+    <p style="font-size:13px;color:var(--muted);">Don't have a login yet?</p>
     <a href="apply.html" class="btn btn-outline btn-full btn-sm" style="margin-top:8px;">Apply to become an agent</a>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     DASHBOARD
+     ═══════════════════════════════════════════════════════════════════════ -->
 <div id="dashApp" style="display:none;">
 <nav class="navbar">
   <div class="navbar-inner">
@@ -334,11 +405,14 @@ html, body { overflow-x: hidden; }
     </div>
     <div class="dash-spacer"></div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <a href="profile.html?id=" id="profileLink" class="btn btn-outline btn-sm" target="_blank" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);"><i class="fas fa-id-card"></i> Profile</a>
+      <a href="#" id="profileLink" class="btn btn-outline btn-sm" target="_blank" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);"><i class="fas fa-id-card"></i> Profile</a>
       <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
       <button class="dash-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
     </div>
   </div>
+
+  <!-- TODAY COMMAND CENTRE -->
+  <div class="today-card" id="todayCard"></div>
 
   <div id="campaignBanner"></div>
   <div class="level-card" id="levelCard"></div>
@@ -359,14 +433,15 @@ html, body { overflow-x: hidden; }
     </div>
     <div class="ref-btns">
       <button class="btn btn-green btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy Link</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefNative()"><i class="fas fa-share-nodes"></i> Share</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share</button>
       <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="openQrModal()"><i class="fas fa-qrcode"></i> My QR</button>
     </div>
   </div>
 
   <div class="tab-bar">
     <button class="tab-btn active" onclick="showAgentTab('sales',this)"><i class="fas fa-chart-line"></i> Sales</button>
+    <button class="tab-btn" onclick="showAgentTab('leads',this)"><i class="fas fa-bullseye"></i> Leads <span class="badge-mini" id="leadsBadge" style="display:none;">0</span></button>
+    <button class="tab-btn" onclick="showAgentTab('messages',this)"><i class="fas fa-comments"></i> Chat <span class="badge-mini" id="chatBadge" style="display:none;">0</span></button>
     <button class="tab-btn" onclick="showAgentTab('commission',this)"><i class="fas fa-coins"></i> Commission</button>
     <button class="tab-btn" onclick="showAgentTab('performance',this)"><i class="fas fa-chart-bar"></i> Stats</button>
     <button class="tab-btn" onclick="showAgentTab('marketing',this)"><i class="fas fa-bullhorn"></i> Promo</button>
@@ -376,18 +451,62 @@ html, body { overflow-x: hidden; }
     <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
   </div>
 
+  <!-- SALES TAB -->
   <div class="tab-pane active" id="agent-tab-sales">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Submitted Sales</h3>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-outline btn-sm" onclick="openStatement()"><i class="fas fa-file-pdf"></i> Monthly Statement</button>
-        <button class="btn btn-outline btn-sm" onclick="downloadMyStatementPdf()"><i class="fas fa-download"></i> All Sales PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="openStatement()"><i class="fas fa-file-pdf"></i> Monthly</button>
+        <button class="btn btn-outline btn-sm" onclick="downloadMyStatementPdf()"><i class="fas fa-download"></i> All</button>
         <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
       </div>
     </div>
     <div id="salesContent"></div>
   </div>
 
+  <!-- LEADS TAB -->
+  <div class="tab-pane" id="agent-tab-leads">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">My Leads Pipeline</h3>
+      <button class="btn btn-primary btn-sm" onclick="openAddLead()"><i class="fas fa-plus"></i> Add Lead</button>
+    </div>
+    <div class="filter-pills-scroll" style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;">
+      <button class="filter-pill active" onclick="filterLeads('all', this)">All</button>
+      <button class="filter-pill" onclick="filterLeads('new', this)">New</button>
+      <button class="filter-pill" onclick="filterLeads('contacted', this)">Contacted</button>
+      <button class="filter-pill" onclick="filterLeads('interested', this)">Interested</button>
+      <button class="filter-pill" onclick="filterLeads('ordered', this)">Ordered</button>
+      <button class="filter-pill" onclick="filterLeads('delivered', this)">Delivered</button>
+      <button class="filter-pill" onclick="filterLeads('lost', this)">Lost</button>
+    </div>
+    <div id="leadsContent"></div>
+  </div>
+
+  <!-- MESSAGES TAB -->
+  <div class="tab-pane" id="agent-tab-messages">
+    <div class="filter-pills-scroll" style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 16px;scrollbar-width:none;">
+      <button class="filter-pill active" onclick="switchChat('team', this)">📡 Team Room</button>
+      <button class="filter-pill" onclick="switchChat('announcements', this)">📢 Announcements</button>
+    </div>
+    <div class="chat-container">
+      <div class="chat-hdr">
+        <div class="chat-hdr-icon" id="chatIcon">📡</div>
+        <div class="chat-hdr-info">
+          <div class="chat-hdr-name" id="chatName">Team Room</div>
+          <div class="chat-hdr-sub" id="chatSub">All agents + admins</div>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-input-row" id="chatInputRow">
+        <textarea id="chatInput" rows="1" placeholder="Type a message…"
+                  oninput="autoGrow(this)"
+                  onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChatMessage();}"></textarea>
+        <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMISSION TAB -->
   <div class="tab-pane" id="agent-tab-commission">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">Commission History</h3>
@@ -396,10 +515,12 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- PERFORMANCE TAB -->
   <div class="tab-pane" id="agent-tab-performance">
     <div id="performanceContent"></div>
   </div>
 
+  <!-- MARKETING TAB -->
   <div class="tab-pane" id="agent-tab-marketing">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">Marketing Library</h3>
@@ -416,6 +537,7 @@ html, body { overflow-x: hidden; }
     <div id="marketingContent"></div>
   </div>
 
+  <!-- TRAINING TAB -->
   <div class="tab-pane" id="agent-tab-training">
     <div class="tr-progress-wrap" id="trProgress"></div>
     <div class="tr-list" id="trList"></div>
@@ -425,11 +547,12 @@ html, body { overflow-x: hidden; }
   <div class="tab-pane" id="agent-tab-documents">
     <div style="margin-bottom:16px;">
       <h3 style="font-size:1rem;margin-bottom:4px;">My Documents</h3>
-      <p style="font-size:13px;color:var(--muted);">Download your official PhoneYa2-ZM documents. All PDFs are branded and ready to share.</p>
+      <p style="font-size:13px;color:var(--muted);">Download your official PhoneYa2-ZM documents.</p>
     </div>
     <div class="doc-grid" id="docGrid"></div>
   </div>
 
+  <!-- TIERS TAB -->
   <div class="tab-pane" id="agent-tab-tiers">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">How Your Commission is Calculated</h3>
@@ -438,13 +561,10 @@ html, body { overflow-x: hidden; }
         <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Commission Tiers</div>
         <div id="tierRatesList" style="color:white;"></div>
       </div>
-      <div style="margin-top:20px;background:var(--light);border-radius:var(--r);padding:16px 18px;">
-        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Examples</div>
-        <div id="tierExample" style="font-size:14px;color:var(--text);line-height:1.8;"></div>
-      </div>
     </div>
   </div>
 
+  <!-- LEADERBOARD TAB -->
   <div class="tab-pane" id="agent-tab-leaderboard">
     <div class="card" style="padding:0;overflow:hidden;">
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
@@ -458,6 +578,10 @@ html, body { overflow-x: hidden; }
 </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODALS
+     ═══════════════════════════════════════════════════════════════════════ -->
+
 <!-- SUBMIT SALE MODAL -->
 <div class="modal-overlay" id="submitSaleModal">
   <div class="modal-box">
@@ -466,8 +590,8 @@ html, body { overflow-x: hidden; }
       <button class="modal-close" onclick="closeSubmitSale()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Record a sale you made. PhoneYa2 will verify it.</p>
-      <div class="sale-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Record a sale you made.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div class="field" style="grid-column:1/-1;">
           <label class="label">Product Sold <span class="req">*</span></label>
           <input type="text" class="input" id="s-product" placeholder="e.g. TWS Earbuds">
@@ -481,11 +605,11 @@ html, body { overflow-x: hidden; }
           <input type="number" class="input" id="s-unit-price" placeholder="e.g. 150" min="1">
         </div>
         <div class="field">
-          <label class="label">Total Amount</label>
+          <label class="label">Total</label>
           <input type="text" class="input input-calc" id="s-amount-calc" readonly value="ZMW 0">
         </div>
         <div class="field">
-          <label class="label">Commission Rate</label>
+          <label class="label">Rate</label>
           <input type="text" class="input input-calc" id="s-comm-pct" readonly value="0%">
         </div>
         <div class="field">
@@ -494,28 +618,82 @@ html, body { overflow-x: hidden; }
         </div>
         <div class="field">
           <label class="label">Customer Name <span class="req">*</span></label>
-          <input type="text" class="input" id="s-cust-name" placeholder="Customer full name">
+          <input type="text" class="input" id="s-cust-name" placeholder="Full name">
         </div>
         <div class="field">
           <label class="label">Customer Phone <span class="req">*</span></label>
           <input type="tel" class="input" id="s-cust-phone" placeholder="+260...">
         </div>
         <div class="field" style="grid-column:1/-1;">
-          <label class="label">Notes (optional)</label>
+          <label class="label">Notes</label>
           <textarea class="textarea" id="s-notes" rows="2"></textarea>
         </div>
       </div>
       <div class="hint" id="s-tier-hint" style="text-align:center;margin-top:4px;">Enter unit price and quantity.</div>
-      <div class="alert alert-info" style="margin-top:12px;">
-        <i class="fas fa-info-circle"></i>
-        <span style="font-size:13px;">Your sale will be <strong>pending approval</strong>.</span>
-      </div>
       <div id="submitSaleError" class="alert alert-error" style="display:none;">
         <i class="fas fa-circle-exclamation"></i><span id="submitSaleErrText"></span>
       </div>
-      <div style="display:flex;gap:10px;margin-top:8px;">
+      <div style="display:flex;gap:10px;margin-top:12px;">
         <button class="btn btn-outline btn-full" onclick="closeSubmitSale()">Cancel</button>
-        <button class="btn btn-primary btn-full" id="submitSaleBtn" onclick="submitSale()"><i class="fas fa-paper-plane"></i> Submit Sale</button>
+        <button class="btn btn-primary btn-full" id="submitSaleBtn" onclick="submitSale()"><i class="fas fa-paper-plane"></i> Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD LEAD MODAL -->
+<div class="modal-overlay" id="leadModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3 id="leadModalTitle">Add New Lead</h3>
+      <button class="modal-close" onclick="closeLeadModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="l-id">
+      <div class="field">
+        <label class="label">Customer Name <span class="req">*</span></label>
+        <input type="text" class="input" id="l-name" placeholder="e.g. Mary Phiri">
+      </div>
+      <div class="field">
+        <label class="label">Customer Phone <span class="req">*</span></label>
+        <input type="tel" class="input" id="l-phone" placeholder="+260...">
+      </div>
+      <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="field">
+          <label class="label">Product Interested In</label>
+          <input type="text" class="input" id="l-product" placeholder="e.g. Smart Watch">
+        </div>
+        <div class="field">
+          <label class="label">Estimated Value (ZMW)</label>
+          <input type="number" class="input" id="l-value" placeholder="e.g. 400" min="0">
+        </div>
+      </div>
+      <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="field">
+          <label class="label">Follow-up Date</label>
+          <input type="date" class="input" id="l-followup">
+        </div>
+        <div class="field">
+          <label class="label">Source</label>
+          <select class="select" id="l-source">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="facebook">Facebook</option>
+            <option value="friend">Friend</option>
+            <option value="walkin">Walk-in</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Notes</label>
+        <textarea class="textarea" id="l-notes" rows="3" placeholder="Any notes about this lead…"></textarea>
+      </div>
+      <div id="leadError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="leadErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline btn-full" onclick="closeLeadModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="saveLeadBtn" onclick="saveLead()"><i class="fas fa-check"></i> Save Lead</button>
       </div>
     </div>
   </div>
@@ -529,16 +707,14 @@ html, body { overflow-x: hidden; }
       <button class="modal-close" onclick="closePhotoModal()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;text-align:center;">
-        Add a clear photo of your face. This will appear on your profile, ID card, and verification page.
-      </p>
-      <div class="photo-preview-wrap" id="photoPreviewWrap">
-        <div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;text-align:center;">Add a clear photo of your face.</p>
+      <div style="width:140px;height:140px;margin:0 auto 20px;border-radius:50%;overflow:hidden;background:var(--light);display:flex;align-items:center;justify-content:center;border:3px solid var(--border);" id="photoPreviewWrap">
+        <div style="color:var(--muted);font-size:3rem;"><i class="fas fa-user"></i></div>
       </div>
-      <div class="photo-upload-area" onclick="document.getElementById('photoFileInput').click()">
-        <i class="fas fa-cloud-upload-alt"></i>
-        <div class="pua-title">Tap to select a photo</div>
-        <div class="pua-sub">JPG, PNG or WebP · We'll compress it for you</div>
+      <div style="border:2px dashed var(--border);border-radius:var(--r);padding:24px 20px;text-align:center;cursor:pointer;margin-bottom:16px;" onclick="document.getElementById('photoFileInput').click()">
+        <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--orange);margin-bottom:8px;display:block;"></i>
+        <div style="font-weight:700;font-size:14px;">Tap to select a photo</div>
+        <div style="font-size:12px;color:var(--muted);">We'll compress it for you</div>
       </div>
       <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
       <div id="photoError" class="alert alert-error" style="display:none;">
@@ -546,12 +722,8 @@ html, body { overflow-x: hidden; }
       </div>
       <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
         <button class="btn btn-outline btn-sm" onclick="closePhotoModal()">Cancel</button>
-        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" id="deletePhotoBtn" onclick="doDeletePhoto()">
-          <i class="fas fa-trash"></i> Remove
-        </button>
-        <button class="btn btn-primary" id="savePhotoBtn" onclick="doSavePhoto()" disabled>
-          <i class="fas fa-check"></i> Save Photo
-        </button>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" id="deletePhotoBtn" onclick="doDeletePhoto()"><i class="fas fa-trash"></i> Remove</button>
+        <button class="btn btn-primary" id="savePhotoBtn" onclick="doSavePhoto()" disabled><i class="fas fa-check"></i> Save</button>
       </div>
     </div>
   </div>
@@ -565,14 +737,12 @@ html, body { overflow-x: hidden; }
       <button class="modal-close" onclick="closeStatement()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Pick a month to see your summary.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Pick a month.</p>
       <div class="month-grid" id="monthGrid"></div>
       <div id="stmtPreview"></div>
       <div style="display:flex;gap:10px;margin-top:16px;">
         <button class="btn btn-outline btn-full" onclick="closeStatement()">Cancel</button>
-        <button class="btn btn-primary btn-full" id="downloadStmtBtn" onclick="downloadMonthlyStatement()" disabled>
-          <i class="fas fa-file-pdf"></i> Download PDF
-        </button>
+        <button class="btn btn-primary btn-full" id="downloadStmtBtn" onclick="downloadMonthlyStatement()" disabled><i class="fas fa-file-pdf"></i> Download</button>
       </div>
     </div>
   </div>
@@ -586,15 +756,15 @@ html, body { overflow-x: hidden; }
       <button class="modal-close" onclick="closeQrModal()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="modal-body" style="text-align:center;">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Customers scan this to verify you as an official PhoneYa2 agent.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Customers scan this to verify you as an official agent.</p>
       <div id="qrCode" style="display:flex;justify-content:center;padding:20px;background:white;border-radius:var(--r);"></div>
       <div style="margin-top:16px;font-size:13px;color:var(--muted);word-break:break-all;" id="qrUrlText"></div>
-      <button class="btn btn-outline btn-full" style="margin-top:16px;" onclick="copyQrUrl()"><i class="fas fa-copy"></i> Copy verification link</button>
+      <button class="btn btn-outline btn-full" style="margin-top:16px;" onclick="copyQrUrl()"><i class="fas fa-copy"></i> Copy link</button>
     </div>
   </div>
 </div>
 
-<!-- TRAINING MODULE MODAL -->
+<!-- MODULE MODAL -->
 <div class="modal-overlay" id="moduleModal">
   <div class="modal-box">
     <div class="modal-hdr">
@@ -606,9 +776,7 @@ html, body { overflow-x: hidden; }
       <div style="background:var(--light);border-radius:var(--r);padding:20px 22px;font-size:14px;line-height:1.75;white-space:pre-wrap;margin-bottom:18px;word-break:break-word;" id="modContent"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-outline btn-full" onclick="closeModule()">Close</button>
-        <button class="btn btn-green btn-full" id="markDoneBtn" onclick="markModuleDone()">
-          <i class="fas fa-circle-check"></i> Mark as Complete
-        </button>
+        <button class="btn btn-green btn-full" id="markDoneBtn" onclick="markModuleDone()"><i class="fas fa-circle-check"></i> Mark Complete</button>
       </div>
     </div>
   </div>
@@ -619,6 +787,7 @@ html, body { overflow-x: hidden; }
 <script src="config.js"></script>
 <script>
 let agentData   = null;
+let profileData = null;
 let agentSales  = [];
 let allSales    = [];
 let myWallet    = null;
@@ -628,47 +797,69 @@ let allMaterials = [];
 let allModules = [];
 let completedModuleIds = new Set();
 let marketingFilter = 'all';
+let leadFilter = 'all';
 let currentModule = null;
 let selectedMonth = null;
 let pendingPhotoFile = null;
 let myApplication = null;
 let activeAgreement = null;
+let myLeads = [];
+let currentChatType = 'team';
+let currentConversation = null;
+let stopChatSub = null;
 
-// ── AUTH ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// AUTH — NEW SUPABASE AUTH-BASED LOGIN
+// ═══════════════════════════════════════════════════════════════════════
 async function doAgentLogin() {
-  const code = document.getElementById('codeInput').value.trim().toUpperCase();
-  if (!code) return;
+  const email    = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+  if (!email || !password) { toast('⚠️  Email and password required'); return; }
+
   const btn = document.getElementById('loginBtn');
-  setLoading(btn, true, 'Checking…');
+  setLoading(btn, true, 'Signing in…');
   document.getElementById('loginErr').classList.remove('show');
+
   try {
-    const agent = await db.getOne('agents', `agent_code=eq.${code}&active=eq.true`);
-    if (!agent) throw new Error('Not found');
-    sessionStorage.setItem('agent_code', code);
-    localStorage.setItem('agent_code', code);
-    agentData = agent;
-    await logReferralEvent(code, 'login');
+    await auth.signIn(email, password);
+    const profile = await getProfile();
+
+    if (!profile) throw new Error('Profile not found');
+    if (profile.role === 'admin') { window.location.href = 'admin.html'; return; }
+
+    if (!profile.agent_code) throw new Error('No agent account linked to this email');
+
+    // Load the agent record by code
+    const agent = await db.getOne('agents', `agent_code=eq.${profile.agent_code}&active=eq.true`);
+    if (!agent) throw new Error('Agent account inactive or not found');
+
+    profileData = profile;
+    agentData   = agent;
+
+    await logReferralEvent(profile.agent_code, 'login');
     bootDashboard();
   } catch(e) {
+    document.getElementById('loginErr').textContent = e.message || 'Incorrect email or password';
     document.getElementById('loginErr').classList.add('show');
-    setLoading(btn, false, '<i class="fas fa-right-to-bracket"></i> Access Dashboard');
+    setLoading(btn, false, '<i class="fas fa-right-to-bracket"></i> Sign In');
   }
 }
 
-function doLogout() {
+async function doLogout() {
+  await auth.signOut();
   sessionStorage.removeItem('agent_code');
   localStorage.removeItem('agent_code');
   location.reload();
 }
 
 async function bootDashboard() {
-  document.getElementById('loginScreen').style.display  = 'none';
-  document.getElementById('dashApp').style.display       = 'block';
-  document.getElementById('nav-agent-code').textContent  = agentData.agent_code;
-  document.getElementById('dashName').textContent        = agentData.full_name;
-  document.getElementById('dashCodeLabel').textContent   = agentData.agent_id + ' · ' + agentData.agent_code;
-  document.getElementById('refUrl').textContent          = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
-  document.getElementById('profileLink').href            = `profile.html?id=${agentData.agent_id}`;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashApp').style.display = 'block';
+  document.getElementById('nav-agent-code').textContent = agentData.agent_code;
+  document.getElementById('dashName').textContent = agentData.full_name;
+  document.getElementById('dashCodeLabel').textContent = agentData.agent_id + ' · ' + agentData.agent_code;
+  document.getElementById('refUrl').textContent = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  document.getElementById('profileLink').href = `profile.html?id=${agentData.agent_id}`;
 
   renderAvatarHeader();
 
@@ -679,11 +870,13 @@ async function bootDashboard() {
   renderTierRates();
   renderLevel();
   renderWallet();
+  renderToday();
   await loadNotifications();
   await loadReferralStats();
   await loadCampaignBanner();
   await loadMarketing();
   await loadTraining();
+  await loadLeads();
   renderDocuments();
 }
 
@@ -704,212 +897,344 @@ async function loadApplicationAndAgreement() {
     }
     const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
     activeAgreement = (agreements && agreements.length) ? agreements[0] : null;
-  } catch(e) { /* ignore */ }
+  } catch(e) {}
 }
 
-// ── PHOTO UPLOAD ─────────────────────────────────────────────────────────
-function openPhotoModal() {
-  pendingPhotoFile = null;
-  document.getElementById('photoError').style.display = 'none';
-  document.getElementById('photoFileInput').value = '';
-  document.getElementById('savePhotoBtn').disabled = true;
-  const wrap = document.getElementById('photoPreviewWrap');
-  if (agentData.profile_photo_url) {
-    wrap.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="Current photo">`;
-    document.getElementById('deletePhotoBtn').style.display = 'inline-flex';
-  } else {
-    wrap.innerHTML = `<div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>`;
-    document.getElementById('deletePhotoBtn').style.display = 'none';
-  }
-  document.getElementById('photoModal').classList.add('open');
-}
-function closePhotoModal() {
-  document.getElementById('photoModal').classList.remove('open');
-  pendingPhotoFile = null;
-}
-function onPhotoSelected(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { showPhotoErr('Please select an image file.'); return; }
-  if (file.size > 8 * 1024 * 1024) { showPhotoErr('Image too large (max 8 MB).'); return; }
-  document.getElementById('photoError').style.display = 'none';
-  pendingPhotoFile = file;
-  const wrap = document.getElementById('photoPreviewWrap');
-  wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview">`;
-  document.getElementById('savePhotoBtn').disabled = false;
-  document.getElementById('deletePhotoBtn').style.display = 'none';
-}
-function showPhotoErr(msg) {
-  document.getElementById('photoErrText').textContent = msg;
-  document.getElementById('photoError').style.display = 'flex';
-}
-async function doSavePhoto() {
-  if (!pendingPhotoFile) return;
-  const btn = document.getElementById('savePhotoBtn');
-  setLoading(btn, true, 'Uploading…');
-  document.getElementById('photoError').style.display = 'none';
-  try {
-    const url = await uploadAgentPhoto(pendingPhotoFile, agentData.agent_code);
-    agentData.profile_photo_url = url;
-    renderAvatarHeader();
-    toast('✅ Photo updated');
-    closePhotoModal();
-  } catch(e) {
-    showPhotoErr(e.message || 'Upload failed');
-    setLoading(btn, false, '<i class="fas fa-check"></i> Save Photo');
-  }
-}
-async function doDeletePhoto() {
-  if (!confirm('Remove your profile photo?')) return;
-  const btn = document.getElementById('deletePhotoBtn');
-  setLoading(btn, true, 'Removing…');
-  try {
-    await deleteAgentPhoto(agentData.agent_code, agentData.profile_photo_url);
-    agentData.profile_photo_url = null;
-    renderAvatarHeader();
-    toast('✅ Photo removed');
-    closePhotoModal();
-  } catch(e) {
-    showPhotoErr(e.message || 'Failed to remove');
-    setLoading(btn, false, '<i class="fas fa-trash"></i> Remove');
-  }
-}
+// ═══════════════════════════════════════════════════════════════════════
+// TODAY COMMAND CENTRE
+// ═══════════════════════════════════════════════════════════════════════
+function renderToday() {
+  const el = document.getElementById('todayCard');
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const firstName = (agentData.full_name || '').split(' ')[0];
 
-// ── DOCUMENTS TAB ────────────────────────────────────────────────────────
-function renderDocuments() {
-  const el = document.getElementById('docGrid');
-  if (!el) return;
+  const activeLeads = myLeads.filter(l => !['delivered', 'lost'].includes(l.status));
+  const today = new Date().toISOString().slice(0, 10);
+  const followupsDue = myLeads.filter(l =>
+    l.followup_date && l.followup_date <= today && !['delivered', 'lost'].includes(l.status)
+  ).length;
+  const ordersAwaiting = myLeads.filter(l => l.status === 'ordered' || l.status === 'paid').length;
 
-  const trainingDone = allModules.length > 0 && completedModuleIds.size === allModules.length;
-
-  const docs = [
-    {
-      icon: 'fa-id-card', color: 'orange',
-      title: 'Agent ID Card',
-      desc: 'Your official branded PhoneYa2-ZM ID card with your photo and QR code.',
-      badge: 'ready',
-      action: 'downloadIdCard()',
-    },
-    {
-      icon: 'fa-file-invoice-dollar', color: 'green',
-      title: 'Sales Statement (All Time)',
-      desc: 'Complete record of every sale you have submitted and its current status.',
-      badge: 'ready',
-      action: 'downloadMyStatementPdf()',
-    },
-    {
-      icon: 'fa-calendar-days', color: 'blue',
-      title: 'Monthly Statement',
-      desc: 'Pick any month to generate a summary statement for that period.',
-      badge: 'ready',
-      action: 'openStatement()',
-    },
-    {
-      icon: 'fa-certificate', color: 'purple',
-      title: 'Certificate of Participation',
-      desc: 'Official certificate confirming you joined the PhoneYa2-ZM Agent Network.',
-      badge: 'ready',
-      action: 'downloadParticipationCert()',
-    },
-    {
-      icon: 'fa-award', color: 'yellow',
-      title: 'Certificate of Achievement',
-      desc: trainingDone ? 'All training modules complete. Download your certificate.' : 'Complete all training modules to unlock this certificate.',
-      badge: trainingDone ? 'ready' : 'locked',
-      action: trainingDone ? 'downloadAchievementCert()' : 'showTrainingLocked()',
-      disabled: !trainingDone,
-    },
-    {
-      icon: 'fa-envelope-open-text', color: 'orange',
-      title: 'Welcome Letter',
-      desc: 'A personalised welcome letter introducing you as a PhoneYa2-ZM agent.',
-      badge: 'ready',
-      action: 'downloadWelcomeLetter()',
-    },
-    {
-      icon: 'fa-file-signature', color: 'blue',
-      title: 'Application Document',
-      desc: myApplication ? 'Your submitted application, saved as a branded PDF.' : 'Application not found.',
-      badge: myApplication ? 'ready' : 'locked',
-      action: myApplication ? 'downloadApplicationPdf()' : 'showLocked()',
-      disabled: !myApplication,
-    },
-    {
-      icon: 'fa-file-contract', color: 'green',
-      title: 'Agent Agreement',
-      desc: activeAgreement ? `The terms you accepted (v${esc(activeAgreement.version)}).` : 'Terms document not available.',
-      badge: activeAgreement ? 'ready' : 'locked',
-      action: activeAgreement ? 'downloadAgreementPdf()' : 'showLocked()',
-      disabled: !activeAgreement,
-    },
-  ];
-
-  el.innerHTML = docs.map(d => `
-    <div class="doc-card">
-      <div class="doc-icon ${d.color}">
-        <i class="fas ${d.icon}"></i>
+  el.innerHTML = `
+    <div class="today-hello">${greeting}, ${esc(firstName)} 👋🏾</div>
+    <div class="today-sub">Here's what needs your attention today</div>
+    <div class="today-stats">
+      <div class="today-stat">
+        <div class="today-stat-val" style="color:#4ade80;">${activeLeads.length}</div>
+        <div class="today-stat-lbl">Active Leads</div>
       </div>
-      <div class="doc-body">
-        <div class="doc-title">${esc(d.title)}</div>
-        <div class="doc-desc">${d.desc}</div>
-        <span class="doc-badge ${d.badge}">
-          ${d.badge === 'ready' ? '✓ Ready' : '🔒 Locked'}
-        </span>
-        <button class="doc-btn" ${d.disabled ? 'disabled' : ''} onclick="${d.action}">
-          <i class="fas fa-download"></i> Download PDF
-        </button>
+      <div class="today-stat">
+        <div class="today-stat-val" style="color:${followupsDue > 0 ? '#fbbf24' : 'rgba(255,255,255,.5)'};">${followupsDue}</div>
+        <div class="today-stat-lbl">Follow-ups Due</div>
+      </div>
+      <div class="today-stat">
+        <div class="today-stat-val" style="color:#60a5fa;">${ordersAwaiting}</div>
+        <div class="today-stat-lbl">Orders Pending</div>
       </div>
     </div>
-  `).join('');
+    <div class="today-actions">
+      <button class="btn btn-primary btn-sm" onclick="openAddLead()"><i class="fas fa-user-plus"></i> Add Lead</button>
+      <button class="btn btn-green btn-sm" onclick="openSubmitSale()"><i class="fas fa-cart-plus"></i> Submit Sale</button>
+      ${followupsDue > 0 ? `<button class="btn btn-sm" style="background:rgba(245,158,11,.9);color:white;" onclick="showAgentTab('leads',document.querySelector('.tab-btn'))"><i class="fas fa-bell"></i> ${followupsDue} Follow-up${followupsDue !== 1 ? 's' : ''}</button>` : ''}
+    </div>
+  `;
 }
 
-// ── DOCUMENT ACTIONS ─────────────────────────────────────────────────────
-async function downloadIdCard() {
-  toast('🎫 Generating ID card…');
-  try { await makeIdCardPdf(agentData); }
-  catch(e) { toast('Error: ' + e.message); }
-}
-function downloadParticipationCert() {
-  toast('🏅 Generating certificate…');
-  try { makeParticipationCertificatePdf(agentData); }
-  catch(e) { toast('Error: ' + e.message); }
-}
-function downloadAchievementCert() {
-  toast('🏆 Generating certificate…');
+// ═══════════════════════════════════════════════════════════════════════
+// LEADS — mini CRM
+// ═══════════════════════════════════════════════════════════════════════
+async function loadLeads() {
   try {
-    makeCertificatePdf({
-      agent: agentData,
-      title: 'Certificate of Achievement',
-      subtitle: 'Proudly awarded to',
-      date: new Date().toLocaleDateString('en-ZM'),
-    });
+    myLeads = await db.getAll('leads', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' });
+    renderLeads();
+    updateLeadsBadge();
+    renderToday();
+  } catch(e) { console.warn('Leads load failed:', e); }
+}
+
+function updateLeadsBadge() {
+  const active = myLeads.filter(l => !['delivered','lost'].includes(l.status)).length;
+  const el = document.getElementById('leadsBadge');
+  if (el) {
+    el.textContent = active;
+    el.style.display = active ? 'inline-block' : 'none';
+  }
+}
+
+function filterLeads(status, btn) {
+  leadFilter = status;
+  document.querySelectorAll('#agent-tab-leads .filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeads();
+}
+
+function renderLeads() {
+  const el = document.getElementById('leadsContent');
+  const list = leadFilter === 'all' ? myLeads : myLeads.filter(l => l.status === leadFilter);
+
+  if (!list.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">🎯</div>
+      <h3>${leadFilter === 'all' ? 'No leads yet' : 'No leads with this status'}</h3>
+      <p>${leadFilter === 'all' ? 'Add your first lead when a customer expresses interest.' : 'Try a different filter.'}</p>
+      ${leadFilter === 'all' ? `<button class="btn btn-primary" style="margin-top:16px;" onclick="openAddLead()"><i class="fas fa-plus"></i> Add First Lead</button>` : ''}
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(l => {
+    const st = leadStatusInfo(l.status);
+    const followupOverdue = l.followup_date && l.followup_date <= new Date().toISOString().slice(0,10) && !['delivered','lost'].includes(l.status);
+    return `
+      <div class="lead-card">
+        <div class="lead-info">
+          <div class="lead-name">${esc(l.customer_name)}${followupOverdue ? ' <span style="font-size:11px;color:#f59e0b;font-weight:700;"><i class="fas fa-bell"></i> Follow-up due</span>' : ''}</div>
+          <div class="lead-meta">
+            <i class="fas fa-phone"></i> ${esc(l.customer_phone)}<br>
+            ${l.product ? `<i class="fas fa-box"></i> ${esc(l.product)}${l.quantity > 1 ? ' × ' + l.quantity : ''}<br>` : ''}
+            ${l.estimated_value ? `<i class="fas fa-coins"></i> ${fmtMoney(l.estimated_value)}<br>` : ''}
+            ${l.followup_date ? `<i class="fas fa-calendar"></i> Follow-up: ${fmtDate(l.followup_date)}<br>` : ''}
+            <i class="fas fa-clock"></i> Added ${timeAgo(l.created_at)}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;align-items:flex-end;">
+          <select class="lead-status-select" onchange="changeLeadStatus('${esc(l.id)}', this.value)">
+            ${LEAD_STATUSES.map(s => `<option value="${s.code}" ${l.status === s.code ? 'selected' : ''}>${s.label}</option>`).join('')}
+          </select>
+          <div class="lead-actions">
+            <a href="https://wa.me/${(l.customer_phone||'').replace(/\\D/g,'')}" target="_blank" class="btn btn-green btn-sm" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="editLead('${esc(l.id)}')" title="Edit"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="deleteLead('${esc(l.id)}','${esc(l.customer_name)}')" title="Delete"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openAddLead() {
+  document.getElementById('leadModalTitle').textContent = 'Add New Lead';
+  document.getElementById('l-id').value = '';
+  ['l-name','l-phone','l-product','l-value','l-followup','l-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('l-source').value = 'whatsapp';
+  document.getElementById('leadError').style.display = 'none';
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function editLead(id) {
+  const l = myLeads.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('leadModalTitle').textContent = 'Edit Lead';
+  document.getElementById('l-id').value = l.id;
+  document.getElementById('l-name').value = l.customer_name || '';
+  document.getElementById('l-phone').value = l.customer_phone || '';
+  document.getElementById('l-product').value = l.product || '';
+  document.getElementById('l-value').value = l.estimated_value || '';
+  document.getElementById('l-followup').value = l.followup_date || '';
+  document.getElementById('l-source').value = l.source || 'other';
+  document.getElementById('l-notes').value = l.notes || '';
+  document.getElementById('leadError').style.display = 'none';
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function closeLeadModal() {
+  document.getElementById('leadModal').classList.remove('open');
+}
+
+async function saveLead() {
+  const id    = document.getElementById('l-id').value;
+  const name  = document.getElementById('l-name').value.trim();
+  const phone = document.getElementById('l-phone').value.trim();
+  if (!name)  { toast('⚠️  Customer name required'); return; }
+  if (!phone) { toast('⚠️  Customer phone required'); return; }
+
+  const btn = document.getElementById('saveLeadBtn');
+  setLoading(btn, true, 'Saving…');
+  document.getElementById('leadError').style.display = 'none';
+
+  try {
+    const payload = {
+      customer_name:   name,
+      customer_phone:  phone,
+      customer_wa:     phone,
+      product:         document.getElementById('l-product').value.trim() || null,
+      estimated_value: Number(document.getElementById('l-value').value) || null,
+      followup_date:   document.getElementById('l-followup').value || null,
+      source:          document.getElementById('l-source').value,
+      notes:           document.getElementById('l-notes').value.trim() || null,
+    };
+
+    if (id) {
+      await db.update('leads', `id=eq.${id}`, { ...payload, updated_at: new Date().toISOString() });
+      toast('✅ Lead updated');
+    } else {
+      await createLead({ ...payload, agent_code: agentData.agent_code });
+      toast('✅ Lead added');
+    }
+
+    closeLeadModal();
+    await loadLeads();
+  } catch(e) {
+    document.getElementById('leadErrText').textContent = e.message;
+    document.getElementById('leadError').style.display = 'flex';
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save Lead');
+  }
+}
+
+async function changeLeadStatus(id, status) {
+  try {
+    await updateLead(id, { status });
+    toast('✅ Status updated');
+    await loadLeads();
   } catch(e) { toast('Error: ' + e.message); }
 }
-function downloadWelcomeLetter() {
-  toast('📩 Generating welcome letter…');
-  try { makeWelcomeLetterPdf(agentData); }
-  catch(e) { toast('Error: ' + e.message); }
-}
-function downloadApplicationPdf() {
-  if (!myApplication) { toast('⚠️  Application not found'); return; }
-  toast('📄 Generating application PDF…');
-  try { makeApplicationPdf(myApplication, agentData); }
-  catch(e) { toast('Error: ' + e.message); }
-}
-function downloadAgreementPdf() {
-  if (!activeAgreement) { toast('⚠️  Agreement not found'); return; }
-  toast('📄 Generating agreement PDF…');
-  try { makeAgreementPdf(activeAgreement, agentData); }
-  catch(e) { toast('Error: ' + e.message); }
-}
-function showTrainingLocked() {
-  toast('🔒 Complete all training modules to unlock this certificate');
-}
-function showLocked() {
-  toast('🔒 Document not available');
+
+async function deleteLead(id, name) {
+  if (!confirm(`Delete lead for "${name}"?`)) return;
+  try {
+    await db.remove('leads', `id=eq.${id}`);
+    toast('🗑️  Lead deleted');
+    await loadLeads();
+  } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── DATA LOADING ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// MESSAGES — Communication Hub
+// ═══════════════════════════════════════════════════════════════════════
+async function switchChat(type, btn) {
+  currentChatType = type;
+  document.querySelectorAll('#agent-tab-messages .filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (stopChatSub) { stopChatSub(); stopChatSub = null; }
+
+  try {
+    currentConversation = await getConversationByType(type);
+    if (!currentConversation) { toast('⚠️  Conversation not found'); return; }
+
+    document.getElementById('chatIcon').textContent = type === 'team' ? '📡' : '📢';
+    document.getElementById('chatName').textContent = type === 'team' ? 'Team Room' : 'Announcements';
+    document.getElementById('chatSub').textContent = type === 'team' ? 'All agents + admins' : 'Official updates from PhoneYa2';
+
+    // Announcements: only admins can send
+    if (type === 'announcements' && profileData.role !== 'admin') {
+      document.getElementById('chatInputRow').style.display = 'none';
+    } else {
+      document.getElementById('chatInputRow').style.display = 'flex';
+    }
+
+    await loadChatMessages();
+    stopChatSub = subscribeToMessages(currentConversation.id, (msg) => {
+      appendChatMessage(msg, true);
+    });
+  } catch(e) {
+    toast('⚠️  ' + e.message);
+  }
+}
+
+async function loadChatMessages() {
+  const el = document.getElementById('chatBody');
+  try {
+    const msgs = await getMessages(currentConversation.id, 100);
+    // Sort ascending
+    msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    el.innerHTML = '';
+    msgs.forEach(m => appendChatMessage(m));
+    el.scrollTop = el.scrollHeight;
+  } catch(e) {
+    el.innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;">Could not load messages: ${esc(e.message)}</div>`;
+  }
+}
+
+function appendChatMessage(msg, scroll = false) {
+  if (msg.deleted_at) return;
+  const el = document.getElementById('chatBody');
+  const mine = msg.sender_id === auth.currentUserId();
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
+  div.dataset.msgId = msg.id;
+
+  const expiry = msg.is_kept ? '' : `<div class="chat-msg-expires">⏱️ Expires in ${timeUntilExpiry(msg.expires_at)}</div>`;
+
+  let media = '';
+  if (msg.media_url) {
+    if (msg.message_type === 'image') {
+      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="">`;
+    } else if (msg.message_type === 'voice') {
+      media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
+    } else {
+      media = `<a href="${esc(msg.media_url)}" target="_blank" style="color:inherit;text-decoration:underline;">📎 Download file</a>`;
+    }
+  }
+
+  div.innerHTML = `
+    ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
+    ${msg.text ? `<div>${esc(msg.text)}</div>` : ''}
+    ${media}
+    <div class="chat-msg-time">${fmtTime(msg.created_at)}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
+    ${expiry}
+    <div class="chat-msg-actions">
+      <button onclick="keepMsg('${esc(msg.id)}')"><i class="fas fa-thumbtack"></i> ${msg.is_kept ? 'Un-keep' : 'Keep'}</button>
+      ${mine ? `<button onclick="removeMsg('${esc(msg.id)}')"><i class="fas fa-trash"></i></button>` : ''}
+    </div>
+  `;
+  el.appendChild(div);
+  if (scroll) el.scrollTop = el.scrollHeight;
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!currentConversation) return;
+
+  const btn = document.querySelector('.chat-send-btn');
+  btn.disabled = true;
+
+  try {
+    await sendMessage(currentConversation.id, {
+      message_type: 'text',
+      text,
+    });
+    input.value = '';
+    input.style.height = 'auto';
+    await loadChatMessages();
+  } catch(e) {
+    toast('⚠️  ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function keepMsg(id) {
+  try {
+    const msg = await db.getOne('messages', `id=eq.${id}`);
+    if (!msg) return;
+    await db.update('messages', `id=eq.${id}`, { is_kept: !msg.is_kept });
+    await loadChatMessages();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function removeMsg(id) {
+  if (!confirm('Delete this message?')) return;
+  try {
+    await deleteMessage(id);
+    await loadChatMessages();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════════════════════════════
 async function loadAgentData() {
   try {
     [agentSales, allSales, myWallet] = await Promise.all([
@@ -979,7 +1304,7 @@ function renderLevel() {
   const { current, next, progress } = calcAgentLevel(totalSales, revenue);
 
   if (!current) {
-    document.getElementById('levelCard').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;">Level data loading…</div>';
+    document.getElementById('levelCard').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;">Loading…</div>';
     return;
   }
 
@@ -1000,9 +1325,6 @@ function renderLevel() {
           <span style="font-weight:700;color:var(--orange);">${progress}%</span>
         </div>
         <div class="level-progress-bar"><div class="level-progress-fill" style="width:${progress}%;"></div></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px;">
-          Needs: ${next.min_sales} sales · ${fmtMoney(next.min_revenue)} revenue
-        </div>
       </div>
     ` : `<div style="margin-top:14px;font-size:13px;color:#16a34a;font-weight:700;"><i class="fas fa-circle-check"></i> Top level reached</div>`}
   `;
@@ -1019,7 +1341,7 @@ function renderWallet() {
       <div><div class="wallet-val" style="color:#60a5fa;">${fmtMoney(w.paid)}</div><div class="wallet-lbl-sm">Paid</div></div>
     </div>
     <div style="margin-top:14px;font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">
-      <i class="fas fa-info-circle"></i> Payouts are processed by PhoneYa2. Contact us on WhatsApp to request a payout of your available balance.
+      <i class="fas fa-info-circle"></i> Payouts are processed by PhoneYa2. Contact us on WhatsApp to request a payout.
     </div>
   `;
 }
@@ -1036,12 +1358,6 @@ function shareRefWa() {
   window.open(waLink(msg), '_blank');
   logReferralEvent(agentData.agent_code, 'whatsapp_share');
 }
-function shareRefNative() {
-  const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
-  if (navigator.share) navigator.share({ title:'PhoneYa2-ZM', text:'Genuine phone accessories.', url });
-  else copyRefLink();
-}
-
 function openQrModal() {
   const verifyUrl = `${CONFIG.agentSiteUrl}/verify.html?id=${agentData.agent_id}`;
   document.getElementById('qrCode').innerHTML = '';
@@ -1055,6 +1371,64 @@ function copyQrUrl() {
   toast('✅ Copied');
 }
 
+// ── PHOTO UPLOAD ────────────────────────────────────────────────────────
+function openPhotoModal() {
+  pendingPhotoFile = null;
+  document.getElementById('photoError').style.display = 'none';
+  document.getElementById('photoFileInput').value = '';
+  document.getElementById('savePhotoBtn').disabled = true;
+  const wrap = document.getElementById('photoPreviewWrap');
+  if (agentData.profile_photo_url) {
+    wrap.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="Current photo" style="width:100%;height:100%;object-fit:cover;">`;
+    document.getElementById('deletePhotoBtn').style.display = 'inline-flex';
+  } else {
+    wrap.innerHTML = `<div style="color:var(--muted);font-size:3rem;"><i class="fas fa-user"></i></div>`;
+    document.getElementById('deletePhotoBtn').style.display = 'none';
+  }
+  document.getElementById('photoModal').classList.add('open');
+}
+function closePhotoModal() { document.getElementById('photoModal').classList.remove('open'); pendingPhotoFile = null; }
+function onPhotoSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showPhotoErr('Please select an image file.'); return; }
+  if (file.size > 8 * 1024 * 1024) { showPhotoErr('Image too large (max 8 MB).'); return; }
+  document.getElementById('photoError').style.display = 'none';
+  pendingPhotoFile = file;
+  const wrap = document.getElementById('photoPreviewWrap');
+  wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview" style="width:100%;height:100%;object-fit:cover;">`;
+  document.getElementById('savePhotoBtn').disabled = false;
+  document.getElementById('deletePhotoBtn').style.display = 'none';
+}
+function showPhotoErr(msg) { document.getElementById('photoErrText').textContent = msg; document.getElementById('photoError').style.display = 'flex'; }
+async function doSavePhoto() {
+  if (!pendingPhotoFile) return;
+  const btn = document.getElementById('savePhotoBtn');
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('photoError').style.display = 'none';
+  try {
+    const url = await uploadAgentPhoto(pendingPhotoFile, agentData.agent_code);
+    agentData.profile_photo_url = url;
+    renderAvatarHeader();
+    toast('✅ Photo updated');
+    closePhotoModal();
+  } catch(e) {
+    showPhotoErr(e.message || 'Upload failed');
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save');
+  }
+}
+async function doDeletePhoto() {
+  if (!confirm('Remove your profile photo?')) return;
+  try {
+    await deleteAgentPhoto(agentData.agent_code, agentData.profile_photo_url);
+    agentData.profile_photo_url = null;
+    renderAvatarHeader();
+    toast('✅ Photo removed');
+    closePhotoModal();
+  } catch(e) { showPhotoErr(e.message || 'Failed'); }
+}
+
+// ── SUBMIT SALE ─────────────────────────────────────────────────────────
 function openSubmitSale() {
   document.getElementById('submitSaleModal').classList.add('open');
   document.getElementById('submitSaleError').style.display = 'none';
@@ -1065,33 +1439,18 @@ function openSubmitSale() {
   document.getElementById('s-comm-calc').value = 'ZMW 0';
   document.getElementById('s-comm-pct').value = '0%';
   document.getElementById('s-amount-calc').value = 'ZMW 0';
-  document.getElementById('s-tier-hint').textContent = 'Enter unit price and quantity.';
   ['s-unit-price','s-qty'].forEach(id => { document.getElementById(id).oninput = recalcSubmitSale; });
 }
-
 function recalcSubmitSale() {
   const unit = Number(document.getElementById('s-unit-price').value) || 0;
   const qty  = Number(document.getElementById('s-qty').value) || 0;
   const amount = unit * qty;
-  const { percentage, commission, tier } = calcCommissionFromAmount(amount);
+  const { percentage, commission } = calcCommissionFromAmount(amount);
   document.getElementById('s-amount-calc').value = fmtMoney(amount);
   document.getElementById('s-comm-pct').value    = percentage + '%';
   document.getElementById('s-comm-calc').value   = fmtMoney(commission);
-  const hintEl = document.getElementById('s-tier-hint');
-  if (tier) {
-    const maxLabel = tier.max_amount === null || tier.max_amount === undefined ? '+' : '–' + tier.max_amount;
-    hintEl.textContent = `Tier: ZMW ${tier.min_amount}${maxLabel} → ${percentage}%`;
-    hintEl.style.color = 'var(--green)';
-  } else if (amount > 0) {
-    hintEl.textContent = '⚠️  No matching tier';
-    hintEl.style.color = 'var(--red)';
-  } else {
-    hintEl.textContent = 'Enter unit price and quantity.';
-    hintEl.style.color = 'var(--muted)';
-  }
 }
 function closeSubmitSale() { document.getElementById('submitSaleModal').classList.remove('open'); }
-
 async function submitSale() {
   const productName   = document.getElementById('s-product').value.trim();
   const quantity      = Number(document.getElementById('s-qty').value) || 1;
@@ -1100,14 +1459,13 @@ async function submitSale() {
   const customerPhone = document.getElementById('s-cust-phone').value.trim();
   const notes         = document.getElementById('s-notes').value.trim();
 
-  if (!productName)   { toast('⚠️  Product required'); return; }
-  if (!unitPrice)     { toast('⚠️  Unit price required'); return; }
-  if (!customerName)  { toast('⚠️  Customer name required'); return; }
-  if (!customerPhone) { toast('⚠️  Customer phone required'); return; }
+  if (!productName || !unitPrice || !customerName || !customerPhone) {
+    toast('⚠️  All fields required'); return;
+  }
 
   const amount = unitPrice * quantity;
   const { percentage, commission, tier } = calcCommissionFromAmount(amount);
-  if (!tier) { toast('⚠️  No tier matches'); return; }
+  if (!tier) { toast('⚠️  No tier matches this amount'); return; }
 
   const btn = document.getElementById('submitSaleBtn');
   setLoading(btn, true, 'Submitting…');
@@ -1141,10 +1499,11 @@ async function submitSale() {
     document.getElementById('submitSaleErrText').textContent = e.message;
     document.getElementById('submitSaleError').style.display = 'flex';
   } finally {
-    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Submit Sale');
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Submit');
   }
 }
 
+// ── SALES LIST ──────────────────────────────────────────────────────────
 function renderSales() {
   const el = document.getElementById('salesContent');
   if (!agentSales.length) {
@@ -1156,21 +1515,16 @@ function renderSales() {
     return `<span class="sale-status-badge" style="${map[s]||''}">${esc(s)}</span>`;
   };
   el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr>
-      <th>Sale ID</th><th>Product</th><th class="hide-mobile">Qty</th>
-      <th>Amount</th><th>Comm.</th><th>Status</th><th class="hide-mobile">Date</th>
-    </tr></thead>
-    <tbody>${agentSales.map(s => `
-      <tr>
-        <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
-        <td><strong style="font-size:13px;">${esc(s.product || '—')}</strong>${s.customer_name ? `<div style="font-size:11px;color:var(--muted);">${esc(s.customer_name)}</div>` : ''}</td>
-        <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
-        <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
-        <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}<div style="font-size:10px;color:var(--muted);font-weight:600;">${s.commission_pct || '—'}%</div></td>
-        <td>${statusBadge(s.status)}</td>
-        <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)}</td>
-      </tr>`).join('')}
-    </tbody></table></div>`;
+    <thead><tr><th>Sale ID</th><th>Product</th><th class="hide-mobile">Qty</th><th>Amount</th><th>Comm.</th><th>Status</th><th class="hide-mobile">Date</th></tr></thead>
+    <tbody>${agentSales.map(s => `<tr>
+      <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
+      <td><strong style="font-size:13px;">${esc(s.product || '—')}</strong>${s.customer_name ? `<div style="font-size:11px;color:var(--muted);">${esc(s.customer_name)}</div>` : ''}</td>
+      <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
+      <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)}</td>
+    </tr>`).join('')}</tbody></table></div>`;
 }
 
 function renderCommHistory() {
@@ -1193,7 +1547,7 @@ function renderCommHistory() {
       <div style="width:36px;height:36px;border-radius:10px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">💰</div>
       <div style="flex:1;min-width:0;">
         <div style="font-weight:600;font-size:14px;word-break:break-word;">${esc(s.product || 'Sale')}</div>
-        <div style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)} · ${fmtMoney(s.amount)}${s.commission_pct ? ' · ' + s.commission_pct + '%' : ''}</div>
+        <div style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)} · ${fmtMoney(s.amount)}</div>
       </div>
       <span class="sale-status-badge" style="${badgeStyle}">${esc(s.status)}</span>
       <div style="font-weight:800;color:${commColor};font-size:15px;flex-shrink:0;">${prefix}${fmtMoney(s.commission)}</div>
@@ -1209,9 +1563,6 @@ function renderPerformance() {
   const totalRevenue = agentSales.reduce((t,s) => t + (s.amount||0), 0);
   const totalComm    = confirmed.reduce((t,s) => t + (s.commission||0), 0);
   const conversion   = agentSales.length ? Math.round((confirmed.length / agentSales.length) * 100) : 0;
-  const linkClicks = myReferral.filter(e => e.event_type === 'link_copied' || e.event_type === 'whatsapp_share').length;
-  const loginCount = myReferral.filter(e => e.event_type === 'login').length;
-  const lastSale = agentSales[0]?.created_at;
 
   el.innerHTML = `
     <div class="perf-card">
@@ -1224,18 +1575,9 @@ function renderPerformance() {
         <div class="perf-cell"><div class="perf-val">${fmtMoney(totalRevenue)}</div><div class="perf-lbl">Revenue</div></div>
         <div class="perf-cell"><div class="perf-val" style="color:#16a34a;">${fmtMoney(totalComm)}</div><div class="perf-lbl">Commission</div></div>
         <div class="perf-cell"><div class="perf-val" style="color:var(--orange);">${conversion}%</div><div class="perf-lbl">Conversion</div></div>
-        <div class="perf-cell"><div class="perf-val">${loginCount}</div><div class="perf-lbl">Logins</div></div>
-        <div class="perf-cell"><div class="perf-val" style="color:#7c3aed;">${linkClicks}</div><div class="perf-lbl">Ref Shares</div></div>
+        <div class="perf-cell"><div class="perf-val">${myLeads.length}</div><div class="perf-lbl">Total Leads</div></div>
+        <div class="perf-cell"><div class="perf-val">${myReferral.length}</div><div class="perf-lbl">Referral Events</div></div>
       </div>
-    </div>
-    <div class="perf-card">
-      <h3 style="font-size:1rem;margin-bottom:16px;">Referral Analytics</h3>
-      <div class="perf-grid">
-        <div class="perf-cell"><div class="perf-val">${myReferral.filter(e => e.event_type === 'link_copied').length}</div><div class="perf-lbl">Link Copies</div></div>
-        <div class="perf-cell"><div class="perf-val">${myReferral.filter(e => e.event_type === 'whatsapp_share').length}</div><div class="perf-lbl">WA Shares</div></div>
-        <div class="perf-cell"><div class="perf-val">${myReferral.filter(e => e.event_type === 'sale_submitted').length}</div><div class="perf-lbl">Sales Tracked</div></div>
-      </div>
-      ${lastSale ? `<div style="font-size:12px;color:var(--muted);margin-top:14px;text-align:center;">Last sale: ${fmtDate(lastSale)}</div>` : ''}
     </div>
   `;
 }
@@ -1244,16 +1586,14 @@ async function loadMarketing() {
   try {
     allMaterials = await db.getAll('marketing_materials', { filter: 'active=eq.true', order: 'sort_order.asc' });
     renderMarketing();
-  } catch(e) { toast('⚠️  ' + e.message); }
+  } catch(e) {}
 }
-
 function filterMarketing(cat, btn) {
   marketingFilter = cat;
   document.querySelectorAll('[data-mc]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderMarketing();
 }
-
 const CAT_LABELS = {
   caption: { label: 'Caption', cls: 'tag-caption', icon: 'fa-comment' },
   script:  { label: 'Script',  cls: 'tag-script',  icon: 'fa-scroll' },
@@ -1262,48 +1602,37 @@ const CAT_LABELS = {
   poster:  { label: 'Poster',  cls: 'tag-poster',  icon: 'fa-image' },
   video:   { label: 'Video',   cls: 'tag-video',   icon: 'fa-play' },
 };
-
 function renderMarketing() {
   const el = document.getElementById('marketingContent');
   const list = marketingFilter === 'all' ? allMaterials : allMaterials.filter(m => m.category === marketingFilter);
   if (!list.length) {
-    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">📭</div><h3>Nothing here</h3><p>Check back soon.</p></div>';
+    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">📭</div><h3>Nothing here</h3></div>';
     return;
   }
   el.innerHTML = `<div class="content-grid">${list.map(m => {
     const meta = CAT_LABELS[m.category] || { label: m.category, cls: 'tag-caption', icon: 'fa-file' };
-    const contentBlock = m.content ? `<div class="mk-content">${esc(m.content)}</div>` : '';
-    const mediaBlock = m.file_url
-      ? (m.category === 'video' ? `<video style="width:100%;border-radius:var(--r);margin-bottom:12px;max-height:200px;" controls src="${esc(m.file_url)}"></video>`
-        : `<img style="width:100%;border-radius:var(--r);margin-bottom:12px;max-height:200px;object-fit:cover;" src="${esc(m.file_url)}" onerror="this.style.display='none'">`)
-      : '';
     return `
       <div class="mk-card">
         <span class="mk-card-tag ${meta.cls}"><i class="fas ${meta.icon}"></i> ${meta.label}</span>
         <div class="mk-title">${esc(m.title)}</div>
-        ${mediaBlock}
-        ${contentBlock}
+        ${m.content ? `<div class="mk-content">${esc(m.content)}</div>` : ''}
         <div class="mk-actions">
           ${m.content ? `<button class="btn btn-primary btn-sm" onclick="copyMaterial('${esc(m.id)}')"><i class="fas fa-copy"></i> Copy</button>` : ''}
           ${m.content ? `<button class="btn btn-green btn-sm" onclick="shareWhatsApp('${esc(m.id)}')"><i class="fab fa-whatsapp"></i> Share</button>` : ''}
-          ${m.file_url && m.category !== 'video' ? `<a href="${esc(m.file_url)}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Open</a>` : ''}
         </div>
       </div>`;
   }).join('')}</div>`;
 }
-
 function copyMaterial(id) {
   const m = allMaterials.find(x => x.id === id);
   if (!m || !m.content) return;
   copyToClipboard(m.content);
   toast('✅ Copied');
-  logReferralEvent(agentData.agent_code, 'material_copied', { material_id: m.material_id });
 }
 function shareWhatsApp(id) {
   const m = allMaterials.find(x => x.id === id);
   if (!m || !m.content) return;
   window.open('https://wa.me/?text=' + encodeURIComponent(m.content), '_blank');
-  logReferralEvent(agentData.agent_code, 'material_shared', { material_id: m.material_id });
 }
 
 async function loadTraining() {
@@ -1312,9 +1641,8 @@ async function loadTraining() {
     const progress = await db.getAll('training_progress', { filter: `agent_code=eq.${agentData.agent_code}&completed=eq.true` });
     completedModuleIds = new Set(progress.map(p => p.module_id));
     renderTraining();
-  } catch(e) { toast('⚠️  ' + e.message); }
+  } catch(e) {}
 }
-
 function renderTraining() {
   const total = allModules.length;
   const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
@@ -1329,8 +1657,8 @@ function renderTraining() {
       <div class="tr-progress-bar"><div class="tr-progress-fill" style="width:${pct}%;"></div></div>
     </div>
     ${completed === total && total > 0
-      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;"><i class="fas fa-award"></i> Certificate Unlocked</div>`
-      : `<div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);flex-shrink:0;">${pct}%</div>`}
+      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;"><i class="fas fa-award"></i> Certificate Unlocked</div>`
+      : `<div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);">${pct}%</div>`}
   `;
 
   const listEl = document.getElementById('trList');
@@ -1350,44 +1678,34 @@ function renderTraining() {
     </div>`;
   }).join('');
 }
-
 function openModule(id) {
   const m = allModules.find(x => x.id === id);
   if (!m) return;
   currentModule = m;
   document.getElementById('modTitle').textContent = `Module ${m.module_number}: ${m.title}`;
   document.getElementById('modContent').textContent = m.content || 'No content yet.';
-  const videoEl = document.getElementById('modVideo');
-  videoEl.innerHTML = m.video_url ? `<video style="width:100%;border-radius:var(--r);margin-bottom:18px;" controls src="${esc(m.video_url)}"></video>` : '';
+  document.getElementById('modVideo').innerHTML = m.video_url ? `<video style="width:100%;border-radius:var(--r);margin-bottom:18px;" controls src="${esc(m.video_url)}"></video>` : '';
   const done = completedModuleIds.has(m.id);
   const btn = document.getElementById('markDoneBtn');
   if (done) { btn.innerHTML = '<i class="fas fa-check"></i> Already Completed'; btn.disabled = true; btn.classList.add('loading'); }
-  else { btn.innerHTML = '<i class="fas fa-circle-check"></i> Mark as Complete'; btn.disabled = false; btn.classList.remove('loading'); }
+  else { btn.innerHTML = '<i class="fas fa-circle-check"></i> Mark Complete'; btn.disabled = false; btn.classList.remove('loading'); }
   document.getElementById('moduleModal').classList.add('open');
 }
 function closeModule() { document.getElementById('moduleModal').classList.remove('open'); currentModule = null; }
-
 async function markModuleDone() {
   if (!currentModule) return;
   const btn = document.getElementById('markDoneBtn');
   setLoading(btn, true, 'Saving…');
   try {
     const existing = await db.getOne('training_progress', `agent_code=eq.${agentData.agent_code}&module_id=eq.${currentModule.id}`);
-    if (existing) {
-      await db.update('training_progress', `id=eq.${existing.id}`, { completed: true, completed_at: new Date().toISOString() });
-    } else {
-      await db.insert('training_progress', { agent_code: agentData.agent_code, module_id: currentModule.id, completed: true, completed_at: new Date().toISOString() });
-    }
+    if (existing) await db.update('training_progress', `id=eq.${existing.id}`, { completed: true, completed_at: new Date().toISOString() });
+    else await db.insert('training_progress', { agent_code: agentData.agent_code, module_id: currentModule.id, completed: true, completed_at: new Date().toISOString() });
     completedModuleIds.add(currentModule.id);
-    await db.logAudit('training', currentModule.id, 'completed', agentData.agent_code);
-    if (completedModuleIds.size === allModules.length) {
-      await createNotification(agentData.agent_code, '🎓 Certificate Unlocked', 'You completed all training modules. Download your Certificate of Achievement from the Documents tab.', 'success');
-    }
     toast('✅ Complete');
     closeModule();
     renderTraining();
     renderDocuments();
-  } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark as Complete'); }
+  } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark Complete'); }
 }
 
 function renderTierRates() {
@@ -1396,15 +1714,6 @@ function renderTierRates() {
   el.innerHTML = COMMISSION_TIERS.sort((a,b) => Number(a.min_amount) - Number(b.min_amount)).map(t => {
     const range = t.max_amount === null || t.max_amount === undefined ? `ZMW ${t.min_amount}+` : `ZMW ${t.min_amount} – ${t.max_amount}`;
     return `<div class="tier-row-display"><span style="color:rgba(255,255,255,.7);">${range}</span><strong style="color:var(--green);">${t.percentage}%</strong></div>`;
-  }).join('');
-
-  const exampleEl = document.getElementById('tierExample');
-  exampleEl.innerHTML = [50, 300, 750, 2000, 10000].map(amt => {
-    const { percentage, commission } = calcCommissionFromAmount(amt);
-    return `<div style="display:flex;justify-content:space-between;padding:4px 0;">
-      <span style="color:var(--muted);">Sale of ${fmtMoney(amt)}</span>
-      <span><strong>${fmtMoney(commission)}</strong> <span style="color:var(--muted);font-size:12px;">(${percentage}%)</span></span>
-    </div>`;
   }).join('');
 }
 
@@ -1441,7 +1750,6 @@ document.addEventListener('click', (e) => {
   const dd = document.getElementById('notifDropdown');
   if (dd && !dd.contains(e.target)) dd.classList.remove('open');
 });
-
 function renderNotifications() {
   const el = document.getElementById('notifList');
   const unread = myNotifs.filter(n => !n.read).length;
@@ -1459,7 +1767,6 @@ function renderNotifications() {
       <div class="notif-time">${fmtDateTime(n.created_at)}</div>
     </div>`).join('');
 }
-
 async function markNotifRead(id) {
   try { await db.update('notifications', `id=eq.${id}`, { read: true }); await loadNotifications(); } catch(e) {}
 }
@@ -1472,14 +1779,48 @@ async function markAllRead(e) {
   } catch(e) {}
 }
 
+function renderDocuments() {
+  const el = document.getElementById('docGrid');
+  if (!el) return;
+  const trainingDone = allModules.length > 0 && completedModuleIds.size === allModules.length;
+
+  const docs = [
+    { icon: 'fa-id-card', color: 'orange', title: 'Agent ID Card', desc: 'Your official branded ID card with photo and QR.', badge: 'ready', action: 'downloadIdCard()' },
+    { icon: 'fa-file-invoice-dollar', color: 'green', title: 'Sales Statement', desc: 'Complete record of every sale you have submitted.', badge: 'ready', action: 'downloadMyStatementPdf()' },
+    { icon: 'fa-calendar-days', color: 'blue', title: 'Monthly Statement', desc: 'Pick any month for a summary.', badge: 'ready', action: 'openStatement()' },
+    { icon: 'fa-certificate', color: 'purple', title: 'Certificate of Participation', desc: 'Confirms you joined the PhoneYa2 Agent Network.', badge: 'ready', action: 'downloadParticipationCert()' },
+    { icon: 'fa-award', color: 'yellow', title: 'Certificate of Achievement', desc: trainingDone ? 'All training complete.' : 'Complete all training to unlock.', badge: trainingDone ? 'ready' : 'locked', action: trainingDone ? 'downloadAchievementCert()' : 'showTrainingLocked()', disabled: !trainingDone },
+    { icon: 'fa-envelope-open-text', color: 'orange', title: 'Welcome Letter', desc: 'Personalised welcome letter.', badge: 'ready', action: 'downloadWelcomeLetter()' },
+    { icon: 'fa-file-signature', color: 'blue', title: 'Application Document', desc: myApplication ? 'Your submitted application as PDF.' : 'Not found.', badge: myApplication ? 'ready' : 'locked', action: myApplication ? 'downloadApplicationPdf()' : 'showLocked()', disabled: !myApplication },
+    { icon: 'fa-file-contract', color: 'green', title: 'Agent Agreement', desc: activeAgreement ? `Terms you accepted (v${esc(activeAgreement.version)}).` : 'Not available.', badge: activeAgreement ? 'ready' : 'locked', action: activeAgreement ? 'downloadAgreementPdf()' : 'showLocked()', disabled: !activeAgreement },
+  ];
+
+  el.innerHTML = docs.map(d => `
+    <div class="doc-card">
+      <div class="doc-icon ${d.color}"><i class="fas ${d.icon}"></i></div>
+      <div class="doc-body">
+        <div class="doc-title">${esc(d.title)}</div>
+        <div class="doc-desc">${d.desc}</div>
+        <span class="doc-badge ${d.badge}">${d.badge === 'ready' ? '✓ Ready' : '🔒 Locked'}</span>
+        <button class="doc-btn" ${d.disabled ? 'disabled' : ''} onclick="${d.action}"><i class="fas fa-download"></i> Download</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function downloadIdCard() { try { toast('🎫 Generating…'); await makeIdCardPdf(agentData); } catch(e) { toast('Error: ' + e.message); } }
+function downloadParticipationCert() { try { toast('🏅 Generating…'); makeParticipationCertificatePdf(agentData); } catch(e) {} }
+function downloadAchievementCert() { try { makeCertificatePdf({ agent: agentData, title: 'Certificate of Achievement', subtitle: 'Proudly awarded to', date: new Date().toLocaleDateString('en-ZM') }); } catch(e) {} }
+function downloadWelcomeLetter() { try { makeWelcomeLetterPdf(agentData); } catch(e) {} }
+function downloadApplicationPdf() { if (myApplication) makeApplicationPdf(myApplication, agentData); }
+function downloadAgreementPdf() { if (activeAgreement) makeAgreementPdf(activeAgreement, agentData); }
+function showTrainingLocked() { toast('🔒 Complete training to unlock'); }
+function showLocked() { toast('🔒 Not available'); }
+
 function downloadMyStatementPdf() {
   if (!agentSales.length) { toast('⚠️  No sales'); return; }
-  const sales = agentSales.map(s => ({
-    sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name,
-    amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status,
-  }));
+  const sales = agentSales.map(s => ({ sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name, amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status }));
   makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: 'All time', sales });
-  toast('📄 Downloading…');
 }
 
 function openStatement() {
@@ -1499,51 +1840,30 @@ function openStatement() {
   if (currentBtn) selectMonth(currentBtn, months[0].year, months[0].month);
   document.getElementById('statementModal').classList.add('open');
 }
-
 function selectMonth(btn, year, month) {
   document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const sales = agentSales.filter(s => {
-    const d = new Date(s.created_at);
-    return d.getFullYear() === year && d.getMonth() === month;
-  });
-  const confirmed = sales.filter(s => s.status === 'confirmed' || s.status === 'paid');
-  const pending   = sales.filter(s => s.status === 'pending');
-  const totalAmount = sales.reduce((t, s) => t + (s.amount || 0), 0);
-  const totalCommConfirmed = confirmed.reduce((t, s) => t + (s.commission || 0), 0);
-  const totalCommPending   = pending.reduce((t, s) => t + (s.commission || 0), 0);
+  const sales = agentSales.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; });
   selectedMonth = { year, month, label: new Date(year, month).toLocaleDateString('en-ZM', { month: 'long', year: 'numeric' }), sales };
-
   const preview = document.getElementById('stmtPreview');
   if (!sales.length) {
-    preview.innerHTML = '<div class="stmt-preview" style="text-align:center;padding:32px 20px;"><div style="font-size:2.5rem;margin-bottom:8px;">📭</div><div style="font-size:14px;color:var(--muted);">No sales.</div></div>';
+    preview.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">No sales this month.</div>';
     document.getElementById('downloadStmtBtn').disabled = true;
     return;
   }
-  preview.innerHTML = `
-    <div class="stmt-preview">
-      <div class="stmt-preview-title">${selectedMonth.label} Summary</div>
-      <div class="stmt-grid">
-        <div class="stmt-cell"><div class="stmt-cell-val">${sales.length}</div><div class="stmt-cell-lbl">Sales</div></div>
-        <div class="stmt-cell"><div class="stmt-cell-val" style="color:var(--orange);">${fmtMoney(totalAmount)}</div><div class="stmt-cell-lbl">Revenue</div></div>
-        <div class="stmt-cell"><div class="stmt-cell-val" style="color:#16a34a;">${fmtMoney(totalCommConfirmed)}</div><div class="stmt-cell-lbl">Commission</div></div>
-        <div class="stmt-cell"><div class="stmt-cell-val" style="color:var(--yellow);">${fmtMoney(totalCommPending)}</div><div class="stmt-cell-lbl">Pending</div></div>
-        <div class="stmt-cell"><div class="stmt-cell-val">${confirmed.length}</div><div class="stmt-cell-lbl">Confirmed</div></div>
-        <div class="stmt-cell"><div class="stmt-cell-val">${pending.length}</div><div class="stmt-cell-lbl">Awaiting</div></div>
-      </div>
-    </div>`;
+  const total = sales.reduce((t,s) => t + (s.amount||0), 0);
+  preview.innerHTML = `<div style="background:var(--light);border-radius:var(--r);padding:16px;text-align:center;">
+    <div style="font-size:12px;color:var(--muted);font-weight:700;">${selectedMonth.label}</div>
+    <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;">${sales.length} sales</div>
+    <div style="color:var(--orange);font-weight:700;">${fmtMoney(total)}</div>
+  </div>`;
   document.getElementById('downloadStmtBtn').disabled = false;
 }
-function closeStatement() { document.getElementById('statementModal').classList.remove('open'); selectedMonth = null; }
-
+function closeStatement() { document.getElementById('statementModal').classList.remove('open'); }
 function downloadMonthlyStatement() {
-  if (!selectedMonth || !selectedMonth.sales.length) return;
-  const sales = selectedMonth.sales.map(s => ({
-    sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name,
-    amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status,
-  }));
+  if (!selectedMonth) return;
+  const sales = selectedMonth.sales.map(s => ({ sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name, amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status }));
   makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: selectedMonth.label, sales });
-  toast('📄 Downloading…');
 }
 
 function showAgentTab(name, btn) {
@@ -1553,16 +1873,26 @@ function showAgentTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   if (name === 'documents') renderDocuments();
+  if (name === 'leads') { loadLeads(); }
+  if (name === 'messages' && !currentConversation) {
+    const teamBtn = document.querySelector('#agent-tab-messages .filter-pill');
+    if (teamBtn) switchChat('team', teamBtn);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const code = agentCode();
-  if (code) {
-    const agent = await db.getOne('agents', `agent_code=eq.${code}&active=eq.true`).catch(() => null);
-    if (agent) {
-      agentData = agent;
-      bootDashboard();
-    }
+  if (auth.isLoggedIn()) {
+    try {
+      const profile = await getProfile();
+      if (profile && profile.role === 'agent' && profile.agent_code) {
+        const agent = await db.getOne('agents', `agent_code=eq.${profile.agent_code}&active=eq.true`);
+        if (agent) {
+          profileData = profile;
+          agentData = agent;
+          bootDashboard();
+        }
+      }
+    } catch(e) {}
   }
 });
 </script>
