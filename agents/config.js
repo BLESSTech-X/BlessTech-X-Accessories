@@ -1,11 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════════
 // PhoneYa2 Agent Network — Shared Config & Utilities
+// V2 — Auth + Leads + Communication Hub
 // ═══════════════════════════════════════════════════════════════════════
 
 const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
 const SB_KEY  = 'sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei';
 
-window.ADMIN_PASSWORD = 'blesstech2026admin';
+window.ADMIN_PASSWORD = 'blesstech2026admin'; // legacy — will be phased out
 
 const CONFIG = {
   brandName:    'PhoneYa2-ZM',
@@ -33,6 +34,7 @@ const CONFIG = {
 let COMMISSION_TIERS = [];
 let AGENT_LEVELS = [];
 
+// ── TIERS + LEVELS ───────────────────────────────────────────────────────
 async function loadTiers() {
   try {
     const rows = await db.getAll('commission_tiers', { filter: 'active=eq.true', order: 'min_amount.asc' });
@@ -61,9 +63,6 @@ function calcCommissionFromAmount(amount) {
   const pct = Number(tier.percentage) || 0;
   return { percentage: pct, commission: Math.round(amt * pct / 100), tier };
 }
-
-function getCommissionPercent(amount) { return calcCommissionFromAmount(amount).percentage; }
-function calcCommission(amount)       { return calcCommissionFromAmount(amount).commission; }
 
 function calcAgentLevel(totalSales, totalRevenue) {
   if (!AGENT_LEVELS.length) return { current: null, next: null, progress: 0 };
@@ -96,7 +95,78 @@ async function getActiveCampaign(date) {
   } catch (e) { return null; }
 }
 
-// ── SUPABASE HELPER ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// AUTH — Supabase Auth (new)
+// ═══════════════════════════════════════════════════════════════════════
+
+const auth = {
+  async signIn(email, password) {
+    const url = `${SB_URL}/auth/v1/token?grant_type=password`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error_description || err.msg || 'Login failed');
+    }
+    const data = await res.json();
+    // Store token + user
+    sessionStorage.setItem('sb_token', data.access_token);
+    sessionStorage.setItem('sb_user_id', data.user.id);
+    sessionStorage.setItem('sb_email', data.user.email);
+    return data;
+  },
+
+  async signOut() {
+    const token = sessionStorage.getItem('sb_token');
+    if (token) {
+      try {
+        await fetch(`${SB_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` },
+        });
+      } catch (e) {}
+    }
+    sessionStorage.removeItem('sb_token');
+    sessionStorage.removeItem('sb_user_id');
+    sessionStorage.removeItem('sb_email');
+  },
+
+  currentUserId()  { return sessionStorage.getItem('sb_user_id'); },
+  currentEmail()   { return sessionStorage.getItem('sb_email'); },
+  currentToken()   { return sessionStorage.getItem('sb_token'); },
+
+  isLoggedIn()     { return !!sessionStorage.getItem('sb_token'); },
+};
+
+// Get the current user's profile (role, agent_code, name)
+async function getProfile() {
+  const uid = auth.currentUserId();
+  if (!uid) return null;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/profiles?id=eq.${uid}&select=*`, {
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${auth.currentToken()}`,
+      },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows?.[0] || null;
+  } catch (e) { return null; }
+}
+
+async function isAdmin() {
+  const p = await getProfile();
+  return p && p.role === 'admin';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SUPABASE REST HELPER (uses anon key — RLS enforces access)
+// ═══════════════════════════════════════════════════════════════════════
+
 const db = {
   async query(table, opts = {}) {
     let url = `${SB_URL}/rest/v1/${table}?`;
@@ -105,10 +175,14 @@ const db = {
     if (opts.order)   url += `order=${opts.order}&`;
     if (opts.limit)   url += `limit=${opts.limit}&`;
     url = url.replace(/&$/, '');
+
+    // If logged in, use the JWT — otherwise fall back to anon key
+    const token = auth.currentToken() || SB_KEY;
+
     const res = await fetch(url, {
       headers: {
         'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         ...(opts.prefer ? { 'Prefer': opts.prefer } : {}),
       },
@@ -157,7 +231,186 @@ const db = {
   },
 };
 
-// ── PHOTO UPLOAD ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// LEADS — mini CRM
+// ═══════════════════════════════════════════════════════════════════════
+
+const LEAD_STATUSES = [
+  { code: 'new',         label: 'New',         icon: 'fa-star',           cls: 'yellow' },
+  { code: 'contacted',   label: 'Contacted',   icon: 'fa-comment',        cls: 'blue' },
+  { code: 'interested',  label: 'Interested',  icon: 'fa-fire',           cls: 'orange' },
+  { code: 'negotiating', label: 'Negotiating', icon: 'fa-handshake',      cls: 'orange' },
+  { code: 'ordered',     label: 'Ordered',     icon: 'fa-cart-shopping',  cls: 'blue' },
+  { code: 'paid',        label: 'Paid',        icon: 'fa-money-bill',     cls: 'green' },
+  { code: 'delivered',   label: 'Delivered',   icon: 'fa-circle-check',   cls: 'green' },
+  { code: 'lost',        label: 'Lost',        icon: 'fa-circle-xmark',   cls: 'red' },
+];
+
+function leadStatusInfo(code) {
+  return LEAD_STATUSES.find(s => s.code === code) || LEAD_STATUSES[0];
+}
+
+async function createLead(data) {
+  const n = await db.nextId('leads');
+  const leadId = makeLeadId(n);
+  const payload = {
+    lead_id:         leadId,
+    agent_code:      data.agent_code,
+    customer_name:   data.customer_name,
+    customer_phone:  data.customer_phone,
+    customer_wa:     data.customer_wa || data.customer_phone,
+    product:         data.product || null,
+    quantity:        Number(data.quantity) || 1,
+    estimated_value: Number(data.estimated_value) || null,
+    location:        data.location || null,
+    notes:           data.notes || null,
+    source:          data.source || 'other',
+    status:          'new',
+    followup_date:   data.followup_date || null,
+  };
+  const result = await db.insert('leads', payload);
+  await db.logAudit('lead', leadId, 'created', data.agent_code, null, payload);
+  return result?.[0] || null;
+}
+
+async function updateLead(id, updates) {
+  updates.updated_at = new Date().toISOString();
+  if (updates.status) updates.last_contacted_at = new Date().toISOString();
+  const result = await db.update('leads', `id=eq.${id}`, updates);
+  return result?.[0] || null;
+}
+
+async function getLeads(agentCode) {
+  const filter = agentCode ? `agent_code=eq.${agentCode}` : '';
+  return db.getAll('leads', { filter, order: 'created_at.desc' });
+}
+
+async function getLeadsDueToday(agentCode) {
+  const today = new Date().toISOString().slice(0, 10);
+  return db.getAll('leads', {
+    filter: `agent_code=eq.${agentCode}&followup_date=lte.${today}&status=not.in.(delivered,lost)`,
+    order: 'followup_date.asc',
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MESSAGES / COMMUNICATION HUB
+// ═══════════════════════════════════════════════════════════════════════
+
+async function getConversationByType(type) {
+  return db.getOne('conversations', `type=eq.${type}`);
+}
+
+async function getMessages(conversationId, limit = 100) {
+  return db.getAll('messages', {
+    filter: `conversation_id=eq.${conversationId}`,
+    order: 'created_at.desc',
+    limit,
+  });
+}
+
+async function sendMessage(conversationId, payload) {
+  const profile = await getProfile();
+  const msg = {
+    conversation_id: conversationId,
+    sender_id:       auth.currentUserId(),
+    sender_name:     profile?.full_name || profile?.email || 'User',
+    message_type:    payload.message_type || 'text',
+    text:            payload.text || null,
+    media_url:       payload.media_url || null,
+    media_thumbnail: payload.media_thumbnail || null,
+    media_duration:  payload.media_duration || null,
+    reply_to_id:     payload.reply_to_id || null,
+  };
+  return db.insert('messages', msg);
+}
+
+async function keepMessage(id) {
+  return db.update('messages', `id=eq.${id}`, { is_kept: true });
+}
+
+async function deleteMessage(id) {
+  return db.update('messages', `id=eq.${id}`, { deleted_at: new Date().toISOString() });
+}
+
+async function addReaction(messageId, emoji) {
+  return db.insert('message_reactions', {
+    message_id: messageId,
+    user_id:    auth.currentUserId(),
+    emoji:      emoji,
+  });
+}
+
+async function removeReaction(messageId, emoji) {
+  return db.remove('message_reactions', `message_id=eq.${messageId}&user_id=eq.${auth.currentUserId()}&emoji=eq.${emoji}`);
+}
+
+// ── CHAT MEDIA UPLOAD (with compression for images) ─────────────────────
+async function uploadChatMedia(file, type = 'image') {
+  const uid = auth.currentUserId();
+  if (!uid) throw new Error('Not logged in');
+  if (!file) throw new Error('No file provided');
+
+  let uploadBlob = file;
+  let ext = 'bin';
+  let contentType = file.type || 'application/octet-stream';
+
+  if (type === 'image' && file.type?.startsWith('image/')) {
+    uploadBlob  = await compressImage(file, 1200, 0.82);
+    ext         = 'jpg';
+    contentType = 'image/jpeg';
+  } else if (type === 'voice') {
+    ext         = 'webm';
+    contentType = file.type || 'audio/webm';
+  } else {
+    ext = (file.name?.split('.').pop() || 'bin').toLowerCase();
+  }
+
+  const filename = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const url = `${SB_URL}/storage/v1/object/chat-media/${filename}`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${auth.currentToken()}`,
+      'Content-Type': contentType,
+      'x-upsert': 'false',
+      'cache-control': 'public, max-age=31536000',
+    },
+    body: uploadBlob,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Upload failed: ${res.status}`);
+  }
+  return `${SB_URL}/storage/v1/object/public/chat-media/${filename}`;
+}
+
+// ── REALTIME SUBSCRIPTION (polling fallback for now) ────────────────────
+// Simple polling — checks for new messages every N seconds.
+// Upgrade to Supabase Realtime websocket in V2.
+function subscribeToMessages(conversationId, onNew, intervalMs = 4000) {
+  let lastCheck = new Date().toISOString();
+  const timer = setInterval(async () => {
+    try {
+      const rows = await db.getAll('messages', {
+        filter: `conversation_id=eq.${conversationId}&created_at=gt.${lastCheck}`,
+        order: 'created_at.asc',
+      });
+      if (rows && rows.length) {
+        lastCheck = rows[rows.length - 1].created_at;
+        rows.forEach(onNew);
+      }
+    } catch (e) {}
+  }, intervalMs);
+  return () => clearInterval(timer);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PHOTO UPLOAD (agent profile)
+// ═══════════════════════════════════════════════════════════════════════
+
 function compressImage(file, maxDim = 800, quality = 0.82) {
   return new Promise((resolve, reject) => {
     if (!file) return reject(new Error('No file provided'));
@@ -201,8 +454,8 @@ async function uploadAgentPhoto(file, agentCode) {
   if (!agentCode) throw new Error('Agent code required');
   const blob = await compressImage(file);
   const filename = `${agentCode}/photo-${Date.now()}.jpg`;
-  const uploadUrl = `${SB_URL}/storage/v1/object/agent-photos/${filename}`;
-  const res = await fetch(uploadUrl, {
+  const url = `${SB_URL}/storage/v1/object/agent-photos/${filename}`;
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       'apikey': SB_KEY,
@@ -258,7 +511,10 @@ function renderAvatar(agent, size = 56, extraClass = '') {
   return `<div class="${extraClass}" style="width:${s}px;height:${s}px;border-radius:50%;background:linear-gradient(135deg,#ff6000,#ff9f43);display:flex;align-items:center;justify-content:center;color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:${Math.round(s*0.42)}px;flex-shrink:0;">${(agent && agent.full_name ? agent.full_name[0].toUpperCase() : '?')}</div>`;
 }
 
-// ── WALLET ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// WALLET / NOTIFICATIONS / REFERRAL / FRAUD / CUSTOMERS
+// ═══════════════════════════════════════════════════════════════════════
+
 async function recalcWallet(agentCode) {
   try {
     const sales = await db.getAll('sales', { filter: `agent_code=eq.${agentCode}` });
@@ -279,7 +535,6 @@ async function recalcWallet(agentCode) {
   } catch (e) {}
 }
 
-// ── NOTIFICATIONS ────────────────────────────────────────────────────────
 async function createNotification(agentCode, title, message, type, link) {
   try {
     await db.insert('notifications', {
@@ -289,7 +544,6 @@ async function createNotification(agentCode, title, message, type, link) {
   } catch (e) {}
 }
 
-// ── REFERRAL ANALYTICS ───────────────────────────────────────────────────
 async function logReferralEvent(agentCode, eventType, metadata) {
   try {
     await db.insert('referral_events', {
@@ -299,7 +553,6 @@ async function logReferralEvent(agentCode, eventType, metadata) {
   } catch (e) {}
 }
 
-// ── FRAUD DETECTION ──────────────────────────────────────────────────────
 async function checkFraud(sale, agentData) {
   const flags = [];
   const agentPhoneClean = (agentData.phone || '').replace(/\D/g, '').slice(-9);
@@ -324,7 +577,6 @@ async function checkFraud(sale, agentData) {
   return flags;
 }
 
-// ── CUSTOMER UPSERT ──────────────────────────────────────────────────────
 async function upsertCustomer(sale) {
   if (!sale.customer_phone) return;
   try {
@@ -349,7 +601,10 @@ async function upsertCustomer(sale) {
   } catch (e) {}
 }
 
-// ── ID GENERATORS ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// ID GENERATORS
+// ═══════════════════════════════════════════════════════════════════════
+
 function makeAppId(n)     { return `PY-${new Date().getFullYear()}-${String(n).padStart(4,'0')}`; }
 function makeAgentId(n)   { return `PYA-${String(n).padStart(4,'0')}`; }
 function makeAgentCode(n) { return `PY${String(n).padStart(3,'0')}`; }
@@ -359,7 +614,10 @@ function makePayoutId(n)  { return `PR-${String(n).padStart(4,'0')}`; }
 function makeCampaignId(n){ return `CAMP-${String(n).padStart(3,'0')}`; }
 function makeMaterialId(n){ return `M-${String(n).padStart(4,'0')}`; }
 
-// ── UTILITIES ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════
+
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -376,7 +634,36 @@ function fmtDateTime(d) {
   if (!d) return '';
   return new Date(d).toLocaleString('en-ZM', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
 }
+function fmtTime(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleTimeString('en-ZM', { hour:'2-digit', minute:'2-digit' });
+}
 function fmtMoney(n) { return 'ZMW ' + Number(n || 0).toLocaleString(); }
+
+function timeAgo(date) {
+  if (!date) return '';
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return fmtDate(date);
+}
+
+function timeUntilExpiry(expiresAt) {
+  if (!expiresAt) return '';
+  const seconds = Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000);
+  if (seconds <= 0) return 'expired';
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  if (days > 0) return `${days}d ${hours}h`;
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
 
 function toast(msg, duration = 3000) {
   let el = document.getElementById('toast');
@@ -410,7 +697,10 @@ function legacyCopy(text) {
   document.execCommand('copy'); document.body.removeChild(ta);
 }
 
-// ── AUTH ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// LEGACY AUTH HELPERS (still used by old pages during transition)
+// ═══════════════════════════════════════════════════════════════════════
+
 function adminLoggedIn() { return sessionStorage.getItem('btx_admin') === 'yes'; }
 function agentCode() { return sessionStorage.getItem('agent_code') || localStorage.getItem('agent_code'); }
 function requireAdmin() { if (!adminLoggedIn()) { window.location.href = 'admin.html'; return false; } return true; }
@@ -420,7 +710,10 @@ function requireAgent() {
   return code;
 }
 
-// ── NAVBAR ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// NAVBAR
+// ═══════════════════════════════════════════════════════════════════════
+
 function buildNav(active) {
   return `
   <nav class="navbar">
@@ -443,11 +736,10 @@ function buildNav(active) {
   </nav>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// PDF GENERATORS — ALL BRANDED
-// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════
+// PDF GENERATORS (unchanged from previous version)
+// ═══════════════════════════════════════════════════════════════════════
 
-// Shared header/footer helper for A4 documents
 function pdfAddHeader(doc, title, subtitle) {
   const W = doc.internal.pageSize.getWidth();
   doc.setFillColor(10, 10, 26);
@@ -477,7 +769,6 @@ function pdfAddFooter(doc, label) {
   }
 }
 
-// Helper to load an image as data URL (for ID card photo)
 function loadImageAsDataUrl(url) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -497,7 +788,6 @@ function loadImageAsDataUrl(url) {
   });
 }
 
-// ── PDF: SALES STATEMENT ─────────────────────────────────────────────────
 function makeSalesStatementPdf(opts = {}) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -554,11 +844,9 @@ function makeSalesStatementPdf(opts = {}) {
   doc.save(`PhoneYa2-Statement-${agentCode || 'All'}-${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
-// ── PDF: ID CARD (with photo) ────────────────────────────────────────────
 async function makeIdCardPdf(agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
-
   const doc = new jsPDF({ unit: 'pt', format: [240, 380], orientation: 'portrait' });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
@@ -592,7 +880,6 @@ async function makeIdCardPdf(agent) {
 
   doc.setTextColor(255, 255, 255); doc.setFontSize(14); doc.setFont('helvetica', 'bold');
   doc.text(agent.full_name || 'Agent', W / 2, 175, { align: 'center' });
-
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
   doc.setTextColor(255, 159, 67);
   doc.text('Sales Assistant', W / 2, 192, { align: 'center' });
@@ -615,7 +902,6 @@ async function makeIdCardPdf(agent) {
   doc.save(`PhoneYa2-ID-${agent.agent_code}.pdf`);
 }
 
-// ── PDF: ACHIEVEMENT CERTIFICATE ─────────────────────────────────────────
 function makeCertificatePdf(opts) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -638,11 +924,9 @@ function makeCertificatePdf(opts) {
 
   doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(38);
   doc.text(title || 'Certificate of Achievement', W / 2, 180, { align: 'center' });
-
   doc.setFont('helvetica', 'normal'); doc.setFontSize(14);
   doc.setTextColor(107, 114, 128);
   doc.text(subtitle || 'Proudly awarded to', W / 2, 215, { align: 'center' });
-
   doc.setFont('helvetica', 'bold'); doc.setFontSize(30);
   doc.setTextColor(255, 96, 0);
   doc.text(agent.full_name || 'Agent', W / 2, 265, { align: 'center' });
@@ -659,14 +943,12 @@ function makeCertificatePdf(opts) {
   doc.line(120, H - 90, 320, H - 90);
   doc.setFontSize(10);
   doc.text('Authorized Signature', 220, H - 75, { align: 'center' });
-
   doc.line(W - 320, H - 90, W - 120, H - 90);
   doc.text('PhoneYa2-ZM Director', W - 220, H - 75, { align: 'center' });
 
   doc.save(`PhoneYa2-Certificate-Achievement-${agent.agent_code}.pdf`);
 }
 
-// ── PDF: PARTICIPATION CERTIFICATE ───────────────────────────────────────
 function makeParticipationCertificatePdf(agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -688,11 +970,9 @@ function makeParticipationCertificatePdf(agent) {
 
   doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(34);
   doc.text('Certificate of Participation', W / 2, 170, { align: 'center' });
-
   doc.setFont('helvetica', 'normal'); doc.setFontSize(14);
   doc.setTextColor(107, 114, 128);
   doc.text('This certifies that', W / 2, 205, { align: 'center' });
-
   doc.setFont('helvetica', 'bold'); doc.setFontSize(32);
   doc.setTextColor(255, 96, 0);
   doc.text(agent.full_name || 'Agent', W / 2, 255, { align: 'center' });
@@ -706,10 +986,8 @@ function makeParticipationCertificatePdf(agent) {
   const lines = doc.splitTextToSize(text, 500);
   let ly = 305;
   lines.forEach(line => { doc.text(line, W / 2, ly, { align: 'center' }); ly += 18; });
-
   doc.setFontSize(10);
   doc.text(`Agent ID: ${agent.agent_id || '—'}`, W / 2, ly + 20, { align: 'center' });
-
   doc.setFontSize(11);
   doc.setTextColor(107, 114, 128);
   doc.text(`Issued: ${fmtDateLong(new Date())}`, W / 2, H - 120, { align: 'center' });
@@ -718,14 +996,12 @@ function makeParticipationCertificatePdf(agent) {
   doc.line(120, H - 90, 320, H - 90);
   doc.setFontSize(10);
   doc.text('Authorized Signature', 220, H - 75, { align: 'center' });
-
   doc.line(W - 320, H - 90, W - 120, H - 90);
   doc.text('PhoneYa2-ZM Director', W - 220, H - 75, { align: 'center' });
 
   doc.save(`PhoneYa2-Certificate-Participation-${agent.agent_code}.pdf`);
 }
 
-// ── PDF: WELCOME LETTER ──────────────────────────────────────────────────
 function makeWelcomeLetterPdf(agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -738,18 +1014,15 @@ function makeWelcomeLetterPdf(agent) {
   let y = 120;
   doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
   doc.text('Welcome to PhoneYa2-ZM', 40, y); y += 30;
-
   doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
   doc.setTextColor(107, 114, 128);
   doc.text(fmtDateLong(new Date()), 40, y); y += 25;
-
-  doc.setTextColor(26, 26, 46);
-  doc.setFontSize(12);
+  doc.setTextColor(26, 26, 46); doc.setFontSize(12);
   doc.text(`Dear ${agent.full_name || 'Agent'},`, 40, y); y += 25;
 
   const paragraphs = [
     'On behalf of the entire PhoneYa2-ZM team, we are delighted to welcome you to our Sales Agent Network.',
-    'You are now an official PhoneYa2-ZM Sales Assistant. Your Agent ID is ' + (agent.agent_id || '—') + ' and your Agent Code is ' + (agent.agent_code || '—') + '. You can use these identifiers to log in to your Agent Dashboard and to promote PhoneYa2-ZM products.',
+    'You are now an official PhoneYa2-ZM Sales Assistant. Your Agent ID is ' + (agent.agent_id || '—') + ' and your Agent Code is ' + (agent.agent_code || '—') + '.',
     'Your personal referral link is:',
   ];
   paragraphs.forEach(p => {
@@ -758,7 +1031,6 @@ function makeWelcomeLetterPdf(agent) {
     y += 8;
   });
 
-  // Referral link box
   doc.setFillColor(245, 245, 250);
   const refText = agent.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agent.agent_code}`;
   const refLines = doc.splitTextToSize(refText, W - 100);
@@ -768,11 +1040,10 @@ function makeWelcomeLetterPdf(agent) {
   refLines.forEach((line, i) => { doc.text(line, 50, y + 20 + i * 16); });
   y += boxH + 20;
 
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
-  doc.setTextColor(26, 26, 46);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.setTextColor(26, 26, 46);
   const remaining = [
-    'As an agent you earn commission on every confirmed sale. You can view your commission, submit new sales, and track your progress directly from your dashboard.',
-    'We have included a training centre in your dashboard where you can complete 9 short modules to unlock your Certificate of Achievement. We highly recommend completing them.',
+    'As an agent you earn commission on every confirmed sale.',
+    'We have included a training centre in your dashboard where you can complete 9 short modules to unlock your Certificate of Achievement.',
     'If you have any questions, simply reach out to us on WhatsApp at +' + CONFIG.waNumber + '.',
     'Once again, welcome. We look forward to a successful partnership.',
   ];
@@ -794,7 +1065,6 @@ function makeWelcomeLetterPdf(agent) {
   doc.save(`PhoneYa2-Welcome-${agent.agent_code}.pdf`);
 }
 
-// ── PDF: APPLICATION ─────────────────────────────────────────────────────
 function makeApplicationPdf(application, agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -815,20 +1085,12 @@ function makeApplicationPdf(application, agent) {
 
   const sections = [
     ['Personal Information', [
-      ['Full Name', a.full_name],
-      ['Age', a.age],
-      ['Location', a.location],
-      ['Education', a.education],
-      ['Phone', a.phone],
-      ['WhatsApp', a.whatsapp],
-      ['Email', a.email],
+      ['Full Name', a.full_name], ['Age', a.age], ['Location', a.location],
+      ['Education', a.education], ['Phone', a.phone], ['WhatsApp', a.whatsapp], ['Email', a.email],
     ]],
     ['Background', [
-      ['Occupation', a.occupation],
-      ['Social Platforms', a.platforms],
-      ['Sales Experience', a.experience],
-      ['Network Size', a.reach],
-      ['Hours Per Week', a.hours],
+      ['Occupation', a.occupation], ['Social Platforms', a.platforms],
+      ['Sales Experience', a.experience], ['Network Size', a.reach], ['Hours Per Week', a.hours],
       ['Referral Source', a.source],
     ]],
   ];
@@ -838,7 +1100,6 @@ function makeApplicationPdf(application, agent) {
     doc.rect(40, y, W - 80, 20, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(80, 80, 100);
     doc.text(title, 48, y + 14); y += 28;
-
     fields.forEach(([label, value]) => {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(120, 120, 140);
       doc.text(label, 40, y);
@@ -852,7 +1113,6 @@ function makeApplicationPdf(application, agent) {
     y += 8;
   });
 
-  // Motivation
   doc.setFillColor(245, 245, 250);
   doc.rect(40, y, W - 80, 20, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(80, 80, 100);
@@ -865,7 +1125,6 @@ function makeApplicationPdf(application, agent) {
   doc.save(`PhoneYa2-Application-${a.app_id || 'unknown'}.pdf`);
 }
 
-// ── PDF: AGENT AGREEMENT ─────────────────────────────────────────────────
 function makeAgreementPdf(agreement, agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -885,11 +1144,9 @@ function makeAgreementPdf(agreement, agent) {
     if (agent.agreement_accepted_at) doc.text(`Accepted: ${fmtDate(agent.agreement_accepted_at)}`, 40, y), y += 14;
   }
   y += 12;
-
   doc.setDrawColor(229, 231, 235);
   doc.line(40, y, W - 40, y);
   y += 20;
-
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(26, 26, 46);
   const content = (agreement && agreement.content) || 'Agreement text not available.';
   const lines = doc.splitTextToSize(content, W - 80);
@@ -902,7 +1159,10 @@ function makeAgreementPdf(agreement, agent) {
   doc.save(`PhoneYa2-Agreement-${(agent && agent.agent_code) || 'agent'}.pdf`);
 }
 
-// ── PWA REGISTRATION ─────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// PWA REGISTRATION
+// ═══════════════════════════════════════════════════════════════════════
+
 (function registerPWA() {
   if (typeof document === 'undefined') return;
   if (!document.querySelector('link[rel="manifest"]')) {
