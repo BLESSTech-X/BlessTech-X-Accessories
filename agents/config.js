@@ -157,9 +157,7 @@ const db = {
   },
 };
 
-// ── PHOTO UPLOAD (with client-side compression) ──────────────────────────
-// Compresses an image File to a small JPEG Blob (~200 KB max).
-// Returns a Promise<Blob>.
+// ── PHOTO UPLOAD ─────────────────────────────────────────────────────────
 function compressImage(file, maxDim = 800, quality = 0.82) {
   return new Promise((resolve, reject) => {
     if (!file) return reject(new Error('No file provided'));
@@ -171,7 +169,6 @@ function compressImage(file, maxDim = 800, quality = 0.82) {
       const img = new Image();
       img.onload = () => {
         let { width, height } = img;
-        // Scale down so the largest dimension is maxDim
         if (width > height && width > maxDim) {
           height = Math.round((height * maxDim) / width);
           width = maxDim;
@@ -183,7 +180,6 @@ function compressImage(file, maxDim = 800, quality = 0.82) {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        // White background (in case original is transparent)
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
@@ -201,17 +197,11 @@ function compressImage(file, maxDim = 800, quality = 0.82) {
   });
 }
 
-// Uploads a photo for an agent. Returns the public URL.
 async function uploadAgentPhoto(file, agentCode) {
   if (!agentCode) throw new Error('Agent code required');
-
-  // Compress the file first
   const blob = await compressImage(file);
-
-  // Build a unique filename with timestamp (so cache busts when they re-upload)
   const filename = `${agentCode}/photo-${Date.now()}.jpg`;
   const uploadUrl = `${SB_URL}/storage/v1/object/agent-photos/${filename}`;
-
   const res = await fetch(uploadUrl, {
     method: 'POST',
     headers: {
@@ -223,57 +213,39 @@ async function uploadAgentPhoto(file, agentCode) {
     },
     body: blob,
   });
-
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || `Upload failed: ${res.status}`);
   }
-
-  // Public URL (Supabase Storage public bucket URL pattern)
   const publicUrl = `${SB_URL}/storage/v1/object/public/agent-photos/${filename}`;
-
-  // Save to the agent's record
   await db.update('agents', `agent_code=eq.${agentCode}`, {
     profile_photo_url: publicUrl,
     photo_updated_at: new Date().toISOString(),
   });
-
-  // Audit log
   await db.logAudit('agent', agentCode, 'photo_uploaded', agentCode, null, { url: publicUrl });
-
   return publicUrl;
 }
 
-// Delete an agent's photo (removes file from storage + clears DB field)
 async function deleteAgentPhoto(agentCode, currentPhotoUrl) {
   if (!agentCode) throw new Error('Agent code required');
-
-  // Extract the storage path from the URL if provided
   if (currentPhotoUrl && currentPhotoUrl.includes('/agent-photos/')) {
     const path = currentPhotoUrl.split('/agent-photos/')[1];
     if (path) {
       try {
         await fetch(`${SB_URL}/storage/v1/object/agent-photos/${path}`, {
           method: 'DELETE',
-          headers: {
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-          },
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
         });
-      } catch (e) { /* ignore storage delete errors */ }
+      } catch (e) {}
     }
   }
-
-  // Clear DB field
   await db.update('agents', `agent_code=eq.${agentCode}`, {
     profile_photo_url: null,
     photo_updated_at: new Date().toISOString(),
   });
-
   await db.logAudit('agent', agentCode, 'photo_deleted', agentCode);
 }
 
-// Helper — returns an <img> tag or initials avatar, whichever is appropriate
 function renderAvatar(agent, size = 56, extraClass = '') {
   const s = Number(size) || 56;
   if (agent && agent.profile_photo_url) {
@@ -396,6 +368,10 @@ function fmtDate(d) {
   if (!d) return '';
   return new Date(d).toLocaleDateString('en-ZM', { day:'numeric', month:'short', year:'numeric' });
 }
+function fmtDateLong(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-ZM', { day:'numeric', month:'long', year:'numeric' });
+}
 function fmtDateTime(d) {
   if (!d) return '';
   return new Date(d).toLocaleString('en-ZM', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
@@ -467,7 +443,61 @@ function buildNav(active) {
   </nav>`;
 }
 
-// ── PDF STATEMENT ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// PDF GENERATORS — ALL BRANDED
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Shared header/footer helper for A4 documents
+function pdfAddHeader(doc, title, subtitle) {
+  const W = doc.internal.pageSize.getWidth();
+  doc.setFillColor(10, 10, 26);
+  doc.rect(0, 0, W, 80, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('PhoneYa2-ZM', 40, 36);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(255, 159, 67);
+  doc.text('Agent Network · ' + (subtitle || title), 40, 56);
+}
+
+function pdfAddFooter(doc, label) {
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(229, 231, 235);
+    doc.line(40, pageH - 40, pageW - 40, pageH - 40);
+    doc.setFontSize(8);
+    doc.setTextColor(107, 114, 128);
+    doc.text('PhoneYa2-ZM · Smart Choices. Better Connection.', 40, pageH - 24);
+    doc.text(`${label || ''} · Page ${i} of ${pageCount}`, pageW - 40, pageH - 24, { align: 'right' });
+  }
+}
+
+// Helper to load an image as data URL (for ID card photo)
+function loadImageAsDataUrl(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      } catch (e) { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+// ── PDF: SALES STATEMENT ─────────────────────────────────────────────────
 function makeSalesStatementPdf(opts = {}) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -476,15 +506,9 @@ function makeSalesStatementPdf(opts = {}) {
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
 
-  doc.setFillColor(10, 10, 26); doc.rect(0, 0, pageW, 70, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
-  doc.text('PhoneYa2-ZM', 40, 32);
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-  doc.setTextColor(255, 159, 67);
-  doc.text('Agent Network · Sales Statement', 40, 50);
+  pdfAddHeader(doc, 'Sales Statement', 'Sales Statement');
 
-  let y = 100;
+  let y = 110;
   doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
   doc.text('SALES STATEMENT', 40, y); y += 20;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(107, 114, 128);
@@ -526,19 +550,11 @@ function makeSalesStatementPdf(opts = {}) {
   doc.setTextColor(22, 163, 74); doc.text(`Confirmed commission: ${fmtMoney(totals.confirmed)}`, 40, ty); ty += 14;
   doc.setTextColor(245, 158, 11); doc.text(`Pending commission: ${fmtMoney(totals.pending)}`, 40, ty);
 
-  const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setDrawColor(229, 231, 235);
-    doc.line(40, pageH - 40, pageW - 40, pageH - 40);
-    doc.setFontSize(8); doc.setTextColor(107, 114, 128);
-    doc.text('PhoneYa2-ZM · Smart Choices. Better Connection.', 40, pageH - 24);
-    doc.text(`Page ${i} of ${pageCount}`, pageW - 40, pageH - 24, { align: 'right' });
-  }
+  pdfAddFooter(doc, agentCode || 'All');
   doc.save(`PhoneYa2-Statement-${agentCode || 'All'}-${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
-// ── PDF — ID CARD (with photo) ───────────────────────────────────────────
+// ── PDF: ID CARD (with photo) ────────────────────────────────────────────
 async function makeIdCardPdf(agent) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -557,20 +573,17 @@ async function makeIdCardPdf(agent) {
   doc.setTextColor(255, 159, 67);
   doc.text('SALES ASSISTANT ID CARD', W / 2, 54, { align: 'center' });
 
-  // Try to add the photo
   let photoAdded = false;
   if (agent.profile_photo_url) {
     try {
       const img = await loadImageAsDataUrl(agent.profile_photo_url);
       if (img) {
-        // Photo is 60pt wide, centered
         doc.addImage(img, 'JPEG', W / 2 - 30, 80, 60, 60, undefined, 'FAST');
         photoAdded = true;
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
   }
   if (!photoAdded) {
-    // Fallback circle with initial
     doc.setFillColor(255, 96, 0);
     doc.circle(W / 2, 110, 30, 'F');
     doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
@@ -602,27 +615,7 @@ async function makeIdCardPdf(agent) {
   doc.save(`PhoneYa2-ID-${agent.agent_code}.pdf`);
 }
 
-// Helper to load remote image as data URL (for jsPDF)
-function loadImageAsDataUrl(url) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg', 0.85));
-      } catch (e) { resolve(null); }
-    };
-    img.onerror = () => resolve(null);
-    img.src = url;
-  });
-}
-
-// ── PDF — CERTIFICATE ────────────────────────────────────────────────────
+// ── PDF: ACHIEVEMENT CERTIFICATE ─────────────────────────────────────────
 function makeCertificatePdf(opts) {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
@@ -641,10 +634,10 @@ function makeCertificatePdf(opts) {
   doc.text('PhoneYa2-ZM', 60, 70);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
   doc.setTextColor(255, 159, 67);
-  doc.text('Agent Network · Certificate', 60, 88);
+  doc.text('Agent Network · Certificate of Achievement', 60, 88);
 
   doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(38);
-  doc.text(title || 'Certificate', W / 2, 180, { align: 'center' });
+  doc.text(title || 'Certificate of Achievement', W / 2, 180, { align: 'center' });
 
   doc.setFont('helvetica', 'normal'); doc.setFontSize(14);
   doc.setTextColor(107, 114, 128);
@@ -670,7 +663,243 @@ function makeCertificatePdf(opts) {
   doc.line(W - 320, H - 90, W - 120, H - 90);
   doc.text('PhoneYa2-ZM Director', W - 220, H - 75, { align: 'center' });
 
-  doc.save(`PhoneYa2-Certificate-${agent.agent_code}.pdf`);
+  doc.save(`PhoneYa2-Certificate-Achievement-${agent.agent_code}.pdf`);
+}
+
+// ── PDF: PARTICIPATION CERTIFICATE ───────────────────────────────────────
+function makeParticipationCertificatePdf(agent) {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+
+  doc.setDrawColor(124, 58, 237); doc.setLineWidth(6);
+  doc.rect(20, 20, W - 40, H - 40);
+  doc.setDrawColor(10, 10, 26); doc.setLineWidth(1);
+  doc.rect(30, 30, W - 60, H - 60);
+
+  doc.setFillColor(10, 10, 26); doc.rect(30, 30, W - 60, 70, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
+  doc.text('PhoneYa2-ZM', 60, 70);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  doc.setTextColor(255, 159, 67);
+  doc.text('Agent Network · Certificate of Participation', 60, 88);
+
+  doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(34);
+  doc.text('Certificate of Participation', W / 2, 170, { align: 'center' });
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(14);
+  doc.setTextColor(107, 114, 128);
+  doc.text('This certifies that', W / 2, 205, { align: 'center' });
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(32);
+  doc.setTextColor(255, 96, 0);
+  doc.text(agent.full_name || 'Agent', W / 2, 255, { align: 'center' });
+
+  doc.setDrawColor(229, 231, 235); doc.setLineWidth(1);
+  doc.line(W / 2 - 200, 275, W / 2 + 200, 275);
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
+  doc.setTextColor(107, 114, 128);
+  const text = 'has been officially accepted into the PhoneYa2-ZM Sales Agent Network and is authorised to promote and sell PhoneYa2-ZM products.';
+  const lines = doc.splitTextToSize(text, 500);
+  let ly = 305;
+  lines.forEach(line => { doc.text(line, W / 2, ly, { align: 'center' }); ly += 18; });
+
+  doc.setFontSize(10);
+  doc.text(`Agent ID: ${agent.agent_id || '—'}`, W / 2, ly + 20, { align: 'center' });
+
+  doc.setFontSize(11);
+  doc.setTextColor(107, 114, 128);
+  doc.text(`Issued: ${fmtDateLong(new Date())}`, W / 2, H - 120, { align: 'center' });
+
+  doc.setDrawColor(26, 26, 46); doc.setLineWidth(1);
+  doc.line(120, H - 90, 320, H - 90);
+  doc.setFontSize(10);
+  doc.text('Authorized Signature', 220, H - 75, { align: 'center' });
+
+  doc.line(W - 320, H - 90, W - 120, H - 90);
+  doc.text('PhoneYa2-ZM Director', W - 220, H - 75, { align: 'center' });
+
+  doc.save(`PhoneYa2-Certificate-Participation-${agent.agent_code}.pdf`);
+}
+
+// ── PDF: WELCOME LETTER ──────────────────────────────────────────────────
+function makeWelcomeLetterPdf(agent) {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+
+  pdfAddHeader(doc, 'Welcome Letter', 'Welcome Letter');
+
+  let y = 120;
+  doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
+  doc.text('Welcome to PhoneYa2-ZM', 40, y); y += 30;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+  doc.setTextColor(107, 114, 128);
+  doc.text(fmtDateLong(new Date()), 40, y); y += 25;
+
+  doc.setTextColor(26, 26, 46);
+  doc.setFontSize(12);
+  doc.text(`Dear ${agent.full_name || 'Agent'},`, 40, y); y += 25;
+
+  const paragraphs = [
+    'On behalf of the entire PhoneYa2-ZM team, we are delighted to welcome you to our Sales Agent Network.',
+    'You are now an official PhoneYa2-ZM Sales Assistant. Your Agent ID is ' + (agent.agent_id || '—') + ' and your Agent Code is ' + (agent.agent_code || '—') + '. You can use these identifiers to log in to your Agent Dashboard and to promote PhoneYa2-ZM products.',
+    'Your personal referral link is:',
+  ];
+  paragraphs.forEach(p => {
+    const lines = doc.splitTextToSize(p, W - 80);
+    lines.forEach(line => { doc.text(line, 40, y); y += 16; });
+    y += 8;
+  });
+
+  // Referral link box
+  doc.setFillColor(245, 245, 250);
+  const refText = agent.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agent.agent_code}`;
+  const refLines = doc.splitTextToSize(refText, W - 100);
+  const boxH = 20 + (refLines.length * 16);
+  doc.roundedRect(40, y, W - 80, boxH, 6, 6, 'F');
+  doc.setTextColor(255, 96, 0); doc.setFont('courier', 'bold'); doc.setFontSize(10);
+  refLines.forEach((line, i) => { doc.text(line, 50, y + 20 + i * 16); });
+  y += boxH + 20;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
+  doc.setTextColor(26, 26, 46);
+  const remaining = [
+    'As an agent you earn commission on every confirmed sale. You can view your commission, submit new sales, and track your progress directly from your dashboard.',
+    'We have included a training centre in your dashboard where you can complete 9 short modules to unlock your Certificate of Achievement. We highly recommend completing them.',
+    'If you have any questions, simply reach out to us on WhatsApp at +' + CONFIG.waNumber + '.',
+    'Once again, welcome. We look forward to a successful partnership.',
+  ];
+  remaining.forEach(p => {
+    const lines = doc.splitTextToSize(p, W - 80);
+    lines.forEach(line => { doc.text(line, 40, y); y += 16; });
+    y += 10;
+  });
+
+  y += 10;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Warm regards,', 40, y); y += 18;
+  doc.text('PhoneYa2-ZM Team', 40, y); y += 16;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  doc.setTextColor(107, 114, 128);
+  doc.text('A BLESSTech-X Venture · Lusaka, Zambia', 40, y);
+
+  pdfAddFooter(doc, 'Welcome Letter');
+  doc.save(`PhoneYa2-Welcome-${agent.agent_code}.pdf`);
+}
+
+// ── PDF: APPLICATION ─────────────────────────────────────────────────────
+function makeApplicationPdf(application, agent) {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const a = application || {};
+
+  pdfAddHeader(doc, 'Application', 'Sales Agent Application');
+
+  let y = 110;
+  doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+  doc.text('SALES AGENT APPLICATION', 40, y); y += 22;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(107, 114, 128);
+  doc.text(`Application ID: ${a.app_id || '—'}`, 40, y); y += 14;
+  doc.text(`Date Submitted: ${fmtDate(a.created_at)}`, 40, y); y += 14;
+  doc.text(`Status: ${(a.status || 'pending').toUpperCase()}`, 40, y); y += 20;
+
+  const sections = [
+    ['Personal Information', [
+      ['Full Name', a.full_name],
+      ['Age', a.age],
+      ['Location', a.location],
+      ['Education', a.education],
+      ['Phone', a.phone],
+      ['WhatsApp', a.whatsapp],
+      ['Email', a.email],
+    ]],
+    ['Background', [
+      ['Occupation', a.occupation],
+      ['Social Platforms', a.platforms],
+      ['Sales Experience', a.experience],
+      ['Network Size', a.reach],
+      ['Hours Per Week', a.hours],
+      ['Referral Source', a.source],
+    ]],
+  ];
+
+  sections.forEach(([title, fields]) => {
+    doc.setFillColor(245, 245, 250);
+    doc.rect(40, y, W - 80, 20, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(80, 80, 100);
+    doc.text(title, 48, y + 14); y += 28;
+
+    fields.forEach(([label, value]) => {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(120, 120, 140);
+      doc.text(label, 40, y);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(26, 26, 46);
+      const v = String(value || '—');
+      const lines = doc.splitTextToSize(v, W - 200);
+      doc.text(lines, 180, y);
+      y += Math.max(lines.length * 14, 16);
+      if (y > H - 100) { doc.addPage(); pdfAddHeader(doc, 'Application', 'Sales Agent Application (continued)'); y = 110; }
+    });
+    y += 8;
+  });
+
+  // Motivation
+  doc.setFillColor(245, 245, 250);
+  doc.rect(40, y, W - 80, 20, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(80, 80, 100);
+  doc.text('Motivation', 48, y + 14); y += 28;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(26, 26, 46);
+  const motiv = doc.splitTextToSize(a.motivation || '—', W - 80);
+  motiv.forEach(line => { doc.text(line, 40, y); y += 15; });
+
+  pdfAddFooter(doc, a.app_id || '');
+  doc.save(`PhoneYa2-Application-${a.app_id || 'unknown'}.pdf`);
+}
+
+// ── PDF: AGENT AGREEMENT ─────────────────────────────────────────────────
+function makeAgreementPdf(agreement, agent) {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) { toast('⚠️ PDF library not loaded'); return; }
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+
+  pdfAddHeader(doc, 'Agreement', 'Sales Agent Agreement');
+
+  let y = 110;
+  doc.setTextColor(26, 26, 46); doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+  doc.text('SALES AGENT AGREEMENT', 40, y); y += 20;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(107, 114, 128);
+  doc.text(`Version: ${(agreement && agreement.version) || '1.0'}`, 40, y); y += 14;
+  if (agent) {
+    doc.text(`Agent: ${agent.full_name || '—'}  (${agent.agent_id || '—'})`, 40, y); y += 14;
+    if (agent.agreement_accepted_at) doc.text(`Accepted: ${fmtDate(agent.agreement_accepted_at)}`, 40, y), y += 14;
+  }
+  y += 12;
+
+  doc.setDrawColor(229, 231, 235);
+  doc.line(40, y, W - 40, y);
+  y += 20;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(26, 26, 46);
+  const content = (agreement && agreement.content) || 'Agreement text not available.';
+  const lines = doc.splitTextToSize(content, W - 80);
+  lines.forEach(line => {
+    if (y > H - 80) { doc.addPage(); pdfAddHeader(doc, 'Agreement', 'Sales Agent Agreement (continued)'); y = 110; }
+    doc.text(line, 40, y); y += 14;
+  });
+
+  pdfAddFooter(doc, 'Agreement');
+  doc.save(`PhoneYa2-Agreement-${(agent && agent.agent_code) || 'agent'}.pdf`);
 }
 
 // ── PWA REGISTRATION ─────────────────────────────────────────────────────
