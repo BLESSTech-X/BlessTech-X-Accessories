@@ -27,14 +27,10 @@ html, body { overflow-x: hidden; }
 @media(max-width:580px) {
   .form-card    { padding: 20px 16px; }
   .apply-wrap   { padding: 20px 16px 80px; }
-  .steps        { gap: 0; }
   .step-label   { display: none; }
   .step-line    { min-width: 14px; }
   .step-nav     { flex-direction: column-reverse; gap: 10px; }
   .step-nav .btn { width: 100%; justify-content: center; }
-}
-@media(max-width:400px) {
-  .step-num     { width: 26px; height: 26px; font-size: 12px; }
 }
 </style>
 </head>
@@ -44,25 +40,13 @@ html, body { overflow-x: hidden; }
 <div class="apply-wrap">
   <div style="margin-bottom:28px;">
     <div class="steps" id="stepIndicator">
-      <div class="step-item active" id="si-1">
-        <div class="step-num">1</div>
-        <div class="step-label">Personal</div>
-      </div>
+      <div class="step-item active" id="si-1"><div class="step-num">1</div><div class="step-label">Personal</div></div>
       <div class="step-line"></div>
-      <div class="step-item" id="si-2">
-        <div class="step-num">2</div>
-        <div class="step-label">About You</div>
-      </div>
+      <div class="step-item" id="si-2"><div class="step-num">2</div><div class="step-label">About You</div></div>
       <div class="step-line"></div>
-      <div class="step-item" id="si-3">
-        <div class="step-num">3</div>
-        <div class="step-label">Agreement</div>
-      </div>
+      <div class="step-item" id="si-3"><div class="step-num">3</div><div class="step-label">Agreement</div></div>
       <div class="step-line"></div>
-      <div class="step-item" id="si-4">
-        <div class="step-num">4</div>
-        <div class="step-label">Review</div>
-      </div>
+      <div class="step-item" id="si-4"><div class="step-num">4</div><div class="step-label">Review</div></div>
     </div>
   </div>
 
@@ -72,7 +56,7 @@ html, body { overflow-x: hidden; }
     <div class="step-panel active" id="step1">
       <div class="step-hdr">
         <h2>Personal Information</h2>
-        <p>Your basic contact details so we can reach you after approval.</p>
+        <p>Your basic contact details and login credentials.</p>
       </div>
       <div class="field-row">
         <div class="field">
@@ -113,13 +97,27 @@ html, body { overflow-x: hidden; }
       <div class="field">
         <label class="label">WhatsApp Number <span class="req">*</span></label>
         <input type="tel" class="input" id="f-whatsapp" placeholder="+260 9XX XXX XXX">
-        <div class="hint">This is where we'll send your Agent ID and Code when approved.</div>
         <div class="err-msg" id="e-whatsapp">Please enter your WhatsApp number.</div>
       </div>
+
+      <div class="divider" style="margin:20px 0;"></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+        <i class="fas fa-lock"></i> <strong>Create your login.</strong> You will use these details to sign in once your application is approved.
+      </p>
+
       <div class="field">
-        <label class="label">Email Address <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-        <input type="email" class="input" id="f-email" placeholder="you@example.com" autocomplete="email">
+        <label class="label">Login Email <span class="req">*</span></label>
+        <input type="email" class="input" id="f-login-email" placeholder="you@example.com" autocomplete="email">
+        <div class="hint">This is the email you'll use to sign in to your agent dashboard.</div>
+        <div class="err-msg" id="e-login-email">Please enter a valid email address.</div>
       </div>
+      <div class="field">
+        <label class="label">Login Password <span class="req">*</span></label>
+        <input type="password" class="input" id="f-login-password" placeholder="At least 8 characters" autocomplete="new-password">
+        <div class="hint">Choose a strong password. You'll need it to log in.</div>
+        <div class="err-msg" id="e-login-password">Password must be at least 8 characters.</div>
+      </div>
+
       <div class="step-nav">
         <div></div>
         <button class="btn btn-primary" onclick="goStep(2)">Next — About You <i class="fas fa-arrow-right"></i></button>
@@ -191,7 +189,6 @@ html, body { overflow-x: hidden; }
           <option value="agent">Referred by an existing agent</option>
           <option value="other">Other</option>
         </select>
-        <div class="hint" id="refSourceHint">If referred by an agent, please provide their code below.</div>
       </div>
       <div class="field" id="refCodeWrap" style="display:none;">
         <label class="label">Referring Agent Code</label>
@@ -216,7 +213,6 @@ html, body { overflow-x: hidden; }
         <p style="font-size:12px;color:var(--muted);margin-top:8px;">Version: <span id="agreeVersionLabel">1.0</span></p>
       </div>
       <div class="terms-box" id="agreementText">Loading agreement…</div>
-
       <div class="check-item">
         <input type="checkbox" id="agree1">
         <label class="check-label" for="agree1">
@@ -239,7 +235,6 @@ html, body { overflow-x: hidden; }
         </label>
       </div>
       <div class="err-msg" id="e-agree" style="margin-top:4px;">Please agree to all three items above.</div>
-
       <div class="step-nav">
         <button class="btn btn-outline" onclick="goStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
         <button class="btn btn-primary" onclick="goStep(4)">Review Application <i class="fas fa-arrow-right"></i></button>
@@ -323,11 +318,9 @@ function showErr(id, show) {
   return !show;
 }
 
-// ── REFERRAL SOURCE TOGGLE ───────────────────────────────────────────────
 document.getElementById('f-source').addEventListener('change', function() {
   const wrap = document.getElementById('refCodeWrap');
-  if (this.value === 'agent') wrap.style.display = 'block';
-  else { wrap.style.display = 'none'; }
+  wrap.style.display = this.value === 'agent' ? 'block' : 'none';
 });
 
 // ── VALIDATION ───────────────────────────────────────────────────────────
@@ -339,6 +332,10 @@ function validateStep(step) {
     ok = showErr('e-location', !req('f-location')) && ok;
     ok = showErr('e-phone',    !req('f-phone'))    && ok;
     ok = showErr('e-whatsapp', !req('f-whatsapp')) && ok;
+    const email = req('f-login-email');
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    ok = showErr('e-login-email', !emailOk) && ok;
+    ok = showErr('e-login-password', req('f-login-password').length < 8) && ok;
   }
   if (step === 2) {
     ok = showErr('e-reach',         !req('f-reach'))              && ok;
@@ -356,30 +353,24 @@ function validateStep(step) {
   return ok;
 }
 
-// ── ELIGIBILITY SCREENING ────────────────────────────────────────────────
+// ── SCREENING ────────────────────────────────────────────────────────────
 function runScreening(data, duplicateFound) {
   const checks = [];
-  const nameParts = (data.full_name || '').trim().split(/\s+/);
-  checks.push({ label: 'Full name provided',       pass: nameParts.length >= 2, weight: 10 });
-  const age = Number(data.age) || 0;
-  checks.push({ label: 'Age 16+',                  pass: age >= 16, weight: 10 });
-  const phoneClean = (data.phone || '').replace(/\D/g, '');
-  checks.push({ label: 'Valid phone number',       pass: phoneClean.length >= 9, weight: 10 });
-  const waClean = (data.whatsapp || '').replace(/\D/g, '');
-  checks.push({ label: 'WhatsApp number provided', pass: waClean.length >= 9, weight: 15 });
+  checks.push({ label: 'Full name provided',       pass: (data.full_name||'').trim().split(/\s+/).length >= 2, weight: 10 });
+  checks.push({ label: 'Age 16+',                  pass: Number(data.age) >= 16, weight: 10 });
+  checks.push({ label: 'Valid phone number',       pass: (data.phone||'').replace(/\D/g,'').length >= 9, weight: 10 });
+  checks.push({ label: 'WhatsApp number provided', pass: (data.whatsapp||'').replace(/\D/g,'').length >= 9, weight: 15 });
   checks.push({ label: 'Location provided',        pass: !!(data.location && data.location.length >= 3), weight: 10 });
   checks.push({ label: 'Network size declared',    pass: !!data.reach, weight: 10 });
   checks.push({ label: 'Hours availability given', pass: !!data.hours, weight: 5 });
   checks.push({ label: 'Customer plan provided',   pass: !!(data.customer_plan && data.customer_plan.length >= 10), weight: 10 });
-  checks.push({ label: 'Motivation provided',      pass: (data.motivation || '').length >= 20, weight: 10 });
+  checks.push({ label: 'Motivation provided',      pass: (data.motivation||'').length >= 20, weight: 10 });
   checks.push({ label: 'All agreements accepted',  pass: data.agree_commission && data.agree_terms && data.agree_accurate, weight: 5 });
   checks.push({ label: 'No duplicate application', pass: !duplicateFound, weight: 5 });
-
-  const totalWeight = checks.reduce((s, c) => s + c.weight, 0);
-  const earned = checks.filter(c => c.pass).reduce((s, c) => s + c.weight, 0);
-  const score = Math.round((earned / totalWeight) * 100);
-  const status = score >= 70 ? 'qualified' : 'review';
-  return { score, status, checks };
+  const total = checks.reduce((s,c) => s + c.weight, 0);
+  const earned = checks.filter(c => c.pass).reduce((s,c) => s + c.weight, 0);
+  const score = Math.round((earned / total) * 100);
+  return { score, status: score >= 70 ? 'qualified' : 'review', checks };
 }
 
 async function checkDuplicate(phone, whatsapp) {
@@ -398,7 +389,6 @@ async function checkDuplicate(phone, whatsapp) {
 function buildReview() {
   const f = id => document.getElementById(id);
   const getSel = id => f(id).options[f(id).selectedIndex]?.text || '—';
-
   const rows = [
     ['Full Name',      req('f-name')],
     ['Age',            req('f-age')],
@@ -406,7 +396,8 @@ function buildReview() {
     ['Education',      getSel('f-education')],
     ['Phone',          req('f-phone')],
     ['WhatsApp',       req('f-whatsapp')],
-    ['Email',          req('f-email') || '—'],
+    ['Login Email',    req('f-login-email')],
+    ['Password',       '••••••••'],
     ['Occupation',     req('f-occupation') || '—'],
     ['Platforms',      req('f-platforms') || '—'],
     ['Experience',     getSel('f-experience')],
@@ -431,10 +422,42 @@ async function submitApplication() {
   setLoading(btn, true, 'Submitting…');
 
   try {
+    const email = req('f-login-email');
+    const password = document.getElementById('f-login-password').value;
+
+    // Check for duplicate application first
     const duplicate = await checkDuplicate(req('f-phone'), req('f-whatsapp'));
+    if (duplicate) {
+      throw new Error('An application with this phone number already exists.');
+    }
+
+    // Get a fresh app ID from the counter
     const n     = await db.nextId('applications');
     const appId = makeAppId(n);
 
+    // 1. Call the Edge Function to create the Auth user
+    toast('Creating your account…');
+    const fnRes = await fetch(`${SB_URL}/functions/v1/create-agent-user`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        full_name: req('f-name'),
+        agent_code: appId, // temporary — real code assigned on approval
+      }),
+    });
+
+    const fnData = await fnRes.json();
+    if (!fnRes.ok) {
+      throw new Error(fnData.error || 'Could not create account. Please try a different email.');
+    }
+
+    // 2. Build the application record
     const data = {
       app_id:           appId,
       full_name:        req('f-name'),
@@ -442,6 +465,8 @@ async function submitApplication() {
       phone:            req('f-phone'),
       whatsapp:         req('f-whatsapp'),
       email:            req('f-email'),
+      login_email:      email,
+      auth_user_id:     fnData.user_id,
       location:         req('f-location'),
       education:        req('f-education'),
       occupation:       req('f-occupation'),
@@ -456,8 +481,8 @@ async function submitApplication() {
       agree_commission: document.getElementById('agree1').checked,
       agree_terms:      document.getElementById('agree2').checked,
       agree_accurate:   document.getElementById('agree3').checked,
-      agreement_version:      activeAgreement ? activeAgreement.version : '1.0',
-      agreement_accepted_at:  new Date().toISOString(),
+      agreement_version:     activeAgreement ? activeAgreement.version : '1.0',
+      agreement_accepted_at: new Date().toISOString(),
       status:           'pending',
     };
 
@@ -465,6 +490,7 @@ async function submitApplication() {
     data.system_eligibility_score = screening.score;
     data.system_screening_status  = screening.status;
 
+    // 3. Save to applications table
     await db.insert('applications', data);
 
     showScreeningResult(screening);
@@ -491,8 +517,8 @@ function showScreeningResult(screening) {
           <span style="color:rgba(255,255,255,.7);">${esc(c.label)} — ${c.pass ? 'Passed' : 'Review'}</span>
         </div>`).join('')}
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;">
-        Your application has passed the system's initial eligibility screening. This is <strong>not final acceptance</strong>.
         Your application is now awaiting review by the PhoneYa2-ZM administration team.
+        You'll be notified when it's been approved.
       </div>
     </div>`;
   box.style.display = 'block';
