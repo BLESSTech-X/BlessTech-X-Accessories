@@ -58,21 +58,18 @@
 .notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
 .notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
 
-/* WALLET */
 .wallet-card { background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(37,211,102,.25); }
 .wallet-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .wallet-val { font-family: 'DM Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
 .wallet-lbl-sm { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
 
-/* CAMPAIGN BANNER */
 .campaign-banner { background: linear-gradient(135deg,#7c3aed,#a855f7); border-radius: var(--r2); padding: 20px 24px; margin-bottom: 20px; color: white; }
 .campaign-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: .85; margin-bottom: 6px; }
 .campaign-title { font-family: 'Syne',sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
 .campaign-meta { font-size: 13px; opacity: .9; }
 .campaign-dates { font-size: 12px; opacity: .75; margin-top: 8px; }
 
-/* LEVEL */
 .level-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:20px 22px; margin-bottom:20px; }
 .level-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:100px; background:linear-gradient(135deg,#7c3aed,#a855f7); color:white; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
 .level-progress-bar { height:8px; background:var(--light); border-radius:100px; overflow:hidden; margin-top:12px; }
@@ -84,60 +81,14 @@
 .ref-url span { flex:1; font-size:13px; color:white; font-family: ui-monospace, Menlo, monospace; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
 .ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
 
-/* ── TAB BAR ────────────────────────────────────────────────────────────── */
-.tab-bar {
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  padding: 0;
-  width: 100%;
-  max-width: 100%;
-}
+.tab-bar { display: flex !important; flex-wrap: nowrap !important; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 0; width: 100%; max-width: 100%; }
 .tab-bar::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex-shrink: 0 !important;
-  padding: 11px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'DM Sans', sans-serif;
-  color: var(--muted);
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color .2s, border-color .2s, background .2s;
-  margin-bottom: -1px;
-  white-space: nowrap;
-  line-height: 1.2;
-  min-height: 44px;
-  text-align: center;
-  min-width: 0;
-  border-radius: 6px 6px 0 0;
-}
+.tab-btn { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0 !important; padding: 11px 14px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s, background .2s; margin-bottom: -1px; white-space: nowrap; line-height: 1.2; min-height: 44px; text-align: center; min-width: 0; border-radius: 6px 6px 0 0; }
 .tab-btn i { font-size: 12px; flex-shrink: 0; line-height: 1; }
 .tab-btn:hover { color: var(--text); background: rgba(0,0,0,.02); }
 .tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); background: rgba(255,96,0,.04); }
-
-@media(max-width:600px) {
-  .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; }
-  .tab-btn i { font-size: 11px; }
-}
-@media(max-width:400px) {
-  .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; }
-  .tab-btn i { font-size: 10px; }
-}
-
+@media(max-width:600px) { .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; } .tab-btn i { font-size: 11px; } }
+@media(max-width:400px) { .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; } .tab-btn i { font-size: 10px; } }
 .tab-pane  { display:none; }
 .tab-pane.active { display:block; }
 
@@ -145,14 +96,12 @@
 .tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
 .tier-row-display:last-child { border-bottom:none; }
 
-/* Perf grid */
 .perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
 .perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
 .perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
 .perf-val { font-family:'DM Sans',sans-serif; font-size:1.4rem; font-weight:800; line-height:1.1; margin-bottom:6px; word-break: break-word; }
 .perf-lbl { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
 
-/* Marketing cards */
 .content-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
 .mk-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:18px 20px; display:flex; flex-direction:column; min-width: 0; }
 .mk-card-tag { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; align-self:flex-start; white-space: nowrap; }
@@ -167,50 +116,14 @@
 .mk-actions { display:flex; gap:8px; flex-wrap:wrap; }
 .mk-actions .btn { flex:1; min-width:100px; justify-content:center; }
 
-/* Training */
-.tr-progress-wrap {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 20px 22px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  min-width: 0;
-  width: 100%;
-}
+.tr-progress-wrap { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; min-width: 0; width: 100%; }
 .tr-progress-wrap > * { min-width: 0; }
 .tr-progress-info { flex: 1; min-width: 200px; }
-.tr-progress-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.tr-progress-val {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1.1;
-  margin-bottom: 4px;
-  letter-spacing: -0.02em;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
-}
-.tr-progress-sub {
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 600;
-  margin-bottom: 12px;
-}
+.tr-progress-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.tr-progress-val { font-family: 'DM Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.tr-progress-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
 .tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; width: 100%; }
 .tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
-
 .tr-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
 .tr-module { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; cursor: pointer; min-width: 0; }
 .tr-module:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -224,7 +137,6 @@
 .tr-status.done { background: #f0fdf4; color: #15803d; }
 .tr-status.todo { background: #fff7ed; color: #c2410c; }
 
-/* Month grid */
 .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .month-btn { padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border); background: white; cursor: pointer; transition: all .2s; text-align: center; font-family: 'DM Sans',sans-serif; }
 .month-btn:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
@@ -239,47 +151,96 @@
 .stmt-cell-val { font-family: 'DM Sans',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
 .stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
 
-/* PHOTO MODAL */
-.photo-preview-wrap {
-  width: 140px; height: 140px; margin: 0 auto 20px;
-  border-radius: 50%; overflow: hidden;
-  background: var(--light);
-  display: flex; align-items: center; justify-content: center;
-  border: 3px solid var(--border);
-  position: relative;
-}
+.photo-preview-wrap { width: 140px; height: 140px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: var(--light); display: flex; align-items: center; justify-content: center; border: 3px solid var(--border); position: relative; }
 .photo-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-preview-placeholder {
-  color: var(--muted); font-size: 3rem;
+.photo-preview-placeholder { color: var(--muted); font-size: 3rem; }
+.photo-upload-area { border: 2px dashed var(--border); border-radius: var(--r); padding: 24px 20px; text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 16px; }
+.photo-upload-area:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
+.photo-upload-area i { font-size: 2rem; color: var(--orange); margin-bottom: 8px; display: block; }
+.photo-upload-area .pua-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.photo-upload-area .pua-sub { font-size: 12px; color: var(--muted); }
+
+/* ── DOCUMENTS TAB ──────────────────────────────────────────────────────── */
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
 }
-.photo-upload-area {
-  border: 2px dashed var(--border);
-  border-radius: var(--r);
-  padding: 24px 20px;
-  text-align: center;
-  cursor: pointer;
+.doc-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
   transition: all .2s;
-  margin-bottom: 16px;
+  min-width: 0;
 }
-.photo-upload-area:hover {
+.doc-card:hover {
   border-color: var(--orange);
-  background: rgba(255,96,0,.03);
+  box-shadow: var(--shadow);
 }
-.photo-upload-area i {
-  font-size: 2rem;
-  color: var(--orange);
-  margin-bottom: 8px;
-  display: block;
+.doc-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
 }
-.photo-upload-area .pua-title {
-  font-weight: 700;
+.doc-icon.orange { background: linear-gradient(135deg,#fff8f4,#ffe0cc); color: var(--orange); }
+.doc-icon.green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #16a34a; }
+.doc-icon.purple { background: linear-gradient(135deg,#f3e8ff,#e9d5ff); color: #7c3aed; }
+.doc-icon.blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #2563eb; }
+.doc-icon.yellow { background: linear-gradient(135deg,#fffbeb,#fef3c7); color: #d97706; }
+.doc-body { flex: 1; min-width: 0; }
+.doc-title {
+  font-weight: 800;
   font-size: 14px;
+  color: var(--text);
   margin-bottom: 4px;
+  line-height: 1.3;
 }
-.photo-upload-area .pua-sub {
+.doc-desc {
   font-size: 12px;
   color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
+.doc-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: 10px;
+}
+.doc-badge.ready     { background: rgba(37,211,102,.12); color: #16a34a; }
+.doc-badge.locked    { background: rgba(107,114,128,.12); color: var(--muted); }
+.doc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--grad-o);
+  color: white;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  width: 100%;
+}
+.doc-btn:hover { opacity: .9; text-decoration: none; }
+.doc-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
@@ -294,6 +255,7 @@ html, body { overflow-x: hidden; }
   .ref-btns .btn { font-size: 12px; padding: 8px 12px; }
   .wallet-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
   .content-grid { grid-template-columns: 1fr; }
+  .doc-grid { grid-template-columns: 1fr; }
 }
 @media(max-width:600px) {
   .dash-hdr { flex-direction: column; align-items: flex-start; }
@@ -409,6 +371,7 @@ html, body { overflow-x: hidden; }
     <button class="tab-btn" onclick="showAgentTab('performance',this)"><i class="fas fa-chart-bar"></i> Stats</button>
     <button class="tab-btn" onclick="showAgentTab('marketing',this)"><i class="fas fa-bullhorn"></i> Promo</button>
     <button class="tab-btn" onclick="showAgentTab('training',this)"><i class="fas fa-graduation-cap"></i> Learn</button>
+    <button class="tab-btn" onclick="showAgentTab('documents',this)"><i class="fas fa-folder-open"></i> Docs</button>
     <button class="tab-btn" onclick="showAgentTab('tiers',this)"><i class="fas fa-percent"></i> Rates</button>
     <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
   </div>
@@ -456,6 +419,15 @@ html, body { overflow-x: hidden; }
   <div class="tab-pane" id="agent-tab-training">
     <div class="tr-progress-wrap" id="trProgress"></div>
     <div class="tr-list" id="trList"></div>
+  </div>
+
+  <!-- DOCUMENTS TAB -->
+  <div class="tab-pane" id="agent-tab-documents">
+    <div style="margin-bottom:16px;">
+      <h3 style="font-size:1rem;margin-bottom:4px;">My Documents</h3>
+      <p style="font-size:13px;color:var(--muted);">Download your official PhoneYa2-ZM documents. All PDFs are branded and ready to share.</p>
+    </div>
+    <div class="doc-grid" id="docGrid"></div>
   </div>
 
   <div class="tab-pane" id="agent-tab-tiers">
@@ -560,22 +532,18 @@ html, body { overflow-x: hidden; }
       <p style="font-size:13px;color:var(--muted);margin-bottom:20px;text-align:center;">
         Add a clear photo of your face. This will appear on your profile, ID card, and verification page.
       </p>
-
       <div class="photo-preview-wrap" id="photoPreviewWrap">
         <div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>
       </div>
-
       <div class="photo-upload-area" onclick="document.getElementById('photoFileInput').click()">
         <i class="fas fa-cloud-upload-alt"></i>
         <div class="pua-title">Tap to select a photo</div>
         <div class="pua-sub">JPG, PNG or WebP · We'll compress it for you</div>
       </div>
       <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
-
       <div id="photoError" class="alert alert-error" style="display:none;">
         <i class="fas fa-circle-exclamation"></i><span id="photoErrText"></span>
       </div>
-
       <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
         <button class="btn btn-outline btn-sm" onclick="closePhotoModal()">Cancel</button>
         <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" id="deletePhotoBtn" onclick="doDeletePhoto()">
@@ -663,6 +631,8 @@ let marketingFilter = 'all';
 let currentModule = null;
 let selectedMonth = null;
 let pendingPhotoFile = null;
+let myApplication = null;
+let activeAgreement = null;
 
 // ── AUTH ─────────────────────────────────────────────────────────────────
 async function doAgentLogin() {
@@ -705,6 +675,7 @@ async function bootDashboard() {
   await loadTiers();
   await loadLevels();
   await loadAgentData();
+  await loadApplicationAndAgreement();
   renderTierRates();
   renderLevel();
   renderWallet();
@@ -713,6 +684,7 @@ async function bootDashboard() {
   await loadCampaignBanner();
   await loadMarketing();
   await loadTraining();
+  renderDocuments();
 }
 
 function renderAvatarHeader() {
@@ -725,14 +697,22 @@ function renderAvatarHeader() {
   }
 }
 
+async function loadApplicationAndAgreement() {
+  try {
+    if (agentData.app_id) {
+      myApplication = await db.getOne('applications', `app_id=eq.${agentData.app_id}`);
+    }
+    const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
+    activeAgreement = (agreements && agreements.length) ? agreements[0] : null;
+  } catch(e) { /* ignore */ }
+}
+
 // ── PHOTO UPLOAD ─────────────────────────────────────────────────────────
 function openPhotoModal() {
   pendingPhotoFile = null;
   document.getElementById('photoError').style.display = 'none';
   document.getElementById('photoFileInput').value = '';
   document.getElementById('savePhotoBtn').disabled = true;
-
-  // Show current photo if exists
   const wrap = document.getElementById('photoPreviewWrap');
   if (agentData.profile_photo_url) {
     wrap.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="Current photo">`;
@@ -741,53 +721,33 @@ function openPhotoModal() {
     wrap.innerHTML = `<div class="photo-preview-placeholder"><i class="fas fa-user"></i></div>`;
     document.getElementById('deletePhotoBtn').style.display = 'none';
   }
-
   document.getElementById('photoModal').classList.add('open');
 }
-
 function closePhotoModal() {
   document.getElementById('photoModal').classList.remove('open');
   pendingPhotoFile = null;
 }
-
 function onPhotoSelected(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
-
-  // Validate
-  if (!file.type.startsWith('image/')) {
-    showPhotoErr('Please select an image file.');
-    return;
-  }
-  if (file.size > 8 * 1024 * 1024) {
-    showPhotoErr('Image too large (max 8 MB before compression).');
-    return;
-  }
-
+  if (!file.type.startsWith('image/')) { showPhotoErr('Please select an image file.'); return; }
+  if (file.size > 8 * 1024 * 1024) { showPhotoErr('Image too large (max 8 MB).'); return; }
   document.getElementById('photoError').style.display = 'none';
   pendingPhotoFile = file;
-
-  // Preview
   const wrap = document.getElementById('photoPreviewWrap');
-  const url = URL.createObjectURL(file);
-  wrap.innerHTML = `<img src="${url}" alt="Preview">`;
-
-  // Enable save
+  wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview">`;
   document.getElementById('savePhotoBtn').disabled = false;
   document.getElementById('deletePhotoBtn').style.display = 'none';
 }
-
 function showPhotoErr(msg) {
   document.getElementById('photoErrText').textContent = msg;
   document.getElementById('photoError').style.display = 'flex';
 }
-
 async function doSavePhoto() {
   if (!pendingPhotoFile) return;
   const btn = document.getElementById('savePhotoBtn');
   setLoading(btn, true, 'Uploading…');
   document.getElementById('photoError').style.display = 'none';
-
   try {
     const url = await uploadAgentPhoto(pendingPhotoFile, agentData.agent_code);
     agentData.profile_photo_url = url;
@@ -799,12 +759,10 @@ async function doSavePhoto() {
     setLoading(btn, false, '<i class="fas fa-check"></i> Save Photo');
   }
 }
-
 async function doDeletePhoto() {
   if (!confirm('Remove your profile photo?')) return;
   const btn = document.getElementById('deletePhotoBtn');
   setLoading(btn, true, 'Removing…');
-
   try {
     await deleteAgentPhoto(agentData.agent_code, agentData.profile_photo_url);
     agentData.profile_photo_url = null;
@@ -815,6 +773,140 @@ async function doDeletePhoto() {
     showPhotoErr(e.message || 'Failed to remove');
     setLoading(btn, false, '<i class="fas fa-trash"></i> Remove');
   }
+}
+
+// ── DOCUMENTS TAB ────────────────────────────────────────────────────────
+function renderDocuments() {
+  const el = document.getElementById('docGrid');
+  if (!el) return;
+
+  const trainingDone = allModules.length > 0 && completedModuleIds.size === allModules.length;
+
+  const docs = [
+    {
+      icon: 'fa-id-card', color: 'orange',
+      title: 'Agent ID Card',
+      desc: 'Your official branded PhoneYa2-ZM ID card with your photo and QR code.',
+      badge: 'ready',
+      action: 'downloadIdCard()',
+    },
+    {
+      icon: 'fa-file-invoice-dollar', color: 'green',
+      title: 'Sales Statement (All Time)',
+      desc: 'Complete record of every sale you have submitted and its current status.',
+      badge: 'ready',
+      action: 'downloadMyStatementPdf()',
+    },
+    {
+      icon: 'fa-calendar-days', color: 'blue',
+      title: 'Monthly Statement',
+      desc: 'Pick any month to generate a summary statement for that period.',
+      badge: 'ready',
+      action: 'openStatement()',
+    },
+    {
+      icon: 'fa-certificate', color: 'purple',
+      title: 'Certificate of Participation',
+      desc: 'Official certificate confirming you joined the PhoneYa2-ZM Agent Network.',
+      badge: 'ready',
+      action: 'downloadParticipationCert()',
+    },
+    {
+      icon: 'fa-award', color: 'yellow',
+      title: 'Certificate of Achievement',
+      desc: trainingDone ? 'All training modules complete. Download your certificate.' : 'Complete all training modules to unlock this certificate.',
+      badge: trainingDone ? 'ready' : 'locked',
+      action: trainingDone ? 'downloadAchievementCert()' : 'showTrainingLocked()',
+      disabled: !trainingDone,
+    },
+    {
+      icon: 'fa-envelope-open-text', color: 'orange',
+      title: 'Welcome Letter',
+      desc: 'A personalised welcome letter introducing you as a PhoneYa2-ZM agent.',
+      badge: 'ready',
+      action: 'downloadWelcomeLetter()',
+    },
+    {
+      icon: 'fa-file-signature', color: 'blue',
+      title: 'Application Document',
+      desc: myApplication ? 'Your submitted application, saved as a branded PDF.' : 'Application not found.',
+      badge: myApplication ? 'ready' : 'locked',
+      action: myApplication ? 'downloadApplicationPdf()' : 'showLocked()',
+      disabled: !myApplication,
+    },
+    {
+      icon: 'fa-file-contract', color: 'green',
+      title: 'Agent Agreement',
+      desc: activeAgreement ? `The terms you accepted (v${esc(activeAgreement.version)}).` : 'Terms document not available.',
+      badge: activeAgreement ? 'ready' : 'locked',
+      action: activeAgreement ? 'downloadAgreementPdf()' : 'showLocked()',
+      disabled: !activeAgreement,
+    },
+  ];
+
+  el.innerHTML = docs.map(d => `
+    <div class="doc-card">
+      <div class="doc-icon ${d.color}">
+        <i class="fas ${d.icon}"></i>
+      </div>
+      <div class="doc-body">
+        <div class="doc-title">${esc(d.title)}</div>
+        <div class="doc-desc">${d.desc}</div>
+        <span class="doc-badge ${d.badge}">
+          ${d.badge === 'ready' ? '✓ Ready' : '🔒 Locked'}
+        </span>
+        <button class="doc-btn" ${d.disabled ? 'disabled' : ''} onclick="${d.action}">
+          <i class="fas fa-download"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── DOCUMENT ACTIONS ─────────────────────────────────────────────────────
+async function downloadIdCard() {
+  toast('🎫 Generating ID card…');
+  try { await makeIdCardPdf(agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadParticipationCert() {
+  toast('🏅 Generating certificate…');
+  try { makeParticipationCertificatePdf(agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadAchievementCert() {
+  toast('🏆 Generating certificate…');
+  try {
+    makeCertificatePdf({
+      agent: agentData,
+      title: 'Certificate of Achievement',
+      subtitle: 'Proudly awarded to',
+      date: new Date().toLocaleDateString('en-ZM'),
+    });
+  } catch(e) { toast('Error: ' + e.message); }
+}
+function downloadWelcomeLetter() {
+  toast('📩 Generating welcome letter…');
+  try { makeWelcomeLetterPdf(agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadApplicationPdf() {
+  if (!myApplication) { toast('⚠️  Application not found'); return; }
+  toast('📄 Generating application PDF…');
+  try { makeApplicationPdf(myApplication, agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function downloadAgreementPdf() {
+  if (!activeAgreement) { toast('⚠️  Agreement not found'); return; }
+  toast('📄 Generating agreement PDF…');
+  try { makeAgreementPdf(activeAgreement, agentData); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+function showTrainingLocked() {
+  toast('🔒 Complete all training modules to unlock this certificate');
+}
+function showLocked() {
+  toast('🔒 Document not available');
 }
 
 // ── DATA LOADING ─────────────────────────────────────────────────────────
@@ -1289,11 +1381,12 @@ async function markModuleDone() {
     completedModuleIds.add(currentModule.id);
     await db.logAudit('training', currentModule.id, 'completed', agentData.agent_code);
     if (completedModuleIds.size === allModules.length) {
-      await createNotification(agentData.agent_code, '🎓 Certificate Unlocked', 'You completed all training modules. Contact PhoneYa2 to receive your certificate.', 'success');
+      await createNotification(agentData.agent_code, '🎓 Certificate Unlocked', 'You completed all training modules. Download your Certificate of Achievement from the Documents tab.', 'success');
     }
     toast('✅ Complete');
     closeModule();
     renderTraining();
+    renderDocuments();
   } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark as Complete'); }
 }
 
@@ -1355,7 +1448,6 @@ function renderNotifications() {
   const badge = document.getElementById('notifBadge');
   if (unread) { badge.textContent = unread; badge.style.display = 'flex'; }
   else badge.style.display = 'none';
-
   if (!myNotifs.length) {
     el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">No notifications.</div>';
     return;
@@ -1460,6 +1552,7 @@ function showAgentTab(name, btn) {
   if (pane) pane.classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  if (name === 'documents') renderDocuments();
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
