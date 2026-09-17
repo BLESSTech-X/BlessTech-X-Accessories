@@ -361,16 +361,12 @@ function runScreening(data, duplicateFound) {
   const checks = [];
   const nameParts = (data.full_name || '').trim().split(/\s+/);
   checks.push({ label: 'Full name provided',       pass: nameParts.length >= 2, weight: 10 });
-
   const age = Number(data.age) || 0;
   checks.push({ label: 'Age 16+',                  pass: age >= 16, weight: 10 });
-
   const phoneClean = (data.phone || '').replace(/\D/g, '');
   checks.push({ label: 'Valid phone number',       pass: phoneClean.length >= 9, weight: 10 });
-
   const waClean = (data.whatsapp || '').replace(/\D/g, '');
   checks.push({ label: 'WhatsApp number provided', pass: waClean.length >= 9, weight: 15 });
-
   checks.push({ label: 'Location provided',        pass: !!(data.location && data.location.length >= 3), weight: 10 });
   checks.push({ label: 'Network size declared',    pass: !!data.reach, weight: 10 });
   checks.push({ label: 'Hours availability given', pass: !!data.hours, weight: 5 });
@@ -466,15 +462,10 @@ async function submitApplication() {
     };
 
     const screening = runScreening(data, duplicate);
+    data.system_eligibility_score = screening.score;
+    data.system_screening_status  = screening.status;
 
-    // Try to insert with screening fields (may fail if columns don't exist yet)
-    const insertData = { ...data };
-    try {
-      insertData.system_eligibility_score = screening.score;
-      insertData.system_screening_status  = screening.status;
-    } catch (e) {}
-
-    await db.insert('applications', insertData);
+    await db.insert('applications', data);
 
     showScreeningResult(screening);
     sessionStorage.setItem('py2_app', JSON.stringify({ ...data, screening }));
@@ -496,7 +487,7 @@ function showScreeningResult(screening) {
       <div style="font-size:1.6rem;font-weight:800;margin-bottom:14px;">Eligibility Score: ${screening.score}%</div>
       ${screening.checks.map(c => `
         <div class="screen-row">
-          <span class="${c.pass ? 'ok' : 'warn'}">${c.pass ? '🟢' : '🟡'}</span>
+          <span>${c.pass ? '🟢' : '🟡'}</span>
           <span style="color:rgba(255,255,255,.7);">${esc(c.label)} — ${c.pass ? 'Passed' : 'Review'}</span>
         </div>`).join('')}
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;">
