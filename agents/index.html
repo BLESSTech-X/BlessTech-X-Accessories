@@ -1021,12 +1021,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
       <span class="footer-link"><i class="fas fa-clock"></i> Mon–Sat · 8am–6pm</span>
     </div>
   </div>
-  <div class="footer-bottom">
+    <div class="footer-bottom">
     <div>© <span id="footerYear"></span> PhoneYa2-ZM · A BLESSTech-X Venture. All rights reserved.</div>
-    <div class="footer-payment-icons">
-      <i class="fas fa-mobile-screen-button" title="Mobile Money"></i>
-      <i class="fas fa-money-bill-wave" title="Cash"></i>
-      <i class="fas fa-building-columns" title="Bank Transfer"></i>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <a href="admin.html" style="font-size:11px;color:rgba(255,255,255,.25);text-decoration:none;transition:color .2s;"
+         onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.25)'">
+        <i class="fas fa-lock" style="margin-right:3px;font-size:10px;"></i>Admin
+      </a>
+      <div class="footer-payment-icons">
+        <i class="fas fa-mobile-screen-button" title="Mobile Money"></i>
+        <i class="fas fa-money-bill-wave" title="Cash"></i>
+        <i class="fas fa-building-columns" title="Bank Transfer"></i>
+      </div>
     </div>
   </div>
 </footer>
