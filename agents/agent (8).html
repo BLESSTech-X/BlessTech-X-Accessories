@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Dashboard — PhoneYa2</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+#loginScreen { position:fixed; inset:0; background:var(--navy); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
+.login-card  { background:white; border-radius:20px; padding:36px 32px; max-width:400px; width:100%; text-align:center; }
+.login-card .login-icon { font-size:2.5rem; margin-bottom:12px; }
+.login-card h2 { margin-bottom:6px; }
+.login-card p  { color:var(--muted); font-size:14px; margin-bottom:24px; }
+
+.dash-wrap { max-width:900px; margin:0 auto; padding:28px 20px 80px; }
+.dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.dash-avatar-wrap { position:relative; flex-shrink:0; }
+.dash-avatar { width:64px; height:64px; border-radius:50%; background:var(--grad-o); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:white; overflow:hidden; border:2px solid rgba(255,255,255,.2); }
+.dash-avatar img { width:100%; height:100%; object-fit:cover; }
+.dash-avatar-edit { position:absolute; bottom:-2px; right:-2px; width:24px; height:24px; border-radius:50%; background:var(--orange); color:white; border:2px solid var(--navy); display:flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer; transition:transform .2s; }
+.dash-avatar-edit:hover { transform:scale(1.15); }
+.dash-name   { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; }
+.dash-code   { font-size:13px; color:rgba(255,255,255,.5); margin-top:2px; }
+.dash-spacer { flex:1; min-width:8px; }
+.dash-logout { background:none; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.5); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
+.dash-logout:hover { border-color:rgba(255,255,255,.3); color:white; }
+
+.notif-btn { position:relative; background:none; border:1px solid rgba(255,255,255,.15); color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+.notif-btn:hover { border-color:var(--orange); background:rgba(255,96,0,.15); }
+.notif-badge { position:absolute; top:-4px; right:-4px; background:var(--orange); color:white; font-size:10px; font-weight:800; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 5px; }
+.notif-dropdown { position:absolute; top:48px; right:0; width:340px; max-width:calc(100vw - 28px); max-height:400px; overflow-y:auto; background:white; border:1px solid var(--border); border-radius:var(--r2); box-shadow:0 12px 40px rgba(0,0,0,.15); z-index:200; display:none; }
+.notif-dropdown.open { display:block; }
+.notif-item { padding:14px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; }
+.notif-item:hover { background:var(--light); }
+.notif-item.unread { background:#f0f9ff; }
+.notif-item:last-child { border-bottom:none; }
+.notif-title { font-weight:700; font-size:13px; margin-bottom:3px; }
+.notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
+.notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
+
+.today-card { background: linear-gradient(135deg,#1a0840,#2d1a5e); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(124,58,237,.3); color: white; }
+.today-hello { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+.today-sub { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 16px; }
+.today-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+.today-stat { background: rgba(255,255,255,.07); border-radius: 12px; padding: 14px 12px; text-align: center; border: 1px solid rgba(255,255,255,.1); }
+.today-stat-val { font-family: 'Syne',sans-serif; font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.today-stat-lbl { font-size: 10px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+.today-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.today-actions .btn { flex: 1; min-width: 120px; justify-content: center; }
+
+.wallet-card { background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(37,211,102,.25); }
+.wallet-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.wallet-val { font-family: 'DM Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
+.wallet-lbl-sm { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+.campaign-banner { background: linear-gradient(135deg,#7c3aed,#a855f7); border-radius: var(--r2); padding: 20px 24px; margin-bottom: 20px; color: white; }
+.campaign-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: .85; margin-bottom: 6px; }
+.campaign-title { font-family: 'Syne',sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+.campaign-meta { font-size: 13px; opacity: .9; }
+.campaign-dates { font-size: 12px; opacity: .75; margin-top: 8px; }
+
+.level-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:20px 22px; margin-bottom:20px; }
+.level-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:100px; background:linear-gradient(135deg,#7c3aed,#a855f7); color:white; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
+.level-progress-bar { height:8px; background:var(--light); border-radius:100px; overflow:hidden; margin-top:12px; }
+.level-progress-fill { height:100%; background:linear-gradient(90deg,#ff6000,#ff9f43); border-radius:100px; transition:width .5s ease; }
+
+.ref-box { background:linear-gradient(135deg,#0d2010,#0a3518); border-radius:var(--r2); padding:22px 24px; margin-bottom:20px; border:1px solid rgba(37,211,102,.2); }
+.ref-label { font-size:11px; font-weight:700; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.ref-url   { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 14px; }
+.ref-url span { flex:1; font-size:13px; color:white; font-family: ui-monospace, Menlo, monospace; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
+.ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
+.tab-bar { display: flex !important; flex-wrap: nowrap !important; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 0; width: 100%; max-width: 100%; }
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0 !important; padding: 11px 14px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s, background .2s; margin-bottom: -1px; white-space: nowrap; line-height: 1.2; min-height: 44px; text-align: center; min-width: 0; border-radius: 6px 6px 0 0; }
+.tab-btn i { font-size: 12px; flex-shrink: 0; line-height: 1; }
+.tab-btn:hover { color: var(--text); background: rgba(0,0,0,.02); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); background: rgba(255,96,0,.04); }
+.tab-btn .badge-mini { background: var(--orange); color: white; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 100px; margin-left: 2px; }
+@media(max-width:600px) { .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; } .tab-btn i { font-size: 11px; } }
+@media(max-width:400px) { .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; } .tab-btn i { font-size: 10px; } }
+.tab-pane  { display:none; }
+.tab-pane.active { display:block; }
+
+.sale-status-badge { font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; white-space:nowrap; display:inline-block; }
+.tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+.tier-row-display:last-child { border-bottom:none; }
+
+.lead-card { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; transition: all .2s; }
+.lead-card:hover { border-color: var(--orange); }
+.lead-info { flex: 1; min-width: 200px; }
+.lead-name { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+.lead-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.lead-meta i { width: 14px; color: var(--muted); }
+.lead-status-select { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; min-width: 120px; }
+.lead-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+/* MESSAGES */
+.chat-container { background: white; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; display: flex; flex-direction: column; height: 70vh; min-height: 500px; }
+.chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: #fafafa; }
+.chat-hdr-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.chat-hdr-info { flex: 1; min-width: 0; }
+.chat-hdr-name { font-weight: 800; font-size: 14px; }
+.chat-hdr-sub { font-size: 12px; color: var(--muted); }
+.chat-body { flex: 1; overflow-y: auto; padding: 16px 20px; background: #f8f9fb; display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; position: relative; word-wrap: break-word; overflow-wrap: anywhere; }
+.chat-msg.mine { align-self: flex-end; background: linear-gradient(135deg,#ff6000,#ff9f43); color: white; border-bottom-right-radius: 4px; }
+.chat-msg.theirs { align-self: flex-start; background: white; color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.chat-msg-sender { font-size: 11px; font-weight: 700; margin-bottom: 4px; opacity: .8; }
+.chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; }
+.chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
+.chat-msg-actions button { background: none; border: none; color: inherit; font-size: 11px; cursor: pointer; opacity: .75; padding: 2px 4px; }
+.chat-msg-actions button:hover { opacity: 1; text-decoration: underline; }
+.chat-msg-media { max-width: 100%; border-radius: 10px; margin-top: 6px; display: block; cursor: pointer; transition: opacity .2s; }
+.chat-msg-media:hover { opacity: .9; }
+.chat-msg-expires { font-size: 10px; margin-top: 4px; opacity: .7; }
+.chat-msg-file { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,.15); border-radius: 8px; margin-top: 6px; text-decoration: none; color: inherit; font-size: 13px; }
+.chat-msg.mine .chat-msg-file { background: rgba(255,255,255,.2); }
+.chat-msg.theirs .chat-msg-file { background: var(--light); }
+.chat-msg-file i { font-size: 20px; flex-shrink: 0; }
+.chat-msg-file .file-meta { flex: 1; min-width: 0; }
+.chat-msg-file .file-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-msg-file .file-size { font-size: 11px; opacity: .7; }
+.chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
+.chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
+.chat-input-row textarea:focus { border-color: var(--orange); }
+.chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
+.chat-send-btn:hover { opacity: .9; }
+.chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--light); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all .2s; }
+.chat-attach-btn:hover { background: var(--orange); color: white; }
+.chat-attach-btn.recording { background: #dc2626; color: white; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+#lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
+#lightboxModal.open { display: flex; }
+
+/* DOCS */
+.doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.doc-card { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; min-width: 0; }
+.doc-card:hover { border-color: var(--orange); box-shadow: var(--shadow); }
+.doc-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+.doc-icon.orange { background: linear-gradient(135deg,#fff8f4,#ffe0cc); color: var(--orange); }
+.doc-icon.green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #16a34a; }
+.doc-icon.purple { background: linear-gradient(135deg,#f3e8ff,#e9d5ff); color: #7c3aed; }
+.doc-icon.blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #2563eb; }
+.doc-icon.yellow { background: linear-gradient(135deg,#fffbeb,#fef3c7); color: #d97706; }
+.doc-body { flex: 1; min-width: 0; }
+.doc-title { font-weight: 800; font-size: 14px; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+.doc-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+.doc-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 10px; }
+.doc-badge.ready     { background: rgba(37,211,102,.12); color: #16a34a; }
+.doc-badge.locked    { background: rgba(107,114,128,.12); color: var(--muted); }
+.doc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: none; background: var(--grad-o); color: white; cursor: pointer; transition: all .2s; text-decoration: none; width: 100%; }
+.doc-btn:hover { opacity: .9; text-decoration: none; }
+.doc-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* MARKETING */
+.content-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+.mk-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:18px 20px; display:flex; flex-direction:column; min-width: 0; }
+.mk-card-tag { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; align-self:flex-start; white-space: nowrap; }
+.tag-caption { background:rgba(255,96,0,.12); color:var(--orange); border:1px solid rgba(255,96,0,.25); }
+.tag-script  { background:rgba(139,92,246,.12); color:#7c3aed; border:1px solid rgba(139,92,246,.25); }
+.tag-faq     { background:rgba(37,99,235,.12); color:#2563eb; border:1px solid rgba(37,99,235,.25); }
+.tag-brand   { background:rgba(37,211,102,.12); color:#16a34a; border:1px solid rgba(37,211,102,.25); }
+.tag-poster  { background:rgba(245,158,11,.12); color:#92400e; border:1px solid rgba(245,158,11,.25); }
+.tag-video   { background:rgba(239,68,68,.12); color:#b91c1c; border:1px solid rgba(239,68,68,.25); }
+.mk-title { font-weight:800; font-size:15px; color:var(--text); margin-bottom:10px; word-break: break-word; }
+.mk-content { background:var(--light); border-radius:var(--r); padding:14px 16px; font-size:13px; color:var(--muted); line-height:1.65; white-space:pre-wrap; word-break:break-word; flex:1; margin-bottom:14px; max-height:200px; overflow-y:auto; }
+.mk-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.mk-actions .btn { flex:1; min-width:100px; justify-content:center; }
+
+/* TRAINING */
+.tr-progress-wrap { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; min-width: 0; width: 100%; }
+.tr-progress-info { flex: 1; min-width: 200px; }
+.tr-progress-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.tr-progress-val { font-family: 'DM Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
+.tr-progress-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
+.tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; width: 100%; }
+.tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
+.tr-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.tr-module { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; cursor: pointer; min-width: 0; }
+.tr-module:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: var(--shadow); }
+.tr-module.done { background: #f0fdf4; border-color: #bbf7d0; }
+.tr-num { width: 40px; height: 40px; border-radius: 50%; background: var(--light); color: var(--muted); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+.tr-module.done .tr-num { background: #16a34a; color: white; }
+.tr-body { flex: 1; min-width: 0; }
+.tr-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 4px; word-break: break-word; }
+.tr-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; word-break: break-word; }
+.tr-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-left: auto; flex-shrink: 0; align-self: flex-start; white-space: nowrap; }
+.tr-status.done { background: #f0fdf4; color: #15803d; }
+.tr-status.todo { background: #fff7ed; color: #c2410c; }
+
+/* EXAM */
+.exam-unlock-box { background: linear-gradient(135deg, #0d2010, #0a3518); border-radius: var(--r2); padding: 24px 26px; margin-top: 20px; color: white; border: 1px solid rgba(37,211,102,.25); text-align: center; }
+.exam-unlock-box h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+.exam-unlock-box p { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 16px; line-height: 1.6; }
+.exam-locked-box { background: var(--light); border: 1px dashed var(--border); border-radius: var(--r2); padding: 24px 26px; margin-top: 20px; text-align: center; }
+.exam-locked-box h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
+.exam-locked-box p { font-size: 13px; color: var(--muted); }
+.exam-q { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 14px; }
+.exam-q-num { font-size: 11px; font-weight: 800; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.exam-q-text { font-size: 14px; font-weight: 700; line-height: 1.5; margin-bottom: 14px; word-break: break-word; }
+.exam-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background .15s; margin-bottom: 6px; }
+.exam-opt:hover { background: var(--light); }
+.exam-opt input { margin-top: 3px; flex-shrink: 0; }
+.exam-opt span { font-size: 13px; line-height: 1.5; word-break: break-word; }
+.exam-result-pass { background: linear-gradient(135deg, #0d2010, #0a3518); border-radius: var(--r2); padding: 30px; text-align: center; color: white; border: 1px solid rgba(37,211,102,.4); }
+.exam-result-fail { background: linear-gradient(135deg, #2a1010, #3a1515); border-radius: var(--r2); padding: 30px; text-align: center; color: white; border: 1px solid rgba(239,68,68,.4); }
+.exam-result-icon { font-size: 3rem; margin-bottom: 12px; }
+.exam-result-score { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 8px; }
+.exam-result-msg { font-size: 14px; line-height: 1.6; opacity: .85; margin-bottom: 20px; }
+
+.perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
+.perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
+.perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
+.perf-val { font-family:'DM Sans',sans-serif; font-size:1.4rem; font-weight:800; line-height:1.1; margin-bottom:6px; word-break: break-word; }
+.perf-lbl { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+
+.month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.month-btn { padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border); background: white; cursor: pointer; transition: all .2s; text-align: center; font-family: 'DM Sans',sans-serif; }
+.month-btn:hover { border-color: var(--orange); background: rgba(255,96,0,.03); }
+.month-btn.active { background: var(--orange); border-color: var(--orange); color: white; }
+.month-btn .mb-name { font-size: 13px; font-weight: 700; }
+.month-btn .mb-year { font-size: 11px; opacity: .6; margin-top: 2px; }
+.stmt-preview { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 16px; }
+.stmt-preview-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.stmt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.stmt-cell { text-align: center; padding: 10px 6px; }
+.stmt-cell-val { font-family: 'DM Sans',sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; word-break: break-word; }
+.stmt-cell-lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+
+@media(max-width:700px) {
+  .dash-wrap { padding: 16px 14px 80px; }
+  .dash-hdr { padding: 18px 16px; gap: 12px; }
+  .ref-box { padding: 16px; }
+  .ref-url { padding: 8px 10px; }
+  .ref-url span { font-size: 12px; }
+  .ref-btns { flex-wrap: wrap; }
+  .ref-btns .btn { font-size: 12px; padding: 8px 12px; }
+  .wallet-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .content-grid { grid-template-columns: 1fr; }
+  .doc-grid { grid-template-columns: 1fr; }
+  .today-stats { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:600px) {
+  .dash-hdr { flex-direction: column; align-items: flex-start; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .stmt-grid { grid-template-columns: 1fr 1fr; }
+  .tr-progress-wrap { padding: 16px; gap: 12px; }
+}
+@media(max-width:400px) {
+  .dash-name { font-size: 1rem; }
+  .month-grid { grid-template-columns: repeat(2, 1fr); }
+  .wallet-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .today-stats { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🔑</div>
+    <h2>Agent Login</h2>
+    <p>Sign in with the email and password you received when your application was approved.</p>
+    <div class="field">
+      <label class="label">Email</label>
+      <input type="email" class="input" id="emailInput" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label class="label">Password</label>
+      <input type="password" class="input" id="passwordInput" placeholder="Your password" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doAgentLogin()">
+      <div class="err-msg" id="loginErr">Incorrect email or password.</div>
+    </div>
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doAgentLogin()">
+      <i class="fas fa-right-to-bracket"></i> Sign In
+    </button>
+    <div class="divider" style="margin:20px 0;"></div>
+    <p style="font-size:13px;color:var(--muted);">Don't have a login yet?</p>
+    <a href="apply.html" class="btn btn-outline btn-full btn-sm" style="margin-top:8px;">Apply to become an agent</a>
+  </div>
+</div>
+
+<div id="dashApp" style="display:none;">
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div><div class="nav-brand">PhoneYa2<span>-ZM</span></div></div>
+    </a>
+    <span class="nav-badge hide-mobile">Agent Network</span>
+    <div class="nav-spacer"></div>
+    <span id="nav-agent-code" style="font-size:13px;color:rgba(255,255,255,.4);" class="hide-mobile"></span>
+    <button class="notif-btn" onclick="toggleNotifications(event)">
+      <i class="fas fa-bell"></i>
+      <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+    </button>
+    <div style="position:relative;">
+      <div class="notif-dropdown" id="notifDropdown">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700;font-size:14px;">Notifications</div>
+          <button class="btn-ghost btn-sm" style="font-size:12px;" onclick="markAllRead(event)">Mark all read</button>
+        </div>
+        <div id="notifList"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <div class="dash-hdr">
+    <div class="dash-avatar-wrap">
+      <div class="dash-avatar" id="dashAvatar">?</div>
+      <div class="dash-avatar-edit" onclick="openPhotoModal()" title="Change photo">
+        <i class="fas fa-camera"></i>
+      </div>
+    </div>
+    <div>
+      <div class="dash-name" id="dashName">Loading…</div>
+      <div class="dash-code" id="dashCodeLabel"></div>
+    </div>
+    <div class="dash-spacer"></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <a href="#" id="profileLink" class="btn btn-outline btn-sm" target="_blank" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);"><i class="fas fa-id-card"></i> Profile</a>
+      <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
+      <button class="dash-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </div>
+
+  <div class="today-card" id="todayCard"></div>
+
+  <div id="campaignBanner"></div>
+  <div class="level-card" id="levelCard"></div>
+  <div class="wallet-card" id="walletCard"></div>
+
+  <div class="stat-grid" style="margin-bottom:20px;">
+    <div class="stat-card"><div class="stat-value" id="st-sales">0</div><div class="stat-label">Sales This Month</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-comm" style="color:#16a34a;">ZMW 0</div><div class="stat-label">Commission Earned</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-pending" style="color:var(--yellow);">ZMW 0</div><div class="stat-label">Pending Commission</div></div>
+    <div class="stat-card"><div class="stat-value" id="st-revenue" style="color:var(--orange);">ZMW 0</div><div class="stat-label">Total Revenue</div></div>
+  </div>
+
+  <div class="ref-box">
+    <div class="ref-label">Your Personal Referral Link</div>
+    <div class="ref-url">
+      <i class="fas fa-link" style="color:var(--green);flex-shrink:0;"></i>
+      <span id="refUrl">—</span>
+    </div>
+    <div class="ref-btns">
+      <button class="btn btn-green btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy Link</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="openQrModal()"><i class="fas fa-qrcode"></i> My QR</button>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showAgentTab('sales',this)"><i class="fas fa-chart-line"></i> Sales</button>
+    <button class="tab-btn" onclick="showAgentTab('leads',this)"><i class="fas fa-bullseye"></i> Leads <span class="badge-mini" id="leadsBadge" style="display:none;">0</span></button>
+    <button class="tab-btn" onclick="showAgentTab('messages',this)"><i class="fas fa-comments"></i> Chat <span class="badge-mini" id="chatBadge" style="display:none;">0</span></button>
+    <button class="tab-btn" onclick="showAgentTab('commission',this)"><i class="fas fa-coins"></i> Commission</button>
+    <button class="tab-btn" onclick="showAgentTab('performance',this)"><i class="fas fa-chart-bar"></i> Stats</button>
+    <button class="tab-btn" onclick="showAgentTab('marketing',this)"><i class="fas fa-bullhorn"></i> Promo</button>
+    <button class="tab-btn" onclick="showAgentTab('training',this)"><i class="fas fa-graduation-cap"></i> Learn</button>
+    <button class="tab-btn" onclick="showAgentTab('documents',this)"><i class="fas fa-folder-open"></i> Docs</button>
+    <button class="tab-btn" onclick="showAgentTab('tiers',this)"><i class="fas fa-percent"></i> Rates</button>
+    <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
+  </div>
+
+  <!-- SALES TAB -->
+  <div class="tab-pane active" id="agent-tab-sales">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">My Submitted Sales</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="openStatement()"><i class="fas fa-file-pdf"></i> Monthly</button>
+        <button class="btn btn-outline btn-sm" onclick="downloadMyStatementPdf()"><i class="fas fa-download"></i> All</button>
+        <button class="btn btn-primary btn-sm" onclick="openSubmitSale()"><i class="fas fa-plus"></i> Submit Sale</button>
+      </div>
+    </div>
+    <div id="salesContent"></div>
+  </div>
+
+  <!-- LEADS TAB -->
+  <div class="tab-pane" id="agent-tab-leads">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">My Leads Pipeline</h3>
+      <button class="btn btn-primary btn-sm" onclick="openAddLead()"><i class="fas fa-plus"></i> Add Lead</button>
+    </div>
+    <div class="filter-pills-scroll" style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;">
+      <button class="filter-pill active" onclick="filterLeads('all', this)">All</button>
+      <button class="filter-pill" onclick="filterLeads('new', this)">New</button>
+      <button class="filter-pill" onclick="filterLeads('contacted', this)">Contacted</button>
+      <button class="filter-pill" onclick="filterLeads('interested', this)">Interested</button>
+      <button class="filter-pill" onclick="filterLeads('ordered', this)">Ordered</button>
+      <button class="filter-pill" onclick="filterLeads('delivered', this)">Delivered</button>
+      <button class="filter-pill" onclick="filterLeads('lost', this)">Lost</button>
+    </div>
+    <div id="leadsContent"></div>
+  </div>
+
+  <!-- MESSAGES TAB -->
+  <div class="tab-pane" id="agent-tab-messages">
+    <div class="filter-pills-scroll" style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 16px;scrollbar-width:none;">
+      <button class="filter-pill active" onclick="switchChat('team', this)">📡 Team Room</button>
+      <button class="filter-pill" onclick="switchChat('announcements', this)">📢 Announcements</button>
+    </div>
+    <div class="chat-container">
+      <div class="chat-hdr">
+        <div class="chat-hdr-icon" id="chatIcon">📡</div>
+        <div class="chat-hdr-info">
+          <div class="chat-hdr-name" id="chatName">Team Room</div>
+          <div class="chat-hdr-sub" id="chatSub">All agents + admins</div>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-input-row" id="chatInputRow">
+        <button class="chat-attach-btn" id="attachImageBtn" onclick="document.getElementById('chatImageInput').click()" title="Send image">
+          <i class="fas fa-camera"></i>
+        </button>
+        <button class="chat-attach-btn" id="attachFileBtn" onclick="document.getElementById('chatFileInput').click()" title="Send file">
+          <i class="fas fa-paperclip"></i>
+        </button>
+        <button class="chat-attach-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Record voice note">
+          <i class="fas fa-microphone" id="micIcon"></i>
+        </button>
+        <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="onChatImageSelected(event)">
+        <input type="file" id="chatFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none" onchange="onChatFileSelected(event)">
+        <textarea id="chatInput" rows="1" placeholder="Type a message…"
+                  oninput="autoGrow(this)"
+                  onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChatMessage();}"></textarea>
+        <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+      <div id="voiceRecordingBar" style="display:none;padding:12px 16px;background:#fee2e2;border-top:1px solid #fecaca;align-items:center;gap:12px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;animation:pulse 1s infinite;"></div>
+        <div style="flex:1;font-size:14px;font-weight:700;color:#991b1b;">Recording… <span id="recordTimer">0:00</span></div>
+        <button class="btn btn-sm" style="background:#991b1b;color:white;" onclick="stopAndSendVoice()"><i class="fas fa-paper-plane"></i> Send</button>
+        <button class="btn btn-sm btn-outline" onclick="cancelVoiceRecording()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMISSION TAB -->
+  <div class="tab-pane" id="agent-tab-commission">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
+      <h3 style="margin-bottom:4px;">Commission History</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Confirmed and pending commissions from your sales.</p>
+      <div id="commHistory"></div>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE TAB -->
+  <div class="tab-pane" id="agent-tab-performance">
+    <div id="performanceContent"></div>
+  </div>
+
+  <!-- MARKETING TAB -->
+  <div class="tab-pane" id="agent-tab-marketing">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <h3 style="font-size:1rem;">Marketing Library</h3>
+    </div>
+    <div class="filter-row" id="marketingTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="filter-pill active" data-mc="all" onclick="filterMarketing('all',this)">All</button>
+      <button class="filter-pill" data-mc="caption" onclick="filterMarketing('caption',this)">Captions</button>
+      <button class="filter-pill" data-mc="script" onclick="filterMarketing('script',this)">Scripts</button>
+      <button class="filter-pill" data-mc="faq" onclick="filterMarketing('faq',this)">FAQs</button>
+      <button class="filter-pill" data-mc="poster" onclick="filterMarketing('poster',this)">Posters</button>
+      <button class="filter-pill" data-mc="video" onclick="filterMarketing('video',this)">Videos</button>
+      <button class="filter-pill" data-mc="brand" onclick="filterMarketing('brand',this)">Brand</button>
+    </div>
+    <div id="marketingContent"></div>
+  </div>
+
+  <!-- TRAINING TAB -->
+  <div class="tab-pane" id="agent-tab-training">
+    <div class="tr-progress-wrap" id="trProgress"></div>
+    <div class="tr-list" id="trList"></div>
+    <div id="examSection"></div>
+  </div>
+
+  <!-- DOCUMENTS TAB -->
+  <div class="tab-pane" id="agent-tab-documents">
+    <div style="margin-bottom:16px;">
+      <h3 style="font-size:1rem;margin-bottom:4px;">My Documents</h3>
+      <p style="font-size:13px;color:var(--muted);">Download your official PhoneYa2-ZM documents.</p>
+    </div>
+    <div class="doc-grid" id="docGrid"></div>
+  </div>
+
+  <!-- TIERS TAB -->
+  <div class="tab-pane" id="agent-tab-tiers">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
+      <h3 style="margin-bottom:4px;">How Your Commission is Calculated</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Your commission is a percentage of the total sale amount.</p>
+      <div style="background:linear-gradient(135deg,#0d2010,#0a3518);border-radius:var(--r);padding:18px 20px;border:1px solid rgba(37,211,102,.2);">
+        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Commission Tiers</div>
+        <div id="tierRatesList" style="color:white;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div class="tab-pane" id="agent-tab-leaderboard">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
+        <h3>Sales Leaderboard</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Top performing agents this period.</p>
+      </div>
+      <div id="agentLeaderboard"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- SUBMIT SALE MODAL -->
+<div class="modal-overlay" id="submitSaleModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Submit a Sale</h3>
+      <button class="modal-close" onclick="closeSubmitSale()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Record a sale you made.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="field" style="grid-column:1/-1;">
+          <label class="label">Product Sold <span class="req">*</span></label>
+          <input type="text" class="input" id="s-product" placeholder="e.g. TWS Earbuds">
+        </div>
+        <div class="field">
+          <label class="label">Quantity <span class="req">*</span></label>
+          <input type="number" class="input" id="s-qty" value="1" min="1">
+        </div>
+        <div class="field">
+          <label class="label">Unit Price (ZMW) <span class="req">*</span></label>
+          <input type="number" class="input" id="s-unit-price" placeholder="e.g. 150" min="1">
+        </div>
+        <div class="field">
+          <label class="label">Total</label>
+          <input type="text" class="input input-calc" id="s-amount-calc" readonly value="ZMW 0">
+        </div>
+        <div class="field">
+          <label class="label">Rate</label>
+          <input type="text" class="input input-calc" id="s-comm-pct" readonly value="0%">
+        </div>
+        <div class="field">
+          <label class="label">Your Commission</label>
+          <input type="text" class="input input-calc" id="s-comm-calc" readonly value="ZMW 0">
+        </div>
+        <div class="field">
+          <label class="label">Customer Name <span class="req">*</span></label>
+          <input type="text" class="input" id="s-cust-name" placeholder="Full name">
+        </div>
+        <div class="field">
+          <label class="label">Customer Phone <span class="req">*</span></label>
+          <input type="tel" class="input" id="s-cust-phone" placeholder="+260...">
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <label class="label">Notes</label>
+          <textarea class="textarea" id="s-notes" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="hint" id="s-tier-hint" style="text-align:center;margin-top:4px;">Enter unit price and quantity.</div>
+      <div id="submitSaleError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="submitSaleErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-outline btn-full" onclick="closeSubmitSale()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="submitSaleBtn" onclick="submitSale()"><i class="fas fa-paper-plane"></i> Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD LEAD MODAL -->
+<div class="modal-overlay" id="leadModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3 id="leadModalTitle">Add New Lead</h3>
+      <button class="modal-close" onclick="closeLeadModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="l-id">
+      <div class="field">
+        <label class="label">Customer Name <span class="req">*</span></label>
+        <input type="text" class="input" id="l-name" placeholder="e.g. Mary Phiri">
+      </div>
+      <div class="field">
+        <label class="label">Customer Phone <span class="req">*</span></label>
+        <input type="tel" class="input" id="l-phone" placeholder="+260...">
+      </div>
+      <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="field">
+          <label class="label">Product Interested In</label>
+          <input type="text" class="input" id="l-product" placeholder="e.g. Smart Watch">
+        </div>
+        <div class="field">
+          <label class="label">Estimated Value (ZMW)</label>
+          <input type="number" class="input" id="l-value" placeholder="e.g. 400" min="0">
+        </div>
+      </div>
+      <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="field">
+          <label class="label">Follow-up Date</label>
+          <input type="date" class="input" id="l-followup">
+        </div>
+        <div class="field">
+          <label class="label">Source</label>
+          <select class="select" id="l-source">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="facebook">Facebook</option>
+            <option value="friend">Friend</option>
+            <option value="walkin">Walk-in</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Notes</label>
+        <textarea class="textarea" id="l-notes" rows="3" placeholder="Any notes about this lead…"></textarea>
+      </div>
+      <div id="leadError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="leadErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline btn-full" onclick="closeLeadModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="saveLeadBtn" onclick="saveLead()"><i class="fas fa-check"></i> Save Lead</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO MODAL -->
+<div class="modal-overlay" id="photoModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Profile Photo</h3>
+      <button class="modal-close" onclick="closePhotoModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;text-align:center;">Add a clear photo of your face.</p>
+      <div style="width:140px;height:140px;margin:0 auto 20px;border-radius:50%;overflow:hidden;background:var(--light);display:flex;align-items:center;justify-content:center;border:3px solid var(--border);" id="photoPreviewWrap">
+        <div style="color:var(--muted);font-size:3rem;"><i class="fas fa-user"></i></div>
+      </div>
+      <div style="border:2px dashed var(--border);border-radius:var(--r);padding:24px 20px;text-align:center;cursor:pointer;margin-bottom:16px;" onclick="document.getElementById('photoFileInput').click()">
+        <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--orange);margin-bottom:8px;display:block;"></i>
+        <div style="font-weight:700;font-size:14px;">Tap to select a photo</div>
+        <div style="font-size:12px;color:var(--muted);">We'll compress it for you</div>
+      </div>
+      <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
+      <div id="photoError" class="alert alert-error" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i><span id="photoErrText"></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="closePhotoModal()">Cancel</button>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" id="deletePhotoBtn" onclick="doDeletePhoto()"><i class="fas fa-trash"></i> Remove</button>
+        <button class="btn btn-primary" id="savePhotoBtn" onclick="doSavePhoto()" disabled><i class="fas fa-check"></i> Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATEMENT MODAL -->
+<div class="modal-overlay" id="statementModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Monthly Statement</h3>
+      <button class="modal-close" onclick="closeStatement()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Pick a month.</p>
+      <div class="month-grid" id="monthGrid"></div>
+      <div id="stmtPreview"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-outline btn-full" onclick="closeStatement()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="downloadStmtBtn" onclick="downloadMonthlyStatement()" disabled><i class="fas fa-file-pdf"></i> Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>My QR Code</h3>
+      <button class="modal-close" onclick="closeQrModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Customers scan this to verify you as an official agent.</p>
+      <div id="qrCode" style="display:flex;justify-content:center;padding:20px;background:white;border-radius:var(--r);"></div>
+      <div style="margin-top:16px;font-size:13px;color:var(--muted);word-break:break-all;" id="qrUrlText"></div>
+      <button class="btn btn-outline btn-full" style="margin-top:16px;" onclick="copyQrUrl()"><i class="fas fa-copy"></i> Copy link</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODULE MODAL -->
+<div class="modal-overlay" id="moduleModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3 id="modTitle">Module</h3>
+      <button class="modal-close" onclick="closeModule()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="modVideo"></div>
+      <div style="background:var(--light);border-radius:var(--r);padding:20px 22px;font-size:14px;line-height:1.75;white-space:pre-wrap;margin-bottom:18px;word-break:break-word;" id="modContent"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-full" onclick="closeModule()">Close</button>
+        <button class="btn btn-green btn-full" id="markDoneBtn" onclick="markModuleDone()"><i class="fas fa-circle-check"></i> Mark Complete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM MODAL -->
+<div class="modal-overlay" id="examModal">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-hdr">
+      <h3>Final Exam</h3>
+      <button class="modal-close" onclick="closeExam()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="examBody">
+      <div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--orange);"></i><p style="margin-top:12px;color:var(--muted);">Loading questions…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE PREVIEW MODAL -->
+<div class="modal-overlay" id="imagePreviewModal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-hdr">
+      <h3>Preview Image</h3>
+      <button class="modal-close" onclick="closeImagePreview()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px;">
+        <img id="imagePreviewImg" style="max-width:100%;max-height:50vh;border-radius:12px;">
+      </div>
+      <div class="field">
+        <label class="label">Caption (optional)</label>
+        <input type="text" class="input" id="imagePreviewCaption" placeholder="Add a caption…">
+      </div>
+      <div id="uploadProgressWrap" style="display:none;margin-top:12px;">
+        <div style="height:8px;background:var(--light);border-radius:100px;overflow:hidden;">
+          <div id="uploadProgressBar" style="height:100%;width:0%;background:var(--grad-o);transition:width .3s;"></div>
+        </div>
+        <div id="uploadProgressText" style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;">Uploading…</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-outline btn-full" onclick="closeImagePreview()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="sendImageBtn" onclick="sendChatImage()"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX MODAL -->
+<div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
+  <div style="position:relative;max-width:95vw;max-height:95vh;" onclick="event.stopPropagation()">
+    <img id="lightboxImg" style="max-width:95vw;max-height:90vh;border-radius:12px;background:black;">
+    <button onclick="closeLightbox(event)" style="position:absolute;top:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:white;border:none;cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;">×</button>
+    <a id="lightboxDownload" download style="position:absolute;bottom:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:white;cursor:pointer;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:var(--orange);text-decoration:none;">
+      <i class="fas fa-download"></i>
+    </a>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+let agentData   = null;
+let profileData = null;
+let agentSales  = [];
+let allSales    = [];
+let myWallet    = null;
+let myNotifs    = [];
+let myReferral  = [];
+let allMaterials = [];
+let allModules = [];
+let completedModuleIds = new Set();
+let marketingFilter = 'all';
+let leadFilter = 'all';
+let currentModule = null;
+let selectedMonth = null;
+let pendingPhotoFile = null;
+let myApplication = null;
+let activeAgreement = null;
+let myLeads = [];
+let currentChatType = 'team';
+let currentConversation = null;
+let stopChatSub = null;
+let examQuestions = [];
+let examAnswers = {};
+let myExamAttempts = [];
+let lastExamResult = null;
+
+// Chat media state
+let _pendingImageFile = null;
+let _voiceRecorder = null;
+let _voiceTimerInterval = null;
+
+// ═══════════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════════
+async function doAgentLogin() {
+  const email    = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+  if (!email || !password) { toast('⚠️  Email and password required'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  setLoading(btn, true, 'Signing in…');
+  document.getElementById('loginErr').classList.remove('show');
+
+  try {
+    const authData = await auth.signIn(email, password);
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    let profile = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      profile = await getProfile();
+      if (profile) break;
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    if (!profile) throw new Error('Profile not found');
+    if (profile.role === 'admin') { window.location.href = 'admin.html'; return; }
+    if (!profile.agent_code) throw new Error('No agent account linked to this email');
+
+    const agent = await db.getOne('agents', `agent_code=eq.${profile.agent_code}&active=eq.true`);
+    if (!agent) throw new Error('Agent account inactive or not found');
+
+    profileData = profile;
+    agentData   = agent;
+
+    await logReferralEvent(profile.agent_code, 'login');
+    bootDashboard();
+  } catch(e) {
+    console.error('Login error:', e);
+    document.getElementById('loginErr').textContent = e.message || 'Incorrect email or password';
+    document.getElementById('loginErr').classList.add('show');
+    setLoading(btn, false, '<i class="fas fa-right-to-bracket"></i> Sign In');
+  }
+}
+
+async function doLogout() {
+  await auth.signOut();
+  sessionStorage.removeItem('agent_code');
+  localStorage.removeItem('agent_code');
+  location.reload();
+}
+
+async function bootDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashApp').style.display = 'block';
+  document.getElementById('nav-agent-code').textContent = agentData.agent_code;
+  document.getElementById('dashName').textContent = agentData.full_name;
+  document.getElementById('dashCodeLabel').textContent = agentData.agent_id + ' · ' + agentData.agent_code;
+  document.getElementById('refUrl').textContent = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  document.getElementById('profileLink').href = `profile.html?id=${agentData.agent_id}`;
+
+  renderAvatarHeader();
+
+  await loadTiers();
+  await loadLevels();
+  await loadAgentData();
+  await loadApplicationAndAgreement();
+  renderTierRates();
+  renderLevel();
+  renderWallet();
+  renderToday();
+  await loadNotifications();
+  await loadReferralStats();
+  await loadCampaignBanner();
+  await loadMarketing();
+  await loadTraining();
+  await loadExamAttempts();
+  await loadLeads();
+  renderDocuments();
+}
+
+function renderAvatarHeader() {
+  const el = document.getElementById('dashAvatar');
+  if (agentData.profile_photo_url) {
+    el.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="${esc(agentData.full_name)}"
+      onerror="this.style.display='none';this.parentElement.innerHTML='${(agentData.full_name || '?')[0].toUpperCase()}';">`;
+  } else {
+    el.textContent = (agentData.full_name || '?')[0].toUpperCase();
+  }
+}
+
+async function loadApplicationAndAgreement() {
+  try {
+    if (agentData.app_id) {
+      myApplication = await db.getOne('applications', `app_id=eq.${agentData.app_id}`);
+    }
+    const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
+    activeAgreement = (agreements && agreements.length) ? agreements[0] : null;
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TODAY COMMAND CENTRE
+// ═══════════════════════════════════════════════════════════════════════
+function renderToday() {
+  const el = document.getElementById('todayCard');
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const firstName = (agentData.full_name || '').split(' ')[0];
+
+  const activeLeads = myLeads.filter(l => !['delivered', 'lost'].includes(l.status));
+  const today = new Date().toISOString().slice(0, 10);
+  const followupsDue = myLeads.filter(l =>
+    l.followup_date && l.followup_date <= today && !['delivered', 'lost'].includes(l.status)
+  ).length;
+  const ordersAwaiting = myLeads.filter(l => l.status === 'ordered' || l.status === 'paid').length;
+
+  el.innerHTML = `
+    <div class="today-hello">${greeting}, ${esc(firstName)} 👋🏾</div>
+    <div class="today-sub">Here's what needs your attention today</div>
+    <div class="today-stats">
+      <div class="today-stat">
+        <div class="today-stat-val" style="color:#4ade80;">${activeLeads.length}</div>
+        <div class="today-stat-lbl">Active Leads</div>
+      </div>
+      <div class="today-stat">
+        <div class="today-stat-val" style="color:${followupsDue > 0 ? '#fbbf24' : 'rgba(255,255,255,.5)'};">${followupsDue}</div>
+        <div class="today-stat-lbl">Follow-ups Due</div>
+      </div>
+      <div class="today-stat">
+        <div class="today-stat-val" style="color:#60a5fa;">${ordersAwaiting}</div>
+        <div class="today-stat-lbl">Orders Pending</div>
+      </div>
+    </div>
+    <div class="today-actions">
+      <button class="btn btn-primary btn-sm" onclick="openAddLead()"><i class="fas fa-user-plus"></i> Add Lead</button>
+      <button class="btn btn-green btn-sm" onclick="openSubmitSale()"><i class="fas fa-cart-plus"></i> Submit Sale</button>
+      ${followupsDue > 0 ? `<button class="btn btn-sm" style="background:rgba(245,158,11,.9);color:white;" onclick="showAgentTab('leads',document.querySelector('.tab-btn'))"><i class="fas fa-bell"></i> ${followupsDue} Follow-up${followupsDue !== 1 ? 's' : ''}</button>` : ''}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LEADS
+// ═══════════════════════════════════════════════════════════════════════
+async function loadLeads() {
+  try {
+    myLeads = await db.getAll('leads', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' });
+    renderLeads();
+    updateLeadsBadge();
+    renderToday();
+  } catch(e) { console.warn('Leads load failed:', e); }
+}
+
+function updateLeadsBadge() {
+  const active = myLeads.filter(l => !['delivered','lost'].includes(l.status)).length;
+  const el = document.getElementById('leadsBadge');
+  if (el) {
+    el.textContent = active;
+    el.style.display = active ? 'inline-block' : 'none';
+  }
+}
+
+function filterLeads(status, btn) {
+  leadFilter = status;
+  document.querySelectorAll('#agent-tab-leads .filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeads();
+}
+
+function renderLeads() {
+  const el = document.getElementById('leadsContent');
+  const list = leadFilter === 'all' ? myLeads : myLeads.filter(l => l.status === leadFilter);
+
+  if (!list.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">🎯</div>
+      <h3>${leadFilter === 'all' ? 'No leads yet' : 'No leads with this status'}</h3>
+      <p>${leadFilter === 'all' ? 'Add your first lead when a customer expresses interest.' : 'Try a different filter.'}</p>
+      ${leadFilter === 'all' ? `<button class="btn btn-primary" style="margin-top:16px;" onclick="openAddLead()"><i class="fas fa-plus"></i> Add First Lead</button>` : ''}
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(l => {
+    const st = leadStatusInfo(l.status);
+    const followupOverdue = l.followup_date && l.followup_date <= new Date().toISOString().slice(0,10) && !['delivered','lost'].includes(l.status);
+    return `
+      <div class="lead-card">
+        <div class="lead-info">
+          <div class="lead-name">${esc(l.customer_name)}${followupOverdue ? ' <span style="font-size:11px;color:#f59e0b;font-weight:700;"><i class="fas fa-bell"></i> Follow-up due</span>' : ''}</div>
+          <div class="lead-meta">
+            <i class="fas fa-phone"></i> ${esc(l.customer_phone)}<br>
+            ${l.product ? `<i class="fas fa-box"></i> ${esc(l.product)}${l.quantity > 1 ? ' × ' + l.quantity : ''}<br>` : ''}
+            ${l.estimated_value ? `<i class="fas fa-coins"></i> ${fmtMoney(l.estimated_value)}<br>` : ''}
+            ${l.followup_date ? `<i class="fas fa-calendar"></i> Follow-up: ${fmtDate(l.followup_date)}<br>` : ''}
+            <i class="fas fa-clock"></i> Added ${timeAgo(l.created_at)}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;align-items:flex-end;">
+          <select class="lead-status-select" onchange="changeLeadStatus('${esc(l.id)}', this.value)">
+            ${LEAD_STATUSES.map(s => `<option value="${s.code}" ${l.status === s.code ? 'selected' : ''}>${s.label}</option>`).join('')}
+          </select>
+          <div class="lead-actions">
+            <a href="https://wa.me/${(l.customer_phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-green btn-sm" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="editLead('${esc(l.id)}')" title="Edit"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="deleteLead('${esc(l.id)}','${esc(l.customer_name)}')" title="Delete"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openAddLead() {
+  document.getElementById('leadModalTitle').textContent = 'Add New Lead';
+  document.getElementById('l-id').value = '';
+  ['l-name','l-phone','l-product','l-value','l-followup','l-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('l-source').value = 'whatsapp';
+  document.getElementById('leadError').style.display = 'none';
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function editLead(id) {
+  const l = myLeads.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('leadModalTitle').textContent = 'Edit Lead';
+  document.getElementById('l-id').value = l.id;
+  document.getElementById('l-name').value = l.customer_name || '';
+  document.getElementById('l-phone').value = l.customer_phone || '';
+  document.getElementById('l-product').value = l.product || '';
+  document.getElementById('l-value').value = l.estimated_value || '';
+  document.getElementById('l-followup').value = l.followup_date || '';
+  document.getElementById('l-source').value = l.source || 'other';
+  document.getElementById('l-notes').value = l.notes || '';
+  document.getElementById('leadError').style.display = 'none';
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function closeLeadModal() {
+  document.getElementById('leadModal').classList.remove('open');
+}
+
+async function saveLead() {
+  const id    = document.getElementById('l-id').value;
+  const name  = document.getElementById('l-name').value.trim();
+  const phone = document.getElementById('l-phone').value.trim();
+  if (!name)  { toast('⚠️  Customer name required'); return; }
+  if (!phone) { toast('⚠️  Customer phone required'); return; }
+
+  const btn = document.getElementById('saveLeadBtn');
+  setLoading(btn, true, 'Saving…');
+  document.getElementById('leadError').style.display = 'none';
+
+  try {
+    const payload = {
+      customer_name:   name,
+      customer_phone:  phone,
+      customer_wa:     phone,
+      product:         document.getElementById('l-product').value.trim() || null,
+      estimated_value: Number(document.getElementById('l-value').value) || null,
+      followup_date:   document.getElementById('l-followup').value || null,
+      source:          document.getElementById('l-source').value,
+      notes:           document.getElementById('l-notes').value.trim() || null,
+    };
+
+    if (id) {
+      await db.update('leads', `id=eq.${id}`, { ...payload, updated_at: new Date().toISOString() });
+      toast('✅ Lead updated');
+    } else {
+      await createLead({ ...payload, agent_code: agentData.agent_code });
+      toast('✅ Lead added');
+    }
+
+    closeLeadModal();
+    await loadLeads();
+  } catch(e) {
+    document.getElementById('leadErrText').textContent = e.message;
+    document.getElementById('leadError').style.display = 'flex';
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save Lead');
+  }
+}
+
+async function changeLeadStatus(id, status) {
+  try {
+    await updateLead(id, { status });
+    toast('✅ Status updated');
+    await loadLeads();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function deleteLead(id, name) {
+  if (!confirm(`Delete lead for "${name}"?`)) return;
+  try {
+    await db.remove('leads', `id=eq.${id}`);
+    toast('🗑️  Lead deleted');
+    await loadLeads();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MESSAGES — with rich media
+// ═══════════════════════════════════════════════════════════════════════
+async function switchChat(type, btn) {
+  currentChatType = type;
+  document.querySelectorAll('#agent-tab-messages .filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (stopChatSub) { stopChatSub(); stopChatSub = null; }
+
+  try {
+    currentConversation = await getConversationByType(type);
+    if (!currentConversation) { toast('⚠️  Conversation not found'); return; }
+
+    document.getElementById('chatIcon').textContent = type === 'team' ? '📡' : '📢';
+    document.getElementById('chatName').textContent = type === 'team' ? 'Team Room' : 'Announcements';
+    document.getElementById('chatSub').textContent = type === 'team' ? 'All agents + admins' : 'Official updates from PhoneYa2';
+
+    if (type === 'announcements' && profileData.role !== 'admin') {
+      document.getElementById('chatInputRow').style.display = 'none';
+    } else {
+      document.getElementById('chatInputRow').style.display = 'flex';
+    }
+
+    await loadChatMessages();
+    stopChatSub = subscribeToMessages(currentConversation.id, (msg) => {
+      appendChatMessage(msg, true);
+    });
+  } catch(e) {
+    toast('⚠️  ' + e.message);
+  }
+}
+
+async function loadChatMessages() {
+  const el = document.getElementById('chatBody');
+  try {
+    const msgs = await getMessages(currentConversation.id, 100);
+    msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    el.innerHTML = '';
+    msgs.forEach(m => appendChatMessage(m));
+    el.scrollTop = el.scrollHeight;
+  } catch(e) {
+    el.innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;">Could not load messages: ${esc(e.message)}</div>`;
+  }
+}
+
+function appendChatMessage(msg, scroll = false) {
+  if (msg.deleted_at) return;
+  const el = document.getElementById('chatBody');
+  const mine = msg.sender_id === auth.currentUserId();
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
+  div.dataset.msgId = msg.id;
+
+  const expiry = msg.is_kept ? '' : `<div class="chat-msg-expires">⏱️ Expires in ${timeUntilExpiry(msg.expires_at)}</div>`;
+
+  let media = '';
+  if (msg.media_url) {
+    if (msg.message_type === 'image') {
+      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="openLightbox('${esc(msg.media_url)}')">`;
+    } else if (msg.message_type === 'voice') {
+      media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
+    } else if (msg.message_type === 'file') {
+      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download>
+        <i class="fas fa-file"></i>
+        <div class="file-meta">
+          <div class="file-name">${esc(msg.text || 'Download file')}</div>
+          <div class="file-size">Tap to download</div>
+        </div>
+      </a>`;
+    } else {
+      media = `<a href="${esc(msg.media_url)}" target="_blank" style="color:inherit;text-decoration:underline;">📎 Download file</a>`;
+    }
+  }
+
+  const textContent = msg.message_type === 'file' ? '' : (msg.text ? `<div>${linkify(msg.text)}</div>` : '');
+
+  div.innerHTML = `
+    ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
+    ${textContent}
+    ${media}
+    <div class="chat-msg-time">${fmtTime(msg.created_at)}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
+    ${expiry}
+    <div class="chat-msg-actions">
+      <button onclick="keepMsg('${esc(msg.id)}')"><i class="fas fa-thumbtack"></i> ${msg.is_kept ? 'Un-keep' : 'Keep'}</button>
+      ${mine ? `<button onclick="removeMsg('${esc(msg.id)}')"><i class="fas fa-trash"></i></button>` : ''}
+    </div>
+  `;
+  el.appendChild(div);
+  if (scroll) el.scrollTop = el.scrollHeight;
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!currentConversation) return;
+
+  const btn = document.querySelector('.chat-send-btn');
+  btn.disabled = true;
+
+  try {
+    await sendMessage(currentConversation.id, { message_type: 'text', text });
+    input.value = '';
+    input.style.height = 'auto';
+    await loadChatMessages();
+  } catch(e) {
+    toast('⚠️  ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function keepMsg(id) {
+  try {
+    const msg = await db.getOne('messages', `id=eq.${id}`);
+    if (!msg) return;
+    await db.update('messages', `id=eq.${id}`, { is_kept: !msg.is_kept });
+    await loadChatMessages();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function removeMsg(id) {
+  if (!confirm('Delete this message?')) return;
+  try {
+    await deleteMessage(id);
+    await loadChatMessages();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── IMAGE ────────────────────────────────────────────────────────────
+function onChatImageSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('⚠️ Please select an image'); return; }
+  if (file.size > 8 * 1024 * 1024) { toast('⚠️ Image too large (max 8 MB)'); return; }
+
+  _pendingImageFile = file;
+  document.getElementById('imagePreviewImg').src = URL.createObjectURL(file);
+  document.getElementById('imagePreviewCaption').value = '';
+  document.getElementById('uploadProgressWrap').style.display = 'none';
+  document.getElementById('imagePreviewModal').classList.add('open');
+  event.target.value = '';
+}
+
+function closeImagePreview() {
+  document.getElementById('imagePreviewModal').classList.remove('open');
+  _pendingImageFile = null;
+}
+
+async function sendChatImage() {
+  if (!_pendingImageFile) return;
+  const btn = document.getElementById('sendImageBtn');
+  const caption = document.getElementById('imagePreviewCaption').value.trim();
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('uploadProgressWrap').style.display = 'block';
+  document.getElementById('uploadProgressBar').style.width = '10%';
+  document.getElementById('uploadProgressText').textContent = 'Uploading image…';
+
+  try {
+    const url = await uploadChatMedia(_pendingImageFile, 'image', (pct) => {
+      document.getElementById('uploadProgressBar').style.width = pct + '%';
+    });
+    document.getElementById('uploadProgressText').textContent = 'Sending…';
+    await sendMessage(currentConversation.id, {
+      message_type: 'image',
+      text: caption || null,
+      media_url: url,
+    });
+    closeImagePreview();
+    await loadChatMessages();
+    toast('✅ Image sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+    document.getElementById('uploadProgressText').textContent = 'Failed: ' + e.message;
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Send');
+  }
+}
+
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxDownload').href = url;
+  document.getElementById('lightboxModal').classList.add('open');
+}
+function closeLightbox(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  document.getElementById('lightboxModal').classList.remove('open');
+}
+
+// ── FILE ─────────────────────────────────────────────────────────────
+async function onChatFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { toast('⚠️ File too large (max 15 MB)'); event.target.value = ''; return; }
+
+  const btn = document.querySelector('.chat-send-btn');
+  if (btn) btn.disabled = true;
+  toast('Uploading file…');
+
+  try {
+    const url = await uploadChatMedia(file, 'file');
+    await sendMessage(currentConversation.id, {
+      message_type: 'file',
+      text: file.name,
+      media_url: url,
+    });
+    await loadChatMessages();
+    toast('✅ File sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  } finally {
+    if (btn) btn.disabled = false;
+    event.target.value = '';
+  }
+}
+
+// ── VOICE ────────────────────────────────────────────────────────────
+async function toggleVoiceRecording() {
+  if (_voiceRecorder) {
+    await stopAndSendVoice();
+  } else {
+    await startVoice();
+  }
+}
+
+async function startVoice() {
+  try {
+    _voiceRecorder = await startVoiceRecording();
+    document.getElementById('micIcon').className = 'fas fa-stop';
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('voiceRecordingBar').style.display = 'flex';
+    document.getElementById('chatInputRow').style.display = 'none';
+
+    let seconds = 0;
+    _voiceTimerInterval = setInterval(() => {
+      seconds++;
+      document.getElementById('recordTimer').textContent = formatDuration(seconds);
+      if (seconds >= 180) stopAndSendVoice();
+    }, 1000);
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  }
+}
+
+async function stopAndSendVoice() {
+  if (!_voiceRecorder) return;
+  const rec = _voiceRecorder;
+  _voiceRecorder = null;
+  clearInterval(_voiceTimerInterval);
+
+  document.getElementById('micIcon').className = 'fas fa-microphone';
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('voiceRecordingBar').style.display = 'none';
+  document.getElementById('chatInputRow').style.display = 'flex';
+
+  try {
+    const { blob, duration } = await rec.stop();
+    if (duration < 1) { toast('⚠️ Recording too short'); return; }
+    if (duration > 180) { toast('⚠️ Max length is 3 minutes'); return; }
+
+    toast('Sending voice note…');
+    const url = await uploadChatMedia(blob, 'voice');
+    await sendMessage(currentConversation.id, {
+      message_type: 'voice',
+      media_url: url,
+    });
+    await loadChatMessages();
+    toast('✅ Voice note sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  }
+}
+
+function cancelVoiceRecording() {
+  if (!_voiceRecorder) return;
+  _voiceRecorder.cancel();
+  _voiceRecorder = null;
+  clearInterval(_voiceTimerInterval);
+  document.getElementById('micIcon').className = 'fas fa-microphone';
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('voiceRecordingBar').style.display = 'none';
+  document.getElementById('chatInputRow').style.display = 'flex';
+  toast('Recording cancelled');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════════════════════════════
+async function loadAgentData() {
+  try {
+    [agentSales, allSales, myWallet] = await Promise.all([
+      db.getAll('sales', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' }),
+      db.getAll('sales', { order: 'created_at.desc' }),
+      db.getOne('wallets', `agent_code=eq.${agentData.agent_code}`).catch(() => null),
+    ]);
+    updateAgentStats();
+    renderSales();
+    renderCommHistory();
+    renderLeaderboard();
+    renderPerformance();
+  } catch(e) { toast('⚠️  ' + e.message); }
+}
+
+async function loadNotifications() {
+  try {
+    myNotifs = await db.getAll('notifications', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc', limit: 30 });
+    renderNotifications();
+  } catch(e) {}
+}
+
+async function loadReferralStats() {
+  try { myReferral = await db.getAll('referral_events', { filter: `agent_code=eq.${agentData.agent_code}` }); }
+  catch(e) { myReferral = []; }
+}
+
+async function loadCampaignBanner() {
+  const banner = document.getElementById('campaignBanner');
+  try {
+    const campaign = await getActiveCampaign();
+    if (!campaign) { banner.innerHTML = ''; return; }
+    banner.innerHTML = `
+      <div class="campaign-banner">
+        <div class="campaign-label"><i class="fas fa-bullhorn"></i> Active Campaign</div>
+        <div class="campaign-title">${esc(campaign.name)}</div>
+        <div class="campaign-meta">
+          ${campaign.commission_override_pct ? `Commission boosted to <strong>${campaign.commission_override_pct}%</strong>` : ''}
+          ${campaign.bonus_per_sale ? ` + <strong>${fmtMoney(campaign.bonus_per_sale)}</strong> bonus per sale` : ''}
+        </div>
+        <div class="campaign-dates"><i class="fas fa-calendar"></i> ${fmtDate(campaign.start_date)} → ${fmtDate(campaign.end_date)}</div>
+      </div>`;
+  } catch(e) { banner.innerHTML = ''; }
+}
+
+function updateAgentStats() {
+  const now = new Date();
+  const thisMonth = agentSales.filter(s => {
+    const d = new Date(s.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = agentSales.filter(s => s.status === 'pending');
+  const totalComm = confirmed.reduce((s, x) => s + (x.commission||0), 0);
+  const pendComm  = pending.reduce((s, x) => s + (x.commission||0), 0);
+  const revenue   = agentSales.reduce((s, x) => s + (x.amount||0), 0);
+
+  document.getElementById('st-sales').textContent   = thisMonth.length;
+  document.getElementById('st-comm').textContent    = fmtMoney(totalComm);
+  document.getElementById('st-pending').textContent = fmtMoney(pendComm);
+  document.getElementById('st-revenue').textContent = fmtMoney(revenue);
+}
+
+function renderLevel() {
+  const totalSales = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid').length;
+  const revenue    = agentSales.reduce((t,s) => t + (s.amount||0), 0);
+  const { current, next, progress } = calcAgentLevel(totalSales, revenue);
+
+  if (!current) {
+    document.getElementById('levelCard').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;">Loading…</div>';
+    return;
+  }
+
+  document.getElementById('levelCard').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Current Level</div>
+        <div class="level-badge"><i class="fas fa-award"></i> ${esc(current.name)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;">${totalSales} sales · ${fmtMoney(revenue)}</div>
+      </div>
+    </div>
+    ${next ? `
+      <div style="margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;">
+          <span>Progress to ${esc(next.name)}</span>
+          <span style="font-weight:700;color:var(--orange);">${progress}%</span>
+        </div>
+        <div class="level-progress-bar"><div class="level-progress-fill" style="width:${progress}%;"></div></div>
+      </div>
+    ` : `<div style="margin-top:14px;font-size:13px;color:#16a34a;font-weight:700;"><i class="fas fa-circle-check"></i> Top level reached</div>`}
+  `;
+}
+
+function renderWallet() {
+  const w = myWallet || { total_earned:0, pending:0, available:0, paid:0 };
+  document.getElementById('walletCard').innerHTML = `
+    <div class="wallet-lbl"><i class="fas fa-wallet"></i> My Wallet</div>
+    <div class="wallet-grid">
+      <div><div class="wallet-val">${fmtMoney(w.total_earned)}</div><div class="wallet-lbl-sm">Total Earned</div></div>
+      <div><div class="wallet-val" style="color:#fbbf24;">${fmtMoney(w.pending)}</div><div class="wallet-lbl-sm">Pending</div></div>
+      <div><div class="wallet-val" style="color:#4ade80;">${fmtMoney(w.available)}</div><div class="wallet-lbl-sm">Available</div></div>
+      <div><div class="wallet-val" style="color:#60a5fa;">${fmtMoney(w.paid)}</div><div class="wallet-lbl-sm">Paid</div></div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">
+      <i class="fas fa-info-circle"></i> Payouts are processed by PhoneYa2. Contact us on WhatsApp to request a payout.
+    </div>
+  `;
+}
+
+function copyRefLink() {
+  const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  copyToClipboard(url);
+  logReferralEvent(agentData.agent_code, 'link_copied');
+  toast('✅ Copied!');
+}
+function shareRefWa() {
+  const url = agentData.referral_url || `${CONFIG.agentSiteUrl}/?ref=${agentData.agent_code}`;
+  const msg = `📱 *PhoneYa2-ZM Accessories*\n\nCases, chargers, earphones & more.\n✅ Genuine products\n🚀 Same-day delivery\n\n🛒 Shop: ${url}`;
+  window.open(waLink(msg), '_blank');
+  logReferralEvent(agentData.agent_code, 'whatsapp_share');
+}
+function openQrModal() {
+  const verifyUrl = `${CONFIG.agentSiteUrl}/verify.html?id=${agentData.agent_id}`;
+  document.getElementById('qrCode').innerHTML = '';
+  new QRCode(document.getElementById('qrCode'), { text: verifyUrl, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.H });
+  document.getElementById('qrUrlText').textContent = verifyUrl;
+  document.getElementById('qrModal').classList.add('open');
+}
+function closeQrModal() { document.getElementById('qrModal').classList.remove('open'); }
+function copyQrUrl() {
+  copyToClipboard(`${CONFIG.agentSiteUrl}/verify.html?id=${agentData.agent_id}`);
+  toast('✅ Copied');
+}
+
+// ── PHOTO UPLOAD ────────────────────────────────────────────────────────
+function openPhotoModal() {
+  pendingPhotoFile = null;
+  document.getElementById('photoError').style.display = 'none';
+  document.getElementById('photoFileInput').value = '';
+  document.getElementById('savePhotoBtn').disabled = true;
+  const wrap = document.getElementById('photoPreviewWrap');
+  if (agentData.profile_photo_url) {
+    wrap.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="Current photo" style="width:100%;height:100%;object-fit:cover;">`;
+    document.getElementById('deletePhotoBtn').style.display = 'inline-flex';
+  } else {
+    wrap.innerHTML = `<div style="color:var(--muted);font-size:3rem;"><i class="fas fa-user"></i></div>`;
+    document.getElementById('deletePhotoBtn').style.display = 'none';
+  }
+  document.getElementById('photoModal').classList.add('open');
+}
+function closePhotoModal() { document.getElementById('photoModal').classList.remove('open'); pendingPhotoFile = null; }
+function onPhotoSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showPhotoErr('Please select an image file.'); return; }
+  if (file.size > 8 * 1024 * 1024) { showPhotoErr('Image too large (max 8 MB).'); return; }
+  document.getElementById('photoError').style.display = 'none';
+  pendingPhotoFile = file;
+  const wrap = document.getElementById('photoPreviewWrap');
+  wrap.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview" style="width:100%;height:100%;object-fit:cover;">`;
+  document.getElementById('savePhotoBtn').disabled = false;
+  document.getElementById('deletePhotoBtn').style.display = 'none';
+}
+function showPhotoErr(msg) { document.getElementById('photoErrText').textContent = msg; document.getElementById('photoError').style.display = 'flex'; }
+async function doSavePhoto() {
+  if (!pendingPhotoFile) return;
+  const btn = document.getElementById('savePhotoBtn');
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('photoError').style.display = 'none';
+  try {
+    const url = await uploadAgentPhoto(pendingPhotoFile, agentData.agent_code);
+    agentData.profile_photo_url = url;
+    renderAvatarHeader();
+    toast('✅ Photo updated');
+    closePhotoModal();
+  } catch(e) {
+    showPhotoErr(e.message || 'Upload failed');
+    setLoading(btn, false, '<i class="fas fa-check"></i> Save');
+  }
+}
+async function doDeletePhoto() {
+  if (!confirm('Remove your profile photo?')) return;
+  try {
+    await deleteAgentPhoto(agentData.agent_code, agentData.profile_photo_url);
+    agentData.profile_photo_url = null;
+    renderAvatarHeader();
+    toast('✅ Photo removed');
+    closePhotoModal();
+  } catch(e) { showPhotoErr(e.message || 'Failed'); }
+}
+
+// ── SUBMIT SALE ─────────────────────────────────────────────────────────
+function openSubmitSale() {
+  document.getElementById('submitSaleModal').classList.add('open');
+  document.getElementById('submitSaleError').style.display = 'none';
+  ['s-product','s-unit-price','s-cust-name','s-cust-phone','s-notes'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('s-qty').value = 1;
+  document.getElementById('s-comm-calc').value = 'ZMW 0';
+  document.getElementById('s-comm-pct').value = '0%';
+  document.getElementById('s-amount-calc').value = 'ZMW 0';
+  ['s-unit-price','s-qty'].forEach(id => { document.getElementById(id).oninput = recalcSubmitSale; });
+}
+function recalcSubmitSale() {
+  const unit = Number(document.getElementById('s-unit-price').value) || 0;
+  const qty  = Number(document.getElementById('s-qty').value) || 0;
+  const amount = unit * qty;
+  const { percentage, commission } = calcCommissionFromAmount(amount);
+  document.getElementById('s-amount-calc').value = fmtMoney(amount);
+  document.getElementById('s-comm-pct').value    = percentage + '%';
+  document.getElementById('s-comm-calc').value   = fmtMoney(commission);
+}
+function closeSubmitSale() { document.getElementById('submitSaleModal').classList.remove('open'); }
+async function submitSale() {
+  const productName   = document.getElementById('s-product').value.trim();
+  const quantity      = Number(document.getElementById('s-qty').value) || 1;
+  const unitPrice     = Number(document.getElementById('s-unit-price').value);
+  const customerName  = document.getElementById('s-cust-name').value.trim();
+  const customerPhone = document.getElementById('s-cust-phone').value.trim();
+  const notes         = document.getElementById('s-notes').value.trim();
+
+  if (!productName || !unitPrice || !customerName || !customerPhone) {
+    toast('⚠️  All fields required'); return;
+  }
+
+  const amount = unitPrice * quantity;
+  const { percentage, commission, tier } = calcCommissionFromAmount(amount);
+  if (!tier) { toast('⚠️  No tier matches this amount'); return; }
+
+  const btn = document.getElementById('submitSaleBtn');
+  setLoading(btn, true, 'Submitting…');
+  document.getElementById('submitSaleError').style.display = 'none';
+
+  try {
+    const n = await db.nextId('sales');
+    const saleId = makeSaleId(n);
+    const saleRecord = {
+      sale_id: saleId, agent_code: agentData.agent_code, product: productName,
+      quantity, unit_price: unitPrice, amount,
+      commission_pct: percentage, commission,
+      customer_name: customerName, customer_phone: customerPhone,
+      status: 'pending', notes: notes || null,
+      submitted_by: 'agent', submitted_at: new Date().toISOString(),
+    };
+    await db.insert('sales', saleRecord);
+    await db.logAudit('sale', saleId, 'submitted_by_agent', agentData.agent_code, null, { amount, commission });
+    await createNotification(null, 'New sale submitted', `${agentData.full_name} submitted sale ${saleId} for ${fmtMoney(amount)}`, 'sale', 'admin.html');
+    await logReferralEvent(agentData.agent_code, 'sale_submitted', { sale_id: saleId });
+
+    closeSubmitSale();
+    toast('✅ Sale ' + saleId + ' submitted');
+    await loadAgentData();
+    await recalcWallet(agentData.agent_code);
+    myWallet = await db.getOne('wallets', `agent_code=eq.${agentData.agent_code}`);
+    renderWallet();
+    renderLevel();
+    showAgentTab('sales', document.querySelector('.tab-btn'));
+  } catch(e) {
+    document.getElementById('submitSaleErrText').textContent = e.message;
+    document.getElementById('submitSaleError').style.display = 'flex';
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Submit');
+  }
+}
+
+// ── SALES LIST ──────────────────────────────────────────────────────────
+function renderSales() {
+  const el = document.getElementById('salesContent');
+  if (!agentSales.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><h3>No sales yet</h3><p>Submit your first sale to get started.</p></div>';
+    return;
+  }
+  const statusBadge = (s) => {
+    const map = { pending:'background:#fef9c3;color:#854d0e;', confirmed:'background:#f0fdf4;color:#15803d;', rejected:'background:#fef2f2;color:#b91c1c;', paid:'background:#eff6ff;color:#1e40af;' };
+    return `<span class="sale-status-badge" style="${map[s]||''}">${esc(s)}</span>`;
+  };
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Sale ID</th><th>Product</th><th class="hide-mobile">Qty</th><th>Amount</th><th>Comm.</th><th>Status</th><th class="hide-mobile">Date</th></tr></thead>
+    <tbody>${agentSales.map(s => `<tr>
+      <td><code style="font-size:12px;color:var(--muted);">${esc(s.sale_id)}</code></td>
+      <td><strong style="font-size:13px;">${esc(s.product || '—')}</strong>${s.customer_name ? `<div style="font-size:11px;color:var(--muted);">${esc(s.customer_name)}</div>` : ''}</td>
+      <td class="hide-mobile" style="font-weight:700;">${s.quantity || 1}</td>
+      <td style="font-weight:700;">${fmtMoney(s.amount)}</td>
+      <td style="color:#16a34a;font-weight:800;">+${fmtMoney(s.commission)}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td class="hide-mobile" style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderCommHistory() {
+  const el = document.getElementById('commHistory');
+  if (!agentSales.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px 0;"><div class="empty-icon">💰</div><h3>No sales yet</h3></div>';
+    return;
+  }
+  el.innerHTML = agentSales.map(s => {
+    const confirmed = s.status === 'confirmed' || s.status === 'paid';
+    const pending   = s.status === 'pending';
+    const rejected  = s.status === 'rejected';
+    const badgeStyle = confirmed ? 'background:#f0fdf4;color:#15803d;'
+                     : pending ? 'background:#fef9c3;color:#854d0e;'
+                     : rejected ? 'background:#fef2f2;color:#b91c1c;'
+                     : 'background:var(--light);color:var(--muted);';
+    const prefix = confirmed ? '+' : pending ? '~' : rejected ? '×' : '';
+    const commColor = rejected ? 'var(--red)' : confirmed ? '#16a34a' : 'var(--yellow)';
+    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border);">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">💰</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:14px;word-break:break-word;">${esc(s.product || 'Sale')}</div>
+        <div style="font-size:12px;color:var(--muted);">${fmtDate(s.created_at)} · ${fmtMoney(s.amount)}</div>
+      </div>
+      <span class="sale-status-badge" style="${badgeStyle}">${esc(s.status)}</span>
+      <div style="font-weight:800;color:${commColor};font-size:15px;flex-shrink:0;">${prefix}${fmtMoney(s.commission)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPerformance() {
+  const el = document.getElementById('performanceContent');
+  const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+  const pending   = agentSales.filter(s => s.status === 'pending');
+  const rejected  = agentSales.filter(s => s.status === 'rejected');
+  const totalRevenue = agentSales.reduce((t,s) => t + (s.amount||0), 0);
+  const totalComm    = confirmed.reduce((t,s) => t + (s.commission||0), 0);
+  const conversion   = agentSales.length ? Math.round((confirmed.length / agentSales.length) * 100) : 0;
+
+  el.innerHTML = `
+    <div class="perf-card">
+      <h3 style="font-size:1rem;margin-bottom:16px;">Performance Overview</h3>
+      <div class="perf-grid">
+        <div class="perf-cell"><div class="perf-val" style="color:var(--orange);">${agentSales.length}</div><div class="perf-lbl">Total Sales</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:#16a34a;">${confirmed.length}</div><div class="perf-lbl">Confirmed</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:var(--yellow);">${pending.length}</div><div class="perf-lbl">Pending</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:var(--red);">${rejected.length}</div><div class="perf-lbl">Rejected</div></div>
+        <div class="perf-cell"><div class="perf-val">${fmtMoney(totalRevenue)}</div><div class="perf-lbl">Revenue</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:#16a34a;">${fmtMoney(totalComm)}</div><div class="perf-lbl">Commission</div></div>
+        <div class="perf-cell"><div class="perf-val" style="color:var(--orange);">${conversion}%</div><div class="perf-lbl">Conversion</div></div>
+        <div class="perf-cell"><div class="perf-val">${myLeads.length}</div><div class="perf-lbl">Total Leads</div></div>
+        <div class="perf-cell"><div class="perf-val">${myReferral.length}</div><div class="perf-lbl">Referral Events</div></div>
+      </div>
+    </div>
+  `;
+}
+
+async function loadMarketing() {
+  try {
+    allMaterials = await db.getAll('marketing_materials', { filter: 'active=eq.true', order: 'sort_order.asc' });
+    renderMarketing();
+  } catch(e) {}
+}
+function filterMarketing(cat, btn) {
+  marketingFilter = cat;
+  document.querySelectorAll('[data-mc]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMarketing();
+}
+const CAT_LABELS = {
+  caption: { label: 'Caption', cls: 'tag-caption', icon: 'fa-comment' },
+  script:  { label: 'Script',  cls: 'tag-script',  icon: 'fa-scroll' },
+  faq:     { label: 'FAQ',     cls: 'tag-faq',     icon: 'fa-circle-question' },
+  brand:   { label: 'Brand',   cls: 'tag-brand',   icon: 'fa-palette' },
+  poster:  { label: 'Poster',  cls: 'tag-poster',  icon: 'fa-image' },
+  video:   { label: 'Video',   cls: 'tag-video',   icon: 'fa-play' },
+};
+function renderMarketing() {
+  const el = document.getElementById('marketingContent');
+  const list = marketingFilter === 'all' ? allMaterials : allMaterials.filter(m => m.category === marketingFilter);
+  if (!list.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">📭</div><h3>Nothing here</h3></div>';
+    return;
+  }
+  el.innerHTML = `<div class="content-grid">${list.map(m => {
+    const meta = CAT_LABELS[m.category] || { label: m.category, cls: 'tag-caption', icon: 'fa-file' };
+    return `
+      <div class="mk-card">
+        <span class="mk-card-tag ${meta.cls}"><i class="fas ${meta.icon}"></i> ${meta.label}</span>
+        <div class="mk-title">${esc(m.title)}</div>
+        ${m.content ? `<div class="mk-content">${esc(m.content)}</div>` : ''}
+        <div class="mk-actions">
+          ${m.content ? `<button class="btn btn-primary btn-sm" onclick="copyMaterial('${esc(m.id)}')"><i class="fas fa-copy"></i> Copy</button>` : ''}
+          ${m.content ? `<button class="btn btn-green btn-sm" onclick="shareWhatsApp('${esc(m.id)}')"><i class="fab fa-whatsapp"></i> Share</button>` : ''}
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+function copyMaterial(id) {
+  const m = allMaterials.find(x => x.id === id);
+  if (!m || !m.content) return;
+  copyToClipboard(m.content);
+  toast('✅ Copied');
+}
+function shareWhatsApp(id) {
+  const m = allMaterials.find(x => x.id === id);
+  if (!m || !m.content) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(m.content), '_blank');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TRAINING + EXAM
+// ═══════════════════════════════════════════════════════════════════════
+async function loadTraining() {
+  try {
+    allModules = await db.getAll('training_modules', { filter: 'active=eq.true', order: 'module_number.asc' });
+    const progress = await db.getAll('training_progress', { filter: `agent_code=eq.${agentData.agent_code}&completed=eq.true` });
+    completedModuleIds = new Set(progress.map(p => p.module_id));
+    renderTraining();
+    renderExamSection();
+  } catch(e) {}
+}
+
+async function loadExamAttempts() {
+  try {
+    myExamAttempts = await db.getAll('exam_attempts', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' });
+    renderExamSection();
+  } catch(e) { myExamAttempts = []; }
+}
+
+function renderTraining() {
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+
+  const progEl = document.getElementById('trProgress');
+  progEl.innerHTML = `
+    <div class="tr-progress-info">
+      <div class="tr-progress-label">Your Progress</div>
+      <div class="tr-progress-val">${completed} / ${total}</div>
+      <div class="tr-progress-sub">modules completed</div>
+      <div class="tr-progress-bar"><div class="tr-progress-fill" style="width:${pct}%;"></div></div>
+    </div>
+    ${completed === total && total > 0
+      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;"><i class="fas fa-award"></i> Exam Unlocked</div>`
+      : `<div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);">${pct}%</div>`}
+  `;
+
+  const listEl = document.getElementById('trList');
+  if (!allModules.length) {
+    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No modules yet</h3><p>Your training content is being prepared. Check back soon.</p></div>';
+    return;
+  }
+  listEl.innerHTML = allModules.map(m => {
+    const done = completedModuleIds.has(m.id);
+    return `<div class="tr-module ${done ? 'done' : ''}" onclick="openModule('${esc(m.id)}')">
+      <div class="tr-num">${done ? '<i class="fas fa-check"></i>' : m.module_number}</div>
+      <div class="tr-body">
+        <div class="tr-title">${esc(m.title)}</div>
+        <div class="tr-desc">${esc(m.description || '')}</div>
+      </div>
+      <div class="tr-status ${done ? 'done' : 'todo'}">${done ? '✓ Done' : 'Start'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderExamSection() {
+  const el = document.getElementById('examSection');
+  if (!el) return;
+
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
+  const allDone = total > 0 && completed === total;
+  const passing = myExamAttempts.find(a => a.passed);
+
+  if (!allDone) {
+    el.innerHTML = `
+      <div class="exam-locked-box">
+        <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
+        <h3>Final Exam Locked</h3>
+        <p>Complete all ${total} training modules to unlock the final exam.<br>Progress: ${completed} / ${total}</p>
+      </div>`;
+    return;
+  }
+
+  if (passing) {
+    el.innerHTML = `
+      <div class="exam-unlock-box">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🏆</div>
+        <h3>Exam Passed!</h3>
+        <p>You scored <strong>${passing.percentage}%</strong> on ${fmtDate(passing.created_at)}.<br>
+        Your Certificate of Achievement is unlocked in the Docs tab.</p>
+        <button class="btn btn-outline btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Retake Exam</button>
+      </div>`;
+    return;
+  }
+
+  const attempts = myExamAttempts.length;
+  el.innerHTML = `
+    <div class="exam-unlock-box">
+      <div style="font-size:2.5rem;margin-bottom:8px;">🎓</div>
+      <h3>Final Exam Unlocked!</h3>
+      <p>You have completed all ${total} modules. Now take the final exam to earn your Certificate of Achievement.<br><br>
+      <strong>Pass mark:</strong> 80% (12 out of 15 correct)<br>
+      <strong>Retakes:</strong> Unlimited${attempts > 0 ? ` · You have taken it ${attempts} time${attempts !== 1 ? 's' : ''}` : ''}</p>
+      <button class="btn btn-green" style="font-size:14px;padding:12px 24px;" onclick="openExam()"><i class="fas fa-graduation-cap"></i> ${attempts > 0 ? 'Try Again' : 'Start Final Exam'}</button>
+    </div>`;
+}
+
+function openModule(id) {
+  const m = allModules.find(x => x.id === id);
+  if (!m) return;
+  currentModule = m;
+  document.getElementById('modTitle').textContent = `Module ${m.module_number}: ${m.title}`;
+  document.getElementById('modContent').textContent = m.content || 'No content yet.';
+  document.getElementById('modVideo').innerHTML = m.video_url ? `<video style="width:100%;border-radius:var(--r);margin-bottom:18px;" controls src="${esc(m.video_url)}"></video>` : '';
+  const done = completedModuleIds.has(m.id);
+  const btn = document.getElementById('markDoneBtn');
+  if (done) { btn.innerHTML = '<i class="fas fa-check"></i> Already Completed'; btn.disabled = true; btn.classList.add('loading'); }
+  else { btn.innerHTML = '<i class="fas fa-circle-check"></i> Mark Complete'; btn.disabled = false; btn.classList.remove('loading'); }
+  document.getElementById('moduleModal').classList.add('open');
+}
+function closeModule() { document.getElementById('moduleModal').classList.remove('open'); currentModule = null; }
+async function markModuleDone() {
+  if (!currentModule) return;
+  const btn = document.getElementById('markDoneBtn');
+  setLoading(btn, true, 'Saving…');
+  try {
+    const existing = await db.getOne('training_progress', `agent_code=eq.${agentData.agent_code}&module_id=eq.${currentModule.id}`);
+    if (existing) await db.update('training_progress', `id=eq.${existing.id}`, { completed: true, completed_at: new Date().toISOString() });
+    else await db.insert('training_progress', { agent_code: agentData.agent_code, module_id: currentModule.id, completed: true, completed_at: new Date().toISOString() });
+    completedModuleIds.add(currentModule.id);
+    toast('✅ Complete');
+    closeModule();
+    renderTraining();
+    renderExamSection();
+    renderDocuments();
+  } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark Complete'); }
+}
+
+// ── EXAM ────────────────────────────────────────────────────────────────
+async function openExam() {
+  examAnswers = {};
+  lastExamResult = null;
+  document.getElementById('examModal').classList.add('open');
+  document.getElementById('examBody').innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--orange);"></i><p style="margin-top:12px;color:var(--muted);">Loading questions…</p></div>';
+  try {
+    examQuestions = await db.getAll('exam_questions', { filter: 'active=eq.true', order: 'question_number.asc' });
+    if (!examQuestions.length) {
+      document.getElementById('examBody').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">No questions available. Contact admin.</div>';
+      return;
+    }
+    renderExamQuestions();
+  } catch(e) {
+    document.getElementById('examBody').innerHTML = `<div style="text-align:center;padding:40px;color:var(--red);">Could not load exam: ${esc(e.message)}</div>`;
+  }
+}
+
+function renderExamQuestions() {
+  const el = document.getElementById('examBody');
+  el.innerHTML = `
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+      <i class="fas fa-info-circle"></i> Answer all ${examQuestions.length} questions. You need 80% to pass. Take your time — no timer.
+    </p>
+    ${examQuestions.map((q, i) => `
+      <div class="exam-q">
+        <div class="exam-q-num">Question ${i + 1} of ${examQuestions.length}</div>
+        <div class="exam-q-text">${esc(q.question)}</div>
+        ${['A','B','C','D'].map(letter => {
+          const optText = q['option_' + letter.toLowerCase()];
+          return `<label class="exam-opt">
+            <input type="radio" name="q${q.id}" value="${letter}" onchange="recordAnswer('${q.id}','${letter}')">
+            <span><strong>${letter}.</strong> ${esc(optText)}</span>
+          </label>`;
+        }).join('')}
+      </div>`).join('')}
+    <div id="examSubmitError" class="alert alert-error" style="display:none;margin-top:12px;">
+      <i class="fas fa-circle-exclamation"></i><span id="examSubmitErrText"></span>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+      <button class="btn btn-outline btn-full" onclick="closeExam()">Cancel</button>
+      <button class="btn btn-green btn-full" id="examSubmitBtn" onclick="submitExam()"><i class="fas fa-check"></i> Submit Exam</button>
+    </div>`;
+}
+
+function recordAnswer(qid, letter) {
+  examAnswers[qid] = letter;
+}
+
+async function submitExam() {
+  const unanswered = examQuestions.filter(q => !examAnswers[q.id]);
+  if (unanswered.length) {
+    const err = document.getElementById('examSubmitError');
+    document.getElementById('examSubmitErrText').textContent = `Please answer all questions. ${unanswered.length} remaining.`;
+    err.style.display = 'flex';
+    return;
+  }
+
+  const btn = document.getElementById('examSubmitBtn');
+  setLoading(btn, true, 'Scoring…');
+
+  let correct = 0;
+  examQuestions.forEach(q => {
+    if (examAnswers[q.id] === q.correct_answer) correct++;
+  });
+  const total = examQuestions.length;
+  const percentage = Math.round((correct / total) * 100);
+  const passed = percentage >= 80;
+
+  try {
+    await db.insert('exam_attempts', {
+      agent_code: agentData.agent_code,
+      score: correct,
+      total: total,
+      percentage: percentage,
+      passed: passed,
+      answers: JSON.stringify(examAnswers),
+    });
+    await db.logAudit('exam', agentData.agent_code, passed ? 'passed' : 'failed', agentData.agent_code, null, { score: correct, total, percentage });
+    await loadExamAttempts();
+  } catch(e) {
+    console.warn('Could not save attempt:', e);
+  }
+
+  lastExamResult = { correct, total, percentage, passed };
+  renderExamResults();
+  setLoading(btn, false, '<i class="fas fa-check"></i> Submit Exam');
+}
+
+function renderExamResults() {
+  const el = document.getElementById('examBody');
+  const r = lastExamResult;
+  const pass = r.passed;
+
+  el.innerHTML = `
+    <div class="${pass ? 'exam-result-pass' : 'exam-result-fail'}">
+      <div class="exam-result-icon">${pass ? '🏆' : '💪'}</div>
+      <div class="exam-result-score">${r.percentage}%</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;">${r.correct} out of ${r.total} correct</div>
+      <div class="exam-result-msg">
+        ${pass
+          ? `Congratulations! You passed the final exam.<br>Your Certificate of Achievement is now unlocked in the Docs tab.`
+          : `You need 80% to pass. You scored ${r.percentage}%.<br>Review the modules and try again — unlimited retakes.`}
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn btn-outline btn-sm" onclick="closeExam()" style="background:rgba(255,255,255,.1);color:white;border-color:rgba(255,255,255,.2);">Close</button>
+        ${!pass ? `<button class="btn btn-green btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Try Again</button>` : `<button class="btn btn-green btn-sm" onclick="closeExam();showAgentTab('documents',document.querySelector('.tab-btn'))"><i class="fas fa-certificate"></i> View Certificate</button>`}
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <h4 style="font-size:14px;font-weight:800;margin-bottom:12px;">Review Your Answers</h4>
+      ${examQuestions.map((q, i) => {
+        const given = examAnswers[q.id];
+        const correct = q.correct_answer;
+        const isRight = given === correct;
+        return `
+          <div style="background:${isRight ? '#f0fdf4' : '#fef2f2'};border:1px solid ${isRight ? '#bbf7d0' : '#fecaca'};border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:800;color:${isRight ? '#15803d' : '#b91c1c'};text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">${isRight ? '✓ Correct' : '✗ Incorrect'} · Q${i + 1}</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:8px;line-height:1.5;">${esc(q.question)}</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">
+              Your answer: <strong style="color:${isRight ? '#15803d' : '#b91c1c'};">${given}. ${esc(q['option_' + given.toLowerCase()])}</strong><br>
+              ${!isRight ? `Correct answer: <strong style="color:#15803d;">${correct}. ${esc(q['option_' + correct.toLowerCase()])}</strong><br>` : ''}
+              ${q.explanation ? `<em style="color:var(--muted);display:block;margin-top:6px;">${esc(q.explanation)}</em>` : ''}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function closeExam() {
+  document.getElementById('examModal').classList.remove('open');
+  examAnswers = {};
+  lastExamResult = null;
+}
+
+function renderTierRates() {
+  const el = document.getElementById('tierRatesList');
+  if (!COMMISSION_TIERS.length) { el.innerHTML = '<div style="opacity:.5;">Loading…</div>'; return; }
+  el.innerHTML = COMMISSION_TIERS.sort((a,b) => Number(a.min_amount) - Number(b.min_amount)).map(t => {
+    const range = t.max_amount === null || t.max_amount === undefined ? `ZMW ${t.min_amount}+` : `ZMW ${t.min_amount} – ${t.max_amount}`;
+    return `<div class="tier-row-display"><span style="color:rgba(255,255,255,.7);">${range}</span><strong style="color:var(--green);">${t.percentage}%</strong></div>`;
+  }).join('');
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('agentLeaderboard');
+  const medals = ['🥇','🥈','🥉'];
+  const byAgent = {};
+  allSales.filter(s => s.status === 'confirmed' || s.status === 'paid').forEach(s => {
+    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales:0, revenue:0 };
+    byAgent[s.agent_code].sales++;
+    byAgent[s.agent_code].revenue += (s.amount||0);
+  });
+  const ranked = Object.entries(byAgent).map(([code, d]) => ({ code, ...d })).sort((a,b) => b.revenue - a.revenue);
+  if (!ranked.length) {
+    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">🏆</div><h3>No sales yet</h3></div>';
+    return;
+  }
+  el.innerHTML = ranked.map((r, i) => {
+    const isMe = r.code === agentData.agent_code;
+    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);${isMe?'background:linear-gradient(90deg,#fff8f4,white);':''}">
+      <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;flex-shrink:0;color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
+      <div style="flex:1;min-width:0;font-weight:${isMe?800:600};font-size:14px;word-break:break-word;">${isMe ? '⭐ You' : esc(r.code)}</div>
+      <div style="font-size:13px;color:var(--muted);margin-right:12px;flex-shrink:0;">${r.sales} sale${r.sales!==1?'s':''}</div>
+      <div style="font-weight:800;color:var(--orange);flex-shrink:0;">${fmtMoney(r.revenue)}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleNotifications(e) {
+  e.stopPropagation();
+  document.getElementById('notifDropdown').classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('notifDropdown');
+  if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+function renderNotifications() {
+  const el = document.getElementById('notifList');
+  const unread = myNotifs.filter(n => !n.read).length;
+  const badge = document.getElementById('notifBadge');
+  if (unread) { badge.textContent = unread; badge.style.display = 'flex'; }
+  else badge.style.display = 'none';
+  if (!myNotifs.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">No notifications.</div>';
+    return;
+  }
+  el.innerHTML = myNotifs.map(n => `
+    <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}')">
+      <div class="notif-title">${esc(n.title)}</div>
+      <div class="notif-msg">${esc(n.message)}</div>
+      <div class="notif-time">${fmtDateTime(n.created_at)}</div>
+    </div>`).join('');
+}
+async function markNotifRead(id) {
+  try { await db.update('notifications', `id=eq.${id}`, { read: true }); await loadNotifications(); } catch(e) {}
+}
+async function markAllRead(e) {
+  e.stopPropagation();
+  try {
+    for (const n of myNotifs.filter(x => !x.read)) await db.update('notifications', `id=eq.${n.id}`, { read: true });
+    await loadNotifications();
+    toast('✅ All read');
+  } catch(e) {}
+}
+
+function renderDocuments() {
+  const el = document.getElementById('docGrid');
+  if (!el) return;
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
+  const allModulesDone = total > 0 && completed === total;
+  const examPassed = myExamAttempts.some(a => a.passed);
+  const certUnlocked = allModulesDone && examPassed;
+
+  const docs = [
+    { icon: 'fa-id-card', color: 'orange', title: 'Agent ID Card', desc: 'Your official branded ID card with photo and QR.', badge: 'ready', action: 'downloadIdCard()' },
+    { icon: 'fa-file-invoice-dollar', color: 'green', title: 'Sales Statement', desc: 'Complete record of every sale you have submitted.', badge: 'ready', action: 'downloadMyStatementPdf()' },
+    { icon: 'fa-calendar-days', color: 'blue', title: 'Monthly Statement', desc: 'Pick any month for a summary.', badge: 'ready', action: 'openStatement()' },
+    { icon: 'fa-certificate', color: 'purple', title: 'Certificate of Participation', desc: 'Confirms you joined the PhoneYa2 Agent Network.', badge: 'ready', action: 'downloadParticipationCert()' },
+    { icon: 'fa-award', color: 'yellow', title: 'Certificate of Achievement', desc: certUnlocked ? 'Exam passed. Well done!' : (allModulesDone ? 'Pass the final exam to unlock.' : 'Complete all training + pass the exam.'), badge: certUnlocked ? 'ready' : 'locked', action: certUnlocked ? 'downloadAchievementCert()' : 'showTrainingLocked()', disabled: !certUnlocked },
+    { icon: 'fa-envelope-open-text', color: 'orange', title: 'Welcome Letter', desc: 'Personalised welcome letter.', badge: 'ready', action: 'downloadWelcomeLetter()' },
+    { icon: 'fa-file-signature', color: 'blue', title: 'Application Document', desc: myApplication ? 'Your submitted application as PDF.' : 'Not found.', badge: myApplication ? 'ready' : 'locked', action: myApplication ? 'downloadApplicationPdf()' : 'showLocked()', disabled: !myApplication },
+    { icon: 'fa-file-contract', color: 'green', title: 'Agent Agreement', desc: activeAgreement ? `Terms you accepted (v${esc(activeAgreement.version)}).` : 'Not available.', badge: activeAgreement ? 'ready' : 'locked', action: activeAgreement ? 'downloadAgreementPdf()' : 'showLocked()', disabled: !activeAgreement },
+  ];
+
+  el.innerHTML = docs.map(d => `
+    <div class="doc-card">
+      <div class="doc-icon ${d.color}"><i class="fas ${d.icon}"></i></div>
+      <div class="doc-body">
+        <div class="doc-title">${esc(d.title)}</div>
+        <div class="doc-desc">${d.desc}</div>
+        <span class="doc-badge ${d.badge}">${d.badge === 'ready' ? '✓ Ready' : '🔒 Locked'}</span>
+        <button class="doc-btn" ${d.disabled ? 'disabled' : ''} onclick="${d.action}"><i class="fas fa-download"></i> Download</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function downloadIdCard() { try { toast('🎫 Generating…'); await makeIdCardPdf(agentData); } catch(e) { toast('Error: ' + e.message); } }
+function downloadParticipationCert() { try { toast('🏅 Generating…'); makeParticipationCertificatePdf(agentData); } catch(e) {} }
+function downloadAchievementCert() { try { makeCertificatePdf({ agent: agentData, title: 'Certificate of Achievement', subtitle: 'Proudly awarded to', date: new Date().toLocaleDateString('en-ZM') }); } catch(e) {} }
+function downloadWelcomeLetter() { try { makeWelcomeLetterPdf(agentData); } catch(e) {} }
+function downloadApplicationPdf() { if (myApplication) makeApplicationPdf(myApplication, agentData); }
+function downloadAgreementPdf() { if (activeAgreement) makeAgreementPdf(activeAgreement, agentData); }
+function showTrainingLocked() { toast('🔒 Complete training and pass the exam to unlock'); }
+function showLocked() { toast('🔒 Not available'); }
+
+function downloadMyStatementPdf() {
+  if (!agentSales.length) { toast('⚠️  No sales'); return; }
+  const sales = agentSales.map(s => ({ sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name, amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status }));
+  makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: 'All time', sales });
+}
+
+function openStatement() {
+  const grid = document.getElementById('monthGrid');
+  const now = new Date();
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ year: d.getFullYear(), month: d.getMonth(), short: d.toLocaleDateString('en-ZM', { month: 'short' }) });
+  }
+  grid.innerHTML = months.map(m => `
+    <button class="month-btn" data-year="${m.year}" data-month="${m.month}" onclick="selectMonth(this, ${m.year}, ${m.month})">
+      <div class="mb-name">${m.short}</div>
+      <div class="mb-year">${m.year}</div>
+    </button>`).join('');
+  const currentBtn = grid.querySelector(`[data-year="${months[0].year}"][data-month="${months[0].month}"]`);
+  if (currentBtn) selectMonth(currentBtn, months[0].year, months[0].month);
+  document.getElementById('statementModal').classList.add('open');
+}
+function selectMonth(btn, year, month) {
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sales = agentSales.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; });
+  selectedMonth = { year, month, label: new Date(year, month).toLocaleDateString('en-ZM', { month: 'long', year: 'numeric' }), sales };
+  const preview = document.getElementById('stmtPreview');
+  if (!sales.length) {
+    preview.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">No sales this month.</div>';
+    document.getElementById('downloadStmtBtn').disabled = true;
+    return;
+  }
+  const total = sales.reduce((t,s) => t + (s.amount||0), 0);
+  preview.innerHTML = `<div style="background:var(--light);border-radius:var(--r);padding:16px;text-align:center;">
+    <div style="font-size:12px;color:var(--muted);font-weight:700;">${selectedMonth.label}</div>
+    <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;">${sales.length} sales</div>
+    <div style="color:var(--orange);font-weight:700;">${fmtMoney(total)}</div>
+  </div>`;
+  document.getElementById('downloadStmtBtn').disabled = false;
+}
+function closeStatement() { document.getElementById('statementModal').classList.remove('open'); }
+function downloadMonthlyStatement() {
+  if (!selectedMonth) return;
+  const sales = selectedMonth.sales.map(s => ({ sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name, amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status }));
+  makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: selectedMonth.label, sales });
+}
+
+function showAgentTab(name, btn) {
+  document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
+  const pane = document.getElementById('agent-tab-' + name);
+  if (pane) pane.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'documents') renderDocuments();
+  if (name === 'leads') { loadLeads(); }
+  if (name === 'training') { renderExamSection(); }
+  if (name === 'messages' && !currentConversation) {
+    const teamBtn = document.querySelector('#agent-tab-messages .filter-pill');
+    if (teamBtn) switchChat('team', teamBtn);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (auth.isLoggedIn()) {
+    try {
+      const profile = await getProfile();
+      if (profile && profile.role === 'agent' && profile.agent_code) {
+        const agent = await db.getOne('agents', `agent_code=eq.${profile.agent_code}&active=eq.true`);
+        if (agent) {
+          profileData = profile;
+          agentData = agent;
+          bootDashboard();
+        }
+      }
+    } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>
