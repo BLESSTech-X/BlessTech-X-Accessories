@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════
 // PhoneYa2 Agent Network — Shared Config & Utilities
-// V2 — Auth + Leads + Communication Hub + Rich Media Chat
+// V2 — Auth + Leads + Communication Hub + Rich Media Chat + WAV Voice
 // ═══════════════════════════════════════════════════════════════════════
 
 const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
@@ -357,17 +357,16 @@ async function uploadChatMedia(file, type = 'image', onProgress) {
     ext         = 'jpg';
     contentType = 'image/jpeg';
   } else if (type === 'voice') {
-    // Detect extension from mime type
     const mt = (file.type || '').toLowerCase();
-    if (mt.includes('mp4') || mt.includes('m4a') || mt.includes('aac')) {
+    if (mt.includes('wav')) {
+      ext = 'wav';
+      contentType = 'audio/wav';
+    } else if (mt.includes('mp4') || mt.includes('m4a') || mt.includes('aac')) {
       ext = 'm4a';
       contentType = 'audio/mp4';
     } else if (mt.includes('ogg')) {
       ext = 'ogg';
       contentType = 'audio/ogg';
-    } else if (mt.includes('wav')) {
-      ext = 'wav';
-      contentType = 'audio/wav';
     } else {
       ext = 'webm';
       contentType = 'audio/webm';
@@ -406,18 +405,21 @@ async function uploadChatMedia(file, type = 'image', onProgress) {
   return `${SB_URL}/storage/v1/object/public/chat-media/${filename}`;
 }
 
-// ── VOICE RECORDER (tap-to-start, tap-to-stop) ─────────────────────────
-let _mediaRecorder = null;
-let _mediaChunks = [];
+// ── VOICE RECORDER (WAV OUTPUT — reliable everywhere) ──────────────────
+// Uses AudioContext + ScriptProcessor to capture raw PCM, then encodes
+// to WAV locally. WAV has a fixed duration header, so playback is
+// always correct — no more "wrong duration" or "blip" problems.
+let _voiceStream = null;
+let _voiceSourceNode = null;
+let _voiceProcessor = null;
+let _voiceAudioCtx = null;
+let _voiceSamples = [];
+let _voiceSampleRate = 44100;
 let _recordStartTime = 0;
-let _recordMimeType = '';
 
 async function startVoiceRecording() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     throw new Error('Voice recording not supported on this device');
-  }
-  if (typeof MediaRecorder === 'undefined') {
-    throw new Error('MediaRecorder not supported on this browser');
   }
 
   const stream = await navigator.mediaDevices.getUserMedia({
@@ -425,84 +427,119 @@ async function startVoiceRecording() {
       echoCancellation: true,
       noiseSuppression: true,
       autoGainControl: true,
+      channelCount: 1,
     }
   });
 
-  _mediaChunks = [];
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioCtx();
+  _voiceSampleRate = audioCtx.sampleRate;
+  _voiceSamples = [];
   _recordStartTime = Date.now();
-  _recordMimeType = '';
 
-  // Pick the best supported mime type.
-  // Prefer webm/opus on Chrome (best compatibility with MediaRecorder), mp4 on Safari.
-  const candidates = [
-    'audio/webm;codecs=opus',
-    'audio/webm',
-    'audio/mp4;codecs=mp4a.40.2',
-    'audio/mp4',
-    'audio/ogg;codecs=opus',
-    'audio/ogg',
-  ];
+  const source = audioCtx.createMediaStreamSource(stream);
+  const bufferSize = 4096;
+  const processor = audioCtx.createScriptProcessor(bufferSize, 1, 1);
 
-  let chosen = '';
-  if (typeof MediaRecorder.isTypeSupported === 'function') {
-    for (const c of candidates) {
-      if (MediaRecorder.isTypeSupported(c)) { chosen = c; break; }
-    }
-  }
-
-  try {
-    _mediaRecorder = chosen
-      ? new MediaRecorder(stream, { mimeType: chosen, audioBitsPerSecond: 128000 })
-      : new MediaRecorder(stream, { audioBitsPerSecond: 128000 });
-  } catch (e) {
-    _mediaRecorder = new MediaRecorder(stream);
-  }
-
-  _recordMimeType = _mediaRecorder.mimeType || chosen || 'audio/webm';
-
-  _mediaRecorder.ondataavailable = (e) => {
-    if (e.data && e.data.size > 0) _mediaChunks.push(e.data);
+  processor.onaudioprocess = (e) => {
+    const inputData = e.inputBuffer.getChannelData(0);
+    _voiceSamples.push(new Float32Array(inputData));
   };
 
-  // Use a timeslice so we get chunks regularly.
-  // This is CRITICAL for reliable playback on mobile.
-  _mediaRecorder.start(250);
+  source.connect(processor);
+  processor.connect(audioCtx.destination);
+
+  _voiceStream = stream;
+  _voiceSourceNode = source;
+  _voiceProcessor = processor;
+  _voiceAudioCtx = audioCtx;
 
   return {
     stop: () => new Promise((resolve) => {
-      const finalize = () => {
-        stream.getTracks().forEach(t => t.stop());
-        const finalType = _recordMimeType || 'audio/webm';
-        const blob = new Blob(_mediaChunks, { type: finalType });
-        const duration = Math.round((Date.now() - _recordStartTime) / 1000);
-        _mediaRecorder = null;
-        resolve({ blob, duration });
-      };
-
-      _mediaRecorder.onstop = finalize;
-
       try {
-        // Flush the final chunk before stopping — this is what fixes
-        // the "0.5-second blip" problem.
-        if (_mediaRecorder.state === 'recording') {
-          _mediaRecorder.requestData();
-        }
-        _mediaRecorder.stop();
-      } catch (e) {
-        finalize();
-      }
+        processor.disconnect();
+        source.disconnect();
+        stream.getTracks().forEach(t => t.stop());
+        audioCtx.close();
+      } catch (e) {}
+
+      const duration = Math.round((Date.now() - _recordStartTime) / 1000);
+      const blob = _encodeWav(_voiceSamples, _voiceSampleRate);
+
+      _voiceStream = null;
+      _voiceSourceNode = null;
+      _voiceProcessor = null;
+      _voiceAudioCtx = null;
+      _voiceSamples = [];
+
+      resolve({ blob, duration });
     }),
     cancel: () => {
       try {
-        if (_mediaRecorder && _mediaRecorder.state === 'recording') {
-          _mediaRecorder.stop();
-        }
+        processor.disconnect();
+        source.disconnect();
+        stream.getTracks().forEach(t => t.stop());
+        audioCtx.close();
       } catch (e) {}
-      stream.getTracks().forEach(t => t.stop());
-      _mediaChunks = [];
-      _mediaRecorder = null;
+      _voiceStream = null;
+      _voiceSourceNode = null;
+      _voiceProcessor = null;
+      _voiceAudioCtx = null;
+      _voiceSamples = [];
     },
   };
+}
+
+// Encode raw Float32 PCM samples as a proper WAV file
+function _encodeWav(samplesArrays, sampleRate) {
+  let totalSamples = 0;
+  for (const arr of samplesArrays) totalSamples += arr.length;
+  const merged = new Float32Array(totalSamples);
+  let offset = 0;
+  for (const arr of samplesArrays) {
+    merged.set(arr, offset);
+    offset += arr.length;
+  }
+
+  const numChannels = 1;
+  const bytesPerSample = 2;
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = merged.length * bytesPerSample;
+  const bufferSize = 44 + dataSize;
+
+  const buffer = new ArrayBuffer(bufferSize);
+  const view = new DataView(buffer);
+
+  _writeWavString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  _writeWavString(view, 8, 'WAVE');
+  _writeWavString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true);
+  _writeWavString(view, 36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  let pcmOffset = 44;
+  for (let i = 0; i < merged.length; i++) {
+    let s = Math.max(-1, Math.min(1, merged[i]));
+    s = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    view.setInt16(pcmOffset, s, true);
+    pcmOffset += 2;
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
+function _writeWavString(view, offset, str) {
+  for (let i = 0; i < str.length; i++) {
+    view.setUint8(offset + i, str.charCodeAt(i));
+  }
 }
 
 // ── MEDIA HELPERS ───────────────────────────────────────────────────────
