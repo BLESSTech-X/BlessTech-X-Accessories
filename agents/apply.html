@@ -19,9 +19,58 @@
 .review-row  { display: flex; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .review-row:last-child { border-bottom: none; }
 .review-lbl  { font-weight: 600; min-width: 140px; color: var(--muted); flex-shrink: 0; }
-.review-val  { color: var(--text); }
+.review-val  { color: var(--text); word-break: break-word; }
 .screen-box  { background: linear-gradient(135deg,#0d2010,#0a3518); border: 1px solid rgba(37,211,102,.25); border-radius: var(--r); padding: 16px 18px; margin-top: 16px; color: white; }
 .screen-row  { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 4px 0; }
+
+/* Password field with show/hide */
+.pwd-wrap { position: relative; }
+.pwd-wrap .input { padding-right: 44px; }
+.pwd-toggle {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: var(--muted);
+  font-size: 15px; padding: 6px 8px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.pwd-toggle:hover { color: var(--orange); background: var(--light); }
+
+/* Password strength */
+.pwd-strength-wrap { margin-top: 6px; }
+.pwd-strength-bar {
+  height: 4px; border-radius: 100px; background: var(--light);
+  overflow: hidden; margin-bottom: 4px;
+}
+.pwd-strength-fill {
+  height: 100%; width: 0%; border-radius: 100px;
+  background: #dc2626; transition: width .3s, background .3s;
+}
+.pwd-strength-fill.weak   { width: 25%; background: #dc2626; }
+.pwd-strength-fill.fair   { width: 50%; background: #f59e0b; }
+.pwd-strength-fill.good   { width: 75%; background: #3b82f6; }
+.pwd-strength-fill.strong { width: 100%; background: #16a34a; }
+.pwd-strength-label { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* Match indicator */
+.pwd-match-hint { font-size: 11px; margin-top: 4px; font-weight: 600; }
+.pwd-match-hint.ok   { color: #16a34a; }
+.pwd-match-hint.bad  { color: #dc2626; }
+
+/* Soft wellbeing banner */
+.wellbeing-tip {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #78350f;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+.wellbeing-tip i { flex-shrink: 0; margin-top: 1px; }
+
 html, body { overflow-x: hidden; }
 * { min-width: 0; }
 @media(max-width:580px) {
@@ -31,6 +80,9 @@ html, body { overflow-x: hidden; }
   .step-line    { min-width: 14px; }
   .step-nav     { flex-direction: column-reverse; gap: 10px; }
   .step-nav .btn { width: 100%; justify-content: center; }
+}
+@media(max-width:400px) {
+  .step-num     { width: 26px; height: 26px; font-size: 12px; }
 }
 </style>
 </head>
@@ -58,6 +110,12 @@ html, body { overflow-x: hidden; }
         <h2>Personal Information</h2>
         <p>Your basic contact details and login credentials.</p>
       </div>
+
+      <div class="wellbeing-tip">
+        <i class="fas fa-lightbulb" style="color:#d97706;"></i>
+        <div><strong>Take your time.</strong> Everything you enter here is used only to set up your agent account. You can update most of it later from your dashboard.</div>
+      </div>
+
       <div class="field-row">
         <div class="field">
           <label class="label">Full Name <span class="req">*</span></label>
@@ -111,11 +169,32 @@ html, body { overflow-x: hidden; }
         <div class="hint">This is the email you'll use to sign in to your agent dashboard.</div>
         <div class="err-msg" id="e-login-email">Please enter a valid email address.</div>
       </div>
+
       <div class="field">
         <label class="label">Login Password <span class="req">*</span></label>
-        <input type="password" class="input" id="f-login-password" placeholder="At least 8 characters" autocomplete="new-password">
-        <div class="hint">Choose a strong password. You'll need it to log in.</div>
+        <div class="pwd-wrap">
+          <input type="password" class="input" id="f-login-password" placeholder="At least 8 characters" autocomplete="new-password" oninput="updatePwdStrength()">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('f-login-password', this)" title="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="pwd-strength-wrap">
+          <div class="pwd-strength-bar"><div class="pwd-strength-fill" id="pwdStrengthFill"></div></div>
+          <div class="pwd-strength-label" id="pwdStrengthLabel">Enter a password</div>
+        </div>
         <div class="err-msg" id="e-login-password">Password must be at least 8 characters.</div>
+      </div>
+
+      <div class="field">
+        <label class="label">Confirm Password <span class="req">*</span></label>
+        <div class="pwd-wrap">
+          <input type="password" class="input" id="f-login-password-confirm" placeholder="Re-enter your password" autocomplete="new-password" oninput="updatePwdMatch()">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('f-login-password-confirm', this)" title="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="pwd-match-hint" id="pwdMatchHint"></div>
+        <div class="err-msg" id="e-login-password-confirm">Passwords must match.</div>
       </div>
 
       <div class="step-nav">
@@ -273,6 +352,58 @@ document.getElementById('nav-wrap').innerHTML = buildNav('apply');
 let currentStep = 1;
 let activeAgreement = null;
 
+// ── SHOW / HIDE PASSWORD ─────────────────────────────────────────────────
+function togglePwd(inputId, btn) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  const isHidden = el.type === 'password';
+  el.type = isHidden ? 'text' : 'password';
+  const icon = btn.querySelector('i');
+  if (icon) icon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+  btn.title = isHidden ? 'Hide password' : 'Show password';
+}
+
+// ── PASSWORD STRENGTH ────────────────────────────────────────────────────
+function updatePwdStrength() {
+  const pwd = document.getElementById('f-login-password').value;
+  const fill = document.getElementById('pwdStrengthFill');
+  const label = document.getElementById('pwdStrengthLabel');
+  if (!pwd) {
+    fill.className = 'pwd-strength-fill';
+    label.textContent = 'Enter a password';
+    return;
+  }
+  let score = 0;
+  if (pwd.length >= 8)  score++;
+  if (pwd.length >= 12) score++;
+  if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score++;
+  if (/\d/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+  let cls = 'weak', txt = 'Weak — add more characters';
+  if (score >= 5) { cls = 'strong'; txt = 'Strong 💪'; }
+  else if (score >= 4) { cls = 'good'; txt = 'Good — could be stronger'; }
+  else if (score >= 3) { cls = 'fair'; txt = 'Fair — try adding numbers or symbols'; }
+
+  fill.className = 'pwd-strength-fill ' + cls;
+  label.textContent = txt;
+  updatePwdMatch();
+}
+
+function updatePwdMatch() {
+  const pwd = document.getElementById('f-login-password').value;
+  const confirm = document.getElementById('f-login-password-confirm').value;
+  const hint = document.getElementById('pwdMatchHint');
+  if (!confirm) { hint.textContent = ''; hint.className = 'pwd-match-hint'; return; }
+  if (pwd === confirm) {
+    hint.textContent = '✓ Passwords match';
+    hint.className = 'pwd-match-hint ok';
+  } else {
+    hint.textContent = '✗ Passwords do not match';
+    hint.className = 'pwd-match-hint bad';
+  }
+}
+
 // ── LOAD ACTIVE AGREEMENT ────────────────────────────────────────────────
 async function loadAgreement() {
   try {
@@ -313,7 +444,6 @@ function req(id) {
   const el = document.getElementById(id);
   return el ? String(el.value).trim() : '';
 }
-
 function showErr(id, show) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('show', show);
@@ -336,10 +466,20 @@ function validateStep(step) {
     ok = showErr('e-location', !req('f-location')) && ok;
     ok = showErr('e-phone',    !req('f-phone'))    && ok;
     ok = showErr('e-whatsapp', !req('f-whatsapp')) && ok;
+
     const email = req('f-login-email');
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     ok = showErr('e-login-email', !emailOk) && ok;
-    ok = showErr('e-login-password', req('f-login-password').length < 8) && ok;
+
+    const pwd = document.getElementById('f-login-password').value;
+    const pwd2 = document.getElementById('f-login-password-confirm').value;
+    ok = showErr('e-login-password', pwd.length < 8) && ok;
+    ok = showErr('e-login-password-confirm', pwd !== pwd2 || !pwd2) && ok;
+
+    if (pwd.length < 8 || pwd !== pwd2) {
+      updatePwdStrength();
+      updatePwdMatch();
+    }
   }
   if (step === 2) {
     ok = showErr('e-reach',         !req('f-reach'))              && ok;
@@ -434,28 +574,6 @@ async function submitApplication() {
       throw new Error('An application with this phone number already exists.');
     }
 
-    toast('Creating your account…');
-    const fnRes = await fetch(`${SB_URL}/functions/v1/create-agent-user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`,
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-        full_name: req('f-name'),
-        agent_code: 'PENDING',
-      }),
-    });
-
-    const fnData = await fnRes.json();
-    if (!fnRes.ok) {
-      throw new Error(fnData.error || 'Could not create account. Please try a different email.');
-    }
-
-    // app_id is auto-generated by the database
     const data = {
       full_name:        req('f-name'),
       age:              Number(req('f-age')) || null,
@@ -463,7 +581,6 @@ async function submitApplication() {
       whatsapp:         req('f-whatsapp'),
       email:            req('f-email'),
       login_email:      email,
-      auth_user_id:     fnData.user_id,
       location:         req('f-location'),
       education:        req('f-education'),
       occupation:       req('f-occupation'),
@@ -489,6 +606,33 @@ async function submitApplication() {
 
     const inserted = await db.insert('applications', data);
     const newAppId = inserted?.[0]?.app_id || '';
+    const newAppRowId = inserted?.[0]?.id || '';
+
+    let authUserId = null;
+    try {
+      toast('Creating your account…');
+      const fnRes = await fetch(`${SB_URL}/functions/v1/create-agent-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`,
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          full_name: req('f-name'),
+          agent_code: 'PENDING',
+        }),
+      });
+      const fnData = await fnRes.json();
+      if (fnRes.ok) {
+        authUserId = fnData.user_id;
+        await db.update('applications', `id=eq.${newAppRowId}`, { auth_user_id: authUserId });
+      }
+    } catch(e) {
+      console.warn('Auth user creation warning:', e);
+    }
 
     showScreeningResult(screening, newAppId);
     sessionStorage.setItem('py2_app', JSON.stringify({ ...data, app_id: newAppId, screening }));
