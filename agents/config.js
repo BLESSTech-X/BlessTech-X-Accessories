@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════
 // PhoneYa2 Agent Network — Shared Config & Utilities
-// V2 — Auth + Leads + Communication Hub + Rich Media Chat
+// V3 — Auth + Leads + Communication Hub + Rich Media Chat + WAV Voice
 // ═══════════════════════════════════════════════════════════════════════
 
 const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
@@ -318,6 +318,7 @@ async function sendMessage(conversationId, payload) {
     media_thumbnail: payload.media_thumbnail || null,
     media_duration:  payload.media_duration || null,
     reply_to_id:     payload.reply_to_id || null,
+    reply_preview:   payload.reply_preview || null,
   };
   return db.insert('messages', msg);
 }
@@ -342,7 +343,7 @@ async function removeReaction(messageId, emoji) {
   return db.remove('message_reactions', `message_id=eq.${messageId}&user_id=eq.${auth.currentUserId()}&emoji=eq.${emoji}`);
 }
 
-// ── CHAT MEDIA UPLOAD (with compression + progress) ────────────────────
+// ── CHAT MEDIA UPLOAD ───────────────────────────────────────────────────
 async function uploadChatMedia(file, type = 'image', onProgress) {
   const uid = auth.currentUserId();
   if (!uid) throw new Error('Not logged in');
@@ -357,8 +358,20 @@ async function uploadChatMedia(file, type = 'image', onProgress) {
     ext         = 'jpg';
     contentType = 'image/jpeg';
   } else if (type === 'voice') {
-    ext         = 'webm';
-    contentType = file.type || 'audio/webm';
+    const mt = (file.type || '').toLowerCase();
+    if (mt.includes('wav')) {
+      ext = 'wav';
+      contentType = 'audio/wav';
+    } else if (mt.includes('mp4') || mt.includes('m4a') || mt.includes('aac')) {
+      ext = 'm4a';
+      contentType = 'audio/mp4';
+    } else if (mt.includes('ogg')) {
+      ext = 'ogg';
+      contentType = 'audio/ogg';
+    } else {
+      ext = 'webm';
+      contentType = 'audio/webm';
+    }
   } else {
     ext = (file.name?.split('.').pop() || 'bin').toLowerCase();
     if (ext.length > 6) ext = 'bin';
@@ -393,9 +406,13 @@ async function uploadChatMedia(file, type = 'image', onProgress) {
   return `${SB_URL}/storage/v1/object/public/chat-media/${filename}`;
 }
 
-// ── VOICE RECORDER (tap-to-start, tap-to-stop) ─────────────────────────
-let _mediaRecorder = null;
-let _mediaChunks = [];
+// ── VOICE RECORDER (WAV OUTPUT — reliable everywhere) ──────────────────
+let _voiceStream = null;
+let _voiceSourceNode = null;
+let _voiceProcessor = null;
+let _voiceAudioCtx = null;
+let _voiceSamples = [];
+let _voiceSampleRate = 44100;
 let _recordStartTime = 0;
 
 async function startVoiceRecording() {
@@ -403,59 +420,123 @@ async function startVoiceRecording() {
     throw new Error('Voice recording not supported on this device');
   }
 
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  _mediaChunks = [];
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+      channelCount: 1,
+    }
+  });
+
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioCtx();
+  _voiceSampleRate = audioCtx.sampleRate;
+  _voiceSamples = [];
   _recordStartTime = Date.now();
 
-  let mimeType = 'audio/webm';
-  if (typeof MediaRecorder.isTypeSupported === 'function') {
-    if (!MediaRecorder.isTypeSupported('audio/webm')) {
-      if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-      else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
-      else mimeType = '';
-    }
-  } else {
-    mimeType = '';
-  }
+  const source = audioCtx.createMediaStreamSource(stream);
+  const bufferSize = 4096;
+  const processor = audioCtx.createScriptProcessor(bufferSize, 1, 1);
 
-  try {
-    _mediaRecorder = mimeType
-      ? new MediaRecorder(stream, { mimeType })
-      : new MediaRecorder(stream);
-  } catch (e) {
-    _mediaRecorder = new MediaRecorder(stream);
-    mimeType = _mediaRecorder.mimeType || 'audio/webm';
-  }
-
-  _mediaRecorder.ondataavailable = (e) => {
-    if (e.data && e.data.size > 0) _mediaChunks.push(e.data);
+  processor.onaudioprocess = (e) => {
+    const inputData = e.inputBuffer.getChannelData(0);
+    _voiceSamples.push(new Float32Array(inputData));
   };
 
-  _mediaRecorder.start();
+  source.connect(processor);
+  processor.connect(audioCtx.destination);
+
+  _voiceStream = stream;
+  _voiceSourceNode = source;
+  _voiceProcessor = processor;
+  _voiceAudioCtx = audioCtx;
 
   return {
     stop: () => new Promise((resolve) => {
-      _mediaRecorder.onstop = () => {
+      try {
+        processor.disconnect();
+        source.disconnect();
         stream.getTracks().forEach(t => t.stop());
-        const finalType = mimeType || 'audio/webm';
-        const blob = new Blob(_mediaChunks, { type: finalType });
-        const duration = Math.round((Date.now() - _recordStartTime) / 1000);
-        _mediaRecorder = null;
-        resolve({ blob, duration });
-      };
-      try { _mediaRecorder.stop(); } catch(e) {
-        stream.getTracks().forEach(t => t.stop());
-        _mediaRecorder = null;
-        resolve({ blob: new Blob(_mediaChunks, { type: 'audio/webm' }), duration: 0 });
-      }
+        audioCtx.close();
+      } catch (e) {}
+
+      const duration = Math.round((Date.now() - _recordStartTime) / 1000);
+      const blob = _encodeWav(_voiceSamples, _voiceSampleRate);
+
+      _voiceStream = null;
+      _voiceSourceNode = null;
+      _voiceProcessor = null;
+      _voiceAudioCtx = null;
+      _voiceSamples = [];
+
+      resolve({ blob, duration });
     }),
     cancel: () => {
-      try { _mediaRecorder.stop(); } catch(e) {}
-      stream.getTracks().forEach(t => t.stop());
-      _mediaChunks = [];
-      _mediaRecorder = null;
+      try {
+        processor.disconnect();
+        source.disconnect();
+        stream.getTracks().forEach(t => t.stop());
+        audioCtx.close();
+      } catch (e) {}
+      _voiceStream = null;
+      _voiceSourceNode = null;
+      _voiceProcessor = null;
+      _voiceAudioCtx = null;
+      _voiceSamples = [];
     },
   };
+}
+
+function _encodeWav(samplesArrays, sampleRate) {
+  let totalSamples = 0;
+  for (const arr of samplesArrays) totalSamples += arr.length;
+  const merged = new Float32Array(totalSamples);
+  let offset = 0;
+  for (const arr of samplesArrays) {
+    merged.set(arr, offset);
+    offset += arr.length;
+  }
+
+  const numChannels = 1;
+  const bytesPerSample = 2;
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = merged.length * bytesPerSample;
+  const bufferSize = 44 + dataSize;
+
+  const buffer = new ArrayBuffer(bufferSize);
+  const view = new DataView(buffer);
+
+  _writeWavString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  _writeWavString(view, 8, 'WAVE');
+  _writeWavString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true);
+  _writeWavString(view, 36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  let pcmOffset = 44;
+  for (let i = 0; i < merged.length; i++) {
+    let s = Math.max(-1, Math.min(1, merged[i]));
+    s = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    view.setInt16(pcmOffset, s, true);
+    pcmOffset += 2;
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
+function _writeWavString(view, offset, str) {
+  for (let i = 0; i < str.length; i++) {
+    view.setUint8(offset + i, str.charCodeAt(i));
+  }
 }
 
 // ── MEDIA HELPERS ───────────────────────────────────────────────────────
@@ -788,6 +869,29 @@ function legacyCopy(text) {
   ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
   document.body.appendChild(ta); ta.select();
   document.execCommand('copy'); document.body.removeChild(ta);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PRESENCE & TYPING
+// ═══════════════════════════════════════════════════════════════════════
+async function setPresence(status, conversationId) {
+  try {
+    const uid = auth.currentUserId();
+    if (!uid) return;
+    const profile = await getProfile();
+    const payload = {
+      user_id: uid,
+      agent_code: profile?.agent_code || null,
+      full_name: profile?.full_name || profile?.email || 'User',
+      role: profile?.role || 'agent',
+      status: status || 'online',
+      conversation_id: conversationId || null,
+      last_seen: new Date().toISOString(),
+    };
+    const existing = await db.getOne('presence', `user_id=eq.${uid}`);
+    if (existing) await db.update('presence', `user_id=eq.${uid}`, payload);
+    else await db.insert('presence', payload);
+  } catch(e) { console.warn('Presence update failed:', e); }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
