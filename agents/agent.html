@@ -101,91 +101,26 @@
 .tier-row-display:last-child { border-bottom:none; }
 
 /* LEADS */
-.lead-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 18px;
-  margin-bottom: 10px;
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  transition: all .2s;
-}
+.lead-card { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; transition: all .2s; }
 .lead-card:hover { border-color: var(--orange); }
 .lead-info { flex: 1; min-width: 200px; }
 .lead-name { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
 .lead-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
 .lead-meta i { width: 14px; color: var(--muted); }
-.lead-status-select {
-  font-size: 12px; padding: 6px 10px; border-radius: 8px;
-  border: 1.5px solid var(--border); background: white; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 700; min-width: 120px;
-}
+.lead-status-select { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; min-width: 120px; }
 .lead-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
 /* MESSAGES */
-.chat-container {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 70vh;
-  min-height: 500px;
-}
-.chat-hdr {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #fafafa;
-}
-.chat-hdr-icon {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--grad-o); color: white;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; flex-shrink: 0;
-}
+.chat-container { background: white; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; display: flex; flex-direction: column; height: 70vh; min-height: 500px; }
+.chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: #fafafa; }
+.chat-hdr-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
 .chat-hdr-info { flex: 1; min-width: 0; }
 .chat-hdr-name { font-weight: 800; font-size: 14px; }
 .chat-hdr-sub { font-size: 12px; color: var(--muted); }
-.chat-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px;
-  background: #f8f9fb;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.chat-msg {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.5;
-  position: relative;
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
-}
-.chat-msg.mine {
-  align-self: flex-end;
-  background: linear-gradient(135deg,#ff6000,#ff9f43);
-  color: white;
-  border-bottom-right-radius: 4px;
-}
-.chat-msg.theirs {
-  align-self: flex-start;
-  background: white;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-bottom-left-radius: 4px;
-}
+.chat-body { flex: 1; overflow-y: auto; padding: 16px 20px; background: #f8f9fb; display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; position: relative; word-wrap: break-word; overflow-wrap: anywhere; }
+.chat-msg.mine { align-self: flex-end; background: linear-gradient(135deg,#ff6000,#ff9f43); color: white; border-bottom-right-radius: 4px; }
+.chat-msg.theirs { align-self: flex-start; background: white; color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 .chat-msg-sender { font-size: 11px; font-weight: 700; margin-bottom: 4px; opacity: .8; }
 .chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; }
 .chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
@@ -193,38 +128,10 @@
 .chat-msg-actions button:hover { opacity: 1; text-decoration: underline; }
 .chat-msg-media { max-width: 100%; border-radius: 10px; margin-top: 6px; display: block; }
 .chat-msg-expires { font-size: 10px; margin-top: 4px; opacity: .7; }
-.chat-input-row {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  background: white;
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-.chat-input-row textarea {
-  flex: 1;
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 10px 14px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  resize: none;
-  max-height: 120px;
-  min-height: 40px;
-  outline: none;
-}
+.chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
+.chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
 .chat-input-row textarea:focus { border-color: var(--orange); }
-.chat-send-btn {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: var(--grad-o);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; flex-shrink: 0;
-  transition: opacity .2s;
-}
+.chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
 .chat-send-btn:hover { opacity: .9; }
 
 /* DOCS */
@@ -282,6 +189,41 @@
 .tr-status { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-left: auto; flex-shrink: 0; align-self: flex-start; white-space: nowrap; }
 .tr-status.done { background: #f0fdf4; color: #15803d; }
 .tr-status.todo { background: #fff7ed; color: #c2410c; }
+
+/* EXAM */
+.exam-unlock-box {
+  background: linear-gradient(135deg, #0d2010, #0a3518);
+  border-radius: var(--r2);
+  padding: 24px 26px;
+  margin-top: 20px;
+  color: white;
+  border: 1px solid rgba(37,211,102,.25);
+  text-align: center;
+}
+.exam-unlock-box h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+.exam-unlock-box p { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 16px; line-height: 1.6; }
+.exam-locked-box {
+  background: var(--light);
+  border: 1px dashed var(--border);
+  border-radius: var(--r2);
+  padding: 24px 26px;
+  margin-top: 20px;
+  text-align: center;
+}
+.exam-locked-box h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
+.exam-locked-box p { font-size: 13px; color: var(--muted); }
+.exam-q { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 14px; }
+.exam-q-num { font-size: 11px; font-weight: 800; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.exam-q-text { font-size: 14px; font-weight: 700; line-height: 1.5; margin-bottom: 14px; word-break: break-word; }
+.exam-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background .15s; margin-bottom: 6px; }
+.exam-opt:hover { background: var(--light); }
+.exam-opt input { margin-top: 3px; flex-shrink: 0; }
+.exam-opt span { font-size: 13px; line-height: 1.5; word-break: break-word; }
+.exam-result-pass { background: linear-gradient(135deg, #0d2010, #0a3518); border-radius: var(--r2); padding: 30px; text-align: center; color: white; border: 1px solid rgba(37,211,102,.4); }
+.exam-result-fail { background: linear-gradient(135deg, #2a1010, #3a1515); border-radius: var(--r2); padding: 30px; text-align: center; color: white; border: 1px solid rgba(239,68,68,.4); }
+.exam-result-icon { font-size: 3rem; margin-bottom: 12px; }
+.exam-result-score { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 8px; }
+.exam-result-msg { font-size: 14px; line-height: 1.6; opacity: .85; margin-bottom: 20px; }
 
 /* PERF */
 .perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
@@ -541,6 +483,7 @@ html, body { overflow-x: hidden; }
   <div class="tab-pane" id="agent-tab-training">
     <div class="tr-progress-wrap" id="trProgress"></div>
     <div class="tr-list" id="trList"></div>
+    <div id="examSection"></div>
   </div>
 
   <!-- DOCUMENTS TAB -->
@@ -782,6 +725,19 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
+<!-- EXAM MODAL -->
+<div class="modal-overlay" id="examModal">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-hdr">
+      <h3>Final Exam</h3>
+      <button class="modal-close" onclick="closeExam()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="examBody">
+      <div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--orange);"></i><p style="margin-top:12px;color:var(--muted);">Loading questions…</p></div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="config.js"></script>
@@ -807,6 +763,10 @@ let myLeads = [];
 let currentChatType = 'team';
 let currentConversation = null;
 let stopChatSub = null;
+let examQuestions = [];
+let examAnswers = {};
+let myExamAttempts = [];
+let lastExamResult = null;
 
 // ═══════════════════════════════════════════════════════════════════════
 // AUTH — NEW SUPABASE AUTH-BASED LOGIN
@@ -821,15 +781,20 @@ async function doAgentLogin() {
   document.getElementById('loginErr').classList.remove('show');
 
   try {
-    await auth.signIn(email, password);
-    const profile = await getProfile();
+    const authData = await auth.signIn(email, password);
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    let profile = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      profile = await getProfile();
+      if (profile) break;
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
 
     if (!profile) throw new Error('Profile not found');
     if (profile.role === 'admin') { window.location.href = 'admin.html'; return; }
-
     if (!profile.agent_code) throw new Error('No agent account linked to this email');
 
-    // Load the agent record by code
     const agent = await db.getOne('agents', `agent_code=eq.${profile.agent_code}&active=eq.true`);
     if (!agent) throw new Error('Agent account inactive or not found');
 
@@ -839,6 +804,7 @@ async function doAgentLogin() {
     await logReferralEvent(profile.agent_code, 'login');
     bootDashboard();
   } catch(e) {
+    console.error('Login error:', e);
     document.getElementById('loginErr').textContent = e.message || 'Incorrect email or password';
     document.getElementById('loginErr').classList.add('show');
     setLoading(btn, false, '<i class="fas fa-right-to-bracket"></i> Sign In');
@@ -876,6 +842,7 @@ async function bootDashboard() {
   await loadCampaignBanner();
   await loadMarketing();
   await loadTraining();
+  await loadExamAttempts();
   await loadLeads();
   renderDocuments();
 }
@@ -1120,7 +1087,6 @@ async function switchChat(type, btn) {
     document.getElementById('chatName').textContent = type === 'team' ? 'Team Room' : 'Announcements';
     document.getElementById('chatSub').textContent = type === 'team' ? 'All agents + admins' : 'Official updates from PhoneYa2';
 
-    // Announcements: only admins can send
     if (type === 'announcements' && profileData.role !== 'admin') {
       document.getElementById('chatInputRow').style.display = 'none';
     } else {
@@ -1140,7 +1106,6 @@ async function loadChatMessages() {
   const el = document.getElementById('chatBody');
   try {
     const msgs = await getMessages(currentConversation.id, 100);
-    // Sort ascending
     msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     el.innerHTML = '';
     msgs.forEach(m => appendChatMessage(m));
@@ -1201,10 +1166,7 @@ async function sendChatMessage() {
   btn.disabled = true;
 
   try {
-    await sendMessage(currentConversation.id, {
-      message_type: 'text',
-      text,
-    });
+    await sendMessage(currentConversation.id, { message_type: 'text', text });
     input.value = '';
     input.style.height = 'auto';
     await loadChatMessages();
@@ -1635,14 +1597,26 @@ function shareWhatsApp(id) {
   window.open('https://wa.me/?text=' + encodeURIComponent(m.content), '_blank');
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// TRAINING + EXAM
+// ═══════════════════════════════════════════════════════════════════════
 async function loadTraining() {
   try {
     allModules = await db.getAll('training_modules', { filter: 'active=eq.true', order: 'module_number.asc' });
     const progress = await db.getAll('training_progress', { filter: `agent_code=eq.${agentData.agent_code}&completed=eq.true` });
     completedModuleIds = new Set(progress.map(p => p.module_id));
     renderTraining();
+    renderExamSection();
   } catch(e) {}
 }
+
+async function loadExamAttempts() {
+  try {
+    myExamAttempts = await db.getAll('exam_attempts', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc' });
+    renderExamSection();
+  } catch(e) { myExamAttempts = []; }
+}
+
 function renderTraining() {
   const total = allModules.length;
   const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
@@ -1657,13 +1631,13 @@ function renderTraining() {
       <div class="tr-progress-bar"><div class="tr-progress-fill" style="width:${pct}%;"></div></div>
     </div>
     ${completed === total && total > 0
-      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;"><i class="fas fa-award"></i> Certificate Unlocked</div>`
+      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-size:12px;font-weight:800;padding:8px 16px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;"><i class="fas fa-award"></i> Exam Unlocked</div>`
       : `<div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--orange);">${pct}%</div>`}
   `;
 
   const listEl = document.getElementById('trList');
   if (!allModules.length) {
-    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No modules yet</h3></div>';
+    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No modules yet</h3><p>Your training content is being prepared. Check back soon.</p></div>';
     return;
   }
   listEl.innerHTML = allModules.map(m => {
@@ -1678,6 +1652,50 @@ function renderTraining() {
     </div>`;
   }).join('');
 }
+
+function renderExamSection() {
+  const el = document.getElementById('examSection');
+  if (!el) return;
+
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
+  const allDone = total > 0 && completed === total;
+  const passing = myExamAttempts.find(a => a.passed);
+
+  if (!allDone) {
+    el.innerHTML = `
+      <div class="exam-locked-box">
+        <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
+        <h3>Final Exam Locked</h3>
+        <p>Complete all ${total} training modules to unlock the final exam.<br>Progress: ${completed} / ${total}</p>
+      </div>`;
+    return;
+  }
+
+  if (passing) {
+    el.innerHTML = `
+      <div class="exam-unlock-box">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🏆</div>
+        <h3>Exam Passed!</h3>
+        <p>You scored <strong>${passing.percentage}%</strong> on ${fmtDate(passing.created_at)}.<br>
+        Your Certificate of Achievement is unlocked in the Docs tab.</p>
+        <button class="btn btn-outline btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Retake Exam</button>
+      </div>`;
+    return;
+  }
+
+  const attempts = myExamAttempts.length;
+  el.innerHTML = `
+    <div class="exam-unlock-box">
+      <div style="font-size:2.5rem;margin-bottom:8px;">🎓</div>
+      <h3>Final Exam Unlocked!</h3>
+      <p>You have completed all ${total} modules. Now take the final exam to earn your Certificate of Achievement.<br><br>
+      <strong>Pass mark:</strong> 80% (12 out of 15 correct)<br>
+      <strong>Retakes:</strong> Unlimited${attempts > 0 ? ` · You have taken it ${attempts} time${attempts !== 1 ? 's' : ''}` : ''}</p>
+      <button class="btn btn-green" style="font-size:14px;padding:12px 24px;" onclick="openExam()"><i class="fas fa-graduation-cap"></i> ${attempts > 0 ? 'Try Again' : 'Start Final Exam'}</button>
+    </div>`;
+}
+
 function openModule(id) {
   const m = allModules.find(x => x.id === id);
   if (!m) return;
@@ -1704,8 +1722,148 @@ async function markModuleDone() {
     toast('✅ Complete');
     closeModule();
     renderTraining();
+    renderExamSection();
     renderDocuments();
   } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark Complete'); }
+}
+
+// ── EXAM ────────────────────────────────────────────────────────────────
+async function openExam() {
+  examAnswers = {};
+  lastExamResult = null;
+  document.getElementById('examModal').classList.add('open');
+  document.getElementById('examBody').innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--orange);"></i><p style="margin-top:12px;color:var(--muted);">Loading questions…</p></div>';
+  try {
+    examQuestions = await db.getAll('exam_questions', { filter: 'active=eq.true', order: 'question_number.asc' });
+    if (!examQuestions.length) {
+      document.getElementById('examBody').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">No questions available. Contact admin.</div>';
+      return;
+    }
+    renderExamQuestions();
+  } catch(e) {
+    document.getElementById('examBody').innerHTML = `<div style="text-align:center;padding:40px;color:var(--red);">Could not load exam: ${esc(e.message)}</div>`;
+  }
+}
+
+function renderExamQuestions() {
+  const el = document.getElementById('examBody');
+  el.innerHTML = `
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+      <i class="fas fa-info-circle"></i> Answer all ${examQuestions.length} questions. You need 80% to pass. Take your time — no timer.
+    </p>
+    ${examQuestions.map((q, i) => `
+      <div class="exam-q">
+        <div class="exam-q-num">Question ${i + 1} of ${examQuestions.length}</div>
+        <div class="exam-q-text">${esc(q.question)}</div>
+        ${['A','B','C','D'].map(letter => {
+          const optText = q['option_' + letter.toLowerCase()];
+          return `<label class="exam-opt">
+            <input type="radio" name="q${q.id}" value="${letter}" onchange="recordAnswer('${q.id}','${letter}')">
+            <span><strong>${letter}.</strong> ${esc(optText)}</span>
+          </label>`;
+        }).join('')}
+      </div>`).join('')}
+    <div id="examSubmitError" class="alert alert-error" style="display:none;margin-top:12px;">
+      <i class="fas fa-circle-exclamation"></i><span id="examSubmitErrText"></span>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+      <button class="btn btn-outline btn-full" onclick="closeExam()">Cancel</button>
+      <button class="btn btn-green btn-full" id="examSubmitBtn" onclick="submitExam()"><i class="fas fa-check"></i> Submit Exam</button>
+    </div>`;
+}
+
+function recordAnswer(qid, letter) {
+  examAnswers[qid] = letter;
+}
+
+async function submitExam() {
+  // Make sure all questions are answered
+  const unanswered = examQuestions.filter(q => !examAnswers[q.id]);
+  if (unanswered.length) {
+    const err = document.getElementById('examSubmitError');
+    document.getElementById('examSubmitErrText').textContent = `Please answer all questions. ${unanswered.length} remaining.`;
+    err.style.display = 'flex';
+    return;
+  }
+
+  const btn = document.getElementById('examSubmitBtn');
+  setLoading(btn, true, 'Scoring…');
+
+  // Score
+  let correct = 0;
+  examQuestions.forEach(q => {
+    if (examAnswers[q.id] === q.correct_answer) correct++;
+  });
+  const total = examQuestions.length;
+  const percentage = Math.round((correct / total) * 100);
+  const passed = percentage >= 80;
+
+  // Save attempt
+  try {
+    await db.insert('exam_attempts', {
+      agent_code: agentData.agent_code,
+      score: correct,
+      total: total,
+      percentage: percentage,
+      passed: passed,
+      answers: JSON.stringify(examAnswers),
+    });
+    await db.logAudit('exam', agentData.agent_code, passed ? 'passed' : 'failed', agentData.agent_code, null, { score: correct, total, percentage });
+    await loadExamAttempts();
+  } catch(e) {
+    console.warn('Could not save attempt:', e);
+  }
+
+  lastExamResult = { correct, total, percentage, passed };
+  renderExamResults();
+  setLoading(btn, false, '<i class="fas fa-check"></i> Submit Exam');
+}
+
+function renderExamResults() {
+  const el = document.getElementById('examBody');
+  const r = lastExamResult;
+  const pass = r.passed;
+
+  el.innerHTML = `
+    <div class="${pass ? 'exam-result-pass' : 'exam-result-fail'}">
+      <div class="exam-result-icon">${pass ? '🏆' : '💪'}</div>
+      <div class="exam-result-score">${r.percentage}%</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;">${r.correct} out of ${r.total} correct</div>
+      <div class="exam-result-msg">
+        ${pass
+          ? `Congratulations! You passed the final exam.<br>Your Certificate of Achievement is now unlocked in the Docs tab.`
+          : `You need 80% to pass. You scored ${r.percentage}%.<br>Review the modules and try again — unlimited retakes.`}
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn btn-outline btn-sm" onclick="closeExam()" style="background:rgba(255,255,255,.1);color:white;border-color:rgba(255,255,255,.2);">Close</button>
+        ${!pass ? `<button class="btn btn-green btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Try Again</button>` : `<button class="btn btn-green btn-sm" onclick="closeExam();showAgentTab('documents',document.querySelector('.tab-btn'))"><i class="fas fa-certificate"></i> View Certificate</button>`}
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <h4 style="font-size:14px;font-weight:800;margin-bottom:12px;">Review Your Answers</h4>
+      ${examQuestions.map((q, i) => {
+        const given = examAnswers[q.id];
+        const correct = q.correct_answer;
+        const isRight = given === correct;
+        return `
+          <div style="background:${isRight ? '#f0fdf4' : '#fef2f2'};border:1px solid ${isRight ? '#bbf7d0' : '#fecaca'};border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:800;color:${isRight ? '#15803d' : '#b91c1c'};text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">${isRight ? '✓ Correct' : '✗ Incorrect'} · Q${i + 1}</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:8px;line-height:1.5;">${esc(q.question)}</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">
+              Your answer: <strong style="color:${isRight ? '#15803d' : '#b91c1c'};">${given}. ${esc(q['option_' + given.toLowerCase()])}</strong><br>
+              ${!isRight ? `Correct answer: <strong style="color:#15803d;">${correct}. ${esc(q['option_' + correct.toLowerCase()])}</strong><br>` : ''}
+              ${q.explanation ? `<em style="color:var(--muted);display:block;margin-top:6px;">${esc(q.explanation)}</em>` : ''}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function closeExam() {
+  document.getElementById('examModal').classList.remove('open');
+  examAnswers = {};
+  lastExamResult = null;
 }
 
 function renderTierRates() {
@@ -1782,14 +1940,18 @@ async function markAllRead(e) {
 function renderDocuments() {
   const el = document.getElementById('docGrid');
   if (!el) return;
-  const trainingDone = allModules.length > 0 && completedModuleIds.size === allModules.length;
+  const total = allModules.length;
+  const completed = allModules.filter(m => completedModuleIds.has(m.id)).length;
+  const allModulesDone = total > 0 && completed === total;
+  const examPassed = myExamAttempts.some(a => a.passed);
+  const certUnlocked = allModulesDone && examPassed;
 
   const docs = [
     { icon: 'fa-id-card', color: 'orange', title: 'Agent ID Card', desc: 'Your official branded ID card with photo and QR.', badge: 'ready', action: 'downloadIdCard()' },
     { icon: 'fa-file-invoice-dollar', color: 'green', title: 'Sales Statement', desc: 'Complete record of every sale you have submitted.', badge: 'ready', action: 'downloadMyStatementPdf()' },
     { icon: 'fa-calendar-days', color: 'blue', title: 'Monthly Statement', desc: 'Pick any month for a summary.', badge: 'ready', action: 'openStatement()' },
     { icon: 'fa-certificate', color: 'purple', title: 'Certificate of Participation', desc: 'Confirms you joined the PhoneYa2 Agent Network.', badge: 'ready', action: 'downloadParticipationCert()' },
-    { icon: 'fa-award', color: 'yellow', title: 'Certificate of Achievement', desc: trainingDone ? 'All training complete.' : 'Complete all training to unlock.', badge: trainingDone ? 'ready' : 'locked', action: trainingDone ? 'downloadAchievementCert()' : 'showTrainingLocked()', disabled: !trainingDone },
+    { icon: 'fa-award', color: 'yellow', title: 'Certificate of Achievement', desc: certUnlocked ? 'Exam passed. Well done!' : (allModulesDone ? 'Pass the final exam to unlock.' : 'Complete all training + pass the exam.'), badge: certUnlocked ? 'ready' : 'locked', action: certUnlocked ? 'downloadAchievementCert()' : 'showTrainingLocked()', disabled: !certUnlocked },
     { icon: 'fa-envelope-open-text', color: 'orange', title: 'Welcome Letter', desc: 'Personalised welcome letter.', badge: 'ready', action: 'downloadWelcomeLetter()' },
     { icon: 'fa-file-signature', color: 'blue', title: 'Application Document', desc: myApplication ? 'Your submitted application as PDF.' : 'Not found.', badge: myApplication ? 'ready' : 'locked', action: myApplication ? 'downloadApplicationPdf()' : 'showLocked()', disabled: !myApplication },
     { icon: 'fa-file-contract', color: 'green', title: 'Agent Agreement', desc: activeAgreement ? `Terms you accepted (v${esc(activeAgreement.version)}).` : 'Not available.', badge: activeAgreement ? 'ready' : 'locked', action: activeAgreement ? 'downloadAgreementPdf()' : 'showLocked()', disabled: !activeAgreement },
@@ -1814,7 +1976,7 @@ function downloadAchievementCert() { try { makeCertificatePdf({ agent: agentData
 function downloadWelcomeLetter() { try { makeWelcomeLetterPdf(agentData); } catch(e) {} }
 function downloadApplicationPdf() { if (myApplication) makeApplicationPdf(myApplication, agentData); }
 function downloadAgreementPdf() { if (activeAgreement) makeAgreementPdf(activeAgreement, agentData); }
-function showTrainingLocked() { toast('🔒 Complete training to unlock'); }
+function showTrainingLocked() { toast('🔒 Complete training and pass the exam to unlock'); }
 function showLocked() { toast('🔒 Not available'); }
 
 function downloadMyStatementPdf() {
@@ -1874,6 +2036,7 @@ function showAgentTab(name, btn) {
   if (btn) btn.classList.add('active');
   if (name === 'documents') renderDocuments();
   if (name === 'leads') { loadLeads(); }
+  if (name === 'training') { renderExamSection(); }
   if (name === 'messages' && !currentConversation) {
     const teamBtn = document.querySelector('#agent-tab-messages .filter-pill');
     if (teamBtn) switchChat('team', teamBtn);
