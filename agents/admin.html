@@ -107,6 +107,7 @@
 .lead-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
 .lead-status-select { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; min-width: 120px; }
 
+/* Chat */
 .chat-container { background: white; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; display: flex; flex-direction: column; height: 70vh; min-height: 500px; }
 .chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: #fafafa; }
 .chat-hdr-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
@@ -122,11 +123,26 @@
 .chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
 .chat-msg-actions button { background: none; border: none; color: inherit; font-size: 11px; cursor: pointer; opacity: .75; padding: 2px 4px; }
 .chat-msg-expires { font-size: 10px; margin-top: 4px; opacity: .7; }
+.chat-msg-media { max-width: 100%; border-radius: 10px; margin-top: 6px; display: block; cursor: pointer; transition: opacity .2s; }
+.chat-msg-media:hover { opacity: .9; }
+.chat-msg-file { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,.15); border-radius: 8px; margin-top: 6px; text-decoration: none; color: inherit; font-size: 13px; }
+.chat-msg.mine .chat-msg-file { background: rgba(255,255,255,.2); }
+.chat-msg.theirs .chat-msg-file { background: var(--light); }
+.chat-msg-file i { font-size: 20px; flex-shrink: 0; }
+.chat-msg-file .file-meta { flex: 1; min-width: 0; }
+.chat-msg-file .file-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-msg-file .file-size { font-size: 11px; opacity: .7; }
 .chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
 .chat-input-row textarea:focus { border-color: var(--orange); }
 .chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
 .chat-send-btn:hover { opacity: .9; }
+.chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--light); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all .2s; }
+.chat-attach-btn:hover { background: var(--orange); color: white; }
+.chat-attach-btn.recording { background: #dc2626; color: white; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+#lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
+#lightboxModal.open { display: flex; }
 
 .agent-photo-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; background: var(--light); border: 3px solid var(--border); flex-shrink: 0; }
 .agent-photo-fallback-large { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg,#ff6000,#ff9f43); display: flex; align-items: center; justify-content: center; color: white; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 38px; border: 3px solid var(--border); flex-shrink: 0; }
@@ -368,8 +384,25 @@
         </div>
         <div class="chat-body" id="adminChatBody"></div>
         <div class="chat-input-row" id="adminChatInputRow">
+          <button class="chat-attach-btn" onclick="document.getElementById('adminChatImageInput').click()" title="Send image">
+            <i class="fas fa-camera"></i>
+          </button>
+          <button class="chat-attach-btn" onclick="document.getElementById('adminChatFileInput').click()" title="Send file">
+            <i class="fas fa-paperclip"></i>
+          </button>
+          <button class="chat-attach-btn" id="adminMicBtn" onclick="toggleAdminVoiceRecording()" title="Record voice note">
+            <i class="fas fa-microphone" id="adminMicIcon"></i>
+          </button>
+          <input type="file" id="adminChatImageInput" accept="image/*" style="display:none" onchange="onAdminChatImageSelected(event)">
+          <input type="file" id="adminChatFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none" onchange="onAdminChatFileSelected(event)">
           <textarea id="adminChatInput" rows="1" placeholder="Type a message…" oninput="autoGrow(this)" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendAdminChatMessage();}"></textarea>
           <button class="chat-send-btn" onclick="sendAdminChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div id="adminVoiceRecordingBar" style="display:none;padding:12px 16px;background:#fee2e2;border-top:1px solid #fecaca;align-items:center;gap:12px;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;animation:pulse 1s infinite;"></div>
+          <div style="flex:1;font-size:14px;font-weight:700;color:#991b1b;">Recording… <span id="adminRecordTimer">0:00</span></div>
+          <button class="btn btn-sm" style="background:#991b1b;color:white;" onclick="stopAndSendAdminVoice()"><i class="fas fa-paper-plane"></i> Send</button>
+          <button class="btn btn-sm btn-outline" onclick="cancelAdminVoiceRecording()">Cancel</button>
         </div>
       </div>
     </div>
@@ -569,6 +602,46 @@
   </div>
 </div>
 
+<!-- IMAGE PREVIEW MODAL -->
+<div class="modal-overlay" id="adminImagePreviewModal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-hdr">
+      <h3>Preview Image</h3>
+      <button class="modal-close" onclick="closeAdminImagePreview()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px;">
+        <img id="adminImagePreviewImg" style="max-width:100%;max-height:50vh;border-radius:12px;">
+      </div>
+      <div class="field">
+        <label class="label">Caption (optional)</label>
+        <input type="text" class="input" id="adminImagePreviewCaption" placeholder="Add a caption…">
+      </div>
+      <div id="adminUploadProgressWrap" style="display:none;margin-top:12px;">
+        <div style="height:8px;background:var(--light);border-radius:100px;overflow:hidden;">
+          <div id="adminUploadProgressBar" style="height:100%;width:0%;background:var(--grad-o);transition:width .3s;"></div>
+        </div>
+        <div id="adminUploadProgressText" style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;">Uploading…</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-outline btn-full" onclick="closeAdminImagePreview()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="adminSendImageBtn" onclick="sendAdminChatImage()"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX MODAL -->
+<div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
+  <div style="position:relative;max-width:95vw;max-height:95vh;" onclick="event.stopPropagation()">
+    <img id="lightboxImg" style="max-width:95vw;max-height:90vh;border-radius:12px;background:black;">
+    <button onclick="closeLightbox(event)" style="position:absolute;top:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:white;border:none;cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;">×</button>
+    <a id="lightboxDownload" download style="position:absolute;bottom:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:white;cursor:pointer;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:var(--orange);text-decoration:none;">
+      <i class="fas fa-download"></i>
+    </a>
+  </div>
+</div>
+
 <script src="config.js"></script>
 <script>
 const APP_STATUSES = [
@@ -646,6 +719,11 @@ let payoutFilter = 'all', reportFilter = 'month', contentFilter = 'marketing', l
 let currentRejectSaleId = null, currentRejectPayoutId = null;
 let currentAdminChatType = 'team', currentAdminConversation = null, stopAdminChatSub = null;
 let editableTiers = [];
+
+// Admin chat media state
+let _adminPendingImageFile = null;
+let _adminVoiceRecorder = null;
+let _adminVoiceTimerInterval = null;
 
 async function loadAll() {
   try {
@@ -956,8 +1034,6 @@ function openApprove() {
 function closeModal() { document.getElementById('approveModal').classList.remove('open'); }
 
 async function getNextAgentNumber() {
-  // Read the ACTUAL highest number from the agents table.
-  // This avoids counter-drift problems when rows are added manually via SQL.
   try {
     const agents = await db.getAll('agents', { select: 'agent_id' });
     let maxNum = 0;
@@ -969,7 +1045,6 @@ async function getNextAgentNumber() {
     });
     return maxNum + 1;
   } catch(e) {
-    // Fallback to the counter if we can't read the table
     const n = await db.nextId('agents');
     return n;
   }
@@ -978,7 +1053,6 @@ async function getNextAgentNumber() {
 async function confirmApprove() {
   const email = document.getElementById('m-email').value.trim();
   if (!currentApp) return;
-
   const finalEmail = currentApp.login_email || email;
   if (!finalEmail) { toast('⚠️  Agent email required'); return; }
   if (!currentApp.auth_user_id) {
@@ -989,18 +1063,15 @@ async function confirmApprove() {
   setLoading(btn, true, 'Approving agent…');
   document.getElementById('approveError').style.display = 'none';
 
-  // Track what we've created so we can roll back on failure
   let createdAgentCode = null;
   let createdWallet = false;
 
   try {
-    // 1. Compute next number from actual data (self-healing)
     const n = await getNextAgentNumber();
     const agentId = makeAgentId(n);
     const agentCode = makeAgentCode(n);
     const refUrl = `${CONFIG.agentSiteUrl}/?ref=${agentCode}`;
 
-    // 2. Insert agent row
     const agentInsert = await db.insert('agents', {
       app_id:        currentApp.app_id,
       agent_id:      agentId,
@@ -1016,7 +1087,6 @@ async function confirmApprove() {
     if (!agentInsert || !agentInsert.length) throw new Error('Could not create agent row');
     createdAgentCode = agentCode;
 
-    // 3. Insert wallet
     await db.insert('wallets', {
       agent_code: agentCode,
       total_earned: 0,
@@ -1026,19 +1096,16 @@ async function confirmApprove() {
     });
     createdWallet = true;
 
-    // 4. Keep the counter roughly in sync (best-effort)
     try {
       await db.update('counters', `name=eq.agents`, { value: n });
     } catch(e) { /* non-fatal */ }
 
-    // 5. Link the profile
     await db.update('profiles', `id=eq.${currentApp.auth_user_id}`, {
       role: 'agent',
       agent_code: agentCode,
       full_name: currentApp.full_name,
     });
 
-    // 6. Update the application
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
     history.push({
       status: 'approved',
@@ -1076,7 +1143,6 @@ async function confirmApprove() {
   } catch(e) {
     console.error('Approval failed:', e);
 
-    // Roll back what we can
     if (createdAgentCode) {
       try { await db.remove('agents', `agent_code=eq.${createdAgentCode}`); } catch(rb) {}
     }
@@ -1089,6 +1155,33 @@ async function confirmApprove() {
     document.getElementById('approveError').style.display = 'flex';
   } finally {
     setLoading(btn, false, '<i class="fas fa-check"></i> Approve Agent');
+  }
+}
+
+async function rejectApp() {
+  if (!currentApp || !confirm('Reject this application? The applicant will no longer be able to log in.')) return;
+
+  try {
+    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
+    history.push({ status: 'rejected', timestamp: new Date().toISOString(), by: 'admin' });
+
+    await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
+      status: 'rejected',
+      status_history: history,
+      reviewed_by: 'admin',
+      reviewed_at: new Date().toISOString(),
+    });
+
+    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin',
+      { status: currentApp.status },
+      { status: 'rejected' }
+    );
+
+    toast('❌ Application rejected');
+    await loadAll();
+    closeDetail();
+  } catch(e) {
+    toast('Error: ' + e.message);
   }
 }
 
@@ -1294,14 +1387,28 @@ function appendAdminChatMessage(msg, scroll = false) {
 
   let media = '';
   if (msg.media_url) {
-    if (msg.message_type === 'image') media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="">`;
-    else if (msg.message_type === 'voice') media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
-    else media = `<a href="${esc(msg.media_url)}" target="_blank" style="color:inherit;text-decoration:underline;">📎 Download file</a>`;
+    if (msg.message_type === 'image') {
+      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="openLightbox('${esc(msg.media_url)}')">`;
+    } else if (msg.message_type === 'voice') {
+      media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
+    } else if (msg.message_type === 'file') {
+      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download>
+        <i class="fas fa-file"></i>
+        <div class="file-meta">
+          <div class="file-name">${esc(msg.text || 'Download file')}</div>
+          <div class="file-size">Tap to download</div>
+        </div>
+      </a>`;
+    } else {
+      media = `<a href="${esc(msg.media_url)}" target="_blank" style="color:inherit;text-decoration:underline;">📎 Download file</a>`;
+    }
   }
+
+  const textContent = msg.message_type === 'file' ? '' : (msg.text ? `<div>${linkify(msg.text)}</div>` : '');
 
   div.innerHTML = `
     ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
-    ${msg.text ? `<div>${esc(msg.text)}</div>` : ''}
+    ${textContent}
     ${media}
     <div class="chat-msg-time">${fmtTime(msg.created_at)}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
     ${expiry}
@@ -1350,6 +1457,160 @@ async function removeAdminMsg(id) {
     await deleteMessage(id);
     await loadAdminChatMessages();
   } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── ADMIN CHAT MEDIA ────────────────────────────────────────────────────
+function onAdminChatImageSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('⚠️ Please select an image'); return; }
+  if (file.size > 8 * 1024 * 1024) { toast('⚠️ Image too large (max 8 MB)'); return; }
+
+  _adminPendingImageFile = file;
+  document.getElementById('adminImagePreviewImg').src = URL.createObjectURL(file);
+  document.getElementById('adminImagePreviewCaption').value = '';
+  document.getElementById('adminUploadProgressWrap').style.display = 'none';
+  document.getElementById('adminImagePreviewModal').classList.add('open');
+  event.target.value = '';
+}
+
+function closeAdminImagePreview() {
+  document.getElementById('adminImagePreviewModal').classList.remove('open');
+  _adminPendingImageFile = null;
+}
+
+async function sendAdminChatImage() {
+  if (!_adminPendingImageFile) return;
+  const btn = document.getElementById('adminSendImageBtn');
+  const caption = document.getElementById('adminImagePreviewCaption').value.trim();
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('adminUploadProgressWrap').style.display = 'block';
+  document.getElementById('adminUploadProgressBar').style.width = '10%';
+  document.getElementById('adminUploadProgressText').textContent = 'Uploading image…';
+
+  try {
+    const url = await uploadChatMedia(_adminPendingImageFile, 'image', (pct) => {
+      document.getElementById('adminUploadProgressBar').style.width = pct + '%';
+    });
+    document.getElementById('adminUploadProgressText').textContent = 'Sending…';
+    await sendMessage(currentAdminConversation.id, {
+      message_type: 'image',
+      text: caption || null,
+      media_url: url,
+    });
+    closeAdminImagePreview();
+    await loadAdminChatMessages();
+    toast('✅ Image sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+    document.getElementById('adminUploadProgressText').textContent = 'Failed: ' + e.message;
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Send');
+  }
+}
+
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxDownload').href = url;
+  document.getElementById('lightboxModal').classList.add('open');
+}
+function closeLightbox(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  document.getElementById('lightboxModal').classList.remove('open');
+}
+
+async function onAdminChatFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { toast('⚠️ File too large (max 15 MB)'); event.target.value = ''; return; }
+
+  const btn = document.querySelector('#tab-messages .chat-send-btn');
+  if (btn) btn.disabled = true;
+  toast('Uploading file…');
+
+  try {
+    const url = await uploadChatMedia(file, 'file');
+    await sendMessage(currentAdminConversation.id, {
+      message_type: 'file',
+      text: file.name,
+      media_url: url,
+    });
+    await loadAdminChatMessages();
+    toast('✅ File sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  } finally {
+    if (btn) btn.disabled = false;
+    event.target.value = '';
+  }
+}
+
+async function toggleAdminVoiceRecording() {
+  if (_adminVoiceRecorder) {
+    await stopAndSendAdminVoice();
+  } else {
+    await startAdminVoice();
+  }
+}
+
+async function startAdminVoice() {
+  try {
+    _adminVoiceRecorder = await startVoiceRecording();
+    document.getElementById('adminMicIcon').className = 'fas fa-stop';
+    document.getElementById('adminMicBtn').classList.add('recording');
+    document.getElementById('adminVoiceRecordingBar').style.display = 'flex';
+    document.getElementById('adminChatInputRow').style.display = 'none';
+
+    let seconds = 0;
+    _adminVoiceTimerInterval = setInterval(() => {
+      seconds++;
+      document.getElementById('adminRecordTimer').textContent = formatDuration(seconds);
+      if (seconds >= 180) stopAndSendAdminVoice();
+    }, 1000);
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  }
+}
+
+async function stopAndSendAdminVoice() {
+  if (!_adminVoiceRecorder) return;
+  const rec = _adminVoiceRecorder;
+  _adminVoiceRecorder = null;
+  clearInterval(_adminVoiceTimerInterval);
+
+  document.getElementById('adminMicIcon').className = 'fas fa-microphone';
+  document.getElementById('adminMicBtn').classList.remove('recording');
+  document.getElementById('adminVoiceRecordingBar').style.display = 'none';
+  document.getElementById('adminChatInputRow').style.display = 'flex';
+
+  try {
+    const { blob, duration } = await rec.stop();
+    if (duration < 1) { toast('⚠️ Recording too short'); return; }
+    if (duration > 180) { toast('⚠️ Max length is 3 minutes'); return; }
+
+    toast('Sending voice note…');
+    const url = await uploadChatMedia(blob, 'voice');
+    await sendMessage(currentAdminConversation.id, {
+      message_type: 'voice',
+      media_url: url,
+    });
+    await loadAdminChatMessages();
+    toast('✅ Voice note sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  }
+}
+
+function cancelAdminVoiceRecording() {
+  if (!_adminVoiceRecorder) return;
+  _adminVoiceRecorder.cancel();
+  _adminVoiceRecorder = null;
+  clearInterval(_adminVoiceTimerInterval);
+  document.getElementById('adminMicIcon').className = 'fas fa-microphone';
+  document.getElementById('adminMicBtn').classList.remove('recording');
+  document.getElementById('adminVoiceRecordingBar').style.display = 'none';
+  document.getElementById('adminChatInputRow').style.display = 'flex';
+  toast('Recording cancelled');
 }
 
 // ── SALES ───────────────────────────────────────────────────────────────
