@@ -309,7 +309,10 @@ function updateStepIndicator() {
   }
 }
 
-function req(id) { return document.getElementById(id).value.trim(); }
+function req(id) { 
+  const el = document.getElementById(id);
+  return el ? String(el.value).trim() : '';
+}
 function showErr(id, show) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('show', show);
