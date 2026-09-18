@@ -100,7 +100,6 @@
 .content-item { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; overflow-wrap: break-word; min-width: 0; }
 .content-item-tag { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
 
-/* Lead card */
 .lead-card { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; transition: all .2s; }
 .lead-card:hover { border-color: var(--orange); }
 .lead-info { flex: 1; min-width: 200px; }
@@ -108,7 +107,6 @@
 .lead-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
 .lead-status-select { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; min-width: 120px; }
 
-/* Chat */
 .chat-container { background: white; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; display: flex; flex-direction: column; height: 70vh; min-height: 500px; }
 .chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: #fafafa; }
 .chat-hdr-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
@@ -129,7 +127,6 @@
 .chat-input-row textarea:focus { border-color: var(--orange); }
 .chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
 .chat-send-btn:hover { opacity: .9; }
-.announcement-toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
 
 .agent-photo-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; background: var(--light); border: 3px solid var(--border); flex-shrink: 0; }
 .agent-photo-fallback-large { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg,#ff6000,#ff9f43); display: flex; align-items: center; justify-content: center; color: white; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 38px; border: 3px solid var(--border); flex-shrink: 0; }
@@ -525,13 +522,20 @@
   <div class="modal-box">
     <div class="modal-hdr"><h3>Approve Application</h3><button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button></div>
     <div class="modal-body">
-      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">This creates an active agent account and generates credentials.</p>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">
+        This will create the agent record, the wallet, and activate their login. It's a one-click approval.
+      </p>
       <div class="field"><label class="label">Application ID</label><input type="text" class="input" id="m-app-id" readonly style="background:var(--light);"></div>
       <div class="field"><label class="label">Applicant Name</label><input type="text" class="input" id="m-name" readonly style="background:var(--light);"></div>
-      <div class="field"><label class="label">Agent Email <span class="req">*</span></label><input type="email" class="input" id="m-email" placeholder="agent@example.com"><div class="hint">Used for the agent to log in. Give this to the agent.</div></div>
-      <div class="field"><label class="label">Temporary Password <span class="req">*</span></label><input type="text" class="input" id="m-password" value="PhoneYa2Agent2026!" readonly><div class="hint">Agent will use this to log in. They should change it later.</div></div>
+      <div class="field"><label class="label">Login Email</label><input type="email" class="input" id="m-email" readonly style="background:var(--light);"></div>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">
+        <i class="fas fa-info-circle"></i> The agent already has their login. They can sign in immediately after approval.
+      </p>
       <div id="approveError" class="alert alert-error" style="display:none;"><i class="fas fa-circle-exclamation"></i><span id="approveErrText"></span></div>
-      <div style="display:flex;gap:10px;margin-top:8px;"><button class="btn btn-outline btn-full" onclick="closeModal()">Cancel</button><button class="btn btn-green btn-full" id="confirmApproveBtn" onclick="confirmApprove()"><i class="fas fa-check"></i> Confirm</button></div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline btn-full" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-green btn-full" id="confirmApproveBtn" onclick="confirmApprove()"><i class="fas fa-check"></i> Approve Agent</button>
+      </div>
     </div>
   </div>
 </div>
@@ -863,6 +867,7 @@ function openDetail(appId) {
         <div class="detail-field" style="margin-top:12px;"><small>Phone</small><p>${esc(a.phone)}</p></div>
         <div class="detail-field" style="margin-top:12px;"><small>WhatsApp</small><p>${esc(a.whatsapp)}</p></div>
         <div class="detail-field" style="margin-top:12px;"><small>Email</small><p>${esc(a.email||'—')}</p></div>
+        <div class="detail-field" style="margin-top:12px;"><small>Login Email</small><p>${esc(a.login_email||'—')}</p></div>
         <div class="detail-field" style="margin-top:12px;"><small>Location</small><p>${esc(a.location)}</p></div>
       </div>
       <div>
@@ -944,7 +949,7 @@ function openApprove() {
   if (!currentApp) return;
   document.getElementById('m-app-id').value = currentApp.app_id;
   document.getElementById('m-name').value = currentApp.full_name;
-  document.getElementById('m-email').value = currentApp.email || '';
+  document.getElementById('m-email').value = currentApp.login_email || currentApp.email || '';
   document.getElementById('approveError').style.display = 'none';
   document.getElementById('approveModal').classList.add('open');
 }
@@ -955,7 +960,6 @@ async function confirmApprove() {
 
   if (!currentApp) return;
 
-  // Use the login_email from the application, fall back to entered email
   const finalEmail = currentApp.login_email || email;
   if (!finalEmail) { toast('⚠️  Agent email required'); return; }
 
@@ -964,13 +968,11 @@ async function confirmApprove() {
   document.getElementById('approveError').style.display = 'none';
 
   try {
-    // 1. Get the next agent_id and agent_code
     const n = await db.nextId('agents');
     const agentId = makeAgentId(n);
     const agentCode = makeAgentCode(n);
     const refUrl = `${CONFIG.agentSiteUrl}/?ref=${agentCode}`;
 
-    // 2. Create the agents row (contains full profile info)
     await db.insert('agents', {
       app_id:        currentApp.app_id,
       agent_id:      agentId,
@@ -984,7 +986,6 @@ async function confirmApprove() {
       referred_by:   currentApp.ref_code || null,
     });
 
-    // 3. Create the wallet row
     await db.insert('wallets', {
       agent_code: agentCode,
       total_earned: 0,
@@ -993,7 +994,6 @@ async function confirmApprove() {
       paid: 0,
     });
 
-    // 4. Update the profiles row — this is the LINK that makes login work
     if (currentApp.auth_user_id) {
       await db.update('profiles', `id=eq.${currentApp.auth_user_id}`, {
         role: 'agent',
@@ -1002,7 +1002,6 @@ async function confirmApprove() {
       });
     }
 
-    // 5. Update the applications row
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
     history.push({
       status: 'approved',
@@ -1019,13 +1018,11 @@ async function confirmApprove() {
       reviewed_at: new Date().toISOString(),
     });
 
-    // 6. Audit log
     await db.logAudit('application', currentApp.app_id, 'approved', 'admin',
       { status: currentApp.status },
       { status: 'approved', agent_code: agentCode }
     );
 
-    // 7. Success message
     closeModal();
     alert(
       `✅ AGENT APPROVED!\n\n` +
@@ -1043,9 +1040,10 @@ async function confirmApprove() {
     document.getElementById('approveErrText').textContent = e.message;
     document.getElementById('approveError').style.display = 'flex';
   } finally {
-    setLoading(btn, false, '<i class="fas fa-check"></i> Confirm');
+    setLoading(btn, false, '<i class="fas fa-check"></i> Approve Agent');
   }
 }
+
 async function rejectApp() {
   if (!currentApp || !confirm('Reject this application?')) return;
   try {
