@@ -952,46 +952,100 @@ function closeModal() { document.getElementById('approveModal').classList.remove
 
 async function confirmApprove() {
   const email = document.getElementById('m-email').value.trim();
-  const password = document.getElementById('m-password').value;
 
-  if (!email) { toast('⚠️  Agent email required'); return; }
+  if (!currentApp) return;
+
+  // Use the login_email from the application, fall back to entered email
+  const finalEmail = currentApp.login_email || email;
+  if (!finalEmail) { toast('⚠️  Agent email required'); return; }
 
   const btn = document.getElementById('confirmApproveBtn');
-  setLoading(btn, true, 'Creating agent…');
+  setLoading(btn, true, 'Approving agent…');
   document.getElementById('approveError').style.display = 'none';
 
   try {
-    const n = await db.nextId('applications');
+    // 1. Get the next agent_id and agent_code
+    const n = await db.nextId('agents');
     const agentId = makeAgentId(n);
     const agentCode = makeAgentCode(n);
     const refUrl = `${CONFIG.agentSiteUrl}/?ref=${agentCode}`;
 
-    const agentRow = await db.insert('agents', {
-      app_id: currentApp.app_id, agent_id: agentId, agent_code: agentCode,
-      full_name: currentApp.full_name, phone: currentApp.phone,
-      whatsapp: currentApp.whatsapp, location: currentApp.location,
-      referral_url: refUrl, active: true,
-      referred_by: currentApp.ref_code || null,
+    // 2. Create the agents row (contains full profile info)
+    await db.insert('agents', {
+      app_id:        currentApp.app_id,
+      agent_id:      agentId,
+      agent_code:    agentCode,
+      full_name:     currentApp.full_name,
+      phone:         currentApp.phone,
+      whatsapp:      currentApp.whatsapp,
+      location:      currentApp.location,
+      referral_url:  refUrl,
+      active:        true,
+      referred_by:   currentApp.ref_code || null,
     });
 
-    await db.insert('wallets', { agent_code: agentCode, total_earned: 0, pending: 0, available: 0, paid: 0 });
+    // 3. Create the wallet row
+    await db.insert('wallets', {
+      agent_code: agentCode,
+      total_earned: 0,
+      pending: 0,
+      available: 0,
+      paid: 0,
+    });
 
+    // 4. Update the profiles row — this is the LINK that makes login work
+    if (currentApp.auth_user_id) {
+      await db.update('profiles', `id=eq.${currentApp.auth_user_id}`, {
+        role: 'agent',
+        agent_code: agentCode,
+        full_name: currentApp.full_name,
+      });
+    }
+
+    // 5. Update the applications row
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
-    history.push({ status: 'approved', timestamp: new Date().toISOString(), by: 'admin', note: 'Agent ' + agentCode });
-    await db.update('applications', `app_id=eq.${currentApp.app_id}`, { status: 'approved', status_history: history, reviewed_by: 'admin', reviewed_at: new Date().toISOString() });
+    history.push({
+      status: 'approved',
+      timestamp: new Date().toISOString(),
+      by: 'admin',
+      note: 'Agent ' + agentCode,
+    });
 
-    await db.logAudit('application', currentApp.app_id, 'approved', 'admin', { status: currentApp.status }, { status: 'approved', agent_code: agentCode });
+    await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
+      status: 'approved',
+      status_history: history,
+      approved_at: new Date().toISOString(),
+      reviewed_by: 'admin',
+      reviewed_at: new Date().toISOString(),
+    });
 
+    // 6. Audit log
+    await db.logAudit('application', currentApp.app_id, 'approved', 'admin',
+      { status: currentApp.status },
+      { status: 'approved', agent_code: agentCode }
+    );
+
+    // 7. Success message
     closeModal();
-    alert(`✅ Agent created: ${agentCode}\n\n⚠️  Two more steps to enable login:\n\n1. Go to Supabase → Authentication → Users\n2. Click "Add user" → Create new user\n3. Email: ${email}\n4. Password: ${password}\n5. ✅ Auto Confirm\n6. Click Create user\n\n7. Then go to Table Editor → profiles\n8. Find the new user row, set:\n   - role = "agent"\n   - agent_code = "${agentCode}"\n   - full_name = "${currentApp.full_name}"\n\n9. Send the agent their login:\n   Email: ${email}\n   Password: ${password}\n   Dashboard: ${CONFIG.agentSiteUrl}/agent.html`);
+    alert(
+      `✅ AGENT APPROVED!\n\n` +
+      `Agent Code: ${agentCode}\n` +
+      `Agent ID: ${agentId}\n` +
+      `Login Email: ${finalEmail}\n\n` +
+      `⚠️ The agent can log in IMMEDIATELY with the email and password they chose during application.\n\n` +
+      `Send them a WhatsApp message with their Agent Code and Dashboard link:\n` +
+      `${CONFIG.agentSiteUrl}/agent.html`
+    );
 
-    loadAll(); closeDetail();
+    loadAll();
+    closeDetail();
   } catch(e) {
     document.getElementById('approveErrText').textContent = e.message;
     document.getElementById('approveError').style.display = 'flex';
-  } finally { setLoading(btn, false, '<i class="fas fa-check"></i> Confirm'); }
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-check"></i> Confirm');
+  }
 }
-
 async function rejectApp() {
   if (!currentApp || !confirm('Reject this application?')) return;
   try {
