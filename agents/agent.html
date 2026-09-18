@@ -100,19 +100,22 @@
 .lead-status-select { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; min-width: 120px; }
 .lead-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
-/* MESSAGES */
+/* CHAT */
 .chat-container { background: white; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; display: flex; flex-direction: column; height: 70vh; min-height: 500px; }
 .chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: #fafafa; }
 .chat-hdr-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
 .chat-hdr-info { flex: 1; min-width: 0; }
-.chat-hdr-name { font-weight: 800; font-size: 14px; }
-.chat-hdr-sub { font-size: 12px; color: var(--muted); }
+.chat-hdr-name { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chat-hdr-sub { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.online-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; display: inline-block; flex-shrink: 0; }
+.online-dot.offline { background: #9ca3af; }
+
 .chat-body { flex: 1; overflow-y: auto; padding: 16px 20px; background: #f8f9fb; display: flex; flex-direction: column; gap: 10px; }
 .chat-msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; position: relative; word-wrap: break-word; overflow-wrap: anywhere; }
 .chat-msg.mine { align-self: flex-end; background: linear-gradient(135deg,#ff6000,#ff9f43); color: white; border-bottom-right-radius: 4px; }
 .chat-msg.theirs { align-self: flex-start; background: white; color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 .chat-msg-sender { font-size: 11px; font-weight: 700; margin-bottom: 4px; opacity: .8; }
-.chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; }
+.chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
 .chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
 .chat-msg-actions button { background: none; border: none; color: inherit; font-size: 11px; cursor: pointer; opacity: .75; padding: 2px 4px; }
 .chat-msg-actions button:hover { opacity: 1; text-decoration: underline; }
@@ -126,14 +129,75 @@
 .chat-msg-file .file-meta { flex: 1; min-width: 0; }
 .chat-msg-file .file-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-msg-file .file-size { font-size: 11px; opacity: .7; }
+
+/* Reply preview inside a message */
+.chat-reply-preview {
+  border-left: 3px solid rgba(255,255,255,.5);
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: .85;
+  background: rgba(255,255,255,.1);
+}
+.chat-msg.theirs .chat-reply-preview { background: var(--light); border-left-color: var(--orange); }
+
+/* Sent tick */
+.chat-tick { font-size: 12px; opacity: .8; }
+
 .chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
 .chat-input-row textarea:focus { border-color: var(--orange); }
 .chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
 .chat-send-btn:hover { opacity: .9; }
+.chat-send-btn:disabled { opacity: .5; cursor: not-allowed; }
 .chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--light); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all .2s; }
 .chat-attach-btn:hover { background: var(--orange); color: white; }
 .chat-attach-btn.recording { background: #dc2626; color: white; }
+
+/* Reply banner above input */
+.reply-banner {
+  background: linear-gradient(135deg, #fff8f4, #ffe0cc);
+  border-top: 1px solid #ffd4b3;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+.reply-banner-content { flex: 1; min-width: 0; }
+.reply-banner-title { font-weight: 700; margin-bottom: 2px; }
+.reply-banner-text { opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reply-banner button {
+  background: none; border: none; cursor: pointer; color: #92400e;
+  padding: 6px; border-radius: 6px; font-size: 14px;
+}
+.reply-banner button:hover { background: rgba(0,0,0,.05); }
+
+/* Typing / recording banner */
+.chat-activity-banner {
+  padding: 6px 20px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-style: italic;
+  background: #f8f9fb;
+  min-height: 24px;
+}
+.chat-activity-dots { display: inline-flex; gap: 3px; }
+.chat-activity-dots span {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--muted);
+  animation: bounce 1.4s infinite;
+}
+.chat-activity-dots span:nth-child(2) { animation-delay: .2s; }
+.chat-activity-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+  30% { transform: translateY(-3px); opacity: 1; }
+}
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 #lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
@@ -337,7 +401,6 @@ html, body { overflow-x: hidden; }
   </div>
 
   <div class="today-card" id="todayCard"></div>
-
   <div id="campaignBanner"></div>
   <div class="level-card" id="levelCard"></div>
   <div class="wallet-card" id="walletCard"></div>
@@ -375,7 +438,6 @@ html, body { overflow-x: hidden; }
     <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
   </div>
 
-  <!-- SALES TAB -->
   <div class="tab-pane active" id="agent-tab-sales">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Submitted Sales</h3>
@@ -388,7 +450,6 @@ html, body { overflow-x: hidden; }
     <div id="salesContent"></div>
   </div>
 
-  <!-- LEADS TAB -->
   <div class="tab-pane" id="agent-tab-leads">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Leads Pipeline</h3>
@@ -406,7 +467,6 @@ html, body { overflow-x: hidden; }
     <div id="leadsContent"></div>
   </div>
 
-  <!-- MESSAGES TAB -->
   <div class="tab-pane" id="agent-tab-messages">
     <div class="filter-pills-scroll" style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 16px;scrollbar-width:none;">
       <button class="filter-pill active" onclick="switchChat('team', this)">📡 Team Room</button>
@@ -416,16 +476,29 @@ html, body { overflow-x: hidden; }
       <div class="chat-hdr">
         <div class="chat-hdr-icon" id="chatIcon">📡</div>
         <div class="chat-hdr-info">
-          <div class="chat-hdr-name" id="chatName">Team Room</div>
+          <div class="chat-hdr-name">
+            <span id="chatName">Team Room</span>
+            <span id="onlineIndicator" style="font-size:11px;font-weight:600;color:var(--muted);display:none;">
+              <span class="online-dot"></span> <span id="onlineCount">0</span> online
+            </span>
+          </div>
           <div class="chat-hdr-sub" id="chatSub">All agents + admins</div>
         </div>
       </div>
       <div class="chat-body" id="chatBody"></div>
+      <div class="chat-activity-banner" id="chatActivityBanner"></div>
+      <div class="reply-banner" id="replyBanner" style="display:none;">
+        <div class="reply-banner-content">
+          <div class="reply-banner-title" id="replyBannerTitle">Replying to…</div>
+          <div class="reply-banner-text" id="replyBannerText"></div>
+        </div>
+        <button onclick="cancelReply()" title="Cancel reply"><i class="fas fa-xmark"></i></button>
+      </div>
       <div class="chat-input-row" id="chatInputRow">
-        <button class="chat-attach-btn" id="attachImageBtn" onclick="document.getElementById('chatImageInput').click()" title="Send image">
+        <button class="chat-attach-btn" onclick="document.getElementById('chatImageInput').click()" title="Send image">
           <i class="fas fa-camera"></i>
         </button>
-        <button class="chat-attach-btn" id="attachFileBtn" onclick="document.getElementById('chatFileInput').click()" title="Send file">
+        <button class="chat-attach-btn" onclick="document.getElementById('chatFileInput').click()" title="Send file">
           <i class="fas fa-paperclip"></i>
         </button>
         <button class="chat-attach-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Record voice note">
@@ -434,9 +507,9 @@ html, body { overflow-x: hidden; }
         <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="onChatImageSelected(event)">
         <input type="file" id="chatFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none" onchange="onChatFileSelected(event)">
         <textarea id="chatInput" rows="1" placeholder="Type a message…"
-                  oninput="autoGrow(this)"
+                  oninput="autoGrow(this); onAgentTyping()"
                   onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChatMessage();}"></textarea>
-        <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
       </div>
       <div id="voiceRecordingBar" style="display:none;padding:12px 16px;background:#fee2e2;border-top:1px solid #fecaca;align-items:center;gap:12px;">
         <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;animation:pulse 1s infinite;"></div>
@@ -447,7 +520,6 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- COMMISSION TAB -->
   <div class="tab-pane" id="agent-tab-commission">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">Commission History</h3>
@@ -456,12 +528,10 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- PERFORMANCE TAB -->
   <div class="tab-pane" id="agent-tab-performance">
     <div id="performanceContent"></div>
   </div>
 
-  <!-- MARKETING TAB -->
   <div class="tab-pane" id="agent-tab-marketing">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">Marketing Library</h3>
@@ -478,14 +548,12 @@ html, body { overflow-x: hidden; }
     <div id="marketingContent"></div>
   </div>
 
-  <!-- TRAINING TAB -->
   <div class="tab-pane" id="agent-tab-training">
     <div class="tr-progress-wrap" id="trProgress"></div>
     <div class="tr-list" id="trList"></div>
     <div id="examSection"></div>
   </div>
 
-  <!-- DOCUMENTS TAB -->
   <div class="tab-pane" id="agent-tab-documents">
     <div style="margin-bottom:16px;">
       <h3 style="font-size:1rem;margin-bottom:4px;">My Documents</h3>
@@ -494,7 +562,6 @@ html, body { overflow-x: hidden; }
     <div class="doc-grid" id="docGrid"></div>
   </div>
 
-  <!-- TIERS TAB -->
   <div class="tab-pane" id="agent-tab-tiers">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">How Your Commission is Calculated</h3>
@@ -506,7 +573,6 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- LEADERBOARD TAB -->
   <div class="tab-pane" id="agent-tab-leaderboard">
     <div class="card" style="padding:0;overflow:hidden;">
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
@@ -798,6 +864,7 @@ let myLeads = [];
 let currentChatType = 'team';
 let currentConversation = null;
 let stopChatSub = null;
+let stopPresenceSub = null;
 let examQuestions = [];
 let examAnswers = {};
 let myExamAttempts = [];
@@ -807,6 +874,20 @@ let lastExamResult = null;
 let _pendingImageFile = null;
 let _voiceRecorder = null;
 let _voiceTimerInterval = null;
+
+// Reply state
+let _replyTo = null;
+
+// Typing throttle
+let _lastTypingSignal = 0;
+let _typingTimeout = null;
+
+// Presence state
+let _myPresenceStatus = 'online';
+
+// Session wellbeing
+let _sessionStartTime = Date.now();
+let _wellbeingShown = false;
 
 // ═══════════════════════════════════════════════════════════════════════
 // AUTH
@@ -821,7 +902,7 @@ async function doAgentLogin() {
   document.getElementById('loginErr').classList.remove('show');
 
   try {
-    const authData = await auth.signIn(email, password);
+    await auth.signIn(email, password);
     await new Promise(resolve => setTimeout(resolve, 200));
 
     let profile = null;
@@ -852,6 +933,7 @@ async function doAgentLogin() {
 }
 
 async function doLogout() {
+  try { await setPresence('offline'); } catch(e) {}
   await auth.signOut();
   sessionStorage.removeItem('agent_code');
   localStorage.removeItem('agent_code');
@@ -885,6 +967,9 @@ async function bootDashboard() {
   await loadExamAttempts();
   await loadLeads();
   renderDocuments();
+
+  startSessionWellbeingTimer();
+  restoreChatDraft();
 }
 
 function renderAvatarHeader() {
@@ -905,6 +990,24 @@ async function loadApplicationAndAgreement() {
     const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
     activeAgreement = (agreements && agreements.length) ? agreements[0] : null;
   } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// WELLBEING NUDGE
+// ═══════════════════════════════════════════════════════════════════════
+function startSessionWellbeingTimer() {
+  setInterval(() => {
+    const hours = (Date.now() - _sessionStartTime) / (1000 * 60 * 60);
+    if (hours >= 2 && !_wellbeingShown) {
+      _wellbeingShown = true;
+      toast('☕ You\'ve been working for 2 hours. Consider a short break.', 6000);
+    }
+  }, 60 * 1000); // check every minute
+}
+
+function isQuietHours() {
+  const h = new Date().getHours();
+  return h >= 22 || h < 6;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1110,7 +1213,115 @@ async function deleteLead(id, name) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// MESSAGES — with rich media
+// PRESENCE + TYPING
+// ═══════════════════════════════════════════════════════════════════════
+async function setPresence(status, conversationId) {
+  try {
+    const uid = auth.currentUserId();
+    if (!uid) return;
+    const payload = {
+      user_id: uid,
+      agent_code: agentData?.agent_code || profileData?.agent_code || null,
+      full_name: profileData?.full_name || profileData?.email || 'User',
+      role: profileData?.role || 'agent',
+      status: status || 'online',
+      conversation_id: conversationId || (currentConversation ? currentConversation.id : null),
+      last_seen: new Date().toISOString(),
+    };
+    // Try update first
+    const existing = await db.getOne('presence', `user_id=eq.${uid}`);
+    if (existing) {
+      await db.update('presence', `user_id=eq.${uid}`, payload);
+    } else {
+      await db.insert('presence', payload);
+    }
+  } catch(e) {
+    console.warn('Presence update failed:', e);
+  }
+}
+
+function startPresenceHeartbeat() {
+  setPresence('online');
+  setInterval(() => { setPresence(_myPresenceStatus); }, 25000);
+  // update on unload
+  window.addEventListener('beforeunload', () => { setPresence('offline'); });
+}
+
+async function onAgentTyping() {
+  const now = Date.now();
+  if (now - _lastTypingSignal < 2000) return;
+  _lastTypingSignal = now;
+  if (_myPresenceStatus !== 'typing') {
+    _myPresenceStatus = 'typing';
+    setPresence('typing');
+  }
+  clearTimeout(_typingTimeout);
+  _typingTimeout = setTimeout(() => {
+    _myPresenceStatus = 'online';
+    setPresence('online');
+  }, 3000);
+}
+
+function startPresencePoll() {
+  if (stopPresenceSub) { stopPresenceSub(); stopPresenceSub = null; }
+  stopPresenceSub = setInterval(async () => {
+    try {
+      const rows = await db.getAll('presence', {});
+      const now = Date.now();
+      const active = rows.filter(r => {
+        const age = now - new Date(r.last_seen).getTime();
+        return age < 60000;
+      });
+      const others = active.filter(r => r.user_id !== auth.currentUserId());
+      const onlineCount = active.length;
+
+      document.getElementById('onlineCount').textContent = onlineCount;
+      document.getElementById('onlineIndicator').style.display = 'inline-flex';
+
+      // Typing / recording banner
+      const typers = others.filter(r => r.status === 'typing');
+      const recorders = others.filter(r => r.status === 'recording');
+      const banner = document.getElementById('chatActivityBanner');
+      if (recorders.length) {
+        banner.innerHTML = `<span>🎤 ${esc(recorders[0].full_name || 'Someone')} is recording audio…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+      } else if (typers.length) {
+        banner.innerHTML = `<span>✍️ ${typers.length === 1 ? esc(typers[0].full_name || 'Someone') + ' is typing' : typers.length + ' people are typing'}…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+      } else {
+        banner.innerHTML = '';
+      }
+    } catch(e) {}
+  }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// REPLY
+// ═══════════════════════════════════════════════════════════════════════
+function setReplyTo(msg) {
+  _replyTo = msg;
+  const banner = document.getElementById('replyBanner');
+  const sender = msg.sender_name || (msg.sender_id === auth.currentUserId() ? 'You' : 'User');
+  document.getElementById('replyBannerTitle').textContent = `Replying to ${sender}`;
+  const preview = msg.text || (msg.message_type === 'image' ? '[Image]' : msg.message_type === 'voice' ? '[Voice note]' : msg.message_type === 'file' ? '[File]' : '');
+  document.getElementById('replyBannerText').textContent = preview.substring(0, 80);
+  banner.style.display = 'flex';
+  document.getElementById('chatInput').focus();
+}
+
+function cancelReply() {
+  _replyTo = null;
+  document.getElementById('replyBanner').style.display = 'none';
+}
+
+function handleReply(id) {
+  const el = document.querySelector(`[data-msg-id="${id}"]`);
+  if (!el) return;
+  const allMsgs = window._currentMsgs || [];
+  const msg = allMsgs.find(m => m.id === id);
+  if (msg) setReplyTo(msg);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MESSAGES
 // ═══════════════════════════════════════════════════════════════════════
 async function switchChat(type, btn) {
   currentChatType = type;
@@ -1133,7 +1344,14 @@ async function switchChat(type, btn) {
       document.getElementById('chatInputRow').style.display = 'flex';
     }
 
+    // Quiet hours hint
+    if (isQuietHours()) {
+      document.getElementById('chatSub').innerHTML = '🌙 Quiet hours — messages will be seen in the morning';
+    }
+
     await loadChatMessages();
+    setPresence('online', currentConversation.id);
+    startPresencePoll();
     stopChatSub = subscribeToMessages(currentConversation.id, (msg) => {
       appendChatMessage(msg, true);
     });
@@ -1147,12 +1365,19 @@ async function loadChatMessages() {
   try {
     const msgs = await getMessages(currentConversation.id, 100);
     msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    window._currentMsgs = msgs;
+    const wasAtBottom = isAtBottom(el);
     el.innerHTML = '';
     msgs.forEach(m => appendChatMessage(m));
-    el.scrollTop = el.scrollHeight;
+    if (wasAtBottom) el.scrollTop = el.scrollHeight;
   } catch(e) {
     el.innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;">Could not load messages: ${esc(e.message)}</div>`;
   }
+}
+
+function isAtBottom(el) {
+  if (!el) return true;
+  return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
 }
 
 function appendChatMessage(msg, scroll = false) {
@@ -1162,17 +1387,19 @@ function appendChatMessage(msg, scroll = false) {
   const div = document.createElement('div');
   div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
   div.dataset.msgId = msg.id;
+  div.style.cursor = 'pointer';
+  div.ondblclick = () => handleReply(msg.id);
 
   const expiry = msg.is_kept ? '' : `<div class="chat-msg-expires">⏱️ Expires in ${timeUntilExpiry(msg.expires_at)}</div>`;
 
   let media = '';
   if (msg.media_url) {
     if (msg.message_type === 'image') {
-      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="openLightbox('${esc(msg.media_url)}')">`;
+      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="event.stopPropagation();openLightbox('${esc(msg.media_url)}')">`;
     } else if (msg.message_type === 'voice') {
       media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
     } else if (msg.message_type === 'file') {
-      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download>
+      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download onclick="event.stopPropagation();">
         <i class="fas fa-file"></i>
         <div class="file-meta">
           <div class="file-name">${esc(msg.text || 'Download file')}</div>
@@ -1186,24 +1413,50 @@ function appendChatMessage(msg, scroll = false) {
 
   const textContent = msg.message_type === 'file' ? '' : (msg.text ? `<div>${linkify(msg.text)}</div>` : '');
 
+  // Reply preview
+  let replyHtml = '';
+  if (msg.reply_to_id && msg.reply_preview) {
+    replyHtml = `<div class="chat-reply-preview">${esc(msg.reply_preview)}</div>`;
+  }
+
+  // Sent tick
+  const tick = mine ? `<span class="chat-tick" title="Sent">✓✓</span>` : '';
+
   div.innerHTML = `
     ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
+    ${replyHtml}
     ${textContent}
     ${media}
-    <div class="chat-msg-time">${fmtTime(msg.created_at)}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
+    <div class="chat-msg-time">${fmtTime(msg.created_at)} ${tick}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
     ${expiry}
     <div class="chat-msg-actions">
-      <button onclick="keepMsg('${esc(msg.id)}')"><i class="fas fa-thumbtack"></i> ${msg.is_kept ? 'Un-keep' : 'Keep'}</button>
-      ${mine ? `<button onclick="removeMsg('${esc(msg.id)}')"><i class="fas fa-trash"></i></button>` : ''}
+      <button onclick="event.stopPropagation();handleReply('${esc(msg.id)}')"><i class="fas fa-reply"></i> Reply</button>
+      <button onclick="event.stopPropagation();keepMsg('${esc(msg.id)}')"><i class="fas fa-thumbtack"></i> ${msg.is_kept ? 'Un-keep' : 'Keep'}</button>
+      ${mine ? `<button onclick="event.stopPropagation();removeMsg('${esc(msg.id)}')"><i class="fas fa-trash"></i></button>` : ''}
     </div>
   `;
   el.appendChild(div);
-  if (scroll) el.scrollTop = el.scrollHeight;
+  if (scroll && isAtBottom(el)) el.scrollTop = el.scrollHeight;
 }
 
 function autoGrow(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function saveChatDraft() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const txt = input.value;
+  if (txt) sessionStorage.setItem('py2_draft_' + currentChatType, txt);
+  else sessionStorage.removeItem('py2_draft_' + currentChatType);
+}
+
+function restoreChatDraft() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const draft = sessionStorage.getItem('py2_draft_' + currentChatType);
+  if (draft) input.value = draft;
 }
 
 async function sendChatMessage() {
@@ -1212,13 +1465,22 @@ async function sendChatMessage() {
   if (!text) return;
   if (!currentConversation) return;
 
-  const btn = document.querySelector('.chat-send-btn');
+  const btn = document.getElementById('chatSendBtn');
   btn.disabled = true;
 
   try {
-    await sendMessage(currentConversation.id, { message_type: 'text', text });
+    const payload = { message_type: 'text', text };
+    if (_replyTo) {
+      payload.reply_to_id = _replyTo.id;
+      const preview = _replyTo.text || (_replyTo.message_type === 'image' ? '[Image]' : _replyTo.message_type === 'voice' ? '[Voice note]' : '[File]');
+      payload.reply_preview = (_replyTo.sender_name ? _replyTo.sender_name + ': ' : '') + preview.substring(0, 80);
+    }
+    await sendMessage(currentConversation.id, payload);
     input.value = '';
     input.style.height = 'auto';
+    sessionStorage.removeItem('py2_draft_' + currentChatType);
+    cancelReply();
+    setPresence('online', currentConversation.id);
     await loadChatMessages();
   } catch(e) {
     toast('⚠️  ' + e.message);
@@ -1278,11 +1540,14 @@ async function sendChatImage() {
       document.getElementById('uploadProgressBar').style.width = pct + '%';
     });
     document.getElementById('uploadProgressText').textContent = 'Sending…';
-    await sendMessage(currentConversation.id, {
-      message_type: 'image',
-      text: caption || null,
-      media_url: url,
-    });
+    const payload = { message_type: 'image', text: caption || null, media_url: url };
+    if (_replyTo) {
+      payload.reply_to_id = _replyTo.id;
+      const preview = _replyTo.text || (_replyTo.message_type === 'image' ? '[Image]' : _replyTo.message_type === 'voice' ? '[Voice note]' : '[File]');
+      payload.reply_preview = (_replyTo.sender_name ? _replyTo.sender_name + ': ' : '') + preview.substring(0, 80);
+    }
+    await sendMessage(currentConversation.id, payload);
+    cancelReply();
     closeImagePreview();
     await loadChatMessages();
     toast('✅ Image sent');
@@ -1310,17 +1575,19 @@ async function onChatFileSelected(event) {
   if (!file) return;
   if (file.size > 15 * 1024 * 1024) { toast('⚠️ File too large (max 15 MB)'); event.target.value = ''; return; }
 
-  const btn = document.querySelector('.chat-send-btn');
+  const btn = document.getElementById('chatSendBtn');
   if (btn) btn.disabled = true;
   toast('Uploading file…');
 
   try {
     const url = await uploadChatMedia(file, 'file');
-    await sendMessage(currentConversation.id, {
-      message_type: 'file',
-      text: file.name,
-      media_url: url,
-    });
+    const payload = { message_type: 'file', text: file.name, media_url: url };
+    if (_replyTo) {
+      payload.reply_to_id = _replyTo.id;
+      payload.reply_preview = (_replyTo.sender_name ? _replyTo.sender_name + ': ' : '') + (_replyTo.text || '[File]').substring(0, 80);
+    }
+    await sendMessage(currentConversation.id, payload);
+    cancelReply();
     await loadChatMessages();
     toast('✅ File sent');
   } catch(e) {
@@ -1343,6 +1610,8 @@ async function toggleVoiceRecording() {
 async function startVoice() {
   try {
     _voiceRecorder = await startVoiceRecording();
+    _myPresenceStatus = 'recording';
+    setPresence('recording');
     document.getElementById('micIcon').className = 'fas fa-stop';
     document.getElementById('micBtn').classList.add('recording');
     document.getElementById('voiceRecordingBar').style.display = 'flex';
@@ -1365,6 +1634,8 @@ async function stopAndSendVoice() {
   _voiceRecorder = null;
   clearInterval(_voiceTimerInterval);
 
+  _myPresenceStatus = 'online';
+  setPresence('online');
   document.getElementById('micIcon').className = 'fas fa-microphone';
   document.getElementById('micBtn').classList.remove('recording');
   document.getElementById('voiceRecordingBar').style.display = 'none';
@@ -1377,10 +1648,13 @@ async function stopAndSendVoice() {
 
     toast('Sending voice note…');
     const url = await uploadChatMedia(blob, 'voice');
-    await sendMessage(currentConversation.id, {
-      message_type: 'voice',
-      media_url: url,
-    });
+    const payload = { message_type: 'voice', media_url: url };
+    if (_replyTo) {
+      payload.reply_to_id = _replyTo.id;
+      payload.reply_preview = (_replyTo.sender_name ? _replyTo.sender_name + ': ' : '') + (_replyTo.text || '[Voice note]').substring(0, 80);
+    }
+    await sendMessage(currentConversation.id, payload);
+    cancelReply();
     await loadChatMessages();
     toast('✅ Voice note sent');
   } catch(e) {
@@ -1393,6 +1667,8 @@ function cancelVoiceRecording() {
   _voiceRecorder.cancel();
   _voiceRecorder = null;
   clearInterval(_voiceTimerInterval);
+  _myPresenceStatus = 'online';
+  setPresence('online');
   document.getElementById('micIcon').className = 'fas fa-microphone';
   document.getElementById('micBtn').classList.remove('recording');
   document.getElementById('voiceRecordingBar').style.display = 'none';
@@ -1639,6 +1915,10 @@ async function submitSale() {
   setLoading(btn, true, 'Submitting…');
   document.getElementById('submitSaleError').style.display = 'none';
 
+  // Check if this is the first sale today
+  const today = new Date().toISOString().slice(0, 10);
+  const todaySales = agentSales.filter(s => (s.created_at || '').slice(0, 10) === today);
+
   try {
     const n = await db.nextId('sales');
     const saleId = makeSaleId(n);
@@ -1656,7 +1936,11 @@ async function submitSale() {
     await logReferralEvent(agentData.agent_code, 'sale_submitted', { sale_id: saleId });
 
     closeSubmitSale();
-    toast('✅ Sale ' + saleId + ' submitted');
+    if (todaySales.length === 0) {
+      toast('🎉 First sale today! You\'re on a roll.', 4000);
+    } else {
+      toast('✅ Sale ' + saleId + ' submitted');
+    }
     await loadAgentData();
     await recalcWallet(agentData.agent_code);
     myWallet = await db.getOne('wallets', `agent_code=eq.${agentData.agent_code}`);
@@ -1803,9 +2087,6 @@ function shareWhatsApp(id) {
   window.open('https://wa.me/?text=' + encodeURIComponent(m.content), '_blank');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// TRAINING + EXAM
-// ═══════════════════════════════════════════════════════════════════════
 async function loadTraining() {
   try {
     allModules = await db.getAll('training_modules', { filter: 'active=eq.true', order: 'module_number.asc' });
@@ -1933,7 +2214,6 @@ async function markModuleDone() {
   } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark Complete'); }
 }
 
-// ── EXAM ────────────────────────────────────────────────────────────────
 async function openExam() {
   examAnswers = {};
   lastExamResult = null;
@@ -2245,6 +2525,11 @@ function showAgentTab(name, btn) {
     if (teamBtn) switchChat('team', teamBtn);
   }
 }
+
+// Save draft on input
+document.addEventListener('input', (e) => {
+  if (e.target && e.target.id === 'chatInput') saveChatDraft();
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (auth.isLoggedIn()) {
