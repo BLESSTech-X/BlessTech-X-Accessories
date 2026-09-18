@@ -42,15 +42,7 @@
 .notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
 .notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
 
-/* TODAY COMMAND CENTRE */
-.today-card {
-  background: linear-gradient(135deg,#1a0840,#2d1a5e);
-  border-radius: var(--r2);
-  padding: 22px 24px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(124,58,237,.3);
-  color: white;
-}
+.today-card { background: linear-gradient(135deg,#1a0840,#2d1a5e); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(124,58,237,.3); color: white; }
 .today-hello { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
 .today-sub { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 16px; }
 .today-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
@@ -60,7 +52,6 @@
 .today-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .today-actions .btn { flex: 1; min-width: 120px; justify-content: center; }
 
-/* WALLET */
 .wallet-card { background: linear-gradient(135deg,#0d2010,#0a3518); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(37,211,102,.25); }
 .wallet-lbl { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .wallet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -100,7 +91,6 @@
 .tier-row-display { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); }
 .tier-row-display:last-child { border-bottom:none; }
 
-/* LEADS */
 .lead-card { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; transition: all .2s; }
 .lead-card:hover { border-color: var(--orange); }
 .lead-info { flex: 1; min-width: 200px; }
@@ -126,13 +116,28 @@
 .chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
 .chat-msg-actions button { background: none; border: none; color: inherit; font-size: 11px; cursor: pointer; opacity: .75; padding: 2px 4px; }
 .chat-msg-actions button:hover { opacity: 1; text-decoration: underline; }
-.chat-msg-media { max-width: 100%; border-radius: 10px; margin-top: 6px; display: block; }
+.chat-msg-media { max-width: 100%; border-radius: 10px; margin-top: 6px; display: block; cursor: pointer; transition: opacity .2s; }
+.chat-msg-media:hover { opacity: .9; }
 .chat-msg-expires { font-size: 10px; margin-top: 4px; opacity: .7; }
+.chat-msg-file { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,.15); border-radius: 8px; margin-top: 6px; text-decoration: none; color: inherit; font-size: 13px; }
+.chat-msg.mine .chat-msg-file { background: rgba(255,255,255,.2); }
+.chat-msg.theirs .chat-msg-file { background: var(--light); }
+.chat-msg-file i { font-size: 20px; flex-shrink: 0; }
+.chat-msg-file .file-meta { flex: 1; min-width: 0; }
+.chat-msg-file .file-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-msg-file .file-size { font-size: 11px; opacity: .7; }
 .chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
 .chat-input-row textarea:focus { border-color: var(--orange); }
 .chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
 .chat-send-btn:hover { opacity: .9; }
+.chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--light); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all .2s; }
+.chat-attach-btn:hover { background: var(--orange); color: white; }
+.chat-attach-btn.recording { background: #dc2626; color: white; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+#lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
+#lightboxModal.open { display: flex; }
 
 /* DOCS */
 .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
@@ -191,25 +196,10 @@
 .tr-status.todo { background: #fff7ed; color: #c2410c; }
 
 /* EXAM */
-.exam-unlock-box {
-  background: linear-gradient(135deg, #0d2010, #0a3518);
-  border-radius: var(--r2);
-  padding: 24px 26px;
-  margin-top: 20px;
-  color: white;
-  border: 1px solid rgba(37,211,102,.25);
-  text-align: center;
-}
+.exam-unlock-box { background: linear-gradient(135deg, #0d2010, #0a3518); border-radius: var(--r2); padding: 24px 26px; margin-top: 20px; color: white; border: 1px solid rgba(37,211,102,.25); text-align: center; }
 .exam-unlock-box h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
 .exam-unlock-box p { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 16px; line-height: 1.6; }
-.exam-locked-box {
-  background: var(--light);
-  border: 1px dashed var(--border);
-  border-radius: var(--r2);
-  padding: 24px 26px;
-  margin-top: 20px;
-  text-align: center;
-}
+.exam-locked-box { background: var(--light); border: 1px dashed var(--border); border-radius: var(--r2); padding: 24px 26px; margin-top: 20px; text-align: center; }
 .exam-locked-box h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
 .exam-locked-box p { font-size: 13px; color: var(--muted); }
 .exam-q { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 14px; }
@@ -225,7 +215,6 @@
 .exam-result-score { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 8px; }
 .exam-result-msg { font-size: 14px; line-height: 1.6; opacity: .85; margin-bottom: 20px; }
 
-/* PERF */
 .perf-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:22px 24px; margin-bottom:16px; }
 .perf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
 .perf-cell { text-align:center; padding:12px 8px; background:var(--light); border-radius:var(--r); min-width: 0; }
@@ -277,9 +266,6 @@ html, body { overflow-x: hidden; }
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     LOGIN SCREEN
-     ═══════════════════════════════════════════════════════════════════════ -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-icon">🔑</div>
@@ -304,9 +290,6 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     DASHBOARD
-     ═══════════════════════════════════════════════════════════════════════ -->
 <div id="dashApp" style="display:none;">
 <nav class="navbar">
   <div class="navbar-inner">
@@ -353,7 +336,6 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- TODAY COMMAND CENTRE -->
   <div class="today-card" id="todayCard"></div>
 
   <div id="campaignBanner"></div>
@@ -440,10 +422,27 @@ html, body { overflow-x: hidden; }
       </div>
       <div class="chat-body" id="chatBody"></div>
       <div class="chat-input-row" id="chatInputRow">
+        <button class="chat-attach-btn" id="attachImageBtn" onclick="document.getElementById('chatImageInput').click()" title="Send image">
+          <i class="fas fa-camera"></i>
+        </button>
+        <button class="chat-attach-btn" id="attachFileBtn" onclick="document.getElementById('chatFileInput').click()" title="Send file">
+          <i class="fas fa-paperclip"></i>
+        </button>
+        <button class="chat-attach-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Record voice note">
+          <i class="fas fa-microphone" id="micIcon"></i>
+        </button>
+        <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="onChatImageSelected(event)">
+        <input type="file" id="chatFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none" onchange="onChatFileSelected(event)">
         <textarea id="chatInput" rows="1" placeholder="Type a message…"
                   oninput="autoGrow(this)"
                   onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChatMessage();}"></textarea>
         <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+      <div id="voiceRecordingBar" style="display:none;padding:12px 16px;background:#fee2e2;border-top:1px solid #fecaca;align-items:center;gap:12px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;animation:pulse 1s infinite;"></div>
+        <div style="flex:1;font-size:14px;font-weight:700;color:#991b1b;">Recording… <span id="recordTimer">0:00</span></div>
+        <button class="btn btn-sm" style="background:#991b1b;color:white;" onclick="stopAndSendVoice()"><i class="fas fa-paper-plane"></i> Send</button>
+        <button class="btn btn-sm btn-outline" onclick="cancelVoiceRecording()">Cancel</button>
       </div>
     </div>
   </div>
@@ -520,10 +519,6 @@ html, body { overflow-x: hidden; }
 
 </div>
 </div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     MODALS
-     ═══════════════════════════════════════════════════════════════════════ -->
 
 <!-- SUBMIT SALE MODAL -->
 <div class="modal-overlay" id="submitSaleModal">
@@ -738,6 +733,46 @@ html, body { overflow-x: hidden; }
   </div>
 </div>
 
+<!-- IMAGE PREVIEW MODAL -->
+<div class="modal-overlay" id="imagePreviewModal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-hdr">
+      <h3>Preview Image</h3>
+      <button class="modal-close" onclick="closeImagePreview()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px;">
+        <img id="imagePreviewImg" style="max-width:100%;max-height:50vh;border-radius:12px;">
+      </div>
+      <div class="field">
+        <label class="label">Caption (optional)</label>
+        <input type="text" class="input" id="imagePreviewCaption" placeholder="Add a caption…">
+      </div>
+      <div id="uploadProgressWrap" style="display:none;margin-top:12px;">
+        <div style="height:8px;background:var(--light);border-radius:100px;overflow:hidden;">
+          <div id="uploadProgressBar" style="height:100%;width:0%;background:var(--grad-o);transition:width .3s;"></div>
+        </div>
+        <div id="uploadProgressText" style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;">Uploading…</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-outline btn-full" onclick="closeImagePreview()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="sendImageBtn" onclick="sendChatImage()"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX MODAL -->
+<div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
+  <div style="position:relative;max-width:95vw;max-height:95vh;" onclick="event.stopPropagation()">
+    <img id="lightboxImg" style="max-width:95vw;max-height:90vh;border-radius:12px;background:black;">
+    <button onclick="closeLightbox(event)" style="position:absolute;top:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:white;border:none;cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;">×</button>
+    <a id="lightboxDownload" download style="position:absolute;bottom:-16px;right:-16px;width:40px;height:40px;border-radius:50%;background:white;cursor:pointer;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:var(--orange);text-decoration:none;">
+      <i class="fas fa-download"></i>
+    </a>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="config.js"></script>
@@ -768,8 +803,13 @@ let examAnswers = {};
 let myExamAttempts = [];
 let lastExamResult = null;
 
+// Chat media state
+let _pendingImageFile = null;
+let _voiceRecorder = null;
+let _voiceTimerInterval = null;
+
 // ═══════════════════════════════════════════════════════════════════════
-// AUTH — NEW SUPABASE AUTH-BASED LOGIN
+// AUTH
 // ═══════════════════════════════════════════════════════════════════════
 async function doAgentLogin() {
   const email    = document.getElementById('emailInput').value.trim();
@@ -909,7 +949,7 @@ function renderToday() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// LEADS — mini CRM
+// LEADS
 // ═══════════════════════════════════════════════════════════════════════
 async function loadLeads() {
   try {
@@ -970,7 +1010,7 @@ function renderLeads() {
             ${LEAD_STATUSES.map(s => `<option value="${s.code}" ${l.status === s.code ? 'selected' : ''}>${s.label}</option>`).join('')}
           </select>
           <div class="lead-actions">
-            <a href="https://wa.me/${(l.customer_phone||'').replace(/\\D/g,'')}" target="_blank" class="btn btn-green btn-sm" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://wa.me/${(l.customer_phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-green btn-sm" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             <button class="btn btn-sm" style="background:var(--navy);color:white;" onclick="editLead('${esc(l.id)}')" title="Edit"><i class="fas fa-pen"></i></button>
             <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);" onclick="deleteLead('${esc(l.id)}','${esc(l.customer_name)}')" title="Delete"><i class="fas fa-trash"></i></button>
           </div>
@@ -1070,7 +1110,7 @@ async function deleteLead(id, name) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// MESSAGES — Communication Hub
+// MESSAGES — with rich media
 // ═══════════════════════════════════════════════════════════════════════
 async function switchChat(type, btn) {
   currentChatType = type;
@@ -1128,17 +1168,27 @@ function appendChatMessage(msg, scroll = false) {
   let media = '';
   if (msg.media_url) {
     if (msg.message_type === 'image') {
-      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="">`;
+      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="openLightbox('${esc(msg.media_url)}')">`;
     } else if (msg.message_type === 'voice') {
       media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
+    } else if (msg.message_type === 'file') {
+      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download>
+        <i class="fas fa-file"></i>
+        <div class="file-meta">
+          <div class="file-name">${esc(msg.text || 'Download file')}</div>
+          <div class="file-size">Tap to download</div>
+        </div>
+      </a>`;
     } else {
       media = `<a href="${esc(msg.media_url)}" target="_blank" style="color:inherit;text-decoration:underline;">📎 Download file</a>`;
     }
   }
 
+  const textContent = msg.message_type === 'file' ? '' : (msg.text ? `<div>${linkify(msg.text)}</div>` : '');
+
   div.innerHTML = `
     ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
-    ${msg.text ? `<div>${esc(msg.text)}</div>` : ''}
+    ${textContent}
     ${media}
     <div class="chat-msg-time">${fmtTime(msg.created_at)}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
     ${expiry}
@@ -1192,6 +1242,162 @@ async function removeMsg(id) {
     await deleteMessage(id);
     await loadChatMessages();
   } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── IMAGE ────────────────────────────────────────────────────────────
+function onChatImageSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('⚠️ Please select an image'); return; }
+  if (file.size > 8 * 1024 * 1024) { toast('⚠️ Image too large (max 8 MB)'); return; }
+
+  _pendingImageFile = file;
+  document.getElementById('imagePreviewImg').src = URL.createObjectURL(file);
+  document.getElementById('imagePreviewCaption').value = '';
+  document.getElementById('uploadProgressWrap').style.display = 'none';
+  document.getElementById('imagePreviewModal').classList.add('open');
+  event.target.value = '';
+}
+
+function closeImagePreview() {
+  document.getElementById('imagePreviewModal').classList.remove('open');
+  _pendingImageFile = null;
+}
+
+async function sendChatImage() {
+  if (!_pendingImageFile) return;
+  const btn = document.getElementById('sendImageBtn');
+  const caption = document.getElementById('imagePreviewCaption').value.trim();
+  setLoading(btn, true, 'Uploading…');
+  document.getElementById('uploadProgressWrap').style.display = 'block';
+  document.getElementById('uploadProgressBar').style.width = '10%';
+  document.getElementById('uploadProgressText').textContent = 'Uploading image…';
+
+  try {
+    const url = await uploadChatMedia(_pendingImageFile, 'image', (pct) => {
+      document.getElementById('uploadProgressBar').style.width = pct + '%';
+    });
+    document.getElementById('uploadProgressText').textContent = 'Sending…';
+    await sendMessage(currentConversation.id, {
+      message_type: 'image',
+      text: caption || null,
+      media_url: url,
+    });
+    closeImagePreview();
+    await loadChatMessages();
+    toast('✅ Image sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+    document.getElementById('uploadProgressText').textContent = 'Failed: ' + e.message;
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Send');
+  }
+}
+
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxDownload').href = url;
+  document.getElementById('lightboxModal').classList.add('open');
+}
+function closeLightbox(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  document.getElementById('lightboxModal').classList.remove('open');
+}
+
+// ── FILE ─────────────────────────────────────────────────────────────
+async function onChatFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { toast('⚠️ File too large (max 15 MB)'); event.target.value = ''; return; }
+
+  const btn = document.querySelector('.chat-send-btn');
+  if (btn) btn.disabled = true;
+  toast('Uploading file…');
+
+  try {
+    const url = await uploadChatMedia(file, 'file');
+    await sendMessage(currentConversation.id, {
+      message_type: 'file',
+      text: file.name,
+      media_url: url,
+    });
+    await loadChatMessages();
+    toast('✅ File sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  } finally {
+    if (btn) btn.disabled = false;
+    event.target.value = '';
+  }
+}
+
+// ── VOICE ────────────────────────────────────────────────────────────
+async function toggleVoiceRecording() {
+  if (_voiceRecorder) {
+    await stopAndSendVoice();
+  } else {
+    await startVoice();
+  }
+}
+
+async function startVoice() {
+  try {
+    _voiceRecorder = await startVoiceRecording();
+    document.getElementById('micIcon').className = 'fas fa-stop';
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('voiceRecordingBar').style.display = 'flex';
+    document.getElementById('chatInputRow').style.display = 'none';
+
+    let seconds = 0;
+    _voiceTimerInterval = setInterval(() => {
+      seconds++;
+      document.getElementById('recordTimer').textContent = formatDuration(seconds);
+      if (seconds >= 180) stopAndSendVoice();
+    }, 1000);
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  }
+}
+
+async function stopAndSendVoice() {
+  if (!_voiceRecorder) return;
+  const rec = _voiceRecorder;
+  _voiceRecorder = null;
+  clearInterval(_voiceTimerInterval);
+
+  document.getElementById('micIcon').className = 'fas fa-microphone';
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('voiceRecordingBar').style.display = 'none';
+  document.getElementById('chatInputRow').style.display = 'flex';
+
+  try {
+    const { blob, duration } = await rec.stop();
+    if (duration < 1) { toast('⚠️ Recording too short'); return; }
+    if (duration > 180) { toast('⚠️ Max length is 3 minutes'); return; }
+
+    toast('Sending voice note…');
+    const url = await uploadChatMedia(blob, 'voice');
+    await sendMessage(currentConversation.id, {
+      message_type: 'voice',
+      media_url: url,
+    });
+    await loadChatMessages();
+    toast('✅ Voice note sent');
+  } catch(e) {
+    toast('⚠️ ' + e.message);
+  }
+}
+
+function cancelVoiceRecording() {
+  if (!_voiceRecorder) return;
+  _voiceRecorder.cancel();
+  _voiceRecorder = null;
+  clearInterval(_voiceTimerInterval);
+  document.getElementById('micIcon').className = 'fas fa-microphone';
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('voiceRecordingBar').style.display = 'none';
+  document.getElementById('chatInputRow').style.display = 'flex';
+  toast('Recording cancelled');
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1777,7 +1983,6 @@ function recordAnswer(qid, letter) {
 }
 
 async function submitExam() {
-  // Make sure all questions are answered
   const unanswered = examQuestions.filter(q => !examAnswers[q.id]);
   if (unanswered.length) {
     const err = document.getElementById('examSubmitError');
@@ -1789,7 +1994,6 @@ async function submitExam() {
   const btn = document.getElementById('examSubmitBtn');
   setLoading(btn, true, 'Scoring…');
 
-  // Score
   let correct = 0;
   examQuestions.forEach(q => {
     if (examAnswers[q.id] === q.correct_answer) correct++;
@@ -1798,7 +2002,6 @@ async function submitExam() {
   const percentage = Math.round((correct / total) * 100);
   const passed = percentage >= 80;
 
-  // Save attempt
   try {
     await db.insert('exam_attempts', {
       agent_code: agentData.agent_code,
