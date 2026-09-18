@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════
 // PhoneYa2 Agent Network — Shared Config & Utilities
-// V2 — Auth + Leads + Communication Hub
+// V2 — Auth + Leads + Communication Hub + Rich Media Chat
 // ═══════════════════════════════════════════════════════════════════════
 
 const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
@@ -96,7 +96,7 @@ async function getActiveCampaign(date) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// AUTH — Supabase Auth (new)
+// AUTH — Supabase Auth
 // ═══════════════════════════════════════════════════════════════════════
 
 const auth = {
@@ -112,7 +112,6 @@ const auth = {
       throw new Error(err.error_description || err.msg || 'Login failed');
     }
     const data = await res.json();
-    // Store token + user
     sessionStorage.setItem('sb_token', data.access_token);
     sessionStorage.setItem('sb_user_id', data.user.id);
     sessionStorage.setItem('sb_email', data.user.email);
@@ -141,7 +140,6 @@ const auth = {
   isLoggedIn()     { return !!sessionStorage.getItem('sb_token'); },
 };
 
-// Get the current user's profile (role, agent_code, name)
 async function getProfile() {
   const uid = auth.currentUserId();
   if (!uid) return null;
@@ -164,7 +162,7 @@ async function isAdmin() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// SUPABASE REST HELPER (uses anon key — RLS enforces access)
+// SUPABASE REST HELPER
 // ═══════════════════════════════════════════════════════════════════════
 
 const db = {
@@ -176,7 +174,6 @@ const db = {
     if (opts.limit)   url += `limit=${opts.limit}&`;
     url = url.replace(/&$/, '');
 
-    // If logged in, use the JWT — otherwise fall back to anon key
     const token = auth.currentToken() || SB_KEY;
 
     const res = await fetch(url, {
@@ -345,8 +342,8 @@ async function removeReaction(messageId, emoji) {
   return db.remove('message_reactions', `message_id=eq.${messageId}&user_id=eq.${auth.currentUserId()}&emoji=eq.${emoji}`);
 }
 
-// ── CHAT MEDIA UPLOAD (with compression for images) ─────────────────────
-async function uploadChatMedia(file, type = 'image') {
+// ── CHAT MEDIA UPLOAD (with compression + progress) ────────────────────
+async function uploadChatMedia(file, type = 'image', onProgress) {
   const uid = auth.currentUserId();
   if (!uid) throw new Error('Not logged in');
   if (!file) throw new Error('No file provided');
@@ -355,8 +352,8 @@ async function uploadChatMedia(file, type = 'image') {
   let ext = 'bin';
   let contentType = file.type || 'application/octet-stream';
 
-  if (type === 'image' && file.type?.startsWith('image/')) {
-    uploadBlob  = await compressImage(file, 1200, 0.82);
+  if (type === 'image' && file.type && file.type.startsWith('image/')) {
+    uploadBlob  = await compressImage(file, 1400, 0.82);
     ext         = 'jpg';
     contentType = 'image/jpeg';
   } else if (type === 'voice') {
@@ -364,10 +361,13 @@ async function uploadChatMedia(file, type = 'image') {
     contentType = file.type || 'audio/webm';
   } else {
     ext = (file.name?.split('.').pop() || 'bin').toLowerCase();
+    if (ext.length > 6) ext = 'bin';
   }
 
   const filename = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const url = `${SB_URL}/storage/v1/object/chat-media/${filename}`;
+
+  if (onProgress) onProgress(10);
 
   const res = await fetch(url, {
     method: 'POST',
@@ -380,16 +380,109 @@ async function uploadChatMedia(file, type = 'image') {
     },
     body: uploadBlob,
   });
+
+  if (onProgress) onProgress(90);
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || `Upload failed: ${res.status}`);
   }
+
+  if (onProgress) onProgress(100);
+
   return `${SB_URL}/storage/v1/object/public/chat-media/${filename}`;
 }
 
-// ── REALTIME SUBSCRIPTION (polling fallback for now) ────────────────────
-// Simple polling — checks for new messages every N seconds.
-// Upgrade to Supabase Realtime websocket in V2.
+// ── VOICE RECORDER (tap-to-start, tap-to-stop) ─────────────────────────
+let _mediaRecorder = null;
+let _mediaChunks = [];
+let _recordStartTime = 0;
+
+async function startVoiceRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    throw new Error('Voice recording not supported on this device');
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  _mediaChunks = [];
+  _recordStartTime = Date.now();
+
+  let mimeType = 'audio/webm';
+  if (typeof MediaRecorder.isTypeSupported === 'function') {
+    if (!MediaRecorder.isTypeSupported('audio/webm')) {
+      if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+      else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
+      else mimeType = '';
+    }
+  } else {
+    mimeType = '';
+  }
+
+  try {
+    _mediaRecorder = mimeType
+      ? new MediaRecorder(stream, { mimeType })
+      : new MediaRecorder(stream);
+  } catch (e) {
+    _mediaRecorder = new MediaRecorder(stream);
+    mimeType = _mediaRecorder.mimeType || 'audio/webm';
+  }
+
+  _mediaRecorder.ondataavailable = (e) => {
+    if (e.data && e.data.size > 0) _mediaChunks.push(e.data);
+  };
+
+  _mediaRecorder.start();
+
+  return {
+    stop: () => new Promise((resolve) => {
+      _mediaRecorder.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        const finalType = mimeType || 'audio/webm';
+        const blob = new Blob(_mediaChunks, { type: finalType });
+        const duration = Math.round((Date.now() - _recordStartTime) / 1000);
+        _mediaRecorder = null;
+        resolve({ blob, duration });
+      };
+      try { _mediaRecorder.stop(); } catch(e) {
+        stream.getTracks().forEach(t => t.stop());
+        _mediaRecorder = null;
+        resolve({ blob: new Blob(_mediaChunks, { type: 'audio/webm' }), duration: 0 });
+      }
+    }),
+    cancel: () => {
+      try { _mediaRecorder.stop(); } catch(e) {}
+      stream.getTracks().forEach(t => t.stop());
+      _mediaChunks = [];
+      _mediaRecorder = null;
+    },
+  };
+}
+
+// ── MEDIA HELPERS ───────────────────────────────────────────────────────
+function formatFileSize(bytes) {
+  if (!bytes) return '0 B';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function formatDuration(seconds) {
+  if (!seconds || seconds < 0) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function linkify(text) {
+  if (!text) return '';
+  const escaped = esc(text);
+  return escaped.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;word-break:break-all;">$1</a>'
+  );
+}
+
+// ── REALTIME SUBSCRIPTION (polling fallback) ───────────────────────────
 function subscribeToMessages(conversationId, onNew, intervalMs = 4000) {
   let lastCheck = new Date().toISOString();
   const timer = setInterval(async () => {
@@ -698,7 +791,7 @@ function legacyCopy(text) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// LEGACY AUTH HELPERS (still used by old pages during transition)
+// LEGACY AUTH HELPERS
 // ═══════════════════════════════════════════════════════════════════════
 
 function adminLoggedIn() { return sessionStorage.getItem('btx_admin') === 'yes'; }
@@ -737,7 +830,7 @@ function buildNav(active) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PDF GENERATORS (unchanged from previous version)
+// PDF GENERATORS
 // ═══════════════════════════════════════════════════════════════════════
 
 function pdfAddHeader(doc, title, subtitle) {
