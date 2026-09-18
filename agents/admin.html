@@ -112,14 +112,15 @@
 .chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: #fafafa; }
 .chat-hdr-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
 .chat-hdr-info { flex: 1; min-width: 0; }
-.chat-hdr-name { font-weight: 800; font-size: 14px; }
+.chat-hdr-name { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .chat-hdr-sub { font-size: 12px; color: var(--muted); }
+.online-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; display: inline-block; flex-shrink: 0; }
 .chat-body { flex: 1; overflow-y: auto; padding: 16px 20px; background: #f8f9fb; display: flex; flex-direction: column; gap: 10px; }
 .chat-msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; position: relative; word-wrap: break-word; overflow-wrap: anywhere; }
 .chat-msg.mine { align-self: flex-end; background: linear-gradient(135deg,#ff6000,#ff9f43); color: white; border-bottom-right-radius: 4px; }
 .chat-msg.theirs { align-self: flex-start; background: white; color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 .chat-msg-sender { font-size: 11px; font-weight: 700; margin-bottom: 4px; opacity: .8; }
-.chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; }
+.chat-msg-time { font-size: 10px; opacity: .65; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
 .chat-msg-actions { display: flex; gap: 6px; margin-top: 6px; }
 .chat-msg-actions button { background: none; border: none; color: inherit; font-size: 11px; cursor: pointer; opacity: .75; padding: 2px 4px; }
 .chat-msg-expires { font-size: 10px; margin-top: 4px; opacity: .7; }
@@ -132,14 +133,42 @@
 .chat-msg-file .file-meta { flex: 1; min-width: 0; }
 .chat-msg-file .file-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-msg-file .file-size { font-size: 11px; opacity: .7; }
+
+.chat-reply-preview {
+  border-left: 3px solid rgba(255,255,255,.5);
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: .85;
+  background: rgba(255,255,255,.1);
+}
+.chat-msg.theirs .chat-reply-preview { background: var(--light); border-left-color: var(--orange); }
+.chat-tick { font-size: 12px; opacity: .8; }
+
 .chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
 .chat-input-row textarea:focus { border-color: var(--orange); }
 .chat-send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-o); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: opacity .2s; }
 .chat-send-btn:hover { opacity: .9; }
+.chat-send-btn:disabled { opacity: .5; cursor: not-allowed; }
 .chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--light); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all .2s; }
 .chat-attach-btn:hover { background: var(--orange); color: white; }
 .chat-attach-btn.recording { background: #dc2626; color: white; }
+
+.reply-banner { background: linear-gradient(135deg, #fff8f4, #ffe0cc); border-top: 1px solid #ffd4b3; padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #92400e; }
+.reply-banner-content { flex: 1; min-width: 0; }
+.reply-banner-title { font-weight: 700; margin-bottom: 2px; }
+.reply-banner-text { opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reply-banner button { background: none; border: none; cursor: pointer; color: #92400e; padding: 6px; border-radius: 6px; font-size: 14px; }
+.reply-banner button:hover { background: rgba(0,0,0,.05); }
+
+.chat-activity-banner { padding: 6px 20px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; font-style: italic; background: #f8f9fb; min-height: 24px; }
+.chat-activity-dots { display: inline-flex; gap: 3px; }
+.chat-activity-dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); animation: bounce 1.4s infinite; }
+.chat-activity-dots span:nth-child(2) { animation-delay: .2s; }
+.chat-activity-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-3px); opacity: 1; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 #lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
 #lightboxModal.open { display: flex; }
@@ -378,11 +407,24 @@
         <div class="chat-hdr">
           <div class="chat-hdr-icon" id="adminChatIcon">📡</div>
           <div class="chat-hdr-info">
-            <div class="chat-hdr-name" id="adminChatName">Team Room</div>
+            <div class="chat-hdr-name">
+              <span id="adminChatName">Team Room</span>
+              <span id="adminOnlineIndicator" style="font-size:11px;font-weight:600;color:var(--muted);display:none;">
+                <span class="online-dot"></span> <span id="adminOnlineCount">0</span> online
+              </span>
+            </div>
             <div class="chat-hdr-sub" id="adminChatSub">All agents + admins</div>
           </div>
         </div>
         <div class="chat-body" id="adminChatBody"></div>
+        <div class="chat-activity-banner" id="adminChatActivityBanner"></div>
+        <div class="reply-banner" id="adminReplyBanner" style="display:none;">
+          <div class="reply-banner-content">
+            <div class="reply-banner-title" id="adminReplyBannerTitle">Replying to…</div>
+            <div class="reply-banner-text" id="adminReplyBannerText"></div>
+          </div>
+          <button onclick="cancelAdminReply()" title="Cancel reply"><i class="fas fa-xmark"></i></button>
+        </div>
         <div class="chat-input-row" id="adminChatInputRow">
           <button class="chat-attach-btn" onclick="document.getElementById('adminChatImageInput').click()" title="Send image">
             <i class="fas fa-camera"></i>
@@ -395,8 +437,8 @@
           </button>
           <input type="file" id="adminChatImageInput" accept="image/*" style="display:none" onchange="onAdminChatImageSelected(event)">
           <input type="file" id="adminChatFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none" onchange="onAdminChatFileSelected(event)">
-          <textarea id="adminChatInput" rows="1" placeholder="Type a message…" oninput="autoGrow(this)" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendAdminChatMessage();}"></textarea>
-          <button class="chat-send-btn" onclick="sendAdminChatMessage()"><i class="fas fa-paper-plane"></i></button>
+          <textarea id="adminChatInput" rows="1" placeholder="Type a message…" oninput="autoGrow(this); onAdminTyping()" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendAdminChatMessage();}"></textarea>
+          <button class="chat-send-btn" id="adminChatSendBtn" onclick="sendAdminChatMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
         <div id="adminVoiceRecordingBar" style="display:none;padding:12px 16px;background:#fee2e2;border-top:1px solid #fecaca;align-items:center;gap:12px;">
           <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;animation:pulse 1s infinite;"></div>
@@ -664,7 +706,30 @@ function statusBadge(code) {
   return `<span class="pill-${cls}">${s.label}</span>`;
 }
 
-// ── AUTH ─────────────────────────────────────────────────────────────────
+let allApps = [], allAgents = [], allSales = [], allLeadsAdmin = [];
+let allAudit = [], allPayouts = [], allCustomers = [], allFlags = [], allMethods = [];
+let allCampaigns = [], allMaterials = [], allModules = [], allAgreements = [];
+let currentFilter = 'all', currentApp = null, saleFilter = 'all', auditFilter = 'all';
+let payoutFilter = 'all', reportFilter = 'month', contentFilter = 'marketing', leadFilter = 'all';
+let currentRejectSaleId = null, currentRejectPayoutId = null;
+let currentAdminChatType = 'team', currentAdminConversation = null, stopAdminChatSub = null;
+let stopAdminPresenceSub = null;
+let editableTiers = [];
+
+let _adminPendingImageFile = null;
+let _adminVoiceRecorder = null;
+let _adminVoiceTimerInterval = null;
+let _adminReplyTo = null;
+let _adminLastTypingSignal = 0;
+let _adminTypingTimeout = null;
+let _adminPresenceStatus = 'online';
+
+let _adminSessionStart = Date.now();
+let _adminWellbeingShown = false;
+
+// ═══════════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════════
 async function doLogin() {
   const email = document.getElementById('emailInput').value.trim();
   const password = document.getElementById('passwordInput').value;
@@ -692,6 +757,7 @@ async function doLogin() {
   }
 }
 async function doLogout() {
+  try { await setAdminPresence('offline'); } catch(e) {}
   await auth.signOut();
   sessionStorage.removeItem('btx_admin');
   location.reload();
@@ -708,23 +774,28 @@ async function initAdmin() {
   await loadAllContent();
   await loadLeads();
   loadTiersIntoEditor();
+  startAdminWellbeingTimer();
+  restoreAdminChatDraft();
 }
 
-// ── DATA ─────────────────────────────────────────────────────────────────
-let allApps = [], allAgents = [], allSales = [], allLeadsAdmin = [];
-let allAudit = [], allPayouts = [], allCustomers = [], allFlags = [], allMethods = [];
-let allCampaigns = [], allMaterials = [], allModules = [], allAgreements = [];
-let currentFilter = 'all', currentApp = null, saleFilter = 'all', auditFilter = 'all';
-let payoutFilter = 'all', reportFilter = 'month', contentFilter = 'marketing', leadFilter = 'all';
-let currentRejectSaleId = null, currentRejectPayoutId = null;
-let currentAdminChatType = 'team', currentAdminConversation = null, stopAdminChatSub = null;
-let editableTiers = [];
+function startAdminWellbeingTimer() {
+  setInterval(() => {
+    const hours = (Date.now() - _adminSessionStart) / (1000 * 60 * 60);
+    if (hours >= 2 && !_adminWellbeingShown) {
+      _adminWellbeingShown = true;
+      toast('☕ You\'ve been working for 2 hours. Consider a short break.', 6000);
+    }
+  }, 60 * 1000);
+}
 
-// Admin chat media state
-let _adminPendingImageFile = null;
-let _adminVoiceRecorder = null;
-let _adminVoiceTimerInterval = null;
+function isQuietHours() {
+  const h = new Date().getHours();
+  return h >= 22 || h < 6;
+}
 
+// ═══════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════
 async function loadAll() {
   try {
     [allApps, allAgents, allSales] = await Promise.all([
@@ -796,7 +867,9 @@ function updateFlagBadge() {
   });
 }
 
-// ── TAB SWITCHING ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════════════
 function showTab(name, btnEl) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('tab-' + name);
@@ -826,12 +899,13 @@ function showTab(name, btnEl) {
   if (panel) panel.style.display = 'none';
 }
 
-// ── GLOBAL SEARCH ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// GLOBAL SEARCH
+// ═══════════════════════════════════════════════════════════════════════
 function showSearchResults() {
   const panel = document.getElementById('globalSearchPanel');
   if (document.getElementById('globalSearch').value.trim()) panel.style.display = 'block';
 }
-
 function globalSearch() {
   const q = document.getElementById('globalSearch').value.trim().toLowerCase();
   const panel = document.getElementById('globalSearchPanel');
@@ -872,7 +946,6 @@ function globalSearch() {
       </div>
     </div>`).join('');
 }
-
 function runSearchAction(i) {
   const m = window._searchMatches && window._searchMatches[i];
   if (m) {
@@ -885,7 +958,9 @@ function runSearchAction(i) {
   document.getElementById('globalSearch').value = '';
 }
 
-// ── AGENT PHOTOS ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// AGENT PHOTOS
+// ═══════════════════════════════════════════════════════════════════════
 function renderAgentPhotoMini(agent) {
   if (agent.profile_photo_url) {
     return `<img src="${esc(agent.profile_photo_url)}" class="agent-photo-mini" alt="" onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='inline-flex');"><span class="agent-photo-fallback-mini" style="display:none;">${(agent.full_name || '?')[0].toUpperCase()}</span>`;
@@ -899,7 +974,9 @@ function renderAgentPhotoLarge(agent) {
   return `<div class="agent-photo-fallback-large">${(agent.full_name || '?')[0].toUpperCase()}</div>`;
 }
 
-// ── APPLICATIONS ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// APPLICATIONS
+// ═══════════════════════════════════════════════════════════════════════
 function renderApps(apps) {
   const list = (apps || allApps).filter(a => currentFilter === 'all' || a.status === currentFilter);
   const tbody = document.getElementById('appTable');
@@ -962,7 +1039,7 @@ function openDetail(appId) {
     <div style="background:var(--light);border-radius:var(--r);padding:16px 18px;">
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;"><i class="fas fa-arrow-right-arrow-left"></i> Change Status</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <select class="select" id="statusSelect" style="flex:1;min-width:200px;">${APP_STATUSES.map(s => `<option value="${s.code}" ${s.code === a.status ? 'selected' : ''}>${s.label}</option>`).join('')}</select>
+        <select class="select" id="statusSelect" style="flex:1;min-width:200px;">${APP_STATUSES.filter(s => s.code !== 'approved' && s.code !== 'active' && s.code !== 'rejected').map(s => `<option value="${s.code}" ${s.code === a.status ? 'selected' : ''}>${s.label}</option>`).join('')}</select>
         <input type="text" class="input" id="statusNote" placeholder="Note…" style="flex:1;min-width:150px;">
         <button class="btn btn-primary btn-sm" id="changeStatusBtn" onclick="changeStatus()"><i class="fas fa-check"></i> Update</button>
       </div>
@@ -1089,16 +1166,11 @@ async function confirmApprove() {
 
     await db.insert('wallets', {
       agent_code: agentCode,
-      total_earned: 0,
-      pending: 0,
-      available: 0,
-      paid: 0,
+      total_earned: 0, pending: 0, available: 0, paid: 0,
     });
     createdWallet = true;
 
-    try {
-      await db.update('counters', `name=eq.agents`, { value: n });
-    } catch(e) { /* non-fatal */ }
+    try { await db.update('counters', `name=eq.agents`, { value: n }); } catch(e) {}
 
     await db.update('profiles', `id=eq.${currentApp.auth_user_id}`, {
       role: 'agent',
@@ -1107,12 +1179,7 @@ async function confirmApprove() {
     });
 
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
-    history.push({
-      status: 'approved',
-      timestamp: new Date().toISOString(),
-      by: 'admin',
-      note: 'Agent ' + agentCode,
-    });
+    history.push({ status: 'approved', timestamp: new Date().toISOString(), by: 'admin', note: 'Agent ' + agentCode });
 
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
       status: 'approved',
@@ -1133,25 +1200,18 @@ async function confirmApprove() {
       `Agent Code: ${agentCode}\n` +
       `Agent ID: ${agentId}\n` +
       `Login Email: ${finalEmail}\n\n` +
-      `⚠️ The agent can log in IMMEDIATELY with the email and password they chose during application.\n\n` +
-      `Send them a WhatsApp message with their Agent Code and Dashboard link:\n` +
-      `${CONFIG.agentSiteUrl}/agent.html`
+      `The agent can log in NOW.\n` +
+      `Dashboard: ${CONFIG.agentSiteUrl}/agent.html`
     );
 
     loadAll();
     closeDetail();
   } catch(e) {
     console.error('Approval failed:', e);
-
-    if (createdAgentCode) {
-      try { await db.remove('agents', `agent_code=eq.${createdAgentCode}`); } catch(rb) {}
-    }
-    if (createdWallet && createdAgentCode) {
-      try { await db.remove('wallets', `agent_code=eq.${createdAgentCode}`); } catch(rb) {}
-    }
-
+    if (createdAgentCode) { try { await db.remove('agents', `agent_code=eq.${createdAgentCode}`); } catch(rb) {} }
+    if (createdWallet && createdAgentCode) { try { await db.remove('wallets', `agent_code=eq.${createdAgentCode}`); } catch(rb) {} }
     document.getElementById('approveErrText').textContent =
-      (e.message || 'Approval failed') + ' — any partial records were rolled back. Try again.';
+      (e.message || 'Approval failed') + ' — partial records rolled back. Try again.';
     document.getElementById('approveError').style.display = 'flex';
   } finally {
     setLoading(btn, false, '<i class="fas fa-check"></i> Approve Agent');
@@ -1160,32 +1220,25 @@ async function confirmApprove() {
 
 async function rejectApp() {
   if (!currentApp || !confirm('Reject this application? The applicant will no longer be able to log in.')) return;
-
   try {
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
     history.push({ status: 'rejected', timestamp: new Date().toISOString(), by: 'admin' });
-
     await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
       status: 'rejected',
       status_history: history,
       reviewed_by: 'admin',
       reviewed_at: new Date().toISOString(),
     });
-
-    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin',
-      { status: currentApp.status },
-      { status: 'rejected' }
-    );
-
+    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin', { status: currentApp.status }, { status: 'rejected' });
     toast('❌ Application rejected');
     await loadAll();
     closeDetail();
-  } catch(e) {
-    toast('Error: ' + e.message);
-  }
+  } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── AGENTS ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// AGENTS
+// ═══════════════════════════════════════════════════════════════════════
 let agentFilter = 'all', selectedAgent = null;
 function setAgentFilter(f, btn) {
   agentFilter = f;
@@ -1302,7 +1355,9 @@ async function removeAgentPhoto(code) {
 }
 function recordSaleForAgent(code) { closeAgentDetail(); showTab('sales', null); openAddSale(code); }
 
-// ── LEADS ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// LEADS
+// ═══════════════════════════════════════════════════════════════════════
 function setLeadFilter(f, btn) {
   leadFilter = f;
   document.querySelectorAll('[data-lf]').forEach(b => b.classList.remove('active'));
@@ -1343,7 +1398,97 @@ function renderAdminLeads() {
   }).join('');
 }
 
-// ── MESSAGES ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// ADMIN CHAT
+// ═══════════════════════════════════════════════════════════════════════
+async function setAdminPresence(status, conversationId) {
+  try {
+    const uid = auth.currentUserId();
+    if (!uid) return;
+    const profile = await getProfile();
+    const payload = {
+      user_id: uid,
+      agent_code: profile?.agent_code || null,
+      full_name: profile?.full_name || profile?.email || 'Admin',
+      role: profile?.role || 'admin',
+      status: status || 'online',
+      conversation_id: conversationId || (currentAdminConversation ? currentAdminConversation.id : null),
+      last_seen: new Date().toISOString(),
+    };
+    const existing = await db.getOne('presence', `user_id=eq.${uid}`);
+    if (existing) await db.update('presence', `user_id=eq.${uid}`, payload);
+    else await db.insert('presence', payload);
+  } catch(e) { console.warn('Admin presence failed:', e); }
+}
+
+function startAdminPresenceHeartbeat() {
+  setAdminPresence('online');
+  setInterval(() => { setAdminPresence(_adminPresenceStatus); }, 25000);
+  window.addEventListener('beforeunload', () => { setAdminPresence('offline'); });
+}
+
+async function onAdminTyping() {
+  const now = Date.now();
+  if (now - _adminLastTypingSignal < 2000) return;
+  _adminLastTypingSignal = now;
+  if (_adminPresenceStatus !== 'typing') {
+    _adminPresenceStatus = 'typing';
+    setAdminPresence('typing');
+  }
+  clearTimeout(_adminTypingTimeout);
+  _adminTypingTimeout = setTimeout(() => {
+    _adminPresenceStatus = 'online';
+    setAdminPresence('online');
+  }, 3000);
+}
+
+function startAdminPresencePoll() {
+  if (stopAdminPresenceSub) { clearInterval(stopAdminPresenceSub); stopAdminPresenceSub = null; }
+  stopAdminPresenceSub = setInterval(async () => {
+    try {
+      const rows = await db.getAll('presence', {});
+      const now = Date.now();
+      const active = rows.filter(r => (now - new Date(r.last_seen).getTime()) < 60000);
+      const others = active.filter(r => r.user_id !== auth.currentUserId());
+
+      document.getElementById('adminOnlineCount').textContent = active.length;
+      document.getElementById('adminOnlineIndicator').style.display = 'inline-flex';
+
+      const typers = others.filter(r => r.status === 'typing');
+      const recorders = others.filter(r => r.status === 'recording');
+      const banner = document.getElementById('adminChatActivityBanner');
+      if (recorders.length) {
+        banner.innerHTML = `<span>🎤 ${esc(recorders[0].full_name || 'Someone')} is recording audio…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+      } else if (typers.length) {
+        banner.innerHTML = `<span>✍️ ${typers.length === 1 ? esc(typers[0].full_name || 'Someone') + ' is typing' : typers.length + ' people are typing'}…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+      } else {
+        banner.innerHTML = '';
+      }
+    } catch(e) {}
+  }, 3500);
+}
+
+function setAdminReplyTo(msg) {
+  _adminReplyTo = msg;
+  const sender = msg.sender_name || (msg.sender_id === auth.currentUserId() ? 'You' : 'User');
+  document.getElementById('adminReplyBannerTitle').textContent = `Replying to ${sender}`;
+  const preview = msg.text || (msg.message_type === 'image' ? '[Image]' : msg.message_type === 'voice' ? '[Voice note]' : msg.message_type === 'file' ? '[File]' : '');
+  document.getElementById('adminReplyBannerText').textContent = preview.substring(0, 80);
+  document.getElementById('adminReplyBanner').style.display = 'flex';
+  document.getElementById('adminChatInput').focus();
+}
+
+function cancelAdminReply() {
+  _adminReplyTo = null;
+  document.getElementById('adminReplyBanner').style.display = 'none';
+}
+
+function handleAdminReply(id) {
+  const allMsgs = window._currentAdminMsgs || [];
+  const msg = allMsgs.find(m => m.id === id);
+  if (msg) setAdminReplyTo(msg);
+}
+
 async function switchAdminChat(type, btn) {
   currentAdminChatType = type;
   document.querySelectorAll('#tab-messages .filter-pill').forEach(b => b.classList.remove('active'));
@@ -1357,7 +1502,14 @@ async function switchAdminChat(type, btn) {
     document.getElementById('adminChatIcon').textContent = type === 'team' ? '📡' : '📢';
     document.getElementById('adminChatName').textContent = type === 'team' ? 'Team Room' : 'Announcements';
     document.getElementById('adminChatSub').textContent = type === 'team' ? 'All agents + admins' : 'Only admins can post';
+
+    if (isQuietHours()) {
+      document.getElementById('adminChatSub').innerHTML = '🌙 Quiet hours — replies may be delayed';
+    }
+
     await loadAdminChatMessages();
+    setAdminPresence('online', currentAdminConversation.id);
+    startAdminPresencePoll();
     stopAdminChatSub = subscribeToMessages(currentAdminConversation.id, (msg) => appendAdminChatMessage(msg, true));
   } catch(e) { toast('⚠️  ' + e.message); }
 }
@@ -1367,12 +1519,19 @@ async function loadAdminChatMessages() {
   try {
     const msgs = await getMessages(currentAdminConversation.id, 100);
     msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    window._currentAdminMsgs = msgs;
+    const wasAtBottom = isAtBottom(el);
     el.innerHTML = '';
     msgs.forEach(m => appendAdminChatMessage(m));
-    el.scrollTop = el.scrollHeight;
+    if (wasAtBottom) el.scrollTop = el.scrollHeight;
   } catch(e) {
     el.innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;">Could not load messages: ${esc(e.message)}</div>`;
   }
+}
+
+function isAtBottom(el) {
+  if (!el) return true;
+  return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
 }
 
 function appendAdminChatMessage(msg, scroll = false) {
@@ -1382,17 +1541,19 @@ function appendAdminChatMessage(msg, scroll = false) {
   const div = document.createElement('div');
   div.className = 'chat-msg ' + (mine ? 'mine' : 'theirs');
   div.dataset.msgId = msg.id;
+  div.style.cursor = 'pointer';
+  div.ondblclick = () => handleAdminReply(msg.id);
 
   const expiry = msg.is_kept ? '' : `<div class="chat-msg-expires">⏱️ Expires in ${timeUntilExpiry(msg.expires_at)}</div>`;
 
   let media = '';
   if (msg.media_url) {
     if (msg.message_type === 'image') {
-      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="openLightbox('${esc(msg.media_url)}')">`;
+      media = `<img src="${esc(msg.media_url)}" class="chat-msg-media" alt="" onclick="event.stopPropagation();openLightbox('${esc(msg.media_url)}')">`;
     } else if (msg.message_type === 'voice') {
       media = `<audio controls src="${esc(msg.media_url)}" style="max-width:100%;margin-top:6px;"></audio>`;
     } else if (msg.message_type === 'file') {
-      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download>
+      media = `<a href="${esc(msg.media_url)}" target="_blank" class="chat-msg-file" download onclick="event.stopPropagation();">
         <i class="fas fa-file"></i>
         <div class="file-meta">
           <div class="file-name">${esc(msg.text || 'Download file')}</div>
@@ -1406,19 +1567,28 @@ function appendAdminChatMessage(msg, scroll = false) {
 
   const textContent = msg.message_type === 'file' ? '' : (msg.text ? `<div>${linkify(msg.text)}</div>` : '');
 
+  let replyHtml = '';
+  if (msg.reply_to_id && msg.reply_preview) {
+    replyHtml = `<div class="chat-reply-preview">${esc(msg.reply_preview)}</div>`;
+  }
+
+  const tick = mine ? `<span class="chat-tick" title="Sent">✓✓</span>` : '';
+
   div.innerHTML = `
     ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
+    ${replyHtml}
     ${textContent}
     ${media}
-    <div class="chat-msg-time">${fmtTime(msg.created_at)}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
+    <div class="chat-msg-time">${fmtTime(msg.created_at)} ${tick}${msg.is_kept ? ' · 📌 Kept' : ''}</div>
     ${expiry}
     <div class="chat-msg-actions">
-      <button onclick="keepAdminMsg('${esc(msg.id)}')"><i class="fas fa-thumbtack"></i> ${msg.is_kept ? 'Un-keep' : 'Keep'}</button>
-      ${mine ? `<button onclick="removeAdminMsg('${esc(msg.id)}')"><i class="fas fa-trash"></i></button>` : ''}
+      <button onclick="event.stopPropagation();handleAdminReply('${esc(msg.id)}')"><i class="fas fa-reply"></i> Reply</button>
+      <button onclick="event.stopPropagation();keepAdminMsg('${esc(msg.id)}')"><i class="fas fa-thumbtack"></i> ${msg.is_kept ? 'Un-keep' : 'Keep'}</button>
+      ${mine ? `<button onclick="event.stopPropagation();removeAdminMsg('${esc(msg.id)}')"><i class="fas fa-trash"></i></button>` : ''}
     </div>
   `;
   el.appendChild(div);
-  if (scroll) el.scrollTop = el.scrollHeight;
+  if (scroll && isAtBottom(el)) el.scrollTop = el.scrollHeight;
 }
 
 function autoGrow(el) {
@@ -1426,17 +1596,40 @@ function autoGrow(el) {
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
+function saveAdminChatDraft() {
+  const input = document.getElementById('adminChatInput');
+  if (!input) return;
+  const txt = input.value;
+  if (txt) sessionStorage.setItem('py2_admin_draft_' + currentAdminChatType, txt);
+  else sessionStorage.removeItem('py2_admin_draft_' + currentAdminChatType);
+}
+function restoreAdminChatDraft() {
+  const input = document.getElementById('adminChatInput');
+  if (!input) return;
+  const draft = sessionStorage.getItem('py2_admin_draft_' + currentAdminChatType);
+  if (draft) input.value = draft;
+}
+
 async function sendAdminChatMessage() {
   const input = document.getElementById('adminChatInput');
   const text = input.value.trim();
   if (!text || !currentAdminConversation) return;
 
-  const btn = document.querySelector('#tab-messages .chat-send-btn');
+  const btn = document.getElementById('adminChatSendBtn');
   btn.disabled = true;
   try {
-    await sendMessage(currentAdminConversation.id, { message_type: 'text', text });
+    const payload = { message_type: 'text', text };
+    if (_adminReplyTo) {
+      payload.reply_to_id = _adminReplyTo.id;
+      const preview = _adminReplyTo.text || (_adminReplyTo.message_type === 'image' ? '[Image]' : _adminReplyTo.message_type === 'voice' ? '[Voice note]' : '[File]');
+      payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + preview.substring(0, 80);
+    }
+    await sendMessage(currentAdminConversation.id, payload);
     input.value = '';
     input.style.height = 'auto';
+    sessionStorage.removeItem('py2_admin_draft_' + currentAdminChatType);
+    cancelAdminReply();
+    setAdminPresence('online', currentAdminConversation.id);
     await loadAdminChatMessages();
   } catch(e) { toast('⚠️  ' + e.message); }
   finally { btn.disabled = false; }
@@ -1450,13 +1643,10 @@ async function keepAdminMsg(id) {
     await loadAdminChatMessages();
   } catch(e) { toast('Error: ' + e.message); }
 }
-
 async function removeAdminMsg(id) {
   if (!confirm('Delete this message?')) return;
-  try {
-    await deleteMessage(id);
-    await loadAdminChatMessages();
-  } catch(e) { toast('Error: ' + e.message); }
+  try { await deleteMessage(id); await loadAdminChatMessages(); }
+  catch(e) { toast('Error: ' + e.message); }
 }
 
 // ── ADMIN CHAT MEDIA ────────────────────────────────────────────────────
@@ -1473,12 +1663,10 @@ function onAdminChatImageSelected(event) {
   document.getElementById('adminImagePreviewModal').classList.add('open');
   event.target.value = '';
 }
-
 function closeAdminImagePreview() {
   document.getElementById('adminImagePreviewModal').classList.remove('open');
   _adminPendingImageFile = null;
 }
-
 async function sendAdminChatImage() {
   if (!_adminPendingImageFile) return;
   const btn = document.getElementById('adminSendImageBtn');
@@ -1493,20 +1681,20 @@ async function sendAdminChatImage() {
       document.getElementById('adminUploadProgressBar').style.width = pct + '%';
     });
     document.getElementById('adminUploadProgressText').textContent = 'Sending…';
-    await sendMessage(currentAdminConversation.id, {
-      message_type: 'image',
-      text: caption || null,
-      media_url: url,
-    });
+    const payload = { message_type: 'image', text: caption || null, media_url: url };
+    if (_adminReplyTo) {
+      payload.reply_to_id = _adminReplyTo.id;
+      payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + (_adminReplyTo.text || '[Image]').substring(0, 80);
+    }
+    await sendMessage(currentAdminConversation.id, payload);
+    cancelAdminReply();
     closeAdminImagePreview();
     await loadAdminChatMessages();
     toast('✅ Image sent');
   } catch(e) {
     toast('⚠️ ' + e.message);
     document.getElementById('adminUploadProgressText').textContent = 'Failed: ' + e.message;
-  } finally {
-    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Send');
-  }
+  } finally { setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Send'); }
 }
 
 function openLightbox(url) {
@@ -1524,38 +1712,35 @@ async function onAdminChatFileSelected(event) {
   if (!file) return;
   if (file.size > 15 * 1024 * 1024) { toast('⚠️ File too large (max 15 MB)'); event.target.value = ''; return; }
 
-  const btn = document.querySelector('#tab-messages .chat-send-btn');
+  const btn = document.getElementById('adminChatSendBtn');
   if (btn) btn.disabled = true;
   toast('Uploading file…');
 
   try {
     const url = await uploadChatMedia(file, 'file');
-    await sendMessage(currentAdminConversation.id, {
-      message_type: 'file',
-      text: file.name,
-      media_url: url,
-    });
+    const payload = { message_type: 'file', text: file.name, media_url: url };
+    if (_adminReplyTo) {
+      payload.reply_to_id = _adminReplyTo.id;
+      payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + (_adminReplyTo.text || '[File]').substring(0, 80);
+    }
+    await sendMessage(currentAdminConversation.id, payload);
+    cancelAdminReply();
     await loadAdminChatMessages();
     toast('✅ File sent');
-  } catch(e) {
-    toast('⚠️ ' + e.message);
-  } finally {
-    if (btn) btn.disabled = false;
-    event.target.value = '';
-  }
+  } catch(e) { toast('⚠️ ' + e.message); }
+  finally { if (btn) btn.disabled = false; event.target.value = ''; }
 }
 
 async function toggleAdminVoiceRecording() {
-  if (_adminVoiceRecorder) {
-    await stopAndSendAdminVoice();
-  } else {
-    await startAdminVoice();
-  }
+  if (_adminVoiceRecorder) await stopAndSendAdminVoice();
+  else await startAdminVoice();
 }
 
 async function startAdminVoice() {
   try {
     _adminVoiceRecorder = await startVoiceRecording();
+    _adminPresenceStatus = 'recording';
+    setAdminPresence('recording');
     document.getElementById('adminMicIcon').className = 'fas fa-stop';
     document.getElementById('adminMicBtn').classList.add('recording');
     document.getElementById('adminVoiceRecordingBar').style.display = 'flex';
@@ -1567,9 +1752,7 @@ async function startAdminVoice() {
       document.getElementById('adminRecordTimer').textContent = formatDuration(seconds);
       if (seconds >= 180) stopAndSendAdminVoice();
     }, 1000);
-  } catch(e) {
-    toast('⚠️ ' + e.message);
-  }
+  } catch(e) { toast('⚠️ ' + e.message); }
 }
 
 async function stopAndSendAdminVoice() {
@@ -1578,6 +1761,8 @@ async function stopAndSendAdminVoice() {
   _adminVoiceRecorder = null;
   clearInterval(_adminVoiceTimerInterval);
 
+  _adminPresenceStatus = 'online';
+  setAdminPresence('online');
   document.getElementById('adminMicIcon').className = 'fas fa-microphone';
   document.getElementById('adminMicBtn').classList.remove('recording');
   document.getElementById('adminVoiceRecordingBar').style.display = 'none';
@@ -1590,15 +1775,16 @@ async function stopAndSendAdminVoice() {
 
     toast('Sending voice note…');
     const url = await uploadChatMedia(blob, 'voice');
-    await sendMessage(currentAdminConversation.id, {
-      message_type: 'voice',
-      media_url: url,
-    });
+    const payload = { message_type: 'voice', media_url: url };
+    if (_adminReplyTo) {
+      payload.reply_to_id = _adminReplyTo.id;
+      payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + (_adminReplyTo.text || '[Voice note]').substring(0, 80);
+    }
+    await sendMessage(currentAdminConversation.id, payload);
+    cancelAdminReply();
     await loadAdminChatMessages();
     toast('✅ Voice note sent');
-  } catch(e) {
-    toast('⚠️ ' + e.message);
-  }
+  } catch(e) { toast('⚠️ ' + e.message); }
 }
 
 function cancelAdminVoiceRecording() {
@@ -1606,6 +1792,8 @@ function cancelAdminVoiceRecording() {
   _adminVoiceRecorder.cancel();
   _adminVoiceRecorder = null;
   clearInterval(_adminVoiceTimerInterval);
+  _adminPresenceStatus = 'online';
+  setAdminPresence('online');
   document.getElementById('adminMicIcon').className = 'fas fa-microphone';
   document.getElementById('adminMicBtn').classList.remove('recording');
   document.getElementById('adminVoiceRecordingBar').style.display = 'none';
@@ -1613,7 +1801,9 @@ function cancelAdminVoiceRecording() {
   toast('Recording cancelled');
 }
 
-// ── SALES ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// SALES
+// ═══════════════════════════════════════════════════════════════════════
 function setSaleFilter(f, btn) {
   saleFilter = f;
   document.querySelectorAll('.filter-pill[data-sf]').forEach(b => b.classList.remove('active'));
@@ -1670,10 +1860,8 @@ async function updateSaleStatus(id, status) {
 }
 async function deleteSale(id, saleId) {
   if (!confirm('Delete sale ' + saleId + '?')) return;
-  try {
-    await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` });
-    toast('Deleted'); await loadAll();
-  } catch(e) { toast('Error: ' + e.message); }
+  try { await db.query('sales', { method: 'DELETE', filter: `id=eq.${id}` }); toast('Deleted'); await loadAll(); }
+  catch(e) { toast('Error: ' + e.message); }
 }
 
 function openAddSale(preselectedCode) {
@@ -1748,7 +1936,9 @@ async function saveSale(notifyAgent) {
   }
 }
 
-// ── PENDING SALES ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// PENDING SALES
+// ═══════════════════════════════════════════════════════════════════════
 function renderPending() {
   const tbody = document.getElementById('pendingTable');
   const pend = allSales.filter(s => s.status === 'pending' && s.submitted_by === 'agent');
@@ -1808,7 +1998,9 @@ async function confirmRejectSale() {
   finally { setLoading(btn, false, '<i class="fas fa-xmark"></i> Reject'); }
 }
 
-// ── PAYOUTS ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// PAYOUTS
+// ═══════════════════════════════════════════════════════════════════════
 function setPayoutFilter(f, btn) {
   payoutFilter = f;
   document.querySelectorAll('.filter-pill[data-pf]').forEach(b => b.classList.remove('active'));
@@ -1864,7 +2056,9 @@ async function confirmRejectPayout() {
   finally { setLoading(btn, false, '<i class="fas fa-xmark"></i> Reject'); }
 }
 
-// ── CUSTOMERS ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// CUSTOMERS
+// ═══════════════════════════════════════════════════════════════════════
 function renderCustomers() {
   const tbody = document.getElementById('customersTable');
   const q = (document.getElementById('custSearch')?.value || '').toLowerCase();
@@ -1883,7 +2077,9 @@ function renderCustomers() {
 }
 function filterCustomers() { renderCustomers(); }
 
-// ── CAMPAIGNS ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// CAMPAIGNS
+// ═══════════════════════════════════════════════════════════════════════
 function renderCampaigns() {
   const el = document.getElementById('campaignList');
   if (!allCampaigns.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;">No campaigns yet.</div>'; return; }
@@ -1958,7 +2154,9 @@ async function deleteCampaign(id) {
   catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── CONTENT ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════════════════════
 function setContentFilter(f, btn) {
   contentFilter = f;
   document.querySelectorAll('.filter-pill[data-cf]').forEach(b => b.classList.remove('active'));
@@ -2109,14 +2307,15 @@ async function activateAgreement(id) {
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── REPORTS ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════════════════════════════════════════
 function setReportFilter(f, btn) {
   reportFilter = f;
   document.querySelectorAll('.filter-pill[data-rf]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderReports();
 }
-
 function getReportDateRange() {
   const now = new Date();
   let start, end;
@@ -2126,7 +2325,6 @@ function getReportDateRange() {
   else { start = new Date(2000,0,1); end = new Date(2100,0,1); }
   return { start, end };
 }
-
 function renderReports() {
   const el = document.getElementById('reportsContent');
   if (!el) return;
@@ -2172,14 +2370,15 @@ function renderReports() {
     </div>`;
 }
 
-// ── AUDIT ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// AUDIT
+// ═══════════════════════════════════════════════════════════════════════
 function setAuditFilter(f, btn) {
   auditFilter = f;
   document.querySelectorAll('.filter-pill[data-audit]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderAudit();
 }
-
 const AUDIT_ICONS = {
   application: { icon:'fa-file-lines', cls:'blue' },
   agent: { icon:'fa-user-tie', cls:'orange' },
@@ -2189,7 +2388,6 @@ const AUDIT_ICONS = {
   campaign: { icon:'fa-bullhorn', cls:'blue' },
   settings: { icon:'fa-gear', cls:'gray' },
 };
-
 function renderAudit() {
   const el = document.getElementById('auditList');
   if (!el) return;
@@ -2210,13 +2408,14 @@ function renderAudit() {
   }).join('');
 }
 
-// ── FRAUD FLAGS ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// FRAUD FLAGS
+// ═══════════════════════════════════════════════════════════════════════
 const FLAG_LABELS = {
   self_purchase: { label: 'Possible Self-Purchase', icon: 'fa-user-secret', cls: 'red' },
   duplicate_customer_24h: { label: 'Duplicate Customer (24h)', icon: 'fa-clone', cls: 'orange' },
   rapid_submission: { label: 'Rapid Submission', icon: 'fa-bolt', cls: 'orange' },
 };
-
 function renderFlags() {
   const el = document.getElementById('flagsList');
   if (!el) return;
@@ -2241,13 +2440,14 @@ function renderFlags() {
     </div>`;
   }).join('');
 }
-
 async function resolveFlag(id) {
   try { await db.update('fraud_flags', `id=eq.${id}`, { status: 'resolved', resolved_at: new Date().toISOString() }); toast('✅ Resolved'); await loadFlags(); }
   catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── PAYMENT METHODS ─────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// PAYMENT METHODS
+// ═══════════════════════════════════════════════════════════════════════
 function renderPaymentMethods() {
   const el = document.getElementById('paymentMethodsList');
   if (!el) return;
@@ -2261,18 +2461,18 @@ function renderPaymentMethods() {
       </label>
     </div>`).join('');
 }
-
 async function togglePaymentMethod(id, active) {
   try { await db.update('payment_methods', `id=eq.${id}`, { active }); toast(active ? '✅ Enabled' : '⚠️  Disabled'); await loadPaymentMethods(); }
   catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── COMMISSION TIER EDITOR ──────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// COMMISSION TIER EDITOR
+// ═══════════════════════════════════════════════════════════════════════
 function loadTiersIntoEditor() {
   editableTiers = COMMISSION_TIERS.map(t => ({ ...t })).sort((a,b) => Number(a.min_amount) - Number(b.min_amount));
   renderTierEditor();
 }
-
 function renderTierEditor() {
   const el = document.getElementById('tierList');
   if (!el) return;
@@ -2286,24 +2486,20 @@ function renderTierEditor() {
       <button class="btn-ghost btn-sm" style="color:var(--red);" onclick="removeTier(${i})"><i class="fas fa-trash"></i></button>
     </div>`).join('');
 }
-
 function updateTierField(i, field, value) {
   if (field === 'max_amount') editableTiers[i][field] = value === '' ? null : Number(value);
   else editableTiers[i][field] = Number(value);
   renderTierEditor();
 }
-
 function addTier() {
   const last = editableTiers[editableTiers.length - 1];
   editableTiers.push({ min_amount: last ? (Number(last.max_amount) || 0) + 1 : 1, max_amount: null, percentage: 5, active: true });
   renderTierEditor();
 }
-
 function removeTier(i) {
   editableTiers.splice(i, 1);
   renderTierEditor();
 }
-
 async function saveTiers() {
   const btn = document.getElementById('saveTiersBtn');
   setLoading(btn, true, 'Saving…');
@@ -2323,18 +2519,24 @@ async function saveTiers() {
   finally { setLoading(btn, false, '<i class="fas fa-check"></i> Save Tiers'); }
 }
 
-// ── PDF DOWNLOADS ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// PDF DOWNLOADS
+// ═══════════════════════════════════════════════════════════════════════
 function downloadAllSalesPdf() {
   if (!allSales.length) { toast('⚠️  No sales'); return; }
   const sales = allSales.map(s => ({ sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name, amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status }));
   makeSalesStatementPdf({ agentName: 'All Agents', agentCode: 'ALL', period: 'All time', sales });
 }
-
 function downloadAgentPdf(code) {
   const agent = allAgents.find(a => a.agent_code === code);
   const sales = allSales.filter(s => s.agent_code === code).map(s => ({ sale_id: s.sale_id, created_at: s.created_at, customer_name: s.customer_name, amount: s.amount, commission_pct: s.commission_pct, commission: s.commission, status: s.status }));
   makeSalesStatementPdf({ agentName: agent?.full_name, agentId: agent?.agent_id, agentCode: code, period: 'All time', sales });
 }
+
+// Save draft on input
+document.addEventListener('input', (e) => {
+  if (e.target && e.target.id === 'adminChatInput') saveAdminChatDraft();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('btx_admin') === 'yes' && auth.isLoggedIn()) {
