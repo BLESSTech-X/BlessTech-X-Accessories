@@ -955,25 +955,53 @@ function openApprove() {
 }
 function closeModal() { document.getElementById('approveModal').classList.remove('open'); }
 
+async function getNextAgentNumber() {
+  // Read the ACTUAL highest number from the agents table.
+  // This avoids counter-drift problems when rows are added manually via SQL.
+  try {
+    const agents = await db.getAll('agents', { select: 'agent_id' });
+    let maxNum = 0;
+    (agents || []).forEach(a => {
+      if (a.agent_id && /^PYA-\d+$/.test(a.agent_id)) {
+        const n = parseInt(a.agent_id.replace('PYA-', ''), 10);
+        if (n > maxNum) maxNum = n;
+      }
+    });
+    return maxNum + 1;
+  } catch(e) {
+    // Fallback to the counter if we can't read the table
+    const n = await db.nextId('agents');
+    return n;
+  }
+}
+
 async function confirmApprove() {
   const email = document.getElementById('m-email').value.trim();
-
   if (!currentApp) return;
 
   const finalEmail = currentApp.login_email || email;
   if (!finalEmail) { toast('⚠️  Agent email required'); return; }
+  if (!currentApp.auth_user_id) {
+    toast('⚠️  No auth user linked — applicant must re-apply'); return;
+  }
 
   const btn = document.getElementById('confirmApproveBtn');
   setLoading(btn, true, 'Approving agent…');
   document.getElementById('approveError').style.display = 'none';
 
+  // Track what we've created so we can roll back on failure
+  let createdAgentCode = null;
+  let createdWallet = false;
+
   try {
-    const n = await db.nextId('agents');
+    // 1. Compute next number from actual data (self-healing)
+    const n = await getNextAgentNumber();
     const agentId = makeAgentId(n);
     const agentCode = makeAgentCode(n);
     const refUrl = `${CONFIG.agentSiteUrl}/?ref=${agentCode}`;
 
-    await db.insert('agents', {
+    // 2. Insert agent row
+    const agentInsert = await db.insert('agents', {
       app_id:        currentApp.app_id,
       agent_id:      agentId,
       agent_code:    agentCode,
@@ -985,7 +1013,10 @@ async function confirmApprove() {
       active:        true,
       referred_by:   currentApp.ref_code || null,
     });
+    if (!agentInsert || !agentInsert.length) throw new Error('Could not create agent row');
+    createdAgentCode = agentCode;
 
+    // 3. Insert wallet
     await db.insert('wallets', {
       agent_code: agentCode,
       total_earned: 0,
@@ -993,15 +1024,21 @@ async function confirmApprove() {
       available: 0,
       paid: 0,
     });
+    createdWallet = true;
 
-    if (currentApp.auth_user_id) {
-      await db.update('profiles', `id=eq.${currentApp.auth_user_id}`, {
-        role: 'agent',
-        agent_code: agentCode,
-        full_name: currentApp.full_name,
-      });
-    }
+    // 4. Keep the counter roughly in sync (best-effort)
+    try {
+      await db.update('counters', `name=eq.agents`, { value: n });
+    } catch(e) { /* non-fatal */ }
 
+    // 5. Link the profile
+    await db.update('profiles', `id=eq.${currentApp.auth_user_id}`, {
+      role: 'agent',
+      agent_code: agentCode,
+      full_name: currentApp.full_name,
+    });
+
+    // 6. Update the application
     const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
     history.push({
       status: 'approved',
@@ -1037,22 +1074,22 @@ async function confirmApprove() {
     loadAll();
     closeDetail();
   } catch(e) {
-    document.getElementById('approveErrText').textContent = e.message;
+    console.error('Approval failed:', e);
+
+    // Roll back what we can
+    if (createdAgentCode) {
+      try { await db.remove('agents', `agent_code=eq.${createdAgentCode}`); } catch(rb) {}
+    }
+    if (createdWallet && createdAgentCode) {
+      try { await db.remove('wallets', `agent_code=eq.${createdAgentCode}`); } catch(rb) {}
+    }
+
+    document.getElementById('approveErrText').textContent =
+      (e.message || 'Approval failed') + ' — any partial records were rolled back. Try again.';
     document.getElementById('approveError').style.display = 'flex';
   } finally {
     setLoading(btn, false, '<i class="fas fa-check"></i> Approve Agent');
   }
-}
-
-async function rejectApp() {
-  if (!currentApp || !confirm('Reject this application?')) return;
-  try {
-    const history = Array.isArray(currentApp.status_history) ? currentApp.status_history : [];
-    history.push({ status: 'rejected', timestamp: new Date().toISOString(), by: 'admin' });
-    await db.update('applications', `app_id=eq.${currentApp.app_id}`, { status: 'rejected', status_history: history, reviewed_by: 'admin', reviewed_at: new Date().toISOString() });
-    await db.logAudit('application', currentApp.app_id, 'rejected', 'admin', { status: currentApp.status }, { status: 'rejected' });
-    toast('Rejected'); loadAll(); closeDetail();
-  } catch(e) { toast('Error: ' + e.message); }
 }
 
 // ── AGENTS ──────────────────────────────────────────────────────────────
