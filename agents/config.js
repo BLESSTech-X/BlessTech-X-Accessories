@@ -357,8 +357,21 @@ async function uploadChatMedia(file, type = 'image', onProgress) {
     ext         = 'jpg';
     contentType = 'image/jpeg';
   } else if (type === 'voice') {
-    ext         = 'webm';
-    contentType = file.type || 'audio/webm';
+    // Detect extension from mime type
+    const mt = (file.type || '').toLowerCase();
+    if (mt.includes('mp4') || mt.includes('m4a') || mt.includes('aac')) {
+      ext = 'm4a';
+      contentType = 'audio/mp4';
+    } else if (mt.includes('ogg')) {
+      ext = 'ogg';
+      contentType = 'audio/ogg';
+    } else if (mt.includes('wav')) {
+      ext = 'wav';
+      contentType = 'audio/wav';
+    } else {
+      ext = 'webm';
+      contentType = 'audio/webm';
+    }
   } else {
     ext = (file.name?.split('.').pop() || 'bin').toLowerCase();
     if (ext.length > 6) ext = 'bin';
@@ -397,60 +410,94 @@ async function uploadChatMedia(file, type = 'image', onProgress) {
 let _mediaRecorder = null;
 let _mediaChunks = [];
 let _recordStartTime = 0;
+let _recordMimeType = '';
 
 async function startVoiceRecording() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     throw new Error('Voice recording not supported on this device');
   }
+  if (typeof MediaRecorder === 'undefined') {
+    throw new Error('MediaRecorder not supported on this browser');
+  }
 
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    }
+  });
+
   _mediaChunks = [];
   _recordStartTime = Date.now();
+  _recordMimeType = '';
 
-  let mimeType = 'audio/webm';
+  // Pick the best supported mime type.
+  // Prefer webm/opus on Chrome (best compatibility with MediaRecorder), mp4 on Safari.
+  const candidates = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/mp4;codecs=mp4a.40.2',
+    'audio/mp4',
+    'audio/ogg;codecs=opus',
+    'audio/ogg',
+  ];
+
+  let chosen = '';
   if (typeof MediaRecorder.isTypeSupported === 'function') {
-    if (!MediaRecorder.isTypeSupported('audio/webm')) {
-      if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-      else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
-      else mimeType = '';
+    for (const c of candidates) {
+      if (MediaRecorder.isTypeSupported(c)) { chosen = c; break; }
     }
-  } else {
-    mimeType = '';
   }
 
   try {
-    _mediaRecorder = mimeType
-      ? new MediaRecorder(stream, { mimeType })
-      : new MediaRecorder(stream);
+    _mediaRecorder = chosen
+      ? new MediaRecorder(stream, { mimeType: chosen, audioBitsPerSecond: 128000 })
+      : new MediaRecorder(stream, { audioBitsPerSecond: 128000 });
   } catch (e) {
     _mediaRecorder = new MediaRecorder(stream);
-    mimeType = _mediaRecorder.mimeType || 'audio/webm';
   }
+
+  _recordMimeType = _mediaRecorder.mimeType || chosen || 'audio/webm';
 
   _mediaRecorder.ondataavailable = (e) => {
     if (e.data && e.data.size > 0) _mediaChunks.push(e.data);
   };
 
-  _mediaRecorder.start();
+  // Use a timeslice so we get chunks regularly.
+  // This is CRITICAL for reliable playback on mobile.
+  _mediaRecorder.start(250);
 
   return {
     stop: () => new Promise((resolve) => {
-      _mediaRecorder.onstop = () => {
+      const finalize = () => {
         stream.getTracks().forEach(t => t.stop());
-        const finalType = mimeType || 'audio/webm';
+        const finalType = _recordMimeType || 'audio/webm';
         const blob = new Blob(_mediaChunks, { type: finalType });
         const duration = Math.round((Date.now() - _recordStartTime) / 1000);
         _mediaRecorder = null;
         resolve({ blob, duration });
       };
-      try { _mediaRecorder.stop(); } catch(e) {
-        stream.getTracks().forEach(t => t.stop());
-        _mediaRecorder = null;
-        resolve({ blob: new Blob(_mediaChunks, { type: 'audio/webm' }), duration: 0 });
+
+      _mediaRecorder.onstop = finalize;
+
+      try {
+        // Flush the final chunk before stopping — this is what fixes
+        // the "0.5-second blip" problem.
+        if (_mediaRecorder.state === 'recording') {
+          _mediaRecorder.requestData();
+        }
+        _mediaRecorder.stop();
+      } catch (e) {
+        finalize();
       }
     }),
     cancel: () => {
-      try { _mediaRecorder.stop(); } catch(e) {}
+      try {
+        if (_mediaRecorder && _mediaRecorder.state === 'recording') {
+          _mediaRecorder.stop();
+        }
+      } catch (e) {}
       stream.getTracks().forEach(t => t.stop());
       _mediaChunks = [];
       _mediaRecorder = null;
