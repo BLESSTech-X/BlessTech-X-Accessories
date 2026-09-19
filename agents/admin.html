@@ -1132,9 +1132,6 @@ async function confirmApprove() {
   if (!currentApp) return;
   const finalEmail = currentApp.login_email || email;
   if (!finalEmail) { toast('⚠️  Agent email required'); return; }
-  if (!currentApp.auth_user_id) {
-    toast('⚠️  No auth user linked — applicant must re-apply'); return;
-  }
 
   const btn = document.getElementById('confirmApproveBtn');
   setLoading(btn, true, 'Approving agent…');
@@ -1142,8 +1139,48 @@ async function confirmApprove() {
 
   let createdAgentCode = null;
   let createdWallet = false;
+  let generatedPassword = null;
 
   try {
+    // ─────────────────────────────────────────────────────────────
+    // STEP 1 — Ensure auth user exists (self-healing)
+    // If the application has no auth_user_id yet (because the
+    // submit-time Edge Function failed for this applicant), create
+    // it now via the Edge Function before continuing.
+    // ─────────────────────────────────────────────────────────────
+    if (!currentApp.auth_user_id) {
+      setLoading(btn, true, 'Creating login…');
+
+      // Generate a readable temporary password so it can be shared
+      // with the agent if needed. They should change it on first login.
+      generatedPassword = 'PY2-' + Math.random().toString(36).slice(-6) + '!' + Math.floor(Math.random()*90+10);
+
+      const { data, error } = await functions.invoke('create-agent-user', {
+        body: {
+          email:     finalEmail,
+          password:  generatedPassword,
+          full_name: currentApp.full_name,
+        },
+      });
+
+      if (error) throw new Error('Login creation failed: ' + error.message);
+      if (!data || !data.user_id) throw new Error('Edge Function returned no user_id');
+
+      currentApp.auth_user_id = data.user_id;
+
+      // Persist the UID immediately so a retry skips this step
+      try {
+        await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
+          auth_user_id: data.user_id,
+        });
+      } catch(e) { /* non-fatal */ }
+
+      setLoading(btn, true, 'Approving agent…');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // STEP 2 — Your existing approval flow (unchanged)
+    // ─────────────────────────────────────────────────────────────
     const n = await getNextAgentNumber();
     const agentId = makeAgentId(n);
     const agentCode = makeAgentCode(n);
@@ -1195,14 +1232,29 @@ async function confirmApprove() {
     );
 
     closeModal();
-    alert(
+
+    // ─────────────────────────────────────────────────────────────
+    // Build the success alert. If we generated a temp password,
+    // include it so the admin can copy-paste it to the agent.
+    // ─────────────────────────────────────────────────────────────
+    let successMsg =
       `✅ AGENT APPROVED!\n\n` +
       `Agent Code: ${agentCode}\n` +
       `Agent ID: ${agentId}\n` +
-      `Login Email: ${finalEmail}\n\n` +
-      `The agent can log in NOW.\n` +
-      `Dashboard: ${CONFIG.agentSiteUrl}/agent.html`
-    );
+      `Login Email: ${finalEmail}\n`;
+
+    if (generatedPassword) {
+      successMsg +=
+        `\n⚠️  NEW LOGIN CREATED FOR THIS AGENT\n` +
+        `Temporary Password: ${generatedPassword}\n` +
+        `(Share this with them — they should change it after first login.)\n`;
+    }
+
+    successMsg +=
+      `\nThe agent can log in NOW.\n` +
+      `Dashboard: ${CONFIG.agentSiteUrl}/agent.html`;
+
+    alert(successMsg);
 
     loadAll();
     closeDetail();
@@ -1217,7 +1269,6 @@ async function confirmApprove() {
     setLoading(btn, false, '<i class="fas fa-check"></i> Approve Agent');
   }
 }
-
 async function rejectApp() {
   if (!currentApp || !confirm('Reject this application? The applicant will no longer be able to log in.')) return;
   try {
