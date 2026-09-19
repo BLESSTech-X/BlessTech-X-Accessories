@@ -29,12 +29,12 @@
 .dash-logout { background:none; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.5); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
 .dash-logout:hover { border-color:rgba(255,255,255,.3); color:white; }
 
-/* QUICK JUMP TABS (sticky, right under header) */
+/* QUICK TABS (sticky, right under header) */
 .quick-tabs {
   position: sticky;
   top: 60px;
   z-index: 90;
-  background: linear-gradient(180deg, #f8f9fb 0%, rgba(248,249,251,.95) 100%);
+  background: #f8f9fb;
   padding: 10px 0 8px;
   margin: 0 -20px 14px;
   padding-left: 20px;
@@ -43,7 +43,6 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(8px);
 }
 .quick-tabs::-webkit-scrollbar { display: none; }
 .quick-tabs-inner {
@@ -104,6 +103,25 @@
 .notif-title { font-weight:700; font-size:13px; margin-bottom:3px; }
 .notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
 .notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
+
+/* Tab menu dropdown */
+.tab-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.tab-menu-item:last-child { border-bottom: none; }
+.tab-menu-item:hover { background: var(--light); color: var(--orange); }
+.tab-menu-item i { width: 18px; text-align: center; color: var(--muted); font-size: 14px; }
+.tab-menu-item.active { background: rgba(255,96,0,.06); color: var(--orange); border-left: 3px solid var(--orange); }
+.tab-menu-item.active i { color: var(--orange); }
 
 /* FLOATING CHAT ALERT */
 .chat-alert {
@@ -715,6 +733,9 @@ html, body { overflow-x: hidden; }
     <span class="nav-badge hide-mobile">Agent Network</span>
     <div class="nav-spacer"></div>
     <span id="nav-agent-code" style="font-size:13px;color:rgba(255,255,255,.4);" class="hide-mobile"></span>
+    <button class="notif-btn" onclick="toggleTabMenu(event)" title="Menu" style="margin-right:6px;">
+      <i class="fas fa-bars"></i>
+    </button>
     <button class="notif-btn" onclick="toggleNotifications(event)">
       <i class="fas fa-bell"></i>
       <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
@@ -726,6 +747,14 @@ html, body { overflow-x: hidden; }
           <button class="btn-ghost btn-sm" style="font-size:12px;" onclick="markAllRead(event)">Mark all read</button>
         </div>
         <div id="notifList"></div>
+      </div>
+    </div>
+    <div style="position:relative;">
+      <div class="notif-dropdown" id="tabMenuDropdown">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:14px;">
+          Jump to…
+        </div>
+        <div id="tabMenuList"></div>
       </div>
     </div>
   </div>
@@ -768,54 +797,55 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <div class="today-card" id="todayCard"></div>
+  <!-- HERO CARDS (shown only on Sales tab) -->
+  <div id="heroCards">
+    <div class="today-card" id="todayCard"></div>
+    <div id="campaignBanner"></div>
+    <div class="level-card" id="levelCard"></div>
+    <div class="wallet-card" id="walletCard"></div>
 
-  <div id="campaignBanner"></div>
-  <div class="level-card" id="levelCard"></div>
-  <div class="wallet-card" id="walletCard"></div>
-
-  <!-- ANIMATED STAT CARDS -->
-  <div class="stat-grid" style="margin-bottom:20px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
-    <div class="stat-card-v2">
-      <div class="stat-icon orange"><i class="fas fa-cart-shopping"></i></div>
-      <div class="stat-value-v2" id="st-sales" data-target="0">0</div>
-      <div class="stat-label-v2">Sales This Month</div>
-    </div>
-    <div class="stat-card-v2">
-      <div class="stat-icon green"><i class="fas fa-coins"></i></div>
-      <div class="stat-value-v2" id="st-comm" data-target="0" style="color:#16a34a;">ZMW 0</div>
-      <div class="stat-label-v2">Commission Earned</div>
-    </div>
-    <div class="stat-card-v2">
-      <div class="stat-icon yellow"><i class="fas fa-clock"></i></div>
-      <div class="stat-value-v2" id="st-pending" data-target="0" style="color:var(--yellow);">ZMW 0</div>
-      <div class="stat-label-v2">Pending Commission</div>
-    </div>
-    <div class="stat-card-v2">
-      <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
-      <div class="stat-value-v2" id="st-revenue" data-target="0" style="color:var(--orange);">ZMW 0</div>
-      <div class="stat-label-v2">Total Revenue</div>
-    </div>
-  </div>
-
-  <div class="ref-box">
-    <div class="ref-label">Your Personal Referral Link</div>
-    <div class="ref-url">
-      <i class="fas fa-link" style="color:var(--green);flex-shrink:0;"></i>
-      <span id="refUrl">—</span>
-    </div>
-    <div class="ref-btns">
-      <button class="btn btn-green btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy Link</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share</button>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="openQrModal()"><i class="fas fa-qrcode"></i> My QR</button>
-    </div>
-    <a href="https://phoneya2.netlify.app" target="_blank" class="shop-link">
-      <i class="fas fa-store"></i>
-      <div style="flex:1;">
-        <div style="font-size:12px;opacity:.8;">Browse all products</div>
-        <div style="font-size:14px;">View PhoneYa2 Shop →</div>
+    <div class="stat-grid" style="margin-bottom:20px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
+      <div class="stat-card-v2">
+        <div class="stat-icon orange"><i class="fas fa-cart-shopping"></i></div>
+        <div class="stat-value-v2" id="st-sales" data-target="0">0</div>
+        <div class="stat-label-v2">Sales This Month</div>
       </div>
-    </a>
+      <div class="stat-card-v2">
+        <div class="stat-icon green"><i class="fas fa-coins"></i></div>
+        <div class="stat-value-v2" id="st-comm" data-target="0" style="color:#16a34a;">ZMW 0</div>
+        <div class="stat-label-v2">Commission Earned</div>
+      </div>
+      <div class="stat-card-v2">
+        <div class="stat-icon yellow"><i class="fas fa-clock"></i></div>
+        <div class="stat-value-v2" id="st-pending" data-target="0" style="color:var(--yellow);">ZMW 0</div>
+        <div class="stat-label-v2">Pending Commission</div>
+      </div>
+      <div class="stat-card-v2">
+        <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+        <div class="stat-value-v2" id="st-revenue" data-target="0" style="color:var(--orange);">ZMW 0</div>
+        <div class="stat-label-v2">Total Revenue</div>
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <div class="ref-label">Your Personal Referral Link</div>
+      <div class="ref-url">
+        <i class="fas fa-link" style="color:var(--green);flex-shrink:0;"></i>
+        <span id="refUrl">—</span>
+      </div>
+      <div class="ref-btns">
+        <button class="btn btn-green btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy Link</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="openQrModal()"><i class="fas fa-qrcode"></i> My QR</button>
+      </div>
+      <a href="https://phoneya2.netlify.app" target="_blank" class="shop-link">
+        <i class="fas fa-store"></i>
+        <div style="flex:1;">
+          <div style="font-size:12px;opacity:.8;">Browse all products</div>
+          <div style="font-size:14px;">View PhoneYa2 Shop →</div>
+        </div>
+      </a>
+    </div>
   </div>
 
   <!-- SALES TAB -->
@@ -871,7 +901,8 @@ html, body { overflow-x: hidden; }
       <div class="chat-body" id="chatBody"></div>
       <div class="chat-activity-banner" id="chatActivityBanner"></div>
       <div class="reply-banner" id="replyBanner" style="display:none;">
-        <div class="reply-banner-content">
+        <div class="reply-banner" id="replyBanner" style="display:none;">
+                <div class="reply-banner-content">
           <div class="reply-banner-title" id="replyBannerTitle">Replying to…</div>
           <div class="reply-banner-text" id="replyBannerText"></div>
         </div>
@@ -1268,12 +1299,9 @@ let _lastTypingSignal = 0;
 let _typingTimeout = null;
 let _myPresenceStatus = 'online';
 
-// Notifications for chat
-let _lastSeenMessageId = null;
 let _chatAlertTimeout = null;
 let _currentTab = 'sales';
 
-// Achievements
 let _knownAchievements = new Set();
 const ACHIEVEMENTS = {
   'first_login': { icon: '👋', title: 'Welcome Aboard!', text: 'You just logged into your agent dashboard for the first time. Let the journey begin!' },
@@ -1283,7 +1311,7 @@ const ACHIEVEMENTS = {
   '5_sales': { icon: '🔥', title: 'Five Sales Club', text: 'Five confirmed sales. You are officially on a roll.' },
   '10_sales': { icon: '🚀', title: 'Ten Sales Strong', text: 'Ten sales confirmed. You are now a serious contender.' },
   'first_module': { icon: '📚', title: 'First Module Done', text: 'You completed your first training module. Knowledge is power.' },
-  'all_modules': { icon: '🎓', title: 'Training Complete', text: 'You have completed ALL 9 training modules. The final exam is now unlocked!' },
+  'all_modules': { icon: '🎓', title: 'Training Complete', text: 'You have completed ALL training modules. The final exam is now unlocked!' },
   'exam_passed': { icon: '🏆', title: 'Exam Passed!', text: 'You passed the final exam. Your Certificate of Achievement is unlocked in the Docs tab.' },
   'first_500_earned': { icon: '💰', title: 'ZMW 500 Earned', text: 'You have earned your first ZMW 500 in commission. Real money, real progress.' },
   'first_5000_earned': { icon: '💎', title: 'ZMW 5,000 Earned', text: 'Over ZMW 5,000 in earnings. You are building something serious.' },
@@ -1372,7 +1400,6 @@ async function bootDashboard() {
 
   startPresenceHeartbeat();
 
-  // Onboarding for first-time users
   const hasSeenOnboarding = localStorage.getItem('py2_onboarding_done_' + agentData.agent_code);
   if (!hasSeenOnboarding) {
     setTimeout(() => {
@@ -1380,11 +1407,8 @@ async function bootDashboard() {
     }, 800);
   }
 
-  // Welcome achievement on first login
-  await checkAchievements();
-
-  // Load achievements from DB
   await loadAchievementsFromDB();
+  await checkAchievements();
 }
 
 async function loadAchievementsFromDB() {
@@ -1401,7 +1425,6 @@ async function unlockAchievement(code) {
 
   _knownAchievements.add(code);
 
-  // Save to DB
   try {
     await db.insert('agent_achievements', {
       agent_code: agentData.agent_code,
@@ -1409,7 +1432,6 @@ async function unlockAchievement(code) {
     });
   } catch(e) { console.warn('Could not save achievement:', e); }
 
-  // Show popup
   showAchievementPopup(ach);
 }
 
@@ -1431,33 +1453,27 @@ function closeOnboarding() {
 
 async function checkAchievements() {
   try {
-    // First login achievement
     const firstLoginKey = 'py2_first_login_' + agentData.agent_code;
     if (!localStorage.getItem(firstLoginKey)) {
       localStorage.setItem(firstLoginKey, 'yes');
       await unlockAchievement('first_login');
     }
 
-    // Sales achievements
     const confirmedSales = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
     if (agentSales.length >= 1) await unlockAchievement('first_sale');
     if (confirmedSales.length >= 1) await unlockAchievement('first_confirmed_sale');
     if (confirmedSales.length >= 5) await unlockAchievement('5_sales');
     if (confirmedSales.length >= 10) await unlockAchievement('10_sales');
 
-    // Lead achievements
     if (myLeads.length >= 1) await unlockAchievement('first_lead');
     if (myLeads.length >= 5) await unlockAchievement('5_leads');
     if (myLeads.length >= 10) await unlockAchievement('10_leads');
 
-    // Training achievements
     if (completedModuleIds.size >= 1) await unlockAchievement('first_module');
     if (allModules.length > 0 && completedModuleIds.size === allModules.length) await unlockAchievement('all_modules');
 
-    // Exam achievement
     if (myExamAttempts.some(a => a.passed)) await unlockAchievement('exam_passed');
 
-    // Earnings achievements
     const totalEarned = confirmedSales.reduce((t,s) => t + (s.commission || 0), 0);
     if (totalEarned >= 500) await unlockAchievement('first_500_earned');
     if (totalEarned >= 5000) await unlockAchievement('first_5000_earned');
@@ -1467,8 +1483,8 @@ async function checkAchievements() {
 function renderAvatarHeader() {
   const el = document.getElementById('dashAvatar');
   if (agentData.profile_photo_url) {
-    el.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="${esc(agentData.full_name)}"
-      onerror="this.style.display='none';this.parentElement.innerHTML='${(agentData.full_name || '?')[0].toUpperCase()}';">`;
+    el.innerHTML = `<img src="${esc(agentData.profile_photo_url)}" alt="${esc(agentData.full_name)}
+          onerror="this.style.display='none';this.parentElement.innerHTML='${(agentData.full_name || '?')[0].toUpperCase()}';">`;
   } else {
     el.textContent = (agentData.full_name || '?')[0].toUpperCase();
   }
@@ -1520,7 +1536,6 @@ function renderToday() {
     <div class="today-actions">
       <button class="btn btn-primary btn-sm" onclick="openAddLead()"><i class="fas fa-user-plus"></i> Add Lead</button>
       <button class="btn btn-green btn-sm" onclick="openSubmitSale()"><i class="fas fa-cart-plus"></i> Submit Sale</button>
-      ${followupsDue > 0 ? `<button class="btn btn-sm" style="background:rgba(245,158,11,.9);color:white;" onclick="showAgentTab('leads',document.querySelector('.tab-btn'))"><i class="fas fa-bell"></i> ${followupsDue} Follow-up${followupsDue !== 1 ? 's' : ''}</button>` : ''}
     </div>
   `;
 }
@@ -1720,7 +1735,6 @@ async function switchChat(type, btn) {
     setPresence('online', currentConversation.id);
     stopChatSub = subscribeToMessages(currentConversation.id, (msg) => {
       appendChatMessage(msg, true);
-      // Only alert if user is NOT on chat tab
       if (_currentTab !== 'messages' && msg.sender_id !== auth.currentUserId()) {
         showChatAlert(msg);
       }
@@ -1918,7 +1932,6 @@ function handleReply(id) {
   if (msg) setReplyTo(msg);
 }
 
-// Image, file, voice handlers
 function onChatImageSelected(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
@@ -2223,7 +2236,8 @@ function updateAgentStats() {
   const now = new Date();
   const thisMonth = agentSales.filter(s => {
     const d = new Date(s.created_at);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.get
+    .getFullYear() === now.getFullYear();
   });
   const confirmed = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
   const pending   = agentSales.filter(s => s.status === 'pending');
@@ -2543,7 +2557,6 @@ function renderPerformance() {
     </div>
   `;
 
-  // Animate donut
   setTimeout(() => {
     const total = confirmed.length + pending.length + rejected.length;
     if (total === 0) return;
@@ -2780,7 +2793,7 @@ function renderExamQuestions() {
           </label>`;
         }).join('')}
       </div>`).join('')}
-    <div id="examSubmitError" class="alert alert-error" style="display:none;margin-top:12px;">
+        <div id="examSubmitError" class="alert alert-error" style="display:none;margin-top:12px;">
       <i class="fas fa-circle-exclamation"></i><span id="examSubmitErrText"></span>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
@@ -2849,7 +2862,7 @@ function renderExamResults() {
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
         <button class="btn btn-outline btn-sm" onclick="closeExam()" style="background:rgba(255,255,255,.1);color:white;border-color:rgba(255,255,255,.2);">Close</button>
-        ${!pass ? `<button class="btn btn-green btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Try Again</button>` : `<button class="btn btn-green btn-sm" onclick="closeExam();showAgentTab('documents',document.querySelector('.quick-tab[data-tab="documents"]'))"><i class="fas fa-certificate"></i> View Certificate</button>`}
+        ${!pass ? `<button class="btn btn-green btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Try Again</button>` : `<button class="btn btn-green btn-sm" onclick="closeExam();showAgentTab('documents',document.querySelector('.quick-tab[data-tab=\"documents\"]'))"><i class="fas fa-certificate"></i> View Certificate</button>`}
       </div>
     </div>
 
@@ -2915,12 +2928,12 @@ function renderLeaderboard() {
 
 function toggleNotifications(e) {
   e.stopPropagation();
-  document.getElementById('notifDropdown').classList.toggle('open');
-}
-document.addEventListener('click', (e) => {
   const dd = document.getElementById('notifDropdown');
-  if (dd && !dd.contains(e.target)) dd.classList.remove('open');
-});
+  const tm = document.getElementById('tabMenuDropdown');
+  if (tm) tm.classList.remove('open');
+  dd.classList.toggle('open');
+}
+
 function renderNotifications() {
   const el = document.getElementById('notifList');
   const unread = myNotifs.filter(n => !n.read).length;
@@ -2938,9 +2951,11 @@ function renderNotifications() {
       <div class="notif-time">${fmtDateTime(n.created_at)}</div>
     </div>`).join('');
 }
+
 async function markNotifRead(id) {
   try { await db.update('notifications', `id=eq.${id}`, { read: true }); await loadNotifications(); } catch(e) {}
 }
+
 async function markAllRead(e) {
   e.stopPropagation();
   try {
@@ -3041,13 +3056,18 @@ function downloadMonthlyStatement() {
   makeSalesStatementPdf({ agentName: agentData.full_name, agentId: agentData.agent_id, agentCode: agentData.agent_code, period: selectedMonth.label, sales });
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════
 function showAgentTab(name, btn) {
   _currentTab = name;
+
+  // Hide all tab panes, show the selected one
   document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('agent-tab-' + name);
   if (pane) pane.classList.add('active');
 
-  // Update quick tabs
+  // Update quick tabs active state
   document.querySelectorAll('.quick-tab').forEach(b => b.classList.remove('active'));
   if (btn && btn.classList.contains('quick-tab')) btn.classList.add('active');
   else {
@@ -3055,9 +3075,20 @@ function showAgentTab(name, btn) {
     if (match) match.classList.add('active');
   }
 
-  // Update sidebar tabs (for compatibility)
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  // Update menu dropdown active state
+  document.querySelectorAll('.tab-menu-item').forEach(item => item.classList.remove('active'));
+  const menuMatch = document.querySelector(`.tab-menu-item[data-tab="${name}"]`);
+  if (menuMatch) menuMatch.classList.add('active');
 
+  // On non-sales tabs: hide the hero cards so content appears right under the tabs
+  // On sales tab: show them
+  const hero = document.getElementById('heroCards');
+  if (hero) {
+    if (name === 'sales') hero.style.display = 'block';
+    else hero.style.display = 'none';
+  }
+
+  // Load tab-specific data
   if (name === 'documents') renderDocuments();
   if (name === 'leads') { loadLeads(); }
   if (name === 'training') { renderExamSection(); }
@@ -3066,6 +3097,7 @@ function showAgentTab(name, btn) {
     const teamBtn = document.querySelector('#agent-tab-messages .filter-pill');
     if (teamBtn) switchChat('team', teamBtn);
   }
+
   // Clear chat badge when viewing chat
   if (name === 'messages') {
     const b = document.getElementById('qt-chat-badge');
@@ -3073,11 +3105,64 @@ function showAgentTab(name, btn) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// TAB MENU (hamburger)
+// ═══════════════════════════════════════════════════════════════════════
+const TAB_MENU_ITEMS = [
+  { tab: 'sales',       icon: 'fa-chart-line',    label: 'Sales' },
+  { tab: 'leads',       icon: 'fa-bullseye',      label: 'Leads' },
+  { tab: 'messages',    icon: 'fa-comments',      label: 'Chat' },
+  { tab: 'commission',  icon: 'fa-coins',         label: 'Commission' },
+  { tab: 'performance', icon: 'fa-chart-pie',     label: 'Stats' },
+  { tab: 'marketing',   icon: 'fa-bullhorn',      label: 'Promo' },
+  { tab: 'training',    icon: 'fa-graduation-cap',label: 'Learn' },
+  { tab: 'documents',   icon: 'fa-folder-open',   label: 'Docs' },
+  { tab: 'tiers',       icon: 'fa-percent',       label: 'Rates' },
+  { tab: 'leaderboard', icon: 'fa-trophy',        label: 'Top' },
+];
+
+function renderTabMenu() {
+  const list = document.getElementById('tabMenuList');
+  if (!list) return;
+  list.innerHTML = TAB_MENU_ITEMS.map(item => `
+    <div class="tab-menu-item" data-tab="${item.tab}" onclick="pickTabFromMenu('${item.tab}')">
+      <i class="fas ${item.icon}"></i>
+      <span>${item.label}</span>
+    </div>
+  `).join('');
+}
+
+function toggleTabMenu(e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById('tabMenuDropdown');
+  if (!dd) return;
+  const notif = document.getElementById('notifDropdown');
+  if (notif) notif.classList.remove('open');
+  dd.classList.toggle('open');
+}
+
+function pickTabFromMenu(name) {
+  const dd = document.getElementById('tabMenuDropdown');
+  if (dd) dd.classList.remove('open');
+  showAgentTab(name, null);
+}
+
+// Close dropdowns when clicking elsewhere
+document.addEventListener('click', (e) => {
+  const notif = document.getElementById('notifDropdown');
+  const tm = document.getElementById('tabMenuDropdown');
+  if (notif && !notif.contains(e.target) && !e.target.closest('.notif-btn')) notif.classList.remove('open');
+  if (tm && !tm.contains(e.target) && !e.target.closest('.notif-btn')) tm.classList.remove('open');
+});
+
+// Save chat draft on input
 document.addEventListener('input', (e) => {
   if (e.target && e.target.id === 'chatInput') saveChatDraft();
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  renderTabMenu();
+
   if (auth.isLoggedIn()) {
     try {
       const profile = await getProfile();
