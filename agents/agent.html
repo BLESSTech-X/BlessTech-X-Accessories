@@ -16,8 +16,8 @@
 .login-card h2 { margin-bottom:6px; }
 .login-card p  { color:var(--muted); font-size:14px; margin-bottom:24px; }
 
-.dash-wrap { max-width:900px; margin:0 auto; padding:28px 20px 80px; }
-.dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.dash-wrap { max-width:900px; margin:0 auto; padding:16px 20px 80px; }
+.dash-hdr  { background:var(--navy); border-radius:var(--r2); padding:24px 28px; margin-bottom:14px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
 .dash-avatar-wrap { position:relative; flex-shrink:0; }
 .dash-avatar { width:64px; height:64px; border-radius:50%; background:var(--grad-o); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:white; overflow:hidden; border:2px solid rgba(255,255,255,.2); }
 .dash-avatar img { width:100%; height:100%; object-fit:cover; }
@@ -28,6 +28,69 @@
 .dash-spacer { flex:1; min-width:8px; }
 .dash-logout { background:none; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.5); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:all .2s; }
 .dash-logout:hover { border-color:rgba(255,255,255,.3); color:white; }
+
+/* QUICK JUMP TABS (sticky, right under header) */
+.quick-tabs {
+  position: sticky;
+  top: 60px;
+  z-index: 90;
+  background: linear-gradient(180deg, #f8f9fb 0%, rgba(248,249,251,.95) 100%);
+  padding: 10px 0 8px;
+  margin: 0 -20px 14px;
+  padding-left: 20px;
+  padding-right: 20px;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+.quick-tabs::-webkit-scrollbar { display: none; }
+.quick-tabs-inner {
+  display: inline-flex;
+  gap: 6px;
+  min-width: 100%;
+}
+.quick-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 100px;
+  background: white;
+  border: 1.5px solid var(--border);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .2s;
+  position: relative;
+}
+.quick-tab i { font-size: 12px; }
+.quick-tab:hover { border-color: var(--orange); color: var(--orange); }
+.quick-tab.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255,96,0,.3);
+}
+.quick-tab .q-badge {
+  background: #dc2626;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 100px;
+  min-width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.quick-tab.active .q-badge { background: rgba(255,255,255,.3); }
 
 .notif-btn { position:relative; background:none; border:1px solid rgba(255,255,255,.15); color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
 .notif-btn:hover { border-color:var(--orange); background:rgba(255,96,0,.15); }
@@ -41,6 +104,259 @@
 .notif-title { font-weight:700; font-size:13px; margin-bottom:3px; }
 .notif-msg { font-size:12px; color:var(--muted); line-height:1.5; }
 .notif-time { font-size:10px; color:var(--muted); margin-top:4px; }
+
+/* FLOATING CHAT ALERT */
+.chat-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  background: linear-gradient(135deg, #0a0a1a, #1a0840);
+  color: white;
+  padding: 14px 20px;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.35);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 500;
+  max-width: calc(100vw - 40px);
+  width: 380px;
+  transition: transform .4s cubic-bezier(.2,.9,.3,1.4);
+  border: 1px solid rgba(255,96,0,.4);
+}
+.chat-alert.show { transform: translateX(-50%) translateY(0); }
+.chat-alert-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--grad-o);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.chat-alert-body { flex: 1; min-width: 0; }
+.chat-alert-title { font-weight: 800; font-size: 14px; margin-bottom: 2px; }
+.chat-alert-text { font-size: 12px; color: rgba(255,255,255,.65); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-alert-btn {
+  background: var(--orange); color: white; border: none;
+  padding: 8px 14px; border-radius: 8px; font-weight: 700;
+  font-size: 12px; cursor: pointer; flex-shrink: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+.chat-alert-btn:hover { opacity: .9; }
+.chat-alert-close {
+  background: none; border: none; color: rgba(255,255,255,.5);
+  cursor: pointer; font-size: 14px; padding: 4px 6px;
+}
+
+/* ACHIEVEMENT POPUP */
+.achievement-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(.8);
+  background: linear-gradient(135deg, #1a0840, #2d1a5e);
+  border: 2px solid rgba(124,58,237,.6);
+  border-radius: 24px;
+  padding: 32px 28px;
+  color: white;
+  text-align: center;
+  z-index: 600;
+  max-width: 380px;
+  width: calc(100vw - 40px);
+  box-shadow: 0 24px 64px rgba(0,0,0,.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: all .4s cubic-bezier(.2,.9,.3,1.4);
+}
+.achievement-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.achievement-icon {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  animation: pop 0.6s ease;
+}
+@keyframes pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.achievement-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 6px;
+}
+.achievement-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.achievement-text {
+  font-size: 13px;
+  color: rgba(255,255,255,.7);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.achievement-btn {
+  background: white; color: #1a0840; border: none;
+  padding: 12px 24px; border-radius: 100px;
+  font-weight: 800; font-size: 14px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.achievement-btn:hover { transform: scale(1.05); }
+
+/* ONBOARDING */
+.onboarding-overlay {
+  position: fixed; inset: 0;
+  background: rgba(10,10,26,.85);
+  z-index: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.onboarding-overlay.open { display: flex; }
+.onboarding-card {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.onboarding-card h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+.onboarding-card .welcome-sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.onboard-step {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.onboard-step:last-child { border-bottom: none; }
+.onboard-step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--grad-o); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 15px; flex-shrink: 0;
+}
+.onboard-step-body { flex: 1; min-width: 0; }
+.onboard-step-title { font-weight: 800; font-size: 14px; margin-bottom: 3px; }
+.onboard-step-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ANIMATED STAT CARDS */
+.stat-card-v2 {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+}
+.stat-card-v2::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--grad-o);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .6s;
+}
+.stat-card-v2:hover::before { transform: scaleX(1); }
+.stat-card-v2:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  border-color: var(--orange);
+}
+.stat-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+  font-size: 1.1rem;
+}
+.stat-icon.orange { background: linear-gradient(135deg, #fff8f4, #ffe0cc); color: var(--orange); }
+.stat-icon.green  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); color: #16a34a; }
+.stat-icon.yellow { background: linear-gradient(135deg, #fffbeb, #fef3c7); color: #d97706; }
+.stat-icon.blue   { background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #2563eb; }
+.stat-value-v2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.stat-label-v2 {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* DONUT CHART */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px;
+}
+.donut {
+  width: 90px; height: 90px; flex-shrink: 0;
+  border-radius: 50%;
+  position: relative;
+  background: conic-gradient(var(--orange) 0deg, var(--light) 0deg);
+  transition: background 1s ease;
+}
+.donut::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  background: white;
+  border-radius: 50%;
+}
+.donut-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  z-index: 2;
+}
+.donut-legend { flex: 1; min-width: 0; }
+.donut-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.donut-legend-row:last-child { margin-bottom: 0; }
+.donut-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.donut-legend-label { flex: 1; color: var(--muted); font-weight: 600; }
+.donut-legend-value { font-weight: 800; }
 
 .today-card { background: linear-gradient(135deg,#1a0840,#2d1a5e); border-radius: var(--r2); padding: 22px 24px; margin-bottom: 20px; border: 1px solid rgba(124,58,237,.3); color: white; }
 .today-hello { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
@@ -67,23 +383,29 @@
 .level-card { background:white; border:1px solid var(--border); border-radius:var(--r2); padding:20px 22px; margin-bottom:20px; }
 .level-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:100px; background:linear-gradient(135deg,#7c3aed,#a855f7); color:white; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
 .level-progress-bar { height:8px; background:var(--light); border-radius:100px; overflow:hidden; margin-top:12px; }
-.level-progress-fill { height:100%; background:linear-gradient(90deg,#ff6000,#ff9f43); border-radius:100px; transition:width .5s ease; }
+.level-progress-fill { height:100%; background:linear-gradient(90deg,#ff6000,#ff9f43); border-radius:100px; transition:width 1.2s ease; }
 
 .ref-box { background:linear-gradient(135deg,#0d2010,#0a3518); border-radius:var(--r2); padding:22px 24px; margin-bottom:20px; border:1px solid rgba(37,211,102,.2); }
 .ref-label { font-size:11px; font-weight:700; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
 .ref-url   { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 14px; }
 .ref-url span { flex:1; font-size:13px; color:white; font-family: ui-monospace, Menlo, monospace; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
 .ref-btns  { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.shop-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #ff6000, #ff9f43);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  margin-top: 12px;
+  transition: all .2s;
+}
+.shop-link:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,96,0,.35); text-decoration: none; color: white; }
+.shop-link i { font-size: 1.1rem; }
 
-.tab-bar { display: flex !important; flex-wrap: nowrap !important; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 0; width: 100%; max-width: 100%; }
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab-btn { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0 !important; padding: 11px 14px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s, background .2s; margin-bottom: -1px; white-space: nowrap; line-height: 1.2; min-height: 44px; text-align: center; min-width: 0; border-radius: 6px 6px 0 0; }
-.tab-btn i { font-size: 12px; flex-shrink: 0; line-height: 1; }
-.tab-btn:hover { color: var(--text); background: rgba(0,0,0,.02); }
-.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); background: rgba(255,96,0,.04); }
-.tab-btn .badge-mini { background: var(--orange); color: white; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 100px; margin-left: 2px; }
-@media(max-width:600px) { .tab-btn { padding: 10px 11px; font-size: 12px; gap: 5px; min-height: 42px; } .tab-btn i { font-size: 11px; } }
-@media(max-width:400px) { .tab-btn { padding: 10px 9px; font-size: 11.5px; gap: 4px; min-height: 40px; } .tab-btn i { font-size: 10px; } }
 .tab-pane  { display:none; }
 .tab-pane.active { display:block; }
 
@@ -109,7 +431,6 @@
 .chat-hdr-sub { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .online-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; display: inline-block; flex-shrink: 0; }
 .online-dot.offline { background: #9ca3af; }
-
 .chat-body { flex: 1; overflow-y: auto; padding: 16px 20px; background: #f8f9fb; display: flex; flex-direction: column; gap: 10px; }
 .chat-msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; position: relative; word-wrap: break-word; overflow-wrap: anywhere; }
 .chat-msg.mine { align-self: flex-end; background: linear-gradient(135deg,#ff6000,#ff9f43); color: white; border-bottom-right-radius: 4px; }
@@ -129,22 +450,9 @@
 .chat-msg-file .file-meta { flex: 1; min-width: 0; }
 .chat-msg-file .file-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-msg-file .file-size { font-size: 11px; opacity: .7; }
-
-/* Reply preview inside a message */
-.chat-reply-preview {
-  border-left: 3px solid rgba(255,255,255,.5);
-  padding: 4px 8px;
-  margin-bottom: 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  opacity: .85;
-  background: rgba(255,255,255,.1);
-}
+.chat-reply-preview { border-left: 3px solid rgba(255,255,255,.5); padding: 4px 8px; margin-bottom: 6px; border-radius: 4px; font-size: 12px; opacity: .85; background: rgba(255,255,255,.1); }
 .chat-msg.theirs .chat-reply-preview { background: var(--light); border-left-color: var(--orange); }
-
-/* Sent tick */
 .chat-tick { font-size: 12px; opacity: .8; }
-
 .chat-input-row { padding: 12px 16px; border-top: 1px solid var(--border); background: white; display: flex; gap: 8px; align-items: flex-end; }
 .chat-input-row textarea { flex: 1; border: 1.5px solid var(--border); border-radius: 20px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; max-height: 120px; min-height: 40px; outline: none; }
 .chat-input-row textarea:focus { border-color: var(--orange); }
@@ -154,50 +462,18 @@
 .chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--light); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all .2s; }
 .chat-attach-btn:hover { background: var(--orange); color: white; }
 .chat-attach-btn.recording { background: #dc2626; color: white; }
-
-/* Reply banner above input */
-.reply-banner {
-  background: linear-gradient(135deg, #fff8f4, #ffe0cc);
-  border-top: 1px solid #ffd4b3;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: #92400e;
-}
+.chat-activity-banner { padding: 6px 20px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; font-style: italic; background: #f8f9fb; min-height: 24px; }
+.chat-activity-dots { display: inline-flex; gap: 3px; }
+.chat-activity-dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); animation: bounce 1.4s infinite; }
+.chat-activity-dots span:nth-child(2) { animation-delay: .2s; }
+.chat-activity-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-3px); opacity: 1; } }
+.reply-banner { background: linear-gradient(135deg, #fff8f4, #ffe0cc); border-top: 1px solid #ffd4b3; padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #92400e; }
 .reply-banner-content { flex: 1; min-width: 0; }
 .reply-banner-title { font-weight: 700; margin-bottom: 2px; }
 .reply-banner-text { opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.reply-banner button {
-  background: none; border: none; cursor: pointer; color: #92400e;
-  padding: 6px; border-radius: 6px; font-size: 14px;
-}
+.reply-banner button { background: none; border: none; cursor: pointer; color: #92400e; padding: 6px; border-radius: 6px; font-size: 14px; }
 .reply-banner button:hover { background: rgba(0,0,0,.05); }
-
-/* Typing / recording banner */
-.chat-activity-banner {
-  padding: 6px 20px;
-  font-size: 12px;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-style: italic;
-  background: #f8f9fb;
-  min-height: 24px;
-}
-.chat-activity-dots { display: inline-flex; gap: 3px; }
-.chat-activity-dots span {
-  width: 4px; height: 4px; border-radius: 50%; background: var(--muted);
-  animation: bounce 1.4s infinite;
-}
-.chat-activity-dots span:nth-child(2) { animation-delay: .2s; }
-.chat-activity-dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes bounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
-  30% { transform: translateY(-3px); opacity: 1; }
-}
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 #lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
@@ -245,7 +521,7 @@
 .tr-progress-val { font-family: 'DM Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
 .tr-progress-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
 .tr-progress-bar { height: 10px; background: var(--light); border-radius: 100px; overflow: hidden; width: 100%; }
-.tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .5s ease; }
+.tr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff6000, #ff9f43); border-radius: 100px; transition: width .8s ease; }
 .tr-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
 .tr-module { background: white; border: 1px solid var(--border); border-radius: var(--r2); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .2s; cursor: pointer; min-width: 0; }
 .tr-module:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -302,7 +578,7 @@ html, body { overflow-x: hidden; }
 * { min-width: 0; }
 
 @media(max-width:700px) {
-  .dash-wrap { padding: 16px 14px 80px; }
+  .dash-wrap { padding: 12px 14px 80px; }
   .dash-hdr { padding: 18px 16px; gap: 12px; }
   .ref-box { padding: 16px; }
   .ref-url { padding: 8px 10px; }
@@ -313,6 +589,7 @@ html, body { overflow-x: hidden; }
   .content-grid { grid-template-columns: 1fr; }
   .doc-grid { grid-template-columns: 1fr; }
   .today-stats { grid-template-columns: 1fr 1fr; }
+  .quick-tabs { margin: 0 -14px 14px; padding-left: 14px; padding-right: 14px; }
 }
 @media(max-width:600px) {
   .dash-hdr { flex-direction: column; align-items: flex-start; }
@@ -325,6 +602,7 @@ html, body { overflow-x: hidden; }
   .month-grid { grid-template-columns: repeat(2, 1fr); }
   .wallet-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .today-stats { grid-template-columns: 1fr; }
+  .chat-alert { width: calc(100vw - 20px); }
 }
 </style>
 </head>
@@ -351,6 +629,80 @@ html, body { overflow-x: hidden; }
     <div class="divider" style="margin:20px 0;"></div>
     <p style="font-size:13px;color:var(--muted);">Don't have a login yet?</p>
     <a href="apply.html" class="btn btn-outline btn-full btn-sm" style="margin-top:8px;">Apply to become an agent</a>
+  </div>
+</div>
+
+<!-- FLOATING CHAT ALERT -->
+<div class="chat-alert" id="chatAlert">
+  <div class="chat-alert-icon"><i class="fas fa-comments"></i></div>
+  <div class="chat-alert-body">
+    <div class="chat-alert-title" id="chatAlertTitle">New message</div>
+    <div class="chat-alert-text" id="chatAlertText">In Team Room</div>
+  </div>
+  <button class="chat-alert-btn" onclick="goToChatFromAlert()">Open</button>
+  <button class="chat-alert-close" onclick="closeChatAlert()"><i class="fas fa-xmark"></i></button>
+</div>
+
+<!-- ACHIEVEMENT POPUP -->
+<div class="achievement-popup" id="achievementPopup">
+  <div class="achievement-icon" id="achievementIcon">🏆</div>
+  <div class="achievement-label">Achievement Unlocked</div>
+  <div class="achievement-title" id="achievementTitle">Title</div>
+  <div class="achievement-text" id="achievementText">Description</div>
+  <button class="achievement-btn" onclick="closeAchievementPopup()">Nice!</button>
+</div>
+
+<!-- ONBOARDING OVERLAY -->
+<div class="onboarding-overlay" id="onboardingOverlay">
+  <div class="onboarding-card">
+    <div style="text-align:center;font-size:3rem;margin-bottom:12px;">👋🏾</div>
+    <h2 style="text-align:center;">Welcome to PhoneYa2!</h2>
+    <p class="welcome-sub" style="text-align:center;">Here's how to get started as an agent.</p>
+    
+    <div class="onboard-step">
+      <div class="onboard-step-num">1</div>
+      <div class="onboard-step-body">
+        <div class="onboard-step-title">Share your referral link</div>
+        <div class="onboard-step-desc">Copy your personal link and post it on WhatsApp status, Facebook, or send it directly to friends.</div>
+      </div>
+    </div>
+    
+    <div class="onboard-step">
+      <div class="onboard-step-num">2</div>
+      <div class="onboard-step-body">
+        <div class="onboard-step-title">Register leads</div>
+        <div class="onboard-step-desc">Every time someone shows interest, add them as a lead. Set a follow-up date and message them.</div>
+      </div>
+    </div>
+    
+    <div class="onboard-step">
+      <div class="onboard-step-num">3</div>
+      <div class="onboard-step-body">
+        <div class="onboard-step-title">Submit sales</div>
+        <div class="onboard-step-desc">When a customer buys, submit the sale. Once confirmed, your commission is added to your wallet.</div>
+      </div>
+    </div>
+    
+    <div class="onboard-step">
+      <div class="onboard-step-num">4</div>
+      <div class="onboard-step-body">
+        <div class="onboard-step-title">Complete training</div>
+        <div class="onboard-step-desc">Go to the Learn tab, finish the 9 modules, and take the exam to unlock your certificate.</div>
+      </div>
+    </div>
+    
+    <div class="onboard-step">
+      <div class="onboard-step-num">5</div>
+      <div class="onboard-step-body">
+        <div class="onboard-step-title">Browse the products</div>
+        <div class="onboard-step-desc">Check out what you're selling on our main store — know the products well.</div>
+      </div>
+    </div>
+    
+    <div style="margin-top:20px;display:flex;gap:10px;">
+      <a href="https://phoneya2.netlify.app" target="_blank" class="btn btn-outline btn-full" style="text-decoration:none;">View products</a>
+      <button class="btn btn-primary btn-full" onclick="closeOnboarding()">Let's go</button>
+    </div>
   </div>
 </div>
 
@@ -400,16 +752,50 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- QUICK TABS -->
+  <div class="quick-tabs" id="quickTabs">
+    <div class="quick-tabs-inner">
+      <button class="quick-tab active" data-tab="sales" onclick="showAgentTab('sales', this)"><i class="fas fa-chart-line"></i> Sales</button>
+      <button class="quick-tab" data-tab="leads" onclick="showAgentTab('leads', this)"><i class="fas fa-bullseye"></i> Leads <span class="q-badge" id="qt-leads-badge" style="display:none;">0</span></button>
+      <button class="quick-tab" data-tab="messages" onclick="showAgentTab('messages', this)"><i class="fas fa-comments"></i> Chat <span class="q-badge" id="qt-chat-badge" style="display:none;">0</span></button>
+      <button class="quick-tab" data-tab="commission" onclick="showAgentTab('commission', this)"><i class="fas fa-coins"></i> Commission</button>
+      <button class="quick-tab" data-tab="performance" onclick="showAgentTab('performance', this)"><i class="fas fa-chart-pie"></i> Stats</button>
+      <button class="quick-tab" data-tab="marketing" onclick="showAgentTab('marketing', this)"><i class="fas fa-bullhorn"></i> Promo</button>
+      <button class="quick-tab" data-tab="training" onclick="showAgentTab('training', this)"><i class="fas fa-graduation-cap"></i> Learn</button>
+      <button class="quick-tab" data-tab="documents" onclick="showAgentTab('documents', this)"><i class="fas fa-folder-open"></i> Docs</button>
+      <button class="quick-tab" data-tab="tiers" onclick="showAgentTab('tiers', this)"><i class="fas fa-percent"></i> Rates</button>
+      <button class="quick-tab" data-tab="leaderboard" onclick="showAgentTab('leaderboard', this)"><i class="fas fa-trophy"></i> Top</button>
+    </div>
+  </div>
+
   <div class="today-card" id="todayCard"></div>
+
   <div id="campaignBanner"></div>
   <div class="level-card" id="levelCard"></div>
   <div class="wallet-card" id="walletCard"></div>
 
-  <div class="stat-grid" style="margin-bottom:20px;">
-    <div class="stat-card"><div class="stat-value" id="st-sales">0</div><div class="stat-label">Sales This Month</div></div>
-    <div class="stat-card"><div class="stat-value" id="st-comm" style="color:#16a34a;">ZMW 0</div><div class="stat-label">Commission Earned</div></div>
-    <div class="stat-card"><div class="stat-value" id="st-pending" style="color:var(--yellow);">ZMW 0</div><div class="stat-label">Pending Commission</div></div>
-    <div class="stat-card"><div class="stat-value" id="st-revenue" style="color:var(--orange);">ZMW 0</div><div class="stat-label">Total Revenue</div></div>
+  <!-- ANIMATED STAT CARDS -->
+  <div class="stat-grid" style="margin-bottom:20px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
+    <div class="stat-card-v2">
+      <div class="stat-icon orange"><i class="fas fa-cart-shopping"></i></div>
+      <div class="stat-value-v2" id="st-sales" data-target="0">0</div>
+      <div class="stat-label-v2">Sales This Month</div>
+    </div>
+    <div class="stat-card-v2">
+      <div class="stat-icon green"><i class="fas fa-coins"></i></div>
+      <div class="stat-value-v2" id="st-comm" data-target="0" style="color:#16a34a;">ZMW 0</div>
+      <div class="stat-label-v2">Commission Earned</div>
+    </div>
+    <div class="stat-card-v2">
+      <div class="stat-icon yellow"><i class="fas fa-clock"></i></div>
+      <div class="stat-value-v2" id="st-pending" data-target="0" style="color:var(--yellow);">ZMW 0</div>
+      <div class="stat-label-v2">Pending Commission</div>
+    </div>
+    <div class="stat-card-v2">
+      <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+      <div class="stat-value-v2" id="st-revenue" data-target="0" style="color:var(--orange);">ZMW 0</div>
+      <div class="stat-label-v2">Total Revenue</div>
+    </div>
   </div>
 
   <div class="ref-box">
@@ -423,21 +809,16 @@ html, body { overflow-x: hidden; }
       <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="shareRefWa()"><i class="fab fa-whatsapp"></i> Share</button>
       <button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.15);" onclick="openQrModal()"><i class="fas fa-qrcode"></i> My QR</button>
     </div>
+    <a href="https://phoneya2.netlify.app" target="_blank" class="shop-link">
+      <i class="fas fa-store"></i>
+      <div style="flex:1;">
+        <div style="font-size:12px;opacity:.8;">Browse all products</div>
+        <div style="font-size:14px;">View PhoneYa2 Shop →</div>
+      </div>
+    </a>
   </div>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="showAgentTab('sales',this)"><i class="fas fa-chart-line"></i> Sales</button>
-    <button class="tab-btn" onclick="showAgentTab('leads',this)"><i class="fas fa-bullseye"></i> Leads <span class="badge-mini" id="leadsBadge" style="display:none;">0</span></button>
-    <button class="tab-btn" onclick="showAgentTab('messages',this)"><i class="fas fa-comments"></i> Chat <span class="badge-mini" id="chatBadge" style="display:none;">0</span></button>
-    <button class="tab-btn" onclick="showAgentTab('commission',this)"><i class="fas fa-coins"></i> Commission</button>
-    <button class="tab-btn" onclick="showAgentTab('performance',this)"><i class="fas fa-chart-bar"></i> Stats</button>
-    <button class="tab-btn" onclick="showAgentTab('marketing',this)"><i class="fas fa-bullhorn"></i> Promo</button>
-    <button class="tab-btn" onclick="showAgentTab('training',this)"><i class="fas fa-graduation-cap"></i> Learn</button>
-    <button class="tab-btn" onclick="showAgentTab('documents',this)"><i class="fas fa-folder-open"></i> Docs</button>
-    <button class="tab-btn" onclick="showAgentTab('tiers',this)"><i class="fas fa-percent"></i> Rates</button>
-    <button class="tab-btn" onclick="showAgentTab('leaderboard',this)"><i class="fas fa-trophy"></i> Top</button>
-  </div>
-
+  <!-- SALES TAB -->
   <div class="tab-pane active" id="agent-tab-sales">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Submitted Sales</h3>
@@ -450,6 +831,7 @@ html, body { overflow-x: hidden; }
     <div id="salesContent"></div>
   </div>
 
+  <!-- LEADS TAB -->
   <div class="tab-pane" id="agent-tab-leads">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">My Leads Pipeline</h3>
@@ -467,6 +849,7 @@ html, body { overflow-x: hidden; }
     <div id="leadsContent"></div>
   </div>
 
+  <!-- MESSAGES TAB -->
   <div class="tab-pane" id="agent-tab-messages">
     <div class="filter-pills-scroll" style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 16px;scrollbar-width:none;">
       <button class="filter-pill active" onclick="switchChat('team', this)">📡 Team Room</button>
@@ -520,6 +903,7 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- COMMISSION TAB -->
   <div class="tab-pane" id="agent-tab-commission">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">Commission History</h3>
@@ -528,10 +912,12 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- PERFORMANCE TAB -->
   <div class="tab-pane" id="agent-tab-performance">
     <div id="performanceContent"></div>
   </div>
 
+  <!-- MARKETING TAB -->
   <div class="tab-pane" id="agent-tab-marketing">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       <h3 style="font-size:1rem;">Marketing Library</h3>
@@ -548,12 +934,14 @@ html, body { overflow-x: hidden; }
     <div id="marketingContent"></div>
   </div>
 
+  <!-- TRAINING TAB -->
   <div class="tab-pane" id="agent-tab-training">
     <div class="tr-progress-wrap" id="trProgress"></div>
     <div class="tr-list" id="trList"></div>
     <div id="examSection"></div>
   </div>
 
+  <!-- DOCUMENTS TAB -->
   <div class="tab-pane" id="agent-tab-documents">
     <div style="margin-bottom:16px;">
       <h3 style="font-size:1rem;margin-bottom:4px;">My Documents</h3>
@@ -562,6 +950,7 @@ html, body { overflow-x: hidden; }
     <div class="doc-grid" id="docGrid"></div>
   </div>
 
+  <!-- TIERS TAB -->
   <div class="tab-pane" id="agent-tab-tiers">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--r2);padding:24px;">
       <h3 style="margin-bottom:4px;">How Your Commission is Calculated</h3>
@@ -573,6 +962,7 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- LEADERBOARD TAB -->
   <div class="tab-pane" id="agent-tab-leaderboard">
     <div class="card" style="padding:0;overflow:hidden;">
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
@@ -870,24 +1260,36 @@ let examAnswers = {};
 let myExamAttempts = [];
 let lastExamResult = null;
 
-// Chat media state
 let _pendingImageFile = null;
 let _voiceRecorder = null;
 let _voiceTimerInterval = null;
-
-// Reply state
 let _replyTo = null;
-
-// Typing throttle
 let _lastTypingSignal = 0;
 let _typingTimeout = null;
-
-// Presence state
 let _myPresenceStatus = 'online';
 
-// Session wellbeing
-let _sessionStartTime = Date.now();
-let _wellbeingShown = false;
+// Notifications for chat
+let _lastSeenMessageId = null;
+let _chatAlertTimeout = null;
+let _currentTab = 'sales';
+
+// Achievements
+let _knownAchievements = new Set();
+const ACHIEVEMENTS = {
+  'first_login': { icon: '👋', title: 'Welcome Aboard!', text: 'You just logged into your agent dashboard for the first time. Let the journey begin!' },
+  'first_lead': { icon: '🎯', title: 'First Lead Registered', text: 'You added your first customer lead. Following up is the secret to sales.' },
+  'first_sale': { icon: '🛒', title: 'First Sale!', text: 'Congratulations on submitting your first sale. This is where it all begins.' },
+  'first_confirmed_sale': { icon: '✅', title: 'Sale Confirmed!', text: 'Your first sale was approved. Commission is being added to your wallet.' },
+  '5_sales': { icon: '🔥', title: 'Five Sales Club', text: 'Five confirmed sales. You are officially on a roll.' },
+  '10_sales': { icon: '🚀', title: 'Ten Sales Strong', text: 'Ten sales confirmed. You are now a serious contender.' },
+  'first_module': { icon: '📚', title: 'First Module Done', text: 'You completed your first training module. Knowledge is power.' },
+  'all_modules': { icon: '🎓', title: 'Training Complete', text: 'You have completed ALL 9 training modules. The final exam is now unlocked!' },
+  'exam_passed': { icon: '🏆', title: 'Exam Passed!', text: 'You passed the final exam. Your Certificate of Achievement is unlocked in the Docs tab.' },
+  'first_500_earned': { icon: '💰', title: 'ZMW 500 Earned', text: 'You have earned your first ZMW 500 in commission. Real money, real progress.' },
+  'first_5000_earned': { icon: '💎', title: 'ZMW 5,000 Earned', text: 'Over ZMW 5,000 in earnings. You are building something serious.' },
+  '5_leads': { icon: '📈', title: 'Five Leads', text: 'Five customer leads registered. Your pipeline is growing.' },
+  '10_leads': { icon: '🎯', title: 'Ten Leads Strong', text: 'Ten customer leads in your pipeline. Sales flow from consistent lead capture.' },
+};
 
 // ═══════════════════════════════════════════════════════════════════════
 // AUTH
@@ -968,8 +1370,98 @@ async function bootDashboard() {
   await loadLeads();
   renderDocuments();
 
-  startSessionWellbeingTimer();
-  restoreChatDraft();
+  startPresenceHeartbeat();
+
+  // Onboarding for first-time users
+  const hasSeenOnboarding = localStorage.getItem('py2_onboarding_done_' + agentData.agent_code);
+  if (!hasSeenOnboarding) {
+    setTimeout(() => {
+      document.getElementById('onboardingOverlay').classList.add('open');
+    }, 800);
+  }
+
+  // Welcome achievement on first login
+  await checkAchievements();
+
+  // Load achievements from DB
+  await loadAchievementsFromDB();
+}
+
+async function loadAchievementsFromDB() {
+  try {
+    const rows = await db.getAll('agent_achievements', { filter: `agent_code=eq.${agentData.agent_code}` });
+    rows.forEach(r => _knownAchievements.add(r.achievement_code));
+  } catch(e) {}
+}
+
+async function unlockAchievement(code) {
+  if (_knownAchievements.has(code)) return;
+  const ach = ACHIEVEMENTS[code];
+  if (!ach) return;
+
+  _knownAchievements.add(code);
+
+  // Save to DB
+  try {
+    await db.insert('agent_achievements', {
+      agent_code: agentData.agent_code,
+      achievement_code: code,
+    });
+  } catch(e) { console.warn('Could not save achievement:', e); }
+
+  // Show popup
+  showAchievementPopup(ach);
+}
+
+function showAchievementPopup(ach) {
+  document.getElementById('achievementIcon').textContent = ach.icon;
+  document.getElementById('achievementTitle').textContent = ach.title;
+  document.getElementById('achievementText').textContent = ach.text;
+  document.getElementById('achievementPopup').classList.add('show');
+}
+
+function closeAchievementPopup() {
+  document.getElementById('achievementPopup').classList.remove('show');
+}
+
+function closeOnboarding() {
+  localStorage.setItem('py2_onboarding_done_' + agentData.agent_code, 'yes');
+  document.getElementById('onboardingOverlay').classList.remove('open');
+}
+
+async function checkAchievements() {
+  try {
+    // First login achievement
+    const firstLoginKey = 'py2_first_login_' + agentData.agent_code;
+    if (!localStorage.getItem(firstLoginKey)) {
+      localStorage.setItem(firstLoginKey, 'yes');
+      await unlockAchievement('first_login');
+    }
+
+    // Sales achievements
+    const confirmedSales = agentSales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+    if (agentSales.length >= 1) await unlockAchievement('first_sale');
+    if (confirmedSales.length >= 1) await unlockAchievement('first_confirmed_sale');
+    if (confirmedSales.length >= 5) await unlockAchievement('5_sales');
+    if (confirmedSales.length >= 10) await unlockAchievement('10_sales');
+
+    // Lead achievements
+    if (myLeads.length >= 1) await unlockAchievement('first_lead');
+    if (myLeads.length >= 5) await unlockAchievement('5_leads');
+    if (myLeads.length >= 10) await unlockAchievement('10_leads');
+
+    // Training achievements
+    if (completedModuleIds.size >= 1) await unlockAchievement('first_module');
+    if (allModules.length > 0 && completedModuleIds.size === allModules.length) await unlockAchievement('all_modules');
+
+    // Exam achievement
+    if (myExamAttempts.some(a => a.passed)) await unlockAchievement('exam_passed');
+
+    // Earnings achievements
+    const totalEarned = confirmedSales.reduce((t,s) => t + (s.commission || 0), 0);
+    if (totalEarned >= 500) await unlockAchievement('first_500_earned');
+    if (totalEarned >= 5000) await unlockAchievement('first_5000_earned');
+  } catch(e) { console.warn('Achievement check failed:', e); }
 }
 
 function renderAvatarHeader() {
@@ -990,24 +1482,6 @@ async function loadApplicationAndAgreement() {
     const agreements = await db.getAll('agreement_versions', { filter: 'active=eq.true', order: 'published_at.desc', limit: 1 });
     activeAgreement = (agreements && agreements.length) ? agreements[0] : null;
   } catch(e) {}
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// WELLBEING NUDGE
-// ═══════════════════════════════════════════════════════════════════════
-function startSessionWellbeingTimer() {
-  setInterval(() => {
-    const hours = (Date.now() - _sessionStartTime) / (1000 * 60 * 60);
-    if (hours >= 2 && !_wellbeingShown) {
-      _wellbeingShown = true;
-      toast('☕ You\'ve been working for 2 hours. Consider a short break.', 6000);
-    }
-  }, 60 * 1000); // check every minute
-}
-
-function isQuietHours() {
-  const h = new Date().getHours();
-  return h >= 22 || h < 6;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1069,6 +1543,11 @@ function updateLeadsBadge() {
   if (el) {
     el.textContent = active;
     el.style.display = active ? 'inline-block' : 'none';
+  }
+  const qt = document.getElementById('qt-leads-badge');
+  if (qt) {
+    qt.textContent = active;
+    qt.style.display = active ? 'inline-flex' : 'none';
   }
 }
 
@@ -1187,6 +1666,7 @@ async function saveLead() {
 
     closeLeadModal();
     await loadLeads();
+    await checkAchievements();
   } catch(e) {
     document.getElementById('leadErrText').textContent = e.message;
     document.getElementById('leadError').style.display = 'flex';
@@ -1213,120 +1693,12 @@ async function deleteLead(id, name) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PRESENCE + TYPING
-// ═══════════════════════════════════════════════════════════════════════
-async function setPresence(status, conversationId) {
-  try {
-    const uid = auth.currentUserId();
-    if (!uid) return;
-    const payload = {
-      user_id: uid,
-      agent_code: agentData?.agent_code || profileData?.agent_code || null,
-      full_name: profileData?.full_name || profileData?.email || 'User',
-      role: profileData?.role || 'agent',
-      status: status || 'online',
-      conversation_id: conversationId || (currentConversation ? currentConversation.id : null),
-      last_seen: new Date().toISOString(),
-    };
-    // Try update first
-    const existing = await db.getOne('presence', `user_id=eq.${uid}`);
-    if (existing) {
-      await db.update('presence', `user_id=eq.${uid}`, payload);
-    } else {
-      await db.insert('presence', payload);
-    }
-  } catch(e) {
-    console.warn('Presence update failed:', e);
-  }
-}
-
-function startPresenceHeartbeat() {
-  setPresence('online');
-  setInterval(() => { setPresence(_myPresenceStatus); }, 25000);
-  // update on unload
-  window.addEventListener('beforeunload', () => { setPresence('offline'); });
-}
-
-async function onAgentTyping() {
-  const now = Date.now();
-  if (now - _lastTypingSignal < 2000) return;
-  _lastTypingSignal = now;
-  if (_myPresenceStatus !== 'typing') {
-    _myPresenceStatus = 'typing';
-    setPresence('typing');
-  }
-  clearTimeout(_typingTimeout);
-  _typingTimeout = setTimeout(() => {
-    _myPresenceStatus = 'online';
-    setPresence('online');
-  }, 3000);
-}
-
-function startPresencePoll() {
-  if (stopPresenceSub) { stopPresenceSub(); stopPresenceSub = null; }
-  stopPresenceSub = setInterval(async () => {
-    try {
-      const rows = await db.getAll('presence', {});
-      const now = Date.now();
-      const active = rows.filter(r => {
-        const age = now - new Date(r.last_seen).getTime();
-        return age < 60000;
-      });
-      const others = active.filter(r => r.user_id !== auth.currentUserId());
-      const onlineCount = active.length;
-
-      document.getElementById('onlineCount').textContent = onlineCount;
-      document.getElementById('onlineIndicator').style.display = 'inline-flex';
-
-      // Typing / recording banner
-      const typers = others.filter(r => r.status === 'typing');
-      const recorders = others.filter(r => r.status === 'recording');
-      const banner = document.getElementById('chatActivityBanner');
-      if (recorders.length) {
-        banner.innerHTML = `<span>🎤 ${esc(recorders[0].full_name || 'Someone')} is recording audio…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
-      } else if (typers.length) {
-        banner.innerHTML = `<span>✍️ ${typers.length === 1 ? esc(typers[0].full_name || 'Someone') + ' is typing' : typers.length + ' people are typing'}…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
-      } else {
-        banner.innerHTML = '';
-      }
-    } catch(e) {}
-  }, 3500);
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// REPLY
-// ═══════════════════════════════════════════════════════════════════════
-function setReplyTo(msg) {
-  _replyTo = msg;
-  const banner = document.getElementById('replyBanner');
-  const sender = msg.sender_name || (msg.sender_id === auth.currentUserId() ? 'You' : 'User');
-  document.getElementById('replyBannerTitle').textContent = `Replying to ${sender}`;
-  const preview = msg.text || (msg.message_type === 'image' ? '[Image]' : msg.message_type === 'voice' ? '[Voice note]' : msg.message_type === 'file' ? '[File]' : '');
-  document.getElementById('replyBannerText').textContent = preview.substring(0, 80);
-  banner.style.display = 'flex';
-  document.getElementById('chatInput').focus();
-}
-
-function cancelReply() {
-  _replyTo = null;
-  document.getElementById('replyBanner').style.display = 'none';
-}
-
-function handleReply(id) {
-  const el = document.querySelector(`[data-msg-id="${id}"]`);
-  if (!el) return;
-  const allMsgs = window._currentMsgs || [];
-  const msg = allMsgs.find(m => m.id === id);
-  if (msg) setReplyTo(msg);
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// MESSAGES
+// CHAT
 // ═══════════════════════════════════════════════════════════════════════
 async function switchChat(type, btn) {
   currentChatType = type;
   document.querySelectorAll('#agent-tab-messages .filter-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 
   if (stopChatSub) { stopChatSub(); stopChatSub = null; }
 
@@ -1344,20 +1716,41 @@ async function switchChat(type, btn) {
       document.getElementById('chatInputRow').style.display = 'flex';
     }
 
-    // Quiet hours hint
-    if (isQuietHours()) {
-      document.getElementById('chatSub').innerHTML = '🌙 Quiet hours — messages will be seen in the morning';
-    }
-
     await loadChatMessages();
     setPresence('online', currentConversation.id);
-    startPresencePoll();
     stopChatSub = subscribeToMessages(currentConversation.id, (msg) => {
       appendChatMessage(msg, true);
+      // Only alert if user is NOT on chat tab
+      if (_currentTab !== 'messages' && msg.sender_id !== auth.currentUserId()) {
+        showChatAlert(msg);
+      }
     });
   } catch(e) {
     toast('⚠️  ' + e.message);
   }
+}
+
+function showChatAlert(msg) {
+  clearTimeout(_chatAlertTimeout);
+  const senderName = msg.sender_name || 'Someone';
+  const preview = msg.text || (msg.message_type === 'image' ? '[Image]' : msg.message_type === 'voice' ? '[Voice note]' : '[File]');
+  document.getElementById('chatAlertTitle').textContent = 'New message from ' + senderName;
+  document.getElementById('chatAlertText').textContent = preview.substring(0, 60);
+  document.getElementById('chatAlert').classList.add('show');
+
+  _chatAlertTimeout = setTimeout(() => {
+    document.getElementById('chatAlert').classList.remove('show');
+  }, 8000);
+}
+
+function closeChatAlert() {
+  document.getElementById('chatAlert').classList.remove('show');
+  clearTimeout(_chatAlertTimeout);
+}
+
+function goToChatFromAlert() {
+  closeChatAlert();
+  showAgentTab('messages', document.querySelector('.quick-tab[data-tab="messages"]'));
 }
 
 async function loadChatMessages() {
@@ -1413,13 +1806,11 @@ function appendChatMessage(msg, scroll = false) {
 
   const textContent = msg.message_type === 'file' ? '' : (msg.text ? `<div>${linkify(msg.text)}</div>` : '');
 
-  // Reply preview
   let replyHtml = '';
   if (msg.reply_to_id && msg.reply_preview) {
     replyHtml = `<div class="chat-reply-preview">${esc(msg.reply_preview)}</div>`;
   }
 
-  // Sent tick
   const tick = mine ? `<span class="chat-tick" title="Sent">✓✓</span>` : '';
 
   div.innerHTML = `
@@ -1506,7 +1897,28 @@ async function removeMsg(id) {
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ── IMAGE ────────────────────────────────────────────────────────────
+function setReplyTo(msg) {
+  _replyTo = msg;
+  const sender = msg.sender_name || (msg.sender_id === auth.currentUserId() ? 'You' : 'User');
+  document.getElementById('replyBannerTitle').textContent = `Replying to ${sender}`;
+  const preview = msg.text || (msg.message_type === 'image' ? '[Image]' : msg.message_type === 'voice' ? '[Voice note]' : msg.message_type === 'file' ? '[File]' : '');
+  document.getElementById('replyBannerText').textContent = preview.substring(0, 80);
+  document.getElementById('replyBanner').style.display = 'flex';
+  document.getElementById('chatInput').focus();
+}
+
+function cancelReply() {
+  _replyTo = null;
+  document.getElementById('replyBanner').style.display = 'none';
+}
+
+function handleReply(id) {
+  const allMsgs = window._currentMsgs || [];
+  const msg = allMsgs.find(m => m.id === id);
+  if (msg) setReplyTo(msg);
+}
+
+// Image, file, voice handlers
 function onChatImageSelected(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
@@ -1543,8 +1955,7 @@ async function sendChatImage() {
     const payload = { message_type: 'image', text: caption || null, media_url: url };
     if (_replyTo) {
       payload.reply_to_id = _replyTo.id;
-      const preview = _replyTo.text || (_replyTo.message_type === 'image' ? '[Image]' : _replyTo.message_type === 'voice' ? '[Voice note]' : '[File]');
-      payload.reply_preview = (_replyTo.sender_name ? _replyTo.sender_name + ': ' : '') + preview.substring(0, 80);
+      payload.reply_preview = (_replyTo.sender_name ? _replyTo.sender_name + ': ' : '') + (_replyTo.text || '[Image]').substring(0, 80);
     }
     await sendMessage(currentConversation.id, payload);
     cancelReply();
@@ -1569,7 +1980,6 @@ function closeLightbox(e) {
   document.getElementById('lightboxModal').classList.remove('open');
 }
 
-// ── FILE ─────────────────────────────────────────────────────────────
 async function onChatFileSelected(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
@@ -1598,7 +2008,6 @@ async function onChatFileSelected(event) {
   }
 }
 
-// ── VOICE ────────────────────────────────────────────────────────────
 async function toggleVoiceRecording() {
   if (_voiceRecorder) {
     await stopAndSendVoice();
@@ -1677,6 +2086,77 @@ function cancelVoiceRecording() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// PRESENCE
+// ═══════════════════════════════════════════════════════════════════════
+async function setPresence(status, conversationId) {
+  try {
+    const uid = auth.currentUserId();
+    if (!uid) return;
+    const payload = {
+      user_id: uid,
+      agent_code: agentData?.agent_code || null,
+      full_name: profileData?.full_name || profileData?.email || 'User',
+      role: profileData?.role || 'agent',
+      status: status || 'online',
+      conversation_id: conversationId || (currentConversation ? currentConversation.id : null),
+      last_seen: new Date().toISOString(),
+    };
+    const existing = await db.getOne('presence', `user_id=eq.${uid}`);
+    if (existing) await db.update('presence', `user_id=eq.${uid}`, payload);
+    else await db.insert('presence', payload);
+  } catch(e) {}
+}
+
+function startPresenceHeartbeat() {
+  setPresence('online');
+  setInterval(() => { setPresence(_myPresenceStatus); }, 25000);
+  window.addEventListener('beforeunload', () => { setPresence('offline'); });
+
+  if (stopPresenceSub) clearInterval(stopPresenceSub);
+  stopPresenceSub = setInterval(async () => {
+    try {
+      const rows = await db.getAll('presence', {});
+      const now = Date.now();
+      const active = rows.filter(r => (now - new Date(r.last_seen).getTime()) < 60000);
+      const others = active.filter(r => r.user_id !== auth.currentUserId());
+
+      const onl = document.getElementById('onlineCount');
+      if (onl) onl.textContent = active.length;
+      const ind = document.getElementById('onlineIndicator');
+      if (ind) ind.style.display = 'inline-flex';
+
+      const typers = others.filter(r => r.status === 'typing');
+      const recorders = others.filter(r => r.status === 'recording');
+      const banner = document.getElementById('chatActivityBanner');
+      if (banner) {
+        if (recorders.length) {
+          banner.innerHTML = `<span>🎤 ${esc(recorders[0].full_name || 'Someone')} is recording audio…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+        } else if (typers.length) {
+          banner.innerHTML = `<span>✍️ ${typers.length === 1 ? esc(typers[0].full_name || 'Someone') + ' is typing' : typers.length + ' people are typing'}…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+        } else {
+          banner.innerHTML = '';
+        }
+      }
+    } catch(e) {}
+  }, 3500);
+}
+
+async function onAgentTyping() {
+  const now = Date.now();
+  if (now - _lastTypingSignal < 2000) return;
+  _lastTypingSignal = now;
+  if (_myPresenceStatus !== 'typing') {
+    _myPresenceStatus = 'typing';
+    setPresence('typing');
+  }
+  clearTimeout(_typingTimeout);
+  _typingTimeout = setTimeout(() => {
+    _myPresenceStatus = 'online';
+    setPresence('online');
+  }, 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // DATA LOADING
 // ═══════════════════════════════════════════════════════════════════════
 async function loadAgentData() {
@@ -1724,6 +2204,21 @@ async function loadCampaignBanner() {
   } catch(e) { banner.innerHTML = ''; }
 }
 
+function animateNumber(el, target, suffix = '', prefix = '') {
+  const start = 0;
+  const duration = 900;
+  const startTime = performance.now();
+  function tick(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const value = Math.round(start + (target - start) * eased);
+    el.textContent = prefix + value.toLocaleString() + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 function updateAgentStats() {
   const now = new Date();
   const thisMonth = agentSales.filter(s => {
@@ -1736,8 +2231,8 @@ function updateAgentStats() {
   const pendComm  = pending.reduce((s, x) => s + (x.commission||0), 0);
   const revenue   = agentSales.reduce((s, x) => s + (x.amount||0), 0);
 
-  document.getElementById('st-sales').textContent   = thisMonth.length;
-  document.getElementById('st-comm').textContent    = fmtMoney(totalComm);
+  animateNumber(document.getElementById('st-sales'), thisMonth.length);
+  document.getElementById('st-comm').textContent = fmtMoney(totalComm);
   document.getElementById('st-pending').textContent = fmtMoney(pendComm);
   document.getElementById('st-revenue').textContent = fmtMoney(revenue);
 }
@@ -1815,7 +2310,6 @@ function copyQrUrl() {
   toast('✅ Copied');
 }
 
-// ── PHOTO UPLOAD ────────────────────────────────────────────────────────
 function openPhotoModal() {
   pendingPhotoFile = null;
   document.getElementById('photoError').style.display = 'none';
@@ -1872,7 +2366,6 @@ async function doDeletePhoto() {
   } catch(e) { showPhotoErr(e.message || 'Failed'); }
 }
 
-// ── SUBMIT SALE ─────────────────────────────────────────────────────────
 function openSubmitSale() {
   document.getElementById('submitSaleModal').classList.add('open');
   document.getElementById('submitSaleError').style.display = 'none';
@@ -1915,10 +2408,6 @@ async function submitSale() {
   setLoading(btn, true, 'Submitting…');
   document.getElementById('submitSaleError').style.display = 'none';
 
-  // Check if this is the first sale today
-  const today = new Date().toISOString().slice(0, 10);
-  const todaySales = agentSales.filter(s => (s.created_at || '').slice(0, 10) === today);
-
   try {
     const n = await db.nextId('sales');
     const saleId = makeSaleId(n);
@@ -1936,17 +2425,14 @@ async function submitSale() {
     await logReferralEvent(agentData.agent_code, 'sale_submitted', { sale_id: saleId });
 
     closeSubmitSale();
-    if (todaySales.length === 0) {
-      toast('🎉 First sale today! You\'re on a roll.', 4000);
-    } else {
-      toast('✅ Sale ' + saleId + ' submitted');
-    }
+    toast('✅ Sale ' + saleId + ' submitted');
     await loadAgentData();
     await recalcWallet(agentData.agent_code);
     myWallet = await db.getOne('wallets', `agent_code=eq.${agentData.agent_code}`);
     renderWallet();
     renderLevel();
-    showAgentTab('sales', document.querySelector('.tab-btn'));
+    showAgentTab('sales', document.querySelector('.quick-tab[data-tab="sales"]'));
+    await checkAchievements();
   } catch(e) {
     document.getElementById('submitSaleErrText').textContent = e.message;
     document.getElementById('submitSaleError').style.display = 'flex';
@@ -1955,7 +2441,6 @@ async function submitSale() {
   }
 }
 
-// ── SALES LIST ──────────────────────────────────────────────────────────
 function renderSales() {
   const el = document.getElementById('salesContent');
   if (!agentSales.length) {
@@ -2018,6 +2503,31 @@ function renderPerformance() {
 
   el.innerHTML = `
     <div class="perf-card">
+      <h3 style="font-size:1rem;margin-bottom:16px;">Sales Status Breakdown</h3>
+      <div class="donut-wrap">
+        <div class="donut" id="salesDonut" style="background: conic-gradient(#16a34a 0deg, #fbbf24 0deg, #ef4444 0deg, #e5e7eb 0deg);">
+          <div class="donut-value" id="salesDonutTotal">0</div>
+        </div>
+        <div class="donut-legend">
+          <div class="donut-legend-row">
+            <div class="donut-dot" style="background:#16a34a;"></div>
+            <div class="donut-legend-label">Confirmed</div>
+            <div class="donut-legend-value">${confirmed.length}</div>
+          </div>
+          <div class="donut-legend-row">
+            <div class="donut-dot" style="background:#fbbf24;"></div>
+            <div class="donut-legend-label">Pending</div>
+            <div class="donut-legend-value">${pending.length}</div>
+          </div>
+          <div class="donut-legend-row">
+            <div class="donut-dot" style="background:#ef4444;"></div>
+            <div class="donut-legend-label">Rejected</div>
+            <div class="donut-legend-value">${rejected.length}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="perf-card">
       <h3 style="font-size:1rem;margin-bottom:16px;">Performance Overview</h3>
       <div class="perf-grid">
         <div class="perf-cell"><div class="perf-val" style="color:var(--orange);">${agentSales.length}</div><div class="perf-lbl">Total Sales</div></div>
@@ -2032,6 +2542,26 @@ function renderPerformance() {
       </div>
     </div>
   `;
+
+  // Animate donut
+  setTimeout(() => {
+    const total = confirmed.length + pending.length + rejected.length;
+    if (total === 0) return;
+    const cAng = Math.round((confirmed.length / total) * 360);
+    const pAng = Math.round((pending.length / total) * 360);
+    const rAng = Math.round((rejected.length / total) * 360);
+    const donut = document.getElementById('salesDonut');
+    if (donut) {
+      donut.style.background = `conic-gradient(
+        #16a34a 0deg ${cAng}deg, 
+        #fbbf24 ${cAng}deg ${cAng + pAng}deg, 
+        #ef4444 ${cAng + pAng}deg ${cAng + pAng + rAng}deg, 
+        #e5e7eb ${cAng + pAng + rAng}deg 360deg
+      )`;
+    }
+    const totalEl = document.getElementById('salesDonutTotal');
+    if (totalEl) animateNumber(totalEl, total);
+  }, 100);
 }
 
 async function loadMarketing() {
@@ -2211,6 +2741,7 @@ async function markModuleDone() {
     renderTraining();
     renderExamSection();
     renderDocuments();
+    await checkAchievements();
   } catch(e) { toast('Error: ' + e.message); setLoading(btn, false, '<i class="fas fa-circle-check"></i> Mark Complete'); }
 }
 
@@ -2235,7 +2766,7 @@ function renderExamQuestions() {
   const el = document.getElementById('examBody');
   el.innerHTML = `
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
-      <i class="fas fa-info-circle"></i> Answer all ${examQuestions.length} questions. You need 80% to pass. Take your time — no timer.
+      <i class="fas fa-info-circle"></i> Answer all ${examQuestions.length} questions. You need 80% to pass.
     </p>
     ${examQuestions.map((q, i) => `
       <div class="exam-q">
@@ -2285,14 +2816,13 @@ async function submitExam() {
   try {
     await db.insert('exam_attempts', {
       agent_code: agentData.agent_code,
-      score: correct,
-      total: total,
-      percentage: percentage,
-      passed: passed,
+      score: correct, total: total,
+      percentage: percentage, passed: passed,
       answers: JSON.stringify(examAnswers),
     });
     await db.logAudit('exam', agentData.agent_code, passed ? 'passed' : 'failed', agentData.agent_code, null, { score: correct, total, percentage });
     await loadExamAttempts();
+    await checkAchievements();
   } catch(e) {
     console.warn('Could not save attempt:', e);
   }
@@ -2314,12 +2844,12 @@ function renderExamResults() {
       <div style="font-size:14px;font-weight:700;margin-bottom:8px;">${r.correct} out of ${r.total} correct</div>
       <div class="exam-result-msg">
         ${pass
-          ? `Congratulations! You passed the final exam.<br>Your Certificate of Achievement is now unlocked in the Docs tab.`
-          : `You need 80% to pass. You scored ${r.percentage}%.<br>Review the modules and try again — unlimited retakes.`}
+          ? `Congratulations! You passed. Your Certificate of Achievement is now unlocked.`
+          : `You need 80% to pass. You scored ${r.percentage}%. Try again anytime.`}
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
         <button class="btn btn-outline btn-sm" onclick="closeExam()" style="background:rgba(255,255,255,.1);color:white;border-color:rgba(255,255,255,.2);">Close</button>
-        ${!pass ? `<button class="btn btn-green btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Try Again</button>` : `<button class="btn btn-green btn-sm" onclick="closeExam();showAgentTab('documents',document.querySelector('.tab-btn'))"><i class="fas fa-certificate"></i> View Certificate</button>`}
+        ${!pass ? `<button class="btn btn-green btn-sm" onclick="openExam()"><i class="fas fa-redo"></i> Try Again</button>` : `<button class="btn btn-green btn-sm" onclick="closeExam();showAgentTab('documents',document.querySelector('.quick-tab[data-tab="documents"]'))"><i class="fas fa-certificate"></i> View Certificate</button>`}
       </div>
     </div>
 
@@ -2512,21 +3042,37 @@ function downloadMonthlyStatement() {
 }
 
 function showAgentTab(name, btn) {
+  _currentTab = name;
   document.querySelectorAll('#dashApp .tab-pane').forEach(p => p.classList.remove('active'));
   const pane = document.getElementById('agent-tab-' + name);
   if (pane) pane.classList.add('active');
+
+  // Update quick tabs
+  document.querySelectorAll('.quick-tab').forEach(b => b.classList.remove('active'));
+  if (btn && btn.classList.contains('quick-tab')) btn.classList.add('active');
+  else {
+    const match = document.querySelector(`.quick-tab[data-tab="${name}"]`);
+    if (match) match.classList.add('active');
+  }
+
+  // Update sidebar tabs (for compatibility)
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+
   if (name === 'documents') renderDocuments();
   if (name === 'leads') { loadLeads(); }
   if (name === 'training') { renderExamSection(); }
+  if (name === 'performance') { renderPerformance(); }
   if (name === 'messages' && !currentConversation) {
     const teamBtn = document.querySelector('#agent-tab-messages .filter-pill');
     if (teamBtn) switchChat('team', teamBtn);
   }
+  // Clear chat badge when viewing chat
+  if (name === 'messages') {
+    const b = document.getElementById('qt-chat-badge');
+    if (b) b.style.display = 'none';
+  }
 }
 
-// Save draft on input
 document.addEventListener('input', (e) => {
   if (e.target && e.target.id === 'chatInput') saveChatDraft();
 });
