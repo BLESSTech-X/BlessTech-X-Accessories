@@ -1382,3 +1382,38 @@ function makeAgreementPdf(agreement, agent) {
     });
   }
 })();
+    } catch (e) {}
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// EDGE FUNCTIONS HELPER
+// ═══════════════════════════════════════════════════════════════════════
+const functions = {
+  async invoke(name, opts = {}) {
+    const url = `${SB_URL}/functions/v1/${name}`;
+    const token = auth.currentToken() || SB_KEY;
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(opts.body || {}),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return { data: null, error: { message: data.error || data.message || `HTTP ${res.status}` } };
+      }
+      return { data, error: null };
+    } catch (e) {
+      return { data: null, error: { message: e.message || 'Network error' } };
+    }
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// LEADS — mini CRM
+// ═══════════════════════════════════════════════════════════════════════
