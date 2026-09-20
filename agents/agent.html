@@ -475,6 +475,13 @@
 .reply-banner button { background: none; border: none; cursor: pointer; color: #92400e; padding: 6px; border-radius: 6px; font-size: 14px; }
 .reply-banner button:hover { background: rgba(0,0,0,.05); }
 
+/* SENDER IDENTITY (new) */
+.chat-sender-link { display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:inherit; margin-bottom:4px; }
+.chat-sender-link:hover .chat-sender-name { text-decoration:underline; }
+.chat-sender-avatar { width:24px; height:24px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+.chat-sender-initial { display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#ff6000,#ff9f43); color:white; font-weight:800; font-size:11px; font-family:'Syne',sans-serif; border-radius:50%; }
+.chat-sender-link.admin .chat-sender-initial { background:linear-gradient(135deg,#7c3aed,#a855f7); }
+
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 #lightboxModal { background: rgba(0,0,0,.92); align-items: center; justify-content: center; }
 #lightboxModal.open { display: flex; }
@@ -1008,8 +1015,15 @@ html, body { overflow-x: hidden; }
   <div class="tab-pane" id="agent-tab-leaderboard">
     <div class="card" style="padding:0;overflow:hidden;">
       <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
-        <h3>Sales Leaderboard</h3>
-        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Top performing agents this period.</p>
+        <h3>Network Leaderboard</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Top performers across the PhoneYa2 network.</p>
+      </div>
+      <div id="lbTabs" class="filter-pills-scroll" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+        <button class="filter-pill lb-tab active" data-metric="sales"      onclick="loadLeaderboard('sales')">Sales</button>
+        <button class="filter-pill lb-tab"        data-metric="commission" onclick="loadLeaderboard('commission')">Commission</button>
+        <button class="filter-pill lb-tab"        data-metric="chat"       onclick="loadLeaderboard('chat')">Chat</button>
+        <button class="filter-pill lb-tab"        data-metric="recruiters" onclick="loadLeaderboard('recruiters')">Recruiters</button>
+        <button class="filter-pill lb-tab"        data-metric="learners"   onclick="loadLeaderboard('learners')">Learners</button>
       </div>
       <div id="agentLeaderboard"></div>
     </div>
@@ -1315,6 +1329,9 @@ let _lastSeenMessageId = null;
 let _chatAlertTimeout = null;
 let _currentTab = 'sales';
 
+// Leaderboard state
+let _lbCurrentMetric = 'sales';
+
 // Achievements
 let _knownAchievements = new Set();
 const ACHIEVEMENTS = {
@@ -1564,7 +1581,41 @@ function renderToday() {
       <button class="btn btn-green btn-sm" onclick="openSubmitSale()"><i class="fas fa-cart-plus"></i> Submit Sale</button>
       ${followupsDue > 0 ? `<button class="btn btn-sm" style="background:rgba(245,158,11,.9);color:white;" onclick="showAgentTab('leads',document.querySelector('.tab-btn'))"><i class="fas fa-bell"></i> ${followupsDue} Follow-up${followupsDue !== 1 ? 's' : ''}</button>` : ''}
     </div>
+    <div id="rankBanner" style="margin-top:14px;font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.6;"></div>
   `;
+
+  // Async-load the agent's top ranks and paint the banner.
+  loadRankBanner();
+}
+
+async function loadRankBanner() {
+  const el = document.getElementById('rankBanner');
+  if (!el) return;
+  el.textContent = '';
+  try {
+    const metrics = [
+      { key: 'sales',      label: 'Sales' },
+      { key: 'commission', label: 'Commission' },
+      { key: 'chat',       label: 'Chat' },
+      { key: 'recruiters', label: 'Recruiters' },
+      { key: 'learners',   label: 'Learners' },
+    ];
+    const ranks = [];
+    for (const m of metrics) {
+      const rows = await getLeaderboard(m.key);
+      const idx = rows.findIndex(r => r.agent_code === agentData.agent_code);
+      if (idx >= 0) {
+        // +1 for the admin row occupying position 1
+        ranks.push({ label: m.label, rank: idx + 2 });
+      }
+    }
+    // Show the top 3 ranks, best first
+    ranks.sort((a, b) => a.rank - b.rank);
+    const top = ranks.slice(0, 3);
+    if (!top.length) { el.innerHTML = ''; return; }
+    el.innerHTML = `<i class="fas fa-trophy" style="color:#fbbf24;"></i> ` +
+      top.map(r => `#${r.rank} in ${r.label}`).join(' · ');
+  } catch (e) { /* silent */ }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1760,9 +1811,12 @@ async function switchChat(type, btn) {
 
     await loadChatMessages();
     setPresence('online', currentConversation.id);
-    stopChatSub = subscribeToMessages(currentConversation.id, (msg) => {
+    stopChatSub = subscribeToMessages(currentConversation.id, async (msg) => {
+      if (!window._senderRoster) {
+        window._senderRoster = await getAgentRoster();
+        window._senderAdminUids = await getAdminUids();
+      }
       appendChatMessage(msg, true);
-      // Only alert if user is NOT on chat tab
       if (_currentTab !== 'messages' && msg.sender_id !== auth.currentUserId()) {
         showChatAlert(msg);
       }
@@ -1798,6 +1852,9 @@ function goToChatFromAlert() {
 async function loadChatMessages() {
   const el = document.getElementById('chatBody');
   try {
+    window._senderRoster    = await getAgentRoster();
+    window._senderAdminUids = await getAdminUids();
+
     const msgs = await getMessages(currentConversation.id, 100);
     msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     window._currentMsgs = msgs;
@@ -1855,8 +1912,14 @@ function appendChatMessage(msg, scroll = false) {
 
   const tick = mine ? `<span class="chat-tick" title="Sent">✓✓</span>` : '';
 
+  // Sender identity: avatar + link for agents, "PhoneYa2 Team" badge for admins, "Guest" fallback.
+  let senderHtml = '';
+  if (!mine) {
+    senderHtml = renderSenderIdentity(msg);
+  }
+
   div.innerHTML = `
-    ${!mine ? `<div class="chat-msg-sender">${esc(msg.sender_name || 'User')}</div>` : ''}
+    ${senderHtml}
     ${replyHtml}
     ${textContent}
     ${media}
@@ -1870,6 +1933,36 @@ function appendChatMessage(msg, scroll = false) {
   `;
   el.appendChild(div);
   if (scroll && isAtBottom(el)) el.scrollTop = el.scrollHeight;
+}
+
+function renderSenderIdentity(msg) {
+  const name = msg.sender_name || 'User';
+
+  const roster = window._senderRoster || new Map();
+  const adminUids = window._senderAdminUids || new Set();
+
+  if (msg.sender_id && roster.has(msg.sender_id)) {
+    const agent = roster.get(msg.sender_id);
+    const avatar = renderAvatarHtml(agent, 24);
+    return `<a class="chat-sender-link" href="profile.html?id=${esc(agent.agent_id)}" target="_blank" rel="noopener">
+      ${avatar}
+      <span class="chat-sender-name">${esc(agent.full_name || name)}</span>
+    </a>`;
+  }
+
+  if (msg.sender_id && adminUids.has(msg.sender_id)) {
+    const avatar = `<span class="chat-sender-initial" style="width:24px;height:24px;">P</span>`;
+    return `<span class="chat-sender-link admin">
+      ${avatar}
+      <span class="chat-sender-name">${esc(ADMIN_IDENTITY.full_name)}</span>
+      <span class="chat-mini-badge" style="background:${ADMIN_IDENTITY.badge_color};color:white;font-size:9px;font-weight:800;padding:1px 6px;border-radius:100px;margin-left:4px;text-transform:uppercase;letter-spacing:.5px;">Admin</span>
+    </span>`;
+  }
+
+  return `<span class="chat-sender-link">
+    <span class="chat-sender-initial" style="width:24px;height:24px;background:linear-gradient(135deg,#9ca3af,#6b7280);">${esc((name[0] || '?').toUpperCase())}</span>
+    <span class="chat-sender-name">${esc(name)}</span>
+  </span>`;
 }
 
 function autoGrow(el) {
@@ -2170,11 +2263,28 @@ function startPresenceHeartbeat() {
       const typers = others.filter(r => r.status === 'typing');
       const recorders = others.filter(r => r.status === 'recording');
       const banner = document.getElementById('chatActivityBanner');
+
+      const roster = window._senderRoster || new Map();
+      const adminUids = window._senderAdminUids || new Set();
+
+      function avatarForPresence(p, size) {
+        if (p.user_id && roster.has(p.user_id)) {
+          return renderAvatarHtml(roster.get(p.user_id), size, 'chat-sender-avatar');
+        }
+        if (p.user_id && adminUids.has(p.user_id)) {
+          return `<span class="chat-sender-initial" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#7c3aed,#a855f7);font-size:${Math.round(size*0.5)}px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">P</span>`;
+        }
+        const initial = (p.full_name || '?')[0].toUpperCase();
+        return `<span class="chat-sender-initial" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#9ca3af,#6b7280);font-size:${Math.round(size*0.5)}px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">${esc(initial)}</span>`;
+      }
+
       if (banner) {
         if (recorders.length) {
-          banner.innerHTML = `<span>🎤 ${esc(recorders[0].full_name || 'Someone')} is recording audio…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+          banner.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;">${avatarForPresence(recorders[0], 18)} 🎤 ${esc(recorders[0].full_name || 'Someone')} is recording…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
         } else if (typers.length) {
-          banner.innerHTML = `<span>✍️ ${typers.length === 1 ? esc(typers[0].full_name || 'Someone') + ' is typing' : typers.length + ' people are typing'}…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
+          const first = typers[0];
+          const av = avatarForPresence(first, 18);
+          banner.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;">${av} ✍️ ${typers.length === 1 ? esc(first.full_name || 'Someone') + ' is typing' : typers.length + ' people are typing'}…</span><span class="chat-activity-dots"><span></span><span></span><span></span></span>`;
         } else {
           banner.innerHTML = '';
         }
@@ -2211,16 +2321,38 @@ async function loadAgentData() {
     updateAgentStats();
     renderSales();
     renderCommHistory();
-    renderLeaderboard();
     renderPerformance();
+    // Leaderboard loads lazily when its tab opens (see showAgentTab).
   } catch(e) { toast('⚠️  ' + e.message); }
 }
 
 async function loadNotifications() {
   try {
-    myNotifs = await db.getAll('notifications', { filter: `agent_code=eq.${agentData.agent_code}`, order: 'created_at.desc', limit: 30 });
+    myNotifs = await getActiveNotifications(agentData.agent_code);
     renderNotifications();
-  } catch(e) {}
+    checkTargetedNotification();
+  } catch(e) { myNotifs = []; renderNotifications(); }
+}
+
+function checkTargetedNotification() {
+  const targeted = myNotifs.filter(n => n.target === 'agent' && n.agent_code === agentData.agent_code);
+  if (!targeted.length) return;
+
+  let seenIds;
+  try { seenIds = new Set(JSON.parse(localStorage.getItem('py2_seen_targeted_notif_ids') || '[]')); }
+  catch(e) { seenIds = new Set(); }
+
+  const unseen = targeted.filter(n => !seenIds.has(n.id));
+  if (!unseen.length) return;
+
+  const newIds = [...seenIds, ...unseen.map(n => n.id)].slice(-50);
+  localStorage.setItem('py2_seen_targeted_notif_ids', JSON.stringify(newIds));
+
+  const top = unseen[0];
+  toast(`📬 ${top.title}: ${top.message}`.slice(0, 140), 6000);
+  const dd = document.getElementById('notifDropdown');
+  if (dd) dd.classList.add('open');
+  setTimeout(() => { if (dd) dd.classList.remove('open'); }, 5000);
 }
 
 async function loadReferralStats() {
@@ -2930,27 +3062,75 @@ function renderTierRates() {
   }).join('');
 }
 
-function renderLeaderboard() {
+// ═══════════════════════════════════════════════════════════════════════
+// LEADERBOARD (metric tabs + admin row)
+// ═══════════════════════════════════════════════════════════════════════
+const LB_METRICS = {
+  sales:      { label: 'Revenue',    fmt: (v) => fmtMoney(v) },
+  commission: { label: 'Commission', fmt: (v) => fmtMoney(v) },
+  chat:       { label: 'Messages',   fmt: (v) => `${v} msg` },
+  recruiters: { label: 'Recruits',   fmt: (v) => `${v} recruit${v === 1 ? '' : 's'}` },
+  learners:   { label: 'Modules',    fmt: (v) => `${v} module${v === 1 ? '' : 's'}` },
+};
+
+const LB_VALUE_KEY = {
+  sales:      'confirmed_revenue',
+  commission: 'confirmed_commission',
+  chat:       'messages_30d',
+  recruiters: 'referred_agents_count',
+  learners:   'modules_completed',
+};
+
+async function loadLeaderboard(metric) {
+  _lbCurrentMetric = metric || 'sales';
   const el = document.getElementById('agentLeaderboard');
-  const medals = ['🥇','🥈','🥉'];
-  const byAgent = {};
-  allSales.filter(s => s.status === 'confirmed' || s.status === 'paid').forEach(s => {
-    if (!byAgent[s.agent_code]) byAgent[s.agent_code] = { sales:0, revenue:0 };
-    byAgent[s.agent_code].sales++;
-    byAgent[s.agent_code].revenue += (s.amount||0);
+  if (!el) return;
+
+  document.querySelectorAll('#lbTabs .lb-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.metric === _lbCurrentMetric);
   });
-  const ranked = Object.entries(byAgent).map(([code, d]) => ({ code, ...d })).sort((a,b) => b.revenue - a.revenue);
-  if (!ranked.length) {
-    el.innerHTML = '<div class="empty" style="padding:32px;"><div class="empty-icon">🏆</div><h3>No sales yet</h3></div>';
+
+  el.innerHTML = '<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
+
+  const rows = await getLeaderboard(_lbCurrentMetric);
+  const key  = LB_VALUE_KEY[_lbCurrentMetric];
+  const meta = LB_METRICS[_lbCurrentMetric] || LB_METRICS.sales;
+  const medals = ['🥇','🥈','🥉'];
+
+  const adminRow = `
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(90deg,#f3e8ff,white);border-bottom:1px solid var(--border);">
+      <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;color:#7c3aed;">1</div>
+      <span class="chat-sender-initial" style="width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;font-weight:800;font-size:14px;font-family:'Syne',sans-serif;flex-shrink:0;">P</span>
+      <div style="flex:1;min-width:0;font-weight:800;font-size:14px;color:#7c3aed;">📢 ${esc(ADMIN_IDENTITY.full_name)}</div>
+      <div style="font-size:11px;color:#7c3aed;font-weight:800;background:rgba(124,58,237,.1);padding:3px 10px;border-radius:100px;flex-shrink:0;">Official</div>
+    </div>`;
+
+  if (!rows.length) {
+    el.innerHTML = adminRow + '<div class="empty" style="padding:28px;"><div class="empty-icon">🏆</div><h3>No stats yet</h3></div>';
     return;
   }
-  el.innerHTML = ranked.map((r, i) => {
-    const isMe = r.code === agentData.agent_code;
+
+  el.innerHTML = adminRow + rows.map((r, i) => {
+    const isMe = r.agent_code === agentData.agent_code;
+    const value = r[key] ?? 0;
+    const rank = i + 2; // admin occupies 1
+    const rankColor = rank === 2 ? 'var(--orange)'
+                    : rank === 3 ? '#9ca3af'
+                    : rank === 4 ? '#d97706'
+                    : 'var(--muted)';
+    const rankLabel = rank <= 4 ? medals[rank - 2] : rank;
+
     return `<div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);${isMe?'background:linear-gradient(90deg,#fff8f4,white);':''}">
-      <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;flex-shrink:0;color:${i===0?'var(--orange)':i===1?'#9ca3af':i===2?'#d97706':'var(--muted)'};">${i < 3 ? medals[i] : i+1}</div>
-      <div style="flex:1;min-width:0;font-weight:${isMe?800:600};font-size:14px;word-break:break-word;">${isMe ? '⭐ You' : esc(r.code)}</div>
-      <div style="font-size:13px;color:var(--muted);margin-right:12px;flex-shrink:0;">${r.sales} sale${r.sales!==1?'s':''}</div>
-      <div style="font-weight:800;color:var(--orange);flex-shrink:0;">${fmtMoney(r.revenue)}</div>
+      <div style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;width:28px;text-align:center;flex-shrink:0;color:${rankColor};">${rankLabel}</div>
+      ${renderAvatarHtml(r, 32)}
+      <div style="flex:1;min-width:0;">
+        <a href="profile.html?id=${esc(r.agent_id)}" target="_blank" rel="noopener" style="font-weight:${isMe?800:600};font-size:14px;color:inherit;text-decoration:none;word-break:break-word;">${isMe ? '⭐ You' : esc(r.full_name || r.agent_code)}</a>
+        <div style="font-size:11px;color:var(--muted);">${esc(r.agent_code)}${r.location ? ' · ' + esc(r.location) : ''}</div>
+      </div>
+      <div style="font-weight:800;color:var(--orange);flex-shrink:0;text-align:right;">
+        ${meta.fmt(Number(value))}
+        <div style="font-size:10px;color:var(--muted);font-weight:600;">${meta.label}</div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -2973,12 +3153,23 @@ function renderNotifications() {
     el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">No notifications.</div>';
     return;
   }
-  el.innerHTML = myNotifs.map(n => `
-    <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}')">
-      <div class="notif-title">${esc(n.title)}</div>
-      <div class="notif-msg">${esc(n.message)}</div>
-      <div class="notif-time">${fmtDateTime(n.created_at)}</div>
-    </div>`).join('');
+  el.innerHTML = myNotifs.map(n => {
+    const msLeft = n.expires_at ? (new Date(n.expires_at).getTime() - Date.now()) : Infinity;
+    const soon = msLeft < 24 * 60 * 60 * 1000 && msLeft > 0;
+    const expired = msLeft <= 0;
+    if (expired) return '';
+    const expiryLine = n.expires_at
+      ? `<div class="notif-time" style="color:${soon ? '#b45309' : 'var(--muted)'};font-weight:${soon ? 700 : 400};">⏱️ expires in ${timeUntilExpiry(n.expires_at)}</div>`
+      : '';
+    return `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead('${esc(n.id)}')"
+           style="${soon ? 'border-left:3px solid #f59e0b;' : ''}">
+        <div class="notif-title">${esc(n.title)}</div>
+        <div class="notif-msg">${esc(n.message)}</div>
+        <div class="notif-time">${fmtDateTime(n.created_at)}</div>
+        ${expiryLine}
+      </div>`;
+  }).join('');
 }
 async function markNotifRead(id) {
   try { await db.update('notifications', `id=eq.${id}`, { read: true }); await loadNotifications(); } catch(e) {}
@@ -2986,7 +3177,7 @@ async function markNotifRead(id) {
 async function markAllRead(e) {
   e.stopPropagation();
   try {
-    for (const n of myNotifs.filter(x => !x.read)) await db.update('notifications', `id=eq.${n.id}`, { read: true });
+    for (const n of myNotifs.filter(x => !x.read)) await db.update('notifications', `id=eq.${x.id}`, { read: true });
     await loadNotifications();
     toast('✅ All read');
   } catch(e) {}
@@ -3089,7 +3280,6 @@ function showAgentTab(name, btn) {
   const pane = document.getElementById('agent-tab-' + name);
   if (pane) pane.classList.add('active');
 
-  // Update quick tabs
   document.querySelectorAll('.quick-tab').forEach(b => b.classList.remove('active'));
   if (btn && btn.classList.contains('quick-tab')) btn.classList.add('active');
   else {
@@ -3097,36 +3287,32 @@ function showAgentTab(name, btn) {
     if (match) match.classList.add('active');
   }
 
-  // Update the tab menu dropdown active state
   document.querySelectorAll('.tab-menu-item').forEach(item => item.classList.remove('active'));
   const menuMatch = document.querySelector(`.tab-menu-item[data-tab="${name}"]`);
   if (menuMatch) menuMatch.classList.add('active');
 
-  // Hide hero cards (today, level, wallet, stats, ref) when not on Sales tab
   const hero = document.getElementById('heroCards');
   if (hero) {
     if (name === 'sales') hero.classList.remove('hero-hidden');
     else hero.classList.add('hero-hidden');
   }
 
-  // Update sidebar tabs (for compatibility)
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
   if (name === 'documents') renderDocuments();
   if (name === 'leads') { loadLeads(); }
   if (name === 'training') { renderExamSection(); }
   if (name === 'performance') { renderPerformance(); }
+  if (name === 'leaderboard') { loadLeaderboard(_lbCurrentMetric || 'sales'); }
   if (name === 'messages' && !currentConversation) {
     const teamBtn = document.querySelector('#agent-tab-messages .filter-pill');
     if (teamBtn) switchChat('team', teamBtn);
   }
-  // Clear chat badge when viewing chat
   if (name === 'messages') {
     const b = document.getElementById('qt-chat-badge');
     if (b) b.style.display = 'none';
   }
 
-  // Scroll to top so the content appears right under the tabs
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -3161,7 +3347,6 @@ function toggleTabMenu(e) {
   if (e) e.stopPropagation();
   const dd = document.getElementById('tabMenuDropdown');
   if (!dd) return;
-  // Close notif dropdown when opening tab menu
   const notif = document.getElementById('notifDropdown');
   if (notif) notif.classList.remove('open');
   dd.classList.toggle('open');
@@ -3173,7 +3358,6 @@ function pickTabFromMenu(name) {
   showAgentTab(name, null);
 }
 
-// Close dropdowns when clicking elsewhere
 document.addEventListener('click', (e) => {
   const dd = document.getElementById('tabMenuDropdown');
   if (dd && !dd.contains(e.target) && !e.target.closest('.notif-btn')) {
@@ -3181,7 +3365,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Render the menu on load
 document.addEventListener('DOMContentLoaded', () => {
   renderTabMenu();
 });
