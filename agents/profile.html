@@ -531,7 +531,7 @@ function publicCity(raw) {
 
 // Local helper — the agent_leaderboard view must exist in Supabase.
 // If the view is missing, this returns [] and pages degrade gracefully.
-const _LB_METRIC_COLUMN = {
+const _PROFILE_LB_METRIC_COLUMN = {
   sales:      'confirmed_revenue',
   commission: 'confirmed_commission',
   chat:       'messages_30d',
@@ -540,7 +540,7 @@ const _LB_METRIC_COLUMN = {
 };
 
 async function getLeaderboard(metric = 'sales') {
-  const col = _LB_METRIC_COLUMN[metric] || 'confirmed_revenue';
+  const col = _PROFILE_LB_METRIC_COLUMN[metric] || 'confirmed_revenue';
   try {
     return await db.getAll('agent_leaderboard', {
       order: `${col}.desc,agent_code.asc`,
