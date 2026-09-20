@@ -265,6 +265,12 @@
       <input type="text" placeholder="Search anything…" id="globalSearch" oninput="globalSearch()" onfocus="showSearchResults()">
     </div>
     <div class="nav-spacer hide-mobile"></div>
+    <button class="btn-ghost" style="color:rgba(255,255,255,.6);padding:8px 10px;" onclick="openNotifyModal()" title="Send Notification">
+      <i class="fas fa-bullhorn"></i>
+    </button>
+    <a class="btn-ghost" style="color:rgba(255,255,255,.6);padding:8px 10px;text-decoration:none;" href="profile.html" target="_blank" title="Network Directory">
+      <i class="fas fa-users-viewfinder"></i>
+    </a>
     <button class="btn-ghost" style="color:rgba(255,255,255,.6);padding:8px 10px;" onclick="doLogout()" title="Logout">
       <i class="fas fa-right-from-bracket"></i>
     </button>
@@ -684,6 +690,69 @@
   </div>
 </div>
 
+<!-- NOTIFICATION COMPOSER MODAL -->
+<div class="modal-overlay" id="notifyModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3>Send Notification</h3>
+      <button class="modal-close" onclick="closeNotifyModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="label">Recipient</label>
+        <div style="display:flex;gap:16px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;cursor:pointer;">
+            <input type="radio" name="notifyTarget" value="all" checked onchange="onNotifyTargetChange()"> All agents
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;cursor:pointer;">
+            <input type="radio" name="notifyTarget" value="agent" onchange="onNotifyTargetChange()"> Specific agent
+          </label>
+        </div>
+      </div>
+      <div class="field" id="notifyAgentWrap" style="display:none;">
+        <label class="label">Agent</label>
+        <select class="select" id="notifyAgent"></select>
+      </div>
+      <div class="field">
+        <label class="label">Type</label>
+        <select class="select" id="notifyType">
+          <option value="info">Info</option>
+          <option value="announcement">Announcement</option>
+          <option value="sale">Sale</option>
+          <option value="warning">Warning</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label">Title <span class="req">*</span></label>
+        <input type="text" class="input" id="notifyTitle" maxlength="80" oninput="renderNotifyPreview()">
+      </div>
+      <div class="field">
+        <label class="label">Message <span class="req">*</span></label>
+        <textarea class="textarea" id="notifyMessage" rows="3" maxlength="300" oninput="renderNotifyPreview()"></textarea>
+      </div>
+      <div class="field">
+        <label class="label">Duration</label>
+        <select class="select" id="notifyDays">
+          <option value="1">1 day</option>
+          <option value="3" selected>3 days</option>
+          <option value="7">7 days</option>
+          <option value="14">14 days</option>
+          <option value="30">30 days</option>
+        </select>
+      </div>
+      <div style="background:var(--light);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Preview</div>
+        <div id="notifyPreview"></div>
+      </div>
+      <div id="notifyErr" class="alert alert-error" style="display:none;"></div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline btn-full" onclick="closeNotifyModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" id="sendNotifyBtn" onclick="sendNotificationFromAdmin()"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="config.js"></script>
 <script>
 const APP_STATUSES = [
@@ -776,6 +845,7 @@ async function initAdmin() {
   loadTiersIntoEditor();
   startAdminWellbeingTimer();
   restoreAdminChatDraft();
+  try { populateNotifyAgentSelect(); } catch(e) {}
 }
 
 function startAdminWellbeingTimer() {
@@ -794,6 +864,79 @@ function isQuietHours() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// NOTIFICATION COMPOSER
+// ═══════════════════════════════════════════════════════════════════════
+function populateNotifyAgentSelect() {
+  const sel = document.getElementById('notifyAgent');
+  if (!sel) return;
+  sel.innerHTML = (allAgents || []).filter(a => a.active).map(a =>
+    `<option value="${esc(a.agent_code)}">${esc(a.full_name)} (${esc(a.agent_code)})</option>`
+  ).join('');
+}
+function openNotifyModal() {
+  const m = document.getElementById('notifyModal');
+  if (!m) return;
+  populateNotifyAgentSelect();
+  document.getElementById('notifyTitle').value = '';
+  document.getElementById('notifyMessage').value = '';
+  document.getElementById('notifyType').value = 'info';
+  document.getElementById('notifyDays').value = '3';
+  document.querySelector('input[name="notifyTarget"][value="all"]').checked = true;
+  onNotifyTargetChange();
+  renderNotifyPreview();
+  document.getElementById('notifyErr').style.display = 'none';
+  m.classList.add('open');
+}
+function closeNotifyModal() {
+  const m = document.getElementById('notifyModal');
+  if (m) m.classList.remove('open');
+}
+function onNotifyTargetChange() {
+  const isAgent = document.querySelector('input[name="notifyTarget"]:checked').value === 'agent';
+  document.getElementById('notifyAgentWrap').style.display = isAgent ? 'block' : 'none';
+  renderNotifyPreview();
+}
+function renderNotifyPreview() {
+  const title = document.getElementById('notifyTitle').value.trim() || 'Title…';
+  const msg = document.getElementById('notifyMessage').value.trim() || 'Message…';
+  const target = document.querySelector('input[name="notifyTarget"]:checked').value;
+  const agentCode = target === 'agent' ? document.getElementById('notifyAgent').value : null;
+  const days = document.getElementById('notifyDays').value;
+  document.getElementById('notifyPreview').innerHTML = `
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+      <div style="font-weight:800;font-size:13px;margin-bottom:4px;">${esc(title)}</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.5;">${esc(msg)}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">🎯 ${target === 'all' ? 'All agents' : esc(agentCode || '—')} · ⏱️ ${esc(days)} day(s)</div>
+    </div>`;
+}
+async function sendNotificationFromAdmin() {
+  const target = document.querySelector('input[name="notifyTarget"]:checked').value;
+  const agentCode = target === 'agent' ? document.getElementById('notifyAgent').value : null;
+  const type = document.getElementById('notifyType').value;
+  const title = document.getElementById('notifyTitle').value.trim();
+  const message = document.getElementById('notifyMessage').value.trim();
+  const days = Number(document.getElementById('notifyDays').value) || 3;
+
+  const err = document.getElementById('notifyErr');
+  err.style.display = 'none';
+  if (!title || !message) { err.textContent = 'Title and message are required.'; err.style.display = 'block'; return; }
+  if (target === 'agent' && !agentCode) { err.textContent = 'Pick an agent.'; err.style.display = 'block'; return; }
+
+  const btn = document.getElementById('sendNotifyBtn');
+  setLoading(btn, true, 'Sending…');
+  try {
+    await sendNotification({ target, agent_code: agentCode, title, message, type, days });
+    toast('✅ Notification sent');
+    closeNotifyModal();
+  } catch(e) {
+    err.textContent = e.message || 'Send failed';
+    err.style.display = 'block';
+  } finally {
+    setLoading(btn, false, '<i class="fas fa-paper-plane"></i> Send');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════════════════
 async function loadAll() {
@@ -805,6 +948,8 @@ async function loadAll() {
     ]);
     updateStats(); renderApps(); renderAgents(); renderSales(); renderPending();
     updatePendingBadge();
+    // Refresh the notify modal's agent dropdown if it's already populated.
+    try { populateNotifyAgentSelect(); } catch(e) {}
     const reportsPane = document.getElementById('tab-reports');
     if (reportsPane && reportsPane.classList.contains('active')) renderReports();
   } catch(e) { toast('⚠️  ' + e.message); }
@@ -1142,17 +1287,8 @@ async function confirmApprove() {
   let generatedPassword = null;
 
   try {
-    // ─────────────────────────────────────────────────────────────
-    // STEP 1 — Ensure auth user exists (self-healing)
-    // If the application has no auth_user_id yet (because the
-    // submit-time Edge Function failed for this applicant), create
-    // it now via the Edge Function before continuing.
-    // ─────────────────────────────────────────────────────────────
     if (!currentApp.auth_user_id) {
       setLoading(btn, true, 'Creating login…');
-
-      // Generate a readable temporary password so it can be shared
-      // with the agent if needed. They should change it on first login.
       generatedPassword = 'PY2-' + Math.random().toString(36).slice(-6) + '!' + Math.floor(Math.random()*90+10);
 
       const { data, error } = await functions.invoke('create-agent-user', {
@@ -1168,7 +1304,6 @@ async function confirmApprove() {
 
       currentApp.auth_user_id = data.user_id;
 
-      // Persist the UID immediately so a retry skips this step
       try {
         await db.update('applications', `app_id=eq.${currentApp.app_id}`, {
           auth_user_id: data.user_id,
@@ -1178,9 +1313,6 @@ async function confirmApprove() {
       setLoading(btn, true, 'Approving agent…');
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // STEP 2 — Your existing approval flow (unchanged)
-    // ─────────────────────────────────────────────────────────────
     const n = await getNextAgentNumber();
     const agentId = makeAgentId(n);
     const agentCode = makeAgentCode(n);
@@ -1233,10 +1365,6 @@ async function confirmApprove() {
 
     closeModal();
 
-    // ─────────────────────────────────────────────────────────────
-    // Build the success alert. If we generated a temp password,
-    // include it so the admin can copy-paste it to the agent.
-    // ─────────────────────────────────────────────────────────────
     let successMsg =
       `✅ AGENT APPROVED!\n\n` +
       `Agent Code: ${agentCode}\n` +
@@ -1669,7 +1797,7 @@ async function sendAdminChatMessage() {
   const btn = document.getElementById('adminChatSendBtn');
   btn.disabled = true;
   try {
-    const payload = { message_type: 'text', text };
+    const payload = { message_type: 'text', text, sender_name: 'PhoneYa2 Team' };
     if (_adminReplyTo) {
       payload.reply_to_id = _adminReplyTo.id;
       const preview = _adminReplyTo.text || (_adminReplyTo.message_type === 'image' ? '[Image]' : _adminReplyTo.message_type === 'voice' ? '[Voice note]' : '[File]');
@@ -1732,7 +1860,7 @@ async function sendAdminChatImage() {
       document.getElementById('adminUploadProgressBar').style.width = pct + '%';
     });
     document.getElementById('adminUploadProgressText').textContent = 'Sending…';
-    const payload = { message_type: 'image', text: caption || null, media_url: url };
+    const payload = { message_type: 'image', text: caption || null, media_url: url, sender_name: 'PhoneYa2 Team' };
     if (_adminReplyTo) {
       payload.reply_to_id = _adminReplyTo.id;
       payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + (_adminReplyTo.text || '[Image]').substring(0, 80);
@@ -1769,7 +1897,7 @@ async function onAdminChatFileSelected(event) {
 
   try {
     const url = await uploadChatMedia(file, 'file');
-    const payload = { message_type: 'file', text: file.name, media_url: url };
+    const payload = { message_type: 'file', text: file.name, media_url: url, sender_name: 'PhoneYa2 Team' };
     if (_adminReplyTo) {
       payload.reply_to_id = _adminReplyTo.id;
       payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + (_adminReplyTo.text || '[File]').substring(0, 80);
@@ -1826,7 +1954,7 @@ async function stopAndSendAdminVoice() {
 
     toast('Sending voice note…');
     const url = await uploadChatMedia(blob, 'voice');
-    const payload = { message_type: 'voice', media_url: url };
+    const payload = { message_type: 'voice', media_url: url, sender_name: 'PhoneYa2 Team' };
     if (_adminReplyTo) {
       payload.reply_to_id = _adminReplyTo.id;
       payload.reply_preview = (_adminReplyTo.sender_name ? _adminReplyTo.sender_name + ': ' : '') + (_adminReplyTo.text || '[Voice note]').substring(0, 80);
