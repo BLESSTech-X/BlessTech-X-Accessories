@@ -1382,11 +1382,3 @@ function makeAgreementPdf(agreement, agent) {
     });
   }
 })();
-const { data, error } = await functions.invoke('create-agent-user', {
-  body: {
-    email: 'test-' + Date.now() + '@example.com',
-    password: 'TestPass123!',
-    full_name: 'Test User',
-  }
-});
-console.log({ data, error });
