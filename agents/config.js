@@ -311,7 +311,7 @@ async function sendMessage(conversationId, payload) {
   const msg = {
     conversation_id: conversationId,
     sender_id:       auth.currentUserId(),
-    sender_name:     profile?.full_name || profile?.email || 'User',
+    sender_name:     payload.sender_name || profile?.full_name || profile?.email || 'User',
     message_type:    payload.message_type || 'text',
     text:            payload.text || null,
     media_url:       payload.media_url || null,
@@ -892,6 +892,121 @@ async function setPresence(status, conversationId) {
     if (existing) await db.update('presence', `user_id=eq.${uid}`, payload);
     else await db.insert('presence', payload);
   } catch(e) { console.warn('Presence update failed:', e); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// NETWORK — agent roster, identity, notifications, leaderboard
+// ═══════════════════════════════════════════════════════════════════════
+
+const ADMIN_IDENTITY = Object.freeze({
+  full_name:      'PhoneYa2 Team',
+  is_admin:       true,
+  avatar_initial: 'P',
+  badge_color:    '#7c3aed',
+});
+
+let _rosterCache     = null;
+let _rosterCacheTime = 0;
+
+async function getAgentRoster() {
+  const now = Date.now();
+  if (_rosterCache && (now - _rosterCacheTime) < 60000) return _rosterCache;
+
+  const map = new Map();
+  try {
+    const rows = await db.getAll('agents', {
+      filter: 'active=eq.true',
+      select: 'agent_id,agent_code,full_name,profile_photo_url,location,joined_at,auth_user_id',
+    });
+    (rows || []).forEach(a => {
+      if (a.auth_user_id) map.set(a.auth_user_id, a);
+    });
+  } catch (e) { /* silent — empty map is fine */ }
+
+  _rosterCache     = map;
+  _rosterCacheTime = now;
+  return map;
+}
+
+async function getAgentByUid(uid) {
+  if (!uid) return null;
+  const roster = await getAgentRoster();
+  return roster.get(uid) || null;
+}
+
+let _adminUidCache     = null;
+let _adminUidCacheTime = 0;
+
+async function getAdminUids() {
+  const now = Date.now();
+  if (_adminUidCache && (now - _adminUidCacheTime) < 60000) return _adminUidCache;
+
+  const set = new Set();
+  try {
+    const rows = await db.getAll('profiles', { filter: 'role=eq.admin', select: 'id' });
+    (rows || []).forEach(r => set.add(r.id));
+  } catch (e) { /* silent */ }
+
+  _adminUidCache     = set;
+  _adminUidCacheTime = now;
+  return set;
+}
+
+async function getActiveNotifications(agentCode) {
+  try {
+    const nowIso = new Date().toISOString();
+    let filter = `expires_at=gt.${nowIso}`;
+    if (agentCode) {
+      filter += `&or=(target.eq.all,and(target.eq.agent,agent_code.eq.${encodeURIComponent(agentCode)}))`;
+    } else {
+      filter += `&target=eq.all`;
+    }
+    return await db.getAll('notifications', { filter, order: 'created_at.desc', limit: 50 });
+  } catch (e) { return []; }
+}
+
+async function sendNotification({ target, agent_code, title, message, type, days } = {}) {
+  const d = Number(days) || 3;
+  const expires_at = new Date(Date.now() + d * 24 * 60 * 60 * 1000).toISOString();
+  const payload = {
+    target:  target || 'all',
+    agent_code: target === 'agent' ? agent_code : null,
+    title:   title || 'Notification',
+    message: message || '',
+    type:    type || 'info',
+    expires_at,
+  };
+  const rows = await db.insert('notifications', payload);
+  return rows?.[0] || null;
+}
+
+const _LB_METRIC_COLUMN = {
+  sales:      'confirmed_revenue',
+  commission: 'confirmed_commission',
+  chat:       'messages_30d',
+  recruiters: 'referred_agents_count',
+  learners:   'modules_completed',
+};
+
+async function getLeaderboard(metric = 'sales') {
+  const col = _LB_METRIC_COLUMN[metric] || 'confirmed_revenue';
+  try {
+    return await db.getAll('agent_leaderboard', {
+      order: `${col}.desc,agent_code.asc`,
+      limit: 100,
+    });
+  } catch (e) { return []; }
+}
+
+function renderAvatarHtml(agent, size = 32, className = '') {
+  const s = Number(size) || 32;
+  const initial = (agent && agent.full_name ? agent.full_name[0] : '?').toUpperCase();
+  const cls = className ? ` ${className}` : '';
+
+  if (agent && agent.profile_photo_url) {
+    return `<img src="${esc(agent.profile_photo_url)}" alt="${esc(agent.full_name || 'Agent')}" class="chat-sender-avatar${cls}" style="width:${s}px;height:${s}px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='inline-flex');">`;
+  }
+  return `<span class="chat-sender-initial${cls}" style="width:${s}px;height:${s}px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;font-weight:800;font-size:${Math.round(s*0.44)}px;font-family:'Syne',sans-serif;flex-shrink:0;">${esc(initial)}</span>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
