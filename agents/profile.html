@@ -268,206 +268,6 @@
   margin: 0 auto 20px;
 }
 
-/* ── RANK STATS CARD ────────────────────────────────────────────────────── */
-.rank-stats-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 20px 22px;
-  margin-bottom: 20px;
-}
-.rank-stats-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-}
-.rank-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-}
-.rank-stat-cell {
-  text-align: center;
-  padding: 12px 8px;
-  background: var(--light);
-  border-radius: var(--r);
-}
-.rank-stat-val {
-  font-family: 'DM Sans',sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 4px;
-  word-break: break-word;
-}
-.rank-stat-lbl {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
-
-/* ── BADGE CHIPS ────────────────────────────────────────────────────────── */
-.badge-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 800;
-  background: var(--light);
-  color: var(--text);
-  margin-right: 6px;
-  margin-bottom: 6px;
-}
-.badge-chip.gold   { background: linear-gradient(135deg,#fef3c7,#fde68a); color:#92400e; }
-.badge-chip.fire   { background: linear-gradient(135deg,#fee2e2,#fecaca); color:#991b1b; }
-.badge-chip.target { background: linear-gradient(135deg,#ede9fe,#ddd6fe); color:#5b21b6; }
-.badge-chip.grad   { background: linear-gradient(135deg,#dbeafe,#bfdbfe); color:#1e40af; }
-
-/* ── AGENTS DIRECTORY ───────────────────────────────────────────────────── */
-.directory-wrap {
-  max-width: 1100px;
-  margin: 30px auto;
-  padding: 0 20px 80px;
-}
-.directory-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-.directory-head h1 {
-  font-family: 'Syne',sans-serif;
-  font-size: 1.6rem;
-  font-weight: 800;
-}
-.directory-head p {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-.directory-controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.directory-search {
-  flex: 1;
-  min-width: 220px;
-  display: flex;
-  background: white;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color .2s;
-}
-.directory-search:focus-within { border-color: var(--orange); }
-.directory-search input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 10px 14px;
-  font-size: 14px;
-  font-family: 'DM Sans',sans-serif;
-  min-width: 0;
-}
-.directory-search i {
-  padding: 11px 12px;
-  color: var(--muted);
-  flex-shrink: 0;
-}
-.directory-sort {
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: white;
-  font-family: 'DM Sans',sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  outline: none;
-  cursor: pointer;
-  max-width: 200px;
-}
-.directory-sort:focus { border-color: var(--orange); }
-.directory-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
-}
-.directory-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-  transition: all .2s;
-}
-.directory-card:hover {
-  border-color: var(--orange);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.06);
-  text-decoration: none;
-  color: inherit;
-}
-.dir-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--light);
-}
-.dir-avatar-fallback {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg,#ff6000,#ff9f43);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-family: 'Syne',sans-serif;
-  font-weight: 800;
-  font-size: 22px;
-  flex-shrink: 0;
-}
-.dir-body { flex: 1; min-width: 0; }
-.dir-name {
-  font-weight: 800;
-  font-size: 15px;
-  margin-bottom: 3px;
-  word-break: break-word;
-}
-.dir-meta {
-  font-size: 11px;
-  color: var(--muted);
-  word-break: break-word;
-}
-.dir-stats {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 8px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.dir-stats strong { color: var(--orange); font-weight: 800; }
-
 html, body { overflow-x: hidden; }
 @media(max-width:480px) {
   .profile-wrap { margin: 20px auto; padding: 0 14px 60px; }
@@ -478,10 +278,6 @@ html, body { overflow-x: hidden; }
   .profile-stat-val { font-size: 1.15rem; }
   .profile-doc-btn { padding: 6px 10px; font-size: 10px; }
   .profile-doc-icon { width: 36px; height: 36px; font-size: 1rem; }
-  .directory-wrap { margin: 20px auto; padding: 0 14px 60px; }
-  .directory-head h1 { font-size: 1.3rem; }
-  .directory-sort { max-width: 100%; }
-  .rank-stats-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
@@ -510,53 +306,16 @@ html, body { overflow-x: hidden; }
 
 </div>
 
-<div id="directoryWrap" class="directory-wrap" style="display:none;"></div>
-
 <div id="toast"></div>
 
 <script src="config.js"></script>
 <script>
 document.getElementById('nav-wrap').innerHTML = buildNav('public');
 
-// Local helper — kept inside profile.html to avoid touching config.js.
-function publicCity(raw) {
-  if (!raw) return '';
-  const parts = String(raw).split(',').map(s => s.trim()).filter(Boolean);
-  if (parts.length === 0) return '';
-  if (parts.length === 1) return parts[0];
-  const last = parts[parts.length - 1];
-  const isCountry = /^(zambia|zm|zambia\.?)$/i.test(last);
-  return isCountry ? parts[parts.length - 2] : last;
-}
-
-// Local helper — the agent_leaderboard view must exist in Supabase.
-// If the view is missing, this returns [] and pages degrade gracefully.
-const _LB_METRIC_COLUMN = {
-  sales:      'confirmed_revenue',
-  commission: 'confirmed_commission',
-  chat:       'messages_30d',
-  recruiters: 'referred_agents_count',
-  learners:   'modules_completed',
-};
-
-async function getLeaderboard(metric = 'sales') {
-  const col = _LB_METRIC_COLUMN[metric] || 'confirmed_revenue';
-  try {
-    return await db.getAll('agent_leaderboard', {
-      order: `${col}.desc,agent_code.asc`,
-      limit: 100,
-    });
-  } catch (e) { return []; }
-}
-
 let currentAgent = null;
 let currentLevel = null;
-let _dirRows = [];
-let _dirSort = 'recent';
 
-// ═══════════════════════════════════════════════════════════════════════
-// LOAD PROFILE
-// ═══════════════════════════════════════════════════════════════════════
+// ── LOAD PROFILE ─────────────────────────────────────────────────────────
 async function loadProfile(identifier) {
   if (!identifier) return showNotFound();
 
@@ -571,38 +330,17 @@ async function loadProfile(identifier) {
     await loadLevels();
     await loadTiers();
 
-    // ── Aggregate stats from the leaderboard view (single row per agent).
-    let stats = null;
-    try {
-      const rows = await db.getAll('agent_leaderboard', { filter: `agent_code=eq.${agent.agent_code}`, limit: 1 });
-      stats = rows?.[0] || null;
-    } catch (e) { stats = null; }
+    // Fetch confirmed + paid sales
+    const sales = await db.getAll('sales', { filter: `agent_code=eq.${agent.agent_code}` });
+    const confirmed = sales.filter(s => s.status === 'confirmed' || s.status === 'paid');
+    const totalSales = confirmed.length;
+    const totalRevenue = confirmed.reduce((t,s) => t + (s.amount || 0), 0);
+    const customerSet = new Set(confirmed.map(s => s.customer_phone).filter(Boolean));
+    const customers = customerSet.size;
+    const level = calcAgentLevel(totalSales, totalRevenue);
+    currentLevel = level;
 
-    // ── Ranks across all metrics. Admin occupies rank #1, so agents
-    //    start at #2 — same convention as the agent dashboard.
-    const ranks = { sales: null, commission: null, chat: null, recruiters: null, learners: null };
-    const metricKeys = ['sales', 'commission', 'chat', 'recruiters', 'learners'];
-    for (const m of metricKeys) {
-      try {
-        const lb = await getLeaderboard(m);
-        const idx = lb.findIndex(r => r.agent_code === agent.agent_code);
-        ranks[m] = idx >= 0 ? idx + 2 : null;
-      } catch (e) { ranks[m] = null; }
-    }
-
-    // ── Privacy gate: phone / WhatsApp only for the agent themselves,
-    //    and only if their own row is still active.
-    let viewerIsSelf = false;
-    try {
-      if (auth.isLoggedIn()) {
-        const myProfile = await getProfile();
-        if (myProfile && myProfile.agent_code === agent.agent_code && agent.active === true) {
-          viewerIsSelf = true;
-        }
-      }
-    } catch (e) {}
-
-    // ── Training completion flag for the Achievement certificate.
+    // Check if all training modules completed
     let trainingDone = false;
     try {
       const allModules = await db.getAll('training_modules', { filter: 'active=eq.true' });
@@ -610,40 +348,11 @@ async function loadProfile(identifier) {
       trainingDone = allModules.length > 0 && progress.length === allModules.length;
     } catch (e) {}
 
-    // ── Badges.
-    const badges = [];
-    if (ranks.sales === 2) badges.push('<span class="badge-chip gold">🥇 Top Seller</span>');
-    if ((stats?.messages_30d || 0) > 100) badges.push('<span class="badge-chip fire">🔥 Chatterbox</span>');
-    if ((stats?.referred_agents_count || 0) > 2) badges.push('<span class="badge-chip target">🎯 Recruiter</span>');
-    if (trainingDone && (stats?.exam_best_pct || 0) >= 80) badges.push('<span class="badge-chip grad">🎓 Graduate</span>');
-
     const photoHtml = agent.profile_photo_url
       ? `<img src="${esc(agent.profile_photo_url)}" alt="${esc(agent.full_name)}" class="profile-photo"
               onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='flex');">
          <div class="profile-photo-fallback" style="display:none;">${(agent.full_name || '?')[0].toUpperCase()}</div>`
       : `<div class="profile-photo-fallback">${(agent.full_name || '?')[0].toUpperCase()}</div>`;
-
-    const city = publicCity(agent.location);
-
-    // ── Level label (Starter / Active / Performer …) from existing levels.
-    let levelLabel = '';
-    try {
-      const salesCount  = stats?.confirmed_sales_count || 0;
-      const revenueSum  = Number(stats?.confirmed_revenue || 0);
-      const lvl = calcAgentLevel(salesCount, revenueSum);
-      if (lvl && lvl.current) levelLabel = lvl.current.name;
-    } catch (e) {}
-
-    // ── Self-only contact rows (Phone + WhatsApp, NO email).
-    const contactRows = viewerIsSelf ? `
-      <div class="profile-info-card">
-        <div class="profile-info-title"><i class="fas fa-address-card"></i> My Contact Details</div>
-        <div class="profile-row"><span class="profile-lbl">Phone</span><span class="profile-val">${esc(agent.phone || '—')}</span></div>
-        <div class="profile-row"><span class="profile-lbl">WhatsApp</span><span class="profile-val">${esc(agent.whatsapp || '—')}</span></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;">
-          <i class="fas fa-lock"></i> Only visible to you. Other agents and visitors cannot see these.
-        </div>
-      </div>` : '';
 
     document.getElementById('profileContent').innerHTML = `
       <div class="profile-hero">
@@ -654,78 +363,22 @@ async function loadProfile(identifier) {
           </div>
           <div class="profile-name">${esc(agent.full_name)}</div>
           <div class="profile-id-line">${esc(agent.agent_id)} · ${esc(agent.agent_code)}</div>
-          ${levelLabel ? `<div class="profile-level"><i class="fas fa-award"></i> ${esc(levelLabel)}</div>` : ''}
-          <div style="margin-top:16px;">
-            <a href="profile.html" class="btn btn-outline btn-sm"
-               style="color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.25);">
-              <i class="fas fa-arrow-left"></i> All agents
-            </a>
-          </div>
+          ${level.current ? `<div class="profile-level"><i class="fas fa-award"></i> ${esc(level.current.name)}</div>` : ''}
         </div>
       </div>
-
-      ${badges.length ? `<div style="margin-bottom:18px;text-align:center;">${badges.join('')}</div>` : ''}
 
       <div class="profile-stats">
         <div class="profile-stat">
-          <div class="profile-stat-val" style="color:var(--orange);">${stats?.confirmed_sales_count || 0}</div>
+          <div class="profile-stat-val" style="color:var(--orange);">${totalSales}</div>
           <div class="profile-stat-lbl">Sales</div>
         </div>
         <div class="profile-stat">
-          <div class="profile-stat-val" style="color:#16a34a;">${fmtMoney(stats?.confirmed_revenue || 0)}</div>
+          <div class="profile-stat-val" style="color:#16a34a;">${fmtMoney(totalRevenue)}</div>
           <div class="profile-stat-lbl">Revenue</div>
         </div>
         <div class="profile-stat">
-          <div class="profile-stat-val">${stats?.leads_count || 0}</div>
-          <div class="profile-stat-lbl">Leads</div>
-        </div>
-      </div>
-
-      <div class="rank-stats-card">
-        <div class="rank-stats-title"><i class="fas fa-ranking-star"></i> Ranks &amp; Activity</div>
-        <div class="rank-stats-grid">
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val" style="color:var(--orange);">${ranks.sales ? '#' + ranks.sales : '—'}</div>
-            <div class="rank-stat-lbl">Sales Rank</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val" style="color:#16a34a;">${ranks.commission ? '#' + ranks.commission : '—'}</div>
-            <div class="rank-stat-lbl">Commission Rank</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val" style="color:#7c3aed;">${ranks.chat ? '#' + ranks.chat : '—'}</div>
-            <div class="rank-stat-lbl">Chat Rank</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${ranks.recruiters ? '#' + ranks.recruiters : '—'}</div>
-            <div class="rank-stat-lbl">Recruiter Rank</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${ranks.learners ? '#' + ranks.learners : '—'}</div>
-            <div class="rank-stat-lbl">Learner Rank</div>
-          </div>
-        </div>
-        <div class="rank-stats-grid" style="margin-top:14px;">
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${fmtMoney(stats?.confirmed_commission || 0)}</div>
-            <div class="rank-stat-lbl">Commission</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${stats?.messages_30d || 0}</div>
-            <div class="rank-stat-lbl">Messages (30d)</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${stats?.referred_agents_count || 0}</div>
-            <div class="rank-stat-lbl">Recruits</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${stats?.modules_completed || 0}</div>
-            <div class="rank-stat-lbl">Modules</div>
-          </div>
-          <div class="rank-stat-cell">
-            <div class="rank-stat-val">${stats?.exam_best_pct || 0}%</div>
-            <div class="rank-stat-lbl">Exam Best</div>
-          </div>
+          <div class="profile-stat-val">${customers}</div>
+          <div class="profile-stat-lbl">Customers</div>
         </div>
       </div>
 
@@ -745,7 +398,7 @@ async function loadProfile(identifier) {
         </div>
         <div class="profile-row">
           <span class="profile-lbl">Location</span>
-          <span class="profile-val">${esc(city || '—')}</span>
+          <span class="profile-val">${esc(agent.location || '—')}</span>
         </div>
         <div class="profile-row">
           <span class="profile-lbl">Joined</span>
@@ -757,8 +410,7 @@ async function loadProfile(identifier) {
         </div>
       </div>
 
-      ${contactRows}
-
+      <!-- DOCUMENTS -->
       <div class="profile-docs-card">
         <div class="profile-docs-title"><i class="fas fa-folder-open"></i> Official Documents</div>
 
@@ -825,7 +477,8 @@ async function loadProfile(identifier) {
 
       <div class="profile-cta">
         <a href="${waLink('Hi! I would like to order PhoneYa2-ZM products from ' + agent.full_name + ' (' + agent.agent_code + ').')}" target="_blank" class="btn btn-green">
-          <i class="fab fa-whatsapp"></i> Order via WhatsApp        </a>
+          <i class="fab fa-whatsapp"></i> Order via WhatsApp
+        </a>
         <a href="index.html" class="btn btn-outline">
           <i class="fas fa-home"></i> PhoneYa2 Home
         </a>
@@ -852,7 +505,6 @@ async function loadProfile(identifier) {
 function showNotFound() {
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('profileContent').style.display = 'none';
-  document.getElementById('directoryWrap').style.display = 'none';
   document.getElementById('notFoundState').style.display = 'block';
 }
 
@@ -861,111 +513,7 @@ function copyVerifyLink(agentId) {
   toast('✅ Verification link copied');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// AGENTS DIRECTORY
-// ═══════════════════════════════════════════════════════════════════════
-async function showDirectory() {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('profileContent').style.display = 'none';
-  document.getElementById('notFoundState').style.display = 'none';
-
-  const wrap = document.getElementById('directoryWrap');
-  wrap.style.display = 'block';
-
-  wrap.innerHTML = `
-    <div class="directory-head">
-      <div>
-        <h1>Agents Directory</h1>
-        <p>All verified PhoneYa2-ZM sales agents.</p>
-      </div>
-      <a href="index.html" class="btn btn-outline btn-sm"><i class="fas fa-home"></i> Home</a>
-    </div>
-    <div class="directory-controls">
-      <div class="directory-search">
-        <i class="fas fa-search"></i>
-        <input type="text" id="dirSearch" placeholder="Search by name or code…" oninput="renderDirectory()">
-      </div>
-      <select class="directory-sort" id="dirSort" onchange="onDirSortChange()">
-        <option value="recent">Recently joined</option>
-        <option value="sales">Top sellers</option>
-        <option value="chat">Most active</option>
-      </select>
-    </div>
-    <div class="directory-grid" id="dirGrid">
-      <div style="text-align:center;padding:40px;color:var(--muted);grid-column:1/-1;">
-        <i class="fas fa-spinner fa-spin"></i> Loading agents…
-      </div>
-    </div>`;
-
-  try {
-    _dirRows = await getLeaderboard('sales');
-  } catch (e) {
-    _dirRows = [];
-  }
-  renderDirectory();
-}
-
-function onDirSortChange() {
-  _dirSort = document.getElementById('dirSort').value || 'recent';
-  renderDirectory();
-}
-
-function renderDirectory() {
-  const grid = document.getElementById('dirGrid');
-  if (!grid) return;
-  const q = (document.getElementById('dirSearch')?.value || '').trim().toLowerCase();
-
-  let rows = [..._dirRows];
-  if (q) {
-    rows = rows.filter(r =>
-      (r.full_name || '').toLowerCase().includes(q) ||
-      (r.agent_code || '').toLowerCase().includes(q)
-    );
-  }
-
-  if (_dirSort === 'sales') {
-    rows.sort((a, b) => (b.confirmed_sales_count || 0) - (a.confirmed_sales_count || 0));
-  } else if (_dirSort === 'chat') {
-    rows.sort((a, b) => (b.messages_30d || 0) - (a.messages_30d || 0));
-  } else {
-    rows.sort((a, b) => new Date(b.joined_at || 0) - new Date(a.joined_at || 0));
-  }
-
-  if (!rows.length) {
-    grid.innerHTML = `
-      <div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1;">
-        <div style="font-size:2rem;margin-bottom:8px;">🔎</div>
-        <div>No agents found.</div>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = rows.map(r => {
-    const avatar = r.profile_photo_url
-      ? `<img class="dir-avatar" src="${esc(r.profile_photo_url)}" alt="${esc(r.full_name || 'Agent')}"
-              onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='flex');">
-         <div class="dir-avatar-fallback" style="display:none;">${esc((r.full_name || '?')[0].toUpperCase())}</div>`
-      : `<div class="dir-avatar-fallback">${esc((r.full_name || '?')[0].toUpperCase())}</div>`;
-
-    const city = publicCity(r.location);
-
-    return `<a class="directory-card" href="profile.html?id=${esc(r.agent_id)}">
-      ${avatar}
-      <div class="dir-body">
-        <div class="dir-name">${esc(r.full_name || r.agent_code)}</div>
-        <div class="dir-meta">${esc(r.agent_code)}${city ? ' · ' + esc(city) : ''}</div>
-        <div class="dir-stats">
-          <span><strong>${r.confirmed_sales_count || 0}</strong> sales</span>
-          <span><strong>${r.messages_30d || 0}</strong> msgs</span>
-        </div>
-      </div>
-    </a>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// DOCUMENT DOWNLOADS
-// ═══════════════════════════════════════════════════════════════════════
+// ── DOCUMENT DOWNLOADS (public-facing only) ──────────────────────────────
 async function downloadAgentIdCard() {
   if (!currentAgent) return;
   toast('🎫 Generating ID card…');
@@ -993,15 +541,13 @@ function downloadAchievementCert() {
   } catch(e) { toast('Error: ' + e.message); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// URL PARSING
-// ═══════════════════════════════════════════════════════════════════════
+// ── URL PARSING ──────────────────────────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
 const id     = params.get('id') || params.get('code') || '';
 if (id) {
   loadProfile(id.toUpperCase());
 } else {
-  showDirectory();
+  showNotFound();
 }
 </script>
 </body>
