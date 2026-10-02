@@ -1,5 +1,5 @@
 ---
-title: Ultra 3 Smart Watch
+title: Ultra 3 Smart Watch Extra
 price: 270
 original_price: 300
 stock: 1000
