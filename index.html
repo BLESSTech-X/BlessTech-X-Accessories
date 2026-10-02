@@ -715,37 +715,45 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
-  <!-- FLASH SALE SECTION -->
-  <div class="section-card" id="flash-section">
+  <!-- NEW ARRIVALS -->
+  <div class="section-card" id="new-arrivals-section">
     <div class="section-hdr">
       <div class="sec-hdr-left">
-        <h2>⚡ Flash Sale</h2>
-        <div class="flash-badge">Limited Stock</div>
-        <div class="countdown" id="countdown" aria-label="Countdown timer">
-          <div class="cd-unit"><div class="cd-num" id="cd-h">08</div><div class="cd-lbl">HRS</div></div>
-          <span class="cd-sep">:</span>
-          <div class="cd-unit"><div class="cd-num" id="cd-m">00</div><div class="cd-lbl">MIN</div></div>
-          <span class="cd-sep">:</span>
-          <div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">SEC</div></div>
-        </div>
+        <h2>🆕 New Arrivals</h2>
+        <span class="new-badge">Just Landed</span>
       </div>
       <div class="sec-hdr-right">
-        <a href="shop.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="shop.html" class="view-all-link">See All <i class="fa-solid fa-arrow-right"></i></a>
         <div class="scroll-btns">
-          <button class="scroll-btn" onclick="scrollTrack('flash-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="scroll-btn" onclick="scrollTrack('flash-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('new-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('new-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
       </div>
     </div>
     <div class="section-body">
-      <div class="h-track-wrap"><div class="h-track" id="flash-track">
-        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
-        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
-        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
-        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
-      </div></div>
+      <div class="h-track-wrap"><div class="h-track" id="new-track"></div></div>
     </div>
   </div>
+  
+  <!-- FEATURED — ALL PRODUCTS (Just For You) -->
+  <div class="section-card">
+    <div class="section-hdr">
+      <div class="sec-hdr-left"><h2>🛍️ Just For You</h2></div>
+      <div class="sec-hdr-right">
+        <a href="shop.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="scroll-btns">
+          <button class="scroll-btn" onclick="scrollTrack('jfy-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('jfy-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="h-track-wrap"><div class="h-track" id="jfy-track"></div></div>
+    </div>
+  </div>
+
+
+
   <!-- ─── NEWSLETTER SECTION ─── -->
 <div class="newsletter-section" style="background:linear-gradient(135deg,#0a0a14 0%,#1a1a3e 100%);border-radius:14px;padding:40px 24px;margin-bottom:16px;border:1px solid rgba(255,255,255,.06);">
   <div style="max-width:600px;margin:0 auto;text-align:center;">
@@ -795,24 +803,35 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     <div class="showcase-progress"><div class="showcase-progress-fill" id="showcase-progress-fill"></div></div>
   </div>
 
-
-  <!-- NEW ARRIVALS -->
-  <div class="section-card" id="new-arrivals-section">
+  <!-- FLASH SALE SECTION -->
+  <div class="section-card" id="flash-section">
     <div class="section-hdr">
       <div class="sec-hdr-left">
-        <h2>🆕 New Arrivals</h2>
-        <span class="new-badge">Just Landed</span>
+        <h2>⚡ Flash Sale</h2>
+        <div class="flash-badge">Limited Stock</div>
+        <div class="countdown" id="countdown" aria-label="Countdown timer">
+          <div class="cd-unit"><div class="cd-num" id="cd-h">08</div><div class="cd-lbl">HRS</div></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><div class="cd-num" id="cd-m">00</div><div class="cd-lbl">MIN</div></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">SEC</div></div>
+        </div>
       </div>
       <div class="sec-hdr-right">
-        <a href="shop.html" class="view-all-link">See All <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="shop.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
         <div class="scroll-btns">
-          <button class="scroll-btn" onclick="scrollTrack('new-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="scroll-btn" onclick="scrollTrack('new-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('flash-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="scroll-btn" onclick="scrollTrack('flash-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
       </div>
     </div>
     <div class="section-body">
-      <div class="h-track-wrap"><div class="h-track" id="new-track"></div></div>
+      <div class="h-track-wrap"><div class="h-track" id="flash-track">
+        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
+        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
+        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
+        <div class="skel-pc"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-line" style="height:11px;margin-bottom:6px"></div><div class="skel skel-line s" style="height:11px;margin-bottom:6px"></div></div></div>
+      </div></div>
     </div>
   </div>
 
@@ -891,23 +910,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
-  <!-- FEATURED — ALL PRODUCTS (Just For You) -->
-  <div class="section-card">
-    <div class="section-hdr">
-      <div class="sec-hdr-left"><h2>🛍️ Just For You</h2></div>
-      <div class="sec-hdr-right">
-        <a href="shop.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
-        <div class="scroll-btns">
-          <button class="scroll-btn" onclick="scrollTrack('jfy-track',-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="scroll-btn" onclick="scrollTrack('jfy-track',1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
-        </div>
-      </div>
-    </div>
-    <div class="section-body">
-      <div class="h-track-wrap"><div class="h-track" id="jfy-track"></div></div>
-    </div>
-  </div>
-
+  
   <!-- HOW TO ORDER -->
   <div class="howto-section">
     <div class="section-hdr" style="padding:14px 18px;border-bottom:1px solid #f0f0f0;">
