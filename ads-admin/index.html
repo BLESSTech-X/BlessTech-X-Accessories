@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/ads-shared.css">
   <style>
-    /* ── Admin page specific ──────────────────────────────────────────── */
     .admin-loading {
       min-height: 60vh;
       display: flex; align-items: center; justify-content: center;
@@ -27,10 +26,8 @@
     }
     .admin-loading .py2-spinner-dark { width: 34px; height: 34px; border-width: 3px; }
 
-    /* Topbar override — admin pages get a slightly darker accent */
     .py2-topbar.admin .py2-topbar-brand span { color: #feca57; }
 
-    /* Queue card */
     .queue-item {
       display: flex; gap: 16px;
       padding: 18px;
@@ -73,15 +70,12 @@
       font-size: 12px; color: var(--py2-muted); margin-bottom: 10px;
     }
     .queue-meta a { color: var(--py2-orange); word-break: break-all; }
-    .queue-actions {
-      display: flex; gap: 8px; flex-wrap: wrap;
-    }
+    .queue-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     @media (max-width: 700px) {
       .queue-item { flex-direction: column; }
       .queue-item .ad-thumb { width: 100%; height: 160px; }
     }
 
-    /* Reports item */
     .report-item {
       padding: 16px;
       background: white;
@@ -112,7 +106,6 @@
       font-size: 11px; color: var(--py2-muted); margin-bottom: 10px;
     }
 
-    /* Log entry */
     .log-item {
       display: flex; gap: 12px;
       padding: 14px 16px;
@@ -136,7 +129,6 @@
       line-height: 1.5;
     }
 
-    /* Analytics top performer row */
     .analytics-row {
       display: flex; align-items: center; gap: 12px;
       padding: 12px 0;
@@ -166,22 +158,103 @@
       display: block;
     }
 
-    /* Warning banner for env check */
-    .admin-warning {
+    /* ── INLINE SIGN-IN / DENIED SCREENS ───────────────────────────────── */
+    #signin-screen, #denied-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%),
+        radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%),
+        var(--py2-light);
+    }
+    #signin-screen .py2-auth-card,
+    #denied-screen .py2-auth-card { max-width: 420px; }
+    #signin-error {
+      display: none;
       background: rgba(230,57,70,.08);
       border: 1px solid rgba(230,57,70,.25);
-      border-radius: var(--py2-radius);
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      font-size: 13.5px; color: #b91c1c;
+      border-radius: var(--py2-radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #b91c1c;
+      margin-bottom: 14px;
       line-height: 1.5;
+    }
+    #signin-error.show { display: block; }
+
+    #denied-screen .denied-icon {
+      font-size: 3rem; text-align: center; margin-bottom: 12px;
     }
   </style>
 </head>
 <body class="py2-page">
 
+<!-- ═══ INLINE SIGN-IN ═══ -->
+<div id="signin-screen" style="display:none;">
+  <div class="py2-auth-card">
+    <div class="py2-auth-brand">
+      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
+           alt="PhoneYa2"
+           onerror="this.style.display='none'">
+      <h1>Admin sign in</h1>
+      <p>Sign in with an admin account to manage ads.</p>
+    </div>
+
+    <div id="signin-error"></div>
+
+    <form id="signin-form" novalidate>
+      <div class="py2-field">
+        <label class="py2-label" for="si-email">Email</label>
+        <input class="py2-input" type="email" id="si-email" required
+               autocomplete="email" placeholder="admin@example.com">
+      </div>
+      <div class="py2-field">
+        <label class="py2-label" for="si-password">Password</label>
+        <input class="py2-input" type="password" id="si-password" required
+               autocomplete="current-password" placeholder="Your password">
+      </div>
+      <button type="submit" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block" id="signin-submit">
+        <i class="fa-solid fa-shield-halved"></i> Sign In
+      </button>
+    </form>
+
+    <div class="py2-auth-alt">
+      Not an admin? <a href="/advertiser/">Go to your dashboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ACCESS DENIED (signed in but not admin) ═══ -->
+<div id="denied-screen" style="display:none;">
+  <div class="py2-auth-card">
+    <div class="denied-icon">🚫</div>
+    <div class="py2-auth-brand" style="margin-bottom:0;">
+      <h1>Admin access required</h1>
+      <p id="denied-name" style="margin-top:6px;"></p>
+    </div>
+    <div class="py2-notice py2-notice-warn" style="margin-top:16px;">
+      <span class="py2-notice-icon">ℹ️</span>
+      <div>
+        You're signed in, but this account isn't an admin. If you think this is
+        a mistake, contact the site owner.
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+      <a href="/advertiser/" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block">
+        <i class="fa-solid fa-arrow-right"></i> Go to my dashboard
+      </a>
+      <button type="button" class="py2-btn py2-btn-secondary py2-btn-lg py2-btn-block" id="denied-signout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ TOP BAR ═══ -->
-<div class="py2-topbar admin">
+<div class="py2-topbar admin" id="admin-topbar" style="display:none;">
   <div class="py2-topbar-inner">
     <a href="/" class="py2-topbar-brand">
       <span style="font-size:22px;">📱</span>
@@ -202,16 +275,15 @@
 </div>
 
 <!-- ═══ LOADING ═══ -->
-<div id="admin-loading" class="admin-loading">
+<div id="admin-loading" class="admin-loading" style="display:none;">
   <div class="py2-spinner py2-spinner-dark"></div>
-  <div>Verifying admin access…</div>
+  <div>Loading admin panel…</div>
 </div>
 
 <!-- ═══ MAIN ═══ -->
 <div id="admin-main" style="display:none;">
   <div class="py2-container">
 
-    <!-- Header -->
     <div class="py2-dash-head">
       <div>
         <h1 class="py2-h1">Ads Admin</h1>
@@ -224,7 +296,6 @@
       </button>
     </div>
 
-    <!-- Top stats -->
     <div class="py2-dash-stats">
       <div class="py2-stat">
         <div class="py2-stat-label">Pending Review</div>
@@ -244,7 +315,6 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="py2-tabs" role="tablist">
       <button class="py2-tab active" data-tab="queue" type="button">
         <i class="fa-solid fa-inbox"></i> Ad Queue <span class="count" id="tab-count-queue">0</span>
@@ -266,12 +336,10 @@
       </button>
     </div>
 
-    <!-- ── TAB: AD QUEUE ── -->
     <section id="tab-queue" class="tab-panel">
       <div id="queue-list"></div>
     </section>
 
-    <!-- ── TAB: ADVERTISERS ── -->
     <section id="tab-advertisers" class="tab-panel" style="display:none;">
       <div class="py2-card">
         <div class="py2-card-head">
@@ -282,7 +350,6 @@
       </div>
     </section>
 
-    <!-- ── TAB: ALL ADS ── -->
     <section id="tab-ads" class="tab-panel" style="display:none;">
       <div class="py2-card">
         <div class="py2-card-head">
@@ -303,7 +370,6 @@
       </div>
     </section>
 
-    <!-- ── TAB: REPORTS ── -->
     <section id="tab-reports" class="tab-panel" style="display:none;">
       <div class="py2-card" style="margin-bottom:16px;">
         <div class="py2-card-body" style="padding:14px 16px;">
@@ -318,7 +384,6 @@
       <div id="reports-list"></div>
     </section>
 
-    <!-- ── TAB: LOG ── -->
     <section id="tab-log" class="tab-panel" style="display:none;">
       <div class="py2-card">
         <div class="py2-card-head">
@@ -329,7 +394,6 @@
       </div>
     </section>
 
-    <!-- ── TAB: ANALYTICS ── -->
     <section id="tab-analytics" class="tab-panel" style="display:none;">
       <div class="py2-dash-stats">
         <div class="py2-stat">
@@ -365,8 +429,8 @@
       </div>
     </section>
 
-  </div><!-- /py2-container -->
-</div><!-- /admin-main -->
+  </div>
+</div>
 
 <!-- ═══ MODAL: APPROVE ═══ -->
 <div class="py2-modal-backdrop" id="modal-approve">
@@ -405,7 +469,7 @@
         The advertiser will see your reason and can edit and resubmit.
       </p>
       <div class="py2-field">
-        <label class="py2-label" for="reject-reason">Reason <span class="req">*</span></label>
+        <label class="py2-label" for="reject-reason-select">Reason <span class="req">*</span></label>
         <select class="py2-select" id="reject-reason-select">
           <option value="">— Choose a preset —</option>
           <option>Illegal products or services</option>
@@ -470,7 +534,7 @@
   </div>
 </div>
 
-<!-- ═══ MODAL: CONFIRM KILL SWITCH ═══ -->
+<!-- ═══ MODAL: KILL SWITCH ═══ -->
 <div class="py2-modal-backdrop" id="modal-kill">
   <div class="py2-modal py2-modal-confirm">
     <div class="py2-modal-head">
@@ -492,10 +556,8 @@
 <script src="/ads-config.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════════════════════════
-   PhoneYa2 Ads — Admin Panel
-   ────────────────────────────────────────────────────────────────────────
-   Every write action is RLS-gated by is_admin(). This script only makes
-   requests; the database decides what's allowed.
+   PhoneYa2 Ads — Admin Panel (v2)
+   Inline sign-in + inline "not admin" screen. No redirects.
    ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -514,16 +576,46 @@
   var advertisers = [];
   var reports     = [];
   var logEntries  = [];
-  var statsByAd   = {}; // { ad_id: { impressions, clicks, sources: {} } }
+  var statsByAd   = {};
   var adsStatusFilter = 'all';
   var adsSearch       = '';
   var advSearch       = '';
   var reportFilter    = 'open';
-
-  // Pending action state for modals
   var pending = { ad: null, report: null, killType: null };
 
   var $ = function (id) { return document.getElementById(id); };
+
+  var screen = {
+    signin: $('signin-screen'),
+    denied: $('denied-screen'),
+    topbar: $('admin-topbar'),
+    loading: $('admin-loading'),
+    main: $('admin-main')
+  };
+  var signinForm     = $('signin-form');
+  var signinEmail    = $('si-email');
+  var signinPassword = $('si-password');
+  var signinSubmit   = $('signin-submit');
+  var signinError    = $('signin-error');
+  var deniedName     = $('denied-name');
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SCREEN SWITCHING
+  // ═══════════════════════════════════════════════════════════════════════
+  function showScreen(name) {
+    ['signin','denied','topbar','loading','main'].forEach(function (k) {
+      var el = screen[k];
+      if (!el) return;
+      if (k === name) {
+        el.style.display = (k === 'signin' || k === 'denied') ? 'flex' : (k === 'topbar' ? '' : 'block');
+      } else {
+        el.style.display = 'none';
+      }
+    });
+    if (name === 'signin') {
+      setTimeout(function () { try { signinEmail.focus(); } catch (e) {} }, 100);
+    }
+  }
 
   // ═══════════════════════════════════════════════════════════════════════
   // HELPERS
@@ -563,25 +655,44 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // AUTH GATE — must be signed in AND have role='admin'
+  // SIGN IN HANDLER
   // ═══════════════════════════════════════════════════════════════════════
-  function gate() {
-    session = P.auth.getSession();
-    if (!session || !session.user) {
-      window.location.href = '/advertise/';
-      return Promise.resolve(false);
+  signinForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    signinError.classList.remove('show');
+
+    var email = signinEmail.value.trim();
+    var pw    = signinPassword.value;
+
+    if (!email || !pw) {
+      signinError.textContent = 'Please enter your email and password.';
+      signinError.classList.add('show');
+      return;
     }
-    return P.db.select('profiles', 'id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
-      .then(function (rows) {
-        if (!rows || !rows[0] || rows[0].role !== 'admin') {
-          // Signed in but not an admin — send them to their own dashboard
-          window.location.href = '/advertiser/';
-          return false;
-        }
-        profile = rows[0];
-        return true;
+
+    signinSubmit.disabled = true;
+    var orig = signinSubmit.innerHTML;
+    signinSubmit.innerHTML = '<span class="py2-spinner"></span> Signing in…';
+
+    P.auth.signin(email, pw)
+      .then(function () {
+        return bootAfterSignin();
+      })
+      .catch(function (err) {
+        signinError.textContent = err.message || 'Sign in failed. Please try again.';
+        signinError.classList.add('show');
+        signinSubmit.disabled = false;
+        signinSubmit.innerHTML = orig;
       });
-  }
+  });
+
+  $('denied-signout').addEventListener('click', function () {
+    P.auth.signout().then(function () {
+      session = null;
+      profile = null;
+      showScreen('signin');
+    });
+  });
 
   // ═══════════════════════════════════════════════════════════════════════
   // DATA LOADING
@@ -594,12 +705,10 @@
       session.access_token
     ).then(function (rows) { ads = rows || []; });
   }
-
   function loadAdvertisers() {
     return P.db.select('advertisers', 'order=joined_at.desc', session.access_token)
       .then(function (rows) { advertisers = rows || []; });
   }
-
   function loadReports() {
     return P.db.select(
       'ad_reports',
@@ -607,7 +716,6 @@
       session.access_token
     ).then(function (rows) { reports = rows || []; });
   }
-
   function loadLog() {
     return P.db.select(
       'ad_moderation_log',
@@ -615,7 +723,6 @@
       session.access_token
     ).then(function (rows) { logEntries = rows || []; });
   }
-
   function loadStats() {
     return Promise.all([
       P.db.select('ad_impressions', 'select=ad_id,source', session.access_token),
@@ -637,18 +744,12 @@
       });
     });
   }
-
   function reloadAll() {
-    return Promise.all([
-      loadAds(),
-      loadAdvertisers(),
-      loadReports(),
-      loadLog()
-    ]).then(loadStats);
+    return Promise.all([loadAds(), loadAdvertisers(), loadReports(), loadLog()]).then(loadStats);
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // STATS BAR
+  // RENDER: STATS BAR
   // ═══════════════════════════════════════════════════════════════════════
   function renderTopStats() {
     var pendingCount = ads.filter(function (a) { return a.status === 'pending'; }).length;
@@ -663,7 +764,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB: AD QUEUE (pending ads)
+  // RENDER: AD QUEUE
   // ═══════════════════════════════════════════════════════════════════════
   function renderQueue() {
     var list = ads.filter(function (a) { return a.status === 'pending'; });
@@ -676,7 +777,6 @@
         '</div>';
       return;
     }
-
     var html = '';
     list.forEach(function (a) {
       var biz = a.advertisers ? a.advertisers.business_name : 'Unknown';
@@ -711,15 +811,10 @@
         '</div>';
     });
     $('queue-list').innerHTML = html;
-    wireQueueActions();
-  }
-
-  function wireQueueActions() {
     $('queue-list').querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act = btn.getAttribute('data-act');
-        var id  = btn.getAttribute('data-id');
-        var ad  = ads.find(function (x) { return x.id === id; });
+        var ad = ads.find(function (x) { return x.id === btn.getAttribute('data-id'); });
         if (!ad) return;
         if (act === 'approve') openApprove(ad);
         if (act === 'reject')  openReject(ad);
@@ -729,7 +824,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB: ADVERTISERS
+  // RENDER: ADVERTISERS
   // ═══════════════════════════════════════════════════════════════════════
   function renderAdvertisers() {
     var q = advSearch.toLowerCase().trim();
@@ -744,28 +839,23 @@
       return;
     }
     var counts = {};
-    ads.forEach(function (a) {
-      counts[a.advertiser_id] = (counts[a.advertiser_id] || 0) + 1;
-    });
-    var html =
-      '<table class="py2-table">' +
-      '<thead><tr>' +
-        '<th>Business</th><th>Tier</th><th>Ads</th><th>Status</th><th>Joined</th><th></th>' +
+    ads.forEach(function (a) { counts[a.advertiser_id] = (counts[a.advertiser_id] || 0) + 1; });
+    var html = '<table class="py2-table"><thead><tr>' +
+      '<th>Business</th><th>Tier</th><th>Ads</th><th>Status</th><th>Joined</th><th></th>' +
       '</tr></thead><tbody>';
     list.forEach(function (a) {
       var adCount = counts[a.id] || 0;
       var stat = a.status === 'active' ? '<span class="py2-badge py2-badge-approved">Active</span>'
         : a.status === 'suspended' ? '<span class="py2-badge py2-badge-paused">Suspended</span>'
         : '<span class="py2-badge py2-badge-banned">Banned</span>';
-      html +=
-        '<tr>' +
-          '<td><strong>' + esc(a.business_name) + '</strong><br>' +
-            '<span style="color:var(--py2-muted);font-size:12px;">' + esc(a.email) + '</span></td>' +
-          '<td>' + tierBadge(a.tier) + '</td>' +
-          '<td>' + num(adCount) + '</td>' +
-          '<td>' + stat + '</td>' +
-          '<td style="font-size:12px;color:var(--py2-muted);">' + esc(P.formatDate(a.joined_at)) + '</td>' +
-          '<td><button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-view-adv="' + a.id + '">View</button></td>' +
+      html += '<tr>' +
+        '<td><strong>' + esc(a.business_name) + '</strong><br>' +
+          '<span style="color:var(--py2-muted);font-size:12px;">' + esc(a.email) + '</span></td>' +
+        '<td>' + tierBadge(a.tier) + '</td>' +
+        '<td>' + num(adCount) + '</td>' +
+        '<td>' + stat + '</td>' +
+        '<td style="font-size:12px;color:var(--py2-muted);">' + esc(P.formatDate(a.joined_at)) + '</td>' +
+        '<td><button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-view-adv="' + a.id + '">View</button></td>' +
         '</tr>';
     });
     html += '</tbody></table>';
@@ -789,7 +879,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB: ALL ADS
+  // RENDER: ALL ADS
   // ═══════════════════════════════════════════════════════════════════════
   function renderAllAds() {
     var q = adsSearch.toLowerCase().trim();
@@ -802,39 +892,35 @@
       $('ads-body').innerHTML = '<div class="py2-table-empty">No ads match.</div>';
       return;
     }
-    var html =
-      '<table class="py2-table">' +
-      '<thead><tr>' +
-        '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
+    var html = '<table class="py2-table"><thead><tr>' +
+      '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
       '</tr></thead><tbody>';
     list.forEach(function (a) {
       var biz = a.advertisers ? a.advertisers.business_name : '—';
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
-      html +=
-        '<tr>' +
-          '<td><strong>' + esc(a.title) + '</strong><br>' +
-            '<span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.slug) + '</span></td>' +
-          '<td>' + esc(biz) + '</td>' +
-          '<td>' + statusBadge(a.status) + '</td>' +
-          '<td>' + num(a.weight) + '</td>' +
-          '<td>' + num(s.impressions) + '</td>' +
-          '<td>' + num(s.clicks) + '</td>' +
-          '<td style="white-space:nowrap;">' +
-            (a.status === 'approved'
-              ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>'
-              : '') +
-            (a.status === 'paused'
-              ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>'
-              : '') +
-            (a.status === 'pending'
-              ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="approve" data-id="' + a.id + '" style="color:#16a34a;"><i class="fa-solid fa-check"></i></button>' +
-                '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reject" data-id="' + a.id + '" style="color:#b91c1c;"><i class="fa-solid fa-xmark"></i></button>'
-              : '') +
-            (a.status !== 'banned'
-              ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:#b91c1c;" title="Ban"><i class="fa-solid fa-ban"></i></button>'
-              : '') +
-          '</td>' +
-        '</tr>';
+      html += '<tr>' +
+        '<td><strong>' + esc(a.title) + '</strong><br>' +
+          '<span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.slug) + '</span></td>' +
+        '<td>' + esc(biz) + '</td>' +
+        '<td>' + statusBadge(a.status) + '</td>' +
+        '<td>' + num(a.weight) + '</td>' +
+        '<td>' + num(s.impressions) + '</td>' +
+        '<td>' + num(s.clicks) + '</td>' +
+        '<td style="white-space:nowrap;">' +
+          (a.status === 'approved'
+            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>'
+            : '') +
+          (a.status === 'paused'
+            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>'
+            : '') +
+          (a.status === 'pending'
+            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="approve" data-id="' + a.id + '" style="color:#16a34a;"><i class="fa-solid fa-check"></i></button>' +
+              '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reject" data-id="' + a.id + '" style="color:#b91c1c;"><i class="fa-solid fa-xmark"></i></button>'
+            : '') +
+          (a.status !== 'banned'
+            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:#b91c1c;" title="Ban"><i class="fa-solid fa-ban"></i></button>'
+            : '') +
+        '</td></tr>';
     });
     html += '</tbody></table>';
     $('ads-body').innerHTML = html;
@@ -858,7 +944,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB: REPORTS
+  // RENDER: REPORTS
   // ═══════════════════════════════════════════════════════════════════════
   function renderReports() {
     var list = reports.filter(function (r) {
@@ -905,17 +991,13 @@
         '</div>';
     });
     $('reports-list').innerHTML = html;
-
     $('reports-list').querySelectorAll('[data-report-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act  = btn.getAttribute('data-report-act');
         var rid  = btn.getAttribute('data-report');
         var adId = btn.getAttribute('data-ad');
         var rep  = reports.find(function (x) { return x.id === rid; });
-        if (act === 'dismiss') {
-          resolveReport(rep, null, 'dismiss_report');
-          return;
-        }
+        if (act === 'dismiss') { resolveReport(rep, null, 'dismiss_report'); return; }
         var ad = ads.find(function (x) { return x.id === adId; });
         if (act === 'pause')  openKill(ad, 'pause', rep);
         if (act === 'ban')    openBan(ad, rep);
@@ -924,7 +1006,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB: LOG
+  // RENDER: LOG
   // ═══════════════════════════════════════════════════════════════════════
   function renderLog() {
     if (!logEntries.length) {
@@ -932,13 +1014,13 @@
       return;
     }
     var iconMap = {
-      approve:        { icon: 'fa-check',        bg: 'linear-gradient(135deg,#16a34a,#22c55e)' },
-      reject:         { icon: 'fa-xmark',        bg: 'linear-gradient(135deg,#dc2626,#ef4444)' },
-      ban:            { icon: 'fa-ban',          bg: 'linear-gradient(135deg,#0a0a14,#3a3a4a)' },
-      pause:          { icon: 'fa-pause',        bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' },
-      unpause:        { icon: 'fa-play',         bg: 'linear-gradient(135deg,#2563eb,#3b82f6)' },
-      resolve_report: { icon: 'fa-flag-checkered', bg: 'linear-gradient(135deg,#f59e0b,#fbbf24)' },
-      dismiss_report: { icon: 'fa-check-double', bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' }
+      approve:        { icon: 'fa-check',         bg: 'linear-gradient(135deg,#16a34a,#22c55e)' },
+      reject:         { icon: 'fa-xmark',         bg: 'linear-gradient(135deg,#dc2626,#ef4444)' },
+      ban:            { icon: 'fa-ban',           bg: 'linear-gradient(135deg,#0a0a14,#3a3a4a)' },
+      pause:          { icon: 'fa-pause',         bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' },
+      unpause:        { icon: 'fa-play',          bg: 'linear-gradient(135deg,#2563eb,#3b82f6)' },
+      resolve_report: { icon: 'fa-flag-checkered',bg: 'linear-gradient(135deg,#f59e0b,#fbbf24)' },
+      dismiss_report: { icon: 'fa-check-double',  bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' }
     };
     var html = '';
     logEntries.forEach(function (e) {
@@ -960,7 +1042,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB: ANALYTICS
+  // RENDER: ANALYTICS
   // ═══════════════════════════════════════════════════════════════════════
   function renderAnalytics() {
     var totalImp = 0, totalClk = 0, adshare = 0, byWa = 0, byFb = 0, byIg = 0;
@@ -977,18 +1059,15 @@
         if (k === 'instagram') byIg    += s.sources[k];
       });
     });
-
     $('an-impressions').textContent = num(totalImp);
     $('an-clicks').textContent      = num(totalClk);
     $('an-ctr').textContent         = ctr(totalImp, totalClk);
     $('an-adshare').textContent     = num(adshare);
 
-    // Top ads by CTR (min 5 impressions to qualify)
     var top = perAd.filter(function (x) { return x.impressions >= 5; })
                     .sort(function (a, b) { return b.ctr - a.ctr; })
                     .slice(0, 10);
     if (!top.length) {
-      // Fall back to top by impressions
       top = perAd.slice().sort(function (a, b) { return b.impressions - a.impressions; }).slice(0, 10);
     }
     if (!top.length) {
@@ -1011,7 +1090,6 @@
       }).join('');
     }
 
-    // Traffic sources
     var totalSrc = adshare + byWa + byFb + byIg || 1;
     function bar(label, n, color) {
       var pct = Math.round((n / totalSrc) * 100);
@@ -1042,12 +1120,10 @@
       performed_by: session.user.id,
       notes:        notes || null
     }, session.access_token).catch(function (e) {
-      // Logging is best-effort — don't block the main action if it fails
       console.warn('moderation log failed:', e && e.message);
     });
   }
 
-  // ── Approve ────────────────────────────────────────────────────────────
   function openApprove(ad) {
     pending.ad = ad;
     $('approve-note').value = '';
@@ -1058,20 +1134,13 @@
     var ad = pending.ad;
     var note = $('approve-note').value.trim() || null;
     closeModal('modal-approve');
-
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'approved' }, session.access_token)
-      .then(function () {
-        return logAction(ad.id, 'approve', null, note);
-      })
-      .then(function () {
-        P.toast('Ad approved — now live', 'success');
-        return reloadAll();
-      })
+      .then(function () { return logAction(ad.id, 'approve', null, note); })
+      .then(function () { P.toast('Ad approved — now live', 'success'); return reloadAll(); })
       .then(function () { renderAll(); })
       .catch(function (e) { P.toast(e.message || 'Could not approve', 'error'); });
   });
 
-  // ── Reject ─────────────────────────────────────────────────────────────
   function openReject(ad) {
     pending.ad = ad;
     $('reject-reason-select').value = '';
@@ -1085,31 +1154,16 @@
     var preset = $('reject-reason-select').value.trim();
     var detail = $('reject-reason-text').value.trim();
     var note   = $('reject-note').value.trim() || null;
-
-    if (!detail) {
-      P.toast('Please write a rejection reason for the advertiser', 'error');
-      return;
-    }
+    if (!detail) { P.toast('Please write a rejection reason for the advertiser', 'error'); return; }
     var fullReason = preset ? (preset + ' — ' + detail) : detail;
-
     closeModal('modal-reject');
-
-    P.db.update('ads', 'id=eq.' + ad.id, {
-      status: 'rejected',
-      rejection_reason: fullReason
-    }, session.access_token)
-      .then(function () {
-        return logAction(ad.id, 'reject', fullReason, note);
-      })
-      .then(function () {
-        P.toast('Ad rejected', 'success');
-        return reloadAll();
-      })
+    P.db.update('ads', 'id=eq.' + ad.id, { status: 'rejected', rejection_reason: fullReason }, session.access_token)
+      .then(function () { return logAction(ad.id, 'reject', fullReason, note); })
+      .then(function () { P.toast('Ad rejected', 'success'); return reloadAll(); })
       .then(function () { renderAll(); })
       .catch(function (e) { P.toast(e.message || 'Could not reject', 'error'); });
   });
 
-  // ── Ban ────────────────────────────────────────────────────────────────
   function openBan(ad, report) {
     pending.ad = ad;
     pending.report = report || null;
@@ -1120,31 +1174,17 @@
     if (!pending.ad) return;
     var ad = pending.ad;
     var reason = $('ban-reason').value.trim();
-    if (!reason) {
-      P.toast('Please explain why this ad is being banned', 'error');
-      return;
-    }
+    if (!reason) { P.toast('Please explain why this ad is being banned', 'error'); return; }
     var linkedReport = pending.report;
     closeModal('modal-ban');
-
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'banned' }, session.access_token)
-      .then(function () {
-        return logAction(ad.id, 'ban', reason, null);
-      })
-      .then(function () {
-        if (linkedReport) {
-          return resolveReport(linkedReport, reason, 'resolve_report');
-        }
-      })
-      .then(function () {
-        P.toast('Ad banned', 'success');
-        return reloadAll();
-      })
+      .then(function () { return logAction(ad.id, 'ban', reason, null); })
+      .then(function () { if (linkedReport) return resolveReport(linkedReport, reason, 'resolve_report'); })
+      .then(function () { P.toast('Ad banned', 'success'); return reloadAll(); })
       .then(function () { renderAll(); })
       .catch(function (e) { P.toast(e.message || 'Could not ban', 'error'); });
   });
 
-  // ── Kill switch (pause/resume) ─────────────────────────────────────────
   function openKill(ad, type, report) {
     pending.ad = ad;
     pending.killType = type;
@@ -1171,35 +1211,22 @@
     var newStatus = type === 'pause' ? 'paused' : 'approved';
     var action = type === 'pause' ? 'pause' : 'unpause';
     closeModal('modal-kill');
-
     P.db.update('ads', 'id=eq.' + ad.id, { status: newStatus }, session.access_token)
-      .then(function () {
-        return logAction(ad.id, action, null, null);
-      })
-      .then(function () {
-        if (linkedReport && type === 'pause') {
-          return resolveReport(linkedReport, 'Ad paused after report', 'resolve_report');
-        }
-      })
-      .then(function () {
-        P.toast(type === 'pause' ? 'Ad deactivated' : 'Ad reactivated', 'success');
-        return reloadAll();
-      })
+      .then(function () { return logAction(ad.id, action, null, null); })
+      .then(function () { if (linkedReport && type === 'pause') return resolveReport(linkedReport, 'Ad paused after report', 'resolve_report'); })
+      .then(function () { P.toast(type === 'pause' ? 'Ad deactivated' : 'Ad reactivated', 'success'); return reloadAll(); })
       .then(function () { renderAll(); })
       .catch(function (e) { P.toast(e.message || 'Could not update ad', 'error'); });
   });
 
-  // ── Resolve / dismiss a report ─────────────────────────────────────────
   function resolveReport(report, reason, action) {
     if (!report) return Promise.resolve();
     return P.db.update('ad_reports', 'id=eq.' + report.id, { resolved: true }, session.access_token)
-      .then(function () {
-        return logAction(report.ad_id, action, reason || null, null);
-      });
+      .then(function () { return logAction(report.ad_id, action, reason || null, null); });
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // MODAL CLOSE BUTTONS
+  // MODAL CLOSE
   // ═══════════════════════════════════════════════════════════════════════
   document.querySelectorAll('[data-close]').forEach(function (btn) {
     btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close')); });
@@ -1234,18 +1261,9 @@
   // ═══════════════════════════════════════════════════════════════════════
   // FILTERS & SEARCH
   // ═══════════════════════════════════════════════════════════════════════
-  $('ads-status-filter').addEventListener('change', function () {
-    adsStatusFilter = this.value;
-    renderAllAds();
-  });
-  $('ads-search').addEventListener('input', function () {
-    adsSearch = this.value;
-    renderAllAds();
-  });
-  $('adv-search').addEventListener('input', function () {
-    advSearch = this.value;
-    renderAdvertisers();
-  });
+  $('ads-status-filter').addEventListener('change', function () { adsStatusFilter = this.value; renderAllAds(); });
+  $('ads-search').addEventListener('input', function () { adsSearch = this.value; renderAllAds(); });
+  $('adv-search').addEventListener('input', function () { advSearch = this.value; renderAdvertisers(); });
   document.querySelectorAll('.report-filter').forEach(function (btn) {
     btn.addEventListener('click', function () {
       document.querySelectorAll('.report-filter').forEach(function (b) { b.classList.remove('active'); });
@@ -1277,12 +1295,15 @@
 
   $('btn-signout').addEventListener('click', function () {
     P.auth.signout().then(function () {
-      window.location.href = '/advertise/';
+      session = null;
+      profile = null;
+      ads = []; advertisers = []; reports = []; logEntries = []; statsByAd = {};
+      showScreen('signin');
     });
   });
 
   // ═══════════════════════════════════════════════════════════════════════
-  // RENDER EVERYTHING
+  // RENDER ALL
   // ═══════════════════════════════════════════════════════════════════════
   function renderAll() {
     renderTopStats();
@@ -1295,25 +1316,50 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // BOOT
+  // BOOT — runs after sign-in (or on page load if already signed in)
   // ═══════════════════════════════════════════════════════════════════════
-  gate().then(function (ok) {
-    if (!ok) return;
-    return reloadAll().then(function () {
-      $('admin-loading').style.display = 'none';
-      $('admin-main').style.display    = 'block';
-      $('topbar-admin').textContent    = profile.full_name || profile.email || 'Admin';
-      renderAll();
-    });
-  }).catch(function (e) {
-    $('admin-loading').innerHTML =
-      '<div style="text-align:center;padding:40px;">' +
-      '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Could not load admin panel</h3>' +
-      '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' +
-      (e.message || 'Please try again.') + '</p>' +
-      '<button onclick="location.reload()" class="py2-btn py2-btn-primary" style="margin-top:16px;">Retry</button>' +
-      '</div>';
-  });
+  function bootAfterSignin() {
+    session = P.auth.getSession();
+    if (!session || !session.user) {
+      showScreen('signin');
+      return Promise.resolve();
+    }
+    showScreen('loading');
+    return P.db.select('profiles', 'id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
+      .then(function (rows) {
+        profile = rows && rows[0] ? rows[0] : null;
+        if (!profile || profile.role !== 'admin') {
+          deniedName.textContent = session.user.email ? ('Signed in as ' + session.user.email) : '';
+          showScreen('denied');
+          return Promise.resolve(null);
+        }
+        return reloadAll().then(function () {
+          $('topbar-admin').textContent = profile.full_name || profile.email || 'Admin';
+          showScreen('main');
+          renderAll();
+        });
+      })
+      .catch(function (err) {
+        showScreen('loading');
+        screen.loading.innerHTML =
+          '<div style="text-align:center;padding:40px;">' +
+          '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Could not load admin panel</h3>' +
+          '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' +
+          (err.message || 'Please try again.') + '</p>' +
+          '<button onclick="location.reload()" class="py2-btn py2-btn-primary" style="margin-top:16px;">Retry</button>' +
+          '</div>';
+      });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // ENTRY POINT
+  // ═══════════════════════════════════════════════════════════════════════
+  var existing = P.auth.getSession();
+  if (existing && existing.user) {
+    bootAfterSignin();
+  } else {
+    showScreen('signin');
+  }
 })();
 </script>
 
