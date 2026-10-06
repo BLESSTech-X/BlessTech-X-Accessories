@@ -883,7 +883,8 @@ loadShop();
   function fetchAds() {
     var now = new Date().toISOString();
     var qs =
-      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier,advertiser_profiles!inner(slug))' +
+      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
+      '&status=eq.approved' +
       '&placement=eq.carousel' +
       '&start_date=lte.' + encodeURIComponent(now) +
       '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
@@ -941,9 +942,7 @@ loadShop();
   }
 
   function buildPortalCard(ad) {
-    var bizSlug = ad.advertisers && ad.advertisers.advertiser_profiles && ad.advertisers.advertiser_profiles[0]
-  ? ad.advertisers.advertiser_profiles[0].slug
-  : null;
+    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
     var cta = ctaFor(ad);
     var card = document.createElement('div');
     card.className = 'py2-ads-card';
@@ -964,13 +963,7 @@ loadShop();
           '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
         '</a>' +
       '</div>';
-    card.addEventListener('click', function () {
-  // Route to the business's profile page if we know it, else fall back to the ad page
-  var bizSlug = ad.advertisers && ad.advertisers.slug;
-  window.location.href = bizSlug
-    ? '/b/' + encodeURIComponent(bizSlug)
-    : '/ad/' + encodeURIComponent(ad.slug);
-});
+    card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
     var ctaEl = card.querySelector('.py2-ads-cta');
     if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
     return card;
@@ -1081,9 +1074,7 @@ loadShop();
   });
 
   function buildPopupHTML(ad) {
-    var bizSlug = ad.advertisers && ad.advertisers.advertiser_profiles && ad.advertisers.advertiser_profiles[0]
-  ? ad.advertisers.advertiser_profiles[0].slug
-  : null;
+    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
     var cta = ctaFor(ad);
     return renderMedia(ad) +
       '<div class="py2-ads-popup-body">' +
