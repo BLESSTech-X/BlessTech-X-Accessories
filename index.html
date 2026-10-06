@@ -2008,7 +2008,13 @@ init();
           '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
         '</a>' +
       '</div>';
-    card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
+    card.addEventListener('click', function () {
+  // Route to the business's profile page if we know it, else fall back to the ad page
+  var bizSlug = ad.advertisers && ad.advertisers.slug;
+  window.location.href = bizSlug
+    ? '/b/' + encodeURIComponent(bizSlug)
+    : '/ad/' + encodeURIComponent(ad.slug);
+});
     var ctaEl = card.querySelector('.py2-ads-cta');
     if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
     return card;
