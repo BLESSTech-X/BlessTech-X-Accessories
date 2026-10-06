@@ -18,9 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/ads-shared.css">
   <style>
-    /* ── Page-specific styles (used only on the advertiser dashboard) ── */
-
-    /* Loading overlay shown during initial auth gate */
+    /* ── Page-specific styles ──────────────────────────────────────────── */
     .dash-loading {
       min-height: 60vh;
       display: flex;
@@ -30,17 +28,10 @@
       gap: 14px;
       color: var(--py2-muted);
     }
-    .dash-loading .py2-spinner-dark {
-      width: 34px; height: 34px; border-width: 3px;
-    }
+    .dash-loading .py2-spinner-dark { width: 34px; height: 34px; border-width: 3px; }
 
-    /* Ad list item extras */
-    .ad-thumb-emoji {
-      font-size: 1.8rem;
-      color: var(--py2-muted);
-    }
+    .ad-thumb-emoji { font-size: 1.8rem; color: var(--py2-muted); }
 
-    /* Stats cards per ad */
     .ad-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -67,31 +58,13 @@
       margin-top: 2px;
     }
 
-    /* Create Ad form: destination help text */
-    #dest-help {
-      font-size: 12px;
-      color: var(--py2-muted);
-      margin-top: 5px;
-      line-height: 1.4;
-    }
+    #dest-help { font-size: 12px; color: var(--py2-muted); margin-top: 5px; line-height: 1.4; }
+    #img-preview img { aspect-ratio: 16 / 9; max-height: 240px; }
 
-    /* Image preview ratio (16:9 like the carousel) */
-    #img-preview img {
-      aspect-ratio: 16 / 9;
-      max-height: 240px;
-    }
-
-    /* Character counters under title / description */
-    .char-count {
-      font-size: 11px;
-      color: var(--py2-muted);
-      text-align: right;
-      margin-top: 3px;
-    }
+    .char-count { font-size: 11px; color: var(--py2-muted); text-align: right; margin-top: 3px; }
     .char-count.warn { color: var(--py2-amber); }
     .char-count.over { color: var(--py2-red); }
 
-    /* Share tab: QR code container */
     .qr-wrap {
       display: flex;
       align-items: center;
@@ -111,35 +84,19 @@
       box-shadow: var(--py2-shadow-sm);
     }
 
-    /* Password change form */
-    .pw-form {
-      max-width: 380px;
-    }
-
-    /* Empty state icon spacing */
+    .pw-form { max-width: 380px; }
     .py2-empty + .py2-card { margin-top: 16px; }
 
-    /* Danger zone */
-    .danger-zone {
-      border-color: rgba(230,57,70,.25);
-      background: rgba(230,57,70,.02);
-    }
-    .danger-zone .py2-card-head {
-      border-bottom-color: rgba(230,57,70,.15);
-    }
-
-    /* Confirm modal variant */
-    .py2-modal-confirm {
-      max-width: 420px;
-    }
-
-    /* Sign out button in topbar (uses .py2-btn-ghost) */
+    /* Sign out button in topbar */
     .py2-topbar-nav .signout:hover {
       background: rgba(230,57,70,.15);
       color: #ff9b9b;
     }
 
-    /* Mobile: stack stats */
+    /* Confirm modal variant */
+    .py2-modal-confirm { max-width: 420px; }
+
+    /* Mobile: stats on small screens */
     @media (max-width: 480px) {
       .ad-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
       .ad-stat-mini { padding: 6px; }
@@ -148,3 +105,1495 @@
     }
   </style>
 </head>
+<body class="py2-page">
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="py2-topbar">
+  <div class="py2-topbar-inner">
+    <a href="/" class="py2-topbar-brand">
+      <span style="font-size:22px;">📱</span>
+      <div>
+        PhoneYa2 <span>Ads</span>
+        <small>Advertiser Dashboard</small>
+      </div>
+    </a>
+    <nav class="py2-topbar-nav">
+      <a href="/" target="_blank">View Shop</a>
+      <span id="topbar-biz" style="color:rgba(255,255,255,.85);font-size:13px;padding:0 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+      <button type="button" class="signout" id="btn-signout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+      </button>
+    </nav>
+  </div>
+</div>
+
+<!-- ═══ LOADING ═══ -->
+<div id="dash-loading" class="dash-loading">
+  <div class="py2-spinner py2-spinner-dark"></div>
+  <div>Loading your dashboard…</div>
+</div>
+
+<!-- ═══ MAIN DASHBOARD ═══ -->
+<div id="dash-main" style="display:none;">
+  <div class="py2-container">
+
+    <!-- Header -->
+    <div class="py2-dash-head">
+      <div>
+        <h1 class="py2-h1" id="dash-greeting">Welcome back</h1>
+        <p class="py2-sub" style="margin-bottom:0;">
+          Manage your ads, track performance, and share your campaigns.
+        </p>
+      </div>
+      <button type="button" class="py2-btn py2-btn-primary" id="btn-new-ad-top">
+        <i class="fa-solid fa-plus"></i> Create New Ad
+      </button>
+    </div>
+
+    <!-- Top stats -->
+    <div class="py2-dash-stats" id="dash-stats">
+      <div class="py2-stat">
+        <div class="py2-stat-label">Active Ads</div>
+        <div class="py2-stat-value accent" id="stat-active">0</div>
+      </div>
+      <div class="py2-stat">
+        <div class="py2-stat-label">Total Impressions</div>
+        <div class="py2-stat-value" id="stat-impressions">0</div>
+      </div>
+      <div class="py2-stat">
+        <div class="py2-stat-label">Total Clicks</div>
+        <div class="py2-stat-value" id="stat-clicks">0</div>
+      </div>
+      <div class="py2-stat">
+        <div class="py2-stat-label">Overall CTR</div>
+        <div class="py2-stat-value" id="stat-ctr">—</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="py2-tabs" role="tablist">
+      <button class="py2-tab active" data-tab="ads" role="tab" type="button">
+        <i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span>
+      </button>
+      <button class="py2-tab" data-tab="create" role="tab" type="button">
+        <i class="fa-solid fa-plus"></i> Create Ad
+      </button>
+      <button class="py2-tab" data-tab="stats" role="tab" type="button">
+        <i class="fa-solid fa-chart-line"></i> Stats
+      </button>
+      <button class="py2-tab" data-tab="account" role="tab" type="button">
+        <i class="fa-solid fa-user"></i> Account
+      </button>
+      <button class="py2-tab" data-tab="share" role="tab" type="button">
+        <i class="fa-solid fa-share-nodes"></i> Share
+      </button>
+    </div>
+
+    <!-- ── TAB: MY ADS ── -->
+    <section id="tab-ads" class="tab-panel" role="tabpanel">
+      <div class="py2-card" style="margin-bottom:16px;">
+        <div class="py2-card-body" style="padding:14px 16px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:12px;color:var(--py2-muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;">Filter</span>
+            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm ads-filter active" data-filter="all">All</button>
+            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm ads-filter" data-filter="approved">Approved</button>
+            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm ads-filter" data-filter="pending">Pending</button>
+            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm ads-filter" data-filter="paused">Paused</button>
+            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm ads-filter" data-filter="rejected">Rejected</button>
+          </div>
+        </div>
+      </div>
+      <div id="ads-list"></div>
+    </section>
+
+    <!-- ── TAB: CREATE AD ── -->
+    <section id="tab-create" class="tab-panel" role="tabpanel" style="display:none;">
+      <div class="py2-card" style="max-width:720px;margin:0 auto;">
+        <div class="py2-card-head">
+          <h2 id="create-form-title">Create a New Ad</h2>
+        </div>
+        <div class="py2-card-body">
+
+          <div id="create-error" class="py2-notice py2-notice-danger" style="display:none;">
+            <span class="py2-notice-icon">⚠️</span>
+            <div id="create-error-text">Something went wrong.</div>
+          </div>
+
+          <div id="create-info" class="py2-notice" style="display:none;">
+            <span class="py2-notice-icon">ℹ️</span>
+            <div id="create-info-text">Info</div>
+          </div>
+
+          <form id="ad-form" novalidate>
+            <input type="hidden" id="f-ad-id" value="">
+
+            <div class="py2-field">
+              <label class="py2-label" for="f-title">Ad Title <span class="req">*</span></label>
+              <input class="py2-input" type="text" id="f-title" maxlength="60"
+                     placeholder="e.g. iPhone 13 Sale — 30% Off" required>
+              <div class="char-count" id="count-title">0 / 60</div>
+              <div class="py2-error" id="err-title">Please enter a title (max 60 characters).</div>
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label" for="f-desc">Short Description</label>
+              <textarea class="py2-textarea" id="f-desc" maxlength="200"
+                        placeholder="e.g. Affordable. Delivery across Lusaka." style="min-height:80px;"></textarea>
+              <div class="char-count" id="count-desc">0 / 200</div>
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label">Ad Image <span class="req">*</span></label>
+              <div class="py2-file" id="img-drop">
+                <input type="file" class="py2-file-input" id="f-image" accept="image/*">
+                <div class="py2-file-icon">🖼️</div>
+                <div class="py2-file-text">
+                  <strong>Click to choose</strong> or drag &amp; drop<br>
+                  JPG or PNG · max 2MB · we'll compress it automatically
+                </div>
+              </div>
+              <div class="py2-file-preview" id="img-preview">
+                <img src="" alt="Preview" id="img-preview-img">
+                <button type="button" class="py2-file-remove" id="img-remove" aria-label="Remove image">✕</button>
+              </div>
+              <div class="py2-error" id="err-image">Please add an image (or wait for it to finish uploading).</div>
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label" for="f-dest-type">Where should this ad send people? <span class="req">*</span></label>
+              <select class="py2-select" id="f-dest-type" required>
+                <option value="">— Choose —</option>
+                <option value="whatsapp">WhatsApp chat</option>
+                <option value="website">Website</option>
+                <option value="facebook">Facebook page</option>
+                <option value="instagram">Instagram profile</option>
+                <option value="tiktok">TikTok profile</option>
+                <option value="youtube">YouTube channel or video</option>
+              </select>
+              <div class="py2-error" id="err-dest-type">Please choose a destination type.</div>
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label" for="f-dest-url">Destination <span class="req">*</span></label>
+              <input class="py2-input" type="text" id="f-dest-url" required
+                     placeholder="Choose a destination type above first">
+              <div id="dest-help"></div>
+              <div class="py2-error" id="err-dest-url">Please enter a valid destination.</div>
+            </div>
+
+            <div class="py2-input-group">
+              <div class="py2-field">
+                <label class="py2-label" for="f-start">Start Date</label>
+                <input class="py2-input" type="date" id="f-start">
+              </div>
+              <div class="py2-field">
+                <label class="py2-label" for="f-end">End Date (optional)</label>
+                <input class="py2-input" type="date" id="f-end">
+                <div class="py2-help">Leave blank to run indefinitely.</div>
+              </div>
+            </div>
+
+            <div class="py2-notice" style="margin-top:8px;">
+              <span class="py2-notice-icon">🇿🇲</span>
+              <div>
+                Every ad is reviewed by our team before going live. We usually approve
+                within 24 hours. You'll see the status change here in your dashboard.
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="py2-card-foot">
+          <button type="button" class="py2-btn py2-btn-secondary" id="btn-cancel-ad">Cancel</button>
+          <button type="button" class="py2-btn py2-btn-primary" id="btn-submit-ad">
+            <i class="fa-solid fa-paper-plane"></i> <span id="submit-ad-label">Submit Ad for Review</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TAB: STATS ── -->
+    <section id="tab-stats" class="tab-panel" role="tabpanel" style="display:none;">
+      <div class="py2-card">
+        <div class="py2-card-head">
+          <h2>📊 Performance by Ad</h2>
+          <span style="font-size:12px;color:var(--py2-muted);">Updated in real time</span>
+        </div>
+        <div class="py2-card-body" id="stats-body" style="padding:0;"></div>
+      </div>
+
+      <div class="py2-card">
+        <div class="py2-card-head">
+          <h2>🌍 Traffic You Brought to PhoneYa2</h2>
+        </div>
+        <div class="py2-card-body">
+          <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">
+            Unique visitors who landed on PhoneYa2 by clicking your shared ad links.
+            This is the number that shows how much you're helping grow the PhoneYa2 network.
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+            <div class="py2-stat">
+              <div class="py2-stat-label">Via Adshare Links</div>
+              <div class="py2-stat-value accent" id="stat-adshare">0</div>
+            </div>
+            <div class="py2-stat">
+              <div class="py2-stat-label">Via WhatsApp</div>
+              <div class="py2-stat-value" id="stat-wa">0</div>
+            </div>
+            <div class="py2-stat">
+              <div class="py2-stat-label">Via Facebook</div>
+              <div class="py2-stat-value" id="stat-fb">0</div>
+            </div>
+            <div class="py2-stat">
+              <div class="py2-stat-label">Via Instagram</div>
+              <div class="py2-stat-value" id="stat-ig">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TAB: ACCOUNT ── -->
+    <section id="tab-account" class="tab-panel" role="tabpanel" style="display:none;">
+      <div class="py2-card">
+        <div class="py2-card-head">
+          <h2>🏢 Business Information</h2>
+        </div>
+        <div class="py2-card-body">
+          <form id="account-form" novalidate>
+
+            <div class="py2-field">
+              <label class="py2-label" for="a-business">Business Name <span class="req">*</span></label>
+              <input class="py2-input" type="text" id="a-business" maxlength="80" required>
+              <div class="py2-error" id="err-a-business">Please enter your business name.</div>
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label" for="a-owner">Owner Name</label>
+              <input class="py2-input" type="text" id="a-owner" maxlength="80">
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label" for="a-phone">Phone / WhatsApp <span class="req">*</span></label>
+              <input class="py2-input" type="tel" id="a-phone" required>
+              <div class="py2-error" id="err-a-phone">Please enter a valid phone number.</div>
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label">Email (cannot be changed)</label>
+              <input class="py2-input" type="email" id="a-email" disabled style="background:#f5f5f7;color:#666;">
+            </div>
+
+            <div class="py2-field">
+              <label class="py2-label">Business Logo</label>
+              <div class="py2-file" id="logo-drop">
+                <input type="file" class="py2-file-input" id="f-logo" accept="image/*">
+                <div class="py2-file-icon">🏢</div>
+                <div class="py2-file-text">
+                  <strong>Click to choose</strong> or drag &amp; drop<br>
+                  Shown next to your ads. JPG or PNG · max 2MB.
+                </div>
+              </div>
+              <div class="py2-file-preview" id="logo-preview">
+                <img src="" alt="Logo preview" id="logo-preview-img">
+                <button type="button" class="py2-file-remove" id="logo-remove" aria-label="Remove logo">✕</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="py2-card-foot">
+          <button type="button" class="py2-btn py2-btn-primary" id="btn-save-account">
+            <i class="fa-solid fa-check"></i> Save Changes
+          </button>
+        </div>
+      </div>
+
+      <div class="py2-card">
+        <div class="py2-card-head">
+          <h2>🔒 Change Password</h2>
+        </div>
+        <div class="py2-card-body">
+          <form id="password-form" class="pw-form" novalidate>
+            <div class="py2-field">
+              <label class="py2-label" for="p-current">Current Password <span class="req">*</span></label>
+              <input class="py2-input" type="password" id="p-current" required autocomplete="current-password">
+            </div>
+            <div class="py2-field">
+              <label class="py2-label" for="p-new">New Password <span class="req">*</span></label>
+              <input class="py2-input" type="password" id="p-new" required minlength="8" autocomplete="new-password">
+              <div class="py2-help">At least 8 characters.</div>
+              <div class="py2-error" id="err-p-new">Password must be at least 8 characters.</div>
+            </div>
+            <div class="py2-field">
+              <label class="py2-label" for="p-confirm">Confirm New Password <span class="req">*</span></label>
+              <input class="py2-input" type="password" id="p-confirm" required autocomplete="new-password">
+              <div class="py2-error" id="err-p-confirm">Passwords do not match.</div>
+            </div>
+          </form>
+        </div>
+        <div class="py2-card-foot">
+          <button type="button" class="py2-btn py2-btn-secondary" id="btn-save-password">
+            <i class="fa-solid fa-key"></i> Update Password
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TAB: SHARE ── -->
+    <section id="tab-share" class="tab-panel" role="tabpanel" style="display:none;">
+      <div class="py2-card">
+        <div class="py2-card-head">
+          <h2>🔗 Share Your Ads</h2>
+          <span style="font-size:12px;color:var(--py2-muted);">Approved ads can be shared anywhere</span>
+        </div>
+        <div class="py2-card-body">
+          <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;margin-bottom:16px;">
+            Copy the link below and share it with your customers on WhatsApp, Facebook,
+            or anywhere else. Every visitor you bring to PhoneYa2 helps the whole network grow.
+          </p>
+          <div id="share-list"></div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /py2-container -->
+</div><!-- /dash-main -->
+
+<!-- ═══ MODAL: CONFIRM ═══ -->
+<div class="py2-modal-backdrop" id="modal-confirm">
+  <div class="py2-modal py2-modal-confirm">
+    <div class="py2-modal-head">
+      <h3 id="modal-confirm-title">Are you sure?</h3>
+      <button type="button" class="py2-modal-close" data-close="modal-confirm" aria-label="Close">✕</button>
+    </div>
+    <div class="py2-modal-body">
+      <p id="modal-confirm-body" style="font-size:14px;color:var(--py2-muted);line-height:1.6;">
+        This action cannot be undone.
+      </p>
+    </div>
+    <div class="py2-modal-foot">
+      <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-confirm">Cancel</button>
+      <button type="button" class="py2-btn py2-btn-danger" id="modal-confirm-action">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: REJECTION REASON ═══ -->
+<div class="py2-modal-backdrop" id="modal-reason">
+  <div class="py2-modal py2-modal-confirm">
+    <div class="py2-modal-head">
+      <h3>Ad Not Approved</h3>
+      <button type="button" class="py2-modal-close" data-close="modal-reason" aria-label="Close">✕</button>
+    </div>
+    <div class="py2-modal-body">
+      <div class="py2-notice py2-notice-warn" style="margin-bottom:10px;">
+        <span class="py2-notice-icon">⚠️</span>
+        <div id="modal-reason-text">No reason provided.</div>
+      </div>
+      <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;">
+        You can edit your ad and resubmit it. Make sure it complies with our
+        advertising policy.
+      </p>
+    </div>
+    <div class="py2-modal-foot">
+      <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-reason">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="/ads-config.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   PhoneYa2 Ads — Advertiser Dashboard
+   ────────────────────────────────────────────────────────────────────────
+   Depends on:
+     · /ads-config.js   (window.py2Ads)
+     · /ads-shared.css  (styles)
+
+   All permission decisions are made by Supabase RLS. This script only
+   sends requests; the database refuses anything the user isn't allowed
+   to do.
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var P = window.py2Ads;
+  if (!P) {
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;">' +
+      '<h2>Configuration missing</h2><p>ads-config.js did not load. Please contact support.</p></div>';
+    return;
+  }
+
+  var esc = P.esc;
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════════════════════════════════
+  var session     = null;   // { access_token, user, ... }
+  var advertiser  = null;   // row from advertisers table
+  var ads         = [];     // rows from ads table (only this advertiser's)
+  var statsByAd   = {};     // { ad_id: { impressions, clicks } }
+  var adsFilter   = 'all';
+  var editingAdId = null;   // when editing an existing ad
+
+  // Image state — reset when the form is cleared
+  var imgState = {
+    file: null,          // the file the user chose (before compression)
+    compressed: null,    // the Blob we'll upload (after compression)
+    uploading: false,
+    uploadedUrl: null    // public URL after successful upload
+  };
+  var logoState = {
+    file: null,
+    compressed: null,
+    uploading: false,
+    uploadedUrl: null
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // DOM REFS
+  // ═══════════════════════════════════════════════════════════════════════
+  var $ = function (id) { return document.getElementById(id); };
+
+  var el = {
+    loading:        $('dash-loading'),
+    main:           $('dash-main'),
+    greeting:       $('dash-greeting'),
+    topbarBiz:      $('topbar-biz'),
+
+    statActive:     $('stat-active'),
+    statImpressions:$('stat-impressions'),
+    statClicks:     $('stat-clicks'),
+    statCtr:        $('stat-ctr'),
+    tabCountAds:    $('tab-count-ads'),
+
+    adsList:        $('ads-list'),
+    statsBody:      $('stats-body'),
+    shareList:      $('share-list'),
+
+    statAdshare:    $('stat-adshare'),
+    statWa:         $('stat-wa'),
+    statFb:         $('stat-fb'),
+    statIg:         $('stat-ig'),
+
+    // Create / edit form
+    formTitle:      $('create-form-title'),
+    form:           $('ad-form'),
+    fAdId:          $('f-ad-id'),
+    fTitle:         $('f-title'),
+    fDesc:          $('f-desc'),
+    fDestType:      $('f-dest-type'),
+    fDestUrl:       $('f-dest-url'),
+    fStart:         $('f-start'),
+    fEnd:           $('f-end'),
+    destHelp:       $('dest-help'),
+    countTitle:     $('count-title'),
+    countDesc:      $('count-desc'),
+    createError:    $('create-error'),
+    createErrorText:$('create-error-text'),
+    createInfo:     $('create-info'),
+    createInfoText: $('create-info-text'),
+    submitAdLabel:  $('submit-ad-label'),
+    submitAdBtn:    $('btn-submit-ad'),
+    cancelAdBtn:    $('btn-cancel-ad'),
+
+    // Image upload
+    imgDrop:        $('img-drop'),
+    fImage:         $('f-image'),
+    imgPreview:     $('img-preview'),
+    imgPreviewImg:  $('img-preview-img'),
+    imgRemove:      $('img-remove'),
+
+    // Logo upload
+    logoDrop:       $('logo-drop'),
+    fLogo:          $('f-logo'),
+    logoPreview:    $('logo-preview'),
+    logoPreviewImg: $('logo-preview-img'),
+    logoRemove:     $('logo-remove'),
+
+    // Account
+    aBusiness:      $('a-business'),
+    aOwner:         $('a-owner'),
+    aPhone:         $('a-phone'),
+    aEmail:         $('a-email'),
+
+    // Password
+    pCurrent:       $('p-current'),
+    pNew:           $('p-new'),
+    pConfirm:       $('p-confirm'),
+
+    // Modals
+    modalConfirm:       $('modal-confirm'),
+    modalConfirmTitle:  $('modal-confirm-title'),
+    modalConfirmBody:   $('modal-confirm-body'),
+    modalConfirmAction: $('modal-confirm-action'),
+    modalReason:        $('modal-reason'),
+    modalReasonText:    $('modal-reason-text')
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // UTILITIES
+  // ═══════════════════════════════════════════════════════════════════════
+  function num(n) {
+    n = parseInt(n, 10) || 0;
+    return n.toLocaleString();
+  }
+  function ctr(imp, clk) {
+    if (!imp) return '—';
+    return ((clk / imp) * 100).toFixed(1) + '%';
+  }
+  function isEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
+  }
+  function isPhone(v) {
+    var d = String(v || '').replace(/[^\d]/g, '');
+    return d.length >= 9 && d.length <= 15;
+  }
+  function todayISO() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+  function openModal(id) { var m = $(id); if (m) m.classList.add('open'); }
+  function closeModal(id) { var m = $(id); if (m) m.classList.remove('open'); }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // IMAGE COMPRESSION  (targets max 2MB, downscales to max width 1200px)
+  // ═══════════════════════════════════════════════════════════════════════
+  function compressImage(file, maxW, quality) {
+    maxW = maxW || 1200;
+    quality = quality || 0.82;
+    return new Promise(function (resolve, reject) {
+      if (!file.type || file.type.indexOf('image/') !== 0) {
+        reject(new Error('Not an image'));
+        return;
+      }
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxW) {
+          h = Math.round((h * maxW) / w);
+          w = maxW;
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function (blob) {
+          if (!blob) { reject(new Error('Compression failed')); return; }
+          // If the compressed blob is bigger than 2MB, re-encode at lower quality
+          if (blob.size > 2 * 1024 * 1024) {
+            canvas.toBlob(function (blob2) {
+              if (!blob2 || blob2.size > 2 * 1024 * 1024) {
+                reject(new Error('Image is still too large after compression. Please choose a smaller image.'));
+                return;
+              }
+              resolve(blob2);
+            }, 'image/jpeg', 0.65);
+          } else {
+            resolve(blob);
+          }
+        }, 'image/jpeg', quality);
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error('Could not read image'));
+      };
+      img.src = url;
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // AUTH GATE
+  // ═══════════════════════════════════════════════════════════════════════
+  function gate() {
+    session = P.auth.getSession();
+    if (!session || !session.user) {
+      window.location.href = '/advertise/';
+      return false;
+    }
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // DATA LOADING
+  // ═══════════════════════════════════════════════════════════════════════
+  function loadAdvertiser() {
+    return P.db.select(
+      'advertisers',
+      'auth_user_id=eq.' + encodeURIComponent(session.user.id) + '&limit=1',
+      session.access_token
+    ).then(function (rows) {
+      if (!rows || !rows[0]) {
+        throw new Error('No advertiser profile found for this account.');
+      }
+      advertiser = rows[0];
+      return advertiser;
+    });
+  }
+
+  function loadAds() {
+    return P.db.select(
+      'ads',
+      'advertiser_id=eq.' + encodeURIComponent(advertiser.id) +
+        '&order=created_at.desc',
+      session.access_token
+    ).then(function (rows) {
+      ads = rows || [];
+      return ads;
+    });
+  }
+
+  function loadStats() {
+    if (!ads.length) { statsByAd = {}; return Promise.resolve(); }
+    var ids = ads.map(function (a) { return a.id; }).join(',');
+    var impQuery = 'ad_id=in.(' + ids + ')&select=ad_id,source';
+    var clkQuery = 'ad_id=in.(' + ids + ')&select=ad_id,source';
+
+    return Promise.all([
+      P.db.select('ad_impressions', impQuery, session.access_token),
+      P.db.select('ad_clicks',      clkQuery, session.access_token)
+    ]).then(function (results) {
+      var imps = results[0] || [];
+      var clks = results[1] || [];
+
+      statsByAd = {};
+      ads.forEach(function (a) {
+        statsByAd[a.id] = { impressions: 0, clicks: 0, sources: {} };
+      });
+
+      imps.forEach(function (r) {
+        if (!statsByAd[r.ad_id]) return;
+        statsByAd[r.ad_id].impressions++;
+        var s = r.source || 'direct';
+        statsByAd[r.ad_id].sources[s] = (statsByAd[r.ad_id].sources[s] || 0) + 1;
+      });
+      clks.forEach(function (r) {
+        if (!statsByAd[r.ad_id]) return;
+        statsByAd[r.ad_id].clicks++;
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // RENDER: TOP STATS
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderTopStats() {
+    var active = ads.filter(function (a) { return a.status === 'approved'; }).length;
+    var totalImp = 0, totalClk = 0;
+    Object.keys(statsByAd).forEach(function (k) {
+      totalImp += statsByAd[k].impressions || 0;
+      totalClk += statsByAd[k].clicks || 0;
+    });
+    el.statActive.textContent      = num(active);
+    el.statImpressions.textContent = num(totalImp);
+    el.statClicks.textContent      = num(totalClk);
+    el.statCtr.textContent         = totalImp ? ctr(totalImp, totalClk) : '—';
+    el.tabCountAds.textContent     = num(ads.length);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // RENDER: MY ADS LIST
+  // ═══════════════════════════════════════════════════════════════════════
+  function statusBadge(status) {
+    var map = {
+      pending:  { cls: 'py2-badge-pending',  label: 'Pending Review' },
+      approved: { cls: 'py2-badge-approved', label: 'Live' },
+      rejected: { cls: 'py2-badge-rejected', label: 'Rejected' },
+      paused:   { cls: 'py2-badge-paused',   label: 'Paused' },
+      banned:   { cls: 'py2-badge-banned',   label: 'Banned' }
+    };
+    var m = map[status] || map.pending;
+    return '<span class="py2-badge ' + m.cls + '">' + m.label + '</span>';
+  }
+
+  function adActions(a) {
+    var btns = '';
+    // Edit — available unless banned
+    if (a.status !== 'banned') {
+      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="edit" data-id="' + a.id + '">'
+        + '<i class="fa-solid fa-pen"></i> Edit</button>';
+    }
+    // Pause / Resume for approved/paused
+    if (a.status === 'approved') {
+      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="pause" data-id="' + a.id + '">'
+        + '<i class="fa-solid fa-pause"></i> Pause</button>';
+    } else if (a.status === 'paused') {
+      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="resume" data-id="' + a.id + '">'
+        + '<i class="fa-solid fa-play"></i> Resume</button>';
+    }
+    // Reason — only for rejected
+    if (a.status === 'rejected') {
+      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reason" data-id="' + a.id + '">'
+        + '<i class="fa-solid fa-circle-info"></i> Why?</button>';
+    }
+    // Delete — never while banned
+    if (a.status !== 'banned') {
+      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="delete" data-id="' + a.id + '" style="color:var(--py2-red);">'
+        + '<i class="fa-solid fa-trash"></i> Delete</button>';
+    }
+    return btns;
+  }
+
+  function renderAdsList() {
+    var list = ads.slice();
+    if (adsFilter !== 'all') {
+      list = list.filter(function (a) { return a.status === adsFilter; });
+    }
+
+    if (!ads.length) {
+      el.adsList.innerHTML =
+        '<div class="py2-empty">' +
+        '<div class="py2-empty-icon">📣</div>' +
+        '<h3>No ads yet</h3>' +
+        '<p>Create your first ad to start reaching Zambian customers.</p>' +
+        '<button type="button" class="py2-btn py2-btn-primary" id="empty-create-btn">' +
+        '<i class="fa-solid fa-plus"></i> Create Your First Ad</button>' +
+        '</div>';
+      var b = $('empty-create-btn');
+      if (b) b.addEventListener('click', function () { switchTab('create'); });
+      return;
+    }
+
+    if (!list.length) {
+      el.adsList.innerHTML =
+        '<div class="py2-empty">' +
+        '<div class="py2-empty-icon">🔍</div>' +
+        '<h3>No ads match this filter</h3>' +
+        '<p>Try a different filter above.</p>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    list.forEach(function (a) {
+      var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
+      var thumb = a.media_url
+        ? '<div class="py2-ad-thumb"><img src="' + esc(a.media_url) + '" alt="' + esc(a.title) + '" onerror="this.parentElement.innerHTML=\'<span class=&quot;ad-thumb-emoji&quot;>🖼️</span>\'"></div>'
+        : '<div class="py2-ad-thumb"><span class="ad-thumb-emoji">🖼️</span></div>';
+
+      var meta = 'Created ' + P.formatDate(a.created_at);
+      if (a.status === 'approved' && a.end_date) {
+        meta += ' · ends ' + P.formatDate(a.end_date);
+      }
+
+      var rejectedNote = '';
+      if (a.status === 'rejected' && a.rejection_reason) {
+        rejectedNote = '<div class="py2-notice py2-notice-danger" style="margin-top:8px;font-size:12.5px;">' +
+          '<span class="py2-notice-icon">⚠️</span><div>' + esc(a.rejection_reason) + '</div></div>';
+      }
+
+      html +=
+        '<div class="py2-ad-item">' +
+          thumb +
+          '<div class="py2-ad-main">' +
+            '<div class="py2-ad-top">' + statusBadge(a.status) +
+              '<span style="font-size:11px;color:var(--py2-muted);">' + esc(a.destination_type) + '</span>' +
+            '</div>' +
+            '<div class="py2-ad-title">' + esc(a.title) + '</div>' +
+            '<div class="py2-ad-meta">' + esc(meta) + '</div>' +
+            rejectedNote +
+            '<div class="ad-stats-grid">' +
+              '<div class="ad-stat-mini"><div class="num">' + num(s.impressions) + '</div><div class="lbl">Views</div></div>' +
+              '<div class="ad-stat-mini"><div class="num">' + num(s.clicks) + '</div><div class="lbl">Clicks</div></div>' +
+              '<div class="ad-stat-mini"><div class="num">' + ctr(s.impressions, s.clicks) + '</div><div class="lbl">CTR</div></div>' +
+            '</div>' +
+            '<div class="py2-ad-actions">' + adActions(a) + '</div>' +
+          '</div>' +
+        '</div>';
+    });
+
+    el.adsList.innerHTML = html;
+
+    // Wire up buttons
+    el.adsList.querySelectorAll('[data-act]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var act = btn.getAttribute('data-act');
+        var id  = btn.getAttribute('data-id');
+        var ad  = ads.find(function (x) { return x.id === id; });
+        if (!ad) return;
+        if (act === 'edit')   startEdit(ad);
+        if (act === 'pause')  setPaused(ad, true);
+        if (act === 'resume') setPaused(ad, false);
+        if (act === 'delete') confirmDelete(ad);
+        if (act === 'reason') showReason(ad);
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // ADS FILTER
+  // ═══════════════════════════════════════════════════════════════════════
+  document.querySelectorAll('.ads-filter').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.ads-filter').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      adsFilter = btn.getAttribute('data-filter');
+      renderAdsList();
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TAB SWITCHING
+  // ═══════════════════════════════════════════════════════════════════════
+  function switchTab(name) {
+    document.querySelectorAll('.py2-tab').forEach(function (t) {
+      t.classList.toggle('active', t.getAttribute('data-tab') === name);
+    });
+    ['ads','create','stats','account','share'].forEach(function (n) {
+      var panel = $('tab-' + n);
+      if (panel) panel.style.display = (n === name) ? 'block' : 'none';
+    });
+    if (name === 'stats')   renderStatsTab();
+    if (name === 'share')   renderShareTab();
+    if (name === 'account') fillAccountForm();
+    if (name !== 'create')  resetAdForm(); // leaving the form clears edit state
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.py2-tab').forEach(function (t) {
+    t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
+  });
+
+  // Topbar "Create New Ad"
+  $('btn-new-ad-top').addEventListener('click', function () {
+    resetAdForm();
+    switchTab('create');
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // STATS TAB
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderStatsTab() {
+    if (!ads.length) {
+      el.statsBody.innerHTML = '<div class="py2-table-empty">No ads yet. Create one to see stats.</div>';
+      return;
+    }
+
+    var rows = ads.map(function (a) {
+      var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
+      return '<tr>' +
+        '<td><strong>' + esc(a.title) + '</strong></td>' +
+        '<td>' + statusBadge(a.status) + '</td>' +
+        '<td>' + num(s.impressions) + '</td>' +
+        '<td>' + num(s.clicks) + '</td>' +
+        '<td>' + ctr(s.impressions, s.clicks) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    el.statsBody.innerHTML =
+      '<table class="py2-table">' +
+      '<thead><tr>' +
+      '<th>Ad</th><th>Status</th><th>Views</th><th>Clicks</th><th>CTR</th>' +
+      '</tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+      '</table>';
+
+    // Traffic sources
+    var sources = { adshare: 0, whatsapp: 0, facebook: 0, instagram: 0 };
+    Object.keys(statsByAd).forEach(function (id) {
+      var s = statsByAd[id].sources || {};
+      Object.keys(s).forEach(function (k) {
+        if (sources[k] !== undefined) sources[k] += s[k];
+      });
+    });
+    el.statAdshare.textContent = num(sources.adshare);
+    el.statWa.textContent      = num(sources.whatsapp);
+    el.statFb.textContent      = num(sources.facebook);
+    el.statIg.textContent      = num(sources.instagram);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SHARE TAB
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderShareTab() {
+    var approved = ads.filter(function (a) { return a.status === 'approved'; });
+
+    if (!approved.length) {
+      el.shareList.innerHTML =
+        '<div class="py2-empty">' +
+        '<div class="py2-empty-icon">⏳</div>' +
+        '<h3>Nothing to share yet</h3>' +
+        '<p>Once your ads are approved, their shareable links will appear here.</p>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    approved.forEach(function (a) {
+      var url = window.location.origin + '/ad/' + encodeURIComponent(a.slug) + '?ref=adshare-' + a.id;
+      var qr  = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
+      html +=
+        '<div style="padding:16px 0;border-bottom:1px solid var(--py2-border-soft);">' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
+            statusBadge('approved') +
+            '<strong style="font-family:var(--py2-font-head);font-size:14px;">' + esc(a.title) + '</strong>' +
+          '</div>' +
+          '<div class="py2-share-row">' +
+            '<span class="py2-share-url" id="share-url-' + a.id + '">' + esc(url) + '</span>' +
+            '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-copy="' + a.id + '">' +
+              '<i class="fa-solid fa-copy"></i> Copy</button>' +
+            '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-wa="' + a.id + '">' +
+              '<i class="fa-brands fa-whatsapp"></i> Share on WhatsApp</button>' +
+          '</div>' +
+          '<div class="qr-wrap">' +
+            '<img class="qr-img" src="' + esc(qr) + '" alt="QR code" loading="lazy">' +
+            '<div style="font-size:12.5px;color:var(--py2-muted);line-height:1.5;max-width:280px;">' +
+              'Print this QR on your flyers, business cards, or shop window. Scanning it opens your ad page.' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    });
+    el.shareList.innerHTML = html;
+
+    el.shareList.querySelectorAll('[data-copy]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-copy');
+        var urlEl = $('share-url-' + id);
+        if (!urlEl) return;
+        var url = urlEl.textContent;
+        navigator.clipboard.writeText(url).then(function () {
+          P.toast('Link copied!', 'success');
+        }).catch(function () {
+          P.toast('Could not copy. Please select and copy manually.', 'error');
+        });
+      });
+    });
+
+    el.shareList.querySelectorAll('[data-wa]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-wa');
+        var ad = ads.find(function (x) { return x.id === id; });
+        if (!ad) return;
+        var url = window.location.origin + '/ad/' + encodeURIComponent(ad.slug) + '?ref=adshare-' + ad.id;
+        var text = encodeURIComponent('Check out ' + ad.title + ' on PhoneYa2: ' + url);
+        window.open('https://wa.me/?text=' + text, '_blank', 'noopener');
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // CREATE / EDIT AD FORM
+  // ═══════════════════════════════════════════════════════════════════════
+  var DEST_HELP = {
+    whatsapp:  'Enter your WhatsApp phone number with country code, e.g. +260971234567',
+    website:   'Enter the full website URL, e.g. https://yourbusiness.com',
+    facebook:  'Enter your Facebook page URL, e.g. https://facebook.com/yourpage',
+    instagram: 'Enter your Instagram profile URL, e.g. https://instagram.com/yourhandle',
+    tiktok:    'Enter your TikTok profile URL, e.g. https://tiktok.com/@yourhandle',
+    youtube:   'Enter your YouTube channel or video URL'
+  };
+
+  el.fDestType.addEventListener('change', function () {
+    var t = el.fDestType.value;
+    el.destHelp.textContent = DEST_HELP[t] || '';
+    if (t === 'whatsapp') {
+      el.fDestUrl.type = 'tel';
+      el.fDestUrl.placeholder = '+260 9XX XXX XXX';
+    } else {
+      el.fDestUrl.type = 'url';
+      el.fDestUrl.placeholder = 'https://…';
+    }
+  });
+
+  el.fTitle.addEventListener('input', function () {
+    el.countTitle.textContent = el.fTitle.value.length + ' / 60';
+  });
+  el.fDesc.addEventListener('input', function () {
+    el.countDesc.textContent = el.fDesc.value.length + ' / 200';
+  });
+
+  // Image drop / file picker
+  el.imgDrop.addEventListener('click', function () { el.fImage.click(); });
+  el.fImage.addEventListener('change', function () {
+    if (el.fImage.files && el.fImage.files[0]) {
+      pickImage(el.fImage.files[0]);
+    }
+  });
+  ['dragover','dragenter'].forEach(function (ev) {
+    el.imgDrop.addEventListener(ev, function (e) { e.preventDefault(); el.imgDrop.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(function (ev) {
+    el.imgDrop.addEventListener(ev, function (e) { e.preventDefault(); el.imgDrop.classList.remove('dragover'); });
+  });
+  el.imgDrop.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) pickImage(f);
+  });
+  el.imgRemove.addEventListener('click', function () {
+    imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+    el.fImage.value = '';
+    el.imgPreview.classList.remove('show');
+    el.imgPreviewImg.src = '';
+  });
+
+  function pickImage(file) {
+    imgState.file = file;
+    imgState.compressed = null;
+    imgState.uploadedUrl = null;
+    el.imgPreview.classList.add('show');
+    var reader = new FileReader();
+    reader.onload = function (e) { el.imgPreviewImg.src = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+
+  // Logo drop / picker
+  el.logoDrop.addEventListener('click', function () { el.fLogo.click(); });
+  el.fLogo.addEventListener('change', function () {
+    if (el.fLogo.files && el.fLogo.files[0]) {
+      pickLogo(el.fLogo.files[0]);
+    }
+  });
+  el.logoRemove.addEventListener('click', function () {
+    logoState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+    el.fLogo.value = '';
+    el.logoPreview.classList.remove('show');
+    el.logoPreviewImg.src = '';
+  });
+
+  function pickLogo(file) {
+    logoState.file = file;
+    logoState.compressed = null;
+    logoState.uploadedUrl = null;
+    el.logoPreview.classList.add('show');
+    var reader = new FileReader();
+    reader.onload = function (e) { el.logoPreviewImg.src = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+
+  function resetAdForm() {
+    editingAdId = null;
+    el.formTitle.textContent = 'Create a New Ad';
+    el.submitAdLabel.textContent = 'Submit Ad for Review';
+    el.fAdId.value = '';
+    el.fTitle.value = '';
+    el.fDesc.value = '';
+    el.fDestType.value = '';
+    el.fDestUrl.value = '';
+    el.fDestUrl.type = 'text';
+    el.fDestUrl.placeholder = 'Choose a destination type above first';
+    el.destHelp.textContent = '';
+    el.fStart.value = todayISO();
+    el.fEnd.value = '';
+    el.countTitle.textContent = '0 / 60';
+    el.countDesc.textContent = '0 / 200';
+    el.createError.style.display = 'none';
+    el.createInfo.style.display = 'none';
+    imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+    el.fImage.value = '';
+    el.imgPreview.classList.remove('show');
+    el.imgPreviewImg.src = '';
+    // Clear field errors
+    document.querySelectorAll('#tab-create .py2-error').forEach(function (e) { e.classList.remove('show'); });
+    document.querySelectorAll('#tab-create .py2-input').forEach(function (e) { e.classList.remove('error'); });
+  }
+
+  el.cancelAdBtn.addEventListener('click', function () {
+    resetAdForm();
+    switchTab('ads');
+  });
+
+  function startEdit(ad) {
+    resetAdForm();
+    editingAdId = ad.id;
+    el.formTitle.textContent = 'Edit Ad';
+    el.submitAdLabel.textContent = 'Save Changes & Resubmit';
+    el.fAdId.value = ad.id;
+    el.fTitle.value = ad.title || '';
+    el.fDesc.value = ad.description || '';
+    el.fDestType.value = ad.destination_type || '';
+    el.fDestType.dispatchEvent(new Event('change'));
+    el.fDestUrl.value = ad.destination_url || '';
+    if (ad.start_date) {
+      el.fStart.value = ad.start_date.slice(0, 10);
+    }
+    if (ad.end_date) {
+      el.fEnd.value = ad.end_date.slice(0, 10);
+    }
+    // Existing image
+    if (ad.media_url) {
+      imgState.uploadedUrl = ad.media_url;
+      el.imgPreview.classList.add('show');
+      el.imgPreviewImg.src = ad.media_url;
+    }
+    el.countTitle.textContent = el.fTitle.value.length + ' / 60';
+    el.countDesc.textContent = el.fDesc.value.length + ' / 200';
+
+    // Editing an approved ad sends it back to pending
+    if (ad.status === 'approved') {
+      el.createInfo.style.display = 'flex';
+      el.createInfoText.textContent = 'Saving changes to a live ad will send it back for review. It will be re-approved within 24 hours.';
+    }
+
+    switchTab('create');
+  }
+
+  // ── Slug generation (unique per advertiser) ─────────────────────────────
+  function makeSlug(title) {
+    var base = P.slugify(title || 'ad');
+    if (!base) base = 'ad';
+    // Append a short random suffix to avoid collisions
+    return base + '-' + P.uniqueSuffix();
+  }
+
+  // ── Field validation helpers ────────────────────────────────────────────
+  function setErr(id, show) {
+    var e = $('err-' + id);
+    if (e) e.classList.toggle('show', !!show);
+    var input = $(id) || $('f-' + id);
+    if (input && input.classList) input.classList.toggle('error', !!show);
+  }
+
+  function validateAdForm() {
+    var ok = true;
+    if (!el.fTitle.value.trim()) { setErr('title', true); ok = false; } else setErr('title', false);
+    if (!el.fDestType.value)     { setErr('dest-type', true); ok = false; } else setErr('dest-type', false);
+    if (!el.fDestUrl.value.trim()) { setErr('dest-url', true); ok = false; } else setErr('dest-url', false);
+
+    // Destination URL sanity check
+    var t = el.fDestType.value;
+    var u = el.fDestUrl.value.trim();
+    if (t === 'whatsapp') {
+      var digits = u.replace(/[^\d]/g, '');
+      if (digits.length < 9) { setErr('dest-url', true); ok = false; }
+    } else if (u && u.indexOf('http') !== 0) {
+      setErr('dest-url', true); ok = false;
+    }
+
+    // Image: either already uploaded URL, or a file to upload now
+    if (!imgState.uploadedUrl && !imgState.file) {
+      setErr('image', true); ok = false;
+    } else {
+      setErr('image', false);
+    }
+
+    return ok;
+  }
+
+  // ── Submit ad ───────────────────────────────────────────────────────────
+  el.submitAdBtn.addEventListener('click', function () {
+    el.createError.style.display = 'none';
+    el.createInfo.style.display = 'none';
+
+    if (!validateAdForm()) {
+      P.toast('Please fix the highlighted fields', 'error');
+      return;
+    }
+
+    el.submitAdBtn.disabled = true;
+    var origHTML = el.submitAdBtn.innerHTML;
+    el.submitAdBtn.innerHTML = '<span class="py2-spinner"></span> ' +
+      (editingAdId ? 'Saving…' : 'Uploading image…');
+
+    // Step 1: compress + upload the image if the user chose a new one
+    var uploadPromise = Promise.resolve(imgState.uploadedUrl);
+    if (imgState.file && !imgState.uploadedUrl) {
+      uploadPromise = compressImage(imgState.file, 1200, 0.82)
+        .then(function (blob) {
+          imgState.compressed = blob;
+          var path = 'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
+            .then(function () {
+              return P.storage.publicUrl('ad-media', path);
+            });
+        })
+        .then(function (publicUrl) {
+          imgState.uploadedUrl = publicUrl;
+          return publicUrl;
+        });
+    }
+
+    uploadPromise
+      .then(function (mediaUrl) {
+        el.submitAdBtn.innerHTML = '<span class="py2-spinner"></span> Saving…';
+
+        var payload = {
+          title:            el.fTitle.value.trim(),
+          description:      el.fDesc.value.trim() || null,
+          media_url:        mediaUrl,
+          media_type:       'image',
+          destination_type: el.fDestType.value,
+          destination_url:  el.fDestUrl.value.trim(),
+          start_date:       el.fStart.value ? new Date(el.fStart.value + 'T00:00:00').toISOString() : new Date().toISOString(),
+          end_date:         el.fEnd.value ? new Date(el.fEnd.value + 'T23:59:59').toISOString() : null
+        };
+
+        if (editingAdId) {
+          // Editing an approved ad sends it back to pending per brief Section 6
+          var currentAd = ads.find(function (x) { return x.id === editingAdId; });
+          if (currentAd && currentAd.status === 'approved') {
+            payload.status = 'pending';
+          }
+          return P.db.update('ads', 'id=eq.' + editingAdId, payload, session.access_token);
+        } else {
+          payload.advertiser_id = advertiser.id;
+          payload.slug          = makeSlug(el.fTitle.value);
+          payload.status        = 'pending';
+          payload.weight        = 1;
+          payload.placement     = 'carousel';
+          return P.db.insert('ads', payload, session.access_token);
+        }
+      })
+      .then(function () {
+        P.toast(editingAdId ? 'Ad updated — pending review' : 'Ad submitted for review!', 'success');
+        resetAdForm();
+        return reloadAll();
+      })
+      .then(function () {
+        switchTab('ads');
+      })
+      .catch(function (err) {
+        el.submitAdBtn.disabled = false;
+        el.submitAdBtn.innerHTML = origHTML;
+        var msg = err && err.message ? err.message : 'Could not save ad. Please try again.';
+        // Friendly errors for common RLS blocks
+        if (/row-level security|permission/i.test(msg)) {
+          msg = 'You do not have permission to do that. If this keeps happening, contact support.';
+        }
+        el.createError.style.display = 'flex';
+        el.createErrorText.textContent = msg;
+        P.toast(msg, 'error');
+      });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // PAUSE / RESUME / DELETE
+  // ═══════════════════════════════════════════════════════════════════════
+  function setPaused(ad, shouldPause) {
+    var newStatus = shouldPause ? 'paused' : 'approved';
+    P.db.update('ads', 'id=eq.' + ad.id, { status: newStatus }, session.access_token)
+      .then(function () {
+        P.toast(shouldPause ? 'Ad paused' : 'Ad resumed', 'success');
+        return reloadAll();
+      })
+      .catch(function (err) {
+        P.toast(err.message || 'Could not update ad', 'error');
+      });
+  }
+
+  function confirmDelete(ad) {
+    el.modalConfirmTitle.textContent = 'Delete this ad?';
+    el.modalConfirmBody.innerHTML = 'The ad <strong>' + esc(ad.title) + '</strong> will be removed permanently. This cannot be undone.';
+    el.modalConfirmAction.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+    el.modalConfirmAction.onclick = function () {
+      closeModal('modal-confirm');
+      P.db.delete('ads', 'id=eq.' + ad.id, session.access_token)
+        .then(function () {
+          P.toast('Ad deleted', 'success');
+          return reloadAll();
+        })
+        .catch(function (err) {
+          P.toast(err.message || 'Could not delete ad', 'error');
+        });
+    };
+    openModal('modal-confirm');
+  }
+
+  function showReason(ad) {
+    el.modalReasonText.textContent = ad.rejection_reason || 'No reason was provided. Please review our advertising policy.';
+    openModal('modal-reason');
+  }
+
+  // Modal close buttons (any element with data-close)
+  document.querySelectorAll('[data-close]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      closeModal(btn.getAttribute('data-close'));
+    });
+  });
+  document.querySelectorAll('.py2-modal-backdrop').forEach(function (bd) {
+    bd.addEventListener('click', function (e) {
+      if (e.target === bd) bd.classList.remove('open');
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // ACCOUNT TAB
+  // ═══════════════════════════════════════════════════════════════════════
+  function fillAccountForm() {
+    if (!advertiser) return;
+    el.aBusiness.value = advertiser.business_name || '';
+    el.aOwner.value    = advertiser.owner_name    || '';
+    el.aPhone.value    = advertiser.phone         || '';
+    el.aEmail.value    = advertiser.email         || '';
+    if (advertiser.logo_url) {
+      logoState.uploadedUrl = advertiser.logo_url;
+      el.logoPreview.classList.add('show');
+      el.logoPreviewImg.src = advertiser.logo_url;
+    }
+  }
+
+  $('btn-save-account').addEventListener('click', function () {
+    var btn = this;
+    var orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="py2-spinner"></span> Saving…';
+
+    var biz   = el.aBusiness.value.trim();
+    var owner = el.aOwner.value.trim() || null;
+    var phone = el.aPhone.value.trim();
+
+    var ok = true;
+    if (!biz) { $('err-a-business').classList.add('show'); ok = false; }
+    else       { $('err-a-business').classList.remove('show'); }
+    if (!isPhone(phone)) { $('err-a-phone').classList.add('show'); ok = false; }
+    else                 { $('err-a-phone').classList.remove('show'); }
+    if (!ok) {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+      P.toast('Please fix the highlighted fields', 'error');
+      return;
+    }
+
+    var uploadLogo = Promise.resolve(logoState.uploadedUrl);
+    if (logoState.file && !logoState.uploadedUrl) {
+      uploadLogo = compressImage(logoState.file, 400, 0.85)
+        .then(function (blob) {
+          var path = 'logos/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
+            .then(function () { return P.storage.publicUrl('ad-media', path); });
+        })
+        .then(function (url) { logoState.uploadedUrl = url; return url; });
+    }
+
+    uploadLogo.then(function (logoUrl) {
+      var patch = { business_name: biz, owner_name: owner, phone: phone };
+      if (logoUrl) patch.logo_url = logoUrl;
+      return P.db.update('advertisers', 'id=eq.' + advertiser.id, patch, session.access_token);
+    })
+      .then(function () {
+        P.toast('Account updated', 'success');
+        return reloadAll();
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        P.toast(err.message || 'Could not update account', 'error');
+      });
+  });
+
+  // ── Password change ────────────────────────────────────────────────────
+  $('btn-save-password').addEventListener('click', function () {
+    $('err-p-new').classList.remove('show');
+    $('err-p-confirm').classList.remove('show');
+
+    var cur = el.pCurrent.value;
+    var nw  = el.pNew.value;
+    var cf  = el.pConfirm.value;
+
+    if (!cur) { P.toast('Please enter your current password', 'error'); return; }
+    if (nw.length < 8) { $('err-p-new').classList.add('show'); return; }
+    if (nw !== cf) { $('err-p-confirm').classList.add('show'); return; }
+
+    var btn = this;
+    var orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="py2-spinner"></span> Updating…';
+
+    // Supabase: change password by re-verifying the current one first
+    fetch(P.config.url + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': P.config.key },
+      body: JSON.stringify({ email: session.user.email, password: cur })
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error('Current password is incorrect');
+        return r.json();
+      })
+      .then(function () {
+        // Use the fresh token to update the user's password
+        return fetch(P.config.url + '/auth/v1/user', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': P.config.key,
+            'Authorization': 'Bearer ' + session.access_token
+          },
+          body: JSON.stringify({ password: nw })
+        }).then(function (r) {
+          if (!r.ok) throw new Error('Could not update password');
+          return r.json();
+        });
+      })
+      .then(function () {
+        P.toast('Password updated', 'success');
+        el.pCurrent.value = '';
+        el.pNew.value = '';
+        el.pConfirm.value = '';
+        btn.disabled = false;
+        btn.innerHTML = orig;
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        P.toast(err.message || 'Could not update password', 'error');
+      });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SIGN OUT
+  // ═══════════════════════════════════════════════════════════════════════
+  $('btn-signout').addEventListener('click', function () {
+    P.auth.signout().then(function () {
+      window.location.href = '/advertise/';
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // RELOAD ALL DATA
+  // ═══════════════════════════════════════════════════════════════════════
+  function reloadAll() {
+    return loadAds()
+      .then(loadStats)
+      .then(function () {
+        renderTopStats();
+        renderAdsList();
+        renderStatsTab();
+        renderShareTab();
+        // Greeting + topbar
+        if (advertiser) {
+          el.greeting.textContent = 'Welcome back, ' + (advertiser.owner_name || advertiser.business_name);
+          el.topbarBiz.textContent = advertiser.business_name;
+        }
+      });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // BOOT
+  // ═══════════════════════════════════════════════════════════════════════
+  function boot() {
+    if (!gate()) return;
+
+    loadAdvertiser()
+      .then(function () {
+        return reloadAll();
+      })
+      .then(function () {
+        el.loading.style.display = 'none';
+        el.main.style.display = 'block';
+      })
+      .catch(function (err) {
+        el.loading.innerHTML = '<div style="text-align:center;padding:40px;">' +
+          '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Something went wrong</h3>' +
+          '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' +
+          (err.message || 'Could not load your dashboard.') + '</p>' +
+          '<button onclick="location.reload()" class="py2-btn py2-btn-primary" style="margin-top:16px;">Retry</button>' +
+          '</div>';
+      });
+  }
+
+  boot();
+})();
+</script>
+
+</body>
+</html>
