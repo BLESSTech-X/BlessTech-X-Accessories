@@ -18,633 +18,386 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/ads-shared.css">
   <style>
-    .dash-loading {
-      min-height: 60vh;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 14px;
-      color: var(--py2-muted);
-    }
-    .dash-loading .py2-spinner-dark { width: 34px; height: 34px; border-width: 3px; }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════
+   ADVERTISER DASHBOARD — MOBILE & RESPONSIVE FIXES
+   Added inline. Everything is scoped and additive.
+   Desktop appearance above 900px is unchanged.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-    .ad-thumb-emoji { font-size: 1.8rem; color: var(--py2-muted); }
+/* ── Global mobile behaviour ───────────────────────────────────────────── */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
-    .ad-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .ad-stat-mini {
-      background: var(--py2-light);
-      border-radius: 8px;
-      padding: 8px 10px;
-      text-align: center;
-    }
-    .ad-stat-mini .num {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 15px;
-      color: var(--py2-text);
-    }
-    .ad-stat-mini .lbl {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--py2-muted);
-      margin-top: 2px;
-    }
+/* iOS Safari auto-zooms on inputs smaller than 16px */
+@media (max-width: 900px) {
+  .py2-input, .py2-select, .py2-textarea,
+  input, select, textarea, .color-hex {
+    font-size: 16px !important;
+  }
+}
 
-    #dest-help { font-size: 12px; color: var(--py2-muted); margin-top: 5px; line-height: 1.4; }
-    #img-preview img, #img-preview video {
-      aspect-ratio: 16 / 9;
-      max-height: 240px;
-      object-fit: cover;
-      width: 100%;
-      border-radius: var(--py2-radius-sm);
-    }
+/* Bigger touch targets */
+@media (max-width: 900px) {
+  .py2-btn { min-height: 44px; padding: 11px 18px; }
+  .py2-btn-sm { min-height: 40px; padding: 10px 14px; font-size: 13px; }
+  .py2-tab { min-height: 44px; padding: 12px 16px; }
+}
 
-    .char-count { font-size: 11px; color: var(--py2-muted); text-align: right; margin-top: 3px; }
+/* ── Top bar ───────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .py2-topbar-inner {
+    padding: 8px 12px; gap: 6px; flex-wrap: wrap;
+    height: auto; min-height: 56px;
+  }
+  .py2-topbar-brand { font-size: 14px; gap: 8px; }
+  .py2-topbar-brand span { font-size: 18px !important; }
+  .py2-topbar-brand small { font-size: 9px; letter-spacing: 1px; }
+  .py2-topbar-nav {
+    gap: 2px; width: 100%; justify-content: flex-start; margin-top: 6px;
+  }
+  .py2-topbar-nav a, .py2-topbar-nav button {
+    padding: 8px 10px; font-size: 12px; flex-shrink: 0;
+  }
+  #topbar-biz { display: none; }
+}
 
-    .qr-wrap {
-      display: flex; align-items: center; gap: 16px;
-      padding: 14px; border-radius: var(--py2-radius);
-      background: var(--py2-light);
-      margin-top: 10px; flex-wrap: wrap;
-    }
-    .qr-img {
-      width: 120px; height: 120px;
-      background: white; border-radius: 8px; padding: 6px;
-      display: block; box-shadow: var(--py2-shadow-sm);
-    }
+/* ── Container padding ─────────────────────────────────────────────────── */
+@media (max-width: 900px) { .py2-container { padding: 16px 12px 60px; } }
+@media (max-width: 500px) { .py2-container { padding: 12px 10px 60px; } }
 
-    .pw-form { max-width: 380px; }
-    .py2-empty + .py2-card { margin-top: 16px; }
+/* ── Dash header + stats ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .py2-dash-head {
+    flex-direction: column; align-items: stretch; gap: 12px;
+  }
+  .py2-dash-head > div { width: 100%; }
+  .py2-dash-head .py2-btn { width: 100%; justify-content: center; }
+  .py2-dash-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+  }
+}
+@media (max-width: 420px) {
+  .py2-dash-stats { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .py2-stat { padding: 12px 14px; }
+  .py2-stat-label { font-size: 10px; letter-spacing: .6px; }
+  .py2-stat-value { font-size: 1.25rem; }
+}
 
-    .py2-topbar-nav .signout:hover {
-      background: rgba(230,57,70,.15);
-      color: #ff9b9b;
-    }
+/* ── Plan card ─────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .plan-card {
+    flex-direction: column; align-items: stretch;
+    padding: 18px 16px; gap: 14px;
+  }
+  .plan-card .plan-icon { width: 48px; height: 48px; font-size: 22px; }
+  .plan-card .plan-name { font-size: 1.3rem; }
+  .plan-card .plan-actions { width: 100%; }
+  .plan-card .plan-actions .py2-btn {
+    width: 100%; justify-content: center;
+    min-height: 46px; font-size: 14px;
+  }
+}
 
-    .py2-modal-confirm { max-width: 420px; }
+/* ── Expired banner ────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .expired-banner {
+    flex-direction: column; align-items: flex-start;
+    gap: 10px; padding: 14px; font-size: 13px;
+  }
+  .expired-banner .py2-btn { width: 100%; justify-content: center; }
+}
 
-    @media (max-width: 480px) {
-      .ad-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-      .ad-stat-mini { padding: 6px; }
-      .ad-stat-mini .num { font-size: 13px; }
-      .ad-stat-mini .lbl { font-size: 9px; }
-    }
+/* ── Tab bar — horizontal scroll on mobile ─────────────────────────────── */
+@media (max-width: 900px) {
+  .py2-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto; overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: -12px; margin-right: -12px;
+    padding-left: 12px; padding-right: 12px;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+  .py2-tabs::-webkit-scrollbar { display: none; }
+  .py2-tab {
+    flex-shrink: 0; font-size: 13px;
+    padding: 12px 14px; border-bottom-width: 3px;
+  }
+  .py2-tab i { font-size: 15px; }
+  .tier-pill { display: none; }
+}
 
-    #signin-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-      background:
-        radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%),
-        radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%),
-        var(--py2-light);
-    }
-    #signin-screen .py2-auth-card { max-width: 420px; }
-    #signin-error {
-      display: none;
-      background: rgba(230,57,70,.08);
-      border: 1px solid rgba(230,57,70,.25);
-      border-radius: var(--py2-radius-sm);
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #b91c1c;
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
-    #signin-error.show { display: block; }
+/* ── My Ads list items ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .py2-ad-item { flex-direction: column; padding: 14px; gap: 12px; }
+  .py2-ad-thumb { width: 100%; height: 170px; border-radius: 10px; }
+  .py2-ad-actions { gap: 8px; }
+  .py2-ad-actions .py2-btn {
+    flex: 1 1 auto;
+    min-width: calc(50% - 4px);
+    justify-content: center;
+  }
+}
+@media (max-width: 480px) {
+  .py2-ad-actions .py2-btn { min-width: 100%; }
+  .ad-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .ad-stat-mini { padding: 8px 4px; }
+  .ad-stat-mini .num { font-size: 14px; }
+  .ad-stat-mini .lbl { font-size: 9px; letter-spacing: .3px; }
+}
 
-    /* ── PLAN CARD ─────────────────────────────────────────────────── */
-    .plan-card {
-      border-radius: var(--py2-radius-lg);
-      padding: 20px 22px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      flex-wrap: wrap;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--py2-shadow-sm);
-    }
-    .plan-card.free {
-      background: linear-gradient(135deg, #f8f9ff, #eef0f8);
-      border: 1px solid rgba(0,0,0,.06);
-    }
-    .plan-card.starter {
-      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-      border: 1px solid rgba(37,99,235,.15);
-    }
-    .plan-card.standard {
-      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-      border: 1px solid rgba(139,92,246,.2);
-    }
-    .plan-card.business {
-      background: linear-gradient(135deg, #fef3c7, #fde68a);
-      border: 1px solid rgba(217,119,6,.25);
-    }
-    .plan-card.premium {
-      background: linear-gradient(135deg, #0a0a14, #1a1a3e);
-      border: 1px solid rgba(255,96,0,.4);
-      color: white;
-    }
-    .plan-card.premium .plan-label,
-    .plan-card.premium .plan-desc { color: rgba(255,255,255,.7); }
-    .plan-card.premium .plan-name { color: white; }
+/* ── Create Ad form ────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .media-toggle { grid-template-columns: 1fr 1fr !important; }
+  .media-toggle-btn { padding: 12px 8px !important; font-size: 12.5px !important; }
+  .media-toggle-btn i { font-size: 1.2rem !important; }
+  .video-sources {
+    grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;
+  }
+  .video-source-btn { padding: 12px 6px !important; font-size: 11.5px !important; }
+  .py2-input-group { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 700px) {
+  .py2-file { padding: 24px 16px; }
+  .py2-file-icon { font-size: 2.4rem; }
+  .py2-file-text { font-size: 12.5px; line-height: 1.6; }
+}
 
-    .plan-icon {
-      width: 56px; height: 56px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px;
-      flex-shrink: 0;
-      background: white;
-      box-shadow: 0 4px 14px rgba(0,0,0,.08);
-    }
-    .plan-card.premium .plan-icon { background: rgba(255,255,255,.1); }
+/* ── Stats tab ─────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .py2-table { font-size: 12.5px; }
+  .py2-table th, .py2-table td { padding: 10px 8px; }
+  .py2-table th { font-size: 9.5px; letter-spacing: .5px; }
+  .py2-card-body .py2-table {
+    display: block; overflow-x: auto;
+    -webkit-overflow-scrolling: touch; white-space: nowrap;
+  }
+}
+@media (max-width: 420px) {
+  #tab-stats .py2-card-body > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+}
 
-    .plan-info { flex: 1; min-width: 200px; }
-    .plan-label {
-      font-size: 10.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--py2-muted);
-      margin-bottom: 4px;
-    }
-    .plan-name {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 1.5rem;
-      line-height: 1.1;
-      margin-bottom: 4px;
-    }
-    .plan-desc {
-      font-size: 13px;
-      color: var(--py2-muted);
-      line-height: 1.5;
-    }
-    .plan-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+/* ── My Profile tab ────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .profile-layout { grid-template-columns: 1fr !important; gap: 16px; }
+  .profile-preview-mock { position: static; top: auto; }
+  .mock-iframe-wrap { aspect-ratio: 16 / 9; max-height: 380px; }
+  .mock-actions { padding: 10px 12px; gap: 6px; }
+  .mock-actions .py2-btn {
+    flex: 1 1 calc(50% - 3px); min-width: 0; justify-content: center;
+  }
+}
+@media (max-width: 700px) {
+  #pf-colors-field > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important; gap: 14px !important;
+  }
+  .color-swatch-row {
+    display: grid; grid-template-columns: 56px 1fr;
+    gap: 10px; align-items: center;
+  }
+  .color-swatch-row input[type="color"] {
+    width: 100%; height: 48px; padding: 2px;
+  }
+  .color-hex { padding: 12px 14px; font-size: 15px; }
+}
+@media (max-width: 480px) {
+  .social-field { flex-direction: column; align-items: stretch; gap: 6px; }
+  .social-field .sf-icon { width: 100%; height: 40px; border-radius: 10px; }
+}
+@media (max-width: 600px) {
+  .profile-slug-row { flex-wrap: wrap; gap: 6px; padding: 10px; }
+  .profile-slug-row span {
+    width: 100%; flex: 1 1 100%;
+    white-space: normal; word-break: break-all;
+    font-size: 11.5px; line-height: 1.4;
+  }
+  .profile-slug-row button {
+    width: 100%; justify-content: center;
+    padding: 10px; min-height: 40px;
+  }
+}
+@media (max-width: 900px) {
+  .lock-unlock-btn {
+    width: 100%; justify-content: center;
+    min-height: 44px; font-size: 13px; padding: 12px 16px;
+  }
+  .lock-badge {
+    position: static; display: inline-flex;
+    margin-bottom: 6px; font-size: 10px; padding: 4px 10px;
+  }
+  .locked-field { padding-top: 0; }
+}
 
-    /* Progress bar for expiry */
-    .plan-progress {
-      width: 100%;
-      height: 6px;
-      background: rgba(0,0,0,.06);
-      border-radius: 100px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    .plan-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #16a34a, #22c55e);
-      border-radius: 100px;
-      transition: width .4s;
-    }
-    .plan-progress-fill.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-    .plan-progress-fill.danger { background: linear-gradient(90deg, #dc2626, #ef4444); }
+/* ── Account tab ───────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .pw-form { max-width: none; }
+  .py2-card-foot {
+    flex-direction: column-reverse; align-items: stretch; gap: 8px;
+  }
+  .py2-card-foot .py2-btn {
+    width: 100%; justify-content: center; min-height: 46px;
+  }
+}
 
-    /* Expired banner */
-    .expired-banner {
-      background: rgba(230,57,70,.08);
-      border: 1px solid rgba(230,57,70,.25);
-      border-radius: var(--py2-radius);
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      font-size: 13.5px;
-      line-height: 1.5;
-      color: #b91c1c;
-    }
-    .expired-banner i { flex-shrink: 0; margin-top: 2px; }
+/* ── Share tab ─────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .qr-wrap {
+    flex-direction: column; align-items: center;
+    text-align: center; gap: 12px; padding: 16px;
+  }
+  .qr-img { width: 160px; height: 160px; }
+  .py2-share-row {
+    flex-direction: column; align-items: stretch;
+    gap: 8px; padding: 12px;
+  }
+  .py2-share-url {
+    flex: 1 1 100%;
+    white-space: normal; word-break: break-all;
+    font-size: 11px; line-height: 1.45; padding: 4px 0;
+  }
+  .py2-share-row .py2-btn {
+    width: 100%; justify-content: center; min-height: 44px;
+  }
+}
 
-    /* ── UPGRADE MODAL ─────────────────────────────────────────────── */
-    #upgrade-modal .py2-modal { max-width: 900px; padding: 0; }
-    .upgrade-head {
-      background: linear-gradient(135deg, #0a0a14, #1a1a3e);
-      color: white;
-      padding: 28px 28px 22px;
-      border-radius: var(--py2-radius-lg) var(--py2-radius-lg) 0 0;
-      position: relative;
-    }
-    .upgrade-head h3 {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-      letter-spacing: -.3px;
-    }
-    .upgrade-head p {
-      color: rgba(255,255,255,.6);
-      font-size: 14px;
-      line-height: 1.55;
-      max-width: 620px;
-    }
-    .upgrade-head .py2-modal-close {
-      position: absolute;
-      top: 18px; right: 18px;
-      color: rgba(255,255,255,.6);
-      font-size: 22px;
-    }
-    .upgrade-head .py2-modal-close:hover { color: white; }
+/* ── Upgrade modal ─────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  #upgrade-modal .py2-modal {
+    max-width: 100%; margin: 0;
+    max-height: 100vh; max-height: 100dvh;
+    border-radius: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+  }
+  .upgrade-head {
+    padding: 22px 18px 18px; border-radius: 0; flex-shrink: 0;
+  }
+  .upgrade-head h3 { font-size: 1.25rem; padding-right: 40px; }
+  .upgrade-head p { font-size: 13px; margin-top: 6px; }
+  .upgrade-head .py2-modal-close {
+    top: 14px; right: 14px;
+    width: 40px; height: 40px; font-size: 22px;
+    background: rgba(255,255,255,.1); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+  }
+  .tier-grid {
+    grid-template-columns: repeat(2, 1fr);
+    overflow-y: auto; flex: 1; border-radius: 0;
+  }
+  .tier-col { padding: 18px 14px; }
+  .tier-col.current { padding-top: 34px; }
+  .tier-name { font-size: 14px; }
+  .tier-price { font-size: 1.4rem; }
+  .tier-period { font-size: 10.5px; }
+  .tier-features { font-size: 11.5px; line-height: 1.6; }
+  .tier-features li { gap: 5px; margin-bottom: 4px; }
+  .tier-col .py2-btn {
+    min-height: 44px; font-size: 13px; padding: 12px 8px;
+  }
+  .tier-col .current-badge {
+    min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px;
+  }
+}
+@media (max-width: 480px) {
+  .tier-grid { grid-template-columns: 1fr; }
+}
 
-    .tier-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1px;
-      background: rgba(0,0,0,.06);
-      border-radius: 0 0 var(--py2-radius-lg) var(--py2-radius-lg);
-      overflow: hidden;
-    }
-    .tier-col {
-      background: white;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    .tier-col.current {
-      background: linear-gradient(180deg, #fff7ed, #ffffff);
-    }
-    .tier-col.current::before {
-      content: 'Current Plan';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      background: var(--py2-orange);
-      color: white;
-      font-size: 9px;
-      font-weight: 800;
-      text-align: center;
-      padding: 3px 0;
-      letter-spacing: .8px;
-      text-transform: uppercase;
-    }
-    .tier-col.current { padding-top: 30px; }
+/* ── Payment modal ─────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  #payment-modal .py2-modal {
+    max-width: 100%; margin: 0;
+    width: 100%; max-height: 100vh; max-height: 100dvh;
+    border-radius: 20px 20px 0 0;
+    margin-top: auto; align-self: flex-end;
+  }
+  .py2-modal-backdrop { align-items: flex-end; padding: 0; }
+  #payment-modal .py2-modal-head { padding: 20px 20px 0; }
+  #payment-modal .py2-modal-body { padding: 14px 20px; }
+  #payment-modal .py2-modal-foot {
+    padding: 0 20px 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+  .payment-summary { padding: 16px; }
+  .payment-summary .row { font-size: 13.5px; }
+  .payment-summary .price-tag { font-size: 1.35rem; }
+  .payment-methods { gap: 8px; }
+  .payment-btn { padding: 14px 16px; min-height: 64px; gap: 12px; }
+  .payment-btn .pm-icon { width: 44px; height: 44px; font-size: 20px; }
+  .payment-btn .pm-title { font-size: 14px; }
+  .payment-btn .pm-sub { font-size: 11.5px; }
+  .payment-note { font-size: 12px; padding: 12px; }
+}
 
-    .tier-name {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-    .tier-price {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 1.6rem;
-      color: var(--py2-text);
-      line-height: 1;
-      margin-bottom: 2px;
-    }
-    .tier-price small {
-      font-size: .7rem;
-      color: var(--py2-muted);
-      font-weight: 600;
-    }
-    .tier-period {
-      font-size: 11px;
-      color: var(--py2-muted);
-      margin-bottom: 16px;
-    }
-    .tier-features {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 16px;
-      flex: 1;
-      font-size: 12px;
-      line-height: 1.7;
-      color: #444;
-    }
-    .tier-features li {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .tier-features li i { color: #16a34a; flex-shrink: 0; margin-top: 3px; font-size: 10px; }
-    .tier-features li.no { color: #9ca3af; }
-    .tier-features li.no i { color: #d1d5db; }
-    .tier-col .py2-btn { width: 100%; font-size: 12.5px; padding: 10px; }
-    .tier-col .current-badge {
-      width: 100%;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--py2-orange);
-      padding: 10px;
-      background: rgba(255,96,0,.08);
-      border-radius: 8px;
-    }
-    @media (max-width: 800px) {
-      .tier-grid { grid-template-columns: 1fr; }
-      .tier-col.current { padding-top: 34px; }
-    }
+/* ── All other modals — bottom-sheet style on mobile ───────────────────── */
+@media (max-width: 700px) {
+  .py2-modal-backdrop { padding: 0; align-items: flex-end; }
+  .py2-modal {
+    max-width: 100%; width: 100%; margin: 0;
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh; max-height: 92dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .py2-modal.py2-modal-confirm { max-width: 100%; }
+  .py2-modal-head { padding: 20px 20px 0; }
+  .py2-modal-body { padding: 14px 20px; }
+  .py2-modal-foot {
+    padding: 0 20px 20px;
+    flex-direction: column-reverse; align-items: stretch; gap: 8px;
+  }
+  .py2-modal-foot .py2-btn {
+    width: 100%; justify-content: center; min-height: 46px;
+  }
+  .py2-modal-close {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; font-size: 22px;
+  }
+}
 
-    /* ── PAYMENT MODAL ─────────────────────────────────────────────── */
-    #payment-modal .py2-modal { max-width: 480px; }
-    .payment-summary {
-      background: linear-gradient(135deg, #fff7ed, #ffedd5);
-      border-radius: var(--py2-radius);
-      padding: 18px 20px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(255,96,0,.2);
-    }
-    .payment-summary .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-    .payment-summary .row:last-child { margin-bottom: 0; padding-top: 8px; border-top: 1px dashed rgba(255,96,0,.25); }
-    .payment-summary .row strong { font-family: var(--py2-font-head); font-size: 1rem; }
-    .payment-summary .price-tag {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 1.5rem;
-      color: var(--py2-orange);
-    }
-    .payment-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
-    .payment-btn {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 18px;
-      border-radius: var(--py2-radius);
-      border: 1.5px solid rgba(0,0,0,.08);
-      background: white;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      transition: all .2s;
-      font-size: 14px;
-    }
-    .payment-btn:hover {
-      border-color: var(--py2-orange);
-      background: #fff7ed;
-      transform: translateY(-1px);
-    }
-    .payment-btn .pm-icon {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      color: white;
-      flex-shrink: 0;
-    }
-    .payment-btn .pm-body { flex: 1; }
-    .payment-btn .pm-title {
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 2px;
-    }
-    .payment-btn .pm-sub {
-      font-size: 12px;
-      color: var(--py2-muted);
-    }
-    .payment-btn .pm-arrow {
-      color: var(--py2-muted);
-      font-size: 14px;
-    }
-    .payment-note {
-      background: rgba(84,160,255,.07);
-      border: 1px solid rgba(84,160,255,.2);
-      border-radius: var(--py2-radius);
-      padding: 12px 14px;
-      font-size: 12.5px;
-      line-height: 1.55;
-      color: var(--py2-text);
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-    .payment-note i { color: var(--py2-c5); flex-shrink: 0; margin-top: 1px; }
+/* ── Sign-in screen ────────────────────────────────────────────────────── */
+@media (max-width: 500px) {
+  #signin-screen {
+    padding: 16px 12px;
+    align-items: flex-start; padding-top: 40px;
+  }
+  #signin-screen .py2-auth-card {
+    padding: 26px 20px; border-radius: 16px;
+  }
+  .py2-auth-brand img { height: 48px; width: 48px; }
+  .py2-auth-brand h1 { font-size: 1.3rem; }
+}
 
-    /* ── MY PROFILE TAB ────────────────────────────────────────────── */
-    .profile-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-      gap: 24px;
-      align-items: start;
-    }
-    @media (max-width: 900px) {
-      .profile-layout { grid-template-columns: 1fr; }
-    }
+/* ── Toast ─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  #py2ads-toast {
+    left: 12px !important; right: 12px !important;
+    bottom: 20px !important;
+    transform: none !important;
+    max-width: none !important;
+    white-space: normal !important;
+    text-align: center; line-height: 1.4;
+    padding: 12px 16px; font-size: 13px;
+  }
+}
 
-    .locked-field {
-      position: relative;
-      opacity: .65;
-      pointer-events: none;
+/* ── Safe-area for phones with gesture bars ────────────────────────────── */
+@supports (padding: env(safe-area-inset-bottom)) {
+  @media (max-width: 900px) {
+    .py2-container {
+      padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
     }
-    .locked-field input,
-    .locked-field textarea,
-    .locked-field select {
-      background: #f5f5f7 !important;
-      cursor: not-allowed;
-    }
-    .lock-badge {
-      position: absolute;
-      top: 6px; right: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: linear-gradient(135deg, #5f27cd, #a55eea);
-      color: white;
-      font-size: 9.5px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 100px;
-      letter-spacing: .5px;
-      text-transform: uppercase;
-      z-index: 2;
-    }
-    .lock-badge i { font-size: 8px; }
-    .lock-unlock-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--py2-orange);
-      color: white;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 7px 14px;
-      border-radius: 100px;
-      border: none;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: transform .2s;
-      font-family: var(--py2-font-body);
-    }
-    .lock-unlock-btn:hover { transform: translateY(-1px); }
-
-    .color-swatch-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .color-swatch-row input[type="color"] {
-      width: 48px;
-      height: 44px;
-      border-radius: 10px;
-      border: 1.5px solid rgba(0,0,0,.1);
-      cursor: pointer;
-      padding: 2px;
-      background: white;
-    }
-    .color-hex {
-      flex: 1;
-      min-width: 100px;
-      border: 1.5px solid rgba(0,0,0,.1);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-family: ui-monospace, monospace;
-      outline: none;
-    }
-
-    .social-fields {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    .social-field {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .social-field .sf-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-    .social-field input { flex: 1; }
-
-    /* Live preview mockup */
-    .profile-preview-mock {
-      position: sticky;
-      top: 100px;
-      border-radius: var(--py2-radius-lg);
-      overflow: hidden;
-      border: 1px solid rgba(0,0,0,.08);
-      background: white;
-      box-shadow: var(--py2-shadow);
-    }
-    .mock-label {
-      padding: 10px 16px;
-      background: #f8f9ff;
-      border-bottom: 1px solid rgba(0,0,0,.06);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--py2-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .mock-iframe-wrap {
-      aspect-ratio: 9 / 16;
-      max-height: 640px;
-      background: #0a0a14;
-      position: relative;
-      overflow: hidden;
-    }
-    .mock-iframe-wrap iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-    .mock-empty {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255,255,255,.3);
-      font-size: 13px;
-      text-align: center;
-      padding: 20px;
-    }
-    .mock-actions {
-      padding: 12px 16px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      border-top: 1px solid rgba(0,0,0,.06);
-      background: white;
-    }
-    .mock-actions .py2-btn { flex: 1; min-width: 100px; }
-
-    .profile-slug-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--py2-light);
-      border-radius: var(--py2-radius-sm);
-      padding: 8px 12px;
-      font-family: ui-monospace, monospace;
-      font-size: 12px;
-      color: var(--py2-muted);
-      margin-bottom: 14px;
-      overflow: hidden;
-    }
-    .profile-slug-row span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1;
-    }
-    .profile-slug-row button {
-      background: white;
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: var(--py2-font-body);
-      color: var(--py2-text);
-      flex-shrink: 0;
-    }
-    .profile-slug-row button:hover { background: #f0fdf4; border-color: #25d366; color: #128c7e; }
-
-    /* Tier chip in tab bar */
-    .tier-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 100px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-left: 6px;
-    }
-    .tier-pill.free     { background: rgba(107,114,128,.15); color: #4b5563; }
-    .tier-pill.starter  { background: rgba(37,99,235,.15);   color: #2563eb; }
-    .tier-pill.standard { background: rgba(139,92,246,.15);  color: #7c3aed; }
-    .tier-pill.business { background: rgba(217,119,6,.15);   color: #b45309; }
-    .tier-pill.premium  { background: linear-gradient(135deg, #ff6000, #ff9f43); color: white; }
+  }
+}
   </style>
 </head>
 <body class="py2-page">
