@@ -7,7 +7,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-MVNT6SQCS2');
 </script>
 <meta charset="UTF-8">
@@ -26,6 +25,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/ads-shared.css">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
@@ -51,7 +51,6 @@ img{max-width:100%;display:block;}
 @keyframes slideOutDown{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ═══ UNIFIED HEADER ═══════════════════════════════════════ */
 .top-header{background:var(--white);border-bottom:1px solid var(--border,#e8e8e8);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.07);}
 .top-header-inner{max-width:1280px;margin:0 auto;padding:0 16px;height:68px;display:flex;align-items:center;gap:16px;}
 .logo-wrap{flex-shrink:0;display:flex;align-items:center;gap:10px;text-decoration:none;}
@@ -72,13 +71,11 @@ img{max-width:100%;display:block;}
 .dnav-order{background:#ff6000;color:white;font-weight:700;font-size:13px;padding:8px 16px;border-radius:8px;display:flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap;transition:transform .2s,box-shadow .2s;flex-shrink:0;margin-left:4px;}
 .dnav-order:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,96,0,.4);}
 .hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1a2e;padding:6px;}
-/* Cat nav */
 .cat-nav{background:white;border-bottom:1px solid #e8e8e8;}
 .cat-nav-inner{max-width:1280px;margin:0 auto;padding:0 16px;display:flex;align-items:center;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;}
 .cat-nav-inner::-webkit-scrollbar{display:none;}
 .cat-nav-item{display:flex;align-items:center;gap:6px;padding:10px 14px;font-size:13px;font-weight:500;color:#6b7280;white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;text-decoration:none;flex-shrink:0;}
 .cat-nav-item:hover,.cat-nav-item.active{color:#ff6000;border-bottom-color:#ff6000;background:rgba(255,96,0,.04);}
-/* Mobile nav drawer */
 .mob-nav{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:rgba(0,0,0,.5);}
 .mob-nav.open{display:flex;}
 .mob-nav-panel{width:280px;background:white;height:100%;overflow-y:auto;animation:slideInLeft .28s ease;}
@@ -98,22 +95,18 @@ img{max-width:100%;display:block;}
 @media(max-width:900px){.desk-nav{display:none;}.hamburger{display:block;}.header-search{max-width:none;}}
 @media(max-width:600px){.header-search{display:none;}}
 
-/* BREADCRUMB */
 .breadcrumb{max-width:1280px;margin:0 auto;padding:84px 24px 0;}
 .bc-inner{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);flex-wrap:wrap;}
 .bc-inner a{color:var(--muted);transition:color .2s;}
 .bc-inner a:hover{color:var(--text);}
 .bc-inner i{font-size:10px;}
 
-/* LOADING */
 .loading-state{text-align:center;padding:80px 24px;color:var(--muted);}
 .spinner{width:36px;height:36px;border:3px solid rgba(0,0,0,.1);border-top-color:var(--c5);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px;}
 
-/* LAYOUT */
 .product-detail{max-width:1280px;margin:0 auto;padding:20px 24px 48px;}
 .product-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start;}
 
-/* GALLERY */
 .gallery-wrap{position:sticky;top:80px;width:100%;min-width:0;}
 .main-img-box{
   position:relative;border-radius:20px;overflow:hidden;background:white;
@@ -131,7 +124,6 @@ img{max-width:100%;display:block;}
 .gal-prev,.gal-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.15);transition:all .2s;}
 .gal-prev{left:10px;} .gal-next{right:10px;}
 .gal-prev:hover,.gal-next:hover{background:white;box-shadow:0 4px 16px rgba(0,0,0,.2);}
-/* thumbnails */
 .thumbs-row{
   display:flex;gap:8px;margin-top:10px;
   overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;
@@ -143,35 +135,27 @@ img{max-width:100%;display:block;}
 .thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--light);}
 .thumb.active{border-color:var(--c5);box-shadow:0 0 0 2px rgba(84,160,255,.25);}
 .thumb:hover:not(.active){border-color:rgba(84,160,255,.4);}
-/* action row */
 .img-action-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
 .img-act-btn{flex:1;min-width:0;padding:9px 6px;border-radius:10px;border:1.5px solid rgba(0,0,0,.09);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;color:var(--text);transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .img-act-btn:hover{background:var(--light);}
 .img-act-btn.wished{color:var(--c1);border-color:rgba(255,107,107,.3);background:rgba(255,107,107,.05);}
 
-/* PRODUCT INFO */
 .prod-info{animation:fadeIn .5s .1s ease both;}
 .prod-cat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
 .prod-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);line-height:1.15;margin-bottom:14px;}
-/* price drop banner */
 .drop-banner{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#c2410c;font-weight:600;display:flex;align-items:center;gap:7px;}
-/* price */
 .price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .prod-price{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
 .prod-orig{font-size:1.1rem;color:var(--muted);text-decoration:line-through;font-weight:400;}
 .prod-save{font-size:12px;font-weight:700;color:#ea580c;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);padding:3px 10px;border-radius:100px;}
-/* stock */
 .stock-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;margin-bottom:16px;}
 .sp-in{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);color:#16a34a;}
 .sp-low{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:#ea580c;}
 .sp-out{background:rgba(107,114,128,.1);border:1px solid rgba(107,114,128,.25);color:var(--muted);}
-/* feature pills */
 .feat-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
 .fpill{background:white;border:1.5px solid rgba(0,0,0,.07);font-size:12px;font-weight:500;padding:6px 12px;border-radius:100px;color:var(--text);}
-/* order note */
 .order-note{background:rgba(84,160,255,.07);border:1px solid rgba(84,160,255,.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--text);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
 .order-note i{color:var(--c5);flex-shrink:0;margin-top:1px;}
-/* qty */
 .qty-block{display:flex;align-items:center;gap:16px;margin-bottom:24px;}
 .qty-lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
 .qty-ctrl{display:flex;align-items:center;background:white;border:1.5px solid rgba(0,0,0,.1);border-radius:12px;overflow:hidden;}
@@ -179,13 +163,11 @@ img{max-width:100%;display:block;}
 .qty-btn:hover{background:var(--light);}
 .qty-num{min-width:36px;text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
 .qty-total{font-size:13px;color:var(--muted);}
-/* desc */
 .desc-block{background:white;border-radius:16px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,0,0,.05);}
 .desc-block h4{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;}
 .desc-txt{font-size:15px;line-height:1.75;color:var(--text);}
 .desc-txt.clamped{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .desc-toggle{background:none;border:none;color:var(--c5);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;padding:0;font-family:'DM Sans',sans-serif;}
-/* how to order block */
 .howto-block{background:white;border-radius:16px;margin-bottom:20px;border:1px solid rgba(0,0,0,.05);overflow:hidden;}
 .howto-block-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none;}
 .howto-block-hdr h4{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;}
@@ -202,7 +184,6 @@ img{max-width:100%;display:block;}
 .pchip.a{background:rgba(255,0,0,.08);color:#dc2626;border:1px solid rgba(255,0,0,.15);}
 .pchip.m{background:rgba(254,202,57,.15);color:#92400e;border:1px solid rgba(254,202,57,.3);}
 .pchip.c{background:rgba(22,163,74,.08);color:#16a34a;border:1px solid rgba(22,163,74,.2);}
-/* CTA */
 .cta-stack{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
 .btn-wa-order{background:var(--grad-green);color:white;font-weight:700;font-size:16px;padding:17px 24px;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 20px rgba(37,211,102,.4);transition:transform .2s,box-shadow .2s;text-decoration:none;font-family:'DM Sans',sans-serif;}
 .btn-wa-order:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(37,211,102,.55);}
@@ -214,7 +195,6 @@ img{max-width:100%;display:block;}
 .btn-sec{background:white;border:1.5px solid rgba(0,0,0,.1);color:var(--text);font-weight:600;font-size:14px;padding:12px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .btn-sec:hover{background:var(--light);}
 .btn-sec.wished{color:var(--c1);border-color:rgba(255,107,107,.3);}
-/* share row */
 .share-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .share-lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
 .share-btns{display:flex;gap:8px;flex-wrap:wrap;}
@@ -225,17 +205,14 @@ img{max-width:100%;display:block;}
 .sh-fb:hover{background:rgba(24,119,242,.18);}
 .sh-cp{background:rgba(84,160,255,.1);color:var(--c5);border:1px solid rgba(84,160,255,.2);}
 .sh-cp:hover{background:rgba(84,160,255,.18);}
-/* trust */
 .trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
 .trust-card{background:white;border-radius:12px;padding:14px 10px;text-align:center;border:1px solid rgba(0,0,0,.05);}
 .trust-card .ticon{font-size:1.4rem;margin-bottom:6px;}
 .trust-card .tlbl{font-size:11px;font-weight:700;color:var(--text);}
 .trust-card .tsub{font-size:10px;color:var(--muted);margin-top:2px;}
-/* back */
 .btn-back{display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid rgba(0,0,0,.09);color:var(--text);font-weight:600;font-size:13px;padding:10px 18px;border-radius:10px;cursor:pointer;transition:all .2s;margin-top:8px;font-family:'DM Sans',sans-serif;}
 .btn-back:hover{background:var(--light);}
 
-/* LIGHTBOX */
 .lightbox{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:20px;}
 .lightbox.open{display:flex;}
 #lb-img{max-width:90vw;max-height:85vh;border-radius:12px;object-fit:contain;animation:popIn .3s ease;}
@@ -247,7 +224,6 @@ img{max-width:100%;display:block;}
 .lb-prev:hover,.lb-next:hover{background:rgba(255,255,255,.25);}
 .lb-count{position:absolute;top:16px;left:16px;color:rgba(255,255,255,.6);font-size:13px;background:rgba(0,0,0,.4);padding:4px 12px;border-radius:100px;}
 
-/* SHARE SHEET */
 .share-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;}
 .share-overlay.open{display:flex;}
 .share-sheet{background:white;border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;animation:slideUp .3s ease;}
@@ -262,11 +238,9 @@ img{max-width:100%;display:block;}
 .share-link-input{flex:1;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--muted);background:var(--light);outline:none;}
 .btn-copy{background:var(--dark);color:white;font-weight:600;font-size:13px;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
-/* TOAST */
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);z-index:600;background:var(--dark);color:white;font-size:13px;font-weight:500;padding:10px 20px;border-radius:100px;display:flex;align-items:center;gap:8px;pointer-events:none;opacity:0;white-space:nowrap;transition:opacity .3s;}
 .toast.show{opacity:1;}
 
-/* RELATED */
 .related-section{max-width:1280px;margin:0 auto;padding:0 24px 60px;}
 .sec-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:8px;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;}
 .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:16px;}
@@ -284,13 +258,11 @@ img{max-width:100%;display:block;}
 .rel-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
 .rel-orig{font-size:.8rem;color:var(--muted);text-decoration:line-through;}
 
-/* NOT FOUND */
 .not-found{max-width:600px;margin:60px auto;padding:40px 24px;text-align:center;}
 .not-found .nf-emoji{font-size:4rem;margin-bottom:16px;}
 .not-found h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:12px;}
 .not-found p{color:var(--muted);margin-bottom:24px;}
 
-/* SALES NOTIF */
 .sales-notif{position:fixed;bottom:88px;left:16px;z-index:300;background:white;border-radius:14px;padding:12px 14px;box-shadow:0 4px 24px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.07);max-width:280px;display:flex;align-items:center;gap:10px;animation:slideInUp .4s ease forwards;}
 .sales-notif.hiding{animation:slideOutDown .4s ease forwards;}
 .sn-icon{width:38px;height:38px;border-radius:10px;background:var(--grad-green);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
@@ -298,7 +270,6 @@ img{max-width:100%;display:block;}
 .sn-text span{font-size:11px;color:var(--muted);}
 .sn-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;flex-shrink:0;}
 
-/* FOOTER */
 footer{background:var(--dark);padding:64px 24px 0;}
 .footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
 .footer-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:white;margin-bottom:10px;}
@@ -317,7 +288,6 @@ footer{background:var(--dark);padding:64px 24px 0;}
 .footer-btm{max-width:1280px;margin:40px auto 0;padding:20px 0;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 .footer-btm span{color:rgba(255,255,255,.3);font-size:12px;}
 
-/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-top:1px solid rgba(0,0,0,.06);box-shadow:0 -4px 20px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-around;}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:500;text-decoration:none;flex:1;padding:6px 0;transition:color .2s;}
 .bnav-item i{font-size:20px;transition:transform .2s;}
@@ -336,51 +306,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   .footer-grid{grid-template-columns:repeat(2,1fr);}
 }
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.trust-grid{grid-template-columns:repeat(3,1fr);}.btn-row-2{grid-template-columns:1fr 1fr;}}
-
-
-/* ═══════════════════════════════════════════════════════════
-   SPONSORED ADS GRID (PhoneYa2 Ads)
-   Self-contained. All classes prefixed .py2-ads- to avoid
-   collision with existing site styles. Section is hidden by
-   default and only revealed when at least one ad renders.
-═══════════════════════════════════════════════════════════ */
-#py2-ads-grid{display:none;}
-#py2-ads-grid.py2-ads-ready{display:block;}
-.py2-ads-section{max-width:1280px;margin:0 auto;padding:0 24px 60px;}
-.py2-ads-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-.py2-ads-head-l{display:flex;align-items:center;gap:12px;}
-.py2-ads-head-l h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;}
-.py2-ads-tag{display:inline-block;background:rgba(255,96,0,.12);color:#ff6000;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.6px;}
-.py2-ads-seeall{color:var(--orange,#ff6000);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
-.py2-ads-seeall:hover{color:#e55400;}
-
-.py2-ads-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
-.py2-ads-card{background:white;border-radius:14px;overflow:hidden;cursor:pointer;transition:box-shadow .25s,transform .25s;border:1px solid #f0f0f0;position:relative;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.05);}
-.py2-ads-card:hover{box-shadow:0 12px 32px rgba(0,0,0,.12);transform:translateY(-4px);}
-.py2-ads-img{height:170px;background:var(--light,#f8f9ff);position:relative;overflow:hidden;}
-.py2-ads-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;}
-.py2-ads-card:hover .py2-ads-img img{transform:scale(1.05);}
-.py2-ads-sponsored{position:absolute;top:10px;left:10px;background:rgba(10,10,20,.75);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.6px;backdrop-filter:blur(4px);z-index:2;}
-.py2-ads-report{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);color:#6b7280;font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;border:none;cursor:pointer;text-decoration:none;line-height:1.5;z-index:2;}
-.py2-ads-report:hover{background:white;color:#dc2626;}
-.py2-ads-body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1;}
-.py2-ads-biz{font-size:11px;font-weight:700;color:#ff6000;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.py2-ads-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text,#1a1a2e);line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px;}
-.py2-ads-desc{font-size:13px;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px;}
-.py2-ads-cta{margin-top:auto;width:100%;background:var(--orange,#ff6000);color:white;font-weight:700;font-size:13px;padding:10px;border-radius:9px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .2s,box-shadow .2s;}
-.py2-ads-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,96,0,.4);}
-.py2-ads-cta i{font-size:14px;}
-
-@media(max-width:900px){
-  .py2-ads-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
-  .py2-ads-img{height:150px;}
-}
-@media(max-width:600px){
-  .py2-ads-section{padding:0 16px 40px;}
-  .py2-ads-grid{grid-template-columns:1fr;gap:12px;}
-  .py2-ads-img{height:170px;}
-  .py2-ads-head-l h2{font-size:1.2rem;}
-}
 </style>
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -392,7 +317,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 </head>
 <body>
 
-<!-- UNIFIED HEADER -->
 <div class="top-header">
   <div class="top-header-inner">
     <button class="hamburger" id="hamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
@@ -421,7 +345,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   </div>
 </div>
 
-<!-- CAT NAV STRIP -->
 <div class="cat-nav">
   <div class="cat-nav-inner">
     <a href="shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store"></i> All Products</a>
@@ -436,7 +359,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   </div>
 </div>
 
-<!-- MOBILE NAV DRAWER -->
 <div class="mob-nav" id="mob-nav" role="dialog" aria-modal="true">
   <div class="mob-nav-panel">
     <div class="mob-nav-hdr">
@@ -464,7 +386,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 </div>
 
 
-<!-- BREADCRUMB -->
 <div class="breadcrumb">
   <div class="bc-inner">
     <a href="index.html">Home</a>
@@ -475,38 +396,29 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   </div>
 </div>
 
-<!-- PRODUCT DETAIL -->
 <div class="product-detail" id="product-detail">
   <div class="loading-state"><div class="spinner"></div>Loading product…</div>
 </div>
 
-<!-- RELATED -->
+<!-- ═══ SPONSORED ADS GRID — placed between product detail and related ═══
+     Styled by /ads-shared.css. Supports images and videos. -->
+<section class="py2-ads-section" id="py2-ads-grid" aria-label="Sponsored businesses">
+  <div class="py2-ads-head">
+    <div class="py2-ads-head-l">
+      <h2>🇿🇲 Sponsored — Zambian Businesses</h2>
+      <span class="py2-ads-tag">Featured Today</span>
+    </div>
+    <a href="/advertise/" class="py2-ads-seeall">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+  <div class="py2-ads-grid" id="py2-ads-grid-track"></div>
+</section>
+
 <div class="related-section" id="related-section" style="display:none">
   <div class="sec-tag">You Might Also Like</div>
   <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem">Related Products</h2>
   <div class="related-grid" id="related-grid"></div>
 </div>
 
-<!-- ═══ SPONSORED ADS GRID (PhoneYa2 Ads) ═══
-     Populated by the script at the bottom of this page.
-     Self-hides when zero approved ads are returned, and also
-     self-hides when window.PY2_ADS_CONFIG is not yet set
-     (i.e. before ads-config.js is deployed).
-     No existing styles, IDs, or behaviours are touched. -->
-<section id="py2-ads-grid" aria-label="Sponsored businesses">
-  <div class="py2-ads-section">
-    <div class="py2-ads-head">
-      <div class="py2-ads-head-l">
-        <h2>🇿🇲 Sponsored</h2>
-        <span class="py2-ads-tag">Zambian Businesses</span>
-      </div>
-      <a href="/advertise/" class="py2-ads-seeall">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
-    </div>
-    <div class="py2-ads-grid" id="py2-ads-grid-track"></div>
-  </div>
-</section>
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div>
@@ -549,7 +461,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   <a href="contact.html" class="bnav-item"><i class="fa-solid fa-envelope"></i><span>Contact</span></a>
 </nav>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
   <button class="lb-close" id="lb-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
   <button class="lb-prev" id="lb-prev" aria-label="Previous image"><i class="fa-solid fa-chevron-left"></i></button>
@@ -559,7 +470,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   <div class="lb-count" id="lb-count">1 / 1</div>
 </div>
 
-<!-- SHARE SHEET -->
 <div class="share-overlay" id="share-overlay" role="dialog" aria-modal="true">
   <div class="share-sheet">
     <button class="ss-close" id="ss-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
@@ -572,7 +482,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast" role="alert"><i class="fa-solid fa-check"></i> <span id="toast-msg">Done!</span></div>
 
 <script>
@@ -586,7 +495,6 @@ const FORM_BASE  = 'https://docs.google.com/forms/d/e/1FAIpQLSfNBtX9pIa9a9dNgKqR
 const FORM_ENTRY = 'entry.1497396155';
 const WA         = '260979603741';
 
-// Google Form URL — product name + price + qty pre-filled
 function orderUrl(p, qty) {
   qty = qty || 1;
   let detail = (p.title || 'Product') + ' – ZMW ' + (p.price || 0);
@@ -596,7 +504,6 @@ function orderUrl(p, qty) {
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
 const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
 
-// ─── Utilities ──────────────────────────────────────────────────────────────
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escJs(s)   { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
@@ -607,7 +514,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ─── parseFrontmatter ────────────────────────────────────────────────────────
 function parseFrontmatter(text, slug) {
   const match = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
   if (!match) return null;
@@ -634,7 +540,6 @@ function parseFrontmatter(text, slug) {
   return out;
 }
 
-// ─── fetchAllProducts ────────────────────────────────────────────────────────
 async function fetchAllProducts() {
   const res = await fetch('/content/products/index.json?t='+Date.now());
   if (!res.ok) throw new Error('index.json '+res.status);
@@ -648,7 +553,6 @@ async function fetchAllProducts() {
   return products;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 function stockStatus(s) {
   const n = parseInt(s)||0;
   if (n===0) return {label:'Out of Stock',cls:'sp-out',ico:'fa-solid fa-ban',canOrder:false};
@@ -664,10 +568,8 @@ function waMsg(p, qty) {
   return 'https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
 }
 
-// ─── State ────────────────────────────────────────────────────────────────────
 let currentProd = null, galleryImages = [], galIdx = 0, qty = 1, isWished = false;
 
-// ─── Wishlist ─────────────────────────────────────────────────────────────────
 function getWishlist() { try { return JSON.parse(localStorage.getItem('py2_wish')||'[]'); } catch(e) { return []; } }
 function saveWishlist(l) { try { localStorage.setItem('py2_wish', JSON.stringify(l)); } catch(e) {} }
 function toggleWish(slug) {
@@ -682,7 +584,6 @@ function toggleWish(slug) {
   });
 }
 
-// ─── Gallery ──────────────────────────────────────────────────────────────────
 function setGalleryImg(idx) {
   if (!galleryImages.length) return;
   galIdx = ((idx % galleryImages.length) + galleryImages.length) % galleryImages.length;
@@ -692,7 +593,6 @@ function setGalleryImg(idx) {
   if (mainImg) { mainImg.src = gi.src; mainImg.alt = gi.caption || (currentProd ? currentProd.title : ''); }
   if (mainBox) mainBox.classList.remove('zoomed');
   document.querySelectorAll('.thumb').forEach((t,i) => t.classList.toggle('active', i===galIdx));
-  // sync lightbox
   const lbImg = document.getElementById('lb-img');
   const lbCap = document.getElementById('lb-cap');
   const lbCount = document.getElementById('lb-count');
@@ -709,7 +609,6 @@ document.getElementById('lb-close').addEventListener('click', () => { document.g
 document.getElementById('lb-prev').addEventListener('click', () => setGalleryImg(galIdx-1));
 document.getElementById('lb-next').addEventListener('click', () => setGalleryImg(galIdx+1));
 document.getElementById('lightbox').addEventListener('click', e => { if (e.target===e.currentTarget) { e.currentTarget.classList.remove('open'); document.body.style.overflow=''; } });
-// keyboard nav in lightbox
 document.addEventListener('keydown', e => {
   if (!document.getElementById('lightbox').classList.contains('open')) return;
   if (e.key==='ArrowLeft') setGalleryImg(galIdx-1);
@@ -717,12 +616,10 @@ document.addEventListener('keydown', e => {
   if (e.key==='Escape') { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow=''; }
 });
 
-// ─── Share sheet ──────────────────────────────────────────────────────────────
 window.openShareSheet = function() {
   const overlay = document.getElementById('share-overlay');
   const input = document.getElementById('share-link-input');
   overlay.classList.add('open');
-  // Use the clean product URL (not current URL which may have extra params)
   const productUrl = currentProd
     ? window.location.origin + '/product.html?id=' + currentProd.slug
     : window.location.href;
@@ -740,10 +637,8 @@ document.getElementById('btn-copy-link').addEventListener('click', () => {
 });
 function buildShareOpts() {
   if (!currentProd) return;
-  // Use the clean product URL so the preview shows this specific product
   const productUrl = window.location.origin + '/product.html?id=' + currentProd.slug;
   const encodedUrl = encodeURIComponent(productUrl);
-  // WhatsApp message: rich format with product details
   const waText = encodeURIComponent(
     '👋 Check this out at PhoneYa2-ZM:\n\n' +
     '*' + currentProd.title + '*\n' +
@@ -774,7 +669,6 @@ function buildShareOpts() {
   });
 }
 
-// ─── Quantity ─────────────────────────────────────────────────────────────────
 window.changeQty = function(delta) {
   qty = Math.max(1, Math.min(99, qty+delta));
   const disp = document.getElementById('qty-disp');
@@ -787,7 +681,6 @@ window.changeQty = function(delta) {
   }
 };
 
-// ─── Desc toggle ──────────────────────────────────────────────────────────────
 window.toggleDesc = function() {
   const dt = document.getElementById('desc-txt');
   const tog = document.getElementById('desc-toggle');
@@ -796,7 +689,6 @@ window.toggleDesc = function() {
   tog.textContent = clamped ? 'Read more ↓' : 'Read less ↑';
 };
 
-// ─── How to order toggle ──────────────────────────────────────────────────────
 window.toggleHowTo = function() {
   const body = document.getElementById('howto-body');
   const chev = document.getElementById('howto-chev');
@@ -805,19 +697,16 @@ window.toggleHowTo = function() {
   chev.style.transform = open ? 'rotate(180deg)' : '';
 };
 
-// ─── Hamburger ────────────────────────────────────────────────────────────────
 document.getElementById('hamburger').addEventListener('click', function() {
   const nav = document.getElementById('mob-nav');
   const open = nav.classList.toggle('open');
   this.querySelector('i').className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
 });
 
-// ─── Notify me ────────────────────────────────────────────────────────────────
 window.notifyMe = function(title) {
   window.open('https://wa.me/'+WA+'?text='+encodeURIComponent('Hi! Please notify me when "'+title+'" is back in stock.'),'_blank','noopener');
 };
 
-// ─── Render product ───────────────────────────────────────────────────────────
 function renderProduct(p) {
   currentProd = p; qty = 1;
   isWished = getWishlist().includes(p.slug);
@@ -828,7 +717,6 @@ function renderProduct(p) {
   const hasDrop = op > p.price;
   const save = hasDrop ? Math.round(op-p.price) : 0;
 
-  // Build gallery array: main image first, then gallery items
   galleryImages = [];
   if (p.image) galleryImages.push({src:p.image, caption:p.title});
   if (p.gallery && p.gallery.length) {
@@ -837,21 +725,17 @@ function renderProduct(p) {
   if (!galleryImages.length) galleryImages.push({src:'', caption:''});
   galIdx = 0;
 
-  // ── Update ALL meta tags so shared links show the product, not generic site ──
   const productUrl = window.location.origin + '/product.html?id=' + p.slug;
   const productImg = galleryImages[0].src || 'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg';
 
-  // Page title + description
   document.getElementById('page-title').textContent = p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM';
   const descEl = document.getElementById('page-desc');
   if (descEl) descEl.content = (p.description || '') + ' Same-day delivery in Lusaka.';
 
-  // Open Graph (Facebook, WhatsApp link preview, LinkedIn)
   const setMeta = (id, val) => { const el=document.getElementById(id); if(el) el.content=val; };
   setMeta('og-title',  p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM');
   setMeta('og-desc',   (p.description||'Genuine phone accessory from PhoneYa2-ZM.') + ' Same-day delivery in Lusaka, Zambia.');
   setMeta('og-image',  productImg);
-  // og:url — critical: tells crawlers the canonical URL of this product
   let ogUrl = document.getElementById('og-url');
   if (!ogUrl) {
     ogUrl = document.createElement('meta');
@@ -861,19 +745,12 @@ function renderProduct(p) {
   }
   ogUrl.content = productUrl;
 
-  // Twitter Card
-  setMeta('twitter-title', p.title + ' – ZMW ' + p.price + ' | PhoneYa2-ZM');
-  setMeta('twitter-desc',  p.description || 'Shop phone accessories at PhoneYa2-ZM, Lusaka.');
-  setMeta('twitter-image', productImg);
-
-  // Push the clean product URL to browser history (so copy/paste URL is shareable)
   if (window.history && window.history.replaceState) {
     window.history.replaceState({ slug: p.slug }, p.title, '/product.html?id=' + p.slug);
   }
 
   const bcEl = document.getElementById('bc-name'); if (bcEl) bcEl.textContent = p.title;
 
-  // Thumbnails HTML
   const thumbsHTML = galleryImages.length > 1
     ? '<div class="thumbs-row">' + galleryImages.map((g,i) =>
         '<div class="thumb'+(i===0?' active':'')+'" onclick="setGalleryImg('+i+')" role="button" aria-label="View image '+(i+1)+'">' +
@@ -882,12 +759,10 @@ function renderProduct(p) {
       ).join('') + '</div>'
     : '';
 
-  // Navigation arrows (only if multiple images)
   const navArrows = galleryImages.length > 1
     ? '<button class="gal-prev" onclick="setGalleryImg(galIdx-1)" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><button class="gal-next" onclick="setGalleryImg(galIdx+1)" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>'
     : '';
 
-  // Price HTML
   const priceHTML = hasDrop
     ? '<div class="price-row"><div class="prod-price">ZMW '+p.price.toLocaleString()+'</div><div class="prod-orig">ZMW '+op.toLocaleString()+'</div><div class="prod-save">Save ZMW '+save+'</div></div>'
     : '<div class="price-row"><div class="prod-price">ZMW '+(p.price||0).toLocaleString()+'</div></div>';
@@ -908,15 +783,11 @@ function renderProduct(p) {
     ? '<a href="'+orderUrl(p,1)+'" target="_blank" rel="noopener" class="btn-order-main" id="btn-order-main"><i class="fa-solid fa-clipboard-list" style="font-size:1.2rem"></i> Order Now</a>'
     : '<button class="btn-wa-notify" onclick="notifyMe(\''+escJs(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify Me When Back in Stock</button>';
 
-  const wishIcon = isWished ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-  const wishTxt  = isWished ? 'Saved' : 'Save';
-
   const detailEl = document.getElementById('product-detail');
   if (!detailEl) return;
 
   detailEl.innerHTML = `
   <div class="product-layout">
-    <!-- GALLERY -->
     <div class="gallery-wrap">
       <div class="main-img-box" id="main-img-box" onclick="handleImgClick(event)">
         ${galleryImages[0].src
@@ -933,7 +804,6 @@ function renderProduct(p) {
         <button class="img-act-btn" onclick="openShareSheet()" aria-label="Share product"><i class="fa-solid fa-share-nodes"></i> Share</button>
       </div>
     </div>
-    <!-- INFO -->
     <div class="prod-info">
       <div class="prod-cat-lbl">${escHtml(cat)}</div>
       <h1 class="prod-title">${escHtml(p.title)}</h1>
@@ -992,20 +862,17 @@ function renderProduct(p) {
   </div>`;
 }
 
-// ─── Img click (zoom) ─────────────────────────────────────────────────────────
 window.handleImgClick = function(e) {
   if (e.target.closest('.gal-prev') || e.target.closest('.gal-next')) return;
   const box = document.getElementById('main-img-box');
   if (box) box.classList.toggle('zoomed');
 };
 
-// ─── Render not found ─────────────────────────────────────────────────────────
 function renderNotFound(slug) {
   const el = document.getElementById('product-detail');
   if (el) el.innerHTML = '<div class="not-found"><div class="nf-emoji">🔍</div><h2>Product Not Found</h2><p>We couldn\'t find "'+escHtml(slug||'this product')+'".</p><a href="shop.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Shop</a></div>';
 }
 
-// ─── Render related ───────────────────────────────────────────────────────────
 function renderRelated(allProds, currentSlug, category) {
   const related = allProds.filter(p => p.category === category && p.slug !== currentSlug).slice(0, 4);
   if (!related.length) return;
@@ -1031,7 +898,6 @@ function renderRelated(allProds, currentSlug, category) {
   });
 }
 
-// ─── Sales notification ───────────────────────────────────────────────────────
 async function showSalesNotif() {
   if (sessionStorage.getItem('py2_notif')) return;
   let sales = [];
@@ -1054,28 +920,20 @@ window.dismissNotif = function() {
   setTimeout(()=>n.remove(), 400);
 };
 
-// ─── Main load ────────────────────────────────────────────────────────────────
 async function loadProductPage() {
   const slug = new URLSearchParams(window.location.search).get('id');
   if (!slug) { renderNotFound(''); return; }
-
-  // Try fetching this specific product's .md file
   let product = null;
   try {
     const r = await fetch('/content/products/'+slug+'.md');
     if (r.ok) { const t = await r.text(); product = parseFrontmatter(t, slug); }
   } catch(e) {}
-
   if (!product) { renderNotFound(slug); return; }
-
   renderProduct(product);
-
-  // Load all products for related section (non-blocking)
   try {
     const allProds = await fetchAllProducts();
     renderRelated(allProds, slug, product.category);
-  } catch(e) { /* related section just stays hidden */ }
-
+  } catch(e) {}
   setTimeout(showSalesNotif, 10000);
 }
 
@@ -1083,7 +941,7 @@ loadProductPage();
 </script>
 
 
-<!-- ── PWA: Service Worker + Install Button ──────────────────────────── -->
+<!-- ── PWA block (unchanged) ── -->
 <div id="pwa-install-bar" style="display:none;position:fixed;bottom:75px;left:50%;transform:translateX(-50%);z-index:400;background:#0a0a14;color:white;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);max-width:calc(100vw - 32px);animation:slideInUp .4s ease;">
   <img src="/icons/icon-72.png" alt="" style="width:36px;height:36px;border-radius:8px;" onerror="this.style.display='none'">
   <div style="flex:1;min-width:0;">
@@ -1099,19 +957,14 @@ loadProductPage();
 </div>
 
 <script>
-// ─── Service Worker Registration ─────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(reg => {
-        console.log('[PWA] Service worker registered');
-
-        // Check for updates on every page load
         reg.addEventListener('updatefound', () => {
           const newSW = reg.installing;
           newSW.addEventListener('statechange', () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              // New version ready — show update bar
               document.getElementById('pwa-update-bar').style.display = 'block';
               window._newSW = newSW;
             }
@@ -1119,96 +972,58 @@ if ('serviceWorker' in navigator) {
         });
       })
       .catch(err => console.warn('[PWA] SW registration failed:', err));
-
-    // Reload page after new SW activates
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       window.location.reload();
     });
   });
 }
-
 function applyUpdate() {
-  if (window._newSW) {
-    window._newSW.postMessage('skipWaiting');
-  }
+  if (window._newSW) window._newSW.postMessage('skipWaiting');
 }
-
-// ─── Install Prompt ───────────────────────────────────────────────────────────
 let _installPrompt = null;
 const installBar  = document.getElementById('pwa-install-bar');
 const installBtn  = document.getElementById('pwa-install-btn');
 const dismissBtn  = document.getElementById('pwa-dismiss-btn');
-
-// Capture the browser's install event
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _installPrompt = e;
-  // Only show if user hasn't dismissed before
   if (!sessionStorage.getItem('pwa-dismissed')) {
-    setTimeout(() => {
-      if (installBar) installBar.style.display = 'flex';
-    }, 3000); // wait 3s before showing
+    setTimeout(() => { if (installBar) installBar.style.display = 'flex'; }, 3000);
   }
 });
-
 if (installBtn) {
   installBtn.addEventListener('click', async () => {
     if (!_installPrompt) return;
     _installPrompt.prompt();
     const { outcome } = await _installPrompt.userChoice;
-    if (outcome === 'accepted') {
-      if (installBar) installBar.style.display = 'none';
-    }
+    if (outcome === 'accepted') { if (installBar) installBar.style.display = 'none'; }
     _installPrompt = null;
   });
 }
-
 if (dismissBtn) {
   dismissBtn.addEventListener('click', () => {
     if (installBar) installBar.style.display = 'none';
     sessionStorage.setItem('pwa-dismissed', '1');
   });
 }
-
-// Hide install bar if already installed
 window.addEventListener('appinstalled', () => {
   if (installBar) installBar.style.display = 'none';
   _installPrompt = null;
-  console.log('[PWA] App installed');
 });
 </script>
-<!-- ── End PWA ─────────────────────────────────────────────────────────── -->
-  <script>
-// ─── HIDE INSTALL BAR IF ALREADY INSTALLED ──────────────────────────────
+
+<script>
 (function() {
   const installBar = document.getElementById('pwa-install-bar');
   if (!installBar) return;
-
-  // 1. If already installed (standalone mode)
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    installBar.style.display = 'none';
-    return;
-  }
-
-  // 2. If user dismissed it before in this session
-  if (sessionStorage.getItem('pwa-dismissed')) {
-    installBar.style.display = 'none';
-    return;
-  }
-
-  // 3. If already installed via Chrome (check for appinstalled event)
-  // The appinstalled event will hide it automatically (see below)
+  if (window.matchMedia('(display-mode: standalone)').matches) { installBar.style.display = 'none'; return; }
+  if (sessionStorage.getItem('pwa-dismissed')) { installBar.style.display = 'none'; return; }
 })();
-
-// ─── APPINSTALLED EVENT ──────────────────────────────────────────────────
 window.addEventListener('appinstalled', () => {
   const installBar = document.getElementById('pwa-install-bar');
   if (installBar) installBar.style.display = 'none';
   sessionStorage.setItem('pwa-dismissed', '1');
-  console.log('[PWA] App installed — install bar hidden');
 });
-
-// ─── DISMISS BUTTON ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   const dismissBtn = document.getElementById('pwa-dismiss-btn');
   if (dismissBtn) {
@@ -1223,10 +1038,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- ═══════════════════════════════════════════════════════════
-     PHONEYA2 ADS — Sponsored grid loader
-     Self-guards: if window.PY2_ADS_CONFIG is not set (i.e. ads-config.js
-     has not been deployed yet), the whole section stays hidden and this
-     script exits without side-effects. No existing feature is touched.
+     PHONEYA2 ADS — Sponsored grid (with video support)
 ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
@@ -1234,71 +1046,83 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var section = document.getElementById('py2-ads-grid');
   if (!section) return;
+  function hideSection() { section.style.display = 'none'; }
 
-  function hideSection() {
-    section.classList.remove('py2-ads-ready');
-    section.style.display = 'none';
-  }
+  var SUPABASE_URL = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.url)
+    || 'https://signnapmkdctdcfpnsiu.supabase.co';
+  var SUPABASE_KEY = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.key)
+    || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
-  if (!window.PY2_ADS_CONFIG || !window.PY2_ADS_CONFIG.url || !window.PY2_ADS_CONFIG.key) {
-    hideSection();
-    return;
-  }
-
-  var SUPABASE_URL = window.PY2_ADS_CONFIG.url;
-  var SUPABASE_KEY = window.PY2_ADS_CONFIG.key;
-  var GRID         = document.getElementById('py2-ads-grid-track');
+  var GRID = document.getElementById('py2-ads-grid-track');
   if (!GRID) { hideSection(); return; }
 
   function esc(s) {
     return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  var _visitorHashCache = null;
+  function renderMedia(ad) {
+    var url = ad.media_url || '';
+    var type = ad.media_type || 'image';
+    var provider = ad.video_provider || '';
+    if (!url) return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5">🇿🇲</div>';
+    if (type !== 'video') {
+      return '<img src="' + esc(url) + '" alt="' + esc(ad.title || '') + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5&quot;>🇿🇲</div>\'">';
+    }
+    if (!provider) {
+      if (/youtube\.com|youtu\.be/i.test(url)) provider = 'youtube';
+      else if (/vimeo\.com/i.test(url))        provider = 'vimeo';
+      else if (/tiktok\.com/i.test(url))       provider = 'tiktok';
+      else                                     provider = 'mp4';
+    }
+    if (provider === 'youtube') {
+      var m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+      if (!m) return '<div class="py2-ads-video-fallback"><div class="vf-icon">▶</div>YouTube</div>';
+      return '<iframe src="https://www.youtube.com/embed/' + esc(m[1]) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(m[1]) + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen title="' + esc(ad.title || '') + '"></iframe>';
+    }
+    if (provider === 'vimeo') {
+      var v = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if (!v) return '<div class="py2-ads-video-fallback"><div class="vf-icon">▶</div>Vimeo</div>';
+      return '<iframe src="https://player.vimeo.com/video/' + esc(v[1]) + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" allowfullscreen title="' + esc(ad.title || '') + '"></iframe>';
+    }
+    if (provider === 'tiktok') {
+      return '<div class="py2-ads-video-fallback" style="background:linear-gradient(135deg,#000,#fe2c55)"><div class="vf-icon">🎵</div>TikTok</div>';
+    }
+    return '<video src="' + esc(url) + '" autoplay muted loop playsinline></video>';
+  }
+
+  var _vh = null;
   function visitorHash() {
-    if (_visitorHashCache) return Promise.resolve(_visitorHashCache);
+    if (_vh) return Promise.resolve(_vh);
     try {
-      var ua   = navigator.userAgent || '';
-      var lang = navigator.language || '';
-      var day  = new Date().toISOString().slice(0, 10);
-      var raw  = ua + '|' + lang + '|' + day + '|py2ads';
+      var ua = navigator.userAgent || '', lang = navigator.language || '';
+      var day = new Date().toISOString().slice(0, 10);
+      var raw = ua + '|' + lang + '|' + day + '|py2ads';
       if (!window.crypto || !window.crypto.subtle) {
         var h = 0;
         for (var i = 0; i < raw.length; i++) { h = ((h << 5) - h + raw.charCodeAt(i)) | 0; }
-        _visitorHashCache = 'v1_' + Math.abs(h).toString(36);
-        return Promise.resolve(_visitorHashCache);
+        _vh = 'v1_' + Math.abs(h).toString(36);
+        return Promise.resolve(_vh);
       }
       var buf = new TextEncoder().encode(raw);
-      return window.crypto.subtle.digest('SHA-256', buf).then(function (digest) {
-        var bytes = new Uint8Array(digest);
-        var hex = '';
-        for (var j = 0; j < 12; j++) { hex += ('0' + bytes[j].toString(16)).slice(-2); }
-        _visitorHashCache = 'v1_' + hex;
-        return _visitorHashCache;
-      }).catch(function () {
-        _visitorHashCache = 'v1_' + Math.random().toString(36).slice(2, 12);
-        return _visitorHashCache;
-      });
-    } catch (e) {
-      _visitorHashCache = 'v1_anon';
-      return Promise.resolve(_visitorHashCache);
-    }
+      return window.crypto.subtle.digest('SHA-256', buf).then(function (d) {
+        var b = new Uint8Array(d); var hex = '';
+        for (var j = 0; j < 12; j++) hex += ('0' + b[j].toString(16)).slice(-2);
+        _vh = 'v1_' + hex; return _vh;
+      }).catch(function () { _vh = 'v1_' + Math.random().toString(36).slice(2, 12); return _vh; });
+    } catch (e) { _vh = 'v1_anon'; return Promise.resolve(_vh); }
   }
 
   function detectSource() {
     try {
       var ref = document.referrer || '';
-      if (/whatsapp|wa\.me/i.test(ref))       return 'whatsapp';
-      if (/facebook|fb\.com/i.test(ref))      return 'facebook';
-      if (/instagram/i.test(ref))             return 'instagram';
+      if (/whatsapp|wa\.me/i.test(ref))  return 'whatsapp';
+      if (/facebook|fb\.com/i.test(ref)) return 'facebook';
+      if (/instagram/i.test(ref))        return 'instagram';
       if (!ref) {
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('ref') && params.get('ref').indexOf('adshare') === 0) return 'adshare';
+        var p = new URLSearchParams(window.location.search);
+        if (p.get('ref') && p.get('ref').indexOf('adshare') === 0) return 'adshare';
         return 'direct';
       }
       return 'other';
@@ -1308,9 +1132,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function sbGet(path) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
       headers: {
-        'apikey':        SUPABASE_KEY,
+        'apikey': SUPABASE_KEY,
         'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Accept':        'application/json'
+        'Accept': 'application/json'
       }
     }).then(function (r) {
       if (!r.ok) throw new Error('Supabase GET ' + r.status);
@@ -1322,52 +1146,45 @@ document.addEventListener('DOMContentLoaded', function() {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
       method: 'POST',
       headers: {
-        'apikey':        SUPABASE_KEY,
+        'apikey': SUPABASE_KEY,
         'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type':  'application/json',
-        'Prefer':        'return=minimal'
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
       },
       body: JSON.stringify(body)
     });
   }
 
   function fetchAds() {
-    var nowIso = new Date().toISOString();
+    var now = new Date().toISOString();
     var qs =
-      'ads?select=id,slug,title,description,media_url,media_type,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
+      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
       '&status=eq.approved' +
       '&placement=eq.carousel' +
-      '&start_date=lte.' + encodeURIComponent(nowIso) +
-      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(nowIso) + ')' +
+      '&start_date=lte.' + encodeURIComponent(now) +
+      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
       '&order=weight.desc,created_at.desc' +
       '&limit=9';
     return sbGet(qs);
   }
 
   function weightedShuffle(list) {
-    var pool = list.slice();
-    var out  = [];
-    var last = null;
+    var pool = list.slice(), out = [], last = null;
     while (pool.length) {
       var total = 0;
       for (var i = 0; i < pool.length; i++) {
-        var w = parseInt(pool[i].weight, 10);
-        if (!w || w < 1) w = 1;
+        var w = parseInt(pool[i].weight, 10) || 1;
         if (last && pool[i].id === last.id) w = Math.max(1, Math.floor(w / 4));
         total += w;
       }
-      var r    = Math.random() * total;
-      var pick = pool[pool.length - 1];
-      var acc  = 0;
+      var r = Math.random() * total, pick = pool[pool.length - 1], acc = 0;
       for (var j = 0; j < pool.length; j++) {
-        var ww = parseInt(pool[j].weight, 10);
-        if (!ww || ww < 1) ww = 1;
+        var ww = parseInt(pool[j].weight, 10) || 1;
         if (last && pool[j].id === last.id) ww = Math.max(1, Math.floor(ww / 4));
         acc += ww;
         if (r <= acc) { pick = pool[j]; break; }
       }
-      out.push(pick);
-      last = pick;
+      out.push(pick); last = pick;
       var idx = pool.indexOf(pick);
       if (idx > -1) pool.splice(idx, 1);
     }
@@ -1375,98 +1192,65 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function ctaFor(ad) {
-    var t = ad.destination_type;
-    var u = ad.destination_url || '';
+    var t = ad.destination_type, u = ad.destination_url || '';
     if (t === 'whatsapp') {
       var digits = String(u).replace(/[^\d]/g, '');
       return { label: 'Chat on WhatsApp', href: 'https://wa.me/' + digits, icon: 'fa-brands fa-whatsapp' };
     }
-    if (t === 'website')   return { label: 'Visit Website',   href: u, icon: 'fa-solid fa-globe' };
+    if (t === 'website')   return { label: 'Visit Website',    href: u, icon: 'fa-solid fa-globe' };
     if (t === 'facebook')  return { label: 'View on Facebook', href: u, icon: 'fa-brands fa-facebook-f' };
     if (t === 'instagram') return { label: 'View on Instagram',href: u, icon: 'fa-brands fa-instagram' };
-    if (t === 'tiktok')    return { label: 'View on TikTok',  href: u, icon: 'fa-brands fa-tiktok' };
-    if (t === 'youtube')   return { label: 'Watch on YouTube',href: u, icon: 'fa-brands fa-youtube' };
+    if (t === 'tiktok')    return { label: 'View on TikTok',   href: u, icon: 'fa-brands fa-tiktok' };
+    if (t === 'youtube')   return { label: 'Watch on YouTube', href: u, icon: 'fa-brands fa-youtube' };
     return { label: 'View Deal', href: u, icon: 'fa-solid fa-arrow-up-right-from-square' };
   }
 
   function buildCard(ad) {
-    var biz  = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
-    var cta  = ctaFor(ad);
-    var img  = ad.media_url || '';
+    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta = ctaFor(ad);
     var card = document.createElement('div');
     card.className = 'py2-ads-card';
     card.setAttribute('role', 'article');
     card.setAttribute('aria-label', ad.title);
-
-    var imgHtml = img
-      ? '<img src="' + esc(img) + '" alt="' + esc(ad.title) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5&quot;>🇿🇲</div>\'">'
-      : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5">🇿🇲</div>';
-
     card.innerHTML =
       '<div class="py2-ads-img">' +
         '<span class="py2-ads-sponsored">Sponsored</span>' +
-        '<button class="py2-ads-report" type="button" aria-label="Report this ad" ' +
-          'onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
-        imgHtml +
+        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsGridReport(\'' + esc(ad.id) + '\')">Report</button>' +
+        renderMedia(ad) +
       '</div>' +
       '<div class="py2-ads-body">' +
         '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
         '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
         '<div class="py2-ads-desc">' + esc(ad.description || '') + '</div>' +
-        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" ' +
-          'onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsGridClick(\'' + esc(ad.id) + '\')">' +
           '<i class="' + cta.icon + '"></i> ' + esc(cta.label) +
         '</a>' +
       '</div>';
-
-    card.addEventListener('click', function () {
-      window.location.href = '/ad/' + encodeURIComponent(ad.slug);
-    });
+    card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
     var ctaEl = card.querySelector('.py2-ads-cta');
     if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
-
     return card;
   }
 
   function recordImpression(adId) {
     visitorHash().then(function (vh) {
-      return sbPost('ad_impressions', {
-        ad_id:        adId,
-        visitor_hash: vh,
-        placement:    'grid',
-        source:       detectSource()
-      });
+      return sbPost('ad_impressions', { ad_id: adId, visitor_hash: vh, placement: 'grid', source: detectSource() });
     }).catch(function () {});
   }
 
-  window.py2AdsClick = function (adId) {
+  window.py2AdsGridClick = function (adId) {
     visitorHash().then(function (vh) {
-      return sbPost('ad_clicks', {
-        ad_id:        adId,
-        visitor_hash: vh,
-        placement:    'grid',
-        source:       detectSource()
-      });
+      return sbPost('ad_clicks', { ad_id: adId, visitor_hash: vh, placement: 'grid', source: detectSource() });
     }).catch(function () {});
   };
 
-  window.py2AdsReport = function (adId) {
-    var reason = window.prompt(
-      'Report this ad.\n\nPlease type a short reason (e.g. "misleading", "scam", "adult content"):',
-      ''
-    );
+  window.py2AdsGridReport = function (adId) {
+    var reason = window.prompt('Report this ad.\n\nPlease type a short reason:', '');
     if (!reason || !reason.trim()) return;
     visitorHash().then(function (vh) {
-      return sbPost('ad_reports', {
-        ad_id:        adId,
-        reason:       reason.trim().slice(0, 120),
-        visitor_hash: vh
-      });
-    }).then(function () {
-      window.alert('Thank you. Our team will review this ad.');
-    }).catch(function () {
-      window.alert('Could not submit report right now. Please try again later.');
-    });
+      return sbPost('ad_reports', { ad_id: adId, reason: reason.trim().slice(0, 120), visitor_hash: vh });
+    }).then(function () { window.alert('Thank you. Our team will review this ad.'); })
+      .catch(function () { window.alert('Could not submit report right now.'); });
   };
 
   function boot(rows) {
@@ -1474,15 +1258,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var ordered = weightedShuffle(rows);
     GRID.innerHTML = '';
     ordered.forEach(function (ad) { GRID.appendChild(buildCard(ad)); });
-    section.classList.add('py2-ads-ready');
+    section.style.display = 'block';
     ordered.forEach(function (ad) { recordImpression(ad.id); });
   }
 
-  fetchAds()
-    .then(boot)
-    .catch(function () {
-      hideSection();
-    });
+  fetchAds().then(boot).catch(function () { hideSection(); });
 })();
 </script>
 
