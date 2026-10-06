@@ -58,6 +58,7 @@ button{font-family:'DM Sans',sans-serif;}
 @keyframes slideInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 @keyframes slideOutDown{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
 @keyframes tick{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+@keyframes py2Pop{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:scale(1);}}
 
 /* ═══════════════════════════════════════════
    ANNOUNCEMENT BAR
@@ -371,21 +372,15 @@ footer{background:var(--dark);padding:48px 16px 0;margin-top:8px;}
   .hamburger{display:block;}
   .howto-steps-grid{grid-template-columns:repeat(2,1fr);}
   .hero-side{display:none;}
-  /* Carousel on mobile */
   .pc{width:160px;}
   .pc-featured{width:200px;}
   .section-body{padding:12px;}
-  /* Hero content padding */
   .hero-slide-content{padding:24px 20px;}
   .hero-slide-title{font-size:clamp(1.3rem,6vw,2rem);}
   .hero-slide-sub{font-size:13px;}
-  /* Section headers */
   .section-hdr{padding:12px 14px;flex-wrap:wrap;gap:8px;}
-  /* Main wrap padding */
   .main-wrap{padding:8px 10px;}
-  /* How to order steps */
   .howto-step:not(:last-child)::after{display:none;}
-  /* Bottom nav safe area */
   .bottom-nav{padding-bottom:env(safe-area-inset-bottom);}
 }
 @media(max-width:480px){
@@ -393,21 +388,16 @@ footer{background:var(--dark);padding:48px 16px 0;margin-top:8px;}
   .promo-banners{grid-template-columns:1fr;}
   .stats-banner{grid-template-columns:repeat(2,1fr);}
   .footer-grid{grid-template-columns:1fr;}
-  /* Cards fill nicely on small phones */
   .pc{width:148px;}
   .pc-featured{width:180px;}
   .pc-img{height:140px;}
-  /* Hero */
   .hero-banner{min-height:280px;}
   .hero-cta-row{flex-direction:column;align-items:flex-start;}
   .btn-hero-shop,.btn-hero-wa{width:auto;font-size:13px;padding:10px 16px;}
-  /* How to order */
   .howto-steps-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
   .howto-footer{gap:8px;padding:12px 16px;}
-  /* Section cards */
   .section-hdr{flex-direction:column;align-items:flex-start;}
   .sec-hdr-right{width:100%;justify-content:space-between;}
-  /* Trust items */
   .trust-item{padding:10px 12px;}
 }
 iframe[src*="tawk.to"]{bottom:70px !important;}
@@ -530,13 +520,13 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 
 
 /* ═══════════════════════════════════════════════════════════
-   SPONSORED ADS CAROUSEL (PhoneYa2 Ads)
-   Self-contained. All classes prefixed .py2-ads- to avoid
-   collision with existing site styles. Section is hidden by
-   default and only revealed when at least one ad renders.
+   SPONSORED ADS — CAROUSEL (below hero) + POPUP
+   All classes prefixed .py2-ads- to avoid collision.
+   Self-contained. Hides only when zero approved ads.
 ═══════════════════════════════════════════════════════════ */
 #py2-ads-carousel{display:none;}
 #py2-ads-carousel.py2-ads-ready{display:block;}
+
 .py2-ads-card{width:220px;flex-shrink:0;background:white;border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .25s,transform .25s;border:1px solid #f0f0f0;position:relative;display:flex;flex-direction:column;}
 .py2-ads-card:hover{box-shadow:0 10px 32px rgba(0,0,0,.14);transform:translateY(-5px);}
 .py2-ads-img{height:124px;background:var(--light);position:relative;overflow:hidden;}
@@ -560,6 +550,28 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 @media(max-width:480px){
   .py2-ads-card{width:170px;}
   .py2-ads-img{height:100px;}
+}
+
+/* ── POPUP ───────────────────────────────────────────────────── */
+#py2-ads-popup-backdrop{position:fixed;inset:0;z-index:998;background:rgba(10,10,20,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;}
+#py2-ads-popup-backdrop.open{display:flex;animation:py2Pop .3s ease;}
+.py2-ads-popup{background:white;border-radius:18px;overflow:hidden;max-width:460px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.35);position:relative;}
+.py2-ads-popup-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--light);display:block;}
+.py2-ads-popup-img-ph{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--light);font-size:3rem;}
+.py2-ads-popup-body{padding:22px 24px 24px;}
+.py2-ads-popup-tag{display:inline-block;background:linear-gradient(135deg,#ff6000,#ff9f43);color:white;font-size:10px;font-weight:800;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+.py2-ads-popup-biz{font-size:12px;font-weight:700;color:#ff6000;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.py2-ads-popup-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;line-height:1.2;margin-bottom:10px;}
+.py2-ads-popup-desc{font-size:14px;line-height:1.6;color:#555;margin-bottom:18px;}
+.py2-ads-popup-cta{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--orange);color:white;font-weight:700;font-size:15px;padding:14px;border-radius:10px;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(255,96,0,.35);}
+.py2-ads-popup-cta:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(255,96,0,.5);}
+.py2-ads-popup-close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(10,10,20,.6);color:white;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s;}
+.py2-ads-popup-close:hover{background:rgba(10,10,20,.85);}
+.py2-ads-popup-report{text-align:center;margin-top:14px;font-size:12px;color:#9ca3af;}
+.py2-ads-popup-report a{color:#9ca3af;text-decoration:underline;cursor:pointer;}
+@media(max-width:480px){
+  .py2-ads-popup-body{padding:18px 18px 20px;}
+  .py2-ads-popup-title{font-size:1.15rem;}
 }
 </style>
   <link rel="manifest" href="https://progressier.app/Qn40PARc0DxCTLIapBvJ/progressier.json">
@@ -767,6 +779,28 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
+  <!-- ═══ SPONSORED ADS CAROUSEL — HIGH VISIBILITY ═══
+       Placed right below the hero, above Trust and New Arrivals.
+       Populated by the script at the bottom of this page. -->
+  <section class="section-card" id="py2-ads-carousel" aria-label="Sponsored businesses">
+    <div class="section-hdr">
+      <div class="sec-hdr-left">
+        <h2>🇿🇲 Sponsored — Zambian Businesses</h2>
+        <span class="py2-ads-tag">Featured Today</span>
+      </div>
+      <div class="sec-hdr-right">
+        <a href="/advertise/" class="view-all-link">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="scroll-btns">
+          <button class="scroll-btn" onclick="py2AdsScroll(-1)" aria-label="Previous sponsored ad"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="scroll-btn" onclick="py2AdsScroll(1)" aria-label="Next sponsored ad"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="h-track-wrap"><div class="h-track" id="py2-ads-track"></div></div>
+    </div>
+  </section>
+
   <!-- TRUST BADGES ROW -->
   <div class="trust-row">
     <div class="trust-item">
@@ -805,31 +839,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
-  <!-- ═══ SPONSORED ADS CAROUSEL (PhoneYa2 Ads) ═══
-       Populated by the script at the bottom of this page.
-       Self-hides when zero approved ads are returned, and also
-       self-hides when window.PY2_ADS_CONFIG is not yet set
-       (i.e. before ads-config.js is deployed).
-       No existing styles, IDs, or behaviours are touched. -->
-  <section class="section-card" id="py2-ads-carousel" aria-label="Sponsored businesses">
-    <div class="section-hdr">
-      <div class="sec-hdr-left">
-        <h2>🇿🇲 Sponsored</h2>
-        <span class="py2-ads-tag">Zambian Businesses</span>
-      </div>
-      <div class="sec-hdr-right">
-        <a href="/advertise/" class="view-all-link">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
-        <div class="scroll-btns">
-          <button class="scroll-btn" onclick="py2AdsScroll(-1)" aria-label="Previous sponsored ad"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="scroll-btn" onclick="py2AdsScroll(1)" aria-label="Next sponsored ad"><i class="fa-solid fa-chevron-right"></i></button>
-        </div>
-      </div>
-    </div>
-    <div class="section-body">
-      <div class="h-track-wrap"><div class="h-track" id="py2-ads-track"></div></div>
-    </div>
-  </section>
-
 
 
   <!-- ─── NEWSLETTER SECTION ─── -->
@@ -867,14 +876,11 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 
   <!-- ── FULL-SCREEN PRODUCT SHOWCASE ─────────────────────────────────── -->
   <div class="showcase-section" id="showcase-section" aria-label="Featured product showcase">
-    <!-- Placeholder shown while products load -->
     <div class="showcase-placeholder" id="showcase-placeholder">
       <div class="sp-icon">📱</div>
       <p>Loading featured products…</p>
     </div>
-    <!-- Slides injected by JS -->
     <div id="showcase-slides"></div>
-    <!-- Controls -->
     <button class="showcase-prev" id="showcase-prev" aria-label="Previous product"><i class="fa-solid fa-chevron-left"></i></button>
     <button class="showcase-next" id="showcase-next" aria-label="Next product"><i class="fa-solid fa-chevron-right"></i></button>
     <div class="showcase-dots" id="showcase-dots"></div>
@@ -1107,6 +1113,14 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 
 </div><!-- /main-wrap -->
 
+<!-- ═══ SPONSORED AD POPUP (dismissible, once per session) ═══ -->
+<div id="py2-ads-popup-backdrop" role="dialog" aria-modal="true" aria-label="Featured sponsored ad">
+  <div class="py2-ads-popup" role="document">
+    <button class="py2-ads-popup-close" id="py2-ads-popup-close" aria-label="Close">✕</button>
+    <div id="py2-ads-popup-content"></div>
+  </div>
+</div>
+
 <!-- WHATSAPP STICKY -->
 <div class="wa-sticky">
   <div class="wa-sticky-pulse"></div>
@@ -1180,7 +1194,6 @@ const FORM_BASE  = 'https://docs.google.com/forms/d/e/1FAIpQLSfNBtX9pIa9a9dNgKqR
 const FORM_ENTRY = 'entry.1497396155';
 const WA         = '260979603741';
 
-// Build Google Form URL with product name + price pre-filled
 function orderUrl(p, qty) {
   qty = qty || 1;
   let detail = (p.title || 'Product') + ' – ZMW ' + (p.price || 0);
@@ -1189,7 +1202,6 @@ function orderUrl(p, qty) {
 }
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
 
-// ─── Product Sharing ─────────────────────────────────────────────────────────
 function shareProduct(p) {
   if (!p) return;
   const productUrl = window.location.origin + '/product.html?id=' + p.slug;
@@ -1228,7 +1240,6 @@ function showShareToast(msg) {
   clearTimeout(t._timer); t._timer = setTimeout(() => { t.style.opacity='0'; }, 2500);
 }
 
-// ─── Utilities ───────────────────────────────────────────────────────────────
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function waMsg(p) {
   return 'https://wa.me/'+WA+'?text='+encodeURIComponent('Hello PhoneYa2 👋\n\nI would like to order:\nProduct: '+p.title+'\nPrice: ZMW '+p.price+(p.order_note?'\nNote: '+p.order_note:'')+'\n\nPlease confirm availability and delivery options.');
@@ -1241,7 +1252,6 @@ function stockStatus(s) {
   return {label:'In Stock',cls:'sb-in',canOrder:true};
 }
 
-// ─── parseFrontmatter ────────────────────────────────────────────────────────
 function parseFrontmatter(text, slug) {
   const match = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
   if (!match) return null;
@@ -1268,7 +1278,6 @@ function parseFrontmatter(text, slug) {
   return out;
 }
 
-// ─── fetchAllProducts ────────────────────────────────────────────────────────
 async function fetchAllProducts() {
   const res = await fetch('/content/products/index.json?t='+Date.now());
   if (!res.ok) throw new Error('index.json '+res.status);
@@ -1282,7 +1291,6 @@ async function fetchAllProducts() {
   return products;
 }
 
-// ─── Build featured/wide product card (New Arrivals, Deals) ─────────────────
 function buildFeaturedCard(p) {
   const st  = stockStatus(p.stock);
   const op  = parseFloat(p.original_price) || 0;
@@ -1294,7 +1302,6 @@ function buildFeaturedCard(p) {
   div.setAttribute('role', 'article');
   div.setAttribute('aria-label', p.title);
 
-  // Image element — built via DOM to avoid quote escaping
   const imgWrap = document.createElement('div');
   imgWrap.className = 'pc-img';
 
@@ -1328,7 +1335,6 @@ function buildFeaturedCard(p) {
   }
   div.appendChild(imgWrap);
 
-  // Body
   const body = document.createElement('div');
   body.className = 'pc-body';
 
@@ -1368,7 +1374,6 @@ function buildFeaturedCard(p) {
     body.appendChild(btn);
   }
 
-  // Share row
   const shareRow = document.createElement('div');
   shareRow.className = 'pc-share-row';
   shareRow.innerHTML =
@@ -1381,8 +1386,6 @@ function buildFeaturedCard(p) {
   return div;
 }
 
-
-// ─── Build product card (compact Alibaba style) ───────────────────────────────
 function buildCard(p) {
   const st = stockStatus(p.stock);
   const op = parseFloat(p.original_price)||0;
@@ -1420,7 +1423,6 @@ function buildCard(p) {
   return div;
 }
 
-// ─── Side panel product row ───────────────────────────────────────────────────
 function buildSideRow(p) {
   const op=parseFloat(p.original_price)||0;
   const hasDrop=op>p.price;
@@ -1434,12 +1436,9 @@ function buildSideRow(p) {
   return div;
 }
 
-// ─── Horizontal scroll ────────────────────────────────────────────────────────
-// trackPos, autoTimers, userPaused declared in scrollTrack engine above
-// ─── Carousel scroll engine with touch + drag + auto-pause ──────────────────
-const trackPos      = {};    // current position (card index) per track id
-const autoTimers    = {};    // setInterval handle per track id
-const userPaused    = {};    // true while user is dragging or recently touched
+const trackPos      = {};
+const autoTimers    = {};
+const userPaused    = {};
 
 function getCardW(id) {
   const track = document.getElementById(id);
@@ -1466,13 +1465,11 @@ window.scrollTrack = function(id, dir) {
   const max = getMaxPos(id);
   trackPos[id] = Math.max(0, Math.min((trackPos[id] || 0) + dir, max));
   applyPos(id);
-  // User manually scrolled — pause auto for 4 seconds
   userPaused[id] = true;
   clearTimeout(window['_pt_' + id]);
   window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 4000);
 };
 
-// Touch/drag support — call this once per track wrapper element
 function addCarouselDrag(id) {
   const wrap = document.getElementById(id);
   if (!wrap || wrap._dragInit) return;
@@ -1480,7 +1477,6 @@ function addCarouselDrag(id) {
 
   let startX = 0, startPos = 0, isDragging = false;
 
-  // ── Touch ──
   wrap.addEventListener('touchstart', e => {
     startX   = e.touches[0].clientX;
     startPos = trackPos[id] || 0;
@@ -1497,7 +1493,6 @@ function addCarouselDrag(id) {
     window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 4000);
   }, { passive: true });
 
-  // ── Mouse drag ──
   wrap.addEventListener('mousedown', e => {
     isDragging = true;
     startX     = e.clientX;
@@ -1510,7 +1505,6 @@ function addCarouselDrag(id) {
     if (!isDragging) return;
     const dx = e.clientX - startX;
     const cardW = getCardW(id);
-    // Live drag: shift by fractional card
     const track = document.getElementById(id);
     if (track) track.style.transform = 'translateX(-' + (startPos * cardW - dx) + 'px)';
   });
@@ -1520,13 +1514,12 @@ function addCarouselDrag(id) {
     wrap.style.cursor = '';
     const dx = e.clientX - startX;
     if (Math.abs(dx) > 40) scrollTrack(id, dx < 0 ? 1 : -1);
-    else applyPos(id); // snap back if tiny drag
+    else applyPos(id);
     clearTimeout(window['_pt_' + id]);
     window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 4000);
   });
 }
 
-// ─── Category showcase ────────────────────────────────────────────────────────
 let allProducts = [];
 let currentCsCat = 'case';
 
@@ -1563,9 +1556,7 @@ function renderCsGrid(cat) {
   });
 }
 
-// ─── Countdown timer ──────────────────────────────────────────────────────────
 (function startCountdown() {
-  // Set end to next midnight
   const now = new Date();
   const end = new Date(now); end.setHours(23,59,59,999);
   function update() {
@@ -1584,7 +1575,6 @@ function renderCsGrid(cat) {
   update(); setInterval(update,1000);
 })();
 
-// ─── Hero slideshow ───────────────────────────────────────────────────────────
 (function initHero() {
   const slides=document.querySelectorAll('.hero-slide');
   const dotsEl=document.getElementById('hero-dots');
@@ -1618,8 +1608,6 @@ function renderCsGrid(cat) {
   reset();
 })();
 
-// ─── Hamburger ────────────────────────────────────────────────────────────────
-// ─── PWA Share + Install functions ──────────────────────────────────────────
 window.shareApp = function() {
   const shareData = {
     title: 'PhoneYa2-ZM Accessories',
@@ -1627,10 +1615,8 @@ window.shareApp = function() {
     url:  'https://phoneya2-accessories.vercel.app/'
   };
   if (navigator.share) {
-    // Native share sheet (Android/iOS)
     navigator.share(shareData).catch(() => {});
   } else {
-    // Fallback: copy link + open WhatsApp
     const waText = encodeURIComponent(shareData.text + ' ' + shareData.url);
     window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
   }
@@ -1647,18 +1633,15 @@ window.installApp = function() {
       window._installPrompt = null;
     });
   } else {
-    // Already installed or not supported — give instructions
     alert('To install:\n\nAndroid: tap the menu (⋮) in Chrome → "Add to Home Screen"\niPhone: tap Share (↑) in Safari → "Add to Home Screen"');
   }
 };
 
-// Show install button in action bar when browser is ready
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   window._installPrompt = e;
   const btn = document.getElementById('pwa-install-bar-btn');
   if (btn) btn.style.display = 'flex';
-  // Also hide the floating bottom install bar (already handled separately)
   const floatingBar = document.getElementById('pwa-install-bar');
   if (floatingBar && !sessionStorage.getItem('pwa-dismissed')) {
     setTimeout(() => { floatingBar.style.display = 'flex'; }, 4000);
@@ -1669,7 +1652,6 @@ window.addEventListener('appinstalled', () => {
   const btn = document.getElementById('pwa-install-bar-btn');
   if (btn) btn.style.display = 'none';
   window._installPrompt = null;
-  console.log('[PWA] Installed successfully');
 });
 
 document.getElementById('hamburger').addEventListener('click',()=>{
@@ -1682,22 +1664,19 @@ document.getElementById('mob-nav').addEventListener('click',e=>{
   if(e.target===e.currentTarget) e.currentTarget.classList.remove('open');
 });
 
-// ─── Search ───────────────────────────────────────────────────────────────────
 window.doHeaderSearch = function(mobile) {
   const q = (document.getElementById(mobile ? 'mob-search' : 'main-search')?.value || '').trim();
   if (q) window.location.href = 'shop.html?q=' + encodeURIComponent(q);
 };
-// Keep old name as alias so any remaining calls still work
 window.doSearch = window.doHeaderSearch;
 document.getElementById('main-search')?.addEventListener('keydown', e => { if (e.key === 'Enter') doHeaderSearch(); });
 document.getElementById('mob-search')?.addEventListener('keydown',  e => { if (e.key === 'Enter') doHeaderSearch(true); });
 
-// ─── Full-Screen Product Showcase ─────────────────────────────────────────────
 let showcaseIdx     = 0;
 let showcaseProds   = [];
 let showcaseTimer   = null;
 let showcasePaused  = false;
-const SHOWCASE_DUR  = 5000; // ms per slide
+const SHOWCASE_DUR  = 5000;
 
 function buildShowcase(prods) {
   showcaseProds = prods;
@@ -1721,7 +1700,6 @@ function buildShowcase(prods) {
       ? orderUrl(p, 1)
       : 'https://wa.me/260979603741?text=' + encodeURIComponent('Hi! I want to order: ' + p.title + ' – ZMW ' + p.price);
 
-    // Build slide
 const slide = document.createElement('div');
 slide.className = 'showcase-slide' + (i === 0 ? ' active' : '');
 slide.innerHTML =
@@ -1741,11 +1719,9 @@ slide.innerHTML =
     '</div>' +
   '</div>';
 
-    // Click the slide (not the buttons) → go to product page
     slide.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
     if (container) container.appendChild(slide);
 
-    // Dot
     const dot = document.createElement('button');
     dot.className = 'showcase-dot' + (i === 0 ? ' active' : '');
     dot.setAttribute('aria-label', 'Product ' + (i + 1));
@@ -1753,11 +1729,9 @@ slide.innerHTML =
     if (dotsEl) dotsEl.appendChild(dot);
   });
 
-  // Arrow nav
   document.getElementById('showcase-prev')?.addEventListener('click', e => { e.stopPropagation(); goShowcase(showcaseIdx - 1); });
   document.getElementById('showcase-next')?.addEventListener('click', e => { e.stopPropagation(); goShowcase(showcaseIdx + 1); });
 
-  // Touch swipe on showcase
   const section = document.getElementById('showcase-section');
   if (section) {
     let tsx = 0;
@@ -1787,7 +1761,6 @@ function goShowcase(n) {
   slides[showcaseIdx].classList.add('active');
   if (dots[showcaseIdx]) dots[showcaseIdx].classList.add('active');
 
-  // Pause auto-rotate
   showcasePaused = true;
   clearTimeout(window._showcasePauseTimer);
   window._showcasePauseTimer = setTimeout(() => { showcasePaused = false; }, 4000);
@@ -1823,7 +1796,6 @@ function startShowcaseAuto() {
   }, SHOWCASE_DUR);
 }
 
-// ─── Sales notification ───────────────────────────────────────────────────────
 async function showSalesNotif() {
   if(sessionStorage.getItem('py2_notif')) return;
   let sales=[];
@@ -1842,7 +1814,6 @@ window.dismissNotif=function(){
   setTimeout(()=>n.remove(),400);
 };
 
-// ─── Load settings ────────────────────────────────────────────────────────────
 async function loadSettings() {
   try {
     const r=await fetch('/content/settings/homepage.json?t='+Date.now());
@@ -1854,7 +1825,6 @@ async function loadSettings() {
   } catch(e){}
 }
 
-// ─── MAIN LOAD ────────────────────────────────────────────────────────────────
 async function init() {
   loadSettings();
 
@@ -1869,9 +1839,6 @@ async function init() {
 
   allProducts = products;
 
-  // ── Helper: safely populate any track ──────────────────────────────────────
-  // Clears existing content (incl. skeletons), renders each card,
-  // catches per-card errors so one bad product never breaks the whole section.
   function fillTrack(id, items, cardFn) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1886,7 +1853,6 @@ async function init() {
     });
   }
 
-  // ── Utility: shuffle an array in-place (Fisher-Yates) ─────────────────────
   function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -1896,15 +1862,12 @@ async function init() {
     return a;
   }
 
-  // ── FLASH SALE ─────────────────────────────────────────────────────────────
-  // Shows products with a real discount (original_price > price), biggest
-  // savings first. Pads with low-stock items if fewer than 4 sale items.
   const onSale   = products
     .filter(p => parseFloat(p.original_price) > p.price)
     .sort((a,b) => {
       const savA = ((a.original_price - a.price) / a.original_price) * 100;
       const savB = ((b.original_price - b.price) / b.original_price) * 100;
-      return savB - savA; // highest % off first
+      return savB - savA;
     });
   const lowStockPad = products
     .filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price));
@@ -1913,7 +1876,6 @@ async function init() {
     : [...onSale, ...lowStockPad].slice(0, 8);
   fillTrack('flash-track', (flashList.length ? flashList : products).slice(0, 8), buildCard);
 
-  // ── SIDE PANELS ────────────────────────────────────────────────────────────
   const flashSide = document.getElementById('flash-side');
   if (flashSide) {
     flashSide.innerHTML = '';
@@ -1928,60 +1890,39 @@ async function init() {
       .forEach(p => featSide.appendChild(buildSideRow(p)));
   }
 
-  // ── NEW ARRIVALS ───────────────────────────────────────────────────────────
-  // Uses the slug order from index.json (newest files added appear last in
-  // the sorted list — alphabetical — so we reverse for a "newest" feel).
-  // Featured products are boosted to the top.
-  // When you add a product in the CMS, it appears here after the next deploy.
   const newArrivals = [...products]
     .sort((a, b) => {
-      // Featured products first
       if (b.featured && !a.featured) return 1;
       if (a.featured && !b.featured) return -1;
-      // Then by slug alphabetically reversed (recent additions tend to be
-      // later in the alphabet when sequentially named)
       return b.slug.localeCompare(a.slug);
     })
     .slice(0, 8);
   fillTrack('new-track', newArrivals, buildFeaturedCard);
 
-  // ── DEALS OF THE DAY ───────────────────────────────────────────────────────
-  // On-sale items first (biggest absolute saving), then low-stock items.
-  // Shuffled slightly so it feels fresh on every visit.
   const dealsList = [
     ...onSale.sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price)),
     ...products.filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price))
   ];
-  // Add random in-stock products to pad if not enough deals
   if (dealsList.length < 4) {
     const inStock = shuffle(products.filter(p => p.stock > 5 && !dealsList.find(d => d.slug === p.slug)));
     dealsList.push(...inStock.slice(0, 8 - dealsList.length));
   }
   fillTrack('deals-track', dealsList.slice(0, 8), buildFeaturedCard);
 
-  // ── JUST FOR YOU ───────────────────────────────────────────────────────────
-  // Fully shuffled on every page load — feels different every time.
   fillTrack('jfy-track', shuffle(products), buildCard);
 
-  // ── CATEGORY SHOWCASE ──────────────────────────────────────────────────────
   renderCsGrid('case');
 
-  // ── SHOW INSTALL BUTTON if browser says site is installable ───────────────
-  // The beforeinstallprompt event fires asynchronously; the button is shown
-  // there. We also check here in case it already fired before this ran.
   if (window._installPrompt) {
     const installBarBtn = document.getElementById('pwa-install-bar-btn');
     if (installBarBtn) installBarBtn.style.display = 'flex';
   }
 
-  // ── FULL-SCREEN SHOWCASE ──────────────────────────────────────────────────
   const showcaseProds = shuffle(products.filter(p => (parseInt(p.stock)||0) > 0));
   buildShowcase(showcaseProds);
 
-  // Sales notif after 9s
   setTimeout(showSalesNotif, 9000);
 
-  // Auto-scroll all carousels
   startCarouselAuto();
 }
 
@@ -1993,10 +1934,8 @@ function startCarouselAuto() {
     { id: 'deals-track', interval: 4000 },
   ];
   configs.forEach(({ id, interval }) => {
-    // Attach touch + drag to this track
     addCarouselDrag(id);
 
-    // Auto-scroll ticker — skips if user recently interacted
     autoTimers[id] = setInterval(() => {
       if (userPaused[id]) return;
       const max = getMaxPos(id);
@@ -2004,7 +1943,6 @@ function startCarouselAuto() {
       applyPos(id);
     }, interval);
 
-    // Pause auto on hover, resume when mouse leaves
     const wrap = document.getElementById(id);
     if (wrap) {
       wrap.addEventListener('mouseenter', () => { userPaused[id] = true; });
@@ -2021,19 +1959,13 @@ init();
 
 
 <!-- ═══════════════════════════════════════════════════════════
-     PHONEYA2 ADS — Sponsored carousel loader
-     Self-guards: if window.PY2_ADS_CONFIG is not set (i.e. ads-config.js
-     has not been deployed yet), the whole section stays hidden and this
-     script exits without side-effects. No existing feature is touched.
+     PHONEYA2 ADS — Sponsored carousel (below hero) + Popup
+     Self-contained. Uses inline fallback if ads-config.js fails.
 ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
   'use strict';
 
-  // ── Guard: config file must exist first ──────────────────────────────
-  // ads-config.js (deployed later) will set:
-  //   window.PY2_ADS_CONFIG = { url, key }
-  // Until then, hide the section and exit.
   var section = document.getElementById('py2-ads-carousel');
   if (!section) return;
 
@@ -2042,83 +1974,67 @@ init();
     section.style.display = 'none';
   }
 
-    var SUPABASE_URL = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.url)
+  // Inline fallback — same project, same key. Works even if ads-config.js didn't load.
+  var SUPABASE_URL = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.url)
     || 'https://signnapmkdctdcfpnsiu.supabase.co';
   var SUPABASE_KEY = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.key)
     || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
-  // ── State for this carousel ─────────────────────────────────────────
-  var ADS          = [];
-  var pos          = 0;
-  var autoTimer    = null;
-  var userPaused   = false;
-  var CAROUSEL_MS  = 6000;   // Section 7: auto-advance every 6 seconds
-  var SETTLE_MS    = 8000;   // pause after user interaction
+  var TRACK = document.getElementById('py2-ads-track');
+  if (!TRACK) { hideSection(); return; }
 
-  // ── Escaping helper (Section 15 rule #2) ────────────────────────────
+  var ADS         = [];
+  var pos         = 0;
+  var autoTimer   = null;
+  var userPaused  = false;
+  var CAROUSEL_MS = 6000;
+  var SETTLE_MS   = 8000;
+
   function esc(s) {
     return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  // ── visitor_hash (Section 11) ──────────────────────────────────────
-  // Truncated SHA-256 of (UA + language + daily-rotating salt).
-  // No PII stored. Computed lazily and cached for the page session.
-  var _visitorHashCache = null;
+  var _vh = null;
   function visitorHash() {
-    if (_visitorHashCache) return Promise.resolve(_visitorHashCache);
+    if (_vh) return Promise.resolve(_vh);
     try {
-      var ua   = navigator.userAgent || '';
-      var lang = navigator.language || '';
-      var day  = new Date().toISOString().slice(0, 10);
-      var raw  = ua + '|' + lang + '|' + day + '|py2ads';
+      var ua = navigator.userAgent || '', lang = navigator.language || '';
+      var day = new Date().toISOString().slice(0, 10);
+      var raw = ua + '|' + lang + '|' + day + '|py2ads';
       if (!window.crypto || !window.crypto.subtle) {
-        // Fallback: cheap string hash if SubtleCrypto unavailable
         var h = 0;
         for (var i = 0; i < raw.length; i++) { h = ((h << 5) - h + raw.charCodeAt(i)) | 0; }
-        _visitorHashCache = 'v1_' + Math.abs(h).toString(36);
-        return Promise.resolve(_visitorHashCache);
+        _vh = 'v1_' + Math.abs(h).toString(36);
+        return Promise.resolve(_vh);
       }
       var buf = new TextEncoder().encode(raw);
-      return window.crypto.subtle.digest('SHA-256', buf).then(function (digest) {
-        var bytes = new Uint8Array(digest);
-        var hex = '';
-        for (var j = 0; j < 12; j++) { hex += ('0' + bytes[j].toString(16)).slice(-2); }
-        _visitorHashCache = 'v1_' + hex;
-        return _visitorHashCache;
+      return window.crypto.subtle.digest('SHA-256', buf).then(function (d) {
+        var b = new Uint8Array(d); var hex = '';
+        for (var j = 0; j < 12; j++) hex += ('0' + b[j].toString(16)).slice(-2);
+        _vh = 'v1_' + hex; return _vh;
       }).catch(function () {
-        _visitorHashCache = 'v1_' + Math.random().toString(36).slice(2, 12);
-        return _visitorHashCache;
+        _vh = 'v1_' + Math.random().toString(36).slice(2, 12); return _vh;
       });
-    } catch (e) {
-      _visitorHashCache = 'v1_anon';
-      return Promise.resolve(_visitorHashCache);
-    }
+    } catch (e) { _vh = 'v1_anon'; return Promise.resolve(_vh); }
   }
 
-  // ── source attribution (Section 11) ────────────────────────────────
-  // whatsapp / facebook / direct / adshare / other
   function detectSource() {
     try {
       var ref = document.referrer || '';
-      if (/whatsapp|wa\.me/i.test(ref))       return 'whatsapp';
-      if (/facebook|fb\.com/i.test(ref))      return 'facebook';
-      if (/instagram/i.test(ref))             return 'instagram';
+      if (/whatsapp|wa\.me/i.test(ref))  return 'whatsapp';
+      if (/facebook|fb\.com/i.test(ref)) return 'facebook';
+      if (/instagram/i.test(ref))        return 'instagram';
       if (!ref) {
-        // No referrer — could be a shared link or a direct visit
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('ref') && params.get('ref').indexOf('adshare') === 0) return 'adshare';
+        var p = new URLSearchParams(window.location.search);
+        if (p.get('ref') && p.get('ref').indexOf('adshare') === 0) return 'adshare';
         return 'direct';
       }
       return 'other';
     } catch (e) { return 'direct'; }
   }
 
-  // ── Supabase REST helpers (no SDK, plain fetch) ────────────────────
   function sbGet(path) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
       headers: {
@@ -2145,76 +2061,73 @@ init();
     });
   }
 
-  // ── Fetch approved, active, non-expired ads ────────────────────────
-  // Section 7 + Section 5.4: public can read approved ads that are
-  // within their date range and not paused/banned/rejected.
   function fetchAds() {
-    var nowIso = new Date().toISOString();
+    var now = new Date().toISOString();
     var qs =
       'ads?select=id,slug,title,description,media_url,media_type,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
       '&status=eq.approved' +
       '&placement=eq.carousel' +
-      '&start_date=lte.' + encodeURIComponent(nowIso) +
-      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(nowIso) + ')' +
+      '&start_date=lte.' + encodeURIComponent(now) +
+      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
       '&order=weight.desc,created_at.desc' +
       '&limit=40';
     return sbGet(qs);
   }
 
-  // ── Weighted random shuffle (Section 7 rotation algorithm) ─────────
-  // No ad appears twice in a row. Free=1, paid=3, premium=8.
+  function fetchPopularAd() {
+    var now = new Date().toISOString();
+    var qs =
+      'ads?select=id,slug,title,description,media_url,destination_type,destination_url,advertisers(business_name,logo_url)' +
+      '&status=eq.approved' +
+      '&placement=eq.carousel' +
+      '&start_date=lte.' + encodeURIComponent(now) +
+      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
+      '&order=weight.desc,created_at.desc' +
+      '&limit=1';
+    return sbGet(qs).then(function (rows) { return (rows && rows[0]) || null; });
+  }
+
   function weightedShuffle(list) {
-    var pool = list.slice();
-    var out  = [];
-    var last = null;
+    var pool = list.slice(), out = [], last = null;
     while (pool.length) {
       var total = 0;
       for (var i = 0; i < pool.length; i++) {
-        var w = parseInt(pool[i].weight, 10);
-        if (!w || w < 1) w = 1;
-        // Discourage immediate repeat by halving weight for the previous ad
+        var w = parseInt(pool[i].weight, 10) || 1;
         if (last && pool[i].id === last.id) w = Math.max(1, Math.floor(w / 4));
         total += w;
       }
-      var r    = Math.random() * total;
-      var pick = pool[pool.length - 1];
-      var acc  = 0;
+      var r = Math.random() * total, pick = pool[pool.length - 1], acc = 0;
       for (var j = 0; j < pool.length; j++) {
-        var ww = parseInt(pool[j].weight, 10);
-        if (!ww || ww < 1) ww = 1;
+        var ww = parseInt(pool[j].weight, 10) || 1;
         if (last && pool[j].id === last.id) ww = Math.max(1, Math.floor(ww / 4));
         acc += ww;
         if (r <= acc) { pick = pool[j]; break; }
       }
-      out.push(pick);
-      last = pick;
+      out.push(pick); last = pick;
       var idx = pool.indexOf(pick);
       if (idx > -1) pool.splice(idx, 1);
     }
     return out;
   }
 
-  // ── CTA label + destination by type (Section 9.3) ──────────────────
   function ctaFor(ad) {
-    var t = ad.destination_type;
-    var u = ad.destination_url || '';
+    var t = ad.destination_type, u = ad.destination_url || '';
     if (t === 'whatsapp') {
       var digits = String(u).replace(/[^\d]/g, '');
       return { label: 'Chat on WhatsApp', href: 'https://wa.me/' + digits, icon: 'fa-brands fa-whatsapp' };
     }
-    if (t === 'website')   return { label: 'Visit Website',   href: u, icon: 'fa-solid fa-globe' };
+    if (t === 'website')   return { label: 'Visit Website',    href: u, icon: 'fa-solid fa-globe' };
     if (t === 'facebook')  return { label: 'View on Facebook', href: u, icon: 'fa-brands fa-facebook-f' };
     if (t === 'instagram') return { label: 'View on Instagram',href: u, icon: 'fa-brands fa-instagram' };
-    if (t === 'tiktok')    return { label: 'View on TikTok',  href: u, icon: 'fa-brands fa-tiktok' };
-    if (t === 'youtube')   return { label: 'Watch on YouTube',href: u, icon: 'fa-brands fa-youtube' };
+    if (t === 'tiktok')    return { label: 'View on TikTok',   href: u, icon: 'fa-brands fa-tiktok' };
+    if (t === 'youtube')   return { label: 'Watch on YouTube', href: u, icon: 'fa-brands fa-youtube' };
     return { label: 'View Deal', href: u, icon: 'fa-solid fa-arrow-up-right-from-square' };
   }
 
-  // ── Render one card ────────────────────────────────────────────────
   function buildCard(ad) {
-    var biz  = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
-    var cta  = ctaFor(ad);
-    var img  = ad.media_url || '';
+    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta = ctaFor(ad);
+    var img = ad.media_url || '';
     var card = document.createElement('div');
     card.className = 'py2-ads-card';
     card.setAttribute('role', 'article');
@@ -2227,41 +2140,35 @@ init();
     card.innerHTML =
       '<div class="py2-ads-img">' +
         '<span class="py2-ads-sponsored">Sponsored</span>' +
-        '<button class="py2-ads-report" type="button" aria-label="Report this ad" ' +
-          'onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\',\'' + esc(ad.slug) + '\')">Report</button>' +
+        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
         imgHtml +
       '</div>' +
       '<div class="py2-ads-body">' +
         '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
         '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
         '<div class="py2-ads-desc">' + esc(ad.description || '') + '</div>' +
-        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" ' +
-          'onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
           '<i class="' + cta.icon + '"></i> ' + esc(cta.label) +
         '</a>' +
       '</div>';
 
-    // Whole-card click → shareable ad page (/ad/:slug) per Section 7
     card.addEventListener('click', function () {
       window.location.href = '/ad/' + encodeURIComponent(ad.slug);
     });
-    // Only the CTA opens the destination
     var ctaEl = card.querySelector('.py2-ads-cta');
     if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
-
     return card;
   }
 
-  // ── Analytics writers (fire-and-forget, never block UI) ────────────
-  function recordImpression(adId) {
+  function recordImpression(adId, placement) {
     visitorHash().then(function (vh) {
       return sbPost('ad_impressions', {
         ad_id:        adId,
         visitor_hash: vh,
-        placement:    'carousel',
+        placement:    placement || 'carousel',
         source:       detectSource()
       });
-    }).catch(function () { /* silent — analytics must never break UI */ });
+    }).catch(function () {});
   }
 
   window.py2AdsClick = function (adId) {
@@ -2275,13 +2182,8 @@ init();
     }).catch(function () {});
   };
 
-  // ── Report flow (Section 9.4) ──────────────────────────────────────
-  // Prompt for reason, POST to ad_reports (anyone can insert per RLS).
   window.py2AdsReport = function (adId) {
-    var reason = window.prompt(
-      'Report this ad.\n\nPlease type a short reason (e.g. "misleading", "scam", "adult content"):',
-      ''
-    );
+    var reason = window.prompt('Report this ad.\n\nPlease type a short reason:', '');
     if (!reason || !reason.trim()) return;
     visitorHash().then(function (vh) {
       return sbPost('ad_reports', {
@@ -2289,29 +2191,21 @@ init();
         reason:       reason.trim().slice(0, 120),
         visitor_hash: vh
       });
-    }).then(function () {
-      window.alert('Thank you. Our team will review this ad.');
-    }).catch(function () {
-      window.alert('Could not submit report right now. Please try again later.');
-    });
+    }).then(function () { window.alert('Thank you. Our team will review this ad.'); })
+      .catch(function () { window.alert('Could not submit report right now.'); });
   };
 
-  // ── Scroll controls (Section 7: 1 / 2 / 4 visible) ─────────────────
   function cardWidth() {
     var c = TRACK.querySelector('.py2-ads-card');
     return c ? c.offsetWidth + 12 : 232;
   }
   function visibleCount() {
-    var wrap = TRACK.parentElement;
-    var cw   = cardWidth();
+    var wrap = TRACK.parentElement, cw = cardWidth();
     return Math.max(1, Math.floor(wrap.offsetWidth / cw));
   }
-  function maxPos() {
-    return Math.max(0, ADS.length - visibleCount());
-  }
-  function applyPos() {
-    TRACK.style.transform = 'translateX(-' + (pos * cardWidth()) + 'px)';
-  }
+  function maxPos() { return Math.max(0, ADS.length - visibleCount()); }
+  function applyPos() { TRACK.style.transform = 'translateX(-' + (pos * cardWidth()) + 'px)'; }
+
   window.py2AdsScroll = function (dir) {
     pos = Math.max(0, Math.min(pos + dir, maxPos()));
     applyPos();
@@ -2320,17 +2214,14 @@ init();
     window._py2AdsPause = setTimeout(function () { userPaused = false; }, SETTLE_MS);
   };
 
-  // ── Auto-advance every 6s, pause on hover/touch (Section 7) ────────
   function startAuto() {
     clearInterval(autoTimer);
     autoTimer = setInterval(function () {
-      if (userPaused) return;
-      if (document.hidden) return;
+      if (userPaused || document.hidden) return;
       pos = (pos < maxPos()) ? (pos + 1) : 0;
       applyPos();
     }, CAROUSEL_MS);
   }
-
   function bindPause() {
     var wrap = TRACK.parentElement;
     wrap.addEventListener('mouseenter', function () { userPaused = true; });
@@ -2345,28 +2236,82 @@ init();
     }, { passive: true });
   }
 
-  // ── Boot ───────────────────────────────────────────────────────────
   function boot(rows) {
     if (!Array.isArray(rows) || !rows.length) { hideSection(); return; }
     ADS = weightedShuffle(rows);
     TRACK.innerHTML = '';
     ADS.forEach(function (ad) { TRACK.appendChild(buildCard(ad)); });
     section.classList.add('py2-ads-ready');
-    applyPos();
-    bindPause();
-    startAuto();
-
-    // Record one impression per card actually rendered.
-    // (Viewport-based impression tracking is a V2 refinement.)
-    ADS.forEach(function (ad) { recordImpression(ad.id); });
+    applyPos(); bindPause(); startAuto();
+    ADS.forEach(function (ad) { recordImpression(ad.id, 'carousel'); });
   }
 
+  // ══════════════════════════════════════════════════════════
+  // POPUP — shows top ad 8s after load, once per session
+  // ══════════════════════════════════════════════════════════
+  var POPUP_KEY = 'py2ads_popup_shown';
+  var popupBackdrop = document.getElementById('py2-ads-popup-backdrop');
+  var popupContent  = document.getElementById('py2-ads-popup-content');
+  var popupClose    = document.getElementById('py2-ads-popup-close');
+  var popupFired    = false;
+
+  function closePopup() {
+    if (popupBackdrop) popupBackdrop.classList.remove('open');
+  }
+  if (popupClose) popupClose.addEventListener('click', closePopup);
+  if (popupBackdrop) popupBackdrop.addEventListener('click', function (e) {
+    if (e.target === popupBackdrop) closePopup();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && popupBackdrop && popupBackdrop.classList.contains('open')) closePopup();
+  });
+
+  function renderPopup(ad) {
+    if (!popupBackdrop || !popupContent) return;
+    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta = ctaFor(ad);
+    var imgHtml = ad.media_url
+      ? '<img class="py2-ads-popup-img" src="' + esc(ad.media_url) + '" alt="' + esc(ad.title) + '" onerror="this.outerHTML=\'<div class=&quot;py2-ads-popup-img-ph&quot;>🇿🇲</div>\'">'
+      : '<div class="py2-ads-popup-img-ph">🇿🇲</div>';
+
+    popupContent.innerHTML =
+      imgHtml +
+      '<div class="py2-ads-popup-body">' +
+        '<span class="py2-ads-popup-tag">⭐ Featured Business</span>' +
+        '<div class="py2-ads-popup-biz">' + esc(biz) + '</div>' +
+        '<h2 class="py2-ads-popup-title">' + esc(ad.title) + '</h2>' +
+        (ad.description ? '<p class="py2-ads-popup-desc">' + esc(ad.description) + '</p>' : '') +
+        '<a class="py2-ads-popup-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="py2AdsClick(\'' + esc(ad.id) + '\')">' +
+          '<i class="' + cta.icon + '"></i> ' + esc(cta.label) +
+        '</a>' +
+        '<div class="py2-ads-popup-report"><a onclick="py2AdsReport(\'' + esc(ad.id) + '\');return false;" href="#">Report this ad</a></div>' +
+      '</div>';
+
+    popupBackdrop.classList.add('open');
+    recordImpression(ad.id, 'popup');
+  }
+
+  function maybeShowPopup() {
+    if (popupFired) return;
+    try { if (sessionStorage.getItem(POPUP_KEY)) return; } catch (e) {}
+    popupFired = true;
+    fetchPopularAd().then(function (ad) {
+      if (!ad) return;
+      // Wait 8 seconds so the user has time to start browsing
+      setTimeout(function () {
+        renderPopup(ad);
+        try { sessionStorage.setItem(POPUP_KEY, '1'); } catch (e) {}
+      }, 8000);
+    }).catch(function () {});
+  }
+
+  // Fire the carousel + popup loader
   fetchAds()
-    .then(boot)
-    .catch(function () {
-      // Any error → keep the section hidden. The homepage is unaffected.
-      hideSection();
-    });
+    .then(function (rows) {
+      boot(rows);
+      if (rows && rows.length) maybeShowPopup();
+    })
+    .catch(function () { hideSection(); });
 })();
 </script>
 
@@ -2375,7 +2320,7 @@ init();
 
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+var Tawk_API=Tawk_API||{}, Tawk_LoadShart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
