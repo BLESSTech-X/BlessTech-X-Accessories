@@ -394,6 +394,112 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 .pwa-install-btn-bar:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,211,102,.5);}
 @media(max-width:480px){.pwa-action-bar{padding:10px 12px;}.pwa-share-btn,.pwa-install-btn-bar{font-size:13px;padding:9px 18px;}}
 
+/* ═══ GLOWING ADVERTISE FOR FREE BUTTON ═══ */
+.pwa-advertise-btn{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 26px;
+  border-radius:100px;
+  font-family:'DM Sans',sans-serif;
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.3px;
+  color:#0a0a14;
+  text-decoration:none;
+  cursor:pointer;
+  overflow:hidden;
+  isolation:isolate;
+  background:linear-gradient(135deg,#feca57 0%,#ff9f43 50%,#ff6000 100%);
+  background-size:200% 200%;
+  box-shadow:
+    0 0 0 0 rgba(255,159,67,.7),
+    0 4px 16px rgba(255,96,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.4);
+  animation:advPulse 2s ease-in-out infinite, advShift 4s ease-in-out infinite;
+  transition:transform .2s ease, box-shadow .3s ease;
+  white-space:nowrap;
+}
+.pwa-advertise-btn strong{
+  font-weight:900;
+  color:#0a0a14;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.pwa-advertise-btn:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:
+    0 0 0 0 rgba(255,159,67,.9),
+    0 8px 28px rgba(255,96,0,.7),
+    inset 0 1px 0 rgba(255,255,255,.5);
+}
+.pwa-advertise-btn:active{transform:translateY(-1px) scale(.99);}
+
+.pwa-advertise-btn::before{
+  content:'';
+  position:absolute;
+  top:0;left:-120%;
+  width:80%;height:100%;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.75) 50%,transparent 100%);
+  transform:skewX(-20deg);
+  animation:advShine 2.6s ease-in-out infinite;
+  z-index:1;
+  pointer-events:none;
+}
+
+.pwa-advertise-btn .adv-glow{
+  position:absolute;
+  inset:-6px;
+  border-radius:100px;
+  background:radial-gradient(ellipse at center,rgba(255,159,67,.55) 0%,rgba(255,96,0,.25) 40%,transparent 75%);
+  z-index:-1;
+  animation:advHalo 2s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.pwa-advertise-btn .adv-arrow{
+  font-size:11px;
+  transition:transform .25s ease;
+}
+.pwa-advertise-btn:hover .adv-arrow{transform:translateX(4px);}
+
+@keyframes advPulse{
+  0%,100%{
+    box-shadow:
+      0 0 0 0 rgba(255,159,67,.7),
+      0 4px 16px rgba(255,96,0,.5),
+      inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  50%{
+    box-shadow:
+      0 0 0 10px rgba(255,159,67,0),
+      0 6px 22px rgba(255,96,0,.65),
+      inset 0 1px 0 rgba(255,255,255,.4);
+  }
+}
+@keyframes advHalo{
+  0%,100%{opacity:.55;transform:scale(1);}
+  50%{opacity:.95;transform:scale(1.08);}
+}
+@keyframes advShift{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+@keyframes advShine{
+  0%{left:-120%;}
+  60%,100%{left:150%;}
+}
+
+@media(max-width:480px){
+  .pwa-advertise-btn{
+    font-size:12.5px;
+    padding:9px 18px;
+    gap:6px;
+  }
+  .pwa-advertise-btn .adv-arrow{display:none;}
+}
+
 .showcase-section{position:relative;width:100%;height:92vh;min-height:520px;max-height:800px;overflow:hidden;margin-bottom:16px;border-radius:16px;background:#0a0a14;cursor:pointer;}
 .showcase-slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;pointer-events:none;}
 .showcase-slide.active{opacity:1;pointer-events:auto;}
@@ -522,6 +628,16 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   <button class="pwa-share-btn" onclick="shareApp()" aria-label="Share PhoneYa2">
     <i class="fa-solid fa-share-nodes"></i> Share PhoneYa2
   </button>
+
+  <!-- ⬇️ GLOWING ADVERTISE FOR FREE BUTTON ⬇️ -->
+  <a href="https://phoneya2.pages.dev/advertiser" class="pwa-advertise-btn" aria-label="Advertise for free" target="_blank" rel="noopener">
+    <span class="adv-glow"></span>
+    <i class="fa-solid fa-bullhorn"></i>
+    <span>Advertise For <strong>FREE</strong></span>
+    <i class="fa-solid fa-arrow-right adv-arrow"></i>
+  </a>
+  <!-- ⬆️ END GLOWING ADVERTISE BUTTON ⬆️ -->
+
   <button class="pwa-install-btn-bar" id="pwa-install-bar-btn" onclick="installApp()" aria-label="Add to Home Screen" style="display:none">
     <i class="fa-solid fa-mobile-screen-button"></i> Add to Home Screen
   </button>
@@ -1975,7 +2091,6 @@ init();
   }
 
   function ctaLabelShort(ad) {
-    // Shortened label for portal buttons
     var t = ad.destination_type;
     if (t === 'whatsapp')  return 'Open WhatsApp';
     if (t === 'website')   return 'Enter Website';
@@ -2045,7 +2160,6 @@ init();
       .catch(function () { window.alert('Could not submit report right now.'); });
   };
 
-  // ── Interstitial controller ────────────────────────────────────────
   function setupInterstitial(sectionEl, adList) {
     if (!sectionEl || !adList.length) return;
 
@@ -2053,14 +2167,12 @@ init();
     var dotsEl = sectionEl.querySelector('.py2-ads-interstitial-dots');
     if (!stage) return;
 
-    // Build slides
     adList.forEach(function (ad, i) {
       var slide = document.createElement('div');
       slide.className = 'py2-ads-interstitial-slide' + (i === 0 ? ' is-active' : '');
       slide.appendChild(buildPortalCard(ad));
       stage.appendChild(slide);
 
-      // Dot
       if (dotsEl && adList.length > 1) {
         var dot = document.createElement('button');
         dot.type = 'button';
@@ -2074,7 +2186,7 @@ init();
     sectionEl.style.display = 'block';
     recordImpression(adList[0].id, 'interstitial');
 
-    if (adList.length < 2) return; // no rotation needed
+    if (adList.length < 2) return;
 
     var current = 0;
     var slideEls = stage.querySelectorAll('.py2-ads-interstitial-slide');
@@ -2095,7 +2207,6 @@ init();
 
       slideEls[current].classList.add('is-active');
 
-      // Dots
       if (dotEls.length) {
         dotEls.forEach(function (d, i) { d.classList.toggle('is-active', i === current); });
       }
@@ -2115,7 +2226,6 @@ init();
       }, ROTATE_MS);
     }
 
-    // Pause on hover / touch
     sectionEl.addEventListener('mouseenter', function () { paused = true; });
     sectionEl.addEventListener('mouseleave', function () { paused = false; });
     sectionEl.addEventListener('touchstart', function () { paused = true; }, { passive: true });
@@ -2126,7 +2236,6 @@ init();
     reset();
   }
 
-  // ── Popup ──────────────────────────────────────────────────────────
   var popupBackdrop = document.getElementById('py2-ads-popup-backdrop');
   var popupContent  = document.getElementById('py2-ads-popup-content');
   var popupClose    = document.getElementById('py2-ads-popup-close');
@@ -2170,7 +2279,6 @@ init();
     if (!adList.length) return;
 
     setTimeout(function () {
-      // Pick the highest-weight ad for the popup
       var top = adList.slice().sort(function (a, b) {
         return (parseInt(b.weight, 10) || 1) - (parseInt(a.weight, 10) || 1);
       })[0];
@@ -2182,13 +2290,11 @@ init();
     }, POPUP_DELAY_MS);
   }
 
-  // ── Boot ───────────────────────────────────────────────────────────
   function boot(rows) {
     if (!Array.isArray(rows) || !rows.length) return;
 
     var ordered = weightedShuffle(rows);
 
-    // Two interstitials, each starting at a different offset so they aren't identical
     var slot1 = ordered;
     var slot2 = ordered.length > 1
       ? ordered.slice(Math.floor(ordered.length / 2)).concat(ordered.slice(0, Math.floor(ordered.length / 2)))
