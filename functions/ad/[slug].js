@@ -1,9 +1,9 @@
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════════════════════
    Cloudflare Pages Function — GET /ad/:slug
-   ────────────────────────────────────────────────────────────────────────
+   ────────────────────────────────────────────────────────────────────────────────
    Shareable ad page with OG tags prerendered.
    Now links prominently to the business profile at /b/<slug>.
-   ═══════════════════════════════════════════════════════════════════════════ */
+   ════════════════════════════════════════════════════════════════════════════════ */
 
 const SUPABASE_URL = 'https://signnapmkdctdcfpnsiu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
@@ -482,7 +482,7 @@ export async function onRequestGet(context) {
       heroHtml = '<video src="' + esc(mUrl) + '" autoplay muted loop playsinline></video>';
     }
   } else {
-    heroHtml = '<img class="ad-hero-img" src="' + esc(mUrl) + '" alt="' + esc(ad.title) + '" onerror="this.outerHTML=\'<div class=\\'ad-hero-img-fallback\\'>🖼️</div>\'">';
+    heroHtml = '<img class="ad-hero-img" src="' + esc(mUrl) + '" alt="' + esc(ad.title) + '" onerror="this.onerror=null;this.className=\'ad-hero-img-fallback\';this.innerHTML=\'🖼️\';this.removeAttribute(\'src\');">';
   }
 
   // Business logo
