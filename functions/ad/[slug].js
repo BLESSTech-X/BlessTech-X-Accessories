@@ -1,32 +1,19 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Cloudflare Pages Function — GET /ad/:slug
    ────────────────────────────────────────────────────────────────────────
-   Renders the shareable ad page with OG meta tags prerendered so
-   WhatsApp / Facebook / Twitter / LinkedIn produce rich preview cards.
-
-   Route: /ad/:slug
-   Cloudflare Pages automatically routes /ad/anything-here to this file
-   because it lives at functions/ad/[slug].js. No config file required.
-
-   Data source: Supabase REST API (publishable key — safe on the server).
-
-   If you are on Netlify instead, tell me — the file format differs slightly.
+   Shareable ad page with OG tags prerendered.
+   Now links prominently to the business profile at /b/<slug>.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-// ── Config ────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://signnapmkdctdcfpnsiu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 const SITE_URL     = 'https://phoneya2.pages.dev';
 const FALLBACK_OG_IMAGE = 'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg';
 
-// ── Helpers ───────────────────────────────────────────────────────────────
 function esc(s) {
   return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 function ctaFor(ad) {
@@ -44,49 +31,45 @@ function ctaFor(ad) {
   return { label: 'View Deal', href: u, icon: 'globe', isBrand: false };
 }
 
-// ── Data fetchers ─────────────────────────────────────────────────────────
 async function fetchAd(slug) {
   const qs =
-    'ads?select=id,slug,title,description,media_url,destination_type,destination_url,status,start_date,end_date,advertiser_id,advertisers(business_name,logo_url)' +
+    'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,start_date,end_date,advertiser_id,advertisers(id,business_name,logo_url)' +
     '&slug=eq.' + encodeURIComponent(slug) +
     '&limit=1';
-
   const r = await fetch(SUPABASE_URL + '/rest/v1/' + qs, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Accept': 'application/json'
-    }
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Accept': 'application/json' }
   });
   if (!r.ok) return null;
   const rows = await r.json();
   return rows && rows[0] ? rows[0] : null;
 }
 
-async function fetchOtherAds(excludeAdId) {
-  const nowIso = new Date().toISOString();
+async function fetchAdvertiserProfile(advertiserId) {
   const qs =
-    'ads?select=id,slug,title,media_url,advertisers(business_name)' +
-    '&status=eq.approved' +
-    '&placement=eq.carousel' +
-    '&start_date=lte.' + encodeURIComponent(nowIso) +
-    '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(nowIso) + ')' +
-    '&id=neq.' + encodeURIComponent(excludeAdId) +
-    '&order=weight.desc,created_at.desc' +
-    '&limit=6';
-
+    'advertiser_profiles?select=slug,tagline,about,primary_color,accent_color,verified,logo_url' +
+    '&advertiser_id=eq.' + encodeURIComponent(advertiserId) +
+    '&limit=1';
   const r = await fetch(SUPABASE_URL + '/rest/v1/' + qs, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Accept': 'application/json'
-    }
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Accept': 'application/json' }
+  });
+  if (!r.ok) return null;
+  const rows = await r.json();
+  return rows && rows[0] ? rows[0] : null;
+}
+
+async function fetchOtherBusinesses(excludeAdvertiserId) {
+  const qs =
+    'advertiser_profiles?select=slug,tagline,logo_url,verified,advertisers(business_name)' +
+    '&advertiser_id=neq.' + encodeURIComponent(excludeAdvertiserId) +
+    '&order=view_count.desc' +
+    '&limit=6';
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + qs, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Accept': 'application/json' }
   });
   if (!r.ok) return [];
   return (await r.json()) || [];
 }
 
-// ── Full HTML shell ───────────────────────────────────────────────────────
 function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml }) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -123,9 +106,9 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml }) {
   <link rel="stylesheet" href="/ads-shared.css">
   <style>
     body.ad-page {
-      background: #f8f9ff;
+      background: #0a0a14;
       font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
-      color: #1a1a2e;
+      color: #e8e8f0;
       margin: 0;
       padding-bottom: 60px;
       -webkit-font-smoothing: antialiased;
@@ -138,140 +121,230 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml }) {
     .ad-page .brand-link {
       display: flex; align-items: center; gap: 8px;
       font-family: 'Syne', system-ui, sans-serif; font-weight: 800; font-size: 15px;
-      text-decoration: none; color: #1a1a2e;
+      text-decoration: none; color: white;
     }
     .ad-page .brand-link span { color: #ff6000; }
 
     .ad-hero {
-      background: white;
-      border-radius: 16px;
+      background: linear-gradient(160deg, #12122a, #0a0a14);
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,.08);
-      border: 1px solid rgba(0,0,0,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
       margin-bottom: 20px;
+      position: relative;
     }
+    .ad-hero::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3,#54a0ff,#5f27cd,#ff6b6b);
+      background-size: 300% 100%;
+      animation: gradShift 4s linear infinite;
+      z-index: 3;
+    }
+    @keyframes gradShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
     .ad-hero-img {
       width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
-      background: #f8f9ff; display: block;
+      background: #05050c; display: block;
     }
     .ad-hero-img-fallback {
       width: 100%; aspect-ratio: 16/9;
       display: flex; align-items: center; justify-content: center;
-      background: #f8f9ff; font-size: 3rem;
+      background: linear-gradient(135deg,#0a0a14,#1a1a3e);
+      font-size: 3rem; color: rgba(255,255,255,.3);
     }
-    .ad-hero-body { padding: 22px 22px 24px; }
-    .ad-sponsor-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .ad-hero video, .ad-hero iframe {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover;
+      border: 0; display: block;
+    }
+    .ad-hero-body { padding: 24px 24px 26px; }
+
+    .ad-sponsor-row {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .25s;
+    }
+    .ad-sponsor-row:hover { transform: translateY(-2px); }
     .ad-sponsor-logo {
-      width: 44px; height: 44px; border-radius: 10px;
-      background: #f8f9ff; object-fit: cover;
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, #ff6000, #ff9f43);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; flex-shrink: 0;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem;
+      color: white;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: 0 6px 20px -6px #ff6000;
+      border: 2px solid rgba(255,255,255,.15);
     }
+    .ad-sponsor-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .ad-sponsor-info { min-width: 0; flex: 1; }
     .ad-sponsor-name {
-      font-family: 'Syne', system-ui, sans-serif;
-      font-weight: 700; font-size: 14px; color: #ff6000;
-      text-transform: uppercase; letter-spacing: .6px;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
+      color: white; margin-bottom: 3px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
     .ad-sponsor-tag {
-      display: inline-block; background: rgba(10,10,20,.75); color: white;
-      font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 100px;
-      text-transform: uppercase; letter-spacing: .5px;
+      display: inline-block;
+      background: rgba(10,10,20,.75); color: white;
+      font-size: 9px; font-weight: 800;
+      padding: 3px 10px; border-radius: 100px;
+      text-transform: uppercase; letter-spacing: .7px;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .ad-sponsor-cta-hint {
+      font-size: 11.5px;
+      color: #ff9f43;
+      font-weight: 600;
+      margin-top: 4px;
     }
     .ad-title-big {
-      font-family: 'Syne', system-ui, sans-serif;
-      font-weight: 800; font-size: clamp(1.4rem, 4vw, 2rem);
-      line-height: 1.15; margin-bottom: 10px;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      color: white; line-height: 1.15; margin-bottom: 12px;
+      letter-spacing: -.3px;
     }
     .ad-desc-big {
-      font-size: 15px; line-height: 1.65; color: #444; margin-bottom: 20px;
+      font-size: 15px; line-height: 1.65; color: rgba(255,255,255,.65);
+      margin-bottom: 20px;
     }
     .ad-cta-big {
       display: flex; align-items: center; justify-content: center; gap: 10px;
-      background: linear-gradient(135deg,#ff6000,#ff9f43);
-      color: white; font-weight: 700; font-size: 16px;
-      padding: 16px 24px; border-radius: 12px;
+      background: linear-gradient(135deg, #ff6000, #ff9f43);
+      color: white; font-weight: 800; font-size: 16px;
+      padding: 17px 24px; border-radius: 12px;
       text-decoration: none; width: 100%; box-sizing: border-box;
-      box-shadow: 0 4px 20px rgba(255,96,0,.35);
-      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 8px 30px -6px rgba(255,96,0,.5);
+      transition: transform .25s, box-shadow .25s;
     }
-    .ad-cta-big:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,96,0,.5); }
-    .ad-cta-big i { font-size: 1.15rem; }
-
-    .ad-report-row {
-      text-align: center; margin-top: 14px;
-      font-size: 12px; color: #6b7280;
-    }
-    .ad-report-row a {
-      color: #6b7280; text-decoration: underline; cursor: pointer;
+    .ad-cta-big:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px -6px rgba(255,96,0,.7);
     }
 
-    .more-section { margin-top: 26px; }
+    /* Business profile promo strip */
+    .business-strip {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-top: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: all .25s;
+      flex-wrap: wrap;
+    }
+    .business-strip:hover {
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,159,67,.35);
+      transform: translateY(-2px);
+    }
+    .bs-logo {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, #ff6000, #ff9f43);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+      color: white; flex-shrink: 0; overflow: hidden;
+    }
+    .bs-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .bs-info { flex: 1; min-width: 180px; }
+    .bs-name {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+      color: white; margin-bottom: 3px;
+    }
+    .bs-tagline {
+      font-size: 12.5px; color: rgba(255,255,255,.55);
+      line-height: 1.4;
+    }
+    .bs-arrow {
+      color: #ff9f43; font-size: 18px; flex-shrink: 0;
+    }
+
+    .ad-report-row { text-align: center; margin-top: 16px; font-size: 12px; color: rgba(255,255,255,.4); }
+    .ad-report-row a { color: rgba(255,255,255,.4); text-decoration: underline; cursor: pointer; }
+
+    /* More businesses section */
+    .more-section { margin-top: 32px; }
     .more-section h2 {
-      font-family: 'Syne', system-ui, sans-serif;
-      font-weight: 800; font-size: 1.15rem; margin-bottom: 4px;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem;
+      color: white; margin-bottom: 6px; letter-spacing: -.2px;
     }
-    .more-section p.sub { font-size: 13px; color: #6b7280; margin-bottom: 14px; }
+    .more-section p.sub { font-size: 13px; color: rgba(255,255,255,.5); margin-bottom: 16px; }
     .more-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
     }
     .more-card {
-      background: white; border-radius: 12px; overflow: hidden;
-      border: 1px solid rgba(0,0,0,.06); text-decoration: none; color: inherit;
-      box-shadow: 0 2px 12px rgba(0,0,0,.05);
-      transition: transform .2s, box-shadow .2s;
-      display: flex; flex-direction: column;
+      background: linear-gradient(160deg, #12122a, #0a0a14);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      display: flex; align-items: center; gap: 12px;
+      transition: all .25s;
     }
-    .more-card:hover { transform: translateY(-3px); box-shadow: 0 4px 20px rgba(0,0,0,.08); }
-    .more-card-img { aspect-ratio: 16/9; background: #f8f9ff; overflow: hidden; }
-    .more-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .more-card-body { padding: 10px 12px 12px; }
+    .more-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,159,67,.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .more-card-logo {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, #ff6000, #ff9f43);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      color: white; flex-shrink: 0; overflow: hidden;
+    }
+    .more-card-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .more-card-body { flex: 1; min-width: 0; }
     .more-card-biz {
-      font-size: 10px; font-weight: 700; color: #ff6000;
-      text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+      color: white; margin-bottom: 2px;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .more-card-title {
-      font-family: 'Syne', system-ui, sans-serif;
-      font-weight: 700; font-size: 13.5px; line-height: 1.3;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      overflow: hidden;
+    .more-card-tag {
+      font-size: 11.5px; color: rgba(255,255,255,.5);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+
     .advertise-strip {
-      margin-top: 30px; background: #0a0a14; color: white;
-      border-radius: 16px; padding: 22px 20px;
+      margin-top: 30px;
+      background: linear-gradient(135deg, #12122a, #0a0a14);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 24px 22px;
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
     }
     .advertise-strip h3 {
-      font-family: 'Syne', system-ui, sans-serif;
-      font-weight: 800; font-size: 1.05rem; margin: 0 0 4px;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.05rem; color: white; margin: 0 0 4px;
     }
-    .advertise-strip p {
-      font-size: 13px; color: rgba(255,255,255,.6); margin: 0; line-height: 1.5;
-    }
+    .advertise-strip p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; line-height: 1.5; }
     .advertise-strip a {
-      background: linear-gradient(135deg,#ff6000,#ff9f43);
+      background: linear-gradient(135deg, #ff6000, #ff9f43);
       color: white; font-weight: 700;
       padding: 10px 18px; border-radius: 10px;
-      text-decoration: none; white-space: nowrap; font-size: 14px;
+      text-decoration: none; white-space: nowrap; font-size: 13px;
     }
+
     .empty {
       text-align: center; padding: 80px 20px;
-      background: white; border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.05);
+      background: linear-gradient(160deg, #12122a, #0a0a14);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.08);
     }
     .empty-icon { font-size: 3rem; margin-bottom: 12px; }
-    .empty h1 {
-      font-family: 'Syne', system-ui, sans-serif;
-      font-weight: 800; font-size: 1.5rem; margin-bottom: 8px;
-    }
-    .empty p { color: #6b7280; font-size: 14px; margin-bottom: 20px; }
+    .empty h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; margin: 0 0 8px; color: white; }
+    .empty p { color: rgba(255,255,255,.5); font-size: 14px; margin: 0 0 20px; }
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg,#ff6000,#ff9f43);
+      background: linear-gradient(135deg, #ff6000, #ff9f43);
       color: white; font-weight: 700; font-size: 14px;
-      padding: 12px 22px; border-radius: 10px;
-      text-decoration: none; box-shadow: 0 4px 16px rgba(255,96,0,.35);
+      padding: 12px 22px; border-radius: 10px; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(255,96,0,.35);
     }
   </style>
 </head>
@@ -283,26 +356,15 @@ ${bodyHtml}
     'use strict';
     var P = window.py2Ads;
     if (!P) return;
-
     var AD_ID = window.__PY2_AD_ID__;
     if (!AD_ID) return;
 
-    // Record impression
+    // Impression
     P.visitorHash().then(function (vh) {
       return fetch(P.config.url + '/rest/v1/ad_impressions', {
         method: 'POST',
-        headers: {
-          'apikey':        P.config.key,
-          'Authorization': 'Bearer ' + P.config.key,
-          'Content-Type':  'application/json',
-          'Prefer':        'return=minimal'
-        },
-        body: JSON.stringify({
-          ad_id:        AD_ID,
-          visitor_hash: vh,
-          placement:    'share',
-          source:       P.detectSource()
-        })
+        headers: { 'apikey': P.config.key, 'Authorization': 'Bearer ' + P.config.key, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ ad_id: AD_ID, visitor_hash: vh, placement: 'share', source: P.detectSource() })
       }).catch(function () {});
     });
 
@@ -313,18 +375,8 @@ ${bodyHtml}
         P.visitorHash().then(function (vh) {
           return fetch(P.config.url + '/rest/v1/ad_clicks', {
             method: 'POST',
-            headers: {
-              'apikey':        P.config.key,
-              'Authorization': 'Bearer ' + P.config.key,
-              'Content-Type':  'application/json',
-              'Prefer':        'return=minimal'
-            },
-            body: JSON.stringify({
-              ad_id:        AD_ID,
-              visitor_hash: vh,
-              placement:    'share',
-              source:       P.detectSource()
-            })
+            headers: { 'apikey': P.config.key, 'Authorization': 'Bearer ' + P.config.key, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ ad_id: AD_ID, visitor_hash: vh, placement: 'share', source: P.detectSource() })
           }).catch(function () {});
         });
       });
@@ -335,31 +387,16 @@ ${bodyHtml}
     if (report) {
       report.addEventListener('click', function (e) {
         e.preventDefault();
-        var reason = window.prompt(
-          'Report this ad.\\n\\nPlease type a short reason (e.g. "misleading", "scam", "adult content"):',
-          ''
-        );
+        var reason = window.prompt('Report this ad.\\n\\nPlease type a short reason:', '');
         if (!reason || !reason.trim()) return;
         P.visitorHash().then(function (vh) {
           return fetch(P.config.url + '/rest/v1/ad_reports', {
             method: 'POST',
-            headers: {
-              'apikey':        P.config.key,
-              'Authorization': 'Bearer ' + P.config.key,
-              'Content-Type':  'application/json',
-              'Prefer':        'return=minimal'
-            },
-            body: JSON.stringify({
-              ad_id:        AD_ID,
-              reason:       reason.trim().slice(0, 120),
-              visitor_hash: vh
-            })
+            headers: { 'apikey': P.config.key, 'Authorization': 'Bearer ' + P.config.key, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ ad_id: AD_ID, reason: reason.trim().slice(0, 120), visitor_hash: vh })
           });
-        }).then(function () {
-          window.alert('Thank you. Our team will review this ad.');
-        }).catch(function () {
-          window.alert('Could not submit report right now.');
-        });
+        }).then(function () { window.alert('Thank you. Our team will review this ad.'); })
+          .catch(function () { window.alert('Could not submit report right now.'); });
       });
     }
   })();
@@ -368,7 +405,6 @@ ${bodyHtml}
 </html>`;
 }
 
-// ── Not-found page ────────────────────────────────────────────────────────
 function notFoundPage(slug) {
   const body = `
     <div class="wrap">
@@ -385,83 +421,110 @@ function notFoundPage(slug) {
     ogImage: FALLBACK_OG_IMAGE,
     canonicalUrl: SITE_URL + '/ad/' + encodeURIComponent(slug || ''),
     bodyHtml: body
-  }), {
-    status: 404,
-    headers: { 'content-type': 'text/html; charset=utf-8' }
-  });
+  }), { status: 404, headers: { 'content-type': 'text/html; charset=utf-8' } });
 }
 
-// ── Main handler ──────────────────────────────────────────────────────────
 export async function onRequestGet(context) {
   const { params } = context;
   const slug = params && params.slug;
+  if (!slug || typeof slug !== 'string') return notFoundPage('');
 
-  if (!slug || typeof slug !== 'string') {
-    return notFoundPage('');
-  }
-
-  // Fetch ad
   let ad;
-  try {
-    ad = await fetchAd(slug);
-  } catch (e) {
-    return new Response('Error loading ad', { status: 502 });
-  }
-
-  // Visibility check
+  try { ad = await fetchAd(slug); } catch (e) { return new Response('Error loading ad', { status: 502 }); }
   if (!ad) return notFoundPage(slug);
+
   const now = new Date();
   const startOk = !ad.start_date || new Date(ad.start_date) <= now;
   const endOk   = !ad.end_date   || new Date(ad.end_date)   >  now;
-  if (ad.status !== 'approved' || !startOk || !endOk) {
-    return notFoundPage(slug);
+  if (ad.status !== 'approved' || !startOk || !endOk) return notFoundPage(slug);
+
+  // Fetch advertiser's profile + other businesses
+  let advProfile = null;
+  let others = [];
+  try { advProfile = await fetchAdvertiserProfile(ad.advertiser_id); } catch (e) {}
+  try { others = await fetchOtherBusinesses(ad.advertiser_id); } catch (e) {}
+
+  const biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+  const bizLogo = (ad.advertisers && ad.advertisers.logo_url) || '';
+  const bizSlug = advProfile ? advProfile.slug : '';
+  const bizTagline = advProfile ? (advProfile.tagline || '') : '';
+  const isVerified = advProfile && advProfile.verified === true;
+  const cta = ctaFor(ad);
+
+  const canonical = SITE_URL + '/ad/' + encodeURIComponent(ad.slug);
+  const heroImg = ad.media_url || FALLBACK_OG_IMAGE;
+  const ogTitle = ad.title + ' — ' + biz + ' | PhoneYa2 Ads';
+  const ogDesc = (ad.description || ('Discover ' + biz + ' on PhoneYa2.')).slice(0, 160);
+  const ogImg = heroImg;
+
+  // Hero media — image or video
+  let heroHtml;
+  const mType = ad.media_type || 'image';
+  const mProvider = ad.video_provider || '';
+  const mUrl = ad.media_url || '';
+
+  if (!mUrl) {
+    heroHtml = '<div class="ad-hero-img-fallback">🇿🇲</div>';
+  } else if (mType === 'video') {
+    if (mProvider === 'youtube' || /youtube\.com|youtu\.be/i.test(mUrl)) {
+      const m = mUrl.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+      heroHtml = m
+        ? '<iframe src="https://www.youtube.com/embed/' + esc(m[1]) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(m[1]) + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen title="' + esc(ad.title) + '"></iframe>'
+        : '<div class="ad-hero-img-fallback">▶</div>';
+    } else if (mProvider === 'vimeo' || /vimeo\.com/i.test(mUrl)) {
+      const m = mUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      heroHtml = m
+        ? '<iframe src="https://player.vimeo.com/video/' + esc(m[1]) + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" allowfullscreen title="' + esc(ad.title) + '"></iframe>'
+        : '<div class="ad-hero-img-fallback">▶</div>';
+    } else if (mProvider === 'tiktok' || /tiktok\.com/i.test(mUrl)) {
+      heroHtml = '<div class="ad-hero-img-fallback" style="background:linear-gradient(135deg,#000,#fe2c55);color:white">🎵</div>';
+    } else {
+      heroHtml = '<video src="' + esc(mUrl) + '" autoplay muted loop playsinline></video>';
+    }
+  } else {
+    heroHtml = '<img class="ad-hero-img" src="' + esc(mUrl) + '" alt="' + esc(ad.title) + '" onerror="this.outerHTML=\'<div class=\\'ad-hero-img-fallback\\'>🖼️</div>\'">';
   }
 
-  // Fetch other approved ads (silent failure OK)
-  let others = [];
-  try {
-    others = await fetchOtherAds(ad.id);
-  } catch (e) { /* silent */ }
-
-  // Build values
-  const biz       = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
-  const bizLogo   = (ad.advertisers && ad.advertisers.logo_url)      || '';
-  const cta       = ctaFor(ad);
-  const canonical = SITE_URL + '/ad/' + encodeURIComponent(ad.slug);
-  const heroImg   = ad.media_url || FALLBACK_OG_IMAGE;
-  const ogTitle   = ad.title + ' — ' + biz + ' | PhoneYa2 Ads';
-  const ogDesc    = (ad.description || 'Discover this Zambian business on PhoneYa2.').slice(0, 160);
-  const ogImg     = heroImg;
-
-  const heroImgHtml = ad.media_url
-    ? `<img class="ad-hero-img" src="${esc(ad.media_url)}" alt="${esc(ad.title)}" onerror="this.outerHTML='<div class=\\'ad-hero-img-fallback\\'>🖼️</div>'">`
-    : `<div class="ad-hero-img-fallback">🖼️</div>`;
-
+  // Business logo
   const logoHtml = bizLogo
-    ? `<img class="ad-sponsor-logo" src="${esc(bizLogo)}" alt="${esc(biz)}">`
-    : `<div class="ad-sponsor-logo">🏢</div>`;
+    ? '<img src="' + esc(bizLogo) + '" alt="" onerror="this.parentElement.textContent=\'' + esc(biz.charAt(0).toUpperCase()) + '\'">'
+    : esc(biz.charAt(0).toUpperCase());
 
+  // Profile strip
+  const profileStripHtml = bizSlug
+    ? '<a class="business-strip" href="/b/' + esc(bizSlug) + '">' +
+        '<div class="bs-logo">' + logoHtml + '</div>' +
+        '<div class="bs-info">' +
+          '<div class="bs-name">' + esc(biz) + (isVerified ? ' <span style="color:#48dbfb;font-size:12px;">✓</span>' : '') + '</div>' +
+          '<div class="bs-tagline">' + (bizTagline ? esc(bizTagline) : 'Visit their full profile') + '</div>' +
+        '</div>' +
+        '<i class="fa-solid fa-arrow-right bs-arrow"></i>' +
+      '</a>'
+    : '';
+
+  // Other businesses
   const moreHtml = others.length
-    ? `<div class="more-section">
-        <h2>🇿🇲 Discover other Zambian businesses</h2>
-        <p class="sub">More sponsored businesses on PhoneYa2</p>
-        <div class="more-grid">
-          ${others.map(o => {
-            const oBiz = (o.advertisers && o.advertisers.business_name) || 'Zambian Business';
-            const img = o.media_url
-              ? `<img src="${esc(o.media_url)}" alt="${esc(o.title)}" loading="lazy">`
-              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:#f5f5f5">🇿🇲</div>`;
-            return `
-              <a class="more-card" href="/ad/${esc(o.slug)}">
-                <div class="more-card-img">${img}</div>
-                <div class="more-card-body">
-                  <div class="more-card-biz">${esc(oBiz)}</div>
-                  <div class="more-card-title">${esc(o.title)}</div>
-                </div>
-              </a>`;
-          }).join('')}
-        </div>
-      </div>`
+    ? '<div class="more-section">' +
+        '<h2>🇿🇲 Discover other Zambian businesses</h2>' +
+        '<p class="sub">More businesses on PhoneYa2</p>' +
+        '<div class="more-grid">' +
+          others.map(o => {
+            const oBiz = (o.advertisers && o.advertisers.business_name) || 'Business';
+            const oLogo = o.logo_url
+              ? '<img src="' + esc(o.logo_url) + '" alt="" onerror="this.parentElement.textContent=\'' + esc(oBiz.charAt(0).toUpperCase()) + '\'">'
+              : esc(oBiz.charAt(0).toUpperCase());
+            const oTag = o.tagline || 'Visit profile';
+            const oVerified = o.verified === true ? ' <span style="color:#48dbfb;font-size:11px;">✓</span>' : '';
+            return '<a class="more-card" href="/b/' + esc(o.slug) + '">' +
+              '<div class="more-card-logo">' + oLogo + '</div>' +
+              '<div class="more-card-body">' +
+                '<div class="more-card-biz">' + esc(oBiz) + oVerified + '</div>' +
+                '<div class="more-card-tag">' + esc(oTag) + '</div>' +
+              '</div>' +
+            '</a>';
+          }).join('') +
+        '</div>' +
+      '</div>'
     : '';
 
   const iconPrefix = cta.isBrand ? 'brands' : 'solid';
@@ -473,21 +536,25 @@ export async function onRequestGet(context) {
           <span style="font-size:22px;">📱</span>
           <div>PhoneYa2 <span>Ads</span></div>
         </a>
-        <a href="/shop.html" style="font-size:13px;color:#ff6000;font-weight:600;text-decoration:none;">
+        <a href="/shop.html" style="font-size:13px;color:#ff9f43;font-weight:600;text-decoration:none;">
           Shop accessories <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
 
       <div class="ad-hero">
-        ${heroImgHtml}
+        ${heroHtml}
         <div class="ad-hero-body">
-          <div class="ad-sponsor-row">
-            ${logoHtml}
-            <div style="min-width:0;flex:1;">
-              <div class="ad-sponsor-name">${esc(biz)}</div>
-              <div style="margin-top:2px;"><span class="ad-sponsor-tag">Sponsored</span></div>
+          <a class="ad-sponsor-row" href="${bizSlug ? '/b/' + esc(bizSlug) : '#'}">
+            <div class="ad-sponsor-logo">${logoHtml}</div>
+            <div class="ad-sponsor-info">
+              <div class="ad-sponsor-name">
+                ${esc(biz)}
+                ${isVerified ? '<span style="color:#48dbfb;font-size:13px;">✓</span>' : ''}
+                <span class="ad-sponsor-tag">Sponsored</span>
+              </div>
+              ${bizSlug ? '<div class="ad-sponsor-cta-hint">Tap to view full profile <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></div>' : ''}
             </div>
-          </div>
+          </a>
 
           <h1 class="ad-title-big">${esc(ad.title)}</h1>
           ${ad.description ? `<p class="ad-desc-big">${esc(ad.description)}</p>` : ''}
@@ -496,6 +563,8 @@ export async function onRequestGet(context) {
             <i class="fa-${iconPrefix} fa-${cta.icon}"></i>
             ${esc(cta.label)}
           </a>
+
+          ${profileStripHtml}
 
           <div class="ad-report-row">
             <a id="ad-report" href="#">Report this ad</a>
@@ -508,9 +577,9 @@ export async function onRequestGet(context) {
       <div class="advertise-strip">
         <div>
           <h3>Want your business here?</h3>
-          <p>Advertise on PhoneYa2 and reach Zambian shoppers. Free to start.</p>
+          <p>Advertise on PhoneYa2 and get a free business profile. Upgrade anytime for custom branding.</p>
         </div>
-        <a href="/advertise/">Advertise →</a>
+        <a href="/advertise/">Get started →</a>
       </div>
     </div>
 
