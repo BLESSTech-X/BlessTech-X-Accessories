@@ -336,6 +336,51 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   .footer-grid{grid-template-columns:repeat(2,1fr);}
 }
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;}.trust-grid{grid-template-columns:repeat(3,1fr);}.btn-row-2{grid-template-columns:1fr 1fr;}}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SPONSORED ADS GRID (PhoneYa2 Ads)
+   Self-contained. All classes prefixed .py2-ads- to avoid
+   collision with existing site styles. Section is hidden by
+   default and only revealed when at least one ad renders.
+═══════════════════════════════════════════════════════════ */
+#py2-ads-grid{display:none;}
+#py2-ads-grid.py2-ads-ready{display:block;}
+.py2-ads-section{max-width:1280px;margin:0 auto;padding:0 24px 60px;}
+.py2-ads-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.py2-ads-head-l{display:flex;align-items:center;gap:12px;}
+.py2-ads-head-l h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;}
+.py2-ads-tag{display:inline-block;background:rgba(255,96,0,.12);color:#ff6000;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.6px;}
+.py2-ads-seeall{color:var(--orange,#ff6000);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
+.py2-ads-seeall:hover{color:#e55400;}
+
+.py2-ads-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.py2-ads-card{background:white;border-radius:14px;overflow:hidden;cursor:pointer;transition:box-shadow .25s,transform .25s;border:1px solid #f0f0f0;position:relative;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.py2-ads-card:hover{box-shadow:0 12px 32px rgba(0,0,0,.12);transform:translateY(-4px);}
+.py2-ads-img{height:170px;background:var(--light,#f8f9ff);position:relative;overflow:hidden;}
+.py2-ads-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;}
+.py2-ads-card:hover .py2-ads-img img{transform:scale(1.05);}
+.py2-ads-sponsored{position:absolute;top:10px;left:10px;background:rgba(10,10,20,.75);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.6px;backdrop-filter:blur(4px);z-index:2;}
+.py2-ads-report{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);color:#6b7280;font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;border:none;cursor:pointer;text-decoration:none;line-height:1.5;z-index:2;}
+.py2-ads-report:hover{background:white;color:#dc2626;}
+.py2-ads-body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1;}
+.py2-ads-biz{font-size:11px;font-weight:700;color:#ff6000;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.py2-ads-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text,#1a1a2e);line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px;}
+.py2-ads-desc{font-size:13px;color:var(--muted,#6b7280);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px;}
+.py2-ads-cta{margin-top:auto;width:100%;background:var(--orange,#ff6000);color:white;font-weight:700;font-size:13px;padding:10px;border-radius:9px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .2s,box-shadow .2s;}
+.py2-ads-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,96,0,.4);}
+.py2-ads-cta i{font-size:14px;}
+
+@media(max-width:900px){
+  .py2-ads-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+  .py2-ads-img{height:150px;}
+}
+@media(max-width:600px){
+  .py2-ads-section{padding:0 16px 40px;}
+  .py2-ads-grid{grid-template-columns:1fr;gap:12px;}
+  .py2-ads-img{height:170px;}
+  .py2-ads-head-l h2{font-size:1.2rem;}
+}
 </style>
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -441,6 +486,25 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem">Related Products</h2>
   <div class="related-grid" id="related-grid"></div>
 </div>
+
+<!-- ═══ SPONSORED ADS GRID (PhoneYa2 Ads) ═══
+     Populated by the script at the bottom of this page.
+     Self-hides when zero approved ads are returned, and also
+     self-hides when window.PY2_ADS_CONFIG is not yet set
+     (i.e. before ads-config.js is deployed).
+     No existing styles, IDs, or behaviours are touched. -->
+<section id="py2-ads-grid" aria-label="Sponsored businesses">
+  <div class="py2-ads-section">
+    <div class="py2-ads-head">
+      <div class="py2-ads-head-l">
+        <h2>🇿🇲 Sponsored</h2>
+        <span class="py2-ads-tag">Zambian Businesses</span>
+      </div>
+      <a href="/advertise/" class="py2-ads-seeall">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="py2-ads-grid" id="py2-ads-grid-track"></div>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
@@ -1155,6 +1219,271 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PHONEYA2 ADS — Sponsored grid loader
+     Self-guards: if window.PY2_ADS_CONFIG is not set (i.e. ads-config.js
+     has not been deployed yet), the whole section stays hidden and this
+     script exits without side-effects. No existing feature is touched.
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  var section = document.getElementById('py2-ads-grid');
+  if (!section) return;
+
+  function hideSection() {
+    section.classList.remove('py2-ads-ready');
+    section.style.display = 'none';
+  }
+
+  if (!window.PY2_ADS_CONFIG || !window.PY2_ADS_CONFIG.url || !window.PY2_ADS_CONFIG.key) {
+    hideSection();
+    return;
+  }
+
+  var SUPABASE_URL = window.PY2_ADS_CONFIG.url;
+  var SUPABASE_KEY = window.PY2_ADS_CONFIG.key;
+  var GRID         = document.getElementById('py2-ads-grid-track');
+  if (!GRID) { hideSection(); return; }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  var _visitorHashCache = null;
+  function visitorHash() {
+    if (_visitorHashCache) return Promise.resolve(_visitorHashCache);
+    try {
+      var ua   = navigator.userAgent || '';
+      var lang = navigator.language || '';
+      var day  = new Date().toISOString().slice(0, 10);
+      var raw  = ua + '|' + lang + '|' + day + '|py2ads';
+      if (!window.crypto || !window.crypto.subtle) {
+        var h = 0;
+        for (var i = 0; i < raw.length; i++) { h = ((h << 5) - h + raw.charCodeAt(i)) | 0; }
+        _visitorHashCache = 'v1_' + Math.abs(h).toString(36);
+        return Promise.resolve(_visitorHashCache);
+      }
+      var buf = new TextEncoder().encode(raw);
+      return window.crypto.subtle.digest('SHA-256', buf).then(function (digest) {
+        var bytes = new Uint8Array(digest);
+        var hex = '';
+        for (var j = 0; j < 12; j++) { hex += ('0' + bytes[j].toString(16)).slice(-2); }
+        _visitorHashCache = 'v1_' + hex;
+        return _visitorHashCache;
+      }).catch(function () {
+        _visitorHashCache = 'v1_' + Math.random().toString(36).slice(2, 12);
+        return _visitorHashCache;
+      });
+    } catch (e) {
+      _visitorHashCache = 'v1_anon';
+      return Promise.resolve(_visitorHashCache);
+    }
+  }
+
+  function detectSource() {
+    try {
+      var ref = document.referrer || '';
+      if (/whatsapp|wa\.me/i.test(ref))       return 'whatsapp';
+      if (/facebook|fb\.com/i.test(ref))      return 'facebook';
+      if (/instagram/i.test(ref))             return 'instagram';
+      if (!ref) {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('ref') && params.get('ref').indexOf('adshare') === 0) return 'adshare';
+        return 'direct';
+      }
+      return 'other';
+    } catch (e) { return 'direct'; }
+  }
+
+  function sbGet(path) {
+    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Accept':        'application/json'
+      }
+    }).then(function (r) {
+      if (!r.ok) throw new Error('Supabase GET ' + r.status);
+      return r.json();
+    });
+  }
+
+  function sbPost(path, body) {
+    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal'
+      },
+      body: JSON.stringify(body)
+    });
+  }
+
+  function fetchAds() {
+    var nowIso = new Date().toISOString();
+    var qs =
+      'ads?select=id,slug,title,description,media_url,media_type,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
+      '&status=eq.approved' +
+      '&placement=eq.carousel' +
+      '&start_date=lte.' + encodeURIComponent(nowIso) +
+      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(nowIso) + ')' +
+      '&order=weight.desc,created_at.desc' +
+      '&limit=9';
+    return sbGet(qs);
+  }
+
+  function weightedShuffle(list) {
+    var pool = list.slice();
+    var out  = [];
+    var last = null;
+    while (pool.length) {
+      var total = 0;
+      for (var i = 0; i < pool.length; i++) {
+        var w = parseInt(pool[i].weight, 10);
+        if (!w || w < 1) w = 1;
+        if (last && pool[i].id === last.id) w = Math.max(1, Math.floor(w / 4));
+        total += w;
+      }
+      var r    = Math.random() * total;
+      var pick = pool[pool.length - 1];
+      var acc  = 0;
+      for (var j = 0; j < pool.length; j++) {
+        var ww = parseInt(pool[j].weight, 10);
+        if (!ww || ww < 1) ww = 1;
+        if (last && pool[j].id === last.id) ww = Math.max(1, Math.floor(ww / 4));
+        acc += ww;
+        if (r <= acc) { pick = pool[j]; break; }
+      }
+      out.push(pick);
+      last = pick;
+      var idx = pool.indexOf(pick);
+      if (idx > -1) pool.splice(idx, 1);
+    }
+    return out;
+  }
+
+  function ctaFor(ad) {
+    var t = ad.destination_type;
+    var u = ad.destination_url || '';
+    if (t === 'whatsapp') {
+      var digits = String(u).replace(/[^\d]/g, '');
+      return { label: 'Chat on WhatsApp', href: 'https://wa.me/' + digits, icon: 'fa-brands fa-whatsapp' };
+    }
+    if (t === 'website')   return { label: 'Visit Website',   href: u, icon: 'fa-solid fa-globe' };
+    if (t === 'facebook')  return { label: 'View on Facebook', href: u, icon: 'fa-brands fa-facebook-f' };
+    if (t === 'instagram') return { label: 'View on Instagram',href: u, icon: 'fa-brands fa-instagram' };
+    if (t === 'tiktok')    return { label: 'View on TikTok',  href: u, icon: 'fa-brands fa-tiktok' };
+    if (t === 'youtube')   return { label: 'Watch on YouTube',href: u, icon: 'fa-brands fa-youtube' };
+    return { label: 'View Deal', href: u, icon: 'fa-solid fa-arrow-up-right-from-square' };
+  }
+
+  function buildCard(ad) {
+    var biz  = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta  = ctaFor(ad);
+    var img  = ad.media_url || '';
+    var card = document.createElement('div');
+    card.className = 'py2-ads-card';
+    card.setAttribute('role', 'article');
+    card.setAttribute('aria-label', ad.title);
+
+    var imgHtml = img
+      ? '<img src="' + esc(img) + '" alt="' + esc(ad.title) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5&quot;>🇿🇲</div>\'">'
+      : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5">🇿🇲</div>';
+
+    card.innerHTML =
+      '<div class="py2-ads-img">' +
+        '<span class="py2-ads-sponsored">Sponsored</span>' +
+        '<button class="py2-ads-report" type="button" aria-label="Report this ad" ' +
+          'onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
+        imgHtml +
+      '</div>' +
+      '<div class="py2-ads-body">' +
+        '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
+        '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
+        '<div class="py2-ads-desc">' + esc(ad.description || '') + '</div>' +
+        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" ' +
+          'onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+          '<i class="' + cta.icon + '"></i> ' + esc(cta.label) +
+        '</a>' +
+      '</div>';
+
+    card.addEventListener('click', function () {
+      window.location.href = '/ad/' + encodeURIComponent(ad.slug);
+    });
+    var ctaEl = card.querySelector('.py2-ads-cta');
+    if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    return card;
+  }
+
+  function recordImpression(adId) {
+    visitorHash().then(function (vh) {
+      return sbPost('ad_impressions', {
+        ad_id:        adId,
+        visitor_hash: vh,
+        placement:    'grid',
+        source:       detectSource()
+      });
+    }).catch(function () {});
+  }
+
+  window.py2AdsClick = function (adId) {
+    visitorHash().then(function (vh) {
+      return sbPost('ad_clicks', {
+        ad_id:        adId,
+        visitor_hash: vh,
+        placement:    'grid',
+        source:       detectSource()
+      });
+    }).catch(function () {});
+  };
+
+  window.py2AdsReport = function (adId) {
+    var reason = window.prompt(
+      'Report this ad.\n\nPlease type a short reason (e.g. "misleading", "scam", "adult content"):',
+      ''
+    );
+    if (!reason || !reason.trim()) return;
+    visitorHash().then(function (vh) {
+      return sbPost('ad_reports', {
+        ad_id:        adId,
+        reason:       reason.trim().slice(0, 120),
+        visitor_hash: vh
+      });
+    }).then(function () {
+      window.alert('Thank you. Our team will review this ad.');
+    }).catch(function () {
+      window.alert('Could not submit report right now. Please try again later.');
+    });
+  };
+
+  function boot(rows) {
+    if (!Array.isArray(rows) || !rows.length) { hideSection(); return; }
+    var ordered = weightedShuffle(rows);
+    GRID.innerHTML = '';
+    ordered.forEach(function (ad) { GRID.appendChild(buildCard(ad)); });
+    section.classList.add('py2-ads-ready');
+    ordered.forEach(function (ad) { recordImpression(ad.id); });
+  }
+
+  fetchAds()
+    .then(boot)
+    .catch(function () {
+      hideSection();
+    });
+})();
 </script>
 
 <!--Start of Tawk.to Script-->
