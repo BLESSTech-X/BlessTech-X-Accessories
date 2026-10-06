@@ -1675,22 +1675,20 @@
 
     if (videoState.mode === 'video') {
       if (videoState.source === 'mp4') {
-        if (videoState.uploadedUrl) {
+                if (videoState.uploadedUrl) {
           mediaPromise = Promise.resolve(videoState.uploadedUrl);
           finalProvider = 'mp4';
         } else {
-          // Upload the MP4
+          // Compute the path ONCE, use the same value for upload and public URL
+          var vidPath = 'ads/' + advertiser.id + '/' + Date.now() + '-' +
+                        Math.random().toString(36).slice(2, 8) + '.mp4';
           mediaPromise = P.storage.upload(
             'ad-media',
-            'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.mp4',
+            vidPath,
             videoState.file,
             { contentType: 'video/mp4' }
           ).then(function () {
-            var url = P.storage.publicUrl('ad-media', 'ads/' + advertiser.id + '/' + Date.now() + '.mp4');
-            // P.storage.upload returns after upload; recompute the exact path
-            // Simpler: rebuild the same path we used
-            // We can just use the returned url directly:
-            return url;
+            return P.storage.publicUrl('ad-media', vidPath);
           });
           finalProvider = 'mp4';
         }
