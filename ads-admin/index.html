@@ -49,26 +49,10 @@
     }
     .queue-item .ad-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .queue-body { flex: 1; min-width: 0; }
-    .queue-title {
-      font-family: var(--py2-font-head);
-      font-weight: 800; font-size: 15px;
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-    .queue-biz {
-      font-size: 12px; color: var(--py2-orange);
-      font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
-      margin-bottom: 6px;
-    }
-    .queue-desc {
-      font-size: 13px; color: var(--py2-muted);
-      line-height: 1.5; margin-bottom: 10px;
-      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .queue-meta {
-      font-size: 12px; color: var(--py2-muted); margin-bottom: 10px;
-    }
+    .queue-title { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; margin-bottom: 4px; line-height: 1.3; }
+    .queue-biz { font-size: 12px; color: var(--py2-orange); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+    .queue-desc { font-size: 13px; color: var(--py2-muted); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .queue-meta { font-size: 12px; color: var(--py2-muted); margin-bottom: 10px; }
     .queue-meta a { color: var(--py2-orange); word-break: break-all; }
     .queue-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     @media (max-width: 700px) {
@@ -76,158 +60,253 @@
       .queue-item .ad-thumb { width: 100%; height: 160px; }
     }
 
-    .report-item {
-      padding: 16px;
-      background: white;
-      border: 1px solid var(--py2-border-soft);
-      border-left: 3px solid var(--py2-red);
-      border-radius: var(--py2-radius);
-      margin-bottom: 10px;
-    }
+    .report-item { padding: 16px; background: white; border: 1px solid var(--py2-border-soft); border-left: 3px solid var(--py2-red); border-radius: var(--py2-radius); margin-bottom: 10px; }
     .report-item.resolved { border-left-color: #16a34a; opacity: .65; }
-    .report-reason {
-      display: inline-block;
-      background: rgba(230,57,70,.1);
-      color: #b91c1c;
-      font-size: 11px; font-weight: 700;
-      padding: 3px 10px; border-radius: 100px;
-      text-transform: uppercase; letter-spacing: .5px;
-      margin-bottom: 8px;
-    }
-    .report-ad-title {
-      font-family: var(--py2-font-head);
-      font-weight: 700; font-size: 14px; margin-bottom: 6px;
-    }
-    .report-detail {
-      font-size: 13px; color: #444;
-      line-height: 1.5; margin-bottom: 8px;
-    }
-    .report-meta {
-      font-size: 11px; color: var(--py2-muted); margin-bottom: 10px;
-    }
+    .report-reason { display: inline-block; background: rgba(230,57,70,.1); color: #b91c1c; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .report-ad-title { font-family: var(--py2-font-head); font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+    .report-detail { font-size: 13px; color: #444; line-height: 1.5; margin-bottom: 8px; }
+    .report-meta { font-size: 11px; color: var(--py2-muted); margin-bottom: 10px; }
 
-    .log-item {
-      display: flex; gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--py2-border-soft);
-      align-items: flex-start;
-    }
+    .log-item { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--py2-border-soft); align-items: flex-start; }
     .log-item:last-child { border-bottom: none; }
-    .log-icon {
-      width: 34px; height: 34px;
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
-      color: white;
-    }
+    .log-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; color: white; }
     .log-action { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
     .log-meta { font-size: 11.5px; color: var(--py2-muted); line-height: 1.45; }
-    .log-reason {
-      font-size: 12.5px; color: #444;
-      background: var(--py2-light); padding: 8px 10px;
-      border-radius: 8px; margin-top: 6px;
-      line-height: 1.5;
-    }
+    .log-reason { font-size: 12.5px; color: #444; background: var(--py2-light); padding: 8px 10px; border-radius: 8px; margin-top: 6px; line-height: 1.5; }
 
-    .analytics-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--py2-border-soft);
-    }
+    .analytics-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--py2-border-soft); }
     .analytics-row:last-child { border-bottom: none; }
-    .analytics-rank {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: var(--py2-light);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--py2-font-head); font-weight: 800; font-size: 13px;
-      flex-shrink: 0;
-    }
+    .analytics-rank { width: 28px; height: 28px; border-radius: 8px; background: var(--py2-light); display: flex; align-items: center; justify-content: center; font-family: var(--py2-font-head); font-weight: 800; font-size: 13px; flex-shrink: 0; }
     .analytics-rank.gold   { background: linear-gradient(135deg,#feca57,#ff9f43); color: white; }
     .analytics-rank.silver { background: linear-gradient(135deg,#c0c0c0,#8f8f8f); color: white; }
     .analytics-rank.bronze { background: linear-gradient(135deg,#cd7f32,#8b5a2b); color: white; }
     .analytics-title { flex: 1; min-width: 0; }
-    .analytics-name {
-      font-family: var(--py2-font-head); font-weight: 700; font-size: 13.5px;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
+    .analytics-name { font-family: var(--py2-font-head); font-weight: 700; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .analytics-sub { font-size: 11.5px; color: var(--py2-muted); }
     .analytics-nums { text-align: right; font-size: 12px; line-height: 1.5; }
-    .analytics-nums strong {
-      font-family: var(--py2-font-head);
-      font-weight: 800; font-size: 15px;
-      display: block;
-    }
+    .analytics-nums strong { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; display: block; }
 
-    /* ── INLINE SIGN-IN / DENIED SCREENS ───────────────────────────────── */
     #signin-screen, #denied-screen {
       min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px;
+      background: radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%), radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%), var(--py2-light);
+    }
+    #signin-screen .py2-auth-card, #denied-screen .py2-auth-card { max-width: 420px; }
+    #signin-error { display: none; background: rgba(230,57,70,.08); border: 1px solid rgba(230,57,70,.25); border-radius: var(--py2-radius-sm); padding: 10px 14px; font-size: 13px; color: #b91c1c; margin-bottom: 14px; line-height: 1.5; }
+    #signin-error.show { display: block; }
+    #denied-screen .denied-icon { font-size: 3rem; text-align: center; margin-bottom: 12px; }
+
+    /* ── Tier badges ──────────────────────────────────────────────── */
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10.5px; font-weight: 800;
+      padding: 3px 10px; border-radius: 100px;
+      text-transform: uppercase; letter-spacing: .6px;
+    }
+    .tier-badge.free     { background: rgba(107,114,128,.15); color: #4b5563; }
+    .tier-badge.starter  { background: rgba(37,99,235,.15);   color: #2563eb; }
+    .tier-badge.standard { background: rgba(139,92,246,.15);  color: #7c3aed; }
+    .tier-badge.business { background: rgba(217,119,6,.15);   color: #b45309; }
+    .tier-badge.premium  { background: linear-gradient(135deg, #ff6000, #ff9f43); color: white; }
+    .tier-badge.expired  { background: rgba(230,57,70,.15);   color: #b91c1c; }
+
+    .expiry-cell { font-size: 12px; line-height: 1.4; }
+    .expiry-cell .days { font-weight: 700; }
+    .expiry-cell.ok      .days { color: #16a34a; }
+    .expiry-cell.warn    .days { color: #f59e0b; }
+    .expiry-cell.danger  .days { color: #dc2626; }
+    .expiry-cell.expired .days { color: #dc2626; }
+    .expiry-cell.none    .days { color: var(--py2-muted); }
+
+    /* ── Change Plan modal ────────────────────────────────────────── */
+    #plan-modal .py2-modal { max-width: 560px; }
+
+    .plan-tier-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 620px) { .plan-tier-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .plan-tier-option {
+      background: white;
+      border: 2px solid rgba(0,0,0,.08);
+      border-radius: var(--py2-radius);
+      padding: 12px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      font-family: var(--py2-font-body);
+    }
+    .plan-tier-option:hover { border-color: var(--py2-orange); }
+    .plan-tier-option.selected {
+      border-color: var(--py2-orange);
+      background: linear-gradient(180deg, #fff7ed, #ffffff);
+      box-shadow: 0 4px 14px rgba(255,96,0,.15);
+    }
+    .plan-tier-option .pto-name {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .plan-tier-option .pto-price {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--py2-orange);
+    }
+    .plan-tier-option .pto-price small {
+      font-size: 9px;
+      color: var(--py2-muted);
+      font-weight: 600;
+    }
+
+    .duration-btns {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .duration-btn {
+      background: white;
+      border: 1.5px solid rgba(0,0,0,.1);
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--py2-font-body);
+      color: var(--py2-muted);
+      transition: all .2s;
+    }
+    .duration-btn:hover { border-color: var(--py2-orange); color: var(--py2-text); }
+    .duration-btn.active {
+      border-color: var(--py2-orange);
+      background: rgba(255,96,0,.06);
+      color: var(--py2-orange);
+    }
+
+    .tier-preview-box {
+      background: var(--py2-light);
+      border-radius: var(--py2-radius);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--py2-text);
+    }
+    .tier-preview-box strong { color: var(--py2-orange); }
+
+    /* Verified toggle */
+    .verified-toggle {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-      background:
-        radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%),
-        radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%),
-        var(--py2-light);
-    }
-    #signin-screen .py2-auth-card,
-    #denied-screen .py2-auth-card { max-width: 420px; }
-    #signin-error {
-      display: none;
-      background: rgba(230,57,70,.08);
-      border: 1px solid rgba(230,57,70,.25);
-      border-radius: var(--py2-radius-sm);
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #b91c1c;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--py2-light);
+      border-radius: var(--py2-radius);
       margin-bottom: 14px;
-      line-height: 1.5;
     }
-    #signin-error.show { display: block; }
+    .verified-toggle .vt-body { flex: 1; }
+    .verified-toggle .vt-title { font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
+    .verified-toggle .vt-sub { font-size: 12px; color: var(--py2-muted); line-height: 1.4; }
+    .switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider {
+      position: absolute;
+      inset: 0;
+      background: #ccc;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: .3s;
+    }
+    .switch .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    }
+    .switch input:checked + .slider { background: linear-gradient(135deg, #25d366, #128c7e); }
+    .switch input:checked + .slider::before { transform: translateX(22px); }
 
-    #denied-screen .denied-icon {
-      font-size: 3rem; text-align: center; margin-bottom: 12px;
+    /* Expiring list */
+    .expiring-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: white;
+      border: 1px solid var(--py2-border-soft);
+      border-left: 4px solid var(--py2-amber);
+      border-radius: var(--py2-radius);
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .expiring-row.expired { border-left-color: var(--py2-red); }
+    .expiring-row.soon { border-left-color: #f59e0b; }
+    .expiring-row .exp-main { flex: 1; min-width: 200px; }
+    .expiring-row .exp-name { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; margin-bottom: 2px; }
+    .expiring-row .exp-meta { font-size: 12px; color: var(--py2-muted); }
+    .expiring-row .exp-days {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 22px;
+      text-align: center;
+      min-width: 90px;
+      line-height: 1;
+    }
+    .expiring-row.expired .exp-days { color: var(--py2-red); }
+    .expiring-row.soon .exp-days { color: #f59e0b; }
+    .expiring-row .exp-days small {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--py2-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      font-family: var(--py2-font-body);
     }
   </style>
 </head>
 <body class="py2-page">
 
-<!-- ═══ INLINE SIGN-IN ═══ -->
+<!-- SIGN-IN -->
 <div id="signin-screen" style="display:none;">
   <div class="py2-auth-card">
     <div class="py2-auth-brand">
-      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2"
-           onerror="this.style.display='none'">
+      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2" onerror="this.style.display='none'">
       <h1>Admin sign in</h1>
       <p>Sign in with an admin account to manage ads.</p>
     </div>
-
     <div id="signin-error"></div>
-
     <form id="signin-form" novalidate>
       <div class="py2-field">
         <label class="py2-label" for="si-email">Email</label>
-        <input class="py2-input" type="email" id="si-email" required
-               autocomplete="email" placeholder="admin@example.com">
+        <input class="py2-input" type="email" id="si-email" required autocomplete="email" placeholder="admin@example.com">
       </div>
       <div class="py2-field">
         <label class="py2-label" for="si-password">Password</label>
-        <input class="py2-input" type="password" id="si-password" required
-               autocomplete="current-password" placeholder="Your password">
+        <input class="py2-input" type="password" id="si-password" required autocomplete="current-password" placeholder="Your password">
       </div>
       <button type="submit" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block" id="signin-submit">
         <i class="fa-solid fa-shield-halved"></i> Sign In
       </button>
     </form>
-
-    <div class="py2-auth-alt">
-      Not an admin? <a href="/advertiser/">Go to your dashboard</a>
-    </div>
+    <div class="py2-auth-alt">Not an admin? <a href="/advertiser/">Go to your dashboard</a></div>
   </div>
 </div>
 
-<!-- ═══ ACCESS DENIED (signed in but not admin) ═══ -->
+<!-- DENIED -->
 <div id="denied-screen" style="display:none;">
   <div class="py2-auth-card">
     <div class="denied-icon">🚫</div>
@@ -237,31 +316,21 @@
     </div>
     <div class="py2-notice py2-notice-warn" style="margin-top:16px;">
       <span class="py2-notice-icon">ℹ️</span>
-      <div>
-        You're signed in, but this account isn't an admin. If you think this is
-        a mistake, contact the site owner.
-      </div>
+      <div>You're signed in, but this account isn't an admin.</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
-      <a href="/advertiser/" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block">
-        <i class="fa-solid fa-arrow-right"></i> Go to my dashboard
-      </a>
-      <button type="button" class="py2-btn py2-btn-secondary py2-btn-lg py2-btn-block" id="denied-signout">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
-      </button>
+      <a href="/advertiser/" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block"><i class="fa-solid fa-arrow-right"></i> Go to my dashboard</a>
+      <button type="button" class="py2-btn py2-btn-secondary py2-btn-lg py2-btn-block" id="denied-signout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ TOP BAR ═══ -->
+<!-- TOPBAR -->
 <div class="py2-topbar admin" id="admin-topbar" style="display:none;">
   <div class="py2-topbar-inner">
     <a href="/" class="py2-topbar-brand">
       <span style="font-size:22px;">📱</span>
-      <div>
-        PhoneYa2 <span>Ads</span>
-        <small>Admin Panel</small>
-      </div>
+      <div>PhoneYa2 <span>Ads</span><small>Admin Panel</small></div>
     </a>
     <nav class="py2-topbar-nav">
       <a href="/" target="_blank">View Shop</a>
@@ -274,22 +343,20 @@
   </div>
 </div>
 
-<!-- ═══ LOADING ═══ -->
+<!-- LOADING -->
 <div id="admin-loading" class="admin-loading" style="display:none;">
   <div class="py2-spinner py2-spinner-dark"></div>
   <div>Loading admin panel…</div>
 </div>
 
-<!-- ═══ MAIN ═══ -->
+<!-- MAIN -->
 <div id="admin-main" style="display:none;">
   <div class="py2-container">
 
     <div class="py2-dash-head">
       <div>
         <h1 class="py2-h1">Ads Admin</h1>
-        <p class="py2-sub" style="margin-bottom:0;">
-          Review submissions, manage advertisers, keep the network clean.
-        </p>
+        <p class="py2-sub" style="margin-bottom:0;">Review submissions, manage advertisers, keep the network clean.</p>
       </div>
       <button type="button" class="py2-btn py2-btn-secondary" id="btn-refresh">
         <i class="fa-solid fa-rotate"></i> Refresh
@@ -313,32 +380,28 @@
         <div class="py2-stat-label">Open Reports</div>
         <div class="py2-stat-value" id="stat-reports" style="color:var(--py2-red);">0</div>
       </div>
+      <div class="py2-stat">
+        <div class="py2-stat-label">Expiring Soon</div>
+        <div class="py2-stat-value" id="stat-expiring" style="color:var(--py2-amber);">0</div>
+      </div>
+      <div class="py2-stat">
+        <div class="py2-stat-label">Paid Customers</div>
+        <div class="py2-stat-value" id="stat-paid">0</div>
+      </div>
     </div>
 
     <div class="py2-tabs" role="tablist">
-      <button class="py2-tab active" data-tab="queue" type="button">
-        <i class="fa-solid fa-inbox"></i> Ad Queue <span class="count" id="tab-count-queue">0</span>
-      </button>
-      <button class="py2-tab" data-tab="advertisers" type="button">
-        <i class="fa-solid fa-building"></i> Advertisers
-      </button>
-      <button class="py2-tab" data-tab="ads" type="button">
-        <i class="fa-solid fa-rectangle-ad"></i> All Ads
-      </button>
-      <button class="py2-tab" data-tab="reports" type="button">
-        <i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span>
-      </button>
-      <button class="py2-tab" data-tab="log" type="button">
-        <i class="fa-solid fa-clipboard-list"></i> Moderation Log
-      </button>
-      <button class="py2-tab" data-tab="analytics" type="button">
-        <i class="fa-solid fa-chart-line"></i> Analytics
-      </button>
+      <button class="py2-tab active" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Ad Queue <span class="count" id="tab-count-queue">0</span></button>
+      <button class="py2-tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Advertisers</button>
+      <button class="py2-tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Plans</button>
+      <button class="py2-tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Expiring <span class="count" id="tab-count-expiring">0</span></button>
+      <button class="py2-tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> All Ads</button>
+      <button class="py2-tab" data-tab="reports" type="button"><i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span></button>
+      <button class="py2-tab" data-tab="log" type="button"><i class="fa-solid fa-clipboard-list"></i> Moderation Log</button>
+      <button class="py2-tab" data-tab="analytics" type="button"><i class="fa-solid fa-chart-line"></i> Analytics</button>
     </div>
 
-    <section id="tab-queue" class="tab-panel">
-      <div id="queue-list"></div>
-    </section>
+    <section id="tab-queue" class="tab-panel"><div id="queue-list"></div></section>
 
     <section id="tab-advertisers" class="tab-panel" style="display:none;">
       <div class="py2-card">
@@ -348,6 +411,28 @@
         </div>
         <div class="py2-card-body" id="advertisers-body" style="padding:0;"></div>
       </div>
+    </section>
+
+    <section id="tab-plans" class="tab-panel" style="display:none;">
+      <div class="py2-card">
+        <div class="py2-card-head">
+          <h2>Plans Overview</h2>
+          <span style="font-size:12px;color:var(--py2-muted);">Everyone and their tier</span>
+        </div>
+        <div class="py2-card-body" id="plans-body" style="padding:0;"></div>
+      </div>
+    </section>
+
+    <section id="tab-expiring" class="tab-panel" style="display:none;">
+      <div class="py2-card" style="margin-bottom:16px;">
+        <div class="py2-card-body" style="padding:14px 16px;">
+          <div style="font-size:13px;color:var(--py2-muted);line-height:1.5;">
+            Advertisers whose paid plan expires in the next 14 days, or has already expired.
+            Reach out before it lapses — a quick message keeps them paid.
+          </div>
+        </div>
+      </div>
+      <div id="expiring-list"></div>
     </section>
 
     <section id="tab-ads" class="tab-panel" style="display:none;">
@@ -396,35 +481,17 @@
 
     <section id="tab-analytics" class="tab-panel" style="display:none;">
       <div class="py2-dash-stats">
-        <div class="py2-stat">
-          <div class="py2-stat-label">Total Impressions</div>
-          <div class="py2-stat-value" id="an-impressions">0</div>
-        </div>
-        <div class="py2-stat">
-          <div class="py2-stat-label">Total Clicks</div>
-          <div class="py2-stat-value" id="an-clicks">0</div>
-        </div>
-        <div class="py2-stat">
-          <div class="py2-stat-label">Overall CTR</div>
-          <div class="py2-stat-value" id="an-ctr">—</div>
-        </div>
-        <div class="py2-stat">
-          <div class="py2-stat-label">Via Adshare Links</div>
-          <div class="py2-stat-value accent" id="an-adshare">0</div>
-        </div>
+        <div class="py2-stat"><div class="py2-stat-label">Total Impressions</div><div class="py2-stat-value" id="an-impressions">0</div></div>
+        <div class="py2-stat"><div class="py2-stat-label">Total Clicks</div><div class="py2-stat-value" id="an-clicks">0</div></div>
+        <div class="py2-stat"><div class="py2-stat-label">Overall CTR</div><div class="py2-stat-value" id="an-ctr">—</div></div>
+        <div class="py2-stat"><div class="py2-stat-label">Via Adshare Links</div><div class="py2-stat-value accent" id="an-adshare">0</div></div>
       </div>
-
       <div class="py2-card" style="margin-bottom:16px;">
-        <div class="py2-card-head">
-          <h2>🏆 Top Performing Ads</h2>
-        </div>
+        <div class="py2-card-head"><h2>🏆 Top Performing Ads</h2></div>
         <div class="py2-card-body" id="an-top-ads"></div>
       </div>
-
       <div class="py2-card">
-        <div class="py2-card-head">
-          <h2>📈 Advertiser-Generated Traffic</h2>
-        </div>
+        <div class="py2-card-head"><h2>📈 Advertiser-Generated Traffic</h2></div>
         <div class="py2-card-body" id="an-sources"></div>
       </div>
     </section>
@@ -432,17 +499,12 @@
   </div>
 </div>
 
-<!-- ═══ MODAL: APPROVE ═══ -->
+<!-- MODAL: APPROVE -->
 <div class="py2-modal-backdrop" id="modal-approve">
   <div class="py2-modal">
-    <div class="py2-modal-head">
-      <h3>Approve this ad?</h3>
-      <button type="button" class="py2-modal-close" data-close="modal-approve">✕</button>
-    </div>
+    <div class="py2-modal-head"><h3>Approve this ad?</h3><button type="button" class="py2-modal-close" data-close="modal-approve">✕</button></div>
     <div class="py2-modal-body">
-      <p style="font-size:14px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">
-        It will go live on the PhoneYa2 homepage carousel and its shareable page immediately.
-      </p>
+      <p style="font-size:14px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">It will go live on the PhoneYa2 homepage carousel and its shareable page immediately.</p>
       <div class="py2-field">
         <label class="py2-label" for="approve-note">Internal note (optional)</label>
         <input type="text" class="py2-input" id="approve-note" placeholder="e.g. approved by Brendan">
@@ -450,24 +512,17 @@
     </div>
     <div class="py2-modal-foot">
       <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-approve">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-success" id="modal-approve-confirm">
-        <i class="fa-solid fa-check"></i> Approve Ad
-      </button>
+      <button type="button" class="py2-btn py2-btn-success" id="modal-approve-confirm"><i class="fa-solid fa-check"></i> Approve Ad</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: REJECT ═══ -->
+<!-- MODAL: REJECT -->
 <div class="py2-modal-backdrop" id="modal-reject">
   <div class="py2-modal">
-    <div class="py2-modal-head">
-      <h3>Reject this ad</h3>
-      <button type="button" class="py2-modal-close" data-close="modal-reject">✕</button>
-    </div>
+    <div class="py2-modal-head"><h3>Reject this ad</h3><button type="button" class="py2-modal-close" data-close="modal-reject">✕</button></div>
     <div class="py2-modal-body">
-      <p style="font-size:14px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">
-        The advertiser will see your reason and can edit and resubmit.
-      </p>
+      <p style="font-size:14px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">The advertiser will see your reason and can edit and resubmit.</p>
       <div class="py2-field">
         <label class="py2-label" for="reject-reason-select">Reason <span class="req">*</span></label>
         <select class="py2-select" id="reject-reason-select">
@@ -498,27 +553,19 @@
     </div>
     <div class="py2-modal-foot">
       <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-reject">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-danger" id="modal-reject-confirm">
-        <i class="fa-solid fa-xmark"></i> Reject Ad
-      </button>
+      <button type="button" class="py2-btn py2-btn-danger" id="modal-reject-confirm"><i class="fa-solid fa-xmark"></i> Reject Ad</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: BAN ═══ -->
+<!-- MODAL: BAN -->
 <div class="py2-modal-backdrop" id="modal-ban">
   <div class="py2-modal">
-    <div class="py2-modal-head">
-      <h3>Ban this ad</h3>
-      <button type="button" class="py2-modal-close" data-close="modal-ban">✕</button>
-    </div>
+    <div class="py2-modal-head"><h3>Ban this ad</h3><button type="button" class="py2-modal-close" data-close="modal-ban">✕</button></div>
     <div class="py2-modal-body">
       <div class="py2-notice py2-notice-danger" style="margin-bottom:14px;">
         <span class="py2-notice-icon">🚫</span>
-        <div>
-          Banning permanently hides the ad. The advertiser can no longer edit it. Use this
-          for policy violations that warrant removal (scams, adult content, malware links).
-        </div>
+        <div>Banning permanently hides the ad. The advertiser can no longer edit it.</div>
       </div>
       <div class="py2-field">
         <label class="py2-label" for="ban-reason">Reason <span class="req">*</span></label>
@@ -527,45 +574,86 @@
     </div>
     <div class="py2-modal-foot">
       <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-ban">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-danger" id="modal-ban-confirm">
-        <i class="fa-solid fa-ban"></i> Ban Ad
-      </button>
+      <button type="button" class="py2-btn py2-btn-danger" id="modal-ban-confirm"><i class="fa-solid fa-ban"></i> Ban Ad</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: KILL SWITCH ═══ -->
+<!-- MODAL: KILL -->
 <div class="py2-modal-backdrop" id="modal-kill">
   <div class="py2-modal py2-modal-confirm">
-    <div class="py2-modal-head">
-      <h3 id="kill-title">Are you sure?</h3>
-      <button type="button" class="py2-modal-close" data-close="modal-kill">✕</button>
-    </div>
-    <div class="py2-modal-body">
-      <p id="kill-body" style="font-size:14px;color:var(--py2-muted);line-height:1.6;"></p>
-    </div>
+    <div class="py2-modal-head"><h3 id="kill-title">Are you sure?</h3><button type="button" class="py2-modal-close" data-close="modal-kill">✕</button></div>
+    <div class="py2-modal-body"><p id="kill-body" style="font-size:14px;color:var(--py2-muted);line-height:1.6;"></p></div>
     <div class="py2-modal-foot">
       <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-kill">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-danger" id="kill-confirm">
-        <i class="fa-solid fa-power-off"></i> Confirm
+      <button type="button" class="py2-btn py2-btn-danger" id="kill-confirm"><i class="fa-solid fa-power-off"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CHANGE PLAN -->
+<div class="py2-modal-backdrop" id="plan-modal">
+  <div class="py2-modal">
+    <div class="py2-modal-head">
+      <h3 id="plan-modal-title">Change plan</h3>
+      <button type="button" class="py2-modal-close" data-close="plan-modal">✕</button>
+    </div>
+    <div class="py2-modal-body">
+      <div id="plan-advertiser-name" style="font-size:13px;color:var(--py2-muted);margin-bottom:18px;"></div>
+
+      <label class="py2-label">Choose tier</label>
+      <div class="plan-tier-grid" id="plan-tier-grid"></div>
+
+      <label class="py2-label">Duration</label>
+      <div class="duration-btns" id="duration-btns">
+        <button type="button" class="duration-btn" data-days="30">30 days</button>
+        <button type="button" class="duration-btn active" data-days="30">1 month</button>
+        <button type="button" class="duration-btn" data-days="60">2 months</button>
+        <button type="button" class="duration-btn" data-days="90">3 months</button>
+        <button type="button" class="duration-btn" data-days="180">6 months</button>
+        <button type="button" class="duration-btn" data-days="365">1 year</button>
+      </div>
+
+      <div class="py2-field">
+        <label class="py2-label" for="plan-expires">Or pick exact expiry date</label>
+        <input type="date" class="py2-input" id="plan-expires">
+      </div>
+
+      <div class="tier-preview-box" id="tier-preview-box"></div>
+
+      <div class="verified-toggle">
+        <div class="vt-body">
+          <div class="vt-title">✓ Verified Badge</div>
+          <div class="vt-sub">Show a verified checkmark on the business profile. Recommended for Business and Premium tier advertisers.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="verified-toggle-input">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="py2-modal-foot" style="justify-content:space-between;flex-wrap:wrap;">
+      <button type="button" class="py2-btn py2-btn-ghost" id="plan-revoke-btn" style="color:var(--py2-red);">
+        <i class="fa-solid fa-rotate-left"></i> Revoke to Free
       </button>
+      <div style="display:flex;gap:10px;">
+        <button type="button" class="py2-btn py2-btn-secondary" data-close="plan-modal">Cancel</button>
+        <button type="button" class="py2-btn py2-btn-primary" id="plan-save-btn">
+          <i class="fa-solid fa-check"></i> Save Plan
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <script src="/ads-config.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════════════════════
-   PhoneYa2 Ads — Admin Panel (v2)
-   Inline sign-in + inline "not admin" screen. No redirects.
-   ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
   var P = window.py2Ads;
   if (!P) {
-    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;">' +
-      '<h2>Configuration missing</h2><p>ads-config.js did not load.</p></div>';
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h2>Configuration missing</h2><p>ads-config.js did not load.</p></div>';
     return;
   }
 
@@ -574,6 +662,7 @@
   var profile     = null;
   var ads         = [];
   var advertisers = [];
+  var profilesByAdv = {};   // { advertiser_id: profile row }
   var reports     = [];
   var logEntries  = [];
   var statsByAd   = {};
@@ -581,67 +670,25 @@
   var adsSearch       = '';
   var advSearch       = '';
   var reportFilter    = 'open';
-  var pending = { ad: null, report: null, killType: null };
+
+  var pending = { ad: null, report: null, killType: null, adv: null };
+
+  // Tier metadata (mirrors advertiser dashboard)
+  var TIERS = [
+    { key: 'free',     name: 'Free',     price: 0,   weight: 1  },
+    { key: 'starter',  name: 'Starter',  price: 10,  weight: 3  },
+    { key: 'standard', name: 'Standard', price: 20,  weight: 6  },
+    { key: 'business', name: 'Business', price: 50,  weight: 12 },
+    { key: 'premium',  name: 'Premium',  price: 100, weight: 25 }
+  ];
+  var TIER_RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
+  function tierCfg(k) { for (var i=0;i<TIERS.length;i++) if (TIERS[i].key===k) return TIERS[i]; return TIERS[0]; }
 
   var $ = function (id) { return document.getElementById(id); };
 
-  var screen = {
-    signin: $('signin-screen'),
-    denied: $('denied-screen'),
-    topbar: $('admin-topbar'),
-    loading: $('admin-loading'),
-    main: $('admin-main')
-  };
-  var signinForm     = $('signin-form');
-  var signinEmail    = $('si-email');
-  var signinPassword = $('si-password');
-  var signinSubmit   = $('signin-submit');
-  var signinError    = $('signin-error');
-  var deniedName     = $('denied-name');
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // SCREEN SWITCHING
-  // ═══════════════════════════════════════════════════════════════════════
-  function showScreen(name) {
-    ['signin','denied','topbar','loading','main'].forEach(function (k) {
-      var el = screen[k];
-      if (!el) return;
-      if (k === name) {
-        el.style.display = (k === 'signin' || k === 'denied') ? 'flex' : (k === 'topbar' ? '' : 'block');
-      } else {
-        el.style.display = 'none';
-      }
-    });
-    if (name === 'signin') {
-      setTimeout(function () { try { signinEmail.focus(); } catch (e) {} }, 100);
-    }
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // HELPERS
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── Utilities ────────────────────────────────────────────────────
   function num(n) { return (parseInt(n, 10) || 0).toLocaleString(); }
   function ctr(i, c) { return i ? ((c / i) * 100).toFixed(1) + '%' : '—'; }
-  function statusBadge(s) {
-    var map = {
-      pending:  ['py2-badge-pending',  'Pending'],
-      approved: ['py2-badge-approved', 'Live'],
-      rejected: ['py2-badge-rejected', 'Rejected'],
-      paused:   ['py2-badge-paused',   'Paused'],
-      banned:   ['py2-badge-banned',   'Banned']
-    };
-    var m = map[s] || map.pending;
-    return '<span class="py2-badge ' + m[0] + '">' + m[1] + '</span>';
-  }
-  function tierBadge(t) {
-    var map = {
-      free:    ['py2-badge-tier-free',    'Free'],
-      paid:    ['py2-badge-tier-paid',    'Paid'],
-      premium: ['py2-badge-tier-premium', 'Premium']
-    };
-    var m = map[t] || map.free;
-    return '<span class="py2-badge ' + m[0] + '">' + m[1] + '</span>';
-  }
   function openModal(id) { var m = $(id); if (m) m.classList.add('open'); }
   function closeModal(id) { var m = $(id); if (m) m.classList.remove('open'); }
   function timeAgo(iso) {
@@ -653,83 +700,87 @@
     if (s < 2592000) return Math.floor(s / 86400) + 'd ago';
     return P.formatDate(iso);
   }
+  function todayPlusDays(days) {
+    var d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  }
+  function daysBetween(a, b) {
+    return Math.round((b - a) / 86400000);
+  }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // SIGN IN HANDLER
-  // ═══════════════════════════════════════════════════════════════════════
-  signinForm.addEventListener('submit', function (e) {
+  // ── Auth screens ─────────────────────────────────────────────────
+  function showScreen(name) {
+    ['signin-screen','denied-screen','admin-topbar','admin-loading','admin-main'].forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      if (id === name) {
+        el.style.display = (id === 'signin-screen' || id === 'denied-screen') ? 'flex'
+                         : (id === 'admin-topbar') ? '' : 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+    if (name === 'signin-screen') setTimeout(function () { try { $('si-email').focus(); } catch(e){} }, 100);
+  }
+
+  $('signin-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    signinError.classList.remove('show');
-
-    var email = signinEmail.value.trim();
-    var pw    = signinPassword.value;
-
+    $('signin-error').classList.remove('show');
+    var email = $('si-email').value.trim(), pw = $('si-password').value;
     if (!email || !pw) {
-      signinError.textContent = 'Please enter your email and password.';
-      signinError.classList.add('show');
+      $('signin-error').textContent = 'Please enter your email and password.';
+      $('signin-error').classList.add('show');
       return;
     }
-
-    signinSubmit.disabled = true;
-    var orig = signinSubmit.innerHTML;
-    signinSubmit.innerHTML = '<span class="py2-spinner"></span> Signing in…';
-
+    var btn = $('signin-submit');
+    btn.disabled = true;
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<span class="py2-spinner"></span> Signing in…';
     P.auth.signin(email, pw)
-      .then(function () {
-        return bootAfterSignin();
-      })
+      .then(function () { return bootAfterSignin(); })
       .catch(function (err) {
-        signinError.textContent = err.message || 'Sign in failed. Please try again.';
-        signinError.classList.add('show');
-        signinSubmit.disabled = false;
-        signinSubmit.innerHTML = orig;
+        $('signin-error').textContent = err.message || 'Sign in failed.';
+        $('signin-error').classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = orig;
       });
   });
 
   $('denied-signout').addEventListener('click', function () {
-    P.auth.signout().then(function () {
-      session = null;
-      profile = null;
-      showScreen('signin');
-    });
+    P.auth.signout().then(function () { session = null; profile = null; showScreen('signin-screen'); });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // DATA LOADING
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── Data loaders ─────────────────────────────────────────────────
   function loadAds() {
-    return P.db.select(
-      'ads',
-      'select=*,advertisers(business_name,owner_name,email,tier,status)' +
-      '&order=created_at.desc',
-      session.access_token
-    ).then(function (rows) { ads = rows || []; });
+    return P.db.select('ads', 'select=*,advertisers(business_name,owner_name,email,tier,status)&order=created_at.desc', session.access_token)
+      .then(function (r) { ads = r || []; });
   }
   function loadAdvertisers() {
     return P.db.select('advertisers', 'order=joined_at.desc', session.access_token)
-      .then(function (rows) { advertisers = rows || []; });
+      .then(function (r) { advertisers = r || []; });
+  }
+  function loadProfiles() {
+    return P.db.select('advertiser_profiles', 'select=*', session.access_token)
+      .then(function (rows) {
+        profilesByAdv = {};
+        (rows || []).forEach(function (p) { profilesByAdv[p.advertiser_id] = p; });
+      });
   }
   function loadReports() {
-    return P.db.select(
-      'ad_reports',
-      'select=*,ads(title,slug,advertiser_id,advertisers(business_name))&order=created_at.desc',
-      session.access_token
-    ).then(function (rows) { reports = rows || []; });
+    return P.db.select('ad_reports', 'select=*,ads(title,slug,advertiser_id,advertisers(business_name))&order=created_at.desc', session.access_token)
+      .then(function (r) { reports = r || []; });
   }
   function loadLog() {
-    return P.db.select(
-      'ad_moderation_log',
-      'select=*,ads(title)&order=created_at.desc&limit=200',
-      session.access_token
-    ).then(function (rows) { logEntries = rows || []; });
+    return P.db.select('ad_moderation_log', 'select=*,ads(title)&order=created_at.desc&limit=200', session.access_token)
+      .then(function (r) { logEntries = r || []; });
   }
   function loadStats() {
     return Promise.all([
       P.db.select('ad_impressions', 'select=ad_id,source', session.access_token),
       P.db.select('ad_clicks',      'select=ad_id,source', session.access_token)
-    ]).then(function (results) {
-      var imps = results[0] || [];
-      var clks = results[1] || [];
+    ]).then(function (res) {
+      var imps = res[0] || [], clks = res[1] || [];
       statsByAd = {};
       ads.forEach(function (a) { statsByAd[a.id] = { impressions: 0, clicks: 0, sources: {} }; });
       imps.forEach(function (r) {
@@ -745,66 +796,98 @@
     });
   }
   function reloadAll() {
-    return Promise.all([loadAds(), loadAdvertisers(), loadReports(), loadLog()]).then(loadStats);
+    return Promise.all([loadAds(), loadAdvertisers(), loadProfiles(), loadReports(), loadLog()]).then(loadStats);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: STATS BAR
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── Plan metadata helpers ────────────────────────────────────────
+  function advertiserEffectiveTier(adv) {
+    if (!adv) return 'free';
+    if (!adv.tier || adv.tier === 'free') return 'free';
+    if (!adv.tier_expires_at) return adv.tier;
+    if (new Date(adv.tier_expires_at) > new Date()) return adv.tier;
+    return 'free';
+  }
+  function advertiserIsExpired(adv) {
+    if (!adv || !adv.tier || adv.tier === 'free') return false;
+    if (!adv.tier_expires_at) return false;
+    return new Date(adv.tier_expires_at) <= new Date();
+  }
+  function advertiserDaysLeft(adv) {
+    if (!adv || !adv.tier_expires_at) return null;
+    return daysBetween(new Date(), new Date(adv.tier_expires_at));
+  }
+
+  function tierBadge(adv) {
+    if (advertiserIsExpired(adv)) {
+      return '<span class="tier-badge expired">Expired · ' + esc(tierCfg(adv.tier).name) + '</span>';
+    }
+    var eff = advertiserEffectiveTier(adv);
+    return '<span class="tier-badge ' + eff + '">' + esc(tierCfg(eff).name) + '</span>';
+  }
+
+  function expiryCell(adv) {
+    if (!adv || !adv.tier || adv.tier === 'free') return '<span class="expiry-cell none">—</span>';
+    if (!adv.tier_expires_at) return '<span class="expiry-cell none">no expiry</span>';
+    var days = advertiserDaysLeft(adv);
+    var cls = days < 0 ? 'expired' : days <= 5 ? 'danger' : days <= 14 ? 'warn' : 'ok';
+    var txt = days < 0 ? Math.abs(days) + ' days ago'
+            : days === 0 ? 'today'
+            : days + ' days left';
+    return '<div class="expiry-cell ' + cls + '">' +
+      '<div class="days">' + txt + '</div>' +
+      '<div style="font-size:11px;color:var(--py2-muted);margin-top:2px;">' + P.formatDate(adv.tier_expires_at) + '</div>' +
+    '</div>';
+  }
+
+  // ── TOP STATS ────────────────────────────────────────────────────
   function renderTopStats() {
     var pendingCount = ads.filter(function (a) { return a.status === 'pending'; }).length;
     var liveCount    = ads.filter(function (a) { return a.status === 'approved'; }).length;
     var openReports  = reports.filter(function (r) { return !r.resolved; }).length;
-    $('stat-pending').textContent     = num(pendingCount);
-    $('stat-live').textContent        = num(liveCount);
-    $('stat-advertisers').textContent = num(advertisers.length);
-    $('stat-reports').textContent     = num(openReports);
-    $('tab-count-queue').textContent  = num(pendingCount);
+    var expiringCount = advertisers.filter(function (a) {
+      if (!a.tier_expires_at || a.tier === 'free') return false;
+      var days = advertiserDaysLeft(a);
+      return days !== null && days <= 14;
+    }).length;
+    var paidCount = advertisers.filter(function (a) {
+      return advertiserEffectiveTier(a) !== 'free';
+    }).length;
+
+    $('stat-pending').textContent      = num(pendingCount);
+    $('stat-live').textContent         = num(liveCount);
+    $('stat-advertisers').textContent  = num(advertisers.length);
+    $('stat-reports').textContent      = num(openReports);
+    $('stat-expiring').textContent     = num(expiringCount);
+    $('stat-paid').textContent         = num(paidCount);
+    $('tab-count-queue').textContent   = num(pendingCount);
     $('tab-count-reports').textContent = num(openReports);
+    $('tab-count-expiring').textContent = num(expiringCount);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: AD QUEUE
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── QUEUE ────────────────────────────────────────────────────────
   function renderQueue() {
     var list = ads.filter(function (a) { return a.status === 'pending'; });
     if (!list.length) {
-      $('queue-list').innerHTML =
-        '<div class="py2-empty">' +
-        '<div class="py2-empty-icon">✅</div>' +
-        '<h3>Queue is empty</h3>' +
-        '<p>No pending ads right now. Great job keeping up.</p>' +
-        '</div>';
+      $('queue-list').innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">✅</div><h3>Queue is empty</h3><p>No pending ads right now.</p></div>';
       return;
     }
     var html = '';
     list.forEach(function (a) {
       var biz = a.advertisers ? a.advertisers.business_name : 'Unknown';
-      var thumb = a.media_url
-        ? '<div class="ad-thumb"><img src="' + esc(a.media_url) + '" alt="' + esc(a.title) + '" loading="lazy" onerror="this.parentElement.textContent=\'🖼️\'"></div>'
-        : '<div class="ad-thumb">🖼️</div>';
-      var dest = a.destination_type === 'whatsapp'
-        ? '+' + String(a.destination_url || '').replace(/[^\d]/g, '')
-        : a.destination_url;
+      var thumb = a.media_url ? '<div class="ad-thumb"><img src="' + esc(a.media_url) + '" alt="" loading="lazy" onerror="this.parentElement.textContent=\'🖼️\'"></div>' : '<div class="ad-thumb">🖼️</div>';
+      var dest = a.destination_type === 'whatsapp' ? '+' + String(a.destination_url || '').replace(/[^\d]/g, '') : a.destination_url;
       html +=
-        '<div class="queue-item" data-id="' + a.id + '">' +
+        '<div class="queue-item">' +
           thumb +
           '<div class="queue-body">' +
             '<div class="queue-biz">' + esc(biz) + '</div>' +
             '<div class="queue-title">' + esc(a.title) + '</div>' +
             (a.description ? '<div class="queue-desc">' + esc(a.description) + '</div>' : '') +
-            '<div class="queue-meta">' +
-              '<strong>Destination:</strong> ' + esc(a.destination_type) + ' → ' +
-              '<a href="' + esc(dest) + '" target="_blank" rel="noopener">' + esc(dest) + '</a>' +
-              '<br><strong>Submitted:</strong> ' + esc(timeAgo(a.created_at)) +
-            '</div>' +
+            '<div class="queue-meta"><strong>Destination:</strong> ' + esc(a.destination_type) + ' → <a href="' + esc(dest) + '" target="_blank">' + esc(dest) + '</a><br><strong>Submitted:</strong> ' + esc(timeAgo(a.created_at)) + '</div>' +
             '<div class="queue-actions">' +
-              '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-act="approve" data-id="' + a.id + '">' +
-                '<i class="fa-solid fa-check"></i> Approve</button>' +
-              '<button type="button" class="py2-btn py2-btn-danger py2-btn-sm" data-act="reject" data-id="' + a.id + '">' +
-                '<i class="fa-solid fa-xmark"></i> Reject</button>' +
-              '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:var(--py2-red);">' +
-                '<i class="fa-solid fa-ban"></i> Ban</button>' +
+              '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-act="approve" data-id="' + a.id + '"><i class="fa-solid fa-check"></i> Approve</button>' +
+              '<button type="button" class="py2-btn py2-btn-danger py2-btn-sm" data-act="reject" data-id="' + a.id + '"><i class="fa-solid fa-xmark"></i> Reject</button>' +
+              '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:var(--py2-red);"><i class="fa-solid fa-ban"></i> Ban</button>' +
               (a.slug ? '<a class="py2-btn py2-btn-ghost py2-btn-sm" href="/ad/' + esc(a.slug) + '" target="_blank"><i class="fa-solid fa-eye"></i> Preview</a>' : '') +
             '</div>' +
           '</div>' +
@@ -823,9 +906,7 @@
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: ADVERTISERS
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── ADVERTISERS ──────────────────────────────────────────────────
   function renderAdvertisers() {
     var q = advSearch.toLowerCase().trim();
     var list = advertisers.filter(function (a) {
@@ -834,53 +915,147 @@
              (a.email || '').toLowerCase().indexOf(q) >= 0 ||
              (a.owner_name || '').toLowerCase().indexOf(q) >= 0;
     });
-    if (!list.length) {
-      $('advertisers-body').innerHTML = '<div class="py2-table-empty">No advertisers found.</div>';
-      return;
-    }
+    if (!list.length) { $('advertisers-body').innerHTML = '<div class="py2-table-empty">No advertisers found.</div>'; return; }
     var counts = {};
     ads.forEach(function (a) { counts[a.advertiser_id] = (counts[a.advertiser_id] || 0) + 1; });
+
     var html = '<table class="py2-table"><thead><tr>' +
-      '<th>Business</th><th>Tier</th><th>Ads</th><th>Status</th><th>Joined</th><th></th>' +
+      '<th>Business</th><th>Plan</th><th>Expires</th><th>Ads</th><th>Status</th><th></th>' +
       '</tr></thead><tbody>';
     list.forEach(function (a) {
+      var prof = profilesByAdv[a.id] || {};
+      var slug = prof.slug || '';
       var adCount = counts[a.id] || 0;
       var stat = a.status === 'active' ? '<span class="py2-badge py2-badge-approved">Active</span>'
-        : a.status === 'suspended' ? '<span class="py2-badge py2-badge-paused">Suspended</span>'
-        : '<span class="py2-badge py2-badge-banned">Banned</span>';
+               : a.status === 'suspended' ? '<span class="py2-badge py2-badge-paused">Suspended</span>'
+               : '<span class="py2-badge py2-badge-banned">Banned</span>';
       html += '<tr>' +
-        '<td><strong>' + esc(a.business_name) + '</strong><br>' +
-          '<span style="color:var(--py2-muted);font-size:12px;">' + esc(a.email) + '</span></td>' +
-        '<td>' + tierBadge(a.tier) + '</td>' +
+        '<td>' +
+          '<strong>' + esc(a.business_name) + '</strong>' +
+          (slug ? '<br><a href="/b/' + esc(slug) + '" target="_blank" style="font-size:11px;color:var(--py2-orange);">/b/' + esc(slug) + '</a>' : '') +
+          '<br><span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.email) + '</span>' +
+        '</td>' +
+        '<td>' + tierBadge(a) + '</td>' +
+        '<td>' + expiryCell(a) + '</td>' +
         '<td>' + num(adCount) + '</td>' +
         '<td>' + stat + '</td>' +
-        '<td style="font-size:12px;color:var(--py2-muted);">' + esc(P.formatDate(a.joined_at)) + '</td>' +
-        '<td><button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-view-adv="' + a.id + '">View</button></td>' +
-        '</tr>';
+        '<td><button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Plan</button></td>' +
+      '</tr>';
     });
     html += '</tbody></table>';
     $('advertisers-body').innerHTML = html;
-    $('advertisers-body').querySelectorAll('[data-view-adv]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var adv = advertisers.find(function (x) { return x.id === b.getAttribute('data-view-adv'); });
-        if (!adv) return;
-        var their = ads.filter(function (x) { return x.advertiser_id === adv.id; });
-        var msg = 'Business: ' + adv.business_name + '\n' +
-                  'Owner: ' + (adv.owner_name || '—') + '\n' +
-                  'Email: ' + adv.email + '\n' +
-                  'Phone: ' + adv.phone + '\n' +
-                  'Tier: ' + adv.tier + '\n' +
-                  'Status: ' + adv.status + '\n' +
-                  'Ads: ' + their.length + ' total\n' +
-                  their.map(function (x) { return '  · ' + x.title + ' (' + x.status + ')'; }).join('\n');
-        window.alert(msg);
+
+    $('advertisers-body').querySelectorAll('[data-plan]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
+        if (adv) openPlanModal(adv);
       });
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: ALL ADS
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── PLANS TAB ────────────────────────────────────────────────────
+  function renderPlansTab() {
+    if (!advertisers.length) { $('plans-body').innerHTML = '<div class="py2-table-empty">No advertisers yet.</div>'; return; }
+
+    // Sort: paid (by days left ascending), then free
+    var sorted = advertisers.slice().sort(function (a, b) {
+      var aEff = advertiserEffectiveTier(a), bEff = advertiserEffectiveTier(b);
+      var aPaid = aEff !== 'free', bPaid = bEff !== 'free';
+      if (aPaid && !bPaid) return -1;
+      if (!aPaid && bPaid) return 1;
+      if (aPaid && bPaid) {
+        var ad = advertiserDaysLeft(a) || 0, bd = advertiserDaysLeft(b) || 0;
+        return ad - bd;
+      }
+      return (a.business_name || '').localeCompare(b.business_name || '');
+    });
+
+    var html = '<table class="py2-table"><thead><tr>' +
+      '<th>Business</th><th>Plan</th><th>Expires in</th><th>Started</th><th>Paid so far</th><th></th>' +
+      '</tr></thead><tbody>';
+    sorted.forEach(function (a) {
+      var eff = advertiserEffectiveTier(a);
+      var cfg = tierCfg(eff);
+      var expired = advertiserIsExpired(a);
+      var days = advertiserDaysLeft(a);
+      var expiryTxt = !a.tier_expires_at || a.tier === 'free'
+        ? '—'
+        : expired ? Math.abs(days) + ' days ago'
+        : days + ' days';
+
+      html += '<tr>' +
+        '<td><strong>' + esc(a.business_name) + '</strong></td>' +
+        '<td>' + tierBadge(a) + '</td>' +
+        '<td>' + esc(expiryTxt) + '</td>' +
+        '<td style="font-size:12px;color:var(--py2-muted);">' + (a.tier_started_at ? P.formatDate(a.tier_started_at) : '—') + '</td>' +
+        '<td style="font-size:13px;">' + (cfg.price > 0 && a.tier_started_at ? 'K' + cfg.price + '/mo' : '—') + '</td>' +
+        '<td><button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Manage</button></td>' +
+      '</tr>';
+    });
+    html += '</tbody></table>';
+    $('plans-body').innerHTML = html;
+
+    $('plans-body').querySelectorAll('[data-plan]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
+        if (adv) openPlanModal(adv);
+      });
+    });
+  }
+
+  // ── EXPIRING TAB ─────────────────────────────────────────────────
+  function renderExpiringTab() {
+    var list = advertisers.filter(function (a) {
+      if (!a.tier_expires_at || a.tier === 'free') return false;
+      var days = advertiserDaysLeft(a);
+      return days !== null && days <= 14;
+    }).sort(function (a, b) {
+      var ad = advertiserDaysLeft(a) || 0, bd = advertiserDaysLeft(b) || 0;
+      return ad - bd;
+    });
+
+    if (!list.length) {
+      $('expiring-list').innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🎉</div><h3>Nobody expiring soon</h3><p>All paid plans are healthy.</p></div>';
+      return;
+    }
+
+    var html = '';
+    list.forEach(function (a) {
+      var days = advertiserDaysLeft(a);
+      var expired = days < 0;
+      var cls = expired ? 'expired' : 'soon';
+      var cfg = tierCfg(a.tier);
+      var wa = a.phone ? String(a.phone).replace(/[^\d]/g, '') : '';
+      var waLink = wa ? 'https://wa.me/' + wa + '?text=' + encodeURIComponent(
+        'Hi ' + (a.owner_name || a.business_name) + ', this is PhoneYa2. Your ' + cfg.name + ' plan expires ' + (expired ? 'has expired.' : 'on ' + P.formatDate(a.tier_expires_at) + '.') + ' Renew to keep your ' + cfg.name + ' benefits. Reply here to continue.'
+      ) : '';
+      html +=
+        '<div class="expiring-row ' + cls + '">' +
+          '<div class="exp-main">' +
+            '<div class="exp-name">' + esc(a.business_name) + '</div>' +
+            '<div class="exp-meta">' + tierBadge(a) + ' · ' + esc(a.email) + ' · +' + esc(a.phone || '—') + '</div>' +
+          '</div>' +
+          '<div class="exp-days">' +
+            (expired ? '−' + Math.abs(days) : '+' + days) +
+            '<small>' + (expired ? 'days ago' : 'days left') + '</small>' +
+          '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+            (waLink ? '<a class="py2-btn py2-btn-success py2-btn-sm" href="' + waLink + '" target="_blank"><i class="fa-brands fa-whatsapp"></i> Message</a>' : '') +
+            '<button type="button" class="py2-btn py2-btn-primary py2-btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> ' + (expired ? 'Renew / Change' : 'Extend / Change') + '</button>' +
+          '</div>' +
+        '</div>';
+    });
+    $('expiring-list').innerHTML = html;
+
+    $('expiring-list').querySelectorAll('[data-plan]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
+        if (adv) openPlanModal(adv);
+      });
+    });
+  }
+
+  // ── ALL ADS ──────────────────────────────────────────────────────
   function renderAllAds() {
     var q = adsSearch.toLowerCase().trim();
     var list = ads.filter(function (a) {
@@ -888,10 +1063,8 @@
       if (q && (a.title || '').toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
-    if (!list.length) {
-      $('ads-body').innerHTML = '<div class="py2-table-empty">No ads match.</div>';
-      return;
-    }
+    if (!list.length) { $('ads-body').innerHTML = '<div class="py2-table-empty">No ads match.</div>'; return; }
+
     var html = '<table class="py2-table"><thead><tr>' +
       '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
       '</tr></thead><tbody>';
@@ -899,31 +1072,23 @@
       var biz = a.advertisers ? a.advertisers.business_name : '—';
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
       html += '<tr>' +
-        '<td><strong>' + esc(a.title) + '</strong><br>' +
-          '<span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.slug) + '</span></td>' +
+        '<td><strong>' + esc(a.title) + '</strong><br><span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.slug) + '</span></td>' +
         '<td>' + esc(biz) + '</td>' +
-        '<td>' + statusBadge(a.status) + '</td>' +
+        '<td><span class="py2-badge py2-badge-' + (a.status === 'approved' ? 'approved' : a.status === 'pending' ? 'pending' : a.status === 'rejected' ? 'rejected' : a.status === 'paused' ? 'paused' : 'banned') + '">' + esc(a.status) + '</span></td>' +
         '<td>' + num(a.weight) + '</td>' +
         '<td>' + num(s.impressions) + '</td>' +
         '<td>' + num(s.clicks) + '</td>' +
         '<td style="white-space:nowrap;">' +
-          (a.status === 'approved'
-            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>'
-            : '') +
-          (a.status === 'paused'
-            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>'
-            : '') +
-          (a.status === 'pending'
-            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="approve" data-id="' + a.id + '" style="color:#16a34a;"><i class="fa-solid fa-check"></i></button>' +
-              '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reject" data-id="' + a.id + '" style="color:#b91c1c;"><i class="fa-solid fa-xmark"></i></button>'
-            : '') +
-          (a.status !== 'banned'
-            ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:#b91c1c;" title="Ban"><i class="fa-solid fa-ban"></i></button>'
-            : '') +
+          (a.status === 'approved' ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>' : '') +
+          (a.status === 'paused'   ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>' : '') +
+          (a.status === 'pending'  ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="approve" data-id="' + a.id + '" style="color:#16a34a;"><i class="fa-solid fa-check"></i></button>' +
+                                     '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reject" data-id="' + a.id + '" style="color:#b91c1c;"><i class="fa-solid fa-xmark"></i></button>' : '') +
+          (a.status !== 'banned'   ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:#b91c1c;" title="Ban"><i class="fa-solid fa-ban"></i></button>' : '') +
         '</td></tr>';
     });
     html += '</tbody></table>';
     $('ads-body').innerHTML = html;
+
     $('ads-body').querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act = btn.getAttribute('data-act');
@@ -937,15 +1102,12 @@
     $('ads-body').querySelectorAll('[data-kill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var ad = ads.find(function (x) { return x.id === btn.getAttribute('data-id'); });
-        if (!ad) return;
-        openKill(ad, btn.getAttribute('data-kill'));
+        if (ad) openKill(ad, btn.getAttribute('data-kill'));
       });
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: REPORTS
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── REPORTS ──────────────────────────────────────────────────────
   function renderReports() {
     var list = reports.filter(function (r) {
       if (reportFilter === 'open')     return !r.resolved;
@@ -953,66 +1115,51 @@
       return true;
     });
     if (!list.length) {
-      $('reports-list').innerHTML =
-        '<div class="py2-empty">' +
-        '<div class="py2-empty-icon">🎉</div>' +
-        '<h3>No reports to show</h3>' +
-        '<p>Nothing reported in this filter.</p>' +
-        '</div>';
+      $('reports-list').innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🎉</div><h3>No reports to show</h3></div>';
       return;
     }
     var html = '';
     list.forEach(function (r) {
-      var ad  = r.ads || {};
+      var ad = r.ads || {};
       var biz = (ad.advertisers && ad.advertisers.business_name) || '';
       var adTitle = ad.title || '(ad deleted)';
-      var adSlug  = ad.slug  || '';
-      var adId    = r.ad_id;
-      var liveAd  = ads.find(function (x) { return x.id === adId; });
+      var adSlug = ad.slug || '';
+      var adId = r.ad_id;
+      var liveAd = ads.find(function (x) { return x.id === adId; });
       html +=
         '<div class="report-item ' + (r.resolved ? 'resolved' : '') + '">' +
           '<span class="report-reason">' + esc(r.reason) + '</span>' +
           (r.resolved ? '<span class="py2-badge py2-badge-approved" style="margin-left:8px;">Resolved</span>' : '') +
           '<div class="report-ad-title">' + esc(adTitle) + (biz ? ' — ' + esc(biz) : '') + '</div>' +
           (r.detail ? '<div class="report-detail">' + esc(r.detail) + '</div>' : '') +
-          '<div class="report-meta">Reported ' + esc(timeAgo(r.created_at)) + ' · visitor ' + esc((r.visitor_hash || '').slice(0, 14)) + '</div>' +
+          '<div class="report-meta">Reported ' + esc(timeAgo(r.created_at)) + '</div>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
             (adSlug ? '<a class="py2-btn py2-btn-ghost py2-btn-sm" href="/ad/' + esc(adSlug) + '" target="_blank"><i class="fa-solid fa-eye"></i> View Ad</a>' : '') +
-            (!r.resolved && liveAd && liveAd.status === 'approved'
-              ? '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-report-act="pause" data-report="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-pause"></i> Pause Ad</button>'
-              : '') +
-            (!r.resolved
-              ? '<button type="button" class="py2-btn py2-btn-danger py2-btn-sm" data-report-act="ban" data-report="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-ban"></i> Ban Ad</button>'
-              : '') +
-            (!r.resolved
-              ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-report-act="dismiss" data-report="' + r.id + '"><i class="fa-solid fa-check-double"></i> Dismiss</button>'
-              : '') +
+            (!r.resolved && liveAd && liveAd.status === 'approved' ? '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-report-act="pause" data-report="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-pause"></i> Pause Ad</button>' : '') +
+            (!r.resolved ? '<button type="button" class="py2-btn py2-btn-danger py2-btn-sm" data-report-act="ban" data-report="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-ban"></i> Ban Ad</button>' : '') +
+            (!r.resolved ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-report-act="dismiss" data-report="' + r.id + '"><i class="fa-solid fa-check-double"></i> Dismiss</button>' : '') +
           '</div>' +
         '</div>';
     });
     $('reports-list').innerHTML = html;
+
     $('reports-list').querySelectorAll('[data-report-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var act  = btn.getAttribute('data-report-act');
-        var rid  = btn.getAttribute('data-report');
+        var act = btn.getAttribute('data-report-act');
+        var rid = btn.getAttribute('data-report');
         var adId = btn.getAttribute('data-ad');
-        var rep  = reports.find(function (x) { return x.id === rid; });
+        var rep = reports.find(function (x) { return x.id === rid; });
         if (act === 'dismiss') { resolveReport(rep, null, 'dismiss_report'); return; }
         var ad = ads.find(function (x) { return x.id === adId; });
-        if (act === 'pause')  openKill(ad, 'pause', rep);
-        if (act === 'ban')    openBan(ad, rep);
+        if (act === 'pause') openKill(ad, 'pause', rep);
+        if (act === 'ban')   openBan(ad, rep);
       });
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: LOG
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── LOG ──────────────────────────────────────────────────────────
   function renderLog() {
-    if (!logEntries.length) {
-      $('log-body').innerHTML = '<div class="py2-table-empty">No moderation actions yet.</div>';
-      return;
-    }
+    if (!logEntries.length) { $('log-body').innerHTML = '<div class="py2-table-empty">No moderation actions yet.</div>'; return; }
     var iconMap = {
       approve:        { icon: 'fa-check',         bg: 'linear-gradient(135deg,#16a34a,#22c55e)' },
       reject:         { icon: 'fa-xmark',         bg: 'linear-gradient(135deg,#dc2626,#ef4444)' },
@@ -1020,7 +1167,11 @@
       pause:          { icon: 'fa-pause',         bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' },
       unpause:        { icon: 'fa-play',          bg: 'linear-gradient(135deg,#2563eb,#3b82f6)' },
       resolve_report: { icon: 'fa-flag-checkered',bg: 'linear-gradient(135deg,#f59e0b,#fbbf24)' },
-      dismiss_report: { icon: 'fa-check-double',  bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' }
+      dismiss_report: { icon: 'fa-check-double',  bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' },
+      plan_change:    { icon: 'fa-crown',         bg: 'linear-gradient(135deg,#ff6000,#ff9f43)' },
+      plan_revoke:    { icon: 'fa-rotate-left',   bg: 'linear-gradient(135deg,#dc2626,#ef4444)' },
+      verified_on:    { icon: 'fa-circle-check',  bg: 'linear-gradient(135deg,#5f27cd,#54a0ff)' },
+      verified_off:   { icon: 'fa-circle-xmark',  bg: 'linear-gradient(135deg,#6b7280,#9ca3af)' }
     };
     var html = '';
     logEntries.forEach(function (e) {
@@ -1031,9 +1182,7 @@
           '<div class="log-icon" style="background:' + conf.bg + ';"><i class="fa-solid ' + conf.icon + '"></i></div>' +
           '<div style="flex:1;min-width:0;">' +
             '<div class="log-action">' + esc(e.action.replace(/_/g, ' ')) + ' — ' + esc(adTitle) + '</div>' +
-            '<div class="log-meta">' + esc(timeAgo(e.created_at)) +
-              (e.reason ? ' · ' + esc(e.reason) : '') +
-            '</div>' +
+            '<div class="log-meta">' + esc(timeAgo(e.created_at)) + (e.reason ? ' · ' + esc(e.reason) : '') + '</div>' +
             (e.notes ? '<div class="log-reason">' + esc(e.notes) + '</div>' : '') +
           '</div>' +
         '</div>';
@@ -1041,9 +1190,7 @@
     $('log-body').innerHTML = html;
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: ANALYTICS
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── ANALYTICS ────────────────────────────────────────────────────
   function renderAnalytics() {
     var totalImp = 0, totalClk = 0, adshare = 0, byWa = 0, byFb = 0, byIg = 0;
     var perAd = [];
@@ -1067,9 +1214,7 @@
     var top = perAd.filter(function (x) { return x.impressions >= 5; })
                     .sort(function (a, b) { return b.ctr - a.ctr; })
                     .slice(0, 10);
-    if (!top.length) {
-      top = perAd.slice().sort(function (a, b) { return b.impressions - a.impressions; }).slice(0, 10);
-    }
+    if (!top.length) top = perAd.slice().sort(function (a, b) { return b.impressions - a.impressions; }).slice(0, 10);
     if (!top.length) {
       $('an-top-ads').innerHTML = '<div class="py2-table-empty">Not enough data yet.</div>';
     } else {
@@ -1082,10 +1227,7 @@
             '<div class="analytics-name">' + esc(x.ad.title) + '</div>' +
             '<div class="analytics-sub">' + esc(biz) + '</div>' +
           '</div>' +
-          '<div class="analytics-nums">' +
-            '<strong>' + ctr(x.impressions, x.clicks) + '</strong>' +
-            num(x.impressions) + ' / ' + num(x.clicks) +
-          '</div>' +
+          '<div class="analytics-nums"><strong>' + ctr(x.impressions, x.clicks) + '</strong>' + num(x.impressions) + ' / ' + num(x.clicks) + '</div>' +
         '</div>';
       }).join('');
     }
@@ -1094,12 +1236,8 @@
     function bar(label, n, color) {
       var pct = Math.round((n / totalSrc) * 100);
       return '<div style="margin-bottom:12px;">' +
-        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">' +
-          '<span>' + label + '</span><span><strong>' + num(n) + '</strong> (' + pct + '%)</span>' +
-        '</div>' +
-        '<div style="height:8px;background:var(--py2-light);border-radius:100px;overflow:hidden;">' +
-          '<div style="height:100%;width:' + pct + '%;background:' + color + ';"></div>' +
-        '</div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span>' + label + '</span><span><strong>' + num(n) + '</strong> (' + pct + '%)</span></div>' +
+        '<div style="height:8px;background:var(--py2-light);border-radius:100px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + color + ';"></div></div>' +
       '</div>';
     }
     $('an-sources').innerHTML =
@@ -1109,35 +1247,26 @@
       bar('Via Instagram',       byIg,    'linear-gradient(90deg,#e1306c,#fd8d3a)');
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // MODERATION ACTIONS
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── MODERATION helpers ───────────────────────────────────────────
   function logAction(adId, action, reason, notes) {
     return P.db.insert('ad_moderation_log', {
-      ad_id:        adId,
-      action:       action,
-      reason:       reason || null,
+      ad_id: adId, action: action,
+      reason: reason || null,
       performed_by: session.user.id,
-      notes:        notes || null
-    }, session.access_token).catch(function (e) {
-      console.warn('moderation log failed:', e && e.message);
-    });
+      notes: notes || null
+    }, session.access_token).catch(function (e) { console.warn('log failed', e); });
   }
 
-  function openApprove(ad) {
-    pending.ad = ad;
-    $('approve-note').value = '';
-    openModal('modal-approve');
-  }
+  // ── Approve/Reject/Ban/Kill ──────────────────────────────────────
+  function openApprove(ad) { pending.ad = ad; $('approve-note').value = ''; openModal('modal-approve'); }
   $('modal-approve-confirm').addEventListener('click', function () {
     if (!pending.ad) return;
-    var ad = pending.ad;
-    var note = $('approve-note').value.trim() || null;
+    var ad = pending.ad, note = $('approve-note').value.trim() || null;
     closeModal('modal-approve');
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'approved' }, session.access_token)
       .then(function () { return logAction(ad.id, 'approve', null, note); })
-      .then(function () { P.toast('Ad approved — now live', 'success'); return reloadAll(); })
-      .then(function () { renderAll(); })
+      .then(function () { P.toast('Ad approved', 'success'); return reloadAll(); })
+      .then(renderAll)
       .catch(function (e) { P.toast(e.message || 'Could not approve', 'error'); });
   });
 
@@ -1153,14 +1282,14 @@
     var ad = pending.ad;
     var preset = $('reject-reason-select').value.trim();
     var detail = $('reject-reason-text').value.trim();
-    var note   = $('reject-note').value.trim() || null;
-    if (!detail) { P.toast('Please write a rejection reason for the advertiser', 'error'); return; }
-    var fullReason = preset ? (preset + ' — ' + detail) : detail;
+    var note = $('reject-note').value.trim() || null;
+    if (!detail) { P.toast('Please write a rejection reason', 'error'); return; }
+    var reason = preset ? (preset + ' — ' + detail) : detail;
     closeModal('modal-reject');
-    P.db.update('ads', 'id=eq.' + ad.id, { status: 'rejected', rejection_reason: fullReason }, session.access_token)
-      .then(function () { return logAction(ad.id, 'reject', fullReason, note); })
+    P.db.update('ads', 'id=eq.' + ad.id, { status: 'rejected', rejection_reason: reason }, session.access_token)
+      .then(function () { return logAction(ad.id, 'reject', reason, note); })
       .then(function () { P.toast('Ad rejected', 'success'); return reloadAll(); })
-      .then(function () { renderAll(); })
+      .then(renderAll)
       .catch(function (e) { P.toast(e.message || 'Could not reject', 'error'); });
   });
 
@@ -1174,14 +1303,14 @@
     if (!pending.ad) return;
     var ad = pending.ad;
     var reason = $('ban-reason').value.trim();
-    if (!reason) { P.toast('Please explain why this ad is being banned', 'error'); return; }
-    var linkedReport = pending.report;
+    if (!reason) { P.toast('Please explain why', 'error'); return; }
+    var rep = pending.report;
     closeModal('modal-ban');
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'banned' }, session.access_token)
       .then(function () { return logAction(ad.id, 'ban', reason, null); })
-      .then(function () { if (linkedReport) return resolveReport(linkedReport, reason, 'resolve_report'); })
+      .then(function () { if (rep) return resolveReport(rep, reason, 'resolve_report'); })
       .then(function () { P.toast('Ad banned', 'success'); return reloadAll(); })
-      .then(function () { renderAll(); })
+      .then(renderAll)
       .catch(function (e) { P.toast(e.message || 'Could not ban', 'error'); });
   });
 
@@ -1189,33 +1318,27 @@
     pending.ad = ad;
     pending.killType = type;
     pending.report = report || null;
-    var titleEl = $('kill-title');
-    var bodyEl  = $('kill-body');
     if (type === 'pause') {
-      titleEl.textContent = 'Deactivate this ad?';
-      bodyEl.textContent  = 'The ad will stop appearing on the homepage carousel and its share page. You can reactivate it any time.';
+      $('kill-title').textContent = 'Deactivate this ad?';
+      $('kill-body').textContent = 'The ad will stop appearing on the homepage carousel. You can reactivate it any time.';
     } else {
-      titleEl.textContent = 'Reactivate this ad?';
-      bodyEl.textContent  = 'The ad will resume appearing on the homepage carousel if it is within its date range.';
+      $('kill-title').textContent = 'Reactivate this ad?';
+      $('kill-body').textContent = 'The ad will resume appearing if it is within its date range.';
     }
-    $('kill-confirm').innerHTML = type === 'pause'
-      ? '<i class="fa-solid fa-power-off"></i> Deactivate'
-      : '<i class="fa-solid fa-play"></i> Reactivate';
+    $('kill-confirm').innerHTML = type === 'pause' ? '<i class="fa-solid fa-power-off"></i> Deactivate' : '<i class="fa-solid fa-play"></i> Reactivate';
     openModal('modal-kill');
   }
   $('kill-confirm').addEventListener('click', function () {
     if (!pending.ad) return;
-    var ad = pending.ad;
-    var type = pending.killType;
-    var linkedReport = pending.report;
+    var ad = pending.ad, type = pending.killType, rep = pending.report;
     var newStatus = type === 'pause' ? 'paused' : 'approved';
     var action = type === 'pause' ? 'pause' : 'unpause';
     closeModal('modal-kill');
     P.db.update('ads', 'id=eq.' + ad.id, { status: newStatus }, session.access_token)
       .then(function () { return logAction(ad.id, action, null, null); })
-      .then(function () { if (linkedReport && type === 'pause') return resolveReport(linkedReport, 'Ad paused after report', 'resolve_report'); })
+      .then(function () { if (rep && type === 'pause') return resolveReport(rep, 'Ad paused after report', 'resolve_report'); })
       .then(function () { P.toast(type === 'pause' ? 'Ad deactivated' : 'Ad reactivated', 'success'); return reloadAll(); })
-      .then(function () { renderAll(); })
+      .then(renderAll)
       .catch(function (e) { P.toast(e.message || 'Could not update ad', 'error'); });
   });
 
@@ -1225,28 +1348,200 @@
       .then(function () { return logAction(report.ad_id, action, reason || null, null); });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // MODAL CLOSE
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── PLAN MODAL ───────────────────────────────────────────────────
+  var planState = { adv: null, tier: 'free', days: 30, expires: '', verified: false };
+
+  function openPlanModal(adv) {
+    planState.adv = adv;
+    var eff = advertiserEffectiveTier(adv);
+    planState.tier = eff === 'free' && adv.tier !== 'free' ? adv.tier : eff; // show raw tier even if expired
+    if (planState.tier === 'free') planState.tier = eff;
+
+    // Default duration
+    var days = 30;
+    if (adv.tier_expires_at) {
+      var remaining = daysBetween(new Date(), new Date(adv.tier_expires_at));
+      if (remaining > 0) days = remaining;
+    }
+    planState.days = days;
+    planState.expires = todayPlusDays(days);
+    planState.verified = adv.verified === true || (profilesByAdv[adv.id] && profilesByAdv[adv.id].verified === true) || false;
+
+    $('plan-modal-title').textContent = 'Plan — ' + adv.business_name;
+    $('plan-advertiser-name').innerHTML =
+      '<strong>' + esc(adv.business_name) + '</strong> · ' + esc(adv.email) + '<br>' +
+      '<span style="color:var(--py2-muted);">Current: </span>' + tierBadge(adv);
+
+    renderPlanTierGrid();
+    renderPlanDurationBtns();
+    $('plan-expires').value = planState.expires;
+    $('verified-toggle-input').checked = planState.verified;
+    renderTierPreviewBox();
+    openModal('plan-modal');
+  }
+
+  function renderPlanTierGrid() {
+    var grid = $('plan-tier-grid');
+    grid.innerHTML = '';
+    TIERS.forEach(function (t) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'plan-tier-option' + (planState.tier === t.key ? ' selected' : '');
+      btn.setAttribute('data-tier', t.key);
+      var priceHtml = t.price === 0 ? 'Free' : 'K' + t.price + '<small>/mo</small>';
+      btn.innerHTML = '<div class="pto-name">' + t.name + '</div><div class="pto-price">' + priceHtml + '</div>';
+      btn.addEventListener('click', function () {
+        planState.tier = t.key;
+        renderPlanTierGrid();
+        renderTierPreviewBox();
+        // Auto-set verified if tier is business/premium
+        if (TIER_RANK[t.key] >= 3 && !$('verified-toggle-input').checked) {
+          // don't force it — but hint in preview
+        }
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderPlanDurationBtns() {
+    document.querySelectorAll('#duration-btns .duration-btn').forEach(function (b) {
+      var d = parseInt(b.getAttribute('data-days'), 10);
+      b.classList.toggle('active', d === planState.days);
+    });
+  }
+  document.querySelectorAll('#duration-btns .duration-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var d = parseInt(b.getAttribute('data-days'), 10);
+      planState.days = d;
+      planState.expires = todayPlusDays(d);
+      $('plan-expires').value = planState.expires;
+      renderPlanDurationBtns();
+      renderTierPreviewBox();
+    });
+  });
+  $('plan-expires').addEventListener('change', function () {
+    planState.expires = this.value;
+    // Update duration highlight based on date chosen
+    var days = daysBetween(new Date(), new Date(this.value));
+    planState.days = days;
+    renderPlanDurationBtns();
+    renderTierPreviewBox();
+  });
+  $('verified-toggle-input').addEventListener('change', function () {
+    planState.verified = this.checked;
+  });
+
+  function renderTierPreviewBox() {
+    var cfg = tierCfg(planState.tier);
+    var verifiedHint = planState.verified ? ' · <strong>✓ Verified badge enabled</strong>' : '';
+    var body = '';
+    if (cfg.key === 'free') {
+      body = 'Reverting to <strong>Free</strong>. All ads will run at weight <strong>1</strong>. No expiry. Verified badge removed.';
+    } else {
+      var expiry = planState.expires ? P.formatDate(planState.expires) : '(no expiry)';
+      body = 'Setting to <strong>' + cfg.name + ' (K' + cfg.price + '/mo)</strong>. Ads will run at weight <strong>' + cfg.weight + '</strong>. Expires <strong>' + expiry + '</strong>' + verifiedHint + '.';
+    }
+    $('tier-preview-box').innerHTML = body;
+  }
+
+  $('plan-save-btn').addEventListener('click', function () {
+    if (!planState.adv) return;
+    var adv = planState.adv;
+    var tier = planState.tier;
+    var expiresAt = tier === 'free' ? null : (planState.expires ? new Date(planState.expires + 'T23:59:59').toISOString() : null);
+    var startedAt = tier === 'free' ? null : (adv.tier_started_at || new Date().toISOString());
+
+    var btn = this;
+    var orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="py2-spinner"></span> Saving…';
+
+    // 1. Update the advertiser
+    P.db.update('advertisers', 'id=eq.' + adv.id, {
+      tier: tier,
+      tier_started_at: startedAt,
+      tier_expires_at: expiresAt
+    }, session.access_token)
+      // 2. Update the verified flag on the profile
+      .then(function () {
+        var prof = profilesByAdv[adv.id];
+        if (!prof) return Promise.resolve();
+        return P.db.update('advertiser_profiles', 'id=eq.' + prof.id, { verified: planState.verified }, session.access_token);
+      })
+      // 3. Log the change
+      .then(function () {
+        var action = tier === 'free' ? 'plan_revoke' : 'plan_change';
+        var note = tier === 'free'
+          ? 'Revoked to Free'
+          : 'Set to ' + tierCfg(tier).name + (expiresAt ? ' — expires ' + P.formatDate(expiresAt) : '');
+        return logAction(null, action, null, note).catch(function () {});
+      })
+      // 4. Update all this advertiser's ads' weight to match the tier
+      .then(function () {
+        var newWeight = tierCfg(tier).weight;
+        var theirAds = ads.filter(function (a) { return a.advertiser_id === adv.id; });
+        if (!theirAds.length) return Promise.resolve();
+        var promises = theirAds.map(function (a) {
+          return P.db.update('ads', 'id=eq.' + a.id, { weight: newWeight }, session.access_token);
+        });
+        return Promise.all(promises);
+      })
+      .then(function () {
+        P.toast('Plan updated for ' + adv.business_name, 'success');
+        return reloadAll();
+      })
+      .then(function () {
+        renderAll();
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        closeModal('plan-modal');
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        P.toast(err.message || 'Could not update plan', 'error');
+      });
+  });
+
+  $('plan-revoke-btn').addEventListener('click', function () {
+    if (!planState.adv) return;
+    if (!confirm('Revoke ' + planState.adv.business_name + ' back to Free? This resets their ad weights to 1.')) return;
+    planState.tier = 'free';
+    planState.expires = '';
+    planState.verified = false;
+    renderPlanTierGrid();
+    renderTierPreviewBox();
+    $('plan-expires').value = '';
+    $('verified-toggle-input').checked = false;
+    // Auto-click save
+    setTimeout(function () { $('plan-save-btn').click(); }, 100);
+  });
+
+  // ── Modal close ──────────────────────────────────────────────────
   document.querySelectorAll('[data-close]').forEach(function (btn) {
     btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close')); });
   });
   document.querySelectorAll('.py2-modal-backdrop').forEach(function (bd) {
     bd.addEventListener('click', function (e) { if (e.target === bd) bd.classList.remove('open'); });
   });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.py2-modal-backdrop.open').forEach(function (m) { m.classList.remove('open'); });
+    }
+  });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // TAB SWITCHING
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── TABS ─────────────────────────────────────────────────────────
   function switchTab(name) {
     document.querySelectorAll('.py2-tab').forEach(function (t) {
       t.classList.toggle('active', t.getAttribute('data-tab') === name);
     });
-    ['queue','advertisers','ads','reports','log','analytics'].forEach(function (n) {
+    ['queue','advertisers','plans','expiring','ads','reports','log','analytics'].forEach(function (n) {
       var panel = $('tab-' + n);
       if (panel) panel.style.display = (n === name) ? 'block' : 'none';
     });
     if (name === 'advertisers') renderAdvertisers();
+    if (name === 'plans')       renderPlansTab();
+    if (name === 'expiring')    renderExpiringTab();
     if (name === 'ads')         renderAllAds();
     if (name === 'reports')     renderReports();
     if (name === 'log')         renderLog();
@@ -1258,9 +1553,7 @@
     t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // FILTERS & SEARCH
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── Filters ──────────────────────────────────────────────────────
   $('ads-status-filter').addEventListener('change', function () { adsStatusFilter = this.value; renderAllAds(); });
   $('ads-search').addEventListener('input', function () { adsSearch = this.value; renderAllAds(); });
   $('adv-search').addEventListener('input', function () { advSearch = this.value; renderAdvertisers(); });
@@ -1273,12 +1566,9 @@
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // REFRESH + SIGN OUT
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── REFRESH + SIGN OUT ───────────────────────────────────────────
   $('btn-refresh').addEventListener('click', function () {
-    var b = this;
-    var orig = b.innerHTML;
+    var b = this, orig = b.innerHTML;
     b.disabled = true;
     b.innerHTML = '<span class="py2-spinner py2-spinner-dark"></span> Refreshing…';
     reloadAll().then(function () {
@@ -1295,71 +1585,57 @@
 
   $('btn-signout').addEventListener('click', function () {
     P.auth.signout().then(function () {
-      session = null;
-      profile = null;
+      session = null; profile = null;
       ads = []; advertisers = []; reports = []; logEntries = []; statsByAd = {};
-      showScreen('signin');
+      showScreen('signin-screen');
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RENDER ALL
-  // ═══════════════════════════════════════════════════════════════════════
   function renderAll() {
     renderTopStats();
     renderQueue();
     renderAdvertisers();
+    renderPlansTab();
+    renderExpiringTab();
     renderAllAds();
     renderReports();
     renderLog();
     renderAnalytics();
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // BOOT — runs after sign-in (or on page load if already signed in)
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── Boot ─────────────────────────────────────────────────────────
   function bootAfterSignin() {
     session = P.auth.getSession();
-    if (!session || !session.user) {
-      showScreen('signin');
-      return Promise.resolve();
-    }
-    showScreen('loading');
+    if (!session || !session.user) { showScreen('signin-screen'); return Promise.resolve(); }
+    showScreen('admin-loading');
     return P.db.select('profiles', 'id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
       .then(function (rows) {
         profile = rows && rows[0] ? rows[0] : null;
         if (!profile || profile.role !== 'admin') {
-          deniedName.textContent = session.user.email ? ('Signed in as ' + session.user.email) : '';
-          showScreen('denied');
+          $('denied-name').textContent = session.user.email ? 'Signed in as ' + session.user.email : '';
+          showScreen('denied-screen');
           return Promise.resolve(null);
         }
         return reloadAll().then(function () {
           $('topbar-admin').textContent = profile.full_name || profile.email || 'Admin';
-          showScreen('main');
+          showScreen('admin-main');
           renderAll();
         });
       })
       .catch(function (err) {
-        showScreen('loading');
-        screen.loading.innerHTML =
+        showScreen('admin-loading');
+        $('admin-loading').innerHTML =
           '<div style="text-align:center;padding:40px;">' +
           '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Could not load admin panel</h3>' +
-          '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' +
-          (err.message || 'Please try again.') + '</p>' +
+          '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' + (err.message || 'Please try again.') + '</p>' +
           '<button onclick="location.reload()" class="py2-btn py2-btn-primary" style="margin-top:16px;">Retry</button>' +
           '</div>';
       });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // ENTRY POINT
-  // ═══════════════════════════════════════════════════════════════════════
   var existing = P.auth.getSession();
-  if (existing && existing.user) {
-    bootAfterSignin();
-  } else {
-    showScreen('signin');
-  }
+  if (existing && existing.user) bootAfterSignin();
+  else showScreen('signin-screen');
 })();
 </script>
 
