@@ -1927,7 +1927,7 @@ init();
   function fetchAds() {
     var now = new Date().toISOString();
     var qs =
-      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
+      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier,advertiser_profiles!inner(slug))' +
       '&status=eq.approved' +
       '&placement=eq.carousel' +
       '&start_date=lte.' + encodeURIComponent(now) +
@@ -1987,7 +1987,9 @@ init();
   }
 
   function buildPortalCard(ad) {
-    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var bizSlug = ad.advertisers && ad.advertisers.advertiser_profiles && ad.advertisers.advertiser_profiles[0]
+  ? ad.advertisers.advertiser_profiles[0].slug
+  : null;
     var cta = ctaFor(ad);
     var card = document.createElement('div');
     card.className = 'py2-ads-card';
@@ -2153,7 +2155,9 @@ init();
   });
 
   function buildPopupHTML(ad) {
-    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var bizSlug = ad.advertisers && ad.advertisers.advertiser_profiles && ad.advertisers.advertiser_profiles[0]
+  ? ad.advertisers.advertiser_profiles[0].slug
+  : null;
     var cta = ctaFor(ad);
     return renderMedia(ad) +
       '<div class="py2-ads-popup-body">' +
