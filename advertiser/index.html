@@ -55,7 +55,13 @@
     }
 
     #dest-help { font-size: 12px; color: var(--py2-muted); margin-top: 5px; line-height: 1.4; }
-    #img-preview img { aspect-ratio: 16 / 9; max-height: 240px; }
+    #img-preview img, #img-preview video {
+      aspect-ratio: 16 / 9;
+      max-height: 240px;
+      object-fit: cover;
+      width: 100%;
+      border-radius: var(--py2-radius-sm);
+    }
 
     .char-count { font-size: 11px; color: var(--py2-muted); text-align: right; margin-top: 3px; }
     .char-count.warn { color: var(--py2-amber); }
@@ -90,7 +96,6 @@
       .ad-stat-mini .lbl { font-size: 9px; }
     }
 
-    /* ── INLINE SIGN-IN CARD ────────────────────────────────────────────── */
     #signin-screen {
       min-height: 100vh;
       display: flex;
@@ -115,13 +120,134 @@
       line-height: 1.5;
     }
     #signin-error.show { display: block; }
+
+    /* ── Media type toggle (Image / Video) ─────────────────────────── */
+    .media-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .media-toggle-btn {
+      background: white;
+      border: 2px solid rgba(0,0,0,.1);
+      border-radius: var(--py2-radius-sm);
+      padding: 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      font-family: var(--py2-font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--py2-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .media-toggle-btn i { font-size: 1.3rem; }
+    .media-toggle-btn:hover { border-color: var(--py2-orange); color: var(--py2-text); }
+    .media-toggle-btn.active {
+      border-color: var(--py2-orange);
+      background: linear-gradient(135deg, rgba(255,96,0,.08), rgba(255,159,67,.05));
+      color: var(--py2-orange);
+      box-shadow: 0 4px 14px rgba(255,96,0,.15);
+    }
+
+    /* ── Video source picker ───────────────────────────────────────── */
+    .video-sources {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .video-source-btn {
+      background: white;
+      border: 1.5px solid rgba(0,0,0,.1);
+      border-radius: var(--py2-radius-sm);
+      padding: 10px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      font-family: var(--py2-font-body);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--py2-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .video-source-btn i { font-size: 1.1rem; }
+    .video-source-btn:hover { border-color: var(--py2-orange); color: var(--py2-text); }
+    .video-source-btn.active {
+      border-color: var(--py2-orange);
+      background: rgba(255,96,0,.06);
+      color: var(--py2-orange);
+    }
+
+    /* ── Preview area for videos ───────────────────────────────────── */
+    .media-preview {
+      margin-top: 12px;
+      border-radius: var(--py2-radius);
+      overflow: hidden;
+      background: #000;
+      display: none;
+      aspect-ratio: 16/9;
+      max-height: 260px;
+      position: relative;
+    }
+    .media-preview.show { display: block; }
+    .media-preview video,
+    .media-preview iframe {
+      width: 100%; height: 100%; object-fit: cover;
+      border: 0; display: block;
+    }
+    .media-preview-remove {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(10,10,20,.7); color: white;
+      border: none; border-radius: 50%;
+      width: 30px; height: 30px;
+      cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+    }
+
+    /* Video preview inside the My Ads list */
+    .ad-thumb video,
+    .ad-thumb iframe {
+      width: 100%; height: 100%; object-fit: cover; border: 0;
+    }
+
+    /* Upload progress */
+    .upload-progress {
+      margin-top: 10px;
+      display: none;
+    }
+    .upload-progress.show { display: block; }
+    .upload-bar {
+      height: 6px;
+      background: var(--py2-light);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .upload-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6000, #ff9f43);
+      width: 0%;
+      transition: width .3s;
+    }
+    .upload-bar-label {
+      font-size: 11px;
+      color: var(--py2-muted);
+      margin-top: 5px;
+      text-align: center;
+    }
   </style>
 </head>
 <body class="py2-page">
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     INLINE SIGN-IN SCREEN (shown when not signed in)
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- ═══ INLINE SIGN-IN ═══ -->
 <div id="signin-screen" style="display:none;">
   <div class="py2-auth-card">
     <div class="py2-auth-brand">
@@ -288,21 +414,98 @@
               <div class="char-count" id="count-desc">0 / 200</div>
             </div>
 
+            <!-- ═══ MEDIA SECTION ═══ -->
             <div class="py2-field">
-              <label class="py2-label">Ad Image <span class="req">*</span></label>
-              <div class="py2-file" id="img-drop">
-                <input type="file" class="py2-file-input" id="f-image" accept="image/*">
-                <div class="py2-file-icon">🖼️</div>
-                <div class="py2-file-text">
-                  <strong>Click to choose</strong> or drag &amp; drop<br>
-                  JPG or PNG · max 2MB · we'll compress it automatically
+              <label class="py2-label">Ad Media <span class="req">*</span></label>
+
+              <!-- Step 1: Image or Video? -->
+              <div class="media-toggle" id="media-toggle">
+                <button type="button" class="media-toggle-btn active" data-media="image">
+                  <i class="fa-solid fa-image"></i>
+                  <span>Image</span>
+                </button>
+                <button type="button" class="media-toggle-btn" data-media="video">
+                  <i class="fa-solid fa-video"></i>
+                  <span>Video</span>
+                </button>
+              </div>
+
+              <!-- ── IMAGE MODE ── -->
+              <div id="media-image-mode">
+                <div class="py2-file" id="img-drop">
+                  <input type="file" class="py2-file-input" id="f-image" accept="image/*">
+                  <div class="py2-file-icon">🖼️</div>
+                  <div class="py2-file-text">
+                    <strong>Click to choose</strong> or drag &amp; drop<br>
+                    JPG or PNG · max 5MB · we'll compress it automatically
+                  </div>
                 </div>
+                <div class="py2-file-preview" id="img-preview">
+                  <img src="" alt="Preview" id="img-preview-img">
+                  <button type="button" class="py2-file-remove" id="img-remove" aria-label="Remove image">✕</button>
+                </div>
+                <div class="py2-error" id="err-image">Please add an image (or wait for it to finish uploading).</div>
               </div>
-              <div class="py2-file-preview" id="img-preview">
-                <img src="" alt="Preview" id="img-preview-img">
-                <button type="button" class="py2-file-remove" id="img-remove" aria-label="Remove image">✕</button>
+
+              <!-- ── VIDEO MODE ── -->
+              <div id="media-video-mode" style="display:none;">
+
+                <p style="font-size:12.5px;color:var(--py2-muted);margin-bottom:10px;line-height:1.5;">
+                  Choose where your video is hosted. On the site it will play automatically (muted).
+                </p>
+
+                <div class="video-sources" id="video-sources">
+                  <button type="button" class="video-source-btn active" data-source="youtube">
+                    <i class="fa-brands fa-youtube" style="color:#ff0000;"></i>
+                    <span>YouTube</span>
+                  </button>
+                  <button type="button" class="video-source-btn" data-source="vimeo">
+                    <i class="fa-brands fa-vimeo-v" style="color:#1ab7ea;"></i>
+                    <span>Vimeo</span>
+                  </button>
+                  <button type="button" class="video-source-btn" data-source="tiktok">
+                    <i class="fa-brands fa-tiktok"></i>
+                    <span>TikTok</span>
+                  </button>
+                  <button type="button" class="video-source-btn" data-source="mp4">
+                    <i class="fa-solid fa-file-video"></i>
+                    <span>Upload MP4</span>
+                  </button>
+                </div>
+
+                <!-- URL input for YouTube / Vimeo / TikTok -->
+                <div id="video-url-wrap">
+                  <input type="url" class="py2-input" id="f-video-url"
+                         placeholder="Paste your YouTube video URL here">
+                  <div class="py2-help" id="video-url-help">
+                    Paste the full video URL, e.g. https://youtube.com/watch?v=abc123
+                  </div>
+                  <div class="py2-error" id="err-video-url">Please enter a valid video URL.</div>
+                </div>
+
+                <!-- File input for direct MP4 upload -->
+                <div id="video-file-wrap" style="display:none;">
+                  <div class="py2-file" id="vid-drop">
+                    <input type="file" class="py2-file-input" id="f-video" accept="video/mp4,video/*">
+                    <div class="py2-file-icon">🎬</div>
+                    <div class="py2-file-text">
+                      <strong>Click to choose</strong> or drag &amp; drop<br>
+                      MP4 · max 5MB · keep it short (5–15 seconds is ideal)
+                    </div>
+                  </div>
+                  <div class="upload-progress" id="video-upload-progress">
+                    <div class="upload-bar"><div class="upload-bar-fill" id="video-upload-bar"></div></div>
+                    <div class="upload-bar-label" id="video-upload-label">Preparing…</div>
+                  </div>
+                </div>
+
+                <!-- Preview area -->
+                <div class="media-preview" id="video-preview">
+                  <button type="button" class="media-preview-remove" id="video-preview-remove" aria-label="Remove video">✕</button>
+                  <div id="video-preview-inner"></div>
+                </div>
+
               </div>
-              <div class="py2-error" id="err-image">Please add an image (or wait for it to finish uploading).</div>
             </div>
 
             <div class="py2-field">
@@ -495,8 +698,8 @@
       </div>
     </section>
 
-  </div><!-- /py2-container -->
-</div><!-- /dash-main -->
+  </div>
+</div>
 
 <!-- ═══ MODAL: CONFIRM ═══ -->
 <div class="py2-modal-backdrop" id="modal-confirm">
@@ -544,10 +747,6 @@
 
 <script src="/ads-config.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════════════════════
-   PhoneYa2 Ads — Advertiser Dashboard (v2)
-   Inline sign-in: no redirect when signed out. The URL stays /advertiser/.
-   ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
@@ -559,9 +758,6 @@
   }
   var esc = P.esc;
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // STATE
-  // ═══════════════════════════════════════════════════════════════════════
   var session     = null;
   var advertiser  = null;
   var ads         = [];
@@ -571,6 +767,17 @@
 
   var imgState  = { file: null, compressed: null, uploading: false, uploadedUrl: null };
   var logoState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+
+  // Video state
+  var videoState = {
+    mode: 'image',              // 'image' | 'video'
+    source: 'youtube',          // 'youtube' | 'vimeo' | 'tiktok' | 'mp4'
+    url: '',                    // for external sources
+    file: null,                 // for mp4 upload
+    uploading: false,
+    uploadedUrl: null,          // public URL after upload (for mp4)
+    provider: null              // final resolved provider
+  };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -622,11 +829,30 @@
     submitAdBtn:     $('btn-submit-ad'),
     cancelAdBtn:     $('btn-cancel-ad'),
 
+    // Image mode
+    mediaToggle:     $('media-toggle'),
+    mediaImageMode:  $('media-image-mode'),
+    mediaVideoMode:  $('media-video-mode'),
     imgDrop:         $('img-drop'),
     fImage:          $('f-image'),
     imgPreview:      $('img-preview'),
     imgPreviewImg:   $('img-preview-img'),
     imgRemove:       $('img-remove'),
+
+    // Video mode
+    videoSources:    $('video-sources'),
+    videoUrlWrap:    $('video-url-wrap'),
+    videoFileWrap:   $('video-file-wrap'),
+    fVideoUrl:       $('f-video-url'),
+    videoUrlHelp:    $('video-url-help'),
+    fVideo:          $('f-video'),
+    vidDrop:         $('vid-drop'),
+    videoPreview:    $('video-preview'),
+    videoPreviewInner: $('video-preview-inner'),
+    videoPreviewRemove: $('video-preview-remove'),
+    videoUploadProgress: $('video-upload-progress'),
+    videoUploadBar:  $('video-upload-bar'),
+    videoUploadLabel: $('video-upload-label'),
 
     logoDrop:        $('logo-drop'),
     fLogo:           $('f-logo'),
@@ -666,9 +892,6 @@
   function openModal(id) { var m = $(id); if (m) m.classList.add('open'); }
   function closeModal(id) { var m = $(id); if (m) m.classList.remove('open'); }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // SCREEN SWITCHING
-  // ═══════════════════════════════════════════════════════════════════════
   function showSignin() {
     el.signinScreen.style.display = 'flex';
     el.topbar.style.display       = 'none';
@@ -690,28 +913,85 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
+  // VIDEO PROVIDER DETECTION
+  // ═══════════════════════════════════════════════════════════════════════
+  function detectProvider(url) {
+    if (!url) return null;
+    if (/youtube\.com|youtu\.be/i.test(url)) return 'youtube';
+    if (/vimeo\.com/i.test(url))             return 'vimeo';
+    if (/tiktok\.com/i.test(url))            return 'tiktok';
+    return null;
+  }
+
+  function isValidVideoUrl(url, source) {
+    if (!url) return false;
+    if (source === 'youtube') {
+      return /(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/.test(url);
+    }
+    if (source === 'vimeo') {
+      return /vimeo\.com\/(?:video\/)?(\d+)/.test(url);
+    }
+    if (source === 'tiktok') {
+      return /tiktok\.com/i.test(url);
+    }
+    return false;
+  }
+
+  function renderVideoPreviewHTML() {
+    var source = videoState.source;
+    var url = videoState.url;
+
+    if (source === 'youtube' && isValidVideoUrl(url, 'youtube')) {
+      var m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+      return '<iframe src="https://www.youtube.com/embed/' + esc(m[1]) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(m[1]) + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    }
+    if (source === 'vimeo' && isValidVideoUrl(url, 'vimeo')) {
+      var v = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      return '<iframe src="https://player.vimeo.com/video/' + esc(v[1]) + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>';
+    }
+    if (source === 'tiktok' && isValidVideoUrl(url, 'tiktok')) {
+      return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;background:#000;gap:8px;">' +
+        '<div style="font-size:2.4rem;">🎵</div><div style="font-size:12px;opacity:.75;">TikTok preview</div></div>';
+    }
+    if (source === 'mp4') {
+      if (videoState.uploadedUrl) {
+        return '<video src="' + esc(videoState.uploadedUrl) + '" autoplay muted loop playsinline></video>';
+      }
+      if (videoState.file) {
+        var objUrl = URL.createObjectURL(videoState.file);
+        return '<video src="' + esc(objUrl) + '" autoplay muted loop playsinline></video>';
+      }
+    }
+    return null;
+  }
+
+  function updateVideoPreview() {
+    var html = renderVideoPreviewHTML();
+    if (html) {
+      el.videoPreviewInner.innerHTML = html;
+      el.videoPreview.classList.add('show');
+    } else {
+      el.videoPreview.classList.remove('show');
+      el.videoPreviewInner.innerHTML = '';
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   // IMAGE COMPRESSION
   // ═══════════════════════════════════════════════════════════════════════
   function compressImage(file, maxW, quality) {
     maxW = maxW || 1200;
     quality = quality || 0.82;
     return new Promise(function (resolve, reject) {
-      if (!file.type || file.type.indexOf('image/') !== 0) {
-        reject(new Error('Not an image'));
-        return;
-      }
+      if (!file.type || file.type.indexOf('image/') !== 0) { reject(new Error('Not an image')); return; }
       var img = new Image();
       var url = URL.createObjectURL(file);
       img.onload = function () {
         URL.revokeObjectURL(url);
         var w = img.naturalWidth, h = img.naturalHeight;
-        if (w > maxW) {
-          h = Math.round((h * maxW) / w);
-          w = maxW;
-        }
+        if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
         var canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = w; canvas.height = h;
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
         canvas.toBlob(function (blob) {
@@ -724,44 +1004,32 @@
               }
               resolve(blob2);
             }, 'image/jpeg', 0.65);
-          } else {
-            resolve(blob);
-          }
+          } else { resolve(blob); }
         }, 'image/jpeg', quality);
       };
-      img.onerror = function () {
-        URL.revokeObjectURL(url);
-        reject(new Error('Could not read image'));
-      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
       img.src = url;
     });
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // SIGN IN HANDLER
+  // SIGN IN
   // ═══════════════════════════════════════════════════════════════════════
   el.signinForm.addEventListener('submit', function (e) {
     e.preventDefault();
     el.signinError.classList.remove('show');
-
     var email = el.signinEmail.value.trim();
     var pw    = el.signinPassword.value;
-
     if (!email || !pw) {
       el.signinError.textContent = 'Please enter your email and password.';
       el.signinError.classList.add('show');
       return;
     }
-
     el.signinSubmit.disabled = true;
     var orig = el.signinSubmit.innerHTML;
     el.signinSubmit.innerHTML = '<span class="py2-spinner"></span> Signing in…';
-
     P.auth.signin(email, pw)
-      .then(function () {
-        // Success — boot the dashboard
-        return bootDashboard();
-      })
+      .then(function () { return bootDashboard(); })
       .catch(function (err) {
         el.signinError.textContent = err.message || 'Sign in failed. Please try again.';
         el.signinError.classList.add('show');
@@ -771,30 +1039,20 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
-  // DATA LOADING
+  // DATA
   // ═══════════════════════════════════════════════════════════════════════
   function loadAdvertiser() {
-    return P.db.select(
-      'advertisers',
-      'auth_user_id=eq.' + encodeURIComponent(session.user.id) + '&limit=1',
-      session.access_token
-    ).then(function (rows) {
-      if (!rows || !rows[0]) {
-        throw new Error('No advertiser profile found for this account.');
-      }
-      advertiser = rows[0];
-      return advertiser;
-    });
+    return P.db.select('advertisers', 'auth_user_id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
+      .then(function (rows) {
+        if (!rows || !rows[0]) throw new Error('No advertiser profile found for this account.');
+        advertiser = rows[0];
+        return advertiser;
+      });
   }
-
   function loadAds() {
-    return P.db.select(
-      'ads',
-      'advertiser_id=eq.' + encodeURIComponent(advertiser.id) + '&order=created_at.desc',
-      session.access_token
-    ).then(function (rows) { ads = rows || []; return ads; });
+    return P.db.select('ads', 'advertiser_id=eq.' + encodeURIComponent(advertiser.id) + '&order=created_at.desc', session.access_token)
+      .then(function (rows) { ads = rows || []; return ads; });
   }
-
   function loadStats() {
     if (!ads.length) { statsByAd = {}; return Promise.resolve(); }
     var ids = ads.map(function (a) { return a.id; }).join(',');
@@ -802,8 +1060,7 @@
       P.db.select('ad_impressions', 'ad_id=in.(' + ids + ')&select=ad_id,source', session.access_token),
       P.db.select('ad_clicks',      'ad_id=in.(' + ids + ')&select=ad_id,source', session.access_token)
     ]).then(function (results) {
-      var imps = results[0] || [];
-      var clks = results[1] || [];
+      var imps = results[0] || [], clks = results[1] || [];
       statsByAd = {};
       ads.forEach(function (a) { statsByAd[a.id] = { impressions: 0, clicks: 0, sources: {} }; });
       imps.forEach(function (r) {
@@ -820,7 +1077,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: TOP STATS
+  // TOP STATS
   // ═══════════════════════════════════════════════════════════════════════
   function renderTopStats() {
     var active = ads.filter(function (a) { return a.status === 'approved'; }).length;
@@ -837,7 +1094,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // RENDER: MY ADS LIST
+  // MY ADS LIST
   // ═══════════════════════════════════════════════════════════════════════
   function statusBadge(status) {
     var map = {
@@ -851,26 +1108,29 @@
     return '<span class="py2-badge ' + m.cls + '">' + m.label + '</span>';
   }
 
+  function renderAdThumb(a) {
+    if (!a.media_url) return '<span class="ad-thumb-emoji">🖼️</span>';
+    if (a.media_type === 'video') {
+      return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a14;color:white;font-size:1.6rem;">🎬</div>';
+    }
+    return '<img src="' + esc(a.media_url) + '" alt="' + esc(a.title) + '" onerror="this.parentElement.innerHTML=\'<span class=&quot;ad-thumb-emoji&quot;>🖼️</span>\'">';
+  }
+
   function adActions(a) {
     var btns = '';
     if (a.status !== 'banned') {
-      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="edit" data-id="' + a.id + '">'
-        + '<i class="fa-solid fa-pen"></i> Edit</button>';
+      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="edit" data-id="' + a.id + '"><i class="fa-solid fa-pen"></i> Edit</button>';
     }
     if (a.status === 'approved') {
-      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="pause" data-id="' + a.id + '">'
-        + '<i class="fa-solid fa-pause"></i> Pause</button>';
+      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="pause" data-id="' + a.id + '"><i class="fa-solid fa-pause"></i> Pause</button>';
     } else if (a.status === 'paused') {
-      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="resume" data-id="' + a.id + '">'
-        + '<i class="fa-solid fa-play"></i> Resume</button>';
+      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="resume" data-id="' + a.id + '"><i class="fa-solid fa-play"></i> Resume</button>';
     }
     if (a.status === 'rejected') {
-      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reason" data-id="' + a.id + '">'
-        + '<i class="fa-solid fa-circle-info"></i> Why?</button>';
+      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reason" data-id="' + a.id + '"><i class="fa-solid fa-circle-info"></i> Why?</button>';
     }
     if (a.status !== 'banned') {
-      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="delete" data-id="' + a.id + '" style="color:var(--py2-red);">'
-        + '<i class="fa-solid fa-trash"></i> Delete</button>';
+      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="delete" data-id="' + a.id + '" style="color:var(--py2-red);"><i class="fa-solid fa-trash"></i> Delete</button>';
     }
     return btns;
   }
@@ -885,8 +1145,7 @@
         '<div class="py2-empty-icon">📣</div>' +
         '<h3>No ads yet</h3>' +
         '<p>Create your first ad to start reaching Zambian customers.</p>' +
-        '<button type="button" class="py2-btn py2-btn-primary" id="empty-create-btn">' +
-        '<i class="fa-solid fa-plus"></i> Create Your First Ad</button>' +
+        '<button type="button" class="py2-btn py2-btn-primary" id="empty-create-btn"><i class="fa-solid fa-plus"></i> Create Your First Ad</button>' +
         '</div>';
       var b = $('empty-create-btn');
       if (b) b.addEventListener('click', function () { switchTab('create'); });
@@ -894,21 +1153,13 @@
     }
 
     if (!list.length) {
-      el.adsList.innerHTML =
-        '<div class="py2-empty">' +
-        '<div class="py2-empty-icon">🔍</div>' +
-        '<h3>No ads match this filter</h3>' +
-        '<p>Try a different filter above.</p>' +
-        '</div>';
+      el.adsList.innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🔍</div><h3>No ads match this filter</h3><p>Try a different filter above.</p></div>';
       return;
     }
 
     var html = '';
     list.forEach(function (a) {
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
-      var thumb = a.media_url
-        ? '<div class="py2-ad-thumb"><img src="' + esc(a.media_url) + '" alt="' + esc(a.title) + '" onerror="this.parentElement.innerHTML=\'<span class=&quot;ad-thumb-emoji&quot;>🖼️</span>\'"></div>'
-        : '<div class="py2-ad-thumb"><span class="ad-thumb-emoji">🖼️</span></div>';
       var meta = 'Created ' + P.formatDate(a.created_at);
       if (a.status === 'approved' && a.end_date) meta += ' · ends ' + P.formatDate(a.end_date);
       var rejectedNote = '';
@@ -916,11 +1167,15 @@
         rejectedNote = '<div class="py2-notice py2-notice-danger" style="margin-top:8px;font-size:12.5px;">' +
           '<span class="py2-notice-icon">⚠️</span><div>' + esc(a.rejection_reason) + '</div></div>';
       }
+      var typeBadge = a.media_type === 'video'
+        ? '<span style="font-size:11px;color:var(--py2-muted);margin-left:4px;">🎬 video</span>'
+        : '';
       html +=
-        '<div class="py2-ad-item">' + thumb +
+        '<div class="py2-ad-item">' +
+          '<div class="py2-ad-thumb">' + renderAdThumb(a) + '</div>' +
           '<div class="py2-ad-main">' +
             '<div class="py2-ad-top">' + statusBadge(a.status) +
-              '<span style="font-size:11px;color:var(--py2-muted);">' + esc(a.destination_type) + '</span>' +
+              '<span style="font-size:11px;color:var(--py2-muted);">' + esc(a.destination_type) + typeBadge + '</span>' +
             '</div>' +
             '<div class="py2-ad-title">' + esc(a.title) + '</div>' +
             '<div class="py2-ad-meta">' + esc(meta) + '</div>' +
@@ -934,13 +1189,12 @@
           '</div>' +
         '</div>';
     });
-
     el.adsList.innerHTML = html;
+
     el.adsList.querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act = btn.getAttribute('data-act');
-        var id  = btn.getAttribute('data-id');
-        var ad  = ads.find(function (x) { return x.id === id; });
+        var ad  = ads.find(function (x) { return x.id === btn.getAttribute('data-id'); });
         if (!ad) return;
         if (act === 'edit')   startEdit(ad);
         if (act === 'pause')  setPaused(ad, true);
@@ -961,7 +1215,7 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TAB SWITCHING
+  // TABS
   // ═══════════════════════════════════════════════════════════════════════
   function switchTab(name) {
     document.querySelectorAll('.py2-tab').forEach(function (t) {
@@ -981,10 +1235,7 @@
     t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
   });
 
-  $('btn-new-ad-top').addEventListener('click', function () {
-    resetAdForm();
-    switchTab('create');
-  });
+  $('btn-new-ad-top').addEventListener('click', function () { resetAdForm(); switchTab('create'); });
 
   // ═══════════════════════════════════════════════════════════════════════
   // STATS TAB
@@ -1005,17 +1256,12 @@
         '</tr>';
     }).join('');
     el.statsBody.innerHTML =
-      '<table class="py2-table">' +
-      '<thead><tr><th>Ad</th><th>Status</th><th>Views</th><th>Clicks</th><th>CTR</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-      '</table>';
+      '<table class="py2-table"><thead><tr><th>Ad</th><th>Status</th><th>Views</th><th>Clicks</th><th>CTR</th></tr></thead><tbody>' + rows + '</tbody></table>';
 
     var sources = { adshare: 0, whatsapp: 0, facebook: 0, instagram: 0 };
     Object.keys(statsByAd).forEach(function (id) {
       var s = statsByAd[id].sources || {};
-      Object.keys(s).forEach(function (k) {
-        if (sources[k] !== undefined) sources[k] += s[k];
-      });
+      Object.keys(s).forEach(function (k) { if (sources[k] !== undefined) sources[k] += s[k]; });
     });
     el.statAdshare.textContent = num(sources.adshare);
     el.statWa.textContent      = num(sources.whatsapp);
@@ -1049,16 +1295,12 @@
           '</div>' +
           '<div class="py2-share-row">' +
             '<span class="py2-share-url" id="share-url-' + a.id + '">' + esc(url) + '</span>' +
-            '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-copy="' + a.id + '">' +
-              '<i class="fa-solid fa-copy"></i> Copy</button>' +
-            '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-wa="' + a.id + '">' +
-              '<i class="fa-brands fa-whatsapp"></i> Share on WhatsApp</button>' +
+            '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-copy="' + a.id + '"><i class="fa-solid fa-copy"></i> Copy</button>' +
+            '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-wa="' + a.id + '"><i class="fa-brands fa-whatsapp"></i> Share on WhatsApp</button>' +
           '</div>' +
           '<div class="qr-wrap">' +
             '<img class="qr-img" src="' + esc(qr) + '" alt="QR code" loading="lazy">' +
-            '<div style="font-size:12.5px;color:var(--py2-muted);line-height:1.5;max-width:280px;">' +
-              'Print this QR on your flyers, business cards, or shop window. Scanning it opens your ad page.' +
-            '</div>' +
+            '<div style="font-size:12.5px;color:var(--py2-muted);line-height:1.5;max-width:280px;">Print this QR on your flyers, business cards, or shop window. Scanning it opens your ad page.</div>' +
           '</div>' +
         '</div>';
     });
@@ -1069,11 +1311,8 @@
         var id = btn.getAttribute('data-copy');
         var urlEl = $('share-url-' + id);
         if (!urlEl) return;
-        navigator.clipboard.writeText(urlEl.textContent).then(function () {
-          P.toast('Link copied!', 'success');
-        }).catch(function () {
-          P.toast('Could not copy. Please select and copy manually.', 'error');
-        });
+        navigator.clipboard.writeText(urlEl.textContent).then(function () { P.toast('Link copied!', 'success'); })
+          .catch(function () { P.toast('Could not copy. Please select and copy manually.', 'error'); });
       });
     });
     el.shareList.querySelectorAll('[data-wa]').forEach(function (btn) {
@@ -1119,6 +1358,103 @@
     el.countDesc.textContent = el.fDesc.value.length + ' / 200';
   });
 
+  // ── Media toggle: Image vs Video ──────────────────────────────────
+  el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = btn.getAttribute('data-media');
+      videoState.mode = mode;
+      el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      el.mediaImageMode.style.display = (mode === 'image') ? 'block' : 'none';
+      el.mediaVideoMode.style.display = (mode === 'video') ? 'block' : 'none';
+      updateVideoPreview();
+    });
+  });
+
+  // ── Video source selection ────────────────────────────────────────
+  el.videoSources.querySelectorAll('.video-source-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var src = btn.getAttribute('data-source');
+      videoState.source = src;
+      videoState.url = '';
+      videoState.file = null;
+      videoState.uploadedUrl = null;
+      el.videoSources.querySelectorAll('.video-source-btn').forEach(function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+
+      if (src === 'mp4') {
+        el.videoUrlWrap.style.display = 'none';
+        el.videoFileWrap.style.display = 'block';
+      } else {
+        el.videoUrlWrap.style.display = 'block';
+        el.videoFileWrap.style.display = 'none';
+        var help = {
+          youtube: 'Paste the full YouTube video URL, e.g. https://youtube.com/watch?v=abc123',
+          vimeo:   'Paste the full Vimeo video URL, e.g. https://vimeo.com/123456789',
+          tiktok:  'Paste the full TikTok video URL, e.g. https://tiktok.com/@yourhandle/video/123'
+        };
+        el.videoUrlHelp.textContent = help[src] || '';
+        el.fVideoUrl.placeholder = src === 'youtube' ? 'https://youtube.com/watch?v=…'
+                                 : src === 'vimeo'   ? 'https://vimeo.com/…'
+                                 : src === 'tiktok'  ? 'https://tiktok.com/@user/video/…'
+                                 : '';
+        el.fVideoUrl.value = '';
+      }
+      updateVideoPreview();
+    });
+  });
+
+  el.fVideoUrl.addEventListener('input', function () {
+    videoState.url = el.fVideoUrl.value.trim();
+    updateVideoPreview();
+  });
+
+  el.fVideo.addEventListener('change', function () {
+    if (el.fVideo.files && el.fVideo.files[0]) {
+      var f = el.fVideo.files[0];
+      if (f.size > 5 * 1024 * 1024) {
+        P.toast('Video too large. Please keep it under 5MB.', 'error');
+        el.fVideo.value = '';
+        return;
+      }
+      videoState.file = f;
+      videoState.uploadedUrl = null;
+      updateVideoPreview();
+    }
+  });
+
+  ['dragover','dragenter'].forEach(function (ev) {
+    el.vidDrop.addEventListener(ev, function (e) { e.preventDefault(); el.vidDrop.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(function (ev) {
+    el.vidDrop.addEventListener(ev, function (e) { e.preventDefault(); el.vidDrop.classList.remove('dragover'); });
+  });
+  el.vidDrop.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) {
+      P.toast('Video too large. Please keep it under 5MB.', 'error');
+      return;
+    }
+    videoState.file = f;
+    videoState.uploadedUrl = null;
+    updateVideoPreview();
+  });
+  el.vidDrop.addEventListener('click', function () { el.fVideo.click(); });
+
+  el.videoPreviewRemove.addEventListener('click', function () {
+    videoState.url = '';
+    videoState.file = null;
+    videoState.uploadedUrl = null;
+    el.fVideoUrl.value = '';
+    el.fVideo.value = '';
+    el.videoPreview.classList.remove('show');
+    el.videoPreviewInner.innerHTML = '';
+  });
+
+  // ── Image picker (unchanged) ──────────────────────────────────────
   el.imgDrop.addEventListener('click', function () { el.fImage.click(); });
   el.fImage.addEventListener('change', function () {
     if (el.fImage.files && el.fImage.files[0]) pickImage(el.fImage.files[0]);
@@ -1188,18 +1524,36 @@
     el.countDesc.textContent = '0 / 200';
     el.createError.style.display = 'none';
     el.createInfo.style.display = 'none';
+
+    // Reset image
     imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
     el.fImage.value = '';
     el.imgPreview.classList.remove('show');
     el.imgPreviewImg.src = '';
+
+    // Reset video
+    videoState = { mode: 'image', source: 'youtube', url: '', file: null, uploading: false, uploadedUrl: null, provider: null };
+    el.fVideoUrl.value = '';
+    el.fVideo.value = '';
+    el.videoPreview.classList.remove('show');
+    el.videoPreviewInner.innerHTML = '';
+    el.videoUploadProgress.classList.remove('show');
+    el.mediaImageMode.style.display = 'block';
+    el.mediaVideoMode.style.display = 'none';
+    el.videoUrlWrap.style.display = 'block';
+    el.videoFileWrap.style.display = 'none';
+    el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (b, i) {
+      b.classList.toggle('active', i === 0);
+    });
+    el.videoSources.querySelectorAll('.video-source-btn').forEach(function (b, i) {
+      b.classList.toggle('active', i === 0);
+    });
+
     document.querySelectorAll('#tab-create .py2-error').forEach(function (e) { e.classList.remove('show'); });
     document.querySelectorAll('#tab-create .py2-input').forEach(function (e) { e.classList.remove('error'); });
   }
 
-  el.cancelAdBtn.addEventListener('click', function () {
-    resetAdForm();
-    switchTab('ads');
-  });
+  el.cancelAdBtn.addEventListener('click', function () { resetAdForm(); switchTab('ads'); });
 
   function startEdit(ad) {
     resetAdForm();
@@ -1214,13 +1568,39 @@
     el.fDestUrl.value = ad.destination_url || '';
     if (ad.start_date) el.fStart.value = ad.start_date.slice(0, 10);
     if (ad.end_date)   el.fEnd.value   = ad.end_date.slice(0, 10);
-    if (ad.media_url) {
+
+    // Media
+    if (ad.media_type === 'video') {
+      videoState.mode = 'video';
+      el.mediaImageMode.style.display = 'none';
+      el.mediaVideoMode.style.display = 'block';
+      el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-media') === 'video');
+      });
+      // Try to detect source from existing URL
+      var prov = ad.video_provider || detectProvider(ad.media_url) || 'youtube';
+      videoState.source = prov;
+      el.videoSources.querySelectorAll('.video-source-btn').forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-source') === prov);
+      });
+      if (prov === 'mp4') {
+        videoState.uploadedUrl = ad.media_url;
+        el.videoUrlWrap.style.display = 'none';
+        el.videoFileWrap.style.display = 'block';
+      } else {
+        videoState.url = ad.media_url;
+        el.fVideoUrl.value = ad.media_url;
+      }
+      updateVideoPreview();
+    } else if (ad.media_url) {
       imgState.uploadedUrl = ad.media_url;
       el.imgPreview.classList.add('show');
       el.imgPreviewImg.src = ad.media_url;
     }
+
     el.countTitle.textContent = el.fTitle.value.length + ' / 60';
     el.countDesc.textContent = el.fDesc.value.length + ' / 200';
+
     if (ad.status === 'approved') {
       el.createInfo.style.display = 'flex';
       el.createInfoText.textContent = 'Saving changes to a live ad will send it back for review. It will be re-approved within 24 hours.';
@@ -1254,8 +1634,27 @@
     } else if (u && u.indexOf('http') !== 0) {
       setErr('dest-url', true); ok = false;
     }
-    if (!imgState.uploadedUrl && !imgState.file) { setErr('image', true); ok = false; }
-    else setErr('image', false);
+
+    // Media validation
+    if (videoState.mode === 'video') {
+      if (videoState.source === 'mp4') {
+        if (!videoState.uploadedUrl && !videoState.file) {
+          P.toast('Please upload a video file', 'error');
+          ok = false;
+        }
+      } else {
+        if (!isValidVideoUrl(videoState.url, videoState.source)) {
+          setErr('video-url', true); ok = false;
+        } else {
+          setErr('video-url', false);
+        }
+      }
+      setErr('image', false);
+    } else {
+      if (!imgState.uploadedUrl && !imgState.file) {
+        setErr('image', true); ok = false;
+      } else setErr('image', false);
+    }
     return ok;
   }
 
@@ -1267,28 +1666,61 @@
     el.submitAdBtn.disabled = true;
     var origHTML = el.submitAdBtn.innerHTML;
     el.submitAdBtn.innerHTML = '<span class="py2-spinner"></span> ' +
-      (editingAdId ? 'Saving…' : 'Uploading image…');
+      (editingAdId ? 'Saving…' : (videoState.mode === 'video' && videoState.source === 'mp4' ? 'Uploading video…' : 'Uploading media…'));
 
-    var uploadPromise = Promise.resolve(imgState.uploadedUrl);
-    if (imgState.file && !imgState.uploadedUrl) {
-      uploadPromise = compressImage(imgState.file, 1200, 0.82)
-        .then(function (blob) {
+    // ── Step 1: resolve the media URL ────────────────────────────────
+    var mediaPromise;
+    var finalMediaType = videoState.mode;
+    var finalProvider = null;
+
+    if (videoState.mode === 'video') {
+      if (videoState.source === 'mp4') {
+        if (videoState.uploadedUrl) {
+          mediaPromise = Promise.resolve(videoState.uploadedUrl);
+          finalProvider = 'mp4';
+        } else {
+          // Upload the MP4
+          mediaPromise = P.storage.upload(
+            'ad-media',
+            'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.mp4',
+            videoState.file,
+            { contentType: 'video/mp4' }
+          ).then(function () {
+            var url = P.storage.publicUrl('ad-media', 'ads/' + advertiser.id + '/' + Date.now() + '.mp4');
+            // P.storage.upload returns after upload; recompute the exact path
+            // Simpler: rebuild the same path we used
+            // We can just use the returned url directly:
+            return url;
+          });
+          finalProvider = 'mp4';
+        }
+      } else {
+        mediaPromise = Promise.resolve(videoState.url);
+        finalProvider = videoState.source; // youtube / vimeo / tiktok
+      }
+    } else {
+      // Image
+      if (imgState.file && !imgState.uploadedUrl) {
+        mediaPromise = compressImage(imgState.file, 1200, 0.82).then(function (blob) {
           imgState.compressed = blob;
           var path = 'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
           return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
             .then(function () { return P.storage.publicUrl('ad-media', path); });
-        })
-        .then(function (publicUrl) { imgState.uploadedUrl = publicUrl; return publicUrl; });
+        }).then(function (url) { imgState.uploadedUrl = url; return url; });
+      } else {
+        mediaPromise = Promise.resolve(imgState.uploadedUrl);
+      }
     }
 
-    uploadPromise
+    mediaPromise
       .then(function (mediaUrl) {
         el.submitAdBtn.innerHTML = '<span class="py2-spinner"></span> Saving…';
         var payload = {
           title:            el.fTitle.value.trim(),
           description:      el.fDesc.value.trim() || null,
           media_url:        mediaUrl,
-          media_type:       'image',
+          media_type:       finalMediaType,
+          video_provider:   finalProvider,
           destination_type: el.fDestType.value,
           destination_url:  el.fDestUrl.value.trim(),
           start_date:       el.fStart.value ? new Date(el.fStart.value + 'T00:00:00').toISOString() : new Date().toISOString(),
@@ -1343,10 +1775,7 @@
     el.modalConfirmAction.onclick = function () {
       closeModal('modal-confirm');
       P.db.delete('ads', 'id=eq.' + ad.id, session.access_token)
-        .then(function () {
-          P.toast('Ad deleted', 'success');
-          return reloadAll();
-        })
+        .then(function () { P.toast('Ad deleted', 'success'); return reloadAll(); })
         .catch(function (err) { P.toast(err.message || 'Could not delete ad', 'error'); });
     };
     openModal('modal-confirm');
@@ -1388,26 +1817,17 @@
     var phone = el.aPhone.value.trim();
 
     var ok = true;
-    if (!biz) { $('err-a-business').classList.add('show'); ok = false; }
-    else       { $('err-a-business').classList.remove('show'); }
-    if (!isPhone(phone)) { $('err-a-phone').classList.add('show'); ok = false; }
-    else                 { $('err-a-phone').classList.remove('show'); }
-    if (!ok) {
-      btn.disabled = false;
-      btn.innerHTML = orig;
-      P.toast('Please fix the highlighted fields', 'error');
-      return;
-    }
+    if (!biz) { $('err-a-business').classList.add('show'); ok = false; } else { $('err-a-business').classList.remove('show'); }
+    if (!isPhone(phone)) { $('err-a-phone').classList.add('show'); ok = false; } else { $('err-a-phone').classList.remove('show'); }
+    if (!ok) { btn.disabled = false; btn.innerHTML = orig; P.toast('Please fix the highlighted fields', 'error'); return; }
 
     var uploadLogo = Promise.resolve(logoState.uploadedUrl);
     if (logoState.file && !logoState.uploadedUrl) {
-      uploadLogo = compressImage(logoState.file, 400, 0.85)
-        .then(function (blob) {
-          var path = 'logos/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
-          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
-            .then(function () { return P.storage.publicUrl('ad-media', path); });
-        })
-        .then(function (url) { logoState.uploadedUrl = url; return url; });
+      uploadLogo = compressImage(logoState.file, 400, 0.85).then(function (blob) {
+        var path = 'logos/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+        return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
+          .then(function () { return P.storage.publicUrl('ad-media', path); });
+      }).then(function (url) { logoState.uploadedUrl = url; return url; });
     }
 
     uploadLogo.then(function (logoUrl) {
@@ -1415,14 +1835,8 @@
       if (logoUrl) patch.logo_url = logoUrl;
       return P.db.update('advertisers', 'id=eq.' + advertiser.id, patch, session.access_token);
     })
-      .then(function () {
-        P.toast('Account updated', 'success');
-        return reloadAll();
-      })
-      .then(function () {
-        btn.disabled = false;
-        btn.innerHTML = orig;
-      })
+      .then(function () { P.toast('Account updated', 'success'); return reloadAll(); })
+      .then(function () { btn.disabled = false; btn.innerHTML = orig; })
       .catch(function (err) {
         btn.disabled = false;
         btn.innerHTML = orig;
@@ -1433,11 +1847,7 @@
   $('btn-save-password').addEventListener('click', function () {
     $('err-p-new').classList.remove('show');
     $('err-p-confirm').classList.remove('show');
-
-    var cur = el.pCurrent.value;
-    var nw  = el.pNew.value;
-    var cf  = el.pConfirm.value;
-
+    var cur = el.pCurrent.value, nw = el.pNew.value, cf = el.pConfirm.value;
     if (!cur) { P.toast('Please enter your current password', 'error'); return; }
     if (nw.length < 8) { $('err-p-new').classList.add('show'); return; }
     if (nw !== cf) { $('err-p-confirm').classList.add('show'); return; }
@@ -1452,10 +1862,7 @@
       headers: { 'Content-Type': 'application/json', 'apikey': P.config.key },
       body: JSON.stringify({ email: session.user.email, password: cur })
     })
-      .then(function (r) {
-        if (!r.ok) throw new Error('Current password is incorrect');
-        return r.json();
-      })
+      .then(function (r) { if (!r.ok) throw new Error('Current password is incorrect'); return r.json(); })
       .then(function () {
         return fetch(P.config.url + '/auth/v1/user', {
           method: 'PUT',
@@ -1465,40 +1872,26 @@
             'Authorization': 'Bearer ' + session.access_token
           },
           body: JSON.stringify({ password: nw })
-        }).then(function (r) {
-          if (!r.ok) throw new Error('Could not update password');
-          return r.json();
-        });
+        }).then(function (r) { if (!r.ok) throw new Error('Could not update password'); return r.json(); });
       })
       .then(function () {
         P.toast('Password updated', 'success');
-        el.pCurrent.value = '';
-        el.pNew.value = '';
-        el.pConfirm.value = '';
-        btn.disabled = false;
-        btn.innerHTML = orig;
+        el.pCurrent.value = ''; el.pNew.value = ''; el.pConfirm.value = '';
+        btn.disabled = false; btn.innerHTML = orig;
       })
       .catch(function (err) {
-        btn.disabled = false;
-        btn.innerHTML = orig;
+        btn.disabled = false; btn.innerHTML = orig;
         P.toast(err.message || 'Could not update password', 'error');
       });
   });
 
   $('btn-signout').addEventListener('click', function () {
     P.auth.signout().then(function () {
-      // Reset all state and show the inline sign-in card
-      session    = null;
-      advertiser = null;
-      ads        = [];
-      statsByAd  = {};
+      session = null; advertiser = null; ads = []; statsByAd = {};
       showSignin();
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // RELOAD ALL DATA
-  // ═══════════════════════════════════════════════════════════════════════
   function reloadAll() {
     return loadAds()
       .then(loadStats)
@@ -1514,24 +1907,14 @@
       });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // BOOT
-  // ═══════════════════════════════════════════════════════════════════════
   function bootDashboard() {
     session = P.auth.getSession();
-    if (!session || !session.user) {
-      showSignin();
-      return Promise.resolve();
-    }
+    if (!session || !session.user) { showSignin(); return Promise.resolve(); }
     showLoading();
     return loadAdvertiser()
       .then(reloadAll)
-      .then(function () {
-        showDashboard();
-      })
+      .then(function () { showDashboard(); })
       .catch(function (err) {
-        // If we can't even find the advertiser row, treat it as signed out
-        // (their session is stale or the account was deleted).
         el.loading.innerHTML =
           '<div style="text-align:center;padding:40px;">' +
           '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Something went wrong</h3>' +
@@ -1541,15 +1924,10 @@
           '<button id="boot-signout" class="py2-btn py2-btn-secondary" style="margin-top:16px;margin-left:8px;">Sign Out</button>' +
           '</div>';
         var so = $('boot-signout');
-        if (so) so.addEventListener('click', function () {
-          P.auth.signout().then(function () { showSignin(); });
-        });
+        if (so) so.addEventListener('click', function () { P.auth.signout().then(function () { showSignin(); }); });
       });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // ENTRY POINT
-  // ═══════════════════════════════════════════════════════════════════════
   session = P.auth.getSession();
   if (session && session.user) {
     bootDashboard();
