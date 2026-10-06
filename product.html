@@ -317,6 +317,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 </head>
 <body>
 
+<!-- UNIFIED HEADER -->
 <div class="top-header">
   <div class="top-header-inner">
     <button class="hamburger" id="hamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
@@ -345,6 +346,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   </div>
 </div>
 
+<!-- CAT NAV STRIP -->
 <div class="cat-nav">
   <div class="cat-nav-inner">
     <a href="shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store"></i> All Products</a>
@@ -359,6 +361,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   </div>
 </div>
 
+<!-- MOBILE NAV DRAWER -->
 <div class="mob-nav" id="mob-nav" role="dialog" aria-modal="true">
   <div class="mob-nav-panel">
     <div class="mob-nav-hdr">
@@ -400,17 +403,14 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   <div class="loading-state"><div class="spinner"></div>Loading product…</div>
 </div>
 
-<!-- ═══ SPONSORED ADS GRID — placed between product detail and related ═══
-     Styled by /ads-shared.css. Supports images and videos. -->
-<section class="py2-ads-section" id="py2-ads-grid" aria-label="Sponsored businesses">
-  <div class="py2-ads-head">
-    <div class="py2-ads-head-l">
-      <h2>🇿🇲 Sponsored — Zambian Businesses</h2>
-      <span class="py2-ads-tag">Featured Today</span>
-    </div>
-    <a href="/advertise/" class="py2-ads-seeall">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
+<!-- ═══ INTERSTITIAL 1 — right after product detail ═══ -->
+<section class="py2-ads-interstitial" id="py2-ads-interstitial-1" aria-label="Sponsored businesses" style="display:none;">
+  <div class="py2-ads-interstitial-head">
+    <span class="label">Sponsored · Zambian Businesses</span>
+    <a href="/advertise/" class="adv-link">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
   </div>
-  <div class="py2-ads-grid" id="py2-ads-grid-track"></div>
+  <div class="py2-ads-interstitial-stage" data-ads-slot="1"></div>
+  <div class="py2-ads-interstitial-dots" data-ads-dots="1"></div>
 </section>
 
 <div class="related-section" id="related-section" style="display:none">
@@ -419,6 +419,17 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   <div class="related-grid" id="related-grid"></div>
 </div>
 
+<!-- ═══ INTERSTITIAL 2 — after related products ═══ -->
+<section class="py2-ads-interstitial" id="py2-ads-interstitial-2" aria-label="Sponsored businesses" style="display:none;">
+  <div class="py2-ads-interstitial-head">
+    <span class="label">Sponsored · Zambian Businesses</span>
+    <a href="/advertise/" class="adv-link">Advertise here <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+  <div class="py2-ads-interstitial-stage" data-ads-slot="2"></div>
+  <div class="py2-ads-interstitial-dots" data-ads-dots="2"></div>
+</section>
+
+<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div>
@@ -483,6 +494,14 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 </div>
 
 <div class="toast" id="toast" role="alert"><i class="fa-solid fa-check"></i> <span id="toast-msg">Done!</span></div>
+
+<!-- ═══ SPONSORED AD POPUP ═══ -->
+<div id="py2-ads-popup-backdrop" role="dialog" aria-modal="true" aria-label="Featured sponsored ad">
+  <div class="py2-ads-popup" role="document">
+    <button class="py2-ads-popup-close" id="py2-ads-popup-close" aria-label="Close">✕</button>
+    <div id="py2-ads-popup-content"></div>
+  </div>
+</div>
 
 <script>
 if (window.netlifyIdentity) {
@@ -941,7 +960,7 @@ loadProductPage();
 </script>
 
 
-<!-- ── PWA block (unchanged) ── -->
+<!-- ── PWA ── -->
 <div id="pwa-install-bar" style="display:none;position:fixed;bottom:75px;left:50%;transform:translateX(-50%);z-index:400;background:#0a0a14;color:white;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);max-width:calc(100vw - 32px);animation:slideInUp .4s ease;">
   <img src="/icons/icon-72.png" alt="" style="width:36px;height:36px;border-radius:8px;" onerror="this.style.display='none'">
   <div style="flex:1;min-width:0;">
@@ -977,9 +996,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-function applyUpdate() {
-  if (window._newSW) window._newSW.postMessage('skipWaiting');
-}
+function applyUpdate() { if (window._newSW) window._newSW.postMessage('skipWaiting'); }
 let _installPrompt = null;
 const installBar  = document.getElementById('pwa-install-bar');
 const installBtn  = document.getElementById('pwa-install-btn');
@@ -1038,23 +1055,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- ═══════════════════════════════════════════════════════════
-     PHONEYA2 ADS — Sponsored grid (with video support)
+     PHONEYA2 ADS — Interstitials + popup loader
 ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
   'use strict';
-
-  var section = document.getElementById('py2-ads-grid');
-  if (!section) return;
-  function hideSection() { section.style.display = 'none'; }
 
   var SUPABASE_URL = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.url)
     || 'https://signnapmkdctdcfpnsiu.supabase.co';
   var SUPABASE_KEY = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.key)
     || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
-  var GRID = document.getElementById('py2-ads-grid-track');
-  if (!GRID) { hideSection(); return; }
+  var ROTATE_MS = 6000;
+  var POPUP_DELAY_MS = 6000;
+  var POPUP_KEY = 'py2ads_popup_shown';
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -1066,9 +1080,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var url = ad.media_url || '';
     var type = ad.media_type || 'image';
     var provider = ad.video_provider || '';
-    if (!url) return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5">🇿🇲</div>';
+    if (!url) return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#05050c;color:rgba(255,255,255,.3)">🇿🇲</div>';
     if (type !== 'video') {
-      return '<img src="' + esc(url) + '" alt="' + esc(ad.title || '') + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f5f5f5&quot;>🇿🇲</div>\'">';
+      return '<img src="' + esc(url) + '" alt="' + esc(ad.title || '') + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#05050c;color:rgba(255,255,255,.3)&quot;>🇿🇲</div>\'">';
     }
     if (!provider) {
       if (/youtube\.com|youtu\.be/i.test(url)) provider = 'youtube';
@@ -1131,26 +1145,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function sbGet(path) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Accept': 'application/json'
-      }
-    }).then(function (r) {
-      if (!r.ok) throw new Error('Supabase GET ' + r.status);
-      return r.json();
-    });
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Accept': 'application/json' }
+    }).then(function (r) { if (!r.ok) throw new Error('Supabase GET ' + r.status); return r.json(); });
   }
-
   function sbPost(path, body) {
     return fetch(SUPABASE_URL + '/rest/v1/' + path, {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
       body: JSON.stringify(body)
     });
   }
@@ -1164,7 +1165,7 @@ document.addEventListener('DOMContentLoaded', function() {
       '&start_date=lte.' + encodeURIComponent(now) +
       '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
       '&order=weight.desc,created_at.desc' +
-      '&limit=9';
+      '&limit=40';
     return sbGet(qs);
   }
 
@@ -1205,7 +1206,18 @@ document.addEventListener('DOMContentLoaded', function() {
     return { label: 'View Deal', href: u, icon: 'fa-solid fa-arrow-up-right-from-square' };
   }
 
-  function buildCard(ad) {
+  function ctaLabelShort(ad) {
+    var t = ad.destination_type;
+    if (t === 'whatsapp')  return 'Open WhatsApp';
+    if (t === 'website')   return 'Enter Website';
+    if (t === 'facebook')  return 'Open Facebook';
+    if (t === 'instagram') return 'Open Instagram';
+    if (t === 'tiktok')    return 'Open TikTok';
+    if (t === 'youtube')   return 'Open YouTube';
+    return 'Enter';
+  }
+
+  function buildPortalCard(ad) {
     var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
     var cta = ctaFor(ad);
     var card = document.createElement('div');
@@ -1215,15 +1227,16 @@ document.addEventListener('DOMContentLoaded', function() {
     card.innerHTML =
       '<div class="py2-ads-img">' +
         '<span class="py2-ads-sponsored">Sponsored</span>' +
-        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsGridReport(\'' + esc(ad.id) + '\')">Report</button>' +
+        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
         renderMedia(ad) +
       '</div>' +
       '<div class="py2-ads-body">' +
         '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
         '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
-        '<div class="py2-ads-desc">' + esc(ad.description || '') + '</div>' +
-        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsGridClick(\'' + esc(ad.id) + '\')">' +
-          '<i class="' + cta.icon + '"></i> ' + esc(cta.label) +
+        (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
+        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+          '<span><i class="' + cta.icon + '"></i> ' + esc(ctaLabelShort(ad)) + '</span>' +
+          '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
         '</a>' +
       '</div>';
     card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
@@ -1232,19 +1245,27 @@ document.addEventListener('DOMContentLoaded', function() {
     return card;
   }
 
-  function recordImpression(adId) {
+  function recordImpression(adId, placement) {
     visitorHash().then(function (vh) {
-      return sbPost('ad_impressions', { ad_id: adId, visitor_hash: vh, placement: 'grid', source: detectSource() });
+      return sbPost('ad_impressions', {
+        ad_id: adId, visitor_hash: vh,
+        placement: placement || 'interstitial',
+        source: detectSource()
+      });
     }).catch(function () {});
   }
 
-  window.py2AdsGridClick = function (adId) {
+  window.py2AdsClick = function (adId) {
     visitorHash().then(function (vh) {
-      return sbPost('ad_clicks', { ad_id: adId, visitor_hash: vh, placement: 'grid', source: detectSource() });
+      return sbPost('ad_clicks', {
+        ad_id: adId, visitor_hash: vh,
+        placement: 'interstitial',
+        source: detectSource()
+      });
     }).catch(function () {});
   };
 
-  window.py2AdsGridReport = function (adId) {
+  window.py2AdsReport = function (adId) {
     var reason = window.prompt('Report this ad.\n\nPlease type a short reason:', '');
     if (!reason || !reason.trim()) return;
     visitorHash().then(function (vh) {
@@ -1253,16 +1274,128 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(function () { window.alert('Could not submit report right now.'); });
   };
 
-  function boot(rows) {
-    if (!Array.isArray(rows) || !rows.length) { hideSection(); return; }
-    var ordered = weightedShuffle(rows);
-    GRID.innerHTML = '';
-    ordered.forEach(function (ad) { GRID.appendChild(buildCard(ad)); });
-    section.style.display = 'block';
-    ordered.forEach(function (ad) { recordImpression(ad.id); });
+  function setupInterstitial(sectionEl, adList) {
+    if (!sectionEl || !adList.length) return;
+    var stage = sectionEl.querySelector('.py2-ads-interstitial-stage');
+    var dotsEl = sectionEl.querySelector('.py2-ads-interstitial-dots');
+    if (!stage) return;
+
+    adList.forEach(function (ad, i) {
+      var slide = document.createElement('div');
+      slide.className = 'py2-ads-interstitial-slide' + (i === 0 ? ' is-active' : '');
+      slide.appendChild(buildPortalCard(ad));
+      stage.appendChild(slide);
+
+      if (dotsEl && adList.length > 1) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', 'Show ad ' + (i + 1));
+        if (i === 0) dot.classList.add('is-active');
+        dot.addEventListener('click', function () { goTo(i, true); });
+        dotsEl.appendChild(dot);
+      }
+    });
+
+    sectionEl.style.display = 'block';
+    recordImpression(adList[0].id, 'interstitial');
+
+    if (adList.length < 2) return;
+
+    var current = 0;
+    var slideEls = stage.querySelectorAll('.py2-ads-interstitial-slide');
+    var dotEls = dotsEl ? dotsEl.querySelectorAll('button') : [];
+    var timer = null;
+    var paused = false;
+
+    function goTo(idx, fromUser) {
+      if (idx === current || idx < 0 || idx >= slideEls.length) return;
+      var prev = current;
+      current = idx;
+      slideEls[prev].classList.remove('is-active');
+      slideEls[prev].classList.add('is-leaving');
+      setTimeout(function () { slideEls[prev].classList.remove('is-leaving'); }, 700);
+      slideEls[current].classList.add('is-active');
+      if (dotEls.length) dotEls.forEach(function (d, i) { d.classList.toggle('is-active', i === current); });
+      recordImpression(adList[current].id, 'interstitial');
+      if (fromUser) reset();
+    }
+    function next() { goTo((current + 1) % slideEls.length); }
+    function reset() {
+      clearInterval(timer);
+      timer = setInterval(function () {
+        if (paused || document.hidden) return;
+        next();
+      }, ROTATE_MS);
+    }
+    sectionEl.addEventListener('mouseenter', function () { paused = true; });
+    sectionEl.addEventListener('mouseleave', function () { paused = false; });
+    sectionEl.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    sectionEl.addEventListener('touchend', function () { setTimeout(function () { paused = false; }, 6000); }, { passive: true });
+    reset();
   }
 
-  fetchAds().then(boot).catch(function () { hideSection(); });
+  var popupBackdrop = document.getElementById('py2-ads-popup-backdrop');
+  var popupContent  = document.getElementById('py2-ads-popup-content');
+  var popupClose    = document.getElementById('py2-ads-popup-close');
+  var popupFired    = false;
+
+  function closePopup() {
+    if (popupBackdrop) popupBackdrop.classList.remove('open');
+    if (popupContent) popupContent.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (e) {} });
+  }
+  if (popupClose) popupClose.addEventListener('click', closePopup);
+  if (popupBackdrop) popupBackdrop.addEventListener('click', function (e) { if (e.target === popupBackdrop) closePopup(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && popupBackdrop && popupBackdrop.classList.contains('open')) closePopup();
+  });
+
+  function buildPopupHTML(ad) {
+    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta = ctaFor(ad);
+    return renderMedia(ad) +
+      '<div class="py2-ads-popup-body">' +
+        '<span class="py2-ads-popup-tag">⭐ Featured Business</span>' +
+        '<div class="py2-ads-popup-biz">' + esc(biz) + '</div>' +
+        '<h2 class="py2-ads-popup-title">' + esc(ad.title) + '</h2>' +
+        (ad.description ? '<p class="py2-ads-popup-desc">' + esc(ad.description) + '</p>' : '') +
+        '<a class="py2-ads-popup-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="py2AdsClick(\'' + esc(ad.id) + '\')">' +
+          '<span><i class="' + cta.icon + '"></i> ' + esc(ctaLabelShort(ad)) + '</span>' +
+          '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
+        '</a>' +
+        '<div class="py2-ads-popup-report"><a onclick="py2AdsReport(\'' + esc(ad.id) + '\');return false;" href="#">Report this ad</a></div>' +
+      '</div>';
+  }
+
+  function maybeShowPopup(adList) {
+    if (popupFired) return;
+    try { if (sessionStorage.getItem(POPUP_KEY)) return; } catch (e) {}
+    popupFired = true;
+    if (!adList.length) return;
+    setTimeout(function () {
+      var top = adList.slice().sort(function (a, b) {
+        return (parseInt(b.weight, 10) || 1) - (parseInt(a.weight, 10) || 1);
+      })[0];
+      if (!top) return;
+      if (popupContent) popupContent.innerHTML = buildPopupHTML(top);
+      if (popupBackdrop) popupBackdrop.classList.add('open');
+      recordImpression(top.id, 'popup');
+      try { sessionStorage.setItem(POPUP_KEY, '1'); } catch (e) {}
+    }, POPUP_DELAY_MS);
+  }
+
+  function boot(rows) {
+    if (!Array.isArray(rows) || !rows.length) return;
+    var ordered = weightedShuffle(rows);
+    var slot1 = ordered;
+    var slot2 = ordered.length > 1
+      ? ordered.slice(Math.floor(ordered.length / 2)).concat(ordered.slice(0, Math.floor(ordered.length / 2)))
+      : ordered;
+    setupInterstitial(document.getElementById('py2-ads-interstitial-1'), slot1);
+    setupInterstitial(document.getElementById('py2-ads-interstitial-2'), slot2);
+    maybeShowPopup(ordered);
+  }
+
+  fetchAds().then(boot).catch(function () { /* silent */ });
 })();
 </script>
 
