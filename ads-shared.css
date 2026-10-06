@@ -1,0 +1,757 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PhoneYa2 Ads — ads-shared.css
+   ────────────────────────────────────────────────────────────────────────
+   Shared styles for the NEW ads pages only:
+     · advertise/index.html    (signup)
+     · advertiser/index.html   (dashboard)
+     · ads-admin/index.html    (admin)
+     · ad/[slug] share page
+
+   The 5 existing shop pages (index, shop, product, about, contact) carry
+   their own inline py2-ads-* styles — this file does NOT replace them.
+
+   Design language matches shared.css used elsewhere on the site so the
+   ads subsystem feels native.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+/* ── TOKENS ──────────────────────────────────────────────────────────── */
+:root {
+  --py2-dark:      #0a0a14;
+  --py2-dark-2:    #12122a;
+  --py2-text:      #1a1a2e;
+  --py2-muted:     #6b7280;
+  --py2-light:     #f8f9ff;
+  --py2-white:     #ffffff;
+  --py2-border:    #e8e8e8;
+  --py2-border-soft: rgba(0,0,0,.06);
+
+  --py2-orange:    #ff6000;
+  --py2-orange-2:  #ff9f43;
+  --py2-green:     #25d366;
+  --py2-green-2:   #128c7e;
+  --py2-red:       #e63946;
+  --py2-amber:     #f59e0b;
+
+  --py2-c1: #ff6b6b; --py2-c2: #feca57; --py2-c3: #48dbfb;
+  --py2-c4: #ff9ff3; --py2-c5: #54a0ff; --py2-c6: #5f27cd;
+
+  --py2-grad2:      linear-gradient(135deg,#ff6b6b 0%,#feca57 50%,#48dbfb 100%);
+  --py2-grad-orange:linear-gradient(135deg,#ff6000,#ff9f43);
+  --py2-grad-green: linear-gradient(135deg,#128c7e,#25d366);
+
+  --py2-radius-sm:  8px;
+  --py2-radius:     12px;
+  --py2-radius-lg:  16px;
+  --py2-radius-xl:  20px;
+
+  --py2-shadow-sm:  0 2px 12px rgba(0,0,0,.06);
+  --py2-shadow:     0 4px 20px rgba(0,0,0,.08);
+  --py2-shadow-lg:  0 12px 32px rgba(0,0,0,.14);
+
+  --py2-font-body:  'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --py2-font-head:  'Syne', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ── RESET (scoped — we don't want to affect unrelated elements) ─────── */
+.py2-page *, .py2-page *::before, .py2-page *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+/* ── PAGE SHELL ──────────────────────────────────────────────────────── */
+.py2-page {
+  font-family: var(--py2-font-body);
+  background: var(--py2-light);
+  color: var(--py2-text);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.py2-page h1,
+.py2-page h2,
+.py2-page h3,
+.py2-page h4 {
+  font-family: var(--py2-font-head);
+  line-height: 1.2;
+}
+.py2-page a { color: inherit; text-decoration: none; }
+.py2-page img { max-width: 100%; display: block; }
+.py2-page button { font-family: var(--py2-font-body); }
+
+/* ── TOP BAR (used by all ads pages) ─────────────────────────────────── */
+.py2-topbar {
+  background: var(--py2-dark);
+  color: white;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  position: sticky; top: 0; z-index: 200;
+}
+.py2-topbar-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.py2-topbar-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--py2-font-head);
+  font-weight: 800;
+  font-size: 16px;
+  color: white;
+  white-space: nowrap;
+}
+.py2-topbar-brand span { color: var(--py2-orange); }
+.py2-topbar-brand small {
+  display: block;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+}
+.py2-topbar-nav {
+  display: flex; align-items: center; gap: 4px;
+  margin-left: auto; flex-wrap: wrap;
+}
+.py2-topbar-nav a,
+.py2-topbar-nav button {
+  background: none; border: none;
+  color: rgba(255,255,255,.75);
+  font-size: 13px; font-weight: 500;
+  padding: 8px 12px; border-radius: 8px;
+  cursor: pointer; transition: all .2s;
+  text-decoration: none; white-space: nowrap;
+}
+.py2-topbar-nav a:hover,
+.py2-topbar-nav button:hover { background: rgba(255,255,255,.08); color: white; }
+.py2-topbar-nav a.active { color: white; background: rgba(255,255,255,.1); }
+
+/* ── MAIN CONTAINER ──────────────────────────────────────────────────── */
+.py2-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+.py2-container-narrow {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* ── HEADINGS / TEXT ─────────────────────────────────────────────────── */
+.py2-h1 {
+  font-family: var(--py2-font-head);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--py2-text);
+  margin-bottom: 8px;
+}
+.py2-h2 {
+  font-family: var(--py2-font-head);
+  font-weight: 800;
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+.py2-h3 {
+  font-family: var(--py2-font-head);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+.py2-sub {
+  color: var(--py2-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ── CARD ────────────────────────────────────────────────────────────── */
+.py2-card {
+  background: var(--py2-white);
+  border: 1px solid var(--py2-border-soft);
+  border-radius: var(--py2-radius-lg);
+  box-shadow: var(--py2-shadow-sm);
+  overflow: hidden;
+}
+.py2-card + .py2-card { margin-top: 16px; }
+.py2-card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--py2-border-soft);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.py2-card-head h2,
+.py2-card-head h3 {
+  font-family: var(--py2-font-head);
+  font-weight: 700;
+  font-size: 15px;
+}
+.py2-card-body { padding: 20px; }
+.py2-card-foot {
+  padding: 14px 20px;
+  border-top: 1px solid var(--py2-border-soft);
+  background: #fafbff;
+  display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────── */
+.py2-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: none; border-radius: var(--py2-radius-sm);
+  font-family: var(--py2-font-body);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .2s, background .2s;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.py2-btn:disabled,
+.py2-btn.disabled { opacity: .55; cursor: not-allowed; }
+.py2-btn:not(:disabled):not(.disabled):hover { transform: translateY(-1px); }
+
+.py2-btn-primary {
+  background: var(--py2-grad-orange);
+  color: white;
+  box-shadow: 0 4px 14px rgba(255,96,0,.32);
+}
+.py2-btn-primary:not(:disabled):hover { box-shadow: 0 6px 22px rgba(255,96,0,.45); }
+
+.py2-btn-success {
+  background: var(--py2-grad-green);
+  color: white;
+  box-shadow: 0 4px 14px rgba(37,211,102,.3);
+}
+.py2-btn-success:not(:disabled):hover { box-shadow: 0 6px 22px rgba(37,211,102,.45); }
+
+.py2-btn-secondary {
+  background: white;
+  color: var(--py2-text);
+  border: 1.5px solid var(--py2-border);
+}
+.py2-btn-secondary:hover { background: var(--py2-light); }
+
+.py2-btn-danger {
+  background: var(--py2-red);
+  color: white;
+}
+.py2-btn-danger:hover { background: #c92e3a; }
+
+.py2-btn-ghost {
+  background: transparent;
+  color: var(--py2-muted);
+  padding: 8px 12px;
+}
+.py2-btn-ghost:hover { background: rgba(0,0,0,.04); color: var(--py2-text); }
+
+.py2-btn-block { width: 100%; }
+.py2-btn-sm { padding: 7px 12px; font-size: 12.5px; }
+.py2-btn-lg { padding: 14px 24px; font-size: 15px; }
+
+/* ── FORMS ───────────────────────────────────────────────────────────── */
+.py2-field { margin-bottom: 16px; }
+.py2-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--py2-text);
+  margin-bottom: 6px;
+}
+.py2-label .req { color: var(--py2-c1); margin-left: 2px; }
+.py2-input,
+.py2-select,
+.py2-textarea {
+  width: 100%;
+  border: 1.5px solid rgba(0,0,0,.1);
+  border-radius: var(--py2-radius-sm);
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: var(--py2-font-body);
+  color: var(--py2-text);
+  background: white;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.py2-input:focus,
+.py2-select:focus,
+.py2-textarea:focus {
+  border-color: var(--py2-orange);
+  box-shadow: 0 0 0 3px rgba(255,96,0,.1);
+}
+.py2-input.error,
+.py2-textarea.error { border-color: var(--py2-red); }
+.py2-textarea { min-height: 110px; resize: vertical; }
+.py2-help {
+  font-size: 12px;
+  color: var(--py2-muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+.py2-error {
+  font-size: 12px;
+  color: var(--py2-red);
+  margin-top: 5px;
+  display: none;
+}
+.py2-error.show { display: block; }
+.py2-input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 520px) {
+  .py2-input-group { grid-template-columns: 1fr; }
+}
+
+/* ── FILE INPUT (image upload) ───────────────────────────────────────── */
+.py2-file {
+  border: 2px dashed rgba(0,0,0,.12);
+  border-radius: var(--py2-radius);
+  padding: 22px;
+  text-align: center;
+  background: #fafbff;
+  cursor: pointer;
+  transition: all .2s;
+}
+.py2-file:hover { border-color: var(--py2-orange); background: #fff9f4; }
+.py2-file.dragover { border-color: var(--py2-orange); background: #fff4ec; }
+.py2-file-input { display: none; }
+.py2-file-icon { font-size: 2rem; margin-bottom: 8px; }
+.py2-file-text { font-size: 13px; color: var(--py2-muted); }
+.py2-file-text strong { color: var(--py2-text); }
+.py2-file-preview {
+  margin-top: 12px;
+  display: none;
+  position: relative;
+  border-radius: var(--py2-radius-sm);
+  overflow: hidden;
+  max-width: 100%;
+}
+.py2-file-preview.show { display: block; }
+.py2-file-preview img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--py2-radius-sm);
+}
+.py2-file-remove {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(10,10,20,.7); color: white;
+  border: none; border-radius: 50%;
+  width: 30px; height: 30px;
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── BADGES ──────────────────────────────────────────────────────────── */
+.py2-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
+.py2-badge-pending  { background: rgba(245,158,11,.12); color: #b45309; border: 1px solid rgba(245,158,11,.25); }
+.py2-badge-approved { background: rgba(22,163,74,.12); color: #15803d; border: 1px solid rgba(22,163,74,.25); }
+.py2-badge-rejected { background: rgba(230,57,70,.12); color: #b91c1c; border: 1px solid rgba(230,57,70,.25); }
+.py2-badge-paused   { background: rgba(107,114,128,.12); color: #4b5563; border: 1px solid rgba(107,114,128,.25); }
+.py2-badge-banned   { background: rgba(10,10,20,.9); color: white; border: 1px solid rgba(10,10,20,.9); }
+.py2-badge-tier-free     { background: rgba(107,114,128,.12); color: #4b5563; }
+.py2-badge-tier-paid     { background: rgba(84,160,255,.12); color: #2563eb; }
+.py2-badge-tier-premium  { background: linear-gradient(135deg,#5f27cd,#54a0ff); color: white; }
+
+/* ── TABS ────────────────────────────────────────────────────────────── */
+.py2-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--py2-border-soft);
+  overflow-x: auto;
+  margin-bottom: 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.py2-tabs::-webkit-scrollbar { display: none; }
+.py2-tab {
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--py2-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  font-family: var(--py2-font-body);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.py2-tab:hover { color: var(--py2-text); }
+.py2-tab.active {
+  color: var(--py2-orange);
+  border-bottom-color: var(--py2-orange);
+}
+.py2-tab .count {
+  font-size: 11px;
+  background: rgba(0,0,0,.06);
+  padding: 1px 7px;
+  border-radius: 100px;
+}
+.py2-tab.active .count { background: rgba(255,96,0,.15); color: var(--py2-orange); }
+
+/* ── TABLES ──────────────────────────────────────────────────────────── */
+.py2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.py2-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--py2-muted);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  border-bottom: 1px solid var(--py2-border-soft);
+  background: #fafbff;
+}
+.py2-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--py2-border-soft);
+  vertical-align: middle;
+}
+.py2-table tr:last-child td { border-bottom: none; }
+.py2-table tr:hover td { background: #fbfcff; }
+.py2-table-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--py2-muted);
+  font-size: 14px;
+}
+
+/* ── MODAL ───────────────────────────────────────────────────────────── */
+.py2-modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(10,10,20,.55);
+  backdrop-filter: blur(4px);
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.py2-modal-backdrop.open { display: flex; }
+.py2-modal {
+  background: white;
+  border-radius: var(--py2-radius-lg);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--py2-shadow-lg);
+  animation: py2Pop .25s ease;
+}
+@keyframes py2Pop {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.py2-modal-head {
+  padding: 20px 24px 0;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+}
+.py2-modal-head h3 {
+  font-family: var(--py2-font-head);
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+.py2-modal-close {
+  background: none; border: none;
+  font-size: 20px; color: var(--py2-muted);
+  cursor: pointer; padding: 4px;
+  line-height: 1;
+}
+.py2-modal-body { padding: 16px 24px; }
+.py2-modal-foot {
+  padding: 0 24px 20px;
+  display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+}
+
+/* ── LOADING / EMPTY STATES ──────────────────────────────────────────── */
+.py2-empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--py2-muted);
+}
+.py2-empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.py2-empty h3 {
+  font-family: var(--py2-font-head);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--py2-text);
+  margin-bottom: 6px;
+}
+.py2-empty p { font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+
+.py2-spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: py2Spin .7s linear infinite;
+  vertical-align: middle;
+}
+.py2-spinner-dark {
+  border-color: rgba(0,0,0,.1);
+  border-top-color: var(--py2-orange);
+}
+@keyframes py2Spin { to { transform: rotate(360deg); } }
+
+/* ── DASHBOARD GRID ──────────────────────────────────────────────────── */
+.py2-dash-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.py2-dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.py2-stat {
+  background: white;
+  border: 1px solid var(--py2-border-soft);
+  border-radius: var(--py2-radius);
+  padding: 16px;
+  box-shadow: var(--py2-shadow-sm);
+}
+.py2-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--py2-muted);
+  margin-bottom: 6px;
+}
+.py2-stat-value {
+  font-family: var(--py2-font-head);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--py2-text);
+}
+.py2-stat-value.accent { color: var(--py2-orange); }
+
+/* ── AD LIST ITEM (used in My Ads / Ad Queue) ────────────────────────── */
+.py2-ad-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border: 1px solid var(--py2-border-soft);
+  border-radius: var(--py2-radius);
+  box-shadow: var(--py2-shadow-sm);
+  align-items: flex-start;
+  transition: box-shadow .2s;
+}
+.py2-ad-item + .py2-ad-item { margin-top: 12px; }
+.py2-ad-item:hover { box-shadow: var(--py2-shadow); }
+.py2-ad-thumb {
+  width: 110px;
+  height: 78px;
+  border-radius: var(--py2-radius-sm);
+  background: var(--py2-light);
+  object-fit: cover;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  overflow: hidden;
+}
+.py2-ad-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.py2-ad-main { flex: 1; min-width: 0; }
+.py2-ad-top {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.py2-ad-title {
+  font-family: var(--py2-font-head);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--py2-text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.py2-ad-meta {
+  font-size: 12px;
+  color: var(--py2-muted);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.py2-ad-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .py2-ad-item { flex-direction: column; }
+  .py2-ad-thumb { width: 100%; height: 140px; }
+}
+
+/* ── SHARE ROW (used on share tab) ───────────────────────────────────── */
+.py2-share-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--py2-light);
+  padding: 10px 12px;
+  border-radius: var(--py2-radius-sm);
+  font-size: 13px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.py2-share-url {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--py2-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── AUTH SCREENS (signup / signin) ──────────────────────────────────── */
+.py2-auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%),
+    radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%),
+    var(--py2-light);
+}
+.py2-auth-card {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-radius: var(--py2-radius-xl);
+  box-shadow: var(--py2-shadow-lg);
+  padding: 36px 32px;
+}
+@media (max-width: 520px) {
+  .py2-auth-card { padding: 28px 20px; }
+}
+.py2-auth-brand {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.py2-auth-brand img {
+  height: 56px; width: 56px;
+  border-radius: var(--py2-radius);
+  margin: 0 auto 12px;
+}
+.py2-auth-brand h1 {
+  font-family: var(--py2-font-head);
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+.py2-auth-brand p {
+  color: var(--py2-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.py2-auth-alt {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--py2-muted);
+}
+.py2-auth-alt a {
+  color: var(--py2-orange);
+  font-weight: 600;
+}
+
+/* ── NOTICE / POLICY BOX ─────────────────────────────────────────────── */
+.py2-notice {
+  background: rgba(84,160,255,.07);
+  border: 1px solid rgba(84,160,255,.2);
+  border-radius: var(--py2-radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--py2-text);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.py2-notice-warn {
+  background: rgba(245,158,11,.08);
+  border-color: rgba(245,158,11,.25);
+}
+.py2-notice-danger {
+  background: rgba(230,57,70,.07);
+  border-color: rgba(230,57,70,.2);
+}
+.py2-notice-icon { flex-shrink: 0; font-size: 1.05rem; line-height: 1.4; }
+
+/* ── CHECKBOX ────────────────────────────────────────────────────────── */
+.py2-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--py2-text);
+  cursor: pointer;
+  padding: 10px 0;
+}
+.py2-check input[type="checkbox"] {
+  width: 18px; height: 18px;
+  margin-top: 1px;
+  accent-color: var(--py2-orange);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .py2-container { padding: 20px 14px 60px; }
+  .py2-topbar-inner { padding: 10px 14px; gap: 8px; }
+  .py2-topbar-nav { gap: 2px; }
+  .py2-topbar-nav a,
+  .py2-topbar-nav button { padding: 6px 8px; font-size: 12px; }
+}
+@media (max-width: 600px) {
+  .py2-container-narrow { padding: 24px 14px 60px; }
+  .py2-h1 { font-size: 1.4rem; }
+  .py2-card-body { padding: 16px; }
+  .py2-tab { padding: 10px 12px; font-size: 13px; }
+  .py2-table th,
+  .py2-table td { padding: 10px 12px; }
+}
+
+/* ── FOCUS RING (a11y) ───────────────────────────────────────────────── */
+.py2-page a:focus-visible,
+.py2-page button:focus-visible,
+.py2-page input:focus-visible,
+.py2-page select:focus-visible,
+.py2-page textarea:focus-visible {
+  outline: 2px solid var(--py2-orange);
+  outline-offset: 2px;
+}
