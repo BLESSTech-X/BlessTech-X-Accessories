@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVNT6SQCS2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MVNT6SQCS2');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advertiser Dashboard — PhoneYa2 Ads</title>
+  <meta name="description" content="Manage your PhoneYa2 ad campaigns: create ads, track performance, share links.">
+  <meta name="theme-color" content="#ff6000">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/ads-shared.css">
+  <style>
+    /* ── Page-specific styles (used only on the advertiser dashboard) ── */
+
+    /* Loading overlay shown during initial auth gate */
+    .dash-loading {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      color: var(--py2-muted);
+    }
+    .dash-loading .py2-spinner-dark {
+      width: 34px; height: 34px; border-width: 3px;
+    }
+
+    /* Ad list item extras */
+    .ad-thumb-emoji {
+      font-size: 1.8rem;
+      color: var(--py2-muted);
+    }
+
+    /* Stats cards per ad */
+    .ad-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .ad-stat-mini {
+      background: var(--py2-light);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .ad-stat-mini .num {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--py2-text);
+    }
+    .ad-stat-mini .lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--py2-muted);
+      margin-top: 2px;
+    }
+
+    /* Create Ad form: destination help text */
+    #dest-help {
+      font-size: 12px;
+      color: var(--py2-muted);
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    /* Image preview ratio (16:9 like the carousel) */
+    #img-preview img {
+      aspect-ratio: 16 / 9;
+      max-height: 240px;
+    }
+
+    /* Character counters under title / description */
+    .char-count {
+      font-size: 11px;
+      color: var(--py2-muted);
+      text-align: right;
+      margin-top: 3px;
+    }
+    .char-count.warn { color: var(--py2-amber); }
+    .char-count.over { color: var(--py2-red); }
+
+    /* Share tab: QR code container */
+    .qr-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px;
+      border-radius: var(--py2-radius);
+      background: var(--py2-light);
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .qr-img {
+      width: 120px; height: 120px;
+      background: white;
+      border-radius: 8px;
+      padding: 6px;
+      display: block;
+      box-shadow: var(--py2-shadow-sm);
+    }
+
+    /* Password change form */
+    .pw-form {
+      max-width: 380px;
+    }
+
+    /* Empty state icon spacing */
+    .py2-empty + .py2-card { margin-top: 16px; }
+
+    /* Danger zone */
+    .danger-zone {
+      border-color: rgba(230,57,70,.25);
+      background: rgba(230,57,70,.02);
+    }
+    .danger-zone .py2-card-head {
+      border-bottom-color: rgba(230,57,70,.15);
+    }
+
+    /* Confirm modal variant */
+    .py2-modal-confirm {
+      max-width: 420px;
+    }
+
+    /* Sign out button in topbar (uses .py2-btn-ghost) */
+    .py2-topbar-nav .signout:hover {
+      background: rgba(230,57,70,.15);
+      color: #ff9b9b;
+    }
+
+    /* Mobile: stack stats */
+    @media (max-width: 480px) {
+      .ad-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .ad-stat-mini { padding: 6px; }
+      .ad-stat-mini .num { font-size: 13px; }
+      .ad-stat-mini .lbl { font-size: 9px; }
+    }
+  </style>
+</head>
