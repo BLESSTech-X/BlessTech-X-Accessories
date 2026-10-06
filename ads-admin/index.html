@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVNT6SQCS2"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -10,437 +9,994 @@
     gtag('config', 'G-MVNT6SQCS2');
   </script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ads Admin — PhoneYa2</title>
   <meta name="description" content="Admin panel for PhoneYa2 Ads.">
   <meta name="theme-color" content="#0a0a14">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/ads-shared.css">
   <style>
-    .admin-loading {
-      min-height: 60vh;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 14px;
-      color: var(--py2-muted);
-    }
-    .admin-loading .py2-spinner-dark { width: 34px; height: 34px; border-width: 3px; }
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ADS ADMIN — single-file stylesheet, mobile-first
+     ═══════════════════════════════════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; }
 
-    .py2-topbar.admin .py2-topbar-brand span { color: #feca57; }
+  :root {
+    --dark:      #0a0a14;
+    --dark-2:    #12122a;
+    --text:      #1a1a2e;
+    --muted:     #6b7280;
+    --light:     #f6f7fb;
+    --white:     #ffffff;
+    --border:    rgba(0,0,0,.08);
+    --orange:    #ff6000;
+    --orange-2:  #ff9f43;
+    --green:     #25d366;
+    --green-2:   #128c7e;
+    --red:       #e63946;
+    --amber:     #f59e0b;
+    --purple:    #7c3aed;
+    --blue:      #2563eb;
+    --radius:    12px;
+    --radius-sm: 8px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.06);
+    --shadow:    0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.14);
+    --font-body: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    --font-head: 'Syne', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
-    .queue-item {
-      display: flex; gap: 16px;
-      padding: 18px;
-      background: white;
-      border: 1px solid var(--py2-border-soft);
-      border-radius: var(--py2-radius);
-      box-shadow: var(--py2-shadow-sm);
-      margin-bottom: 12px;
-      align-items: flex-start;
-    }
-    .queue-item .ad-thumb {
-      width: 140px; height: 90px;
-      flex-shrink: 0;
-      border-radius: var(--py2-radius-sm);
-      overflow: hidden;
-      background: var(--py2-light);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-    }
-    .queue-item .ad-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .queue-body { flex: 1; min-width: 0; }
-    .queue-title { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; margin-bottom: 4px; line-height: 1.3; }
-    .queue-biz { font-size: 12px; color: var(--py2-orange); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
-    .queue-desc { font-size: 13px; color: var(--py2-muted); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .queue-meta { font-size: 12px; color: var(--py2-muted); margin-bottom: 10px; }
-    .queue-meta a { color: var(--py2-orange); word-break: break-all; }
-    .queue-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    @media (max-width: 700px) {
-      .queue-item { flex-direction: column; }
-      .queue-item .ad-thumb { width: 100%; height: 160px; }
-    }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--light);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body { min-height: 100vh; }
 
-    .report-item { padding: 16px; background: white; border: 1px solid var(--py2-border-soft); border-left: 3px solid var(--py2-red); border-radius: var(--py2-radius); margin-bottom: 10px; }
-    .report-item.resolved { border-left-color: #16a34a; opacity: .65; }
-    .report-reason { display: inline-block; background: rgba(230,57,70,.1); color: #b91c1c; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-    .report-ad-title { font-family: var(--py2-font-head); font-weight: 700; font-size: 14px; margin-bottom: 6px; }
-    .report-detail { font-size: 13px; color: #444; line-height: 1.5; margin-bottom: 8px; }
-    .report-meta { font-size: 11px; color: var(--py2-muted); margin-bottom: 10px; }
+  h1, h2, h3, h4 { font-family: var(--font-head); margin: 0; line-height: 1.2; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  button { font-family: var(--font-body); cursor: pointer; }
 
-    .log-item { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--py2-border-soft); align-items: flex-start; }
-    .log-item:last-child { border-bottom: none; }
-    .log-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; color: white; }
-    .log-action { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
-    .log-meta { font-size: 11.5px; color: var(--py2-muted); line-height: 1.45; }
-    .log-reason { font-size: 12.5px; color: #444; background: var(--py2-light); padding: 8px 10px; border-radius: 8px; margin-top: 6px; line-height: 1.5; }
+  /* ── LAYOUT ────────────────────────────────────────────────────────── */
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 14px; }
+  @media (min-width: 768px) { .wrap { padding: 0 22px; } }
 
-    .analytics-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--py2-border-soft); }
-    .analytics-row:last-child { border-bottom: none; }
-    .analytics-rank { width: 28px; height: 28px; border-radius: 8px; background: var(--py2-light); display: flex; align-items: center; justify-content: center; font-family: var(--py2-font-head); font-weight: 800; font-size: 13px; flex-shrink: 0; }
-    .analytics-rank.gold   { background: linear-gradient(135deg,#feca57,#ff9f43); color: white; }
-    .analytics-rank.silver { background: linear-gradient(135deg,#c0c0c0,#8f8f8f); color: white; }
-    .analytics-rank.bronze { background: linear-gradient(135deg,#cd7f32,#8b5a2b); color: white; }
-    .analytics-title { flex: 1; min-width: 0; }
-    .analytics-name { font-family: var(--py2-font-head); font-weight: 700; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .analytics-sub { font-size: 11.5px; color: var(--py2-muted); }
-    .analytics-nums { text-align: right; font-size: 12px; line-height: 1.5; }
-    .analytics-nums strong { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; display: block; }
+  /* ── CARDS ─────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .card-head {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .card-head h2 { font-family: var(--font-head); font-weight: 700; font-size: 15px; }
+  .card-body { padding: 16px; }
+  @media (min-width: 640px) { .card-body { padding: 18px; } }
 
-    #signin-screen, #denied-screen {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px 16px;
-      background: radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%), radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%), var(--py2-light);
-    }
-    #signin-screen .py2-auth-card, #denied-screen .py2-auth-card { max-width: 420px; }
-    #signin-error { display: none; background: rgba(230,57,70,.08); border: 1px solid rgba(230,57,70,.25); border-radius: var(--py2-radius-sm); padding: 10px 14px; font-size: 13px; color: #b91c1c; margin-bottom: 14px; line-height: 1.5; }
-    #signin-error.show { display: block; }
-    #denied-screen .denied-icon { font-size: 3rem; text-align: center; margin-bottom: 12px; }
+  /* ── BUTTONS ───────────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 9px 16px;
+    border: none; border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 13.5px; font-weight: 600;
+    transition: transform .15s, box-shadow .2s, background .2s;
+    white-space: nowrap; line-height: 1.2;
+    text-decoration: none;
+  }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg, #ff6000, #ff9f43); color: white; box-shadow: 0 4px 14px rgba(255,96,0,.3); }
+  .btn-primary:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255,96,0,.42); }
+  .btn-secondary { background: white; color: var(--text); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { background: var(--light); }
+  .btn-success { background: linear-gradient(135deg,#128c7e,#25d366); color: white; }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-ghost { background: transparent; color: var(--muted); padding: 8px 12px; }
+  .btn-ghost:hover { background: rgba(0,0,0,.04); color: var(--text); }
+  .btn-sm { min-height: 34px; padding: 7px 12px; font-size: 12.5px; }
+  .btn-lg { min-height: 48px; padding: 13px 22px; font-size: 15px; }
+  .btn-block { width: 100%; }
 
-    /* ── Tier badges ──────────────────────────────────────────────── */
-    .tier-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 10.5px; font-weight: 800;
-      padding: 3px 10px; border-radius: 100px;
-      text-transform: uppercase; letter-spacing: .6px;
-    }
-    .tier-badge.free     { background: rgba(107,114,128,.15); color: #4b5563; }
-    .tier-badge.starter  { background: rgba(37,99,235,.15);   color: #2563eb; }
-    .tier-badge.standard { background: rgba(139,92,246,.15);  color: #7c3aed; }
-    .tier-badge.business { background: rgba(217,119,6,.15);   color: #b45309; }
-    .tier-badge.premium  { background: linear-gradient(135deg, #ff6000, #ff9f43); color: white; }
-    .tier-badge.expired  { background: rgba(230,57,70,.15);   color: #b91c1c; }
+  /* ── INPUTS ────────────────────────────────────────────────────────── */
+  .input, .select, .textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1.5px solid rgba(0,0,0,.1);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .input:focus, .select:focus, .textarea:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(255,96,0,.1);
+  }
+  .textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .lbl { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; }
+  .lbl .req { color: var(--red); }
+  .help { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
 
-    .expiry-cell { font-size: 12px; line-height: 1.4; }
-    .expiry-cell .days { font-weight: 700; }
-    .expiry-cell.ok      .days { color: #16a34a; }
-    .expiry-cell.warn    .days { color: #f59e0b; }
-    .expiry-cell.danger  .days { color: #dc2626; }
-    .expiry-cell.expired .days { color: #dc2626; }
-    .expiry-cell.none    .days { color: var(--py2-muted); }
+  /* ── NOTICES ───────────────────────────────────────────────────────── */
+  .notice {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px; line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .notice i { flex-shrink: 0; margin-top: 1px; }
+  .notice-info   { background: rgba(84,160,255,.07); border: 1px solid rgba(84,160,255,.2); }
+  .notice-warn   { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); }
+  .notice-danger { background: rgba(230,57,70,.07); border: 1px solid rgba(230,57,70,.2); color: #b91c1c; }
 
-    /* ── Change Plan modal ────────────────────────────────────────── */
-    #plan-modal .py2-modal { max-width: 560px; }
+  /* ── TOP BAR ───────────────────────────────────────────────────────── */
+  .topbar {
+    background: var(--dark);
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-head); font-weight: 800; font-size: 15px;
+  }
+  .brand .brand-icon { font-size: 20px; }
+  .brand span { color: #feca57; }
+  .brand small {
+    display: block; font-size: 9px; font-weight: 600;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    color: rgba(255,255,255,.4);
+  }
+  .topbar-nav { margin-left: auto; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .topbar-nav a, .topbar-nav button {
+    background: none; border: none;
+    color: rgba(255,255,255,.75);
+    font-size: 13px; font-weight: 500;
+    padding: 8px 12px; border-radius: 8px;
+    transition: all .15s;
+    min-height: 36px;
+  }
+  .topbar-nav a:hover, .topbar-nav button:hover { background: rgba(255,255,255,.08); color: white; }
+  #topbar-admin { display: none; }
+  @media (min-width: 640px) {
+    .topbar-inner { padding: 12px 20px; }
+    #topbar-admin { display: inline; color: rgba(255,255,255,.85); font-size: 13px; padding: 0 10px; }
+  }
 
-    .plan-tier-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-    @media (max-width: 620px) { .plan-tier-grid { grid-template-columns: repeat(2, 1fr); } }
+  /* ── SCREENS ───────────────────────────────────────────────────────── */
+  .screen {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .auth-bg {
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%),
+      radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%),
+      var(--light);
+  }
+  .auth-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 28px 22px;
+    width: 100%;
+    max-width: 420px;
+    text-align: left;
+  }
+  .auth-logo {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#ff6000,#ff9f43);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+    color: white;
+  }
+  .auth-card h1 { font-size: 1.4rem; text-align: center; margin-bottom: 6px; }
+  .auth-card .sub { text-align: center; color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
+  .auth-card .alt { text-align: center; font-size: 13px; color: var(--muted); margin-top: 18px; }
+  .auth-card .alt a { color: var(--orange); font-weight: 600; }
 
-    .plan-tier-option {
-      background: white;
-      border: 2px solid rgba(0,0,0,.08);
-      border-radius: var(--py2-radius);
-      padding: 12px 8px;
-      cursor: pointer;
-      text-align: center;
-      transition: all .2s;
-      font-family: var(--py2-font-body);
-    }
-    .plan-tier-option:hover { border-color: var(--py2-orange); }
-    .plan-tier-option.selected {
-      border-color: var(--py2-orange);
-      background: linear-gradient(180deg, #fff7ed, #ffffff);
-      box-shadow: 0 4px 14px rgba(255,96,0,.15);
-    }
-    .plan-tier-option .pto-name {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
-    .plan-tier-option .pto-price {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 15px;
-      color: var(--py2-orange);
-    }
-    .plan-tier-option .pto-price small {
-      font-size: 9px;
-      color: var(--py2-muted);
-      font-weight: 600;
-    }
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  .spinner-dark {
+    border-color: rgba(0,0,0,.1);
+    border-top-color: var(--orange);
+    width: 26px; height: 26px;
+    border-width: 3px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-    .duration-btns {
-      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
-    }
-    .duration-btn {
-      background: white;
-      border: 1.5px solid rgba(0,0,0,.1);
-      border-radius: 8px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: var(--py2-font-body);
-      color: var(--py2-muted);
-      transition: all .2s;
-    }
-    .duration-btn:hover { border-color: var(--py2-orange); color: var(--py2-text); }
-    .duration-btn.active {
-      border-color: var(--py2-orange);
-      background: rgba(255,96,0,.06);
-      color: var(--py2-orange);
-    }
+  /* ── HEADER + STATS ────────────────────────────────────────────────── */
+  .dash-head {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 22px;
+    padding-top: 20px;
+  }
+  .dash-head h1 { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; margin-bottom: 4px; }
+  .dash-head p { color: var(--muted); font-size: 13.5px; margin: 0; line-height: 1.5; }
+  @media (min-width: 640px) {
+    .dash-head { flex-direction: row; align-items: flex-end; justify-content: space-between; padding-top: 24px; }
+    .dash-head .btn { width: auto; }
+  }
 
-    .tier-preview-box {
-      background: var(--py2-light);
-      border-radius: var(--py2-radius);
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--py2-text);
-    }
-    .tier-preview-box strong { color: var(--py2-orange); }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  @media (min-width: 720px) {
+    .stats-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  }
+  .stat {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-lbl {
+    font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .6px;
+    color: var(--muted); margin-bottom: 5px;
+  }
+  .stat-val {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: 1.3rem; line-height: 1.1;
+  }
+  .stat-val.accent { color: var(--orange); }
+  .stat-val.red    { color: var(--red); }
+  .stat-val.amber  { color: var(--amber); }
+  .stat-val.green  { color: #16a34a; }
 
-    /* Verified toggle */
-    .verified-toggle {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      background: var(--py2-light);
-      border-radius: var(--py2-radius);
-      margin-bottom: 14px;
-    }
-    .verified-toggle .vt-body { flex: 1; }
-    .verified-toggle .vt-title { font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
-    .verified-toggle .vt-sub { font-size: 12px; color: var(--py2-muted); line-height: 1.4; }
-    .switch {
-      position: relative;
-      width: 48px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .switch .slider {
-      position: absolute;
-      inset: 0;
-      background: #ccc;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: .3s;
-    }
-    .switch .slider::before {
-      content: '';
-      position: absolute;
-      width: 20px; height: 20px;
-      left: 3px; bottom: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: .3s;
-      box-shadow: 0 2px 6px rgba(0,0,0,.2);
-    }
-    .switch input:checked + .slider { background: linear-gradient(135deg, #25d366, #128c7e); }
-    .switch input:checked + .slider::before { transform: translateX(22px); }
+  /* ── TABS ──────────────────────────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: -14px; margin-right: -14px;
+    padding-left: 14px; padding-right: 14px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  @media (min-width: 768px) {
+    .tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+  }
+  .tab {
+    flex: 0 0 auto;
+    background: none; border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 600;
+    padding: 12px 14px;
+    min-height: 44px;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s;
+  }
+  .tab i { font-size: 14px; }
+  .tab:hover { color: var(--text); }
+  .tab.on { color: var(--orange); border-bottom-color: var(--orange); }
+  .tab .count {
+    font-size: 10.5px; background: rgba(0,0,0,.06);
+    padding: 1px 7px; border-radius: 100px; font-weight: 700;
+  }
+  .tab.on .count { background: rgba(255,96,0,.15); color: var(--orange); }
 
-    /* Expiring list */
-    .expiring-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 16px;
-      background: white;
-      border: 1px solid var(--py2-border-soft);
-      border-left: 4px solid var(--py2-amber);
-      border-radius: var(--py2-radius);
-      margin-bottom: 10px;
-      flex-wrap: wrap;
+  /* ── PANELS ────────────────────────────────────────────────────────── */
+  .panel { display: none; }
+  .panel.on { display: block; }
+
+  /* ── BADGES ────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .4px;
+    white-space: nowrap;
+  }
+  .badge-pending  { background: rgba(245,158,11,.12); color: #b45309; }
+  .badge-approved { background: rgba(22,163,74,.12); color: #15803d; }
+  .badge-rejected { background: rgba(230,57,70,.12); color: #b91c1c; }
+  .badge-paused   { background: rgba(107,114,128,.12); color: #4b5563; }
+  .badge-banned   { background: #0a0a14; color: white; }
+  .badge-active   { background: rgba(22,163,74,.12); color: #15803d; }
+  .badge-suspended{ background: rgba(245,158,11,.12); color: #b45309; }
+
+  /* ── TIER BADGES ──────────────────────────────────────────────────── */
+  .tier-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10.5px; font-weight: 800;
+    padding: 3px 10px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: .6px;
+    white-space: nowrap;
+  }
+  .tier-badge.free     { background: rgba(107,114,128,.15); color: #4b5563; }
+  .tier-badge.starter  { background: rgba(37,99,235,.15);   color: #2563eb; }
+  .tier-badge.standard { background: rgba(139,92,246,.15);  color: #7c3aed; }
+  .tier-badge.business { background: rgba(217,119,6,.15);   color: #b45309; }
+  .tier-badge.premium  { background: linear-gradient(135deg, #ff6000, #ff9f43); color: white; }
+  .tier-badge.expired  { background: rgba(230,57,70,.15);   color: #b91c1c; }
+
+  /* ── QUEUE ITEMS ───────────────────────────────────────────────────── */
+  .queue-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 12px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  @media (min-width: 640px) {
+    .queue-item { flex-direction: row; padding: 18px; gap: 16px; align-items: flex-start; }
+  }
+  .queue-thumb {
+    width: 100%; height: 160px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  @media (min-width: 640px) { .queue-thumb { width: 140px; height: 90px; } }
+  .queue-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .queue-main { flex: 1; min-width: 0; }
+  .queue-biz {
+    font-size: 11.5px; color: var(--orange);
+    font-weight: 800; text-transform: uppercase;
+    letter-spacing: .6px; margin-bottom: 4px;
+  }
+  .queue-title {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: 15px; line-height: 1.3; margin-bottom: 6px;
+  }
+  .queue-desc {
+    font-size: 13px; color: var(--muted);
+    line-height: 1.5; margin-bottom: 8px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .queue-meta {
+    font-size: 12px; color: var(--muted);
+    line-height: 1.5; margin-bottom: 10px;
+  }
+  .queue-meta a { color: var(--orange); word-break: break-all; }
+  .queue-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .queue-actions .btn { flex: 1 1 calc(50% - 3px); }
+  @media (min-width: 640px) {
+    .queue-actions .btn { flex: 0 0 auto; }
+  }
+
+  /* ── DATA TABLE (mobile friendly) ──────────────────────────────────── */
+  .data-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 620px;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .6px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: #fafbff;
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  /* Mobile card-style table for advertisers / plans */
+  .adv-list { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
+  @media (min-width: 720px) { .adv-list { display: none; } }
+  .adv-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+  .adv-card + .adv-card { margin-top: 0; }
+  .adv-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 10px; margin-bottom: 8px;
+  }
+  .adv-card-name {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: 14px; line-height: 1.3;
+  }
+  .adv-card-slug {
+    font-size: 11.5px; color: var(--orange); word-break: break-all; margin-top: 2px;
+  }
+  .adv-card-email {
+    font-size: 11.5px; color: var(--muted); margin-top: 4px;
+  }
+  .adv-card-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  .adv-card-stats > div {
+    background: var(--light);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .adv-card-stats .lbl {
+    font-size: 9.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+    color: var(--muted); margin-bottom: 3px;
+  }
+  .adv-card-stats .val { font-weight: 700; font-size: 13px; }
+
+  .adv-table-wrap { display: none; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  @media (min-width: 720px) { .adv-table-wrap { display: block; } }
+
+  /* ── EXPIRING LIST ─────────────────────────────────────────────────── */
+  .expiring-row {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .expiring-row.expired { border-left-color: var(--red); }
+  @media (min-width: 640px) {
+    .expiring-row { flex-direction: row; align-items: center; padding: 16px; }
+  }
+  .expiring-row .exp-main { flex: 1; min-width: 0; }
+  .expiring-row .exp-name {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: 15px; margin-bottom: 4px;
+  }
+  .expiring-row .exp-meta {
+    font-size: 12px; color: var(--muted); line-height: 1.5;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .expiring-row .exp-days {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: 24px; line-height: 1; text-align: center;
+    flex-shrink: 0;
+  }
+  .expiring-row .exp-days small {
+    display: block;
+    font-size: 9.5px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 4px;
+  }
+  .expiring-row.expired .exp-days { color: var(--red); }
+  .expiring-row.soon .exp-days { color: var(--amber); }
+  .expiring-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .expiring-actions .btn { flex: 1 1 auto; }
+  @media (min-width: 640px) { .expiring-actions .btn { flex: 0 0 auto; } }
+
+  /* ── REPORT ITEMS ──────────────────────────────────────────────────── */
+  .report-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .report-item.resolved { border-left-color: #16a34a; opacity: .7; }
+  .report-reason {
+    display: inline-block;
+    background: rgba(230,57,70,.1);
+    color: #b91c1c;
+    font-size: 10.5px; font-weight: 800;
+    padding: 3px 10px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .report-title {
+    font-family: var(--font-head); font-weight: 700;
+    font-size: 14px; margin-bottom: 6px;
+  }
+  .report-detail {
+    font-size: 13px; line-height: 1.5; color: #444; margin-bottom: 8px;
+  }
+  .report-meta { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .report-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .report-actions .btn { flex: 1 1 calc(50% - 3px); }
+  @media (min-width: 640px) { .report-actions .btn { flex: 0 0 auto; } }
+
+  /* ── MODERATION LOG ────────────────────────────────────────────────── */
+  .log-item {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .log-main { flex: 1; min-width: 0; }
+  .log-action {
+    font-weight: 700; font-size: 13px; margin-bottom: 2px;
+    text-transform: capitalize; word-break: break-word;
+  }
+  .log-meta { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+  .log-note {
+    background: var(--light);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-top: 6px;
+    color: #444;
+  }
+
+  /* ── ANALYTICS ─────────────────────────────────────────────────────── */
+  .an-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .an-row:last-child { border-bottom: none; }
+  .an-rank {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--light);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-weight: 800; font-size: 13px;
+    flex-shrink: 0;
+  }
+  .an-rank.gold { background: linear-gradient(135deg,#feca57,#ff9f43); color: white; }
+  .an-rank.silver { background: linear-gradient(135deg,#c0c0c0,#8f8f8f); color: white; }
+  .an-rank.bronze { background: linear-gradient(135deg,#cd7f32,#8b5a2b); color: white; }
+  .an-info { flex: 1; min-width: 0; }
+  .an-name {
+    font-family: var(--font-head); font-weight: 700; font-size: 13.5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .an-sub { font-size: 11.5px; color: var(--muted); }
+  .an-nums { text-align: right; font-size: 12px; line-height: 1.5; flex-shrink: 0; }
+  .an-nums strong {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: 15px; display: block;
+  }
+
+  .bar-wrap { margin-bottom: 12px; }
+  .bar-head {
+    display: flex; justify-content: space-between;
+    font-size: 13px; margin-bottom: 5px;
+  }
+  .bar-track {
+    height: 8px; background: var(--light);
+    border-radius: 100px; overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 100px; }
+
+  /* ── MODAL ─────────────────────────────────────────────────────────── */
+  .modal {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(10,10,20,.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-end; justify-content: center;
+    padding: 0;
+  }
+  .modal.on { display: flex; }
+  @media (min-width: 640px) {
+    .modal { align-items: center; padding: 20px; }
+  }
+  .modal-box {
+    background: white;
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: slideUp .28s ease;
+  }
+  @media (min-width: 640px) {
+    .modal-box {
+      max-width: 500px;
+      border-radius: 20px;
+      animation: popIn .2s ease;
     }
-    .expiring-row.expired { border-left-color: var(--py2-red); }
-    .expiring-row.soon { border-left-color: #f59e0b; }
-    .expiring-row .exp-main { flex: 1; min-width: 200px; }
-    .expiring-row .exp-name { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; margin-bottom: 2px; }
-    .expiring-row .exp-meta { font-size: 12px; color: var(--py2-muted); }
-    .expiring-row .exp-days {
-      font-family: var(--py2-font-head);
-      font-weight: 800;
-      font-size: 22px;
-      text-align: center;
-      min-width: 90px;
-      line-height: 1;
+    .modal-box.wide { max-width: 720px; }
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: .5; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes popIn   { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-head {
+    padding: 18px 20px 8px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px;
+  }
+  .modal-head h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; }
+  .modal-x {
+    background: none; border: none;
+    width: 40px; height: 40px;
+    border-radius: 50%; color: var(--muted); font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; flex-shrink: 0;
+  }
+  .modal-x:hover { background: rgba(0,0,0,.05); }
+  .modal-body {
+    padding: 12px 20px 18px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .modal-foot {
+    padding: 12px 20px 18px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column-reverse; gap: 8px;
+  }
+  @media (min-width: 640px) {
+    .modal-foot { flex-direction: row; justify-content: flex-end; }
+  }
+  .modal-foot .btn { width: 100%; }
+  @media (min-width: 640px) { .modal-foot .btn { width: auto; min-width: 100px; } }
+
+  /* ── PLAN MODAL ────────────────────────────────────────────────────── */
+  .plan-tier-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  @media (min-width: 640px) {
+    .plan-tier-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+  .plan-tier-opt {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 8px;
+    text-align: center;
+    transition: all .15s;
+    font-family: var(--font-body);
+    min-height: 78px;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 4px;
+  }
+  .plan-tier-opt:hover { border-color: var(--orange); }
+  .plan-tier-opt.on {
+    border-color: var(--orange);
+    background: linear-gradient(180deg, #fff7ed, #fff);
+    box-shadow: 0 4px 14px rgba(255,96,0,.15);
+  }
+  .plan-tier-opt .pto-icon { font-size: 20px; line-height: 1; }
+  .plan-tier-opt .pto-name { font-weight: 800; font-size: 12px; }
+  .plan-tier-opt .pto-price { font-family: var(--font-head); font-weight: 800; font-size: 14px; color: var(--orange); }
+  .plan-tier-opt .pto-price small { font-size: 9px; font-weight: 600; color: var(--muted); }
+
+  .duration-btns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  @media (min-width: 560px) {
+    .duration-btns { grid-template-columns: repeat(6, 1fr); }
+  }
+  .duration-btn {
+    background: white;
+    border: 1.5px solid rgba(0,0,0,.1);
+    border-radius: 8px;
+    padding: 10px 6px;
+    font-size: 12.5px; font-weight: 700;
+    color: var(--muted);
+    min-height: 42px;
+    transition: all .15s;
+  }
+  .duration-btn.on {
+    border-color: var(--orange);
+    background: rgba(255,96,0,.06);
+    color: var(--orange);
+  }
+
+  .preview-box {
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .preview-box strong { color: var(--orange); }
+
+  .verified-toggle {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+  .vt-body { flex: 1; min-width: 0; }
+  .vt-title { font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
+  .vt-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .switch { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider {
+    position: absolute; inset: 0;
+    background: #ccc;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: .3s;
+  }
+  .switch .slider::before {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    left: 3px; bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: .3s;
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  }
+  .switch input:checked + .slider {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+  }
+  .switch input:checked + .slider::before {
+    transform: translateX(22px);
+  }
+
+  /* ── TOAST ─────────────────────────────────────────────────────────── */
+  .toast {
+    position: fixed;
+    left: 12px; right: 12px; bottom: 20px;
+    z-index: 9999;
+    background: var(--dark); color: white;
+    font-size: 13px; font-weight: 500;
+    padding: 12px 18px;
+    border-radius: 12px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity .25s;
+    pointer-events: none;
+    box-shadow: 0 12px 32px rgba(0,0,0,.28);
+  }
+  @media (min-width: 640px) {
+    .toast {
+      left: 50%; right: auto;
+      transform: translateX(-50%);
+      bottom: 32px;
+      max-width: 420px;
+      white-space: nowrap;
     }
-    .expiring-row.expired .exp-days { color: var(--py2-red); }
-    .expiring-row.soon .exp-days { color: #f59e0b; }
-    .expiring-row .exp-days small {
-      display: block;
-      font-size: 9.5px;
-      font-weight: 600;
-      color: var(--py2-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 4px;
-      font-family: var(--py2-font-body);
-    }
+  }
+  .toast.on { opacity: 1; }
+
+  /* ── EMPTY ─────────────────────────────────────────────────────────── */
+  .empty {
+    text-align: center;
+    padding: 44px 20px;
+    color: var(--muted);
+  }
+  .empty .e-icon { font-size: 2.6rem; margin-bottom: 10px; }
+  .empty h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 6px; font-family: var(--font-head); font-weight: 700; }
+  .empty p { font-size: 13.5px; line-height: 1.5; margin-bottom: 16px; }
   </style>
 </head>
-<body class="py2-page">
+<body>
 
-<!-- SIGN-IN -->
-<div id="signin-screen" style="display:none;">
-  <div class="py2-auth-card">
-    <div class="py2-auth-brand">
-      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2" onerror="this.style.display='none'">
-      <h1>Admin sign in</h1>
-      <p>Sign in with an admin account to manage ads.</p>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SIGN-IN
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div id="scr-signin" class="screen auth-bg" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">🛡️</div>
+    <h1>Admin sign in</h1>
+    <p class="sub">Sign in with an admin account to manage ads.</p>
+
+    <div id="signin-error" class="notice notice-danger" style="display:none;">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <div id="signin-error-text"></div>
     </div>
-    <div id="signin-error"></div>
-    <form id="signin-form" novalidate>
-      <div class="py2-field">
-        <label class="py2-label" for="si-email">Email</label>
-        <input class="py2-input" type="email" id="si-email" required autocomplete="email" placeholder="admin@example.com">
+
+    <form id="signin-form">
+      <div class="field">
+        <label class="lbl" for="si-email">Email</label>
+        <input class="input" type="email" id="si-email" autocomplete="email" placeholder="admin@example.com" required>
       </div>
-      <div class="py2-field">
-        <label class="py2-label" for="si-password">Password</label>
-        <input class="py2-input" type="password" id="si-password" required autocomplete="current-password" placeholder="Your password">
+      <div class="field">
+        <label class="lbl" for="si-password">Password</label>
+        <input class="input" type="password" id="si-password" autocomplete="current-password" placeholder="Your password" required>
       </div>
-      <button type="submit" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block" id="signin-submit">
+      <button type="submit" class="btn btn-primary btn-lg btn-block" id="signin-submit">
         <i class="fa-solid fa-shield-halved"></i> Sign In
       </button>
     </form>
-    <div class="py2-auth-alt">Not an admin? <a href="/advertiser/">Go to your dashboard</a></div>
+
+    <div class="alt">Not an admin? <a href="/advertiser/">Go to your dashboard</a></div>
   </div>
 </div>
 
 <!-- DENIED -->
-<div id="denied-screen" style="display:none;">
-  <div class="py2-auth-card">
-    <div class="denied-icon">🚫</div>
-    <div class="py2-auth-brand" style="margin-bottom:0;">
-      <h1>Admin access required</h1>
-      <p id="denied-name" style="margin-top:6px;"></p>
-    </div>
-    <div class="py2-notice py2-notice-warn" style="margin-top:16px;">
-      <span class="py2-notice-icon">ℹ️</span>
+<div id="scr-denied" class="screen auth-bg" style="display:none;">
+  <div class="auth-card">
+    <div style="font-size:3rem;text-align:center;margin-bottom:12px;">🚫</div>
+    <h1>Admin access required</h1>
+    <p class="sub" id="denied-name"></p>
+    <div class="notice notice-warn">
+      <i class="fa-solid fa-triangle-exclamation"></i>
       <div>You're signed in, but this account isn't an admin.</div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
-      <a href="/advertiser/" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block"><i class="fa-solid fa-arrow-right"></i> Go to my dashboard</a>
-      <button type="button" class="py2-btn py2-btn-secondary py2-btn-lg py2-btn-block" id="denied-signout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOPBAR -->
-<div class="py2-topbar admin" id="admin-topbar" style="display:none;">
-  <div class="py2-topbar-inner">
-    <a href="/" class="py2-topbar-brand">
-      <span style="font-size:22px;">📱</span>
-      <div>PhoneYa2 <span>Ads</span><small>Admin Panel</small></div>
+    <a href="/advertiser/" class="btn btn-primary btn-lg btn-block" style="margin-bottom:8px;">
+      <i class="fa-solid fa-arrow-right"></i> Go to my dashboard
     </a>
-    <nav class="py2-topbar-nav">
-      <a href="/" target="_blank">View Shop</a>
-      <a href="/advertiser/">My Ads</a>
-      <span id="topbar-admin" style="color:rgba(255,255,255,.85);font-size:13px;padding:0 10px;"></span>
-      <button type="button" class="signout" id="btn-signout" style="color:rgba(255,255,255,.75);background:none;border:none;cursor:pointer;padding:8px 12px;border-radius:8px;font-size:13px;">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
-      </button>
-    </nav>
+    <button class="btn btn-secondary btn-lg btn-block" id="denied-signout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
+    </button>
   </div>
 </div>
 
 <!-- LOADING -->
-<div id="admin-loading" class="admin-loading" style="display:none;">
-  <div class="py2-spinner py2-spinner-dark"></div>
-  <div>Loading admin panel…</div>
+<div id="scr-loading" class="screen" style="display:none;">
+  <div class="spinner spinner-dark"></div>
+  <p style="color:var(--muted);margin-top:14px;font-size:14px;">Loading admin panel…</p>
 </div>
 
-<!-- MAIN -->
-<div id="admin-main" style="display:none;">
-  <div class="py2-container">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ADMIN DASHBOARD
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div id="scr-admin" style="display:none;">
 
-    <div class="py2-dash-head">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="brand">
+        <span class="brand-icon">📱</span>
+        <div>
+          PhoneYa2 <span>Ads</span>
+          <small>Admin Panel</small>
+        </div>
+      </a>
+      <nav class="topbar-nav">
+        <a href="/" target="_blank">Shop</a>
+        <a href="/advertiser/">Dashboard</a>
+        <span id="topbar-admin"></span>
+        <button type="button" id="btn-signout">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <div class="wrap" style="padding-bottom:60px;">
+
+    <div class="dash-head">
       <div>
-        <h1 class="py2-h1">Ads Admin</h1>
-        <p class="py2-sub" style="margin-bottom:0;">Review submissions, manage advertisers, keep the network clean.</p>
+        <h1>Ads Admin</h1>
+        <p>Review submissions, manage advertisers, keep the network clean.</p>
       </div>
-      <button type="button" class="py2-btn py2-btn-secondary" id="btn-refresh">
+      <button type="button" class="btn btn-secondary" id="btn-refresh" style="width:100%;">
         <i class="fa-solid fa-rotate"></i> Refresh
       </button>
     </div>
 
-    <div class="py2-dash-stats">
-      <div class="py2-stat">
-        <div class="py2-stat-label">Pending Review</div>
-        <div class="py2-stat-value accent" id="stat-pending">0</div>
-      </div>
-      <div class="py2-stat">
-        <div class="py2-stat-label">Live Ads</div>
-        <div class="py2-stat-value" id="stat-live">0</div>
-      </div>
-      <div class="py2-stat">
-        <div class="py2-stat-label">Advertisers</div>
-        <div class="py2-stat-value" id="stat-advertisers">0</div>
-      </div>
-      <div class="py2-stat">
-        <div class="py2-stat-label">Open Reports</div>
-        <div class="py2-stat-value" id="stat-reports" style="color:var(--py2-red);">0</div>
-      </div>
-      <div class="py2-stat">
-        <div class="py2-stat-label">Expiring Soon</div>
-        <div class="py2-stat-value" id="stat-expiring" style="color:var(--py2-amber);">0</div>
-      </div>
-      <div class="py2-stat">
-        <div class="py2-stat-label">Paid Customers</div>
-        <div class="py2-stat-value" id="stat-paid">0</div>
-      </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-lbl">Pending</div><div class="stat-val accent" id="stat-pending">0</div></div>
+      <div class="stat"><div class="stat-lbl">Live Ads</div><div class="stat-val" id="stat-live">0</div></div>
+      <div class="stat"><div class="stat-lbl">Advertisers</div><div class="stat-val" id="stat-advertisers">0</div></div>
+      <div class="stat"><div class="stat-lbl">Reports</div><div class="stat-val red" id="stat-reports">0</div></div>
+      <div class="stat"><div class="stat-lbl">Expiring</div><div class="stat-val amber" id="stat-expiring">0</div></div>
+      <div class="stat"><div class="stat-lbl">Paid</div><div class="stat-val green" id="stat-paid">0</div></div>
     </div>
 
-    <div class="py2-tabs" role="tablist">
-      <button class="py2-tab active" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Ad Queue <span class="count" id="tab-count-queue">0</span></button>
-      <button class="py2-tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Advertisers</button>
-      <button class="py2-tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Plans</button>
-      <button class="py2-tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Expiring <span class="count" id="tab-count-expiring">0</span></button>
-      <button class="py2-tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> All Ads</button>
-      <button class="py2-tab" data-tab="reports" type="button"><i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span></button>
-      <button class="py2-tab" data-tab="log" type="button"><i class="fa-solid fa-clipboard-list"></i> Moderation Log</button>
-      <button class="py2-tab" data-tab="analytics" type="button"><i class="fa-solid fa-chart-line"></i> Analytics</button>
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Queue <span class="count" id="tab-count-queue">0</span></button>
+      <button class="tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Advertisers</button>
+      <button class="tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Plans</button>
+      <button class="tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Expiring <span class="count" id="tab-count-expiring">0</span></button>
+      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> All Ads</button>
+      <button class="tab" data-tab="reports" type="button"><i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span></button>
+      <button class="tab" data-tab="log" type="button"><i class="fa-solid fa-clipboard-list"></i> Log</button>
+      <button class="tab" data-tab="analytics" type="button"><i class="fa-solid fa-chart-line"></i> Analytics</button>
     </div>
 
-    <section id="tab-queue" class="tab-panel"><div id="queue-list"></div></section>
+    <!-- ── PANEL: QUEUE ───────────────────────────────────────────── -->
+    <section class="panel on" data-panel="queue">
+      <div id="queue-list"></div>
+    </section>
 
-    <section id="tab-advertisers" class="tab-panel" style="display:none;">
-      <div class="py2-card">
-        <div class="py2-card-head">
+    <!-- ── PANEL: ADVERTISERS ─────────────────────────────────────── -->
+    <section class="panel" data-panel="advertisers">
+      <div class="card">
+        <div class="card-head">
           <h2>All Advertisers</h2>
-          <input type="text" id="adv-search" class="py2-input" placeholder="Search by name or email…" style="max-width:260px;padding:8px 12px;font-size:13px;">
         </div>
-        <div class="py2-card-body" id="advertisers-body" style="padding:0;"></div>
+        <div class="card-body" style="padding:12px;">
+          <input class="input" type="text" id="adv-search" placeholder="Search by name or email…" style="margin-bottom:0;">
+        </div>
+        <div id="advertisers-body"></div>
       </div>
     </section>
 
-    <section id="tab-plans" class="tab-panel" style="display:none;">
-      <div class="py2-card">
-        <div class="py2-card-head">
+    <!-- ── PANEL: PLANS ───────────────────────────────────────────── -->
+    <section class="panel" data-panel="plans">
+      <div class="card">
+        <div class="card-head">
           <h2>Plans Overview</h2>
-          <span style="font-size:12px;color:var(--py2-muted);">Everyone and their tier</span>
+          <span style="font-size:12px;color:var(--muted);">Everyone & their tier</span>
         </div>
-        <div class="py2-card-body" id="plans-body" style="padding:0;"></div>
+        <div id="plans-body"></div>
       </div>
     </section>
 
-    <section id="tab-expiring" class="tab-panel" style="display:none;">
-      <div class="py2-card" style="margin-bottom:16px;">
-        <div class="py2-card-body" style="padding:14px 16px;">
-          <div style="font-size:13px;color:var(--py2-muted);line-height:1.5;">
-            Advertisers whose paid plan expires in the next 14 days, or has already expired.
-            Reach out before it lapses — a quick message keeps them paid.
-          </div>
+    <!-- ── PANEL: EXPIRING ────────────────────────────────────────── -->
+    <section class="panel" data-panel="expiring">
+      <div class="card">
+        <div class="card-body" style="font-size:13px;color:var(--muted);line-height:1.5;">
+          Advertisers whose paid plan expires in the next 14 days, or has already expired. Reach out before it lapses — a quick message keeps them paid.
         </div>
       </div>
       <div id="expiring-list"></div>
     </section>
 
-    <section id="tab-ads" class="tab-panel" style="display:none;">
-      <div class="py2-card">
-        <div class="py2-card-head">
+    <!-- ── PANEL: ALL ADS ─────────────────────────────────────────── -->
+    <section class="panel" data-panel="ads">
+      <div class="card">
+        <div class="card-head">
           <h2>All Ads</h2>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <select id="ads-status-filter" class="py2-select" style="width:auto;padding:8px 12px;font-size:13px;">
+        </div>
+        <div class="card-body" style="padding:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <select id="ads-status-filter" class="select">
               <option value="all">All statuses</option>
               <option value="pending">Pending</option>
               <option value="approved">Approved</option>
@@ -448,203 +1004,252 @@
               <option value="rejected">Rejected</option>
               <option value="banned">Banned</option>
             </select>
-            <input type="text" id="ads-search" class="py2-input" placeholder="Search title…" style="max-width:220px;padding:8px 12px;font-size:13px;">
+            <input class="input" type="text" id="ads-search" placeholder="Search title…">
           </div>
         </div>
-        <div class="py2-card-body" id="ads-body" style="padding:0;"></div>
+        <div id="ads-body"></div>
       </div>
     </section>
 
-    <section id="tab-reports" class="tab-panel" style="display:none;">
-      <div class="py2-card" style="margin-bottom:16px;">
-        <div class="py2-card-body" style="padding:14px 16px;">
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <span style="font-size:12px;color:var(--py2-muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;">Show</span>
-            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm report-filter active" data-filter="open">Open</button>
-            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm report-filter" data-filter="resolved">Resolved</button>
-            <button type="button" class="py2-btn py2-btn-ghost py2-btn-sm report-filter" data-filter="all">All</button>
+    <!-- ── PANEL: REPORTS ─────────────────────────────────────────── -->
+    <section class="panel" data-panel="reports">
+      <div class="card">
+        <div class="card-body" style="padding:12px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);">Show</span>
+            <button class="btn btn-ghost btn-sm report-filter on" data-filter="open" type="button">Open</button>
+            <button class="btn btn-ghost btn-sm report-filter" data-filter="resolved" type="button">Resolved</button>
+            <button class="btn btn-ghost btn-sm report-filter" data-filter="all" type="button">All</button>
           </div>
         </div>
       </div>
       <div id="reports-list"></div>
     </section>
 
-    <section id="tab-log" class="tab-panel" style="display:none;">
-      <div class="py2-card">
-        <div class="py2-card-head">
+    <!-- ── PANEL: LOG ─────────────────────────────────────────────── -->
+    <section class="panel" data-panel="log">
+      <div class="card">
+        <div class="card-head">
           <h2>Moderation Log</h2>
-          <span style="font-size:12px;color:var(--py2-muted);">Newest first · last 200 entries</span>
+          <span style="font-size:11.5px;color:var(--muted);">Last 200</span>
         </div>
-        <div class="py2-card-body" id="log-body" style="padding:0;"></div>
+        <div class="card-body" style="padding:0;" id="log-body"></div>
       </div>
     </section>
 
-    <section id="tab-analytics" class="tab-panel" style="display:none;">
-      <div class="py2-dash-stats">
-        <div class="py2-stat"><div class="py2-stat-label">Total Impressions</div><div class="py2-stat-value" id="an-impressions">0</div></div>
-        <div class="py2-stat"><div class="py2-stat-label">Total Clicks</div><div class="py2-stat-value" id="an-clicks">0</div></div>
-        <div class="py2-stat"><div class="py2-stat-label">Overall CTR</div><div class="py2-stat-value" id="an-ctr">—</div></div>
-        <div class="py2-stat"><div class="py2-stat-label">Via Adshare Links</div><div class="py2-stat-value accent" id="an-adshare">0</div></div>
+    <!-- ── PANEL: ANALYTICS ───────────────────────────────────────── -->
+    <section class="panel" data-panel="analytics">
+      <div class="stats-grid" style="margin-bottom:16px;">
+        <div class="stat"><div class="stat-lbl">Impressions</div><div class="stat-val" id="an-impressions">0</div></div>
+        <div class="stat"><div class="stat-lbl">Clicks</div><div class="stat-val" id="an-clicks">0</div></div>
+        <div class="stat"><div class="stat-lbl">Overall CTR</div><div class="stat-val" id="an-ctr">—</div></div>
+        <div class="stat"><div class="stat-lbl">Via Adshare</div><div class="stat-val accent" id="an-adshare">0</div></div>
       </div>
-      <div class="py2-card" style="margin-bottom:16px;">
-        <div class="py2-card-head"><h2>🏆 Top Performing Ads</h2></div>
-        <div class="py2-card-body" id="an-top-ads"></div>
+      <div class="card">
+        <div class="card-head"><h2>🏆 Top Performing Ads</h2></div>
+        <div class="card-body" id="an-top-ads"></div>
       </div>
-      <div class="py2-card">
-        <div class="py2-card-head"><h2>📈 Advertiser-Generated Traffic</h2></div>
-        <div class="py2-card-body" id="an-sources"></div>
+      <div class="card">
+        <div class="card-head"><h2>📈 Advertiser Traffic</h2></div>
+        <div class="card-body" id="an-sources"></div>
       </div>
     </section>
 
   </div>
 </div>
 
-<!-- MODAL: APPROVE -->
-<div class="py2-modal-backdrop" id="modal-approve">
-  <div class="py2-modal">
-    <div class="py2-modal-head"><h3>Approve this ad?</h3><button type="button" class="py2-modal-close" data-close="modal-approve">✕</button></div>
-    <div class="py2-modal-body">
-      <p style="font-size:14px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">It will go live on the PhoneYa2 homepage carousel and its shareable page immediately.</p>
-      <div class="py2-field">
-        <label class="py2-label" for="approve-note">Internal note (optional)</label>
-        <input type="text" class="py2-input" id="approve-note" placeholder="e.g. approved by Brendan">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL: APPROVE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="modal" id="modal-approve">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Approve this ad?</h3>
+      <button type="button" class="modal-x" data-close="modal-approve">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+        It goes live immediately on the PhoneYa2 homepage carousel and its shareable page.
+      </p>
+      <div class="field">
+        <label class="lbl" for="approve-note">Internal note (optional)</label>
+        <input class="input" type="text" id="approve-note" placeholder="e.g. approved by Brendan">
       </div>
     </div>
-    <div class="py2-modal-foot">
-      <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-approve">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-success" id="modal-approve-confirm"><i class="fa-solid fa-check"></i> Approve Ad</button>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" data-close="modal-approve">Cancel</button>
+      <button type="button" class="btn btn-success" id="approve-confirm">
+        <i class="fa-solid fa-check"></i> Approve
+      </button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: REJECT -->
-<div class="py2-modal-backdrop" id="modal-reject">
-  <div class="py2-modal">
-    <div class="py2-modal-head"><h3>Reject this ad</h3><button type="button" class="py2-modal-close" data-close="modal-reject">✕</button></div>
-    <div class="py2-modal-body">
-      <p style="font-size:14px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">The advertiser will see your reason and can edit and resubmit.</p>
-      <div class="py2-field">
-        <label class="py2-label" for="reject-reason-select">Reason <span class="req">*</span></label>
-        <select class="py2-select" id="reject-reason-select">
+<div class="modal" id="modal-reject">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Reject this ad</h3>
+      <button type="button" class="modal-x" data-close="modal-reject">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="lbl" for="reject-preset">Reason <span class="req">*</span></label>
+        <select class="select" id="reject-preset">
           <option value="">— Choose a preset —</option>
           <option>Illegal products or services</option>
           <option>Adult or sexually explicit content</option>
-          <option>Scam, fake giveaway, or "get rich quick" scheme</option>
+          <option>Scam or fake giveaway</option>
           <option>Counterfeit goods</option>
           <option>Misleading financial claim</option>
-          <option>Impersonation of a business, brand, or public figure</option>
-          <option>Malware, phishing, or suspicious link</option>
-          <option>Unverified health or medical claim</option>
+          <option>Impersonation</option>
+          <option>Malware or suspicious link</option>
+          <option>Unverified health claim</option>
           <option>Hate speech or harassment</option>
           <option>Political advertising</option>
-          <option>Copyrighted material without permission</option>
-          <option>Image quality too low / unreadable</option>
-          <option>Other (explain below)</option>
+          <option>Copyrighted material</option>
+          <option>Low image quality</option>
+          <option>Other</option>
         </select>
       </div>
-      <div class="py2-field">
-        <label class="py2-label" for="reject-reason-text">Details <span class="req">*</span></label>
-        <textarea class="py2-textarea" id="reject-reason-text" placeholder="Explain to the advertiser what needs to change." style="min-height:90px;"></textarea>
+      <div class="field">
+        <label class="lbl" for="reject-detail">Details <span class="req">*</span></label>
+        <textarea class="textarea" id="reject-detail" placeholder="Explain to the advertiser what needs to change."></textarea>
       </div>
-      <div class="py2-field">
-        <label class="py2-label" for="reject-note">Internal note (optional)</label>
-        <input type="text" class="py2-input" id="reject-note" placeholder="Only visible to admins">
+      <div class="field">
+        <label class="lbl" for="reject-note">Internal note (optional)</label>
+        <input class="input" type="text" id="reject-note" placeholder="Only admins see this">
       </div>
     </div>
-    <div class="py2-modal-foot">
-      <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-reject">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-danger" id="modal-reject-confirm"><i class="fa-solid fa-xmark"></i> Reject Ad</button>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" data-close="modal-reject">Cancel</button>
+      <button type="button" class="btn btn-danger" id="reject-confirm">
+        <i class="fa-solid fa-xmark"></i> Reject
+      </button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: BAN -->
-<div class="py2-modal-backdrop" id="modal-ban">
-  <div class="py2-modal">
-    <div class="py2-modal-head"><h3>Ban this ad</h3><button type="button" class="py2-modal-close" data-close="modal-ban">✕</button></div>
-    <div class="py2-modal-body">
-      <div class="py2-notice py2-notice-danger" style="margin-bottom:14px;">
-        <span class="py2-notice-icon">🚫</span>
-        <div>Banning permanently hides the ad. The advertiser can no longer edit it.</div>
+<div class="modal" id="modal-ban">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Ban this ad</h3>
+      <button type="button" class="modal-x" data-close="modal-ban">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="notice notice-danger">
+        <i class="fa-solid fa-ban"></i>
+        <div>Banning permanently hides the ad. The advertiser can no longer edit it. Use for policy violations that warrant removal.</div>
       </div>
-      <div class="py2-field">
-        <label class="py2-label" for="ban-reason">Reason <span class="req">*</span></label>
-        <textarea class="py2-textarea" id="ban-reason" placeholder="Why is this being banned? This is logged." style="min-height:80px;"></textarea>
+      <div class="field">
+        <label class="lbl" for="ban-reason">Reason <span class="req">*</span></label>
+        <textarea class="textarea" id="ban-reason" placeholder="Why is this being banned? Logged for audit."></textarea>
       </div>
     </div>
-    <div class="py2-modal-foot">
-      <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-ban">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-danger" id="modal-ban-confirm"><i class="fa-solid fa-ban"></i> Ban Ad</button>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" data-close="modal-ban">Cancel</button>
+      <button type="button" class="btn btn-danger" id="ban-confirm">
+        <i class="fa-solid fa-ban"></i> Ban
+      </button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: KILL -->
-<div class="py2-modal-backdrop" id="modal-kill">
-  <div class="py2-modal py2-modal-confirm">
-    <div class="py2-modal-head"><h3 id="kill-title">Are you sure?</h3><button type="button" class="py2-modal-close" data-close="modal-kill">✕</button></div>
-    <div class="py2-modal-body"><p id="kill-body" style="font-size:14px;color:var(--py2-muted);line-height:1.6;"></p></div>
-    <div class="py2-modal-foot">
-      <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-kill">Cancel</button>
-      <button type="button" class="py2-btn py2-btn-danger" id="kill-confirm"><i class="fa-solid fa-power-off"></i> Confirm</button>
+<!-- MODAL: KILL SWITCH -->
+<div class="modal" id="modal-kill">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="kill-title">Are you sure?</h3>
+      <button type="button" class="modal-x" data-close="modal-kill">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="kill-body" style="font-size:14px;color:var(--muted);line-height:1.6;"></p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" data-close="modal-kill">Cancel</button>
+      <button type="button" class="btn btn-danger" id="kill-confirm">
+        <i class="fa-solid fa-power-off"></i> Confirm
+      </button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: CHANGE PLAN -->
-<div class="py2-modal-backdrop" id="plan-modal">
-  <div class="py2-modal">
-    <div class="py2-modal-head">
-      <h3 id="plan-modal-title">Change plan</h3>
-      <button type="button" class="py2-modal-close" data-close="plan-modal">✕</button>
+<!-- MODAL: PLAN -->
+<div class="modal" id="modal-plan">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <h3 id="plan-title">Change plan</h3>
+      <button type="button" class="modal-x" data-close="modal-plan">✕</button>
     </div>
-    <div class="py2-modal-body">
-      <div id="plan-advertiser-name" style="font-size:13px;color:var(--py2-muted);margin-bottom:18px;"></div>
+    <div class="modal-body">
+      <div id="plan-adv-name" style="font-size:13px;color:var(--muted);margin-bottom:16px;"></div>
 
-      <label class="py2-label">Choose tier</label>
+      <label class="lbl">Choose tier</label>
       <div class="plan-tier-grid" id="plan-tier-grid"></div>
 
-      <label class="py2-label">Duration</label>
+      <label class="lbl">Duration</label>
       <div class="duration-btns" id="duration-btns">
-        <button type="button" class="duration-btn" data-days="30">30 days</button>
-        <button type="button" class="duration-btn active" data-days="30">1 month</button>
-        <button type="button" class="duration-btn" data-days="60">2 months</button>
-        <button type="button" class="duration-btn" data-days="90">3 months</button>
-        <button type="button" class="duration-btn" data-days="180">6 months</button>
-        <button type="button" class="duration-btn" data-days="365">1 year</button>
+        <button type="button" class="duration-btn on" data-days="30">30d</button>
+        <button type="button" class="duration-btn" data-days="60">60d</button>
+        <button type="button" class="duration-btn" data-days="90">90d</button>
+        <button type="button" class="duration-btn" data-days="180">6mo</button>
+        <button type="button" class="duration-btn" data-days="365">1yr</button>
       </div>
 
-      <div class="py2-field">
-        <label class="py2-label" for="plan-expires">Or pick exact expiry date</label>
-        <input type="date" class="py2-input" id="plan-expires">
+      <div class="field">
+        <label class="lbl" for="plan-expires">Or exact expiry date</label>
+        <input class="input" type="date" id="plan-expires">
       </div>
 
-      <div class="tier-preview-box" id="tier-preview-box"></div>
+      <div class="preview-box" id="plan-preview"></div>
 
       <div class="verified-toggle">
         <div class="vt-body">
-          <div class="vt-title">✓ Verified Badge</div>
-          <div class="vt-sub">Show a verified checkmark on the business profile. Recommended for Business and Premium tier advertisers.</div>
+          <div class="vt-title">✓ Verified badge</div>
+          <div class="vt-sub">Shows a checkmark on the business profile. Recommended for Business / Premium.</div>
         </div>
         <label class="switch">
-          <input type="checkbox" id="verified-toggle-input">
+          <input type="checkbox" id="verified-input">
           <span class="slider"></span>
         </label>
       </div>
     </div>
-    <div class="py2-modal-foot" style="justify-content:space-between;flex-wrap:wrap;">
-      <button type="button" class="py2-btn py2-btn-ghost" id="plan-revoke-btn" style="color:var(--py2-red);">
+    <div class="modal-foot" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <button type="button" class="btn btn-ghost" id="plan-revoke" style="color:var(--red);">
         <i class="fa-solid fa-rotate-left"></i> Revoke to Free
       </button>
-      <div style="display:flex;gap:10px;">
-        <button type="button" class="py2-btn py2-btn-secondary" data-close="plan-modal">Cancel</button>
-        <button type="button" class="py2-btn py2-btn-primary" id="plan-save-btn">
-          <i class="fa-solid fa-check"></i> Save Plan
+      <div style="display:flex;gap:8px;width:100%;">
+        <button type="button" class="btn btn-secondary" data-close="modal-plan" style="flex:1;">Cancel</button>
+        <button type="button" class="btn btn-primary" id="plan-save" style="flex:1;">
+          <i class="fa-solid fa-check"></i> Save
         </button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- MODAL: REJECTION REASON (viewer) -->
+<div class="modal" id="modal-reason-view">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Ad Rejection</h3>
+      <button type="button" class="modal-x" data-close="modal-reason-view">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="notice notice-warn">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div id="reason-view-text"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" data-close="modal-reason-view">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script src="/ads-config.js"></script>
 <script>
@@ -656,13 +1261,29 @@
     document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h2>Configuration missing</h2><p>ads-config.js did not load.</p></div>';
     return;
   }
-
   var esc = P.esc;
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TIERS (must match the DB)
+  // ═══════════════════════════════════════════════════════════════════════
+  var TIERS = [
+    { key: 'free',     name: 'Free',     price: 0,   icon: '🎁', weight: 1 },
+    { key: 'starter',  name: 'Starter',  price: 10,  icon: '🚀', weight: 3 },
+    { key: 'standard', name: 'Standard', price: 20,  icon: '⭐', weight: 6 },
+    { key: 'business', name: 'Business', price: 50,  icon: '💎', weight: 12 },
+    { key: 'premium',  name: 'Premium',  price: 100, icon: '👑', weight: 25 }
+  ];
+  var RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
+  function tierCfg(k) { for (var i = 0; i < TIERS.length; i++) if (TIERS[i].key === k) return TIERS[i]; return TIERS[0]; }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════════════════════════════════
   var session     = null;
-  var profile     = null;
+  var myProfile   = null;
   var ads         = [];
   var advertisers = [];
-  var profilesByAdv = {};   // { advertiser_id: profile row }
+  var profilesByAdv = {};
   var reports     = [];
   var logEntries  = [];
   var statsByAd   = {};
@@ -673,24 +1294,26 @@
 
   var pending = { ad: null, report: null, killType: null, adv: null };
 
-  // Tier metadata (mirrors advertiser dashboard)
-  var TIERS = [
-    { key: 'free',     name: 'Free',     price: 0,   weight: 1  },
-    { key: 'starter',  name: 'Starter',  price: 10,  weight: 3  },
-    { key: 'standard', name: 'Standard', price: 20,  weight: 6  },
-    { key: 'business', name: 'Business', price: 50,  weight: 12 },
-    { key: 'premium',  name: 'Premium',  price: 100, weight: 25 }
-  ];
-  var TIER_RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
-  function tierCfg(k) { for (var i=0;i<TIERS.length;i++) if (TIERS[i].key===k) return TIERS[i]; return TIERS[0]; }
-
-  var $ = function (id) { return document.getElementById(id); };
-
-  // ── Utilities ────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
   function num(n) { return (parseInt(n, 10) || 0).toLocaleString(); }
   function ctr(i, c) { return i ? ((c / i) * 100).toFixed(1) + '%' : '—'; }
-  function openModal(id) { var m = $(id); if (m) m.classList.add('open'); }
-  function closeModal(id) { var m = $(id); if (m) m.classList.remove('open'); }
+
+  function openModal(id) { $(id).classList.add('on'); document.body.style.overflow = 'hidden'; }
+  function closeModal(id) { $(id).classList.remove('on'); document.body.style.overflow = ''; }
+  function closeAllModals() {
+    document.querySelectorAll('.modal.on').forEach(function (m) { m.classList.remove('on'); });
+    document.body.style.overflow = '';
+  }
+
+  function toast(msg, kind) {
+    var t = $('toast');
+    var icons = { success: '✅', error: '⚠️', info: '💬' };
+    t.textContent = (icons[kind] || '💬') + '  ' + msg;
+    t.classList.add('on');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.classList.remove('on'); }, 2800);
+  }
+
   function timeAgo(iso) {
     if (!iso) return '';
     var s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -709,49 +1332,60 @@
     return Math.round((b - a) / 86400000);
   }
 
-  // ── Auth screens ─────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // SCREEN SWITCH
+  // ═══════════════════════════════════════════════════════════════════════
   function showScreen(name) {
-    ['signin-screen','denied-screen','admin-topbar','admin-loading','admin-main'].forEach(function (id) {
+    ['scr-signin','scr-denied','scr-loading','scr-admin'].forEach(function (id) {
       var el = $(id);
-      if (!el) return;
-      if (id === name) {
-        el.style.display = (id === 'signin-screen' || id === 'denied-screen') ? 'flex'
-                         : (id === 'admin-topbar') ? '' : 'block';
-      } else {
-        el.style.display = 'none';
-      }
+      if (el) el.style.display = 'none';
     });
-    if (name === 'signin-screen') setTimeout(function () { try { $('si-email').focus(); } catch(e){} }, 100);
+    var el = $(name);
+    if (el) el.style.display = (name === 'scr-admin') ? 'block' : 'flex';
+    if (name === 'scr-signin') setTimeout(function () { try { $('si-email').focus(); } catch(e){} }, 100);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // SIGN IN / OUT
+  // ═══════════════════════════════════════════════════════════════════════
   $('signin-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    $('signin-error').classList.remove('show');
-    var email = $('si-email').value.trim(), pw = $('si-password').value;
+    $('signin-error').style.display = 'none';
+    var email = $('si-email').value.trim();
+    var pw    = $('si-password').value;
     if (!email || !pw) {
-      $('signin-error').textContent = 'Please enter your email and password.';
-      $('signin-error').classList.add('show');
+      $('signin-error-text').textContent = 'Enter your email and password.';
+      $('signin-error').style.display = 'flex';
       return;
     }
     var btn = $('signin-submit');
-    btn.disabled = true;
     var orig = btn.innerHTML;
-    btn.innerHTML = '<span class="py2-spinner"></span> Signing in…';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Signing in…';
+
     P.auth.signin(email, pw)
-      .then(function () { return bootAfterSignin(); })
+      .then(function () { return boot(); })
       .catch(function (err) {
-        $('signin-error').textContent = err.message || 'Sign in failed.';
-        $('signin-error').classList.add('show');
+        $('signin-error-text').textContent = err.message || 'Sign in failed.';
+        $('signin-error').style.display = 'flex';
         btn.disabled = false;
         btn.innerHTML = orig;
       });
   });
 
-  $('denied-signout').addEventListener('click', function () {
-    P.auth.signout().then(function () { session = null; profile = null; showScreen('signin-screen'); });
-  });
+  $('btn-signout').addEventListener('click', doSignout);
+  $('denied-signout').addEventListener('click', doSignout);
+  function doSignout() {
+    P.auth.signout().then(function () {
+      session = null; myProfile = null;
+      ads = []; advertisers = []; reports = []; logEntries = []; statsByAd = {};
+      showScreen('scr-signin');
+    });
+  }
 
-  // ── Data loaders ─────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // DATA LOADERS
+  // ═══════════════════════════════════════════════════════════════════════
   function loadAds() {
     return P.db.select('ads', 'select=*,advertisers(business_name,owner_name,email,tier,status)&order=created_at.desc', session.access_token)
       .then(function (r) { ads = r || []; });
@@ -799,59 +1433,51 @@
     return Promise.all([loadAds(), loadAdvertisers(), loadProfiles(), loadReports(), loadLog()]).then(loadStats);
   }
 
-  // ── Plan metadata helpers ────────────────────────────────────────
-  function advertiserEffectiveTier(adv) {
+  // ═══════════════════════════════════════════════════════════════════════
+  // TIER HELPERS
+  // ═══════════════════════════════════════════════════════════════════════
+  function effectiveTier(adv) {
     if (!adv) return 'free';
     if (!adv.tier || adv.tier === 'free') return 'free';
     if (!adv.tier_expires_at) return adv.tier;
-    if (new Date(adv.tier_expires_at) > new Date()) return adv.tier;
-    return 'free';
+    return (new Date(adv.tier_expires_at) > new Date()) ? adv.tier : 'free';
   }
-  function advertiserIsExpired(adv) {
+  function isExpired(adv) {
     if (!adv || !adv.tier || adv.tier === 'free') return false;
     if (!adv.tier_expires_at) return false;
     return new Date(adv.tier_expires_at) <= new Date();
   }
-  function advertiserDaysLeft(adv) {
+  function daysLeft(adv) {
     if (!adv || !adv.tier_expires_at) return null;
     return daysBetween(new Date(), new Date(adv.tier_expires_at));
   }
-
   function tierBadge(adv) {
-    if (advertiserIsExpired(adv)) {
-      return '<span class="tier-badge expired">Expired · ' + esc(tierCfg(adv.tier).name) + '</span>';
-    }
-    var eff = advertiserEffectiveTier(adv);
+    if (isExpired(adv)) return '<span class="tier-badge expired">Expired · ' + esc(tierCfg(adv.tier).name) + '</span>';
+    var eff = effectiveTier(adv);
     return '<span class="tier-badge ' + eff + '">' + esc(tierCfg(eff).name) + '</span>';
   }
-
-  function expiryCell(adv) {
-    if (!adv || !adv.tier || adv.tier === 'free') return '<span class="expiry-cell none">—</span>';
-    if (!adv.tier_expires_at) return '<span class="expiry-cell none">no expiry</span>';
-    var days = advertiserDaysLeft(adv);
-    var cls = days < 0 ? 'expired' : days <= 5 ? 'danger' : days <= 14 ? 'warn' : 'ok';
-    var txt = days < 0 ? Math.abs(days) + ' days ago'
-            : days === 0 ? 'today'
-            : days + ' days left';
-    return '<div class="expiry-cell ' + cls + '">' +
-      '<div class="days">' + txt + '</div>' +
-      '<div style="font-size:11px;color:var(--py2-muted);margin-top:2px;">' + P.formatDate(adv.tier_expires_at) + '</div>' +
-    '</div>';
+  function expiryTxt(adv) {
+    if (!adv || !adv.tier || adv.tier === 'free') return '—';
+    if (!adv.tier_expires_at) return 'no expiry';
+    var d = daysLeft(adv);
+    if (d < 0) return Math.abs(d) + ' days ago';
+    if (d === 0) return 'today';
+    return d + ' days left';
   }
 
-  // ── TOP STATS ────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // TOP STATS
+  // ═══════════════════════════════════════════════════════════════════════
   function renderTopStats() {
-    var pendingCount = ads.filter(function (a) { return a.status === 'pending'; }).length;
-    var liveCount    = ads.filter(function (a) { return a.status === 'approved'; }).length;
-    var openReports  = reports.filter(function (r) { return !r.resolved; }).length;
+    var pendingCount  = ads.filter(function (a) { return a.status === 'pending'; }).length;
+    var liveCount     = ads.filter(function (a) { return a.status === 'approved'; }).length;
+    var openReports   = reports.filter(function (r) { return !r.resolved; }).length;
     var expiringCount = advertisers.filter(function (a) {
       if (!a.tier_expires_at || a.tier === 'free') return false;
-      var days = advertiserDaysLeft(a);
-      return days !== null && days <= 14;
+      var d = daysLeft(a);
+      return d !== null && d <= 14;
     }).length;
-    var paidCount = advertisers.filter(function (a) {
-      return advertiserEffectiveTier(a) !== 'free';
-    }).length;
+    var paidCount = advertisers.filter(function (a) { return effectiveTier(a) !== 'free'; }).length;
 
     $('stat-pending').textContent      = num(pendingCount);
     $('stat-live').textContent         = num(liveCount);
@@ -864,31 +1490,40 @@
     $('tab-count-expiring').textContent = num(expiringCount);
   }
 
-  // ── QUEUE ────────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // QUEUE
+  // ═══════════════════════════════════════════════════════════════════════
   function renderQueue() {
     var list = ads.filter(function (a) { return a.status === 'pending'; });
     if (!list.length) {
-      $('queue-list').innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">✅</div><h3>Queue is empty</h3><p>No pending ads right now.</p></div>';
+      $('queue-list').innerHTML = '<div class="card"><div class="empty"><div class="e-icon">✅</div><h3>Queue is empty</h3><p>No pending ads right now.</p></div></div>';
       return;
     }
     var html = '';
     list.forEach(function (a) {
       var biz = a.advertisers ? a.advertisers.business_name : 'Unknown';
-      var thumb = a.media_url ? '<div class="ad-thumb"><img src="' + esc(a.media_url) + '" alt="" loading="lazy" onerror="this.parentElement.textContent=\'🖼️\'"></div>' : '<div class="ad-thumb">🖼️</div>';
-      var dest = a.destination_type === 'whatsapp' ? '+' + String(a.destination_url || '').replace(/[^\d]/g, '') : a.destination_url;
+      var thumb = a.media_url
+        ? '<div class="queue-thumb"><img src="' + esc(a.media_url) + '" alt="" loading="lazy" onerror="this.parentElement.textContent=\'🖼️\'"></div>'
+        : '<div class="queue-thumb">🖼️</div>';
+      var dest = a.destination_type === 'whatsapp'
+        ? '+' + String(a.destination_url || '').replace(/[^\d]/g, '')
+        : a.destination_url;
       html +=
         '<div class="queue-item">' +
           thumb +
-          '<div class="queue-body">' +
+          '<div class="queue-main">' +
             '<div class="queue-biz">' + esc(biz) + '</div>' +
             '<div class="queue-title">' + esc(a.title) + '</div>' +
             (a.description ? '<div class="queue-desc">' + esc(a.description) + '</div>' : '') +
-            '<div class="queue-meta"><strong>Destination:</strong> ' + esc(a.destination_type) + ' → <a href="' + esc(dest) + '" target="_blank">' + esc(dest) + '</a><br><strong>Submitted:</strong> ' + esc(timeAgo(a.created_at)) + '</div>' +
+            '<div class="queue-meta">' +
+              '<strong>Destination:</strong> ' + esc(a.destination_type) + ' → <a href="' + esc(dest) + '" target="_blank" rel="noopener">' + esc(dest) + '</a>' +
+              '<br><strong>Submitted:</strong> ' + esc(timeAgo(a.created_at)) +
+            '</div>' +
             '<div class="queue-actions">' +
-              '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-act="approve" data-id="' + a.id + '"><i class="fa-solid fa-check"></i> Approve</button>' +
-              '<button type="button" class="py2-btn py2-btn-danger py2-btn-sm" data-act="reject" data-id="' + a.id + '"><i class="fa-solid fa-xmark"></i> Reject</button>' +
-              '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:var(--py2-red);"><i class="fa-solid fa-ban"></i> Ban</button>' +
-              (a.slug ? '<a class="py2-btn py2-btn-ghost py2-btn-sm" href="/ad/' + esc(a.slug) + '" target="_blank"><i class="fa-solid fa-eye"></i> Preview</a>' : '') +
+              '<button class="btn btn-success btn-sm" data-act="approve" data-id="' + a.id + '"><i class="fa-solid fa-check"></i> Approve</button>' +
+              '<button class="btn btn-danger btn-sm" data-act="reject" data-id="' + a.id + '"><i class="fa-solid fa-xmark"></i> Reject</button>' +
+              '<button class="btn btn-ghost btn-sm" style="color:var(--red);" data-act="ban" data-id="' + a.id + '"><i class="fa-solid fa-ban"></i> Ban</button>' +
+              (a.slug ? '<a class="btn btn-ghost btn-sm" href="/ad/' + esc(a.slug) + '" target="_blank"><i class="fa-solid fa-eye"></i> Preview</a>' : '') +
             '</div>' +
           '</div>' +
         '</div>';
@@ -906,7 +1541,9 @@
     });
   }
 
-  // ── ADVERTISERS ──────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // ADVERTISERS
+  // ═══════════════════════════════════════════════════════════════════════
   function renderAdvertisers() {
     var q = advSearch.toLowerCase().trim();
     var list = advertisers.filter(function (a) {
@@ -915,37 +1552,77 @@
              (a.email || '').toLowerCase().indexOf(q) >= 0 ||
              (a.owner_name || '').toLowerCase().indexOf(q) >= 0;
     });
-    if (!list.length) { $('advertisers-body').innerHTML = '<div class="py2-table-empty">No advertisers found.</div>'; return; }
+    var body = $('advertisers-body');
+    if (!list.length) {
+      body.innerHTML = '<div class="empty" style="padding:40px 20px;"><div class="e-icon">🔍</div><h3>No advertisers</h3></div>';
+      return;
+    }
     var counts = {};
     ads.forEach(function (a) { counts[a.advertiser_id] = (counts[a.advertiser_id] || 0) + 1; });
 
-    var html = '<table class="py2-table"><thead><tr>' +
+    // Mobile cards
+    var mobile = '<div class="adv-list">';
+    list.forEach(function (a) {
+      var prof = profilesByAdv[a.id] || {};
+      var slug = prof.slug || '';
+      var adCount = counts[a.id] || 0;
+      var stat = a.status === 'active'
+        ? '<span class="badge badge-active">Active</span>'
+        : a.status === 'suspended'
+        ? '<span class="badge badge-suspended">Suspended</span>'
+        : '<span class="badge badge-banned">Banned</span>';
+      mobile +=
+        '<div class="adv-card">' +
+          '<div class="adv-card-top">' +
+            '<div style="min-width:0;">' +
+              '<div class="adv-card-name">' + esc(a.business_name) + '</div>' +
+              (slug ? '<a class="adv-card-slug" href="/b/' + esc(slug) + '" target="_blank">/b/' + esc(slug) + '</a>' : '') +
+              '<div class="adv-card-email">' + esc(a.email) + '</div>' +
+            '</div>' +
+            stat +
+          '</div>' +
+          '<div class="adv-card-stats">' +
+            '<div><div class="lbl">Plan</div><div class="val">' + tierBadge(a) + '</div></div>' +
+            '<div><div class="lbl">Expires</div><div class="val">' + esc(expiryTxt(a)) + '</div></div>' +
+            '<div><div class="lbl">Ads</div><div class="val">' + num(adCount) + '</div></div>' +
+            '<div><div class="lbl">Status</div><div class="val">' + (a.status || 'active') + '</div></div>' +
+          '</div>' +
+          '<button class="btn btn-primary btn-block" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Manage Plan</button>' +
+        '</div>';
+    });
+    mobile += '</div>';
+
+    // Desktop table
+    var table = '<div class="adv-table-wrap"><table class="data-table"><thead><tr>' +
       '<th>Business</th><th>Plan</th><th>Expires</th><th>Ads</th><th>Status</th><th></th>' +
       '</tr></thead><tbody>';
     list.forEach(function (a) {
       var prof = profilesByAdv[a.id] || {};
       var slug = prof.slug || '';
       var adCount = counts[a.id] || 0;
-      var stat = a.status === 'active' ? '<span class="py2-badge py2-badge-approved">Active</span>'
-               : a.status === 'suspended' ? '<span class="py2-badge py2-badge-paused">Suspended</span>'
-               : '<span class="py2-badge py2-badge-banned">Banned</span>';
-      html += '<tr>' +
+      var stat = a.status === 'active'
+        ? '<span class="badge badge-active">Active</span>'
+        : a.status === 'suspended'
+        ? '<span class="badge badge-suspended">Suspended</span>'
+        : '<span class="badge badge-banned">Banned</span>';
+      table += '<tr>' +
         '<td>' +
           '<strong>' + esc(a.business_name) + '</strong>' +
-          (slug ? '<br><a href="/b/' + esc(slug) + '" target="_blank" style="font-size:11px;color:var(--py2-orange);">/b/' + esc(slug) + '</a>' : '') +
-          '<br><span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.email) + '</span>' +
+          (slug ? '<br><a href="/b/' + esc(slug) + '" target="_blank" style="font-size:11px;color:var(--orange);">/b/' + esc(slug) + '</a>' : '') +
+          '<br><span style="color:var(--muted);font-size:11.5px;">' + esc(a.email) + '</span>' +
         '</td>' +
         '<td>' + tierBadge(a) + '</td>' +
-        '<td>' + expiryCell(a) + '</td>' +
+        '<td style="font-size:12px;">' + esc(expiryTxt(a)) + '</td>' +
         '<td>' + num(adCount) + '</td>' +
         '<td>' + stat + '</td>' +
-        '<td><button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Plan</button></td>' +
+        '<td><button class="btn btn-secondary btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Plan</button></td>' +
       '</tr>';
     });
-    html += '</tbody></table>';
-    $('advertisers-body').innerHTML = html;
+    table += '</tbody></table></div>';
 
-    $('advertisers-body').querySelectorAll('[data-plan]').forEach(function (btn) {
+    body.innerHTML = mobile + table;
+
+    body.querySelectorAll('[data-plan]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
         if (adv) openPlanModal(adv);
@@ -953,48 +1630,73 @@
     });
   }
 
-  // ── PLANS TAB ────────────────────────────────────────────────────
-  function renderPlansTab() {
-    if (!advertisers.length) { $('plans-body').innerHTML = '<div class="py2-table-empty">No advertisers yet.</div>'; return; }
-
-    // Sort: paid (by days left ascending), then free
+  // ═══════════════════════════════════════════════════════════════════════
+  // PLANS TAB
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderPlans() {
+    if (!advertisers.length) {
+      $('plans-body').innerHTML = '<div class="empty"><div class="e-icon">👥</div><h3>No advertisers yet</h3></div>';
+      return;
+    }
     var sorted = advertisers.slice().sort(function (a, b) {
-      var aEff = advertiserEffectiveTier(a), bEff = advertiserEffectiveTier(b);
+      var aEff = effectiveTier(a), bEff = effectiveTier(b);
       var aPaid = aEff !== 'free', bPaid = bEff !== 'free';
       if (aPaid && !bPaid) return -1;
       if (!aPaid && bPaid) return 1;
       if (aPaid && bPaid) {
-        var ad = advertiserDaysLeft(a) || 0, bd = advertiserDaysLeft(b) || 0;
+        var ad = daysLeft(a) || 0, bd = daysLeft(b) || 0;
         return ad - bd;
       }
       return (a.business_name || '').localeCompare(b.business_name || '');
     });
 
-    var html = '<table class="py2-table"><thead><tr>' +
-      '<th>Business</th><th>Plan</th><th>Expires in</th><th>Started</th><th>Paid so far</th><th></th>' +
+    // Mobile cards
+    var mobile = '<div class="adv-list">';
+    sorted.forEach(function (a) {
+      var eff = effectiveTier(a);
+      var cfg = tierCfg(eff);
+      var expired = isExpired(a);
+      var dl = daysLeft(a);
+      var expTxt = !a.tier_expires_at || a.tier === 'free' ? '—' : (expired ? Math.abs(dl) + ' days ago' : dl + ' days');
+      mobile +=
+        '<div class="adv-card">' +
+          '<div class="adv-card-top">' +
+            '<div style="min-width:0;">' +
+              '<div class="adv-card-name">' + esc(a.business_name) + '</div>' +
+            '</div>' +
+            tierBadge(a) +
+          '</div>' +
+          '<div class="adv-card-stats">' +
+            '<div><div class="lbl">Expires in</div><div class="val">' + esc(expTxt) + '</div></div>' +
+            '<div><div class="lbl">Started</div><div class="val">' + (a.tier_started_at ? P.formatDate(a.tier_started_at) : '—') + '</div></div>' +
+            '<div><div class="lbl">Monthly</div><div class="val">' + (cfg.price > 0 ? 'K' + cfg.price : '—') + '</div></div>' +
+          '</div>' +
+          '<button class="btn btn-primary btn-block" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Manage</button>' +
+        '</div>';
+    });
+    mobile += '</div>';
+
+    // Desktop table
+    var table = '<div class="adv-table-wrap"><table class="data-table"><thead><tr>' +
+      '<th>Business</th><th>Plan</th><th>Expires in</th><th>Started</th><th></th>' +
       '</tr></thead><tbody>';
     sorted.forEach(function (a) {
-      var eff = advertiserEffectiveTier(a);
+      var eff = effectiveTier(a);
       var cfg = tierCfg(eff);
-      var expired = advertiserIsExpired(a);
-      var days = advertiserDaysLeft(a);
-      var expiryTxt = !a.tier_expires_at || a.tier === 'free'
-        ? '—'
-        : expired ? Math.abs(days) + ' days ago'
-        : days + ' days';
-
-      html += '<tr>' +
+      var expired = isExpired(a);
+      var dl = daysLeft(a);
+      var expTxt = !a.tier_expires_at || a.tier === 'free' ? '—' : (expired ? Math.abs(dl) + ' days ago' : dl + ' days');
+      table += '<tr>' +
         '<td><strong>' + esc(a.business_name) + '</strong></td>' +
         '<td>' + tierBadge(a) + '</td>' +
-        '<td>' + esc(expiryTxt) + '</td>' +
-        '<td style="font-size:12px;color:var(--py2-muted);">' + (a.tier_started_at ? P.formatDate(a.tier_started_at) : '—') + '</td>' +
-        '<td style="font-size:13px;">' + (cfg.price > 0 && a.tier_started_at ? 'K' + cfg.price + '/mo' : '—') + '</td>' +
-        '<td><button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Manage</button></td>' +
+        '<td style="font-size:12px;">' + esc(expTxt) + '</td>' +
+        '<td style="font-size:12px;color:var(--muted);">' + (a.tier_started_at ? P.formatDate(a.tier_started_at) : '—') + '</td>' +
+        '<td><button class="btn btn-secondary btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Manage</button></td>' +
       '</tr>';
     });
-    html += '</tbody></table>';
-    $('plans-body').innerHTML = html;
+    table += '</tbody></table></div>';
 
+    $('plans-body').innerHTML = mobile + table;
     $('plans-body').querySelectorAll('[data-plan]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
@@ -1003,50 +1705,47 @@
     });
   }
 
-  // ── EXPIRING TAB ─────────────────────────────────────────────────
-  function renderExpiringTab() {
+  // ═══════════════════════════════════════════════════════════════════════
+  // EXPIRING TAB
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderExpiring() {
     var list = advertisers.filter(function (a) {
       if (!a.tier_expires_at || a.tier === 'free') return false;
-      var days = advertiserDaysLeft(a);
-      return days !== null && days <= 14;
+      var d = daysLeft(a);
+      return d !== null && d <= 14;
     }).sort(function (a, b) {
-      var ad = advertiserDaysLeft(a) || 0, bd = advertiserDaysLeft(b) || 0;
+      var ad = daysLeft(a) || 0, bd = daysLeft(b) || 0;
       return ad - bd;
     });
 
     if (!list.length) {
-      $('expiring-list').innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🎉</div><h3>Nobody expiring soon</h3><p>All paid plans are healthy.</p></div>';
+      $('expiring-list').innerHTML = '<div class="card"><div class="empty"><div class="e-icon">🎉</div><h3>Nobody expiring soon</h3><p>All paid plans are healthy.</p></div></div>';
       return;
     }
-
     var html = '';
     list.forEach(function (a) {
-      var days = advertiserDaysLeft(a);
-      var expired = days < 0;
+      var d = daysLeft(a);
+      var expired = d < 0;
       var cls = expired ? 'expired' : 'soon';
       var cfg = tierCfg(a.tier);
       var wa = a.phone ? String(a.phone).replace(/[^\d]/g, '') : '';
       var waLink = wa ? 'https://wa.me/' + wa + '?text=' + encodeURIComponent(
-        'Hi ' + (a.owner_name || a.business_name) + ', this is PhoneYa2. Your ' + cfg.name + ' plan expires ' + (expired ? 'has expired.' : 'on ' + P.formatDate(a.tier_expires_at) + '.') + ' Renew to keep your ' + cfg.name + ' benefits. Reply here to continue.'
+        'Hi ' + (a.owner_name || a.business_name) + ', this is PhoneYa2. Your ' + cfg.name + ' plan ' + (expired ? 'has expired.' : 'expires on ' + P.formatDate(a.tier_expires_at) + '.') + ' Renew to keep your ' + cfg.name + ' benefits.'
       ) : '';
       html +=
         '<div class="expiring-row ' + cls + '">' +
           '<div class="exp-main">' +
             '<div class="exp-name">' + esc(a.business_name) + '</div>' +
-            '<div class="exp-meta">' + tierBadge(a) + ' · ' + esc(a.email) + ' · +' + esc(a.phone || '—') + '</div>' +
+            '<div class="exp-meta">' + tierBadge(a) + ' · ' + esc(a.email) + '</div>' +
           '</div>' +
-          '<div class="exp-days">' +
-            (expired ? '−' + Math.abs(days) : '+' + days) +
-            '<small>' + (expired ? 'days ago' : 'days left') + '</small>' +
-          '</div>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            (waLink ? '<a class="py2-btn py2-btn-success py2-btn-sm" href="' + waLink + '" target="_blank"><i class="fa-brands fa-whatsapp"></i> Message</a>' : '') +
-            '<button type="button" class="py2-btn py2-btn-primary py2-btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> ' + (expired ? 'Renew / Change' : 'Extend / Change') + '</button>' +
+          '<div class="exp-days">' + (expired ? '−' + Math.abs(d) : '+' + d) + '<small>' + (expired ? 'days ago' : 'days left') + '</small></div>' +
+          '<div class="expiring-actions">' +
+            (waLink ? '<a class="btn btn-success btn-sm" href="' + waLink + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Message</a>' : '') +
+            '<button class="btn btn-primary btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> ' + (expired ? 'Renew' : 'Extend') + '</button>' +
           '</div>' +
         '</div>';
     });
     $('expiring-list').innerHTML = html;
-
     $('expiring-list').querySelectorAll('[data-plan]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
@@ -1055,7 +1754,9 @@
     });
   }
 
-  // ── ALL ADS ──────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // ALL ADS TAB
+  // ═══════════════════════════════════════════════════════════════════════
   function renderAllAds() {
     var q = adsSearch.toLowerCase().trim();
     var list = ads.filter(function (a) {
@@ -1063,31 +1764,36 @@
       if (q && (a.title || '').toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
-    if (!list.length) { $('ads-body').innerHTML = '<div class="py2-table-empty">No ads match.</div>'; return; }
-
-    var html = '<table class="py2-table"><thead><tr>' +
-      '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
-      '</tr></thead><tbody>';
-    list.forEach(function (a) {
+    if (!list.length) {
+      $('ads-body').innerHTML = '<div class="empty"><div class="e-icon">📭</div><h3>No ads match</h3></div>';
+      return;
+    }
+    var rows = list.map(function (a) {
       var biz = a.advertisers ? a.advertisers.business_name : '—';
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
-      html += '<tr>' +
-        '<td><strong>' + esc(a.title) + '</strong><br><span style="color:var(--py2-muted);font-size:11.5px;">' + esc(a.slug) + '</span></td>' +
+      var actions = '';
+      if (a.status === 'approved') actions += '<button class="btn btn-ghost btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>';
+      else if (a.status === 'paused') actions += '<button class="btn btn-ghost btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>';
+      if (a.status === 'pending') actions += '<button class="btn btn-ghost btn-sm" style="color:#16a34a;" data-act="approve" data-id="' + a.id + '"><i class="fa-solid fa-check"></i></button>';
+      if (a.status === 'pending') actions += '<button class="btn btn-ghost btn-sm" style="color:#b91c1c;" data-act="reject" data-id="' + a.id + '"><i class="fa-solid fa-xmark"></i></button>';
+      if (a.status !== 'banned') actions += '<button class="btn btn-ghost btn-sm" style="color:#b91c1c;" data-act="ban" data-id="' + a.id + '" title="Ban"><i class="fa-solid fa-ban"></i></button>';
+
+      return '<tr>' +
+        '<td><strong>' + esc(a.title) + '</strong><br><span style="color:var(--muted);font-size:11.5px;">' + esc(a.slug) + '</span></td>' +
         '<td>' + esc(biz) + '</td>' +
-        '<td><span class="py2-badge py2-badge-' + (a.status === 'approved' ? 'approved' : a.status === 'pending' ? 'pending' : a.status === 'rejected' ? 'rejected' : a.status === 'paused' ? 'paused' : 'banned') + '">' + esc(a.status) + '</span></td>' +
+        '<td>' + statusBadgeHtml(a.status) + '</td>' +
         '<td>' + num(a.weight) + '</td>' +
         '<td>' + num(s.impressions) + '</td>' +
         '<td>' + num(s.clicks) + '</td>' +
-        '<td style="white-space:nowrap;">' +
-          (a.status === 'approved' ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>' : '') +
-          (a.status === 'paused'   ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>' : '') +
-          (a.status === 'pending'  ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="approve" data-id="' + a.id + '" style="color:#16a34a;"><i class="fa-solid fa-check"></i></button>' +
-                                     '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reject" data-id="' + a.id + '" style="color:#b91c1c;"><i class="fa-solid fa-xmark"></i></button>' : '') +
-          (a.status !== 'banned'   ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="ban" data-id="' + a.id + '" style="color:#b91c1c;" title="Ban"><i class="fa-solid fa-ban"></i></button>' : '') +
-        '</td></tr>';
-    });
-    html += '</tbody></table>';
-    $('ads-body').innerHTML = html;
+        '<td style="white-space:nowrap;">' + actions + '</td>' +
+      '</tr>';
+    }).join('');
+
+    $('ads-body').innerHTML =
+      '<div class="data-table-wrap" style="padding:0 14px 14px;">' +
+      '<table class="data-table"><thead><tr>' +
+      '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 
     $('ads-body').querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1107,15 +1813,29 @@
     });
   }
 
-  // ── REPORTS ──────────────────────────────────────────────────────
+  function statusBadgeHtml(s) {
+    var map = {
+      pending:  ['badge-pending',  'Pending'],
+      approved: ['badge-approved', 'Live'],
+      rejected: ['badge-rejected', 'Rejected'],
+      paused:   ['badge-paused',   'Paused'],
+      banned:   ['badge-banned',   'Banned']
+    };
+    var m = map[s] || map.pending;
+    return '<span class="badge ' + m[0] + '">' + m[1] + '</span>';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // REPORTS TAB
+  // ═══════════════════════════════════════════════════════════════════════
   function renderReports() {
     var list = reports.filter(function (r) {
-      if (reportFilter === 'open')     return !r.resolved;
+      if (reportFilter === 'open') return !r.resolved;
       if (reportFilter === 'resolved') return r.resolved;
       return true;
     });
     if (!list.length) {
-      $('reports-list').innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🎉</div><h3>No reports to show</h3></div>';
+      $('reports-list').innerHTML = '<div class="card"><div class="empty"><div class="e-icon">🎉</div><h3>No reports</h3></div></div>';
       return;
     }
     var html = '';
@@ -1129,24 +1849,24 @@
       html +=
         '<div class="report-item ' + (r.resolved ? 'resolved' : '') + '">' +
           '<span class="report-reason">' + esc(r.reason) + '</span>' +
-          (r.resolved ? '<span class="py2-badge py2-badge-approved" style="margin-left:8px;">Resolved</span>' : '') +
-          '<div class="report-ad-title">' + esc(adTitle) + (biz ? ' — ' + esc(biz) : '') + '</div>' +
+          (r.resolved ? ' <span class="badge badge-approved">Resolved</span>' : '') +
+          '<div class="report-title">' + esc(adTitle) + (biz ? ' — ' + esc(biz) : '') + '</div>' +
           (r.detail ? '<div class="report-detail">' + esc(r.detail) + '</div>' : '') +
           '<div class="report-meta">Reported ' + esc(timeAgo(r.created_at)) + '</div>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            (adSlug ? '<a class="py2-btn py2-btn-ghost py2-btn-sm" href="/ad/' + esc(adSlug) + '" target="_blank"><i class="fa-solid fa-eye"></i> View Ad</a>' : '') +
-            (!r.resolved && liveAd && liveAd.status === 'approved' ? '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-report-act="pause" data-report="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-pause"></i> Pause Ad</button>' : '') +
-            (!r.resolved ? '<button type="button" class="py2-btn py2-btn-danger py2-btn-sm" data-report-act="ban" data-report="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-ban"></i> Ban Ad</button>' : '') +
-            (!r.resolved ? '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-report-act="dismiss" data-report="' + r.id + '"><i class="fa-solid fa-check-double"></i> Dismiss</button>' : '') +
+          '<div class="report-actions">' +
+            (adSlug ? '<a class="btn btn-ghost btn-sm" href="/ad/' + esc(adSlug) + '" target="_blank"><i class="fa-solid fa-eye"></i> View</a>' : '') +
+            (!r.resolved && liveAd && liveAd.status === 'approved' ? '<button class="btn btn-secondary btn-sm" data-rpact="pause" data-rp="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-pause"></i> Pause Ad</button>' : '') +
+            (!r.resolved ? '<button class="btn btn-danger btn-sm" data-rpact="ban" data-rp="' + r.id + '" data-ad="' + adId + '"><i class="fa-solid fa-ban"></i> Ban Ad</button>' : '') +
+            (!r.resolved ? '<button class="btn btn-ghost btn-sm" data-rpact="dismiss" data-rp="' + r.id + '"><i class="fa-solid fa-check-double"></i> Dismiss</button>' : '') +
           '</div>' +
         '</div>';
     });
     $('reports-list').innerHTML = html;
 
-    $('reports-list').querySelectorAll('[data-report-act]').forEach(function (btn) {
+    $('reports-list').querySelectorAll('[data-rpact]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var act = btn.getAttribute('data-report-act');
-        var rid = btn.getAttribute('data-report');
+        var act = btn.getAttribute('data-rpact');
+        var rid = btn.getAttribute('data-rp');
         var adId = btn.getAttribute('data-ad');
         var rep = reports.find(function (x) { return x.id === rid; });
         if (act === 'dismiss') { resolveReport(rep, null, 'dismiss_report'); return; }
@@ -1157,9 +1877,14 @@
     });
   }
 
-  // ── LOG ──────────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // LOG TAB
+  // ═══════════════════════════════════════════════════════════════════════
   function renderLog() {
-    if (!logEntries.length) { $('log-body').innerHTML = '<div class="py2-table-empty">No moderation actions yet.</div>'; return; }
+    if (!logEntries.length) {
+      $('log-body').innerHTML = '<div class="empty"><div class="e-icon">📋</div><h3>No activity yet</h3></div>';
+      return;
+    }
     var iconMap = {
       approve:        { icon: 'fa-check',         bg: 'linear-gradient(135deg,#16a34a,#22c55e)' },
       reject:         { icon: 'fa-xmark',         bg: 'linear-gradient(135deg,#dc2626,#ef4444)' },
@@ -1176,29 +1901,30 @@
     var html = '';
     logEntries.forEach(function (e) {
       var conf = iconMap[e.action] || { icon: 'fa-circle-info', bg: '#6b7280' };
-      var adTitle = e.ads && e.ads.title ? e.ads.title : '(ad removed)';
+      var adTitle = e.ads && e.ads.title ? e.ads.title : '(no ad)';
       html +=
         '<div class="log-item">' +
           '<div class="log-icon" style="background:' + conf.bg + ';"><i class="fa-solid ' + conf.icon + '"></i></div>' +
-          '<div style="flex:1;min-width:0;">' +
-            '<div class="log-action">' + esc(e.action.replace(/_/g, ' ')) + ' — ' + esc(adTitle) + '</div>' +
+          '<div class="log-main">' +
+            '<div class="log-action">' + esc(String(e.action || '').replace(/_/g, ' ')) + ' — ' + esc(adTitle) + '</div>' +
             '<div class="log-meta">' + esc(timeAgo(e.created_at)) + (e.reason ? ' · ' + esc(e.reason) : '') + '</div>' +
-            (e.notes ? '<div class="log-reason">' + esc(e.notes) + '</div>' : '') +
+            (e.notes ? '<div class="log-note">' + esc(e.notes) + '</div>' : '') +
           '</div>' +
         '</div>';
     });
     $('log-body').innerHTML = html;
   }
 
-  // ── ANALYTICS ────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // ANALYTICS TAB
+  // ═══════════════════════════════════════════════════════════════════════
   function renderAnalytics() {
-    var totalImp = 0, totalClk = 0, adshare = 0, byWa = 0, byFb = 0, byIg = 0;
-    var perAd = [];
+    var tImp = 0, tClk = 0, adshare = 0, byWa = 0, byFb = 0, byIg = 0;
+    var per = [];
     ads.forEach(function (a) {
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0, sources: {} };
-      totalImp += s.impressions;
-      totalClk += s.clicks;
-      perAd.push({ ad: a, impressions: s.impressions, clicks: s.clicks, ctr: s.impressions ? s.clicks / s.impressions : 0 });
+      tImp += s.impressions; tClk += s.clicks;
+      per.push({ ad: a, impressions: s.impressions, clicks: s.clicks, ctr: s.impressions ? s.clicks / s.impressions : 0 });
       Object.keys(s.sources).forEach(function (k) {
         if (k === 'adshare')   adshare += s.sources[k];
         if (k === 'whatsapp')  byWa    += s.sources[k];
@@ -1206,28 +1932,28 @@
         if (k === 'instagram') byIg    += s.sources[k];
       });
     });
-    $('an-impressions').textContent = num(totalImp);
-    $('an-clicks').textContent      = num(totalClk);
-    $('an-ctr').textContent         = ctr(totalImp, totalClk);
+    $('an-impressions').textContent = num(tImp);
+    $('an-clicks').textContent      = num(tClk);
+    $('an-ctr').textContent         = ctr(tImp, tClk);
     $('an-adshare').textContent     = num(adshare);
 
-    var top = perAd.filter(function (x) { return x.impressions >= 5; })
-                    .sort(function (a, b) { return b.ctr - a.ctr; })
-                    .slice(0, 10);
-    if (!top.length) top = perAd.slice().sort(function (a, b) { return b.impressions - a.impressions; }).slice(0, 10);
+    var top = per.filter(function (x) { return x.impressions >= 5; })
+      .sort(function (a, b) { return b.ctr - a.ctr; }).slice(0, 10);
+    if (!top.length) top = per.slice().sort(function (a, b) { return b.impressions - a.impressions; }).slice(0, 10);
+
     if (!top.length) {
-      $('an-top-ads').innerHTML = '<div class="py2-table-empty">Not enough data yet.</div>';
+      $('an-top-ads').innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:14px;">Not enough data yet.</div>';
     } else {
-      var ranks = ['gold', 'silver', 'bronze'];
+      var ranks = ['gold','silver','bronze'];
       $('an-top-ads').innerHTML = top.map(function (x, i) {
         var biz = x.ad.advertisers ? x.ad.advertisers.business_name : '';
-        return '<div class="analytics-row">' +
-          '<div class="analytics-rank ' + (ranks[i] || '') + '">' + (i + 1) + '</div>' +
-          '<div class="analytics-title">' +
-            '<div class="analytics-name">' + esc(x.ad.title) + '</div>' +
-            '<div class="analytics-sub">' + esc(biz) + '</div>' +
+        return '<div class="an-row">' +
+          '<div class="an-rank ' + (ranks[i] || '') + '">' + (i + 1) + '</div>' +
+          '<div class="an-info">' +
+            '<div class="an-name">' + esc(x.ad.title) + '</div>' +
+            '<div class="an-sub">' + esc(biz) + '</div>' +
           '</div>' +
-          '<div class="analytics-nums"><strong>' + ctr(x.impressions, x.clicks) + '</strong>' + num(x.impressions) + ' / ' + num(x.clicks) + '</div>' +
+          '<div class="an-nums"><strong>' + ctr(x.impressions, x.clicks) + '</strong>' + num(x.impressions) + ' / ' + num(x.clicks) + '</div>' +
         '</div>';
       }).join('');
     }
@@ -1235,62 +1961,63 @@
     var totalSrc = adshare + byWa + byFb + byIg || 1;
     function bar(label, n, color) {
       var pct = Math.round((n / totalSrc) * 100);
-      return '<div style="margin-bottom:12px;">' +
-        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span>' + label + '</span><span><strong>' + num(n) + '</strong> (' + pct + '%)</span></div>' +
-        '<div style="height:8px;background:var(--py2-light);border-radius:100px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + color + ';"></div></div>' +
+      return '<div class="bar-wrap">' +
+        '<div class="bar-head"><span>' + label + '</span><span><strong>' + num(n) + '</strong> (' + pct + '%)</span></div>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + color + ';"></div></div>' +
       '</div>';
     }
     $('an-sources').innerHTML =
-      bar('Via Adshare Links',   adshare, 'linear-gradient(90deg,#ff6000,#ff9f43)') +
-      bar('Via WhatsApp',        byWa,    'linear-gradient(90deg,#128c7e,#25d366)') +
-      bar('Via Facebook',        byFb,    'linear-gradient(90deg,#1877f2,#4293ff)') +
-      bar('Via Instagram',       byIg,    'linear-gradient(90deg,#e1306c,#fd8d3a)');
+      bar('Via Adshare',   adshare, 'linear-gradient(90deg,#ff6000,#ff9f43)') +
+      bar('Via WhatsApp',  byWa,    'linear-gradient(90deg,#128c7e,#25d366)') +
+      bar('Via Facebook',  byFb,    'linear-gradient(90deg,#1877f2,#4293ff)') +
+      bar('Via Instagram', byIg,    'linear-gradient(90deg,#e1306c,#fd8d3a)');
   }
 
-  // ── MODERATION helpers ───────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // MODERATION ACTIONS
+  // ═══════════════════════════════════════════════════════════════════════
   function logAction(adId, action, reason, notes) {
     return P.db.insert('ad_moderation_log', {
       ad_id: adId, action: action,
       reason: reason || null,
       performed_by: session.user.id,
       notes: notes || null
-    }, session.access_token).catch(function (e) { console.warn('log failed', e); });
+    }, session.access_token).catch(function (e) { console.warn('log fail', e); });
   }
 
-  // ── Approve/Reject/Ban/Kill ──────────────────────────────────────
   function openApprove(ad) { pending.ad = ad; $('approve-note').value = ''; openModal('modal-approve'); }
-  $('modal-approve-confirm').addEventListener('click', function () {
+  $('approve-confirm').addEventListener('click', function () {
     if (!pending.ad) return;
     var ad = pending.ad, note = $('approve-note').value.trim() || null;
     closeModal('modal-approve');
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'approved' }, session.access_token)
       .then(function () { return logAction(ad.id, 'approve', null, note); })
-      .then(function () { P.toast('Ad approved', 'success'); return reloadAll(); })
+      .then(function () { toast('Ad approved', 'success'); return reloadAll(); })
       .then(renderAll)
-      .catch(function (e) { P.toast(e.message || 'Could not approve', 'error'); });
+      .catch(function (e) { toast(e.message || 'Failed', 'error'); });
   });
 
   function openReject(ad) {
     pending.ad = ad;
-    $('reject-reason-select').value = '';
-    $('reject-reason-text').value = '';
+    $('reject-preset').value = '';
+    $('reject-detail').value = '';
     $('reject-note').value = '';
     openModal('modal-reject');
   }
-  $('modal-reject-confirm').addEventListener('click', function () {
+  $('reject-confirm').addEventListener('click', function () {
     if (!pending.ad) return;
     var ad = pending.ad;
-    var preset = $('reject-reason-select').value.trim();
-    var detail = $('reject-reason-text').value.trim();
+    var preset = $('reject-preset').value.trim();
+    var detail = $('reject-detail').value.trim();
     var note = $('reject-note').value.trim() || null;
-    if (!detail) { P.toast('Please write a rejection reason', 'error'); return; }
+    if (!detail) { toast('Please write a rejection reason', 'error'); return; }
     var reason = preset ? (preset + ' — ' + detail) : detail;
     closeModal('modal-reject');
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'rejected', rejection_reason: reason }, session.access_token)
       .then(function () { return logAction(ad.id, 'reject', reason, note); })
-      .then(function () { P.toast('Ad rejected', 'success'); return reloadAll(); })
+      .then(function () { toast('Ad rejected', 'success'); return reloadAll(); })
       .then(renderAll)
-      .catch(function (e) { P.toast(e.message || 'Could not reject', 'error'); });
+      .catch(function (e) { toast(e.message || 'Failed', 'error'); });
   });
 
   function openBan(ad, report) {
@@ -1299,19 +2026,19 @@
     $('ban-reason').value = '';
     openModal('modal-ban');
   }
-  $('modal-ban-confirm').addEventListener('click', function () {
+  $('ban-confirm').addEventListener('click', function () {
     if (!pending.ad) return;
     var ad = pending.ad;
     var reason = $('ban-reason').value.trim();
-    if (!reason) { P.toast('Please explain why', 'error'); return; }
+    if (!reason) { toast('Please explain why', 'error'); return; }
     var rep = pending.report;
     closeModal('modal-ban');
     P.db.update('ads', 'id=eq.' + ad.id, { status: 'banned' }, session.access_token)
       .then(function () { return logAction(ad.id, 'ban', reason, null); })
       .then(function () { if (rep) return resolveReport(rep, reason, 'resolve_report'); })
-      .then(function () { P.toast('Ad banned', 'success'); return reloadAll(); })
+      .then(function () { toast('Ad banned', 'success'); return reloadAll(); })
       .then(renderAll)
-      .catch(function (e) { P.toast(e.message || 'Could not ban', 'error'); });
+      .catch(function (e) { toast(e.message || 'Failed', 'error'); });
   });
 
   function openKill(ad, type, report) {
@@ -1325,7 +2052,9 @@
       $('kill-title').textContent = 'Reactivate this ad?';
       $('kill-body').textContent = 'The ad will resume appearing if it is within its date range.';
     }
-    $('kill-confirm').innerHTML = type === 'pause' ? '<i class="fa-solid fa-power-off"></i> Deactivate' : '<i class="fa-solid fa-play"></i> Reactivate';
+    $('kill-confirm').innerHTML = type === 'pause'
+      ? '<i class="fa-solid fa-power-off"></i> Deactivate'
+      : '<i class="fa-solid fa-play"></i> Reactivate';
     openModal('modal-kill');
   }
   $('kill-confirm').addEventListener('click', function () {
@@ -1337,9 +2066,9 @@
     P.db.update('ads', 'id=eq.' + ad.id, { status: newStatus }, session.access_token)
       .then(function () { return logAction(ad.id, action, null, null); })
       .then(function () { if (rep && type === 'pause') return resolveReport(rep, 'Ad paused after report', 'resolve_report'); })
-      .then(function () { P.toast(type === 'pause' ? 'Ad deactivated' : 'Ad reactivated', 'success'); return reloadAll(); })
+      .then(function () { toast(type === 'pause' ? 'Ad deactivated' : 'Ad reactivated', 'success'); return reloadAll(); })
       .then(renderAll)
-      .catch(function (e) { P.toast(e.message || 'Could not update ad', 'error'); });
+      .catch(function (e) { toast(e.message || 'Failed', 'error'); });
   });
 
   function resolveReport(report, reason, action) {
@@ -1348,36 +2077,39 @@
       .then(function () { return logAction(report.ad_id, action, reason || null, null); });
   }
 
-  // ── PLAN MODAL ───────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // PLAN MODAL
+  // ═══════════════════════════════════════════════════════════════════════
   var planState = { adv: null, tier: 'free', days: 30, expires: '', verified: false };
 
   function openPlanModal(adv) {
     planState.adv = adv;
-    var eff = advertiserEffectiveTier(adv);
-    planState.tier = eff === 'free' && adv.tier !== 'free' ? adv.tier : eff; // show raw tier even if expired
-    if (planState.tier === 'free') planState.tier = eff;
+    var eff = effectiveTier(adv);
+    // Show the raw tier if it's expired (so admin sees what to renew), else effective
+    planState.tier = (isExpired(adv)) ? adv.tier : eff;
 
-    // Default duration
     var days = 30;
     if (adv.tier_expires_at) {
-      var remaining = daysBetween(new Date(), new Date(adv.tier_expires_at));
-      if (remaining > 0) days = remaining;
+      var rem = daysBetween(new Date(), new Date(adv.tier_expires_at));
+      if (rem > 0) days = rem;
     }
     planState.days = days;
     planState.expires = todayPlusDays(days);
-    planState.verified = adv.verified === true || (profilesByAdv[adv.id] && profilesByAdv[adv.id].verified === true) || false;
+    planState.verified = (profilesByAdv[adv.id] && profilesByAdv[adv.id].verified === true) || false;
 
-    $('plan-modal-title').textContent = 'Plan — ' + adv.business_name;
-    $('plan-advertiser-name').innerHTML =
+    $('plan-title').textContent = 'Plan — ' + adv.business_name;
+    $('plan-adv-name').innerHTML =
       '<strong>' + esc(adv.business_name) + '</strong> · ' + esc(adv.email) + '<br>' +
-      '<span style="color:var(--py2-muted);">Current: </span>' + tierBadge(adv);
+      '<span style="color:var(--muted);">Current: </span>' + tierBadge(adv);
 
     renderPlanTierGrid();
-    renderPlanDurationBtns();
+    document.querySelectorAll('#duration-btns .duration-btn').forEach(function (b) {
+      b.classList.toggle('on', parseInt(b.getAttribute('data-days'), 10) === days);
+    });
     $('plan-expires').value = planState.expires;
-    $('verified-toggle-input').checked = planState.verified;
-    renderTierPreviewBox();
-    openModal('plan-modal');
+    $('verified-input').checked = planState.verified;
+    renderPlanPreview();
+    openModal('modal-plan');
   }
 
   function renderPlanTierGrid() {
@@ -1386,89 +2118,75 @@
     TIERS.forEach(function (t) {
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'plan-tier-option' + (planState.tier === t.key ? ' selected' : '');
+      btn.className = 'plan-tier-opt' + (planState.tier === t.key ? ' on' : '');
       btn.setAttribute('data-tier', t.key);
       var priceHtml = t.price === 0 ? 'Free' : 'K' + t.price + '<small>/mo</small>';
-      btn.innerHTML = '<div class="pto-name">' + t.name + '</div><div class="pto-price">' + priceHtml + '</div>';
+      btn.innerHTML = '<div class="pto-icon">' + t.icon + '</div><div class="pto-name">' + t.name + '</div><div class="pto-price">' + priceHtml + '</div>';
       btn.addEventListener('click', function () {
         planState.tier = t.key;
         renderPlanTierGrid();
-        renderTierPreviewBox();
-        // Auto-set verified if tier is business/premium
-        if (TIER_RANK[t.key] >= 3 && !$('verified-toggle-input').checked) {
-          // don't force it — but hint in preview
-        }
+        renderPlanPreview();
       });
       grid.appendChild(btn);
     });
   }
 
-  function renderPlanDurationBtns() {
-    document.querySelectorAll('#duration-btns .duration-btn').forEach(function (b) {
-      var d = parseInt(b.getAttribute('data-days'), 10);
-      b.classList.toggle('active', d === planState.days);
-    });
-  }
   document.querySelectorAll('#duration-btns .duration-btn').forEach(function (b) {
     b.addEventListener('click', function () {
       var d = parseInt(b.getAttribute('data-days'), 10);
       planState.days = d;
       planState.expires = todayPlusDays(d);
+      document.querySelectorAll('#duration-btns .duration-btn').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
       $('plan-expires').value = planState.expires;
-      renderPlanDurationBtns();
-      renderTierPreviewBox();
+      renderPlanPreview();
     });
   });
   $('plan-expires').addEventListener('change', function () {
     planState.expires = this.value;
-    // Update duration highlight based on date chosen
-    var days = daysBetween(new Date(), new Date(this.value));
-    planState.days = days;
-    renderPlanDurationBtns();
-    renderTierPreviewBox();
+    var d = daysBetween(new Date(), new Date(this.value));
+    planState.days = d;
+    document.querySelectorAll('#duration-btns .duration-btn').forEach(function (x) {
+      x.classList.toggle('on', parseInt(x.getAttribute('data-days'), 10) === d);
+    });
+    renderPlanPreview();
   });
-  $('verified-toggle-input').addEventListener('change', function () {
-    planState.verified = this.checked;
-  });
+  $('verified-input').addEventListener('change', function () { planState.verified = this.checked; });
 
-  function renderTierPreviewBox() {
+  function renderPlanPreview() {
     var cfg = tierCfg(planState.tier);
-    var verifiedHint = planState.verified ? ' · <strong>✓ Verified badge enabled</strong>' : '';
+    var vh = planState.verified ? ' · <strong>✓ Verified enabled</strong>' : '';
     var body = '';
     if (cfg.key === 'free') {
-      body = 'Reverting to <strong>Free</strong>. All ads will run at weight <strong>1</strong>. No expiry. Verified badge removed.';
+      body = 'Reverting to <strong>Free</strong>. All ads run at weight <strong>1</strong>. No expiry. Verified removed.';
     } else {
-      var expiry = planState.expires ? P.formatDate(planState.expires) : '(no expiry)';
-      body = 'Setting to <strong>' + cfg.name + ' (K' + cfg.price + '/mo)</strong>. Ads will run at weight <strong>' + cfg.weight + '</strong>. Expires <strong>' + expiry + '</strong>' + verifiedHint + '.';
+      var exp = planState.expires ? P.formatDate(planState.expires) : '(no expiry)';
+      body = 'Setting to <strong>' + cfg.name + ' (K' + cfg.price + '/mo)</strong>. Ads run at weight <strong>' + cfg.weight + '</strong>. Expires <strong>' + exp + '</strong>' + vh + '.';
     }
-    $('tier-preview-box').innerHTML = body;
+    $('plan-preview').innerHTML = body;
   }
 
-  $('plan-save-btn').addEventListener('click', function () {
+  $('plan-save').addEventListener('click', function () {
     if (!planState.adv) return;
     var adv = planState.adv;
     var tier = planState.tier;
     var expiresAt = tier === 'free' ? null : (planState.expires ? new Date(planState.expires + 'T23:59:59').toISOString() : null);
     var startedAt = tier === 'free' ? null : (adv.tier_started_at || new Date().toISOString());
 
-    var btn = this;
-    var orig = btn.innerHTML;
+    var btn = this, orig = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<span class="py2-spinner"></span> Saving…';
+    btn.innerHTML = '<span class="spinner"></span> Saving…';
 
-    // 1. Update the advertiser
     P.db.update('advertisers', 'id=eq.' + adv.id, {
       tier: tier,
       tier_started_at: startedAt,
       tier_expires_at: expiresAt
     }, session.access_token)
-      // 2. Update the verified flag on the profile
       .then(function () {
         var prof = profilesByAdv[adv.id];
         if (!prof) return Promise.resolve();
         return P.db.update('advertiser_profiles', 'id=eq.' + prof.id, { verified: planState.verified }, session.access_token);
       })
-      // 3. Log the change
       .then(function () {
         var action = tier === 'free' ? 'plan_revoke' : 'plan_change';
         var note = tier === 'free'
@@ -1476,72 +2194,69 @@
           : 'Set to ' + tierCfg(tier).name + (expiresAt ? ' — expires ' + P.formatDate(expiresAt) : '');
         return logAction(null, action, null, note).catch(function () {});
       })
-      // 4. Update all this advertiser's ads' weight to match the tier
       .then(function () {
+        // Update all this advertiser's ads' weight
         var newWeight = tierCfg(tier).weight;
         var theirAds = ads.filter(function (a) { return a.advertiser_id === adv.id; });
         if (!theirAds.length) return Promise.resolve();
-        var promises = theirAds.map(function (a) {
+        return Promise.all(theirAds.map(function (a) {
           return P.db.update('ads', 'id=eq.' + a.id, { weight: newWeight }, session.access_token);
-        });
-        return Promise.all(promises);
+        }));
       })
       .then(function () {
-        P.toast('Plan updated for ' + adv.business_name, 'success');
+        toast('Plan updated for ' + adv.business_name, 'success');
         return reloadAll();
       })
       .then(function () {
         renderAll();
         btn.disabled = false;
         btn.innerHTML = orig;
-        closeModal('plan-modal');
+        closeModal('modal-plan');
       })
       .catch(function (err) {
         btn.disabled = false;
         btn.innerHTML = orig;
-        P.toast(err.message || 'Could not update plan', 'error');
+        toast(err.message || 'Failed', 'error');
       });
   });
 
-  $('plan-revoke-btn').addEventListener('click', function () {
+  $('plan-revoke').addEventListener('click', function () {
     if (!planState.adv) return;
     if (!confirm('Revoke ' + planState.adv.business_name + ' back to Free? This resets their ad weights to 1.')) return;
     planState.tier = 'free';
     planState.expires = '';
     planState.verified = false;
     renderPlanTierGrid();
-    renderTierPreviewBox();
+    renderPlanPreview();
     $('plan-expires').value = '';
-    $('verified-toggle-input').checked = false;
-    // Auto-click save
-    setTimeout(function () { $('plan-save-btn').click(); }, 100);
+    $('verified-input').checked = false;
+    setTimeout(function () { $('plan-save').click(); }, 100);
   });
 
-  // ── Modal close ──────────────────────────────────────────────────
-  document.querySelectorAll('[data-close]').forEach(function (btn) {
-    btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close')); });
+  // ═══════════════════════════════════════════════════════════════════════
+  // MODAL CLOSE
+  // ═══════════════════════════════════════════════════════════════════════
+  document.querySelectorAll('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () { closeModal(b.getAttribute('data-close')); });
   });
-  document.querySelectorAll('.py2-modal-backdrop').forEach(function (bd) {
-    bd.addEventListener('click', function (e) { if (e.target === bd) bd.classList.remove('open'); });
+  document.querySelectorAll('.modal').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) closeModal(m.id); });
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.py2-modal-backdrop.open').forEach(function (m) { m.classList.remove('open'); });
-    }
-  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllModals(); });
 
-  // ── TABS ─────────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════
+  // TABS
+  // ═══════════════════════════════════════════════════════════════════════
   function switchTab(name) {
-    document.querySelectorAll('.py2-tab').forEach(function (t) {
-      t.classList.toggle('active', t.getAttribute('data-tab') === name);
+    document.querySelectorAll('.tab').forEach(function (t) {
+      t.classList.toggle('on', t.getAttribute('data-tab') === name);
     });
-    ['queue','advertisers','plans','expiring','ads','reports','log','analytics'].forEach(function (n) {
-      var panel = $('tab-' + n);
-      if (panel) panel.style.display = (n === name) ? 'block' : 'none';
+    document.querySelectorAll('.panel').forEach(function (p) {
+      p.classList.toggle('on', p.getAttribute('data-panel') === name);
     });
     if (name === 'advertisers') renderAdvertisers();
-    if (name === 'plans')       renderPlansTab();
-    if (name === 'expiring')    renderExpiringTab();
+    if (name === 'plans')       renderPlans();
+    if (name === 'expiring')    renderExpiring();
     if (name === 'ads')         renderAllAds();
     if (name === 'reports')     renderReports();
     if (name === 'log')         renderLog();
@@ -1549,45 +2264,37 @@
     if (name === 'queue')       renderQueue();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  document.querySelectorAll('.py2-tab').forEach(function (t) {
+  document.querySelectorAll('.tab').forEach(function (t) {
     t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
   });
 
-  // ── Filters ──────────────────────────────────────────────────────
+  // Filters
   $('ads-status-filter').addEventListener('change', function () { adsStatusFilter = this.value; renderAllAds(); });
   $('ads-search').addEventListener('input', function () { adsSearch = this.value; renderAllAds(); });
   $('adv-search').addEventListener('input', function () { advSearch = this.value; renderAdvertisers(); });
-  document.querySelectorAll('.report-filter').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.report-filter').forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      reportFilter = btn.getAttribute('data-filter');
+  document.querySelectorAll('.report-filter').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.report-filter').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      reportFilter = b.getAttribute('data-filter');
       renderReports();
     });
   });
 
-  // ── REFRESH + SIGN OUT ───────────────────────────────────────────
+  // Refresh
   $('btn-refresh').addEventListener('click', function () {
     var b = this, orig = b.innerHTML;
     b.disabled = true;
-    b.innerHTML = '<span class="py2-spinner py2-spinner-dark"></span> Refreshing…';
+    b.innerHTML = '<span class="spinner spinner-dark"></span> Refreshing…';
     reloadAll().then(function () {
       renderAll();
       b.disabled = false;
       b.innerHTML = orig;
-      P.toast('Refreshed', 'success');
+      toast('Refreshed', 'success');
     }).catch(function (e) {
       b.disabled = false;
       b.innerHTML = orig;
-      P.toast(e.message || 'Refresh failed', 'error');
-    });
-  });
-
-  $('btn-signout').addEventListener('click', function () {
-    P.auth.signout().then(function () {
-      session = null; profile = null;
-      ads = []; advertisers = []; reports = []; logEntries = []; statsByAd = {};
-      showScreen('signin-screen');
+      toast(e.message || 'Refresh failed', 'error');
     });
   });
 
@@ -1595,47 +2302,50 @@
     renderTopStats();
     renderQueue();
     renderAdvertisers();
-    renderPlansTab();
-    renderExpiringTab();
+    renderPlans();
+    renderExpiring();
     renderAllAds();
     renderReports();
     renderLog();
     renderAnalytics();
   }
 
-  // ── Boot ─────────────────────────────────────────────────────────
-  function bootAfterSignin() {
+  // ═══════════════════════════════════════════════════════════════════════
+  // BOOT
+  // ═══════════════════════════════════════════════════════════════════════
+  function boot() {
     session = P.auth.getSession();
-    if (!session || !session.user) { showScreen('signin-screen'); return Promise.resolve(); }
-    showScreen('admin-loading');
+    if (!session || !session.user) { showScreen('scr-signin'); return Promise.resolve(); }
+    showScreen('scr-loading');
+
     return P.db.select('profiles', 'id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
       .then(function (rows) {
-        profile = rows && rows[0] ? rows[0] : null;
-        if (!profile || profile.role !== 'admin') {
-          $('denied-name').textContent = session.user.email ? 'Signed in as ' + session.user.email : '';
-          showScreen('denied-screen');
+        myProfile = rows && rows[0] ? rows[0] : null;
+        if (!myProfile || myProfile.role !== 'admin') {
+          $('denied-name').textContent = session.user.email ? ('Signed in as ' + session.user.email) : '';
+          showScreen('scr-denied');
           return Promise.resolve(null);
         }
         return reloadAll().then(function () {
-          $('topbar-admin').textContent = profile.full_name || profile.email || 'Admin';
-          showScreen('admin-main');
+          $('topbar-admin').textContent = myProfile.full_name || myProfile.email || 'Admin';
+          showScreen('scr-admin');
           renderAll();
         });
       })
       .catch(function (err) {
-        showScreen('admin-loading');
-        $('admin-loading').innerHTML =
-          '<div style="text-align:center;padding:40px;">' +
-          '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Could not load admin panel</h3>' +
-          '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' + (err.message || 'Please try again.') + '</p>' +
-          '<button onclick="location.reload()" class="py2-btn py2-btn-primary" style="margin-top:16px;">Retry</button>' +
+        showScreen('scr-loading');
+        $('scr-loading').innerHTML =
+          '<div style="text-align:center;padding:40px;max-width:400px;">' +
+          '<h3 style="font-family:var(--font-head);margin-bottom:8px;">Could not load admin panel</h3>' +
+          '<p style="color:var(--muted);font-size:14px;">' + (err.message || 'Please try again.') + '</p>' +
+          '<button onclick="location.reload()" class="btn btn-primary" style="margin-top:16px;">Retry</button>' +
           '</div>';
       });
   }
 
   var existing = P.auth.getSession();
-  if (existing && existing.user) bootAfterSignin();
-  else showScreen('signin-screen');
+  if (existing && existing.user) boot();
+  else showScreen('scr-signin');
 })();
 </script>
 
