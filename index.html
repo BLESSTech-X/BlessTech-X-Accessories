@@ -2042,15 +2042,10 @@ init();
     section.style.display = 'none';
   }
 
-  if (!window.PY2_ADS_CONFIG || !window.PY2_ADS_CONFIG.url || !window.PY2_ADS_CONFIG.key) {
-    hideSection();
-    return;
-  }
-
-  var SUPABASE_URL = window.PY2_ADS_CONFIG.url;
-  var SUPABASE_KEY = window.PY2_ADS_CONFIG.key;
-  var TRACK        = document.getElementById('py2-ads-track');
-  if (!TRACK) { hideSection(); return; }
+    var SUPABASE_URL = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.url)
+    || 'https://signnapmkdctdcfpnsiu.supabase.co';
+  var SUPABASE_KEY = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.key)
+    || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
   // ── State for this carousel ─────────────────────────────────────────
   var ADS          = [];
