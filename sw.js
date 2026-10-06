@@ -57,6 +57,11 @@ self.addEventListener('fetch', event => {
   // Skip admin panel — always fetch fresh so CMS always works
   if (url.pathname.startsWith('/admin')) return;
 
+  // Skip XML and text files (sitemap.xml, robots.txt) — let network handle directly
+  if (url.pathname.endsWith('.xml') || url.pathname.endsWith('.txt')) {
+    return;
+  }
+
   // Always fetch .json files fresh from network, never serve from cache first
   if (url.pathname.endsWith('.json')) {
     event.respondWith(
