@@ -64,8 +64,6 @@
     }
 
     .char-count { font-size: 11px; color: var(--py2-muted); text-align: right; margin-top: 3px; }
-    .char-count.warn { color: var(--py2-amber); }
-    .char-count.over { color: var(--py2-red); }
 
     .qr-wrap {
       display: flex; align-items: center; gap: 16px;
@@ -121,161 +119,559 @@
     }
     #signin-error.show { display: block; }
 
-    /* ── Media type toggle (Image / Video) ─────────────────────────── */
-    .media-toggle {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .media-toggle-btn {
-      background: white;
-      border: 2px solid rgba(0,0,0,.1);
-      border-radius: var(--py2-radius-sm);
-      padding: 14px;
-      cursor: pointer;
-      text-align: center;
-      transition: all .2s;
-      font-family: var(--py2-font-body);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--py2-muted);
+    /* ── PLAN CARD ─────────────────────────────────────────────────── */
+    .plan-card {
+      border-radius: var(--py2-radius-lg);
+      padding: 20px 22px;
+      margin-bottom: 24px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 6px;
-    }
-    .media-toggle-btn i { font-size: 1.3rem; }
-    .media-toggle-btn:hover { border-color: var(--py2-orange); color: var(--py2-text); }
-    .media-toggle-btn.active {
-      border-color: var(--py2-orange);
-      background: linear-gradient(135deg, rgba(255,96,0,.08), rgba(255,159,67,.05));
-      color: var(--py2-orange);
-      box-shadow: 0 4px 14px rgba(255,96,0,.15);
-    }
-
-    /* ── Video source picker ───────────────────────────────────────── */
-    .video-sources {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .video-source-btn {
-      background: white;
-      border: 1.5px solid rgba(0,0,0,.1);
-      border-radius: var(--py2-radius-sm);
-      padding: 10px 8px;
-      cursor: pointer;
-      text-align: center;
-      transition: all .2s;
-      font-family: var(--py2-font-body);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--py2-muted);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .video-source-btn i { font-size: 1.1rem; }
-    .video-source-btn:hover { border-color: var(--py2-orange); color: var(--py2-text); }
-    .video-source-btn.active {
-      border-color: var(--py2-orange);
-      background: rgba(255,96,0,.06);
-      color: var(--py2-orange);
-    }
-
-    /* ── Preview area for videos ───────────────────────────────────── */
-    .media-preview {
-      margin-top: 12px;
-      border-radius: var(--py2-radius);
+      gap: 18px;
+      flex-wrap: wrap;
+      position: relative;
       overflow: hidden;
-      background: #000;
-      display: none;
-      aspect-ratio: 16/9;
-      max-height: 260px;
+      box-shadow: var(--py2-shadow-sm);
+    }
+    .plan-card.free {
+      background: linear-gradient(135deg, #f8f9ff, #eef0f8);
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .plan-card.starter {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border: 1px solid rgba(37,99,235,.15);
+    }
+    .plan-card.standard {
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+      border: 1px solid rgba(139,92,246,.2);
+    }
+    .plan-card.business {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid rgba(217,119,6,.25);
+    }
+    .plan-card.premium {
+      background: linear-gradient(135deg, #0a0a14, #1a1a3e);
+      border: 1px solid rgba(255,96,0,.4);
+      color: white;
+    }
+    .plan-card.premium .plan-label,
+    .plan-card.premium .plan-desc { color: rgba(255,255,255,.7); }
+    .plan-card.premium .plan-name { color: white; }
+
+    .plan-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      background: white;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    }
+    .plan-card.premium .plan-icon { background: rgba(255,255,255,.1); }
+
+    .plan-info { flex: 1; min-width: 200px; }
+    .plan-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--py2-muted);
+      margin-bottom: 4px;
+    }
+    .plan-name {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 1.5rem;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .plan-desc {
+      font-size: 13px;
+      color: var(--py2-muted);
+      line-height: 1.5;
+    }
+    .plan-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Progress bar for expiry */
+    .plan-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(0,0,0,.06);
+      border-radius: 100px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .plan-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      border-radius: 100px;
+      transition: width .4s;
+    }
+    .plan-progress-fill.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .plan-progress-fill.danger { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+    /* Expired banner */
+    .expired-banner {
+      background: rgba(230,57,70,.08);
+      border: 1px solid rgba(230,57,70,.25);
+      border-radius: var(--py2-radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #b91c1c;
+    }
+    .expired-banner i { flex-shrink: 0; margin-top: 2px; }
+
+    /* ── UPGRADE MODAL ─────────────────────────────────────────────── */
+    #upgrade-modal .py2-modal { max-width: 900px; padding: 0; }
+    .upgrade-head {
+      background: linear-gradient(135deg, #0a0a14, #1a1a3e);
+      color: white;
+      padding: 28px 28px 22px;
+      border-radius: var(--py2-radius-lg) var(--py2-radius-lg) 0 0;
       position: relative;
     }
-    .media-preview.show { display: block; }
-    .media-preview video,
-    .media-preview iframe {
-      width: 100%; height: 100%; object-fit: cover;
-      border: 0; display: block;
+    .upgrade-head h3 {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      letter-spacing: -.3px;
     }
-    .media-preview-remove {
-      position: absolute; top: 8px; right: 8px;
-      background: rgba(10,10,20,.7); color: white;
-      border: none; border-radius: 50%;
-      width: 30px; height: 30px;
-      cursor: pointer; font-size: 14px;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 2;
+    .upgrade-head p {
+      color: rgba(255,255,255,.6);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 620px;
     }
+    .upgrade-head .py2-modal-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      color: rgba(255,255,255,.6);
+      font-size: 22px;
+    }
+    .upgrade-head .py2-modal-close:hover { color: white; }
 
-    /* Video preview inside the My Ads list */
-    .ad-thumb video,
-    .ad-thumb iframe {
-      width: 100%; height: 100%; object-fit: cover; border: 0;
-    }
-
-    /* Upload progress */
-    .upload-progress {
-      margin-top: 10px;
-      display: none;
-    }
-    .upload-progress.show { display: block; }
-    .upload-bar {
-      height: 6px;
-      background: var(--py2-light);
-      border-radius: 100px;
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: rgba(0,0,0,.06);
+      border-radius: 0 0 var(--py2-radius-lg) var(--py2-radius-lg);
       overflow: hidden;
     }
-    .upload-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #ff6000, #ff9f43);
-      width: 0%;
-      transition: width .3s;
+    .tier-col {
+      background: white;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
-    .upload-bar-label {
+    .tier-col.current {
+      background: linear-gradient(180deg, #fff7ed, #ffffff);
+    }
+    .tier-col.current::before {
+      content: 'Current Plan';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      background: var(--py2-orange);
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      text-align: center;
+      padding: 3px 0;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+    .tier-col.current { padding-top: 30px; }
+
+    .tier-name {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .tier-price {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 1.6rem;
+      color: var(--py2-text);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .tier-price small {
+      font-size: .7rem;
+      color: var(--py2-muted);
+      font-weight: 600;
+    }
+    .tier-period {
       font-size: 11px;
       color: var(--py2-muted);
-      margin-top: 5px;
-      text-align: center;
+      margin-bottom: 16px;
     }
+    .tier-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px;
+      flex: 1;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #444;
+    }
+    .tier-features li {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .tier-features li i { color: #16a34a; flex-shrink: 0; margin-top: 3px; font-size: 10px; }
+    .tier-features li.no { color: #9ca3af; }
+    .tier-features li.no i { color: #d1d5db; }
+    .tier-col .py2-btn { width: 100%; font-size: 12.5px; padding: 10px; }
+    .tier-col .current-badge {
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--py2-orange);
+      padding: 10px;
+      background: rgba(255,96,0,.08);
+      border-radius: 8px;
+    }
+    @media (max-width: 800px) {
+      .tier-grid { grid-template-columns: 1fr; }
+      .tier-col.current { padding-top: 34px; }
+    }
+
+    /* ── PAYMENT MODAL ─────────────────────────────────────────────── */
+    #payment-modal .py2-modal { max-width: 480px; }
+    .payment-summary {
+      background: linear-gradient(135deg, #fff7ed, #ffedd5);
+      border-radius: var(--py2-radius);
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,96,0,.2);
+    }
+    .payment-summary .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .payment-summary .row:last-child { margin-bottom: 0; padding-top: 8px; border-top: 1px dashed rgba(255,96,0,.25); }
+    .payment-summary .row strong { font-family: var(--py2-font-head); font-size: 1rem; }
+    .payment-summary .price-tag {
+      font-family: var(--py2-font-head);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--py2-orange);
+    }
+    .payment-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .payment-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: var(--py2-radius);
+      border: 1.5px solid rgba(0,0,0,.08);
+      background: white;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: all .2s;
+      font-size: 14px;
+    }
+    .payment-btn:hover {
+      border-color: var(--py2-orange);
+      background: #fff7ed;
+      transform: translateY(-1px);
+    }
+    .payment-btn .pm-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .payment-btn .pm-body { flex: 1; }
+    .payment-btn .pm-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .payment-btn .pm-sub {
+      font-size: 12px;
+      color: var(--py2-muted);
+    }
+    .payment-btn .pm-arrow {
+      color: var(--py2-muted);
+      font-size: 14px;
+    }
+    .payment-note {
+      background: rgba(84,160,255,.07);
+      border: 1px solid rgba(84,160,255,.2);
+      border-radius: var(--py2-radius);
+      padding: 12px 14px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--py2-text);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .payment-note i { color: var(--py2-c5); flex-shrink: 0; margin-top: 1px; }
+
+    /* ── MY PROFILE TAB ────────────────────────────────────────────── */
+    .profile-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .profile-layout { grid-template-columns: 1fr; }
+    }
+
+    .locked-field {
+      position: relative;
+      opacity: .65;
+      pointer-events: none;
+    }
+    .locked-field input,
+    .locked-field textarea,
+    .locked-field select {
+      background: #f5f5f7 !important;
+      cursor: not-allowed;
+    }
+    .lock-badge {
+      position: absolute;
+      top: 6px; right: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #5f27cd, #a55eea);
+      color: white;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 100px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+    .lock-badge i { font-size: 8px; }
+    .lock-unlock-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--py2-orange);
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 7px 14px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform .2s;
+      font-family: var(--py2-font-body);
+    }
+    .lock-unlock-btn:hover { transform: translateY(-1px); }
+
+    .color-swatch-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .color-swatch-row input[type="color"] {
+      width: 48px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(0,0,0,.1);
+      cursor: pointer;
+      padding: 2px;
+      background: white;
+    }
+    .color-hex {
+      flex: 1;
+      min-width: 100px;
+      border: 1.5px solid rgba(0,0,0,.1);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: ui-monospace, monospace;
+      outline: none;
+    }
+
+    .social-fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .social-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .social-field .sf-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .social-field input { flex: 1; }
+
+    /* Live preview mockup */
+    .profile-preview-mock {
+      position: sticky;
+      top: 100px;
+      border-radius: var(--py2-radius-lg);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.08);
+      background: white;
+      box-shadow: var(--py2-shadow);
+    }
+    .mock-label {
+      padding: 10px 16px;
+      background: #f8f9ff;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--py2-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mock-iframe-wrap {
+      aspect-ratio: 9 / 16;
+      max-height: 640px;
+      background: #0a0a14;
+      position: relative;
+      overflow: hidden;
+    }
+    .mock-iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .mock-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,.3);
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+    }
+    .mock-actions {
+      padding: 12px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(0,0,0,.06);
+      background: white;
+    }
+    .mock-actions .py2-btn { flex: 1; min-width: 100px; }
+
+    .profile-slug-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--py2-light);
+      border-radius: var(--py2-radius-sm);
+      padding: 8px 12px;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      color: var(--py2-muted);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .profile-slug-row span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .profile-slug-row button {
+      background: white;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--py2-font-body);
+      color: var(--py2-text);
+      flex-shrink: 0;
+    }
+    .profile-slug-row button:hover { background: #f0fdf4; border-color: #25d366; color: #128c7e; }
+
+    /* Tier chip in tab bar */
+    .tier-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-left: 6px;
+    }
+    .tier-pill.free     { background: rgba(107,114,128,.15); color: #4b5563; }
+    .tier-pill.starter  { background: rgba(37,99,235,.15);   color: #2563eb; }
+    .tier-pill.standard { background: rgba(139,92,246,.15);  color: #7c3aed; }
+    .tier-pill.business { background: rgba(217,119,6,.15);   color: #b45309; }
+    .tier-pill.premium  { background: linear-gradient(135deg, #ff6000, #ff9f43); color: white; }
   </style>
 </head>
 <body class="py2-page">
 
-<!-- ═══ INLINE SIGN-IN ═══ -->
+<!-- ═══ SIGN-IN ═══ -->
 <div id="signin-screen" style="display:none;">
   <div class="py2-auth-card">
     <div class="py2-auth-brand">
       <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2"
-           onerror="this.style.display='none'">
+           alt="PhoneYa2" onerror="this.style.display='none'">
       <h1>Sign in to your dashboard</h1>
       <p>Manage your ads, track performance, and share your campaigns.</p>
     </div>
-
     <div id="signin-error"></div>
-
     <form id="signin-form" novalidate>
       <div class="py2-field">
         <label class="py2-label" for="si-email">Email</label>
-        <input class="py2-input" type="email" id="si-email" required
-               autocomplete="email" placeholder="you@yourbusiness.com">
+        <input class="py2-input" type="email" id="si-email" required autocomplete="email" placeholder="you@yourbusiness.com">
       </div>
       <div class="py2-field">
         <label class="py2-label" for="si-password">Password</label>
-        <input class="py2-input" type="password" id="si-password" required
-               autocomplete="current-password" placeholder="Your password">
+        <input class="py2-input" type="password" id="si-password" required autocomplete="current-password" placeholder="Your password">
       </div>
       <button type="submit" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block" id="signin-submit">
         <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
       </button>
     </form>
-
     <div class="py2-auth-alt">
       Don't have an account? <a href="/advertise/">Create one</a>
     </div>
@@ -312,6 +708,7 @@
 <div id="dash-main" style="display:none;">
   <div class="py2-container">
 
+    <!-- Header -->
     <div class="py2-dash-head">
       <div>
         <h1 class="py2-h1" id="dash-greeting">Welcome back</h1>
@@ -324,6 +721,38 @@
       </button>
     </div>
 
+    <!-- ═══ PLAN CARD ═══ -->
+    <div class="plan-card free" id="plan-card">
+      <div class="plan-icon" id="plan-icon">🎁</div>
+      <div class="plan-info">
+        <div class="plan-label">Your Plan</div>
+        <div class="plan-name" id="plan-name">Free</div>
+        <div class="plan-desc" id="plan-desc">3 ads max · Basic rotation</div>
+        <div class="plan-progress" id="plan-progress-wrap" style="display:none;">
+          <div class="plan-progress-fill" id="plan-progress-fill"></div>
+        </div>
+      </div>
+      <div class="plan-actions">
+        <button type="button" class="py2-btn py2-btn-primary" id="btn-upgrade">
+          <i class="fa-solid fa-rocket"></i> <span id="btn-upgrade-label">Upgrade</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Expired banner -->
+    <div class="expired-banner" id="expired-banner" style="display:none;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong id="expired-text">Your plan has expired.</strong>
+        <div style="margin-top:6px;">
+          <button type="button" class="py2-btn py2-btn-danger py2-btn-sm" id="btn-renew">
+            <i class="fa-solid fa-rotate-right"></i> Renew Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top stats -->
     <div class="py2-dash-stats" id="dash-stats">
       <div class="py2-stat">
         <div class="py2-stat-label">Active Ads</div>
@@ -341,8 +770,13 @@
         <div class="py2-stat-label">Overall CTR</div>
         <div class="py2-stat-value" id="stat-ctr">—</div>
       </div>
+      <div class="py2-stat">
+        <div class="py2-stat-label">Profile Views</div>
+        <div class="py2-stat-value" id="stat-views">0</div>
+      </div>
     </div>
 
+    <!-- Tabs -->
     <div class="py2-tabs" role="tablist">
       <button class="py2-tab active" data-tab="ads" role="tab" type="button">
         <i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span>
@@ -352,6 +786,9 @@
       </button>
       <button class="py2-tab" data-tab="stats" role="tab" type="button">
         <i class="fa-solid fa-chart-line"></i> Stats
+      </button>
+      <button class="py2-tab" data-tab="profile" role="tab" type="button">
+        <i class="fa-solid fa-store"></i> My Profile <span class="tier-pill" id="profile-tier-pill"></span>
       </button>
       <button class="py2-tab" data-tab="account" role="tab" type="button">
         <i class="fa-solid fa-user"></i> Account
@@ -385,12 +822,10 @@
           <h2 id="create-form-title">Create a New Ad</h2>
         </div>
         <div class="py2-card-body">
-
           <div id="create-error" class="py2-notice py2-notice-danger" style="display:none;">
             <span class="py2-notice-icon">⚠️</span>
             <div id="create-error-text">Something went wrong.</div>
           </div>
-
           <div id="create-info" class="py2-notice" style="display:none;">
             <span class="py2-notice-icon">ℹ️</span>
             <div id="create-info-text">Info</div>
@@ -401,36 +836,31 @@
 
             <div class="py2-field">
               <label class="py2-label" for="f-title">Ad Title <span class="req">*</span></label>
-              <input class="py2-input" type="text" id="f-title" maxlength="60"
-                     placeholder="e.g. iPhone 13 Sale — 30% Off" required>
+              <input class="py2-input" type="text" id="f-title" maxlength="60" placeholder="e.g. iPhone 13 Sale — 30% Off" required>
               <div class="char-count" id="count-title">0 / 60</div>
               <div class="py2-error" id="err-title">Please enter a title (max 60 characters).</div>
             </div>
 
             <div class="py2-field">
               <label class="py2-label" for="f-desc">Short Description</label>
-              <textarea class="py2-textarea" id="f-desc" maxlength="200"
-                        placeholder="e.g. Affordable. Delivery across Lusaka." style="min-height:80px;"></textarea>
+              <textarea class="py2-textarea" id="f-desc" maxlength="200" placeholder="e.g. Affordable. Delivery across Lusaka." style="min-height:80px;"></textarea>
               <div class="char-count" id="count-desc">0 / 200</div>
             </div>
 
-            <!-- ═══ MEDIA SECTION ═══ -->
             <div class="py2-field">
               <label class="py2-label">Ad Media <span class="req">*</span></label>
-
-              <!-- Step 1: Image or Video? -->
-              <div class="media-toggle" id="media-toggle">
-                <button type="button" class="media-toggle-btn active" data-media="image">
-                  <i class="fa-solid fa-image"></i>
+              <div class="media-toggle" id="media-toggle" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+                <button type="button" class="media-toggle-btn active" data-media="image" style="background:white;border:2px solid #ff6000;border-radius:8px;padding:14px;cursor:pointer;text-align:center;font-family:inherit;font-size:13px;font-weight:600;color:#ff6000;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                  <i class="fa-solid fa-image" style="font-size:1.3rem;"></i>
                   <span>Image</span>
                 </button>
-                <button type="button" class="media-toggle-btn" data-media="video">
-                  <i class="fa-solid fa-video"></i>
+                <button type="button" class="media-toggle-btn" data-media="video" style="background:white;border:2px solid rgba(0,0,0,.1);border-radius:8px;padding:14px;cursor:pointer;text-align:center;font-family:inherit;font-size:13px;font-weight:600;color:#6b7280;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                  <i class="fa-solid fa-video" style="font-size:1.3rem;"></i>
                   <span>Video</span>
                 </button>
               </div>
 
-              <!-- ── IMAGE MODE ── -->
+              <!-- Image mode -->
               <div id="media-image-mode">
                 <div class="py2-file" id="img-drop">
                   <input type="file" class="py2-file-input" id="f-image" accept="image/*">
@@ -447,64 +877,41 @@
                 <div class="py2-error" id="err-image">Please add an image (or wait for it to finish uploading).</div>
               </div>
 
-              <!-- ── VIDEO MODE ── -->
+              <!-- Video mode -->
               <div id="media-video-mode" style="display:none;">
-
                 <p style="font-size:12.5px;color:var(--py2-muted);margin-bottom:10px;line-height:1.5;">
                   Choose where your video is hosted. On the site it will play automatically (muted).
                 </p>
-
-                <div class="video-sources" id="video-sources">
-                  <button type="button" class="video-source-btn active" data-source="youtube">
-                    <i class="fa-brands fa-youtube" style="color:#ff0000;"></i>
-                    <span>YouTube</span>
+                <div class="video-sources" id="video-sources" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:14px;">
+                  <button type="button" class="video-source-btn active" data-source="youtube" style="background:white;border:1.5px solid #ff6000;border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-family:inherit;font-size:12px;font-weight:600;color:#ff6000;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                    <i class="fa-brands fa-youtube" style="color:#ff0000;font-size:1.1rem;"></i><span>YouTube</span>
                   </button>
-                  <button type="button" class="video-source-btn" data-source="vimeo">
-                    <i class="fa-brands fa-vimeo-v" style="color:#1ab7ea;"></i>
-                    <span>Vimeo</span>
+                  <button type="button" class="video-source-btn" data-source="vimeo" style="background:white;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-family:inherit;font-size:12px;font-weight:600;color:#6b7280;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                    <i class="fa-brands fa-vimeo-v" style="color:#1ab7ea;font-size:1.1rem;"></i><span>Vimeo</span>
                   </button>
-                  <button type="button" class="video-source-btn" data-source="tiktok">
-                    <i class="fa-brands fa-tiktok"></i>
-                    <span>TikTok</span>
+                  <button type="button" class="video-source-btn" data-source="tiktok" style="background:white;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-family:inherit;font-size:12px;font-weight:600;color:#6b7280;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                    <i class="fa-brands fa-tiktok" style="font-size:1.1rem;"></i><span>TikTok</span>
                   </button>
-                  <button type="button" class="video-source-btn" data-source="mp4">
-                    <i class="fa-solid fa-file-video"></i>
-                    <span>Upload MP4</span>
+                  <button type="button" class="video-source-btn" data-source="mp4" style="background:white;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-family:inherit;font-size:12px;font-weight:600;color:#6b7280;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                    <i class="fa-solid fa-file-video" style="font-size:1.1rem;"></i><span>Upload MP4</span>
                   </button>
                 </div>
-
-                <!-- URL input for YouTube / Vimeo / TikTok -->
                 <div id="video-url-wrap">
-                  <input type="url" class="py2-input" id="f-video-url"
-                         placeholder="Paste your YouTube video URL here">
-                  <div class="py2-help" id="video-url-help">
-                    Paste the full video URL, e.g. https://youtube.com/watch?v=abc123
-                  </div>
+                  <input type="url" class="py2-input" id="f-video-url" placeholder="Paste your YouTube video URL here">
+                  <div class="py2-help" id="video-url-help">Paste the full video URL, e.g. https://youtube.com/watch?v=abc123</div>
                   <div class="py2-error" id="err-video-url">Please enter a valid video URL.</div>
                 </div>
-
-                <!-- File input for direct MP4 upload -->
                 <div id="video-file-wrap" style="display:none;">
                   <div class="py2-file" id="vid-drop">
                     <input type="file" class="py2-file-input" id="f-video" accept="video/mp4,video/*">
                     <div class="py2-file-icon">🎬</div>
-                    <div class="py2-file-text">
-                      <strong>Click to choose</strong> or drag &amp; drop<br>
-                      MP4 · max 5MB · keep it short (5–15 seconds is ideal)
-                    </div>
-                  </div>
-                  <div class="upload-progress" id="video-upload-progress">
-                    <div class="upload-bar"><div class="upload-bar-fill" id="video-upload-bar"></div></div>
-                    <div class="upload-bar-label" id="video-upload-label">Preparing…</div>
+                    <div class="py2-file-text"><strong>Click to choose</strong> or drag &amp; drop<br>MP4 · max 5MB · keep it short (5–15 seconds is ideal)</div>
                   </div>
                 </div>
-
-                <!-- Preview area -->
-                <div class="media-preview" id="video-preview">
-                  <button type="button" class="media-preview-remove" id="video-preview-remove" aria-label="Remove video">✕</button>
+                <div class="media-preview" id="video-preview" style="margin-top:12px;border-radius:12px;overflow:hidden;background:#000;display:none;aspect-ratio:16/9;max-height:260px;position:relative;">
+                  <button type="button" class="media-preview-remove" id="video-preview-remove" style="position:absolute;top:8px;right:8px;background:rgba(10,10,20,.7);color:white;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:2;">✕</button>
                   <div id="video-preview-inner"></div>
                 </div>
-
               </div>
             </div>
 
@@ -524,8 +931,7 @@
 
             <div class="py2-field">
               <label class="py2-label" for="f-dest-url">Destination <span class="req">*</span></label>
-              <input class="py2-input" type="text" id="f-dest-url" required
-                     placeholder="Choose a destination type above first">
+              <input class="py2-input" type="text" id="f-dest-url" required placeholder="Choose a destination type above first">
               <div id="dest-help"></div>
               <div class="py2-error" id="err-dest-url">Please enter a valid destination.</div>
             </div>
@@ -544,10 +950,7 @@
 
             <div class="py2-notice" style="margin-top:8px;">
               <span class="py2-notice-icon">🇿🇲</span>
-              <div>
-                Every ad is reviewed by our team before going live. We usually approve
-                within 24 hours. You'll see the status change here in your dashboard.
-              </div>
+              <div>Every ad is reviewed by our team before going live. We usually approve within 24 hours. You'll see the status change here in your dashboard.</div>
             </div>
           </form>
         </div>
@@ -575,8 +978,7 @@
         </div>
         <div class="py2-card-body">
           <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;margin-bottom:14px;">
-            Unique visitors who landed on PhoneYa2 by clicking your shared ad links.
-            This is the number that shows how much you're helping grow the PhoneYa2 network.
+            Unique visitors who landed on PhoneYa2 by clicking your shared ad links. This is the number that shows how much you're helping grow the PhoneYa2 network.
           </p>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
             <div class="py2-stat">
@@ -600,12 +1002,172 @@
       </div>
     </section>
 
+    <!-- ── TAB: MY PROFILE ── -->
+    <section id="tab-profile" class="tab-panel" role="tabpanel" style="display:none;">
+      <div class="profile-slug-row">
+        <i class="fa-solid fa-link" style="color:var(--py2-orange);"></i>
+        <span id="profile-url">/b/loading…</span>
+        <button type="button" id="btn-copy-profile-url"><i class="fa-solid fa-copy"></i> Copy</button>
+      </div>
+
+      <div class="profile-layout">
+        <div>
+          <div class="py2-card" style="margin-bottom:16px;">
+            <div class="py2-card-head">
+              <h2>🏪 Business Profile</h2>
+              <span style="font-size:12px;color:var(--py2-muted);">Your mini-website on PhoneYa2</span>
+            </div>
+            <div class="py2-card-body">
+              <div id="profile-error" class="py2-notice py2-notice-danger" style="display:none;">
+                <span class="py2-notice-icon">⚠️</span>
+                <div id="profile-error-text">Error</div>
+              </div>
+
+              <div class="py2-field">
+                <label class="py2-label" for="pf-tagline">Tagline</label>
+                <input class="py2-input" type="text" id="pf-tagline" maxlength="80" placeholder="One sentence about your business">
+                <div class="py2-help">Short line that appears under your business name. Max 80 characters.</div>
+              </div>
+
+              <div class="py2-field">
+                <label class="py2-label" for="pf-about">About</label>
+                <textarea class="py2-textarea" id="pf-about" maxlength="800" placeholder="Tell visitors about your business, what you sell, where you're located, why they should choose you..." style="min-height:140px;"></textarea>
+                <div class="py2-help">A few paragraphs about your business. Max 800 characters.</div>
+              </div>
+
+              <div class="py2-field" id="pf-logo-field">
+                <label class="py2-label">Business Logo</label>
+                <div class="py2-file" id="pf-logo-drop">
+                  <input type="file" class="py2-file-input" id="pf-logo-file" accept="image/*">
+                  <div class="py2-file-icon">🏢</div>
+                  <div class="py2-file-text"><strong>Click to choose</strong> or drag &amp; drop<br>Shown on your profile page. JPG or PNG · max 2MB.</div>
+                </div>
+                <div class="py2-file-preview" id="pf-logo-preview">
+                  <img src="" alt="Logo preview" id="pf-logo-preview-img">
+                  <button type="button" class="py2-file-remove" id="pf-logo-remove" aria-label="Remove logo">✕</button>
+                </div>
+              </div>
+
+              <div class="py2-field locked-field" id="pf-cover-field">
+                <span class="lock-badge"><i class="fa-solid fa-lock"></i> Standard</span>
+                <label class="py2-label">Cover Image</label>
+                <div class="py2-file" id="pf-cover-drop">
+                  <input type="file" class="py2-file-input" id="pf-cover-file" accept="image/*">
+                  <div class="py2-file-icon">🖼️</div>
+                  <div class="py2-file-text"><strong>Click to choose</strong> or drag &amp; drop<br>Wide banner at the top of your profile. 3:1 ratio ideal.</div>
+                </div>
+                <div class="py2-file-preview" id="pf-cover-preview">
+                  <img src="" alt="Cover preview" id="pf-cover-preview-img">
+                  <button type="button" class="py2-file-remove" id="pf-cover-remove" aria-label="Remove cover">✕</button>
+                </div>
+                <button type="button" class="lock-unlock-btn" onclick="window.py2AdsShowUpgrade && window.py2AdsShowUpgrade()">
+                  <i class="fa-solid fa-rocket"></i> Unlock with Standard
+                </button>
+              </div>
+
+              <div class="py2-field locked-field" id="pf-colors-field">
+                <span class="lock-badge"><i class="fa-solid fa-lock"></i> Standard</span>
+                <label class="py2-label">Brand Colors</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                  <div>
+                    <div class="py2-help" style="margin-top:0;margin-bottom:6px;">Primary</div>
+                    <div class="color-swatch-row">
+                      <input type="color" id="pf-color-primary" value="#ff6000">
+                      <input type="text" class="color-hex" id="pf-color-primary-hex" value="#ff6000" maxlength="7">
+                    </div>
+                  </div>
+                  <div>
+                    <div class="py2-help" style="margin-top:0;margin-bottom:6px;">Accent</div>
+                    <div class="color-swatch-row">
+                      <input type="color" id="pf-color-accent" value="#ff9f43">
+                      <input type="text" class="color-hex" id="pf-color-accent-hex" value="#ff9f43" maxlength="7">
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="lock-unlock-btn" onclick="window.py2AdsShowUpgrade && window.py2AdsShowUpgrade()">
+                  <i class="fa-solid fa-rocket"></i> Unlock with Standard
+                </button>
+              </div>
+
+              <div class="py2-field locked-field" id="pf-socials-field">
+                <span class="lock-badge"><i class="fa-solid fa-lock"></i> Standard</span>
+                <label class="py2-label">Social Media Links</label>
+                <div class="social-fields">
+                  <div class="social-field">
+                    <div class="sf-icon" style="background:#1877f2;"><i class="fa-brands fa-facebook-f"></i></div>
+                    <input type="url" class="py2-input" id="pf-social-facebook" placeholder="https://facebook.com/yourpage">
+                  </div>
+                  <div class="social-field">
+                    <div class="sf-icon" style="background:linear-gradient(135deg,#feda75,#d62976,#962fbf);"><i class="fa-brands fa-instagram"></i></div>
+                    <input type="url" class="py2-input" id="pf-social-instagram" placeholder="https://instagram.com/yourhandle">
+                  </div>
+                  <div class="social-field">
+                    <div class="sf-icon" style="background:#000;"><i class="fa-brands fa-tiktok"></i></div>
+                    <input type="url" class="py2-input" id="pf-social-tiktok" placeholder="https://tiktok.com/@yourhandle">
+                  </div>
+                  <div class="social-field">
+                    <div class="sf-icon" style="background:#ff0000;"><i class="fa-brands fa-youtube"></i></div>
+                    <input type="url" class="py2-input" id="pf-social-youtube" placeholder="https://youtube.com/@yourchannel">
+                  </div>
+                  <div class="social-field">
+                    <div class="sf-icon" style="background:linear-gradient(135deg,#54a0ff,#5f27cd);"><i class="fa-solid fa-globe"></i></div>
+                    <input type="url" class="py2-input" id="pf-social-website" placeholder="https://yourbusiness.com">
+                  </div>
+                </div>
+                <button type="button" class="lock-unlock-btn" onclick="window.py2AdsShowUpgrade && window.py2AdsShowUpgrade()">
+                  <i class="fa-solid fa-rocket"></i> Unlock with Standard
+                </button>
+              </div>
+
+              <div class="py2-field">
+                <label class="py2-label">Contact Info</label>
+                <div class="py2-field">
+                  <input type="tel" class="py2-input" id="pf-contact-phone" placeholder="Phone number">
+                </div>
+                <div class="py2-field">
+                  <input type="tel" class="py2-input" id="pf-contact-whatsapp" placeholder="WhatsApp number">
+                </div>
+                <div class="py2-field">
+                  <input type="email" class="py2-input" id="pf-contact-email" placeholder="Email address">
+                </div>
+                <div class="py2-help">These appear as contact buttons on your profile.</div>
+              </div>
+            </div>
+            <div class="py2-card-foot">
+              <button type="button" class="py2-btn py2-btn-primary" id="btn-save-profile">
+                <i class="fa-solid fa-check"></i> Save Profile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Preview -->
+        <div>
+          <div class="profile-preview-mock">
+            <div class="mock-label">
+              <span>Live Preview</span>
+              <a href="#" id="preview-open-link" target="_blank" style="color:var(--py2-orange);text-decoration:none;font-size:11px;">Open full page <i class="fa-solid fa-external-link-alt"></i></a>
+            </div>
+            <div class="mock-iframe-wrap" id="mock-iframe-wrap">
+              <iframe id="mock-iframe" src="about:blank" title="Profile preview"></iframe>
+            </div>
+            <div class="mock-actions">
+              <button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" id="btn-preview-refresh">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+              <button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" id="btn-preview-qr">
+                <i class="fa-solid fa-qrcode"></i> QR Code
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── TAB: ACCOUNT ── -->
     <section id="tab-account" class="tab-panel" role="tabpanel" style="display:none;">
       <div class="py2-card">
-        <div class="py2-card-head">
-          <h2>🏢 Business Information</h2>
-        </div>
+        <div class="py2-card-head"><h2>🏢 Business Information</h2></div>
         <div class="py2-card-body">
           <form id="account-form" novalidate>
             <div class="py2-field">
@@ -626,21 +1188,6 @@
               <label class="py2-label">Email (cannot be changed)</label>
               <input class="py2-input" type="email" id="a-email" disabled style="background:#f5f5f7;color:#666;">
             </div>
-            <div class="py2-field">
-              <label class="py2-label">Business Logo</label>
-              <div class="py2-file" id="logo-drop">
-                <input type="file" class="py2-file-input" id="f-logo" accept="image/*">
-                <div class="py2-file-icon">🏢</div>
-                <div class="py2-file-text">
-                  <strong>Click to choose</strong> or drag &amp; drop<br>
-                  Shown next to your ads. JPG or PNG · max 2MB.
-                </div>
-              </div>
-              <div class="py2-file-preview" id="logo-preview">
-                <img src="" alt="Logo preview" id="logo-preview-img">
-                <button type="button" class="py2-file-remove" id="logo-remove" aria-label="Remove logo">✕</button>
-              </div>
-            </div>
           </form>
         </div>
         <div class="py2-card-foot">
@@ -651,9 +1198,7 @@
       </div>
 
       <div class="py2-card">
-        <div class="py2-card-head">
-          <h2>🔒 Change Password</h2>
-        </div>
+        <div class="py2-card-head"><h2>🔒 Change Password</h2></div>
         <div class="py2-card-body">
           <form id="password-form" class="pw-form" novalidate>
             <div class="py2-field">
@@ -685,19 +1230,77 @@
     <section id="tab-share" class="tab-panel" role="tabpanel" style="display:none;">
       <div class="py2-card">
         <div class="py2-card-head">
-          <h2>🔗 Share Your Ads</h2>
-          <span style="font-size:12px;color:var(--py2-muted);">Approved ads can be shared anywhere</span>
+          <h2>🔗 Share Your Business</h2>
+          <span style="font-size:12px;color:var(--py2-muted);">Share your mini-website and ads</span>
         </div>
         <div class="py2-card-body">
           <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;margin-bottom:16px;">
-            Copy the link below and share it with your customers on WhatsApp, Facebook,
-            or anywhere else. Every visitor you bring to PhoneYa2 helps the whole network grow.
+            Share your business profile with your customers. Every visitor you bring to PhoneYa2 helps grow your business and the network.
           </p>
           <div id="share-list"></div>
         </div>
       </div>
     </section>
 
+  </div>
+</div>
+
+<!-- ═══ MODAL: UPGRADE ═══ -->
+<div class="py2-modal-backdrop" id="upgrade-modal">
+  <div class="py2-modal">
+    <div class="upgrade-head">
+      <button type="button" class="py2-modal-close" data-close="upgrade-modal" aria-label="Close">✕</button>
+      <h3>Upgrade your plan</h3>
+      <p>Get more ads, higher rotation weight, a full mini-website, custom branding, and priority support. Cancel anytime — each plan is month-to-month.</p>
+    </div>
+    <div class="tier-grid" id="tier-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PAYMENT ═══ -->
+<div class="py2-modal-backdrop" id="payment-modal">
+  <div class="py2-modal">
+    <div class="py2-modal-head">
+      <h3 id="payment-modal-title">Contact us to pay</h3>
+      <button type="button" class="py2-modal-close" data-close="payment-modal" aria-label="Close">✕</button>
+    </div>
+    <div class="py2-modal-body">
+      <div class="payment-summary" id="payment-summary">
+        <!-- Populated by JS -->
+      </div>
+
+      <p style="font-size:13px;color:var(--py2-muted);margin-bottom:14px;line-height:1.5;">
+        Choose how you'd like to reach us. We'll confirm payment and activate your plan right away.
+      </p>
+
+      <div class="payment-methods" id="payment-methods">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="payment-note">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>Once we confirm your payment, your plan is activated immediately. You'll see the update on this dashboard.</div>
+      </div>
+    </div>
+    <div class="py2-modal-foot">
+      <button type="button" class="py2-btn py2-btn-secondary" data-close="payment-modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: QR ═══ -->
+<div class="py2-modal-backdrop" id="qr-modal">
+  <div class="py2-modal py2-modal-confirm">
+    <div class="py2-modal-head">
+      <h3>QR Code for your profile</h3>
+      <button type="button" class="py2-modal-close" data-close="qr-modal" aria-label="Close">✕</button>
+    </div>
+    <div class="py2-modal-body" style="text-align:center;">
+      <p style="font-size:13px;color:var(--py2-muted);margin-bottom:14px;">Print this on flyers, business cards, or your shop window. Scanning it opens your profile page.</p>
+      <img id="qr-modal-img" src="" alt="QR code" style="display:inline-block;background:white;padding:12px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.1);">
+    </div>
   </div>
 </div>
 
@@ -709,9 +1312,7 @@
       <button type="button" class="py2-modal-close" data-close="modal-confirm" aria-label="Close">✕</button>
     </div>
     <div class="py2-modal-body">
-      <p id="modal-confirm-body" style="font-size:14px;color:var(--py2-muted);line-height:1.6;">
-        This action cannot be undone.
-      </p>
+      <p id="modal-confirm-body" style="font-size:14px;color:var(--py2-muted);line-height:1.6;">This action cannot be undone.</p>
     </div>
     <div class="py2-modal-foot">
       <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-confirm">Cancel</button>
@@ -734,10 +1335,7 @@
         <span class="py2-notice-icon">⚠️</span>
         <div id="modal-reason-text">No reason provided.</div>
       </div>
-      <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;">
-        You can edit your ad and resubmit it. Make sure it complies with our
-        advertising policy.
-      </p>
+      <p style="font-size:13px;color:var(--py2-muted);line-height:1.6;">You can edit your ad and resubmit it. Make sure it complies with our advertising policy.</p>
     </div>
     <div class="py2-modal-foot">
       <button type="button" class="py2-btn py2-btn-secondary" data-close="modal-reason">Close</button>
@@ -752,134 +1350,128 @@
 
   var P = window.py2Ads;
   if (!P) {
-    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;">' +
-      '<h2>Configuration missing</h2><p>ads-config.js did not load. Please contact support.</p></div>';
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h2>Configuration missing</h2><p>ads-config.js did not load.</p></div>';
     return;
   }
   var esc = P.esc;
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // TIER CONFIG — the plans
+  // ═══════════════════════════════════════════════════════════════════════
+  var TIERS = [
+    {
+      key: 'free',
+      name: 'Free',
+      price: 0,
+      icon: '🎁',
+      shortDesc: '3 ads max · Basic rotation · Auto profile',
+      features: [
+        { text: '3 active ads' },
+        { text: 'Basic rotation (1×)' },
+        { text: 'Auto business profile' },
+        { text: 'Contact buttons' },
+        { text: '7 days stats history' },
+        { text: 'Custom colors', no: true },
+        { text: 'Social links', no: true },
+        { text: 'Custom slug', no: true },
+        { text: 'Verified badge', no: true }
+      ]
+    },
+    {
+      key: 'starter',
+      name: 'Starter',
+      price: 10,
+      icon: '🚀',
+      shortDesc: '5 ads · 3× rotation · Logo',
+      features: [
+        { text: '5 active ads' },
+        { text: '3× rotation weight' },
+        { text: 'Business logo' },
+        { text: 'Contact buttons' },
+        { text: '30 days stats history' },
+        { text: 'Custom colors', no: true },
+        { text: 'Social links', no: true },
+        { text: 'Custom slug', no: true },
+        { text: 'Verified badge', no: true }
+      ]
+    },
+    {
+      key: 'standard',
+      name: 'Standard',
+      price: 20,
+      icon: '⭐',
+      shortDesc: '10 ads · 6× rotation · Full profile',
+      features: [
+        { text: '10 active ads' },
+        { text: '6× rotation weight' },
+        { text: 'Logo + cover image' },
+        { text: 'Custom brand colors' },
+        { text: 'All social links' },
+        { text: '90 days stats history' },
+        { text: 'Popup eligibility' },
+        { text: 'Custom slug', no: true },
+        { text: 'Verified badge', no: true }
+      ]
+    },
+    {
+      key: 'business',
+      name: 'Business',
+      price: 50,
+      icon: '💎',
+      shortDesc: '20 ads · 12× rotation · Verified',
+      features: [
+        { text: '20 active ads' },
+        { text: '12× rotation weight' },
+        { text: 'Everything in Standard' },
+        { text: 'Custom profile URL' },
+        { text: 'Verified badge ✓' },
+        { text: 'Featured on share pages' },
+        { text: '180 days stats history' },
+        { text: 'Priority support' }
+      ]
+    },
+    {
+      key: 'premium',
+      name: 'Premium',
+      price: 100,
+      icon: '👑',
+      shortDesc: '40 ads · 25× rotation · Everything',
+      features: [
+        { text: '40 active ads' },
+        { text: '25× rotation weight' },
+        { text: 'Everything in Business' },
+        { text: 'Always featured in interstitials' },
+        { text: '365 days stats history' },
+        { text: 'White-glove onboarding' },
+        { text: 'Direct line to support' }
+      ]
+    }
+  ];
+
+  var TIER_RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════════════════════════════════
   var session     = null;
   var advertiser  = null;
+  var profile     = null;
   var ads         = [];
   var statsByAd   = {};
   var adsFilter   = 'all';
   var editingAdId = null;
 
-  var imgState  = { file: null, compressed: null, uploading: false, uploadedUrl: null };
-  var logoState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+  var imgState   = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+  var logoSaveState = { file: null, uploading: false };
+  var coverSaveState = { file: null, uploading: false };
 
-  // Video state
   var videoState = {
-    mode: 'image',              // 'image' | 'video'
-    source: 'youtube',          // 'youtube' | 'vimeo' | 'tiktok' | 'mp4'
-    url: '',                    // for external sources
-    file: null,                 // for mp4 upload
-    uploading: false,
-    uploadedUrl: null,          // public URL after upload (for mp4)
-    provider: null              // final resolved provider
+    mode: 'image', source: 'youtube', url: '', file: null,
+    uploading: false, uploadedUrl: null, provider: null
   };
 
   var $ = function (id) { return document.getElementById(id); };
 
-  var el = {
-    signinScreen:    $('signin-screen'),
-    signinForm:      $('signin-form'),
-    signinEmail:     $('si-email'),
-    signinPassword:  $('si-password'),
-    signinSubmit:    $('signin-submit'),
-    signinError:     $('signin-error'),
-
-    topbar:          $('dash-topbar'),
-    loading:         $('dash-loading'),
-    main:            $('dash-main'),
-    greeting:        $('dash-greeting'),
-    topbarBiz:       $('topbar-biz'),
-
-    statActive:      $('stat-active'),
-    statImpressions: $('stat-impressions'),
-    statClicks:      $('stat-clicks'),
-    statCtr:         $('stat-ctr'),
-    tabCountAds:     $('tab-count-ads'),
-
-    adsList:         $('ads-list'),
-    statsBody:       $('stats-body'),
-    shareList:       $('share-list'),
-    statAdshare:     $('stat-adshare'),
-    statWa:          $('stat-wa'),
-    statFb:          $('stat-fb'),
-    statIg:          $('stat-ig'),
-
-    formTitle:       $('create-form-title'),
-    form:            $('ad-form'),
-    fAdId:           $('f-ad-id'),
-    fTitle:          $('f-title'),
-    fDesc:           $('f-desc'),
-    fDestType:       $('f-dest-type'),
-    fDestUrl:        $('f-dest-url'),
-    fStart:          $('f-start'),
-    fEnd:            $('f-end'),
-    destHelp:        $('dest-help'),
-    countTitle:      $('count-title'),
-    countDesc:       $('count-desc'),
-    createError:     $('create-error'),
-    createErrorText: $('create-error-text'),
-    createInfo:      $('create-info'),
-    createInfoText:  $('create-info-text'),
-    submitAdLabel:   $('submit-ad-label'),
-    submitAdBtn:     $('btn-submit-ad'),
-    cancelAdBtn:     $('btn-cancel-ad'),
-
-    // Image mode
-    mediaToggle:     $('media-toggle'),
-    mediaImageMode:  $('media-image-mode'),
-    mediaVideoMode:  $('media-video-mode'),
-    imgDrop:         $('img-drop'),
-    fImage:          $('f-image'),
-    imgPreview:      $('img-preview'),
-    imgPreviewImg:   $('img-preview-img'),
-    imgRemove:       $('img-remove'),
-
-    // Video mode
-    videoSources:    $('video-sources'),
-    videoUrlWrap:    $('video-url-wrap'),
-    videoFileWrap:   $('video-file-wrap'),
-    fVideoUrl:       $('f-video-url'),
-    videoUrlHelp:    $('video-url-help'),
-    fVideo:          $('f-video'),
-    vidDrop:         $('vid-drop'),
-    videoPreview:    $('video-preview'),
-    videoPreviewInner: $('video-preview-inner'),
-    videoPreviewRemove: $('video-preview-remove'),
-    videoUploadProgress: $('video-upload-progress'),
-    videoUploadBar:  $('video-upload-bar'),
-    videoUploadLabel: $('video-upload-label'),
-
-    logoDrop:        $('logo-drop'),
-    fLogo:           $('f-logo'),
-    logoPreview:     $('logo-preview'),
-    logoPreviewImg:  $('logo-preview-img'),
-    logoRemove:      $('logo-remove'),
-
-    aBusiness:       $('a-business'),
-    aOwner:          $('a-owner'),
-    aPhone:          $('a-phone'),
-    aEmail:          $('a-email'),
-
-    pCurrent:        $('p-current'),
-    pNew:            $('p-new'),
-    pConfirm:        $('p-confirm'),
-
-    modalConfirm:       $('modal-confirm'),
-    modalConfirmTitle:  $('modal-confirm-title'),
-    modalConfirmBody:   $('modal-confirm-body'),
-    modalConfirmAction: $('modal-confirm-action'),
-    modalReason:        $('modal-reason'),
-    modalReasonText:    $('modal-reason-text')
-  };
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // UTILITIES
-  // ═══════════════════════════════════════════════════════════════════════
   function num(n) { return (parseInt(n, 10) || 0).toLocaleString(); }
   function ctr(i, c) { return i ? ((c / i) * 100).toFixed(1) + '%' : '—'; }
   function isPhone(v) { var d = String(v || '').replace(/[^\d]/g, ''); return d.length >= 9 && d.length <= 15; }
@@ -891,162 +1483,109 @@
   }
   function openModal(id) { var m = $(id); if (m) m.classList.add('open'); }
   function closeModal(id) { var m = $(id); if (m) m.classList.remove('open'); }
+  function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim()); }
+  function isHexColor(v) { return /^#[0-9a-fA-F]{6}$/.test(String(v || '').trim()); }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // TIER — helpers
+  // ═══════════════════════════════════════════════════════════════════════
+  function getEffectiveTier() {
+    if (!advertiser) return 'free';
+    var t = advertiser.tier || 'free';
+    if (t === 'free') return 'free';
+    if (!advertiser.tier_expires_at) return t;
+    var exp = new Date(advertiser.tier_expires_at);
+    if (exp < new Date()) return 'free';
+    return t;
+  }
+  function getTierConfig(key) {
+    for (var i = 0; i < TIERS.length; i++) if (TIERS[i].key === key) return TIERS[i];
+    return TIERS[0];
+  }
+  function isPaidActive() {
+    if (!advertiser) return false;
+    if (!advertiser.tier || advertiser.tier === 'free') return false;
+    if (!advertiser.tier_expires_at) return true;
+    return new Date(advertiser.tier_expires_at) > new Date();
+  }
+  function isExpired() {
+    if (!advertiser) return false;
+    if (!advertiser.tier || advertiser.tier === 'free') return false;
+    if (!advertiser.tier_expires_at) return false;
+    return new Date(advertiser.tier_expires_at) <= new Date();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SIGN IN / OUT
+  // ═══════════════════════════════════════════════════════════════════════
   function showSignin() {
-    el.signinScreen.style.display = 'flex';
-    el.topbar.style.display       = 'none';
-    el.loading.style.display      = 'none';
-    el.main.style.display         = 'none';
-    setTimeout(function () { try { el.signinEmail.focus(); } catch (e) {} }, 100);
+    $('signin-screen').style.display = 'flex';
+    $('dash-topbar').style.display = 'none';
+    $('dash-loading').style.display = 'none';
+    $('dash-main').style.display = 'none';
+    setTimeout(function () { try { $('si-email').focus(); } catch (e) {} }, 100);
   }
   function showLoading() {
-    el.signinScreen.style.display = 'none';
-    el.topbar.style.display       = 'none';
-    el.loading.style.display      = 'flex';
-    el.main.style.display         = 'none';
+    $('signin-screen').style.display = 'none';
+    $('dash-topbar').style.display = 'none';
+    $('dash-loading').style.display = 'flex';
+    $('dash-main').style.display = 'none';
   }
   function showDashboard() {
-    el.signinScreen.style.display = 'none';
-    el.topbar.style.display       = '';
-    el.loading.style.display      = 'none';
-    el.main.style.display         = 'block';
+    $('signin-screen').style.display = 'none';
+    $('dash-topbar').style.display = '';
+    $('dash-loading').style.display = 'none';
+    $('dash-main').style.display = 'block';
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // VIDEO PROVIDER DETECTION
-  // ═══════════════════════════════════════════════════════════════════════
-  function detectProvider(url) {
-    if (!url) return null;
-    if (/youtube\.com|youtu\.be/i.test(url)) return 'youtube';
-    if (/vimeo\.com/i.test(url))             return 'vimeo';
-    if (/tiktok\.com/i.test(url))            return 'tiktok';
-    return null;
-  }
-
-  function isValidVideoUrl(url, source) {
-    if (!url) return false;
-    if (source === 'youtube') {
-      return /(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/.test(url);
-    }
-    if (source === 'vimeo') {
-      return /vimeo\.com\/(?:video\/)?(\d+)/.test(url);
-    }
-    if (source === 'tiktok') {
-      return /tiktok\.com/i.test(url);
-    }
-    return false;
-  }
-
-  function renderVideoPreviewHTML() {
-    var source = videoState.source;
-    var url = videoState.url;
-
-    if (source === 'youtube' && isValidVideoUrl(url, 'youtube')) {
-      var m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
-      return '<iframe src="https://www.youtube.com/embed/' + esc(m[1]) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(m[1]) + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-    }
-    if (source === 'vimeo' && isValidVideoUrl(url, 'vimeo')) {
-      var v = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-      return '<iframe src="https://player.vimeo.com/video/' + esc(v[1]) + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>';
-    }
-    if (source === 'tiktok' && isValidVideoUrl(url, 'tiktok')) {
-      return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;background:#000;gap:8px;">' +
-        '<div style="font-size:2.4rem;">🎵</div><div style="font-size:12px;opacity:.75;">TikTok preview</div></div>';
-    }
-    if (source === 'mp4') {
-      if (videoState.uploadedUrl) {
-        return '<video src="' + esc(videoState.uploadedUrl) + '" autoplay muted loop playsinline></video>';
-      }
-      if (videoState.file) {
-        var objUrl = URL.createObjectURL(videoState.file);
-        return '<video src="' + esc(objUrl) + '" autoplay muted loop playsinline></video>';
-      }
-    }
-    return null;
-  }
-
-  function updateVideoPreview() {
-    var html = renderVideoPreviewHTML();
-    if (html) {
-      el.videoPreviewInner.innerHTML = html;
-      el.videoPreview.classList.add('show');
-    } else {
-      el.videoPreview.classList.remove('show');
-      el.videoPreviewInner.innerHTML = '';
-    }
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // IMAGE COMPRESSION
-  // ═══════════════════════════════════════════════════════════════════════
-  function compressImage(file, maxW, quality) {
-    maxW = maxW || 1200;
-    quality = quality || 0.82;
-    return new Promise(function (resolve, reject) {
-      if (!file.type || file.type.indexOf('image/') !== 0) { reject(new Error('Not an image')); return; }
-      var img = new Image();
-      var url = URL.createObjectURL(file);
-      img.onload = function () {
-        URL.revokeObjectURL(url);
-        var w = img.naturalWidth, h = img.naturalHeight;
-        if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
-        var canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        canvas.toBlob(function (blob) {
-          if (!blob) { reject(new Error('Compression failed')); return; }
-          if (blob.size > 2 * 1024 * 1024) {
-            canvas.toBlob(function (blob2) {
-              if (!blob2 || blob2.size > 2 * 1024 * 1024) {
-                reject(new Error('Image is still too large after compression. Please choose a smaller image.'));
-                return;
-              }
-              resolve(blob2);
-            }, 'image/jpeg', 0.65);
-          } else { resolve(blob); }
-        }, 'image/jpeg', quality);
-      };
-      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
-      img.src = url;
-    });
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // SIGN IN
-  // ═══════════════════════════════════════════════════════════════════════
-  el.signinForm.addEventListener('submit', function (e) {
+  $('signin-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    el.signinError.classList.remove('show');
-    var email = el.signinEmail.value.trim();
-    var pw    = el.signinPassword.value;
+    $('signin-error').classList.remove('show');
+    var email = $('si-email').value.trim();
+    var pw = $('si-password').value;
     if (!email || !pw) {
-      el.signinError.textContent = 'Please enter your email and password.';
-      el.signinError.classList.add('show');
+      $('signin-error').textContent = 'Please enter your email and password.';
+      $('signin-error').classList.add('show');
       return;
     }
-    el.signinSubmit.disabled = true;
-    var orig = el.signinSubmit.innerHTML;
-    el.signinSubmit.innerHTML = '<span class="py2-spinner"></span> Signing in…';
+    var btn = $('signin-submit');
+    btn.disabled = true;
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<span class="py2-spinner"></span> Signing in…';
     P.auth.signin(email, pw)
       .then(function () { return bootDashboard(); })
       .catch(function (err) {
-        el.signinError.textContent = err.message || 'Sign in failed. Please try again.';
-        el.signinError.classList.add('show');
-        el.signinSubmit.disabled = false;
-        el.signinSubmit.innerHTML = orig;
+        $('signin-error').textContent = err.message || 'Sign in failed.';
+        $('signin-error').classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = orig;
       });
   });
 
+  $('btn-signout').addEventListener('click', function () {
+    P.auth.signout().then(function () {
+      session = null; advertiser = null; profile = null; ads = []; statsByAd = {};
+      showSignin();
+    });
+  });
+
   // ═══════════════════════════════════════════════════════════════════════
-  // DATA
+  // DATA LOADING
   // ═══════════════════════════════════════════════════════════════════════
   function loadAdvertiser() {
     return P.db.select('advertisers', 'auth_user_id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
       .then(function (rows) {
-        if (!rows || !rows[0]) throw new Error('No advertiser profile found for this account.');
+        if (!rows || !rows[0]) throw new Error('No advertiser profile found.');
         advertiser = rows[0];
         return advertiser;
+      });
+  }
+  function loadProfile() {
+    if (!advertiser) return Promise.resolve(null);
+    return P.db.select('advertiser_profiles', 'advertiser_id=eq.' + encodeURIComponent(advertiser.id) + '&limit=1', session.access_token)
+      .then(function (rows) {
+        profile = rows && rows[0] ? rows[0] : null;
+        return profile;
       });
   }
   function loadAds() {
@@ -1077,7 +1616,175 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TOP STATS
+  // PLAN CARD
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderPlanCard() {
+    var effective = getEffectiveTier();
+    var cfg = getTierConfig(effective);
+    var card = $('plan-card');
+
+    card.className = 'plan-card ' + effective;
+    $('plan-icon').textContent = cfg.icon;
+    $('plan-name').textContent = cfg.name;
+    $('plan-desc').textContent = cfg.shortDesc;
+
+    // Profile tier pill
+    var pill = $('profile-tier-pill');
+    pill.className = 'tier-pill ' + effective;
+    pill.textContent = cfg.name;
+
+    // Progress + expiry
+    var progressWrap = $('plan-progress-wrap');
+    if (isPaidActive()) {
+      var now = new Date();
+      var exp = new Date(advertiser.tier_expires_at);
+      var totalDays = 30;
+      var daysLeft = Math.max(0, Math.ceil((exp - now) / 86400000));
+      var pct = Math.max(0, Math.min(100, (daysLeft / totalDays) * 100));
+
+      $('plan-desc').innerHTML = cfg.shortDesc + ' · <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left</strong>';
+      progressWrap.style.display = 'block';
+      var fill = $('plan-progress-fill');
+      fill.style.width = pct + '%';
+      fill.className = 'plan-progress-fill' + (daysLeft <= 5 ? ' danger' : daysLeft <= 10 ? ' warn' : '');
+      $('btn-upgrade-label').textContent = 'Upgrade';
+    } else if (isExpired()) {
+      progressWrap.style.display = 'none';
+      $('btn-upgrade-label').textContent = 'Renew';
+    } else {
+      progressWrap.style.display = 'none';
+      $('btn-upgrade-label').textContent = 'Upgrade';
+    }
+
+    // Expired banner
+    if (isExpired()) {
+      var days = Math.max(1, Math.round((new Date() - new Date(advertiser.tier_expires_at)) / 86400000));
+      $('expired-text').innerHTML = 'Your <strong>' + getTierConfig(advertiser.tier).name + '</strong> plan expired ' + days + ' day' + (days === 1 ? '' : 's') + ' ago. Renew or upgrade to restore your benefits.';
+      $('expired-banner').style.display = 'flex';
+    } else {
+      $('expired-banner').style.display = 'none';
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // UPGRADE MODAL
+  // ═══════════════════════════════════════════════════════════════════════
+  function renderTierGrid() {
+    var effective = getEffectiveTier();
+    var grid = $('tier-grid');
+    grid.innerHTML = '';
+
+    TIERS.forEach(function (t) {
+      var isCurrent = t.key === effective;
+      var col = document.createElement('div');
+      col.className = 'tier-col' + (isCurrent ? ' current' : '');
+      var featuresHtml = t.features.map(function (f) {
+        var icon = f.no ? 'fa-solid fa-minus' : 'fa-solid fa-check';
+        var cls = f.no ? 'no' : '';
+        return '<li class="' + cls + '"><i class="' + icon + '"></i> ' + esc(f.text) + '</li>';
+      }).join('');
+
+      var action = '';
+      if (isCurrent) {
+        action = '<div class="current-badge"><i class="fa-solid fa-circle-check"></i> Your current plan</div>';
+      } else if (t.price === 0) {
+        action = '<button type="button" class="py2-btn py2-btn-secondary" disabled>Free tier</button>';
+      } else {
+        var isDowngrade = TIER_RANK[t.key] < TIER_RANK[effective];
+        var label = isDowngrade ? 'Switch to ' + t.name : 'Upgrade to ' + t.name;
+        action = '<button type="button" class="py2-btn py2-btn-primary" data-tier="' + t.key + '">' + label + '</button>';
+      }
+
+      var priceHtml = t.price === 0
+        ? '<div class="tier-price">Free</div><div class="tier-period">forever</div>'
+        : '<div class="tier-price">K' + t.price + '<small>/mo</small></div><div class="tier-period">per month · 30 days</div>';
+
+      col.innerHTML =
+        '<div class="tier-name">' + t.icon + ' ' + t.name + '</div>' +
+        priceHtml +
+        '<ul class="tier-features">' + featuresHtml + '</ul>' +
+        action;
+
+      grid.appendChild(col);
+    });
+
+    // Wire tier buttons
+    grid.querySelectorAll('[data-tier]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var key = btn.getAttribute('data-tier');
+        var cfg = getTierConfig(key);
+        closeModal('upgrade-modal');
+        openPaymentModal(cfg);
+      });
+    });
+  }
+
+  $('btn-upgrade').addEventListener('click', function () {
+    renderTierGrid();
+    openModal('upgrade-modal');
+  });
+  $('btn-renew').addEventListener('click', function () {
+    renderTierGrid();
+    openModal('upgrade-modal');
+  });
+
+  // Auto-show upgrade modal on Free / expired (once per session)
+  function maybeAutoShowUpgrade() {
+    var effective = getEffectiveTier();
+    if (effective !== 'free') return;
+    try {
+      if (sessionStorage.getItem('py2ads_upgrade_dismissed')) return;
+    } catch (e) {}
+    setTimeout(function () {
+      renderTierGrid();
+      openModal('upgrade-modal');
+      try { sessionStorage.setItem('py2ads_upgrade_dismissed', '1'); } catch (e) {}
+    }, 4000);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // PAYMENT MODAL
+  // ═══════════════════════════════════════════════════════════════════════
+  function openPaymentModal(tierCfg) {
+    var biz = advertiser.business_name || 'your business';
+    var msg = encodeURIComponent(
+      'Hi PhoneYa2 👋\n\n' +
+      'I want to upgrade my business *' + biz + '* to the *' + tierCfg.name + '* plan (K' + tierCfg.price + '/month).\n\n' +
+      'Please send me payment details.\n\n' +
+      'Thank you!'
+    );
+
+    var summary = $('payment-summary');
+    summary.innerHTML =
+      '<div class="row"><span>Business</span><strong>' + esc(biz) + '</strong></div>' +
+      '<div class="row"><span>Plan</span><strong>' + tierCfg.icon + ' ' + tierCfg.name + '</strong></div>' +
+      '<div class="row"><span>Duration</span><strong>30 days</strong></div>' +
+      '<div class="row"><span>Amount</span><span class="price-tag">K' + tierCfg.price + '</span></div>';
+
+    var methods = $('payment-methods');
+    methods.innerHTML =
+      '<a class="payment-btn" href="https://wa.me/260979603741?text=' + msg + '" target="_blank" rel="noopener">' +
+        '<div class="pm-icon" style="background:linear-gradient(135deg,#128c7e,#25d366);"><i class="fa-brands fa-whatsapp"></i></div>' +
+        '<div class="pm-body"><div class="pm-title">WhatsApp</div><div class="pm-sub">Fastest — replies in minutes</div></div>' +
+        '<i class="fa-solid fa-arrow-right pm-arrow"></i>' +
+      '</a>' +
+      '<a class="payment-btn" href="tel:+260979603741">' +
+        '<div class="pm-icon" style="background:linear-gradient(135deg,#54a0ff,#5f27cd);"><i class="fa-solid fa-phone"></i></div>' +
+        '<div class="pm-body"><div class="pm-title">Call us</div><div class="pm-sub">+260 979 603 741</div></div>' +
+        '<i class="fa-solid fa-arrow-right pm-arrow"></i>' +
+      '</a>' +
+      '<a class="payment-btn" href="mailto:singbless89@gmail.com?subject=' + encodeURIComponent('Upgrade to ' + tierCfg.name + ' — ' + biz) + '&body=' + msg + '">' +
+        '<div class="pm-icon" style="background:linear-gradient(135deg,#ff6b6b,#feca57);"><i class="fa-solid fa-envelope"></i></div>' +
+        '<div class="pm-body"><div class="pm-title">Email</div><div class="pm-sub">singbless89@gmail.com</div></div>' +
+        '<i class="fa-solid fa-arrow-right pm-arrow"></i>' +
+      '</a>';
+
+    $('payment-modal-title').textContent = 'Pay for ' + tierCfg.name;
+    openModal('payment-modal');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // RENDER top stats
   // ═══════════════════════════════════════════════════════════════════════
   function renderTopStats() {
     var active = ads.filter(function (a) { return a.status === 'approved'; }).length;
@@ -1086,15 +1793,16 @@
       totalImp += statsByAd[k].impressions || 0;
       totalClk += statsByAd[k].clicks || 0;
     });
-    el.statActive.textContent      = num(active);
-    el.statImpressions.textContent = num(totalImp);
-    el.statClicks.textContent      = num(totalClk);
-    el.statCtr.textContent         = totalImp ? ctr(totalImp, totalClk) : '—';
-    el.tabCountAds.textContent     = num(ads.length);
+    $('stat-active').textContent      = num(active);
+    $('stat-impressions').textContent = num(totalImp);
+    $('stat-clicks').textContent      = num(totalClk);
+    $('stat-ctr').textContent         = totalImp ? ctr(totalImp, totalClk) : '—';
+    $('stat-views').textContent       = num(profile && profile.view_count ? profile.view_count : 0);
+    $('tab-count-ads').textContent    = num(ads.length);
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // MY ADS LIST
+  // RENDER Ads list
   // ═══════════════════════════════════════════════════════════════════════
   function statusBadge(status) {
     var map = {
@@ -1107,40 +1815,27 @@
     var m = map[status] || map.pending;
     return '<span class="py2-badge ' + m.cls + '">' + m.label + '</span>';
   }
-
   function renderAdThumb(a) {
     if (!a.media_url) return '<span class="ad-thumb-emoji">🖼️</span>';
-    if (a.media_type === 'video') {
-      return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a14;color:white;font-size:1.6rem;">🎬</div>';
-    }
+    if (a.media_type === 'video') return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a14;color:white;font-size:1.6rem;">🎬</div>';
     return '<img src="' + esc(a.media_url) + '" alt="' + esc(a.title) + '" onerror="this.parentElement.innerHTML=\'<span class=&quot;ad-thumb-emoji&quot;>🖼️</span>\'">';
   }
-
   function adActions(a) {
     var btns = '';
-    if (a.status !== 'banned') {
-      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="edit" data-id="' + a.id + '"><i class="fa-solid fa-pen"></i> Edit</button>';
-    }
-    if (a.status === 'approved') {
-      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="pause" data-id="' + a.id + '"><i class="fa-solid fa-pause"></i> Pause</button>';
-    } else if (a.status === 'paused') {
-      btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="resume" data-id="' + a.id + '"><i class="fa-solid fa-play"></i> Resume</button>';
-    }
-    if (a.status === 'rejected') {
-      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reason" data-id="' + a.id + '"><i class="fa-solid fa-circle-info"></i> Why?</button>';
-    }
-    if (a.status !== 'banned') {
-      btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="delete" data-id="' + a.id + '" style="color:var(--py2-red);"><i class="fa-solid fa-trash"></i> Delete</button>';
-    }
+    if (a.status !== 'banned') btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="edit" data-id="' + a.id + '"><i class="fa-solid fa-pen"></i> Edit</button>';
+    if (a.status === 'approved') btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="pause" data-id="' + a.id + '"><i class="fa-solid fa-pause"></i> Pause</button>';
+    else if (a.status === 'paused') btns += '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-act="resume" data-id="' + a.id + '"><i class="fa-solid fa-play"></i> Resume</button>';
+    if (a.status === 'rejected') btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="reason" data-id="' + a.id + '"><i class="fa-solid fa-circle-info"></i> Why?</button>';
+    if (a.status !== 'banned') btns += '<button type="button" class="py2-btn py2-btn-ghost py2-btn-sm" data-act="delete" data-id="' + a.id + '" style="color:var(--py2-red);"><i class="fa-solid fa-trash"></i> Delete</button>';
     return btns;
   }
-
   function renderAdsList() {
     var list = ads.slice();
     if (adsFilter !== 'all') list = list.filter(function (a) { return a.status === adsFilter; });
+    var container = $('ads-list');
 
     if (!ads.length) {
-      el.adsList.innerHTML =
+      container.innerHTML =
         '<div class="py2-empty">' +
         '<div class="py2-empty-icon">📣</div>' +
         '<h3>No ads yet</h3>' +
@@ -1151,9 +1846,8 @@
       if (b) b.addEventListener('click', function () { switchTab('create'); });
       return;
     }
-
     if (!list.length) {
-      el.adsList.innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🔍</div><h3>No ads match this filter</h3><p>Try a different filter above.</p></div>';
+      container.innerHTML = '<div class="py2-empty"><div class="py2-empty-icon">🔍</div><h3>No ads match</h3></div>';
       return;
     }
 
@@ -1164,19 +1858,14 @@
       if (a.status === 'approved' && a.end_date) meta += ' · ends ' + P.formatDate(a.end_date);
       var rejectedNote = '';
       if (a.status === 'rejected' && a.rejection_reason) {
-        rejectedNote = '<div class="py2-notice py2-notice-danger" style="margin-top:8px;font-size:12.5px;">' +
-          '<span class="py2-notice-icon">⚠️</span><div>' + esc(a.rejection_reason) + '</div></div>';
+        rejectedNote = '<div class="py2-notice py2-notice-danger" style="margin-top:8px;font-size:12.5px;"><span class="py2-notice-icon">⚠️</span><div>' + esc(a.rejection_reason) + '</div></div>';
       }
-      var typeBadge = a.media_type === 'video'
-        ? '<span style="font-size:11px;color:var(--py2-muted);margin-left:4px;">🎬 video</span>'
-        : '';
+      var typeBadge = a.media_type === 'video' ? '<span style="font-size:11px;color:var(--py2-muted);margin-left:4px;">🎬 video</span>' : '';
       html +=
         '<div class="py2-ad-item">' +
           '<div class="py2-ad-thumb">' + renderAdThumb(a) + '</div>' +
           '<div class="py2-ad-main">' +
-            '<div class="py2-ad-top">' + statusBadge(a.status) +
-              '<span style="font-size:11px;color:var(--py2-muted);">' + esc(a.destination_type) + typeBadge + '</span>' +
-            '</div>' +
+            '<div class="py2-ad-top">' + statusBadge(a.status) + '<span style="font-size:11px;color:var(--py2-muted);">' + esc(a.destination_type) + typeBadge + '</span></div>' +
             '<div class="py2-ad-title">' + esc(a.title) + '</div>' +
             '<div class="py2-ad-meta">' + esc(meta) + '</div>' +
             rejectedNote +
@@ -1189,12 +1878,11 @@
           '</div>' +
         '</div>';
     });
-    el.adsList.innerHTML = html;
-
-    el.adsList.querySelectorAll('[data-act]').forEach(function (btn) {
+    container.innerHTML = html;
+    container.querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act = btn.getAttribute('data-act');
-        var ad  = ads.find(function (x) { return x.id === btn.getAttribute('data-id'); });
+        var ad = ads.find(function (x) { return x.id === btn.getAttribute('data-id'); });
         if (!ad) return;
         if (act === 'edit')   startEdit(ad);
         if (act === 'pause')  setPaused(ad, true);
@@ -1221,20 +1909,20 @@
     document.querySelectorAll('.py2-tab').forEach(function (t) {
       t.classList.toggle('active', t.getAttribute('data-tab') === name);
     });
-    ['ads','create','stats','account','share'].forEach(function (n) {
+    ['ads','create','stats','profile','account','share'].forEach(function (n) {
       var panel = $('tab-' + n);
       if (panel) panel.style.display = (n === name) ? 'block' : 'none';
     });
     if (name === 'stats')   renderStatsTab();
     if (name === 'share')   renderShareTab();
     if (name === 'account') fillAccountForm();
+    if (name === 'profile') fillProfileForm();
     if (name !== 'create')  resetAdForm();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   document.querySelectorAll('.py2-tab').forEach(function (t) {
     t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
   });
-
   $('btn-new-ad-top').addEventListener('click', function () { resetAdForm(); switchTab('create'); });
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -1242,7 +1930,7 @@
   // ═══════════════════════════════════════════════════════════════════════
   function renderStatsTab() {
     if (!ads.length) {
-      el.statsBody.innerHTML = '<div class="py2-table-empty">No ads yet. Create one to see stats.</div>';
+      $('stats-body').innerHTML = '<div class="py2-table-empty">No ads yet.</div>';
       return;
     }
     var rows = ads.map(function (a) {
@@ -1255,67 +1943,108 @@
         '<td>' + ctr(s.impressions, s.clicks) + '</td>' +
         '</tr>';
     }).join('');
-    el.statsBody.innerHTML =
-      '<table class="py2-table"><thead><tr><th>Ad</th><th>Status</th><th>Views</th><th>Clicks</th><th>CTR</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    $('stats-body').innerHTML = '<table class="py2-table"><thead><tr><th>Ad</th><th>Status</th><th>Views</th><th>Clicks</th><th>CTR</th></tr></thead><tbody>' + rows + '</tbody></table>';
 
     var sources = { adshare: 0, whatsapp: 0, facebook: 0, instagram: 0 };
     Object.keys(statsByAd).forEach(function (id) {
       var s = statsByAd[id].sources || {};
       Object.keys(s).forEach(function (k) { if (sources[k] !== undefined) sources[k] += s[k]; });
     });
-    el.statAdshare.textContent = num(sources.adshare);
-    el.statWa.textContent      = num(sources.whatsapp);
-    el.statFb.textContent      = num(sources.facebook);
-    el.statIg.textContent      = num(sources.instagram);
+    $('stat-adshare').textContent = num(sources.adshare);
+    $('stat-wa').textContent      = num(sources.whatsapp);
+    $('stat-fb').textContent      = num(sources.facebook);
+    $('stat-ig').textContent      = num(sources.instagram);
   }
 
   // ═══════════════════════════════════════════════════════════════════════
   // SHARE TAB
   // ═══════════════════════════════════════════════════════════════════════
   function renderShareTab() {
-    var approved = ads.filter(function (a) { return a.status === 'approved'; });
-    if (!approved.length) {
-      el.shareList.innerHTML =
-        '<div class="py2-empty">' +
-        '<div class="py2-empty-icon">⏳</div>' +
-        '<h3>Nothing to share yet</h3>' +
-        '<p>Once your ads are approved, their shareable links will appear here.</p>' +
-        '</div>';
-      return;
-    }
+    var container = $('share-list');
+    var slug = profile && profile.slug ? profile.slug : '';
+    var profileUrl = slug ? (window.location.origin + '/b/' + slug) : '';
     var html = '';
-    approved.forEach(function (a) {
-      var url = window.location.origin + '/ad/' + encodeURIComponent(a.slug) + '?ref=adshare-' + a.id;
-      var qr  = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
+
+    // Profile share block (only if we have a slug)
+    if (profileUrl) {
+      var qrProfile = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(profileUrl);
       html +=
-        '<div style="padding:16px 0;border-bottom:1px solid var(--py2-border-soft);">' +
+        '<div style="padding:16px 0;border-bottom:2px solid var(--py2-border-soft);margin-bottom:8px;">' +
           '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
-            statusBadge('approved') +
-            '<strong style="font-family:var(--py2-font-head);font-size:14px;">' + esc(a.title) + '</strong>' +
+            '<i class="fa-solid fa-store" style="color:var(--py2-orange);"></i>' +
+            '<strong style="font-family:var(--py2-font-head);font-size:15px;">Your Business Profile</strong>' +
           '</div>' +
+          '<p style="font-size:12.5px;color:var(--py2-muted);margin-bottom:10px;line-height:1.5;">Share this link anywhere — WhatsApp status, social bio, business card, shop window. It\'s your mini-website on PhoneYa2.</p>' +
           '<div class="py2-share-row">' +
-            '<span class="py2-share-url" id="share-url-' + a.id + '">' + esc(url) + '</span>' +
-            '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-copy="' + a.id + '"><i class="fa-solid fa-copy"></i> Copy</button>' +
-            '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-wa="' + a.id + '"><i class="fa-brands fa-whatsapp"></i> Share on WhatsApp</button>' +
+            '<span class="py2-share-url" id="share-profile-url">' + esc(profileUrl) + '</span>' +
+            '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-copy-profile="1"><i class="fa-solid fa-copy"></i> Copy</button>' +
+            '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-wa-profile="1"><i class="fa-brands fa-whatsapp"></i> Share on WhatsApp</button>' +
           '</div>' +
           '<div class="qr-wrap">' +
-            '<img class="qr-img" src="' + esc(qr) + '" alt="QR code" loading="lazy">' +
-            '<div style="font-size:12.5px;color:var(--py2-muted);line-height:1.5;max-width:280px;">Print this QR on your flyers, business cards, or shop window. Scanning it opens your ad page.</div>' +
+            '<img class="qr-img" src="' + esc(qrProfile) + '" alt="QR code" loading="lazy">' +
+            '<div style="font-size:12.5px;color:var(--py2-muted);line-height:1.5;max-width:280px;">Print this QR code. Scanning it opens your business profile.</div>' +
           '</div>' +
         '</div>';
-    });
-    el.shareList.innerHTML = html;
+    }
 
-    el.shareList.querySelectorAll('[data-copy]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-copy');
-        var urlEl = $('share-url-' + id);
-        if (!urlEl) return;
-        navigator.clipboard.writeText(urlEl.textContent).then(function () { P.toast('Link copied!', 'success'); })
-          .catch(function () { P.toast('Could not copy. Please select and copy manually.', 'error'); });
+    // Ads share list
+    var approved = ads.filter(function (a) { return a.status === 'approved'; });
+    if (approved.length) {
+      html += '<h3 style="font-family:var(--py2-font-head);font-size:14px;margin:16px 0 8px;">Your Live Ads</h3>';
+      approved.forEach(function (a) {
+        var url = window.location.origin + '/ad/' + encodeURIComponent(a.slug) + '?ref=adshare-' + a.id;
+        var qr = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
+        html +=
+          '<div style="padding:14px 0;border-bottom:1px solid var(--py2-border-soft);">' +
+            '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
+              statusBadge('approved') +
+              '<strong style="font-family:var(--py2-font-head);font-size:13.5px;">' + esc(a.title) + '</strong>' +
+            '</div>' +
+            '<div class="py2-share-row">' +
+              '<span class="py2-share-url" id="share-url-' + a.id + '">' + esc(url) + '</span>' +
+              '<button type="button" class="py2-btn py2-btn-secondary py2-btn-sm" data-copy="' + a.id + '"><i class="fa-solid fa-copy"></i> Copy</button>' +
+              '<button type="button" class="py2-btn py2-btn-success py2-btn-sm" data-wa="' + a.id + '"><i class="fa-brands fa-whatsapp"></i> Share</button>' +
+            '</div>' +
+            '<div class="qr-wrap">' +
+              '<img class="qr-img" src="' + esc(qr) + '" alt="QR code" loading="lazy">' +
+              '<div style="font-size:12px;color:var(--py2-muted);line-height:1.5;max-width:280px;">Print this on flyers or share it directly.</div>' +
+            '</div>' +
+          '</div>';
+      });
+    } else if (!profileUrl) {
+      html = '<div class="py2-empty"><div class="py2-empty-icon">⏳</div><h3>Nothing to share yet</h3><p>Once your ads are approved, shareable links appear here.</p></div>';
+    }
+
+    container.innerHTML = html;
+
+    // Wire profile copy
+    container.querySelectorAll('[data-copy-profile]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        navigator.clipboard.writeText(profileUrl).then(function () {
+          P.toast('Profile link copied!', 'success');
+        }).catch(function () { P.toast('Could not copy.', 'error'); });
       });
     });
-    el.shareList.querySelectorAll('[data-wa]').forEach(function (btn) {
+    container.querySelectorAll('[data-wa-profile]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var biz = advertiser.business_name || 'our business';
+        var text = encodeURIComponent('Check out ' + biz + ' on PhoneYa2: ' + profileUrl);
+        window.open('https://wa.me/?text=' + text, '_blank', 'noopener');
+      });
+    });
+
+    // Wire ad copy + WhatsApp
+    container.querySelectorAll('[data-copy]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-copy');
+        var el = $('share-url-' + id);
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent).then(function () {
+          P.toast('Link copied!', 'success');
+        }).catch(function () { P.toast('Could not copy.', 'error'); });
+      });
+    });
+    container.querySelectorAll('[data-wa]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var id = btn.getAttribute('data-wa');
         var ad = ads.find(function (x) { return x.id === id; });
@@ -1328,480 +2057,14 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // CREATE / EDIT AD FORM
+  // ACCOUNT TAB
   // ═══════════════════════════════════════════════════════════════════════
-  var DEST_HELP = {
-    whatsapp:  'Enter your WhatsApp phone number with country code, e.g. +260971234567',
-    website:   'Enter the full website URL, e.g. https://yourbusiness.com',
-    facebook:  'Enter your Facebook page URL, e.g. https://facebook.com/yourpage',
-    instagram: 'Enter your Instagram profile URL, e.g. https://instagram.com/yourhandle',
-    tiktok:    'Enter your TikTok profile URL, e.g. https://tiktok.com/@yourhandle',
-    youtube:   'Enter your YouTube channel or video URL'
-  };
-
-  el.fDestType.addEventListener('change', function () {
-    var t = el.fDestType.value;
-    el.destHelp.textContent = DEST_HELP[t] || '';
-    if (t === 'whatsapp') {
-      el.fDestUrl.type = 'tel';
-      el.fDestUrl.placeholder = '+260 9XX XXX XXX';
-    } else {
-      el.fDestUrl.type = 'url';
-      el.fDestUrl.placeholder = 'https://…';
-    }
-  });
-
-  el.fTitle.addEventListener('input', function () {
-    el.countTitle.textContent = el.fTitle.value.length + ' / 60';
-  });
-  el.fDesc.addEventListener('input', function () {
-    el.countDesc.textContent = el.fDesc.value.length + ' / 200';
-  });
-
-  // ── Media toggle: Image vs Video ──────────────────────────────────
-  el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var mode = btn.getAttribute('data-media');
-      videoState.mode = mode;
-      el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (b) {
-        b.classList.toggle('active', b === btn);
-      });
-      el.mediaImageMode.style.display = (mode === 'image') ? 'block' : 'none';
-      el.mediaVideoMode.style.display = (mode === 'video') ? 'block' : 'none';
-      updateVideoPreview();
-    });
-  });
-
-  // ── Video source selection ────────────────────────────────────────
-  el.videoSources.querySelectorAll('.video-source-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var src = btn.getAttribute('data-source');
-      videoState.source = src;
-      videoState.url = '';
-      videoState.file = null;
-      videoState.uploadedUrl = null;
-      el.videoSources.querySelectorAll('.video-source-btn').forEach(function (b) {
-        b.classList.toggle('active', b === btn);
-      });
-
-      if (src === 'mp4') {
-        el.videoUrlWrap.style.display = 'none';
-        el.videoFileWrap.style.display = 'block';
-      } else {
-        el.videoUrlWrap.style.display = 'block';
-        el.videoFileWrap.style.display = 'none';
-        var help = {
-          youtube: 'Paste the full YouTube video URL, e.g. https://youtube.com/watch?v=abc123',
-          vimeo:   'Paste the full Vimeo video URL, e.g. https://vimeo.com/123456789',
-          tiktok:  'Paste the full TikTok video URL, e.g. https://tiktok.com/@yourhandle/video/123'
-        };
-        el.videoUrlHelp.textContent = help[src] || '';
-        el.fVideoUrl.placeholder = src === 'youtube' ? 'https://youtube.com/watch?v=…'
-                                 : src === 'vimeo'   ? 'https://vimeo.com/…'
-                                 : src === 'tiktok'  ? 'https://tiktok.com/@user/video/…'
-                                 : '';
-        el.fVideoUrl.value = '';
-      }
-      updateVideoPreview();
-    });
-  });
-
-  el.fVideoUrl.addEventListener('input', function () {
-    videoState.url = el.fVideoUrl.value.trim();
-    updateVideoPreview();
-  });
-
-  el.fVideo.addEventListener('change', function () {
-    if (el.fVideo.files && el.fVideo.files[0]) {
-      var f = el.fVideo.files[0];
-      if (f.size > 5 * 1024 * 1024) {
-        P.toast('Video too large. Please keep it under 5MB.', 'error');
-        el.fVideo.value = '';
-        return;
-      }
-      videoState.file = f;
-      videoState.uploadedUrl = null;
-      updateVideoPreview();
-    }
-  });
-
-  ['dragover','dragenter'].forEach(function (ev) {
-    el.vidDrop.addEventListener(ev, function (e) { e.preventDefault(); el.vidDrop.classList.add('dragover'); });
-  });
-  ['dragleave','drop'].forEach(function (ev) {
-    el.vidDrop.addEventListener(ev, function (e) { e.preventDefault(); el.vidDrop.classList.remove('dragover'); });
-  });
-  el.vidDrop.addEventListener('drop', function (e) {
-    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (!f) return;
-    if (f.size > 5 * 1024 * 1024) {
-      P.toast('Video too large. Please keep it under 5MB.', 'error');
-      return;
-    }
-    videoState.file = f;
-    videoState.uploadedUrl = null;
-    updateVideoPreview();
-  });
-  el.vidDrop.addEventListener('click', function () { el.fVideo.click(); });
-
-  el.videoPreviewRemove.addEventListener('click', function () {
-    videoState.url = '';
-    videoState.file = null;
-    videoState.uploadedUrl = null;
-    el.fVideoUrl.value = '';
-    el.fVideo.value = '';
-    el.videoPreview.classList.remove('show');
-    el.videoPreviewInner.innerHTML = '';
-  });
-
-  // ── Image picker (unchanged) ──────────────────────────────────────
-  el.imgDrop.addEventListener('click', function () { el.fImage.click(); });
-  el.fImage.addEventListener('change', function () {
-    if (el.fImage.files && el.fImage.files[0]) pickImage(el.fImage.files[0]);
-  });
-  ['dragover','dragenter'].forEach(function (ev) {
-    el.imgDrop.addEventListener(ev, function (e) { e.preventDefault(); el.imgDrop.classList.add('dragover'); });
-  });
-  ['dragleave','drop'].forEach(function (ev) {
-    el.imgDrop.addEventListener(ev, function (e) { e.preventDefault(); el.imgDrop.classList.remove('dragover'); });
-  });
-  el.imgDrop.addEventListener('drop', function (e) {
-    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) pickImage(f);
-  });
-  el.imgRemove.addEventListener('click', function () {
-    imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
-    el.fImage.value = '';
-    el.imgPreview.classList.remove('show');
-    el.imgPreviewImg.src = '';
-  });
-
-  function pickImage(file) {
-    imgState.file = file;
-    imgState.compressed = null;
-    imgState.uploadedUrl = null;
-    el.imgPreview.classList.add('show');
-    var reader = new FileReader();
-    reader.onload = function (e) { el.imgPreviewImg.src = e.target.result; };
-    reader.readAsDataURL(file);
-  }
-
-  el.logoDrop.addEventListener('click', function () { el.fLogo.click(); });
-  el.fLogo.addEventListener('change', function () {
-    if (el.fLogo.files && el.fLogo.files[0]) pickLogo(el.fLogo.files[0]);
-  });
-  el.logoRemove.addEventListener('click', function () {
-    logoState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
-    el.fLogo.value = '';
-    el.logoPreview.classList.remove('show');
-    el.logoPreviewImg.src = '';
-  });
-  function pickLogo(file) {
-    logoState.file = file;
-    logoState.compressed = null;
-    logoState.uploadedUrl = null;
-    el.logoPreview.classList.add('show');
-    var reader = new FileReader();
-    reader.onload = function (e) { el.logoPreviewImg.src = e.target.result; };
-    reader.readAsDataURL(file);
-  }
-
-  function resetAdForm() {
-    editingAdId = null;
-    el.formTitle.textContent = 'Create a New Ad';
-    el.submitAdLabel.textContent = 'Submit Ad for Review';
-    el.fAdId.value = '';
-    el.fTitle.value = '';
-    el.fDesc.value = '';
-    el.fDestType.value = '';
-    el.fDestUrl.value = '';
-    el.fDestUrl.type = 'text';
-    el.fDestUrl.placeholder = 'Choose a destination type above first';
-    el.destHelp.textContent = '';
-    el.fStart.value = todayISO();
-    el.fEnd.value = '';
-    el.countTitle.textContent = '0 / 60';
-    el.countDesc.textContent = '0 / 200';
-    el.createError.style.display = 'none';
-    el.createInfo.style.display = 'none';
-
-    // Reset image
-    imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
-    el.fImage.value = '';
-    el.imgPreview.classList.remove('show');
-    el.imgPreviewImg.src = '';
-
-    // Reset video
-    videoState = { mode: 'image', source: 'youtube', url: '', file: null, uploading: false, uploadedUrl: null, provider: null };
-    el.fVideoUrl.value = '';
-    el.fVideo.value = '';
-    el.videoPreview.classList.remove('show');
-    el.videoPreviewInner.innerHTML = '';
-    el.videoUploadProgress.classList.remove('show');
-    el.mediaImageMode.style.display = 'block';
-    el.mediaVideoMode.style.display = 'none';
-    el.videoUrlWrap.style.display = 'block';
-    el.videoFileWrap.style.display = 'none';
-    el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (b, i) {
-      b.classList.toggle('active', i === 0);
-    });
-    el.videoSources.querySelectorAll('.video-source-btn').forEach(function (b, i) {
-      b.classList.toggle('active', i === 0);
-    });
-
-    document.querySelectorAll('#tab-create .py2-error').forEach(function (e) { e.classList.remove('show'); });
-    document.querySelectorAll('#tab-create .py2-input').forEach(function (e) { e.classList.remove('error'); });
-  }
-
-  el.cancelAdBtn.addEventListener('click', function () { resetAdForm(); switchTab('ads'); });
-
-  function startEdit(ad) {
-    resetAdForm();
-    editingAdId = ad.id;
-    el.formTitle.textContent = 'Edit Ad';
-    el.submitAdLabel.textContent = 'Save Changes & Resubmit';
-    el.fAdId.value = ad.id;
-    el.fTitle.value = ad.title || '';
-    el.fDesc.value = ad.description || '';
-    el.fDestType.value = ad.destination_type || '';
-    el.fDestType.dispatchEvent(new Event('change'));
-    el.fDestUrl.value = ad.destination_url || '';
-    if (ad.start_date) el.fStart.value = ad.start_date.slice(0, 10);
-    if (ad.end_date)   el.fEnd.value   = ad.end_date.slice(0, 10);
-
-    // Media
-    if (ad.media_type === 'video') {
-      videoState.mode = 'video';
-      el.mediaImageMode.style.display = 'none';
-      el.mediaVideoMode.style.display = 'block';
-      el.mediaToggle.querySelectorAll('.media-toggle-btn').forEach(function (b) {
-        b.classList.toggle('active', b.getAttribute('data-media') === 'video');
-      });
-      // Try to detect source from existing URL
-      var prov = ad.video_provider || detectProvider(ad.media_url) || 'youtube';
-      videoState.source = prov;
-      el.videoSources.querySelectorAll('.video-source-btn').forEach(function (b) {
-        b.classList.toggle('active', b.getAttribute('data-source') === prov);
-      });
-      if (prov === 'mp4') {
-        videoState.uploadedUrl = ad.media_url;
-        el.videoUrlWrap.style.display = 'none';
-        el.videoFileWrap.style.display = 'block';
-      } else {
-        videoState.url = ad.media_url;
-        el.fVideoUrl.value = ad.media_url;
-      }
-      updateVideoPreview();
-    } else if (ad.media_url) {
-      imgState.uploadedUrl = ad.media_url;
-      el.imgPreview.classList.add('show');
-      el.imgPreviewImg.src = ad.media_url;
-    }
-
-    el.countTitle.textContent = el.fTitle.value.length + ' / 60';
-    el.countDesc.textContent = el.fDesc.value.length + ' / 200';
-
-    if (ad.status === 'approved') {
-      el.createInfo.style.display = 'flex';
-      el.createInfoText.textContent = 'Saving changes to a live ad will send it back for review. It will be re-approved within 24 hours.';
-    }
-    switchTab('create');
-  }
-
-  function makeSlug(title) {
-    var base = P.slugify(title || 'ad');
-    if (!base) base = 'ad';
-    return base + '-' + P.uniqueSuffix();
-  }
-
-  function setErr(id, show) {
-    var e = $('err-' + id);
-    if (e) e.classList.toggle('show', !!show);
-    var input = $(id) || $('f-' + id);
-    if (input && input.classList) input.classList.toggle('error', !!show);
-  }
-
-  function validateAdForm() {
-    var ok = true;
-    if (!el.fTitle.value.trim()) { setErr('title', true); ok = false; } else setErr('title', false);
-    if (!el.fDestType.value)     { setErr('dest-type', true); ok = false; } else setErr('dest-type', false);
-    if (!el.fDestUrl.value.trim()) { setErr('dest-url', true); ok = false; } else setErr('dest-url', false);
-    var t = el.fDestType.value;
-    var u = el.fDestUrl.value.trim();
-    if (t === 'whatsapp') {
-      var digits = u.replace(/[^\d]/g, '');
-      if (digits.length < 9) { setErr('dest-url', true); ok = false; }
-    } else if (u && u.indexOf('http') !== 0) {
-      setErr('dest-url', true); ok = false;
-    }
-
-    // Media validation
-    if (videoState.mode === 'video') {
-      if (videoState.source === 'mp4') {
-        if (!videoState.uploadedUrl && !videoState.file) {
-          P.toast('Please upload a video file', 'error');
-          ok = false;
-        }
-      } else {
-        if (!isValidVideoUrl(videoState.url, videoState.source)) {
-          setErr('video-url', true); ok = false;
-        } else {
-          setErr('video-url', false);
-        }
-      }
-      setErr('image', false);
-    } else {
-      if (!imgState.uploadedUrl && !imgState.file) {
-        setErr('image', true); ok = false;
-      } else setErr('image', false);
-    }
-    return ok;
-  }
-
-  el.submitAdBtn.addEventListener('click', function () {
-    el.createError.style.display = 'none';
-    el.createInfo.style.display = 'none';
-    if (!validateAdForm()) { P.toast('Please fix the highlighted fields', 'error'); return; }
-
-    el.submitAdBtn.disabled = true;
-    var origHTML = el.submitAdBtn.innerHTML;
-    el.submitAdBtn.innerHTML = '<span class="py2-spinner"></span> ' +
-      (editingAdId ? 'Saving…' : (videoState.mode === 'video' && videoState.source === 'mp4' ? 'Uploading video…' : 'Uploading media…'));
-
-    // ── Step 1: resolve the media URL ────────────────────────────────
-    var mediaPromise;
-    var finalMediaType = videoState.mode;
-    var finalProvider = null;
-
-    if (videoState.mode === 'video') {
-      if (videoState.source === 'mp4') {
-                if (videoState.uploadedUrl) {
-          mediaPromise = Promise.resolve(videoState.uploadedUrl);
-          finalProvider = 'mp4';
-        } else {
-          // Compute the path ONCE, use the same value for upload and public URL
-          var vidPath = 'ads/' + advertiser.id + '/' + Date.now() + '-' +
-                        Math.random().toString(36).slice(2, 8) + '.mp4';
-          mediaPromise = P.storage.upload(
-            'ad-media',
-            vidPath,
-            videoState.file,
-            { contentType: 'video/mp4' }
-          ).then(function () {
-            return P.storage.publicUrl('ad-media', vidPath);
-          });
-          finalProvider = 'mp4';
-        }
-      } else {
-        mediaPromise = Promise.resolve(videoState.url);
-        finalProvider = videoState.source; // youtube / vimeo / tiktok
-      }
-    } else {
-      // Image
-      if (imgState.file && !imgState.uploadedUrl) {
-        mediaPromise = compressImage(imgState.file, 1200, 0.82).then(function (blob) {
-          imgState.compressed = blob;
-          var path = 'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
-          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
-            .then(function () { return P.storage.publicUrl('ad-media', path); });
-        }).then(function (url) { imgState.uploadedUrl = url; return url; });
-      } else {
-        mediaPromise = Promise.resolve(imgState.uploadedUrl);
-      }
-    }
-
-    mediaPromise
-      .then(function (mediaUrl) {
-        el.submitAdBtn.innerHTML = '<span class="py2-spinner"></span> Saving…';
-        var payload = {
-          title:            el.fTitle.value.trim(),
-          description:      el.fDesc.value.trim() || null,
-          media_url:        mediaUrl,
-          media_type:       finalMediaType,
-          video_provider:   finalProvider,
-          destination_type: el.fDestType.value,
-          destination_url:  el.fDestUrl.value.trim(),
-          start_date:       el.fStart.value ? new Date(el.fStart.value + 'T00:00:00').toISOString() : new Date().toISOString(),
-          end_date:         el.fEnd.value ? new Date(el.fEnd.value + 'T23:59:59').toISOString() : null
-        };
-        if (editingAdId) {
-          var currentAd = ads.find(function (x) { return x.id === editingAdId; });
-          if (currentAd && currentAd.status === 'approved') payload.status = 'pending';
-          return P.db.update('ads', 'id=eq.' + editingAdId, payload, session.access_token);
-        } else {
-          payload.advertiser_id = advertiser.id;
-          payload.slug          = makeSlug(el.fTitle.value);
-          payload.status        = 'pending';
-          payload.weight        = 1;
-          payload.placement     = 'carousel';
-          return P.db.insert('ads', payload, session.access_token);
-        }
-      })
-      .then(function () {
-        P.toast(editingAdId ? 'Ad updated — pending review' : 'Ad submitted for review!', 'success');
-        resetAdForm();
-        return reloadAll();
-      })
-      .then(function () { switchTab('ads'); })
-      .catch(function (err) {
-        el.submitAdBtn.disabled = false;
-        el.submitAdBtn.innerHTML = origHTML;
-        var msg = err && err.message ? err.message : 'Could not save ad. Please try again.';
-        if (/row-level security|permission/i.test(msg)) {
-          msg = 'You do not have permission to do that. If this keeps happening, contact support.';
-        }
-        el.createError.style.display = 'flex';
-        el.createErrorText.textContent = msg;
-        P.toast(msg, 'error');
-      });
-  });
-
-  function setPaused(ad, shouldPause) {
-    var newStatus = shouldPause ? 'paused' : 'approved';
-    P.db.update('ads', 'id=eq.' + ad.id, { status: newStatus }, session.access_token)
-      .then(function () {
-        P.toast(shouldPause ? 'Ad paused' : 'Ad resumed', 'success');
-        return reloadAll();
-      })
-      .catch(function (err) { P.toast(err.message || 'Could not update ad', 'error'); });
-  }
-
-  function confirmDelete(ad) {
-    el.modalConfirmTitle.textContent = 'Delete this ad?';
-    el.modalConfirmBody.innerHTML = 'The ad <strong>' + esc(ad.title) + '</strong> will be removed permanently. This cannot be undone.';
-    el.modalConfirmAction.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
-    el.modalConfirmAction.onclick = function () {
-      closeModal('modal-confirm');
-      P.db.delete('ads', 'id=eq.' + ad.id, session.access_token)
-        .then(function () { P.toast('Ad deleted', 'success'); return reloadAll(); })
-        .catch(function (err) { P.toast(err.message || 'Could not delete ad', 'error'); });
-    };
-    openModal('modal-confirm');
-  }
-
-  function showReason(ad) {
-    el.modalReasonText.textContent = ad.rejection_reason || 'No reason was provided. Please review our advertising policy.';
-    openModal('modal-reason');
-  }
-
-  document.querySelectorAll('[data-close]').forEach(function (btn) {
-    btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close')); });
-  });
-  document.querySelectorAll('.py2-modal-backdrop').forEach(function (bd) {
-    bd.addEventListener('click', function (e) { if (e.target === bd) bd.classList.remove('open'); });
-  });
-
   function fillAccountForm() {
     if (!advertiser) return;
-    el.aBusiness.value = advertiser.business_name || '';
-    el.aOwner.value    = advertiser.owner_name    || '';
-    el.aPhone.value    = advertiser.phone         || '';
-    el.aEmail.value    = advertiser.email         || '';
-    if (advertiser.logo_url) {
-      logoState.uploadedUrl = advertiser.logo_url;
-      el.logoPreview.classList.add('show');
-      el.logoPreviewImg.src = advertiser.logo_url;
-    }
+    $('a-business').value = advertiser.business_name || '';
+    $('a-owner').value    = advertiser.owner_name    || '';
+    $('a-phone').value    = advertiser.phone         || '';
+    $('a-email').value    = advertiser.email         || '';
   }
 
   $('btn-save-account').addEventListener('click', function () {
@@ -1810,51 +2073,35 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="py2-spinner"></span> Saving…';
 
-    var biz   = el.aBusiness.value.trim();
-    var owner = el.aOwner.value.trim() || null;
-    var phone = el.aPhone.value.trim();
+    var biz = $('a-business').value.trim();
+    var owner = $('a-owner').value.trim() || null;
+    var phone = $('a-phone').value.trim();
 
     var ok = true;
     if (!biz) { $('err-a-business').classList.add('show'); ok = false; } else { $('err-a-business').classList.remove('show'); }
     if (!isPhone(phone)) { $('err-a-phone').classList.add('show'); ok = false; } else { $('err-a-phone').classList.remove('show'); }
     if (!ok) { btn.disabled = false; btn.innerHTML = orig; P.toast('Please fix the highlighted fields', 'error'); return; }
 
-    var uploadLogo = Promise.resolve(logoState.uploadedUrl);
-    if (logoState.file && !logoState.uploadedUrl) {
-      uploadLogo = compressImage(logoState.file, 400, 0.85).then(function (blob) {
-        var path = 'logos/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
-        return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
-          .then(function () { return P.storage.publicUrl('ad-media', path); });
-      }).then(function (url) { logoState.uploadedUrl = url; return url; });
-    }
-
-    uploadLogo.then(function (logoUrl) {
-      var patch = { business_name: biz, owner_name: owner, phone: phone };
-      if (logoUrl) patch.logo_url = logoUrl;
-      return P.db.update('advertisers', 'id=eq.' + advertiser.id, patch, session.access_token);
-    })
-      .then(function () { P.toast('Account updated', 'success'); return reloadAll(); })
+    P.db.update('advertisers', 'id=eq.' + advertiser.id, { business_name: biz, owner_name: owner, phone: phone }, session.access_token)
+      .then(function () {
+        P.toast('Account updated', 'success');
+        return reloadAll();
+      })
       .then(function () { btn.disabled = false; btn.innerHTML = orig; })
-      .catch(function (err) {
-        btn.disabled = false;
-        btn.innerHTML = orig;
-        P.toast(err.message || 'Could not update account', 'error');
-      });
+      .catch(function (err) { btn.disabled = false; btn.innerHTML = orig; P.toast(err.message || 'Could not update', 'error'); });
   });
 
   $('btn-save-password').addEventListener('click', function () {
     $('err-p-new').classList.remove('show');
     $('err-p-confirm').classList.remove('show');
-    var cur = el.pCurrent.value, nw = el.pNew.value, cf = el.pConfirm.value;
+    var cur = $('p-current').value, nw = $('p-new').value, cf = $('p-confirm').value;
     if (!cur) { P.toast('Please enter your current password', 'error'); return; }
     if (nw.length < 8) { $('err-p-new').classList.add('show'); return; }
     if (nw !== cf) { $('err-p-confirm').classList.add('show'); return; }
-
     var btn = this;
     var orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="py2-spinner"></span> Updating…';
-
     fetch(P.config.url + '/auth/v1/token?grant_type=password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': P.config.key },
@@ -1874,46 +2121,744 @@
       })
       .then(function () {
         P.toast('Password updated', 'success');
-        el.pCurrent.value = ''; el.pNew.value = ''; el.pConfirm.value = '';
+        $('p-current').value = ''; $('p-new').value = ''; $('p-confirm').value = '';
         btn.disabled = false; btn.innerHTML = orig;
       })
+      .catch(function (err) { btn.disabled = false; btn.innerHTML = orig; P.toast(err.message, 'error'); });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // MY PROFILE TAB
+  // ═══════════════════════════════════════════════════════════════════════
+  function fillProfileForm() {
+    if (!profile || !advertiser) return;
+    var effective = getEffectiveTier();
+    var rank = TIER_RANK[effective] || 0;
+
+    // Profile URL
+    var url = window.location.origin + '/b/' + profile.slug;
+    $('profile-url').textContent = url;
+    $('preview-open-link').href = url;
+
+    // Tagline + about (all tiers)
+    $('pf-tagline').value = profile.tagline || '';
+    $('pf-about').value   = profile.about || '';
+
+    // Logo (all tiers can upload; starter+ gets it shown)
+    if (advertiser.logo_url) {
+      $('pf-logo-preview').classList.add('show');
+      $('pf-logo-preview-img').src = advertiser.logo_url;
+    } else {
+      $('pf-logo-preview').classList.remove('show');
+    }
+
+    // Cover (Standard+)
+    if (profile.cover_image_url) {
+      $('pf-cover-preview').classList.add('show');
+      $('pf-cover-preview-img').src = profile.cover_image_url;
+    } else {
+      $('pf-cover-preview').classList.remove('show');
+    }
+
+    // Colors (Standard+)
+    $('pf-color-primary').value = profile.primary_color || '#ff6000';
+    $('pf-color-primary-hex').value = profile.primary_color || '#ff6000';
+    $('pf-color-accent').value = profile.accent_color || '#ff9f43';
+    $('pf-color-accent-hex').value = profile.accent_color || '#ff9f43';
+
+    // Socials (Standard+)
+    var socials = profile.social_links || {};
+    $('pf-social-facebook').value  = socials.facebook  || '';
+    $('pf-social-instagram').value = socials.instagram || '';
+    $('pf-social-tiktok').value    = socials.tiktok    || '';
+    $('pf-social-youtube').value   = socials.youtube   || '';
+    $('pf-social-website').value   = socials.website   || '';
+
+    // Contact (all tiers)
+    $('pf-contact-phone').value    = profile.contact_phone    || '';
+    $('pf-contact-whatsapp').value = profile.contact_whatsapp || '';
+    $('pf-contact-email').value    = profile.contact_email    || '';
+
+    // Lock fields based on tier
+    var lockStandard = rank < 2;
+    ['pf-cover-field', 'pf-colors-field', 'pf-socials-field'].forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      if (lockStandard) el.classList.add('locked-field');
+      else el.classList.remove('locked-field');
+    });
+
+    // Refresh preview
+    refreshProfilePreview();
+  }
+
+  function refreshProfilePreview() {
+    var frame = $('mock-iframe');
+    if (!frame || !profile) return;
+    // Cache buster so the iframe reloads and shows fresh data
+    frame.src = '/b/' + profile.slug + '?preview=' + Date.now();
+  }
+
+  $('btn-preview-refresh').addEventListener('click', function () {
+    refreshProfilePreview();
+    P.toast('Preview refreshed', 'success');
+  });
+
+  $('btn-preview-qr').addEventListener('click', function () {
+    if (!profile) return;
+    var url = window.location.origin + '/b/' + profile.slug;
+    $('qr-modal-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(url);
+    openModal('qr-modal');
+  });
+
+  $('btn-copy-profile-url').addEventListener('click', function () {
+    if (!profile) return;
+    var url = window.location.origin + '/b/' + profile.slug;
+    navigator.clipboard.writeText(url).then(function () {
+      P.toast('Profile link copied!', 'success');
+    }).catch(function () { P.toast('Could not copy.', 'error'); });
+  });
+
+  // Logo/cover file pickers
+  var logoFileState = { file: null };
+  var coverFileState = { file: null };
+
+  $('pf-logo-drop').addEventListener('click', function () { $('pf-logo-file').click(); });
+  $('pf-logo-file').addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      logoFileState.file = this.files[0];
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('pf-logo-preview').classList.add('show');
+        $('pf-logo-preview-img').src = e.target.result;
+      };
+      reader.readAsDataURL(logoFileState.file);
+    }
+  });
+  $('pf-logo-remove').addEventListener('click', function () {
+    logoFileState.file = null;
+    $('pf-logo-file').value = '';
+    $('pf-logo-preview').classList.remove('show');
+    $('pf-logo-preview-img').src = '';
+  });
+
+  $('pf-cover-drop').addEventListener('click', function () { $('pf-cover-file').click(); });
+  $('pf-cover-file').addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      coverFileState.file = this.files[0];
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('pf-cover-preview').classList.add('show');
+        $('pf-cover-preview-img').src = e.target.result;
+      };
+      reader.readAsDataURL(coverFileState.file);
+    }
+  });
+  $('pf-cover-remove').addEventListener('click', function () {
+    coverFileState.file = null;
+    $('pf-cover-file').value = '';
+    $('pf-cover-preview').classList.remove('show');
+    $('pf-cover-preview-img').src = '';
+  });
+
+  // Color picker sync
+  $('pf-color-primary').addEventListener('input', function () {
+    $('pf-color-primary-hex').value = this.value;
+  });
+  $('pf-color-primary-hex').addEventListener('input', function () {
+    if (isHexColor(this.value)) $('pf-color-primary').value = this.value;
+  });
+  $('pf-color-accent').addEventListener('input', function () {
+    $('pf-color-accent-hex').value = this.value;
+  });
+  $('pf-color-accent-hex').addEventListener('input', function () {
+    if (isHexColor(this.value)) $('pf-color-accent').value = this.value;
+  });
+
+  // Save Profile
+  $('btn-save-profile').addEventListener('click', function () {
+    if (!profile || !advertiser) return;
+    var btn = this;
+    var orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="py2-spinner"></span> Saving…';
+
+    $('profile-error').style.display = 'none';
+
+    var effective = getEffectiveTier();
+    var rank = TIER_RANK[effective] || 0;
+
+    // Prepare profile patch (only tier-allowed fields)
+    var patch = {
+      tagline: $('pf-tagline').value.trim() || null,
+      about:   $('pf-about').value.trim() || null,
+      contact_phone:    $('pf-contact-phone').value.trim() || null,
+      contact_whatsapp: $('pf-contact-whatsapp').value.trim() || null,
+      contact_email:    $('pf-contact-email').value.trim() || null
+    };
+
+    if (rank >= 2) {
+      // Standard+ can set colors, cover, socials
+      var pc = $('pf-color-primary-hex').value;
+      var ac = $('pf-color-accent-hex').value;
+      if (isHexColor(pc)) patch.primary_color = pc;
+      if (isHexColor(ac)) patch.accent_color = ac;
+
+      var socials = {};
+      var fb = $('pf-social-facebook').value.trim();
+      var ig = $('pf-social-instagram').value.trim();
+      var tt = $('pf-social-tiktok').value.trim();
+      var yt = $('pf-social-youtube').value.trim();
+      var wb = $('pf-social-website').value.trim();
+      if (fb) socials.facebook = fb;
+      if (ig) socials.instagram = ig;
+      if (tt) socials.tiktok = tt;
+      if (yt) socials.youtube = yt;
+      if (wb) socials.website = wb;
+      patch.social_links = socials;
+    }
+
+    // Upload logo + cover if new files were picked
+    var uploadPromise = Promise.resolve();
+
+    if (logoFileState.file) {
+      uploadPromise = uploadPromise.then(function () {
+        return compressImage(logoFileState.file, 400, 0.85).then(function (blob) {
+          var path = 'logos/' + advertiser.id + '/' + Date.now() + '.jpg';
+          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
+            .then(function () { return P.storage.publicUrl('ad-media', path); });
+        }).then(function (url) {
+          // Logo goes on the advertisers table
+          return P.db.update('advertisers', 'id=eq.' + advertiser.id, { logo_url: url }, session.access_token);
+        });
+      });
+    }
+
+    if (coverFileState.file && rank >= 2) {
+      uploadPromise = uploadPromise.then(function () {
+        return compressImage(coverFileState.file, 1400, 0.82).then(function (blob) {
+          var path = 'covers/' + advertiser.id + '/' + Date.now() + '.jpg';
+          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
+            .then(function () { return P.storage.publicUrl('ad-media', path); });
+        }).then(function (url) {
+          patch.cover_image_url = url;
+        });
+      });
+    }
+
+    uploadPromise.then(function () {
+      return P.db.update('advertiser_profiles', 'id=eq.' + profile.id, patch, session.access_token);
+    })
+      .then(function () {
+        P.toast('Profile saved', 'success');
+        logoFileState.file = null;
+        coverFileState.file = null;
+        return reloadAll();
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        fillProfileForm();
+      })
       .catch(function (err) {
-        btn.disabled = false; btn.innerHTML = orig;
-        P.toast(err.message || 'Could not update password', 'error');
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        var msg = err && err.message ? err.message : 'Could not save profile.';
+        if (/standard plan or higher/i.test(msg)) {
+          msg = 'That field requires the Standard plan or higher. Upgrade to unlock.';
+        } else if (/custom slug/i.test(msg)) {
+          msg = 'Custom slugs require the Business plan or higher.';
+        } else if (/only admins/i.test(msg)) {
+          msg = 'You cannot change that field.';
+        }
+        $('profile-error').style.display = 'flex';
+        $('profile-error-text').textContent = msg;
+        P.toast(msg, 'error');
       });
   });
 
-  $('btn-signout').addEventListener('click', function () {
-    P.auth.signout().then(function () {
-      session = null; advertiser = null; ads = []; statsByAd = {};
-      showSignin();
+  // ═══════════════════════════════════════════════════════════════════════
+  // IMAGE COMPRESSION
+  // ═══════════════════════════════════════════════════════════════════════
+  function compressImage(file, maxW, quality) {
+    maxW = maxW || 1200;
+    quality = quality || 0.82;
+    return new Promise(function (resolve, reject) {
+      if (!file.type || file.type.indexOf('image/') !== 0) { reject(new Error('Not an image')); return; }
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function (blob) {
+          if (!blob) { reject(new Error('Compression failed')); return; }
+          resolve(blob);
+        }, 'image/jpeg', quality);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
+      img.src = url;
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // CREATE / EDIT AD (unchanged flow)
+  // ═══════════════════════════════════════════════════════════════════════
+  var DEST_HELP = {
+    whatsapp:  'Enter your WhatsApp phone number with country code, e.g. +260971234567',
+    website:   'Enter the full website URL, e.g. https://yourbusiness.com',
+    facebook:  'Enter your Facebook page URL, e.g. https://facebook.com/yourpage',
+    instagram: 'Enter your Instagram profile URL, e.g. https://instagram.com/yourhandle',
+    tiktok:    'Enter your TikTok profile URL, e.g. https://tiktok.com/@yourhandle',
+    youtube:   'Enter your YouTube channel or video URL'
+  };
+
+  $('f-dest-type').addEventListener('change', function () {
+    var t = this.value;
+    $('dest-help').textContent = DEST_HELP[t] || '';
+    if (t === 'whatsapp') {
+      $('f-dest-url').type = 'tel';
+      $('f-dest-url').placeholder = '+260 9XX XXX XXX';
+    } else {
+      $('f-dest-url').type = 'url';
+      $('f-dest-url').placeholder = 'https://…';
+    }
+  });
+
+  $('f-title').addEventListener('input', function () {
+    $('count-title').textContent = this.value.length + ' / 60';
+  });
+  $('f-desc').addEventListener('input', function () {
+    $('count-desc').textContent = this.value.length + ' / 200';
+  });
+
+  // Media toggle
+  document.querySelectorAll('.media-toggle-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = btn.getAttribute('data-media');
+      videoState.mode = mode;
+      document.querySelectorAll('.media-toggle-btn').forEach(function (b) {
+        var active = b === btn;
+        b.style.borderColor = active ? '#ff6000' : 'rgba(0,0,0,.1)';
+        b.style.color = active ? '#ff6000' : '#6b7280';
+      });
+      $('media-image-mode').style.display = (mode === 'image') ? 'block' : 'none';
+      $('media-video-mode').style.display = (mode === 'video') ? 'block' : 'none';
+      updateVideoPreview();
     });
   });
 
+  // Video sources
+  document.querySelectorAll('.video-source-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var src = btn.getAttribute('data-source');
+      videoState.source = src;
+      videoState.url = '';
+      videoState.file = null;
+      videoState.uploadedUrl = null;
+      document.querySelectorAll('.video-source-btn').forEach(function (b) {
+        var active = b === btn;
+        b.style.borderColor = active ? '#ff6000' : 'rgba(0,0,0,.1)';
+        b.style.color = active ? '#ff6000' : '#6b7280';
+      });
+      if (src === 'mp4') {
+        $('video-url-wrap').style.display = 'none';
+        $('video-file-wrap').style.display = 'block';
+      } else {
+        $('video-url-wrap').style.display = 'block';
+        $('video-file-wrap').style.display = 'none';
+        var help = {
+          youtube: 'Paste the full YouTube video URL, e.g. https://youtube.com/watch?v=abc123',
+          vimeo:   'Paste the full Vimeo video URL, e.g. https://vimeo.com/123456789',
+          tiktok:  'Paste the full TikTok video URL, e.g. https://tiktok.com/@yourhandle/video/123'
+        };
+        $('video-url-help').textContent = help[src] || '';
+        $('f-video-url').value = '';
+      }
+      updateVideoPreview();
+    });
+  });
+
+  $('f-video-url').addEventListener('input', function () {
+    videoState.url = this.value.trim();
+    updateVideoPreview();
+  });
+
+  $('f-video').addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      var f = this.files[0];
+      if (f.size > 5 * 1024 * 1024) {
+        P.toast('Video too large (max 5MB)', 'error');
+        this.value = '';
+        return;
+      }
+      videoState.file = f;
+      videoState.uploadedUrl = null;
+      updateVideoPreview();
+    }
+  });
+
+  $('vid-drop').addEventListener('click', function () { $('f-video').click(); });
+  $('video-preview-remove').addEventListener('click', function () {
+    videoState.url = ''; videoState.file = null; videoState.uploadedUrl = null;
+    $('f-video-url').value = ''; $('f-video').value = '';
+    $('video-preview').style.display = 'none';
+    $('video-preview-inner').innerHTML = '';
+  });
+
+  function isVideoUrlValid(url, source) {
+    if (!url) return false;
+    if (source === 'youtube') return /(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/.test(url);
+    if (source === 'vimeo')   return /vimeo\.com\/(?:video\/)?(\d+)/.test(url);
+    if (source === 'tiktok')  return /tiktok\.com/i.test(url);
+    return false;
+  }
+  function updateVideoPreview() {
+    var el = $('video-preview-inner');
+    var wrap = $('video-preview');
+    var source = videoState.source;
+    var url = videoState.url;
+    var html = '';
+
+    if (source === 'youtube' && isVideoUrlValid(url, 'youtube')) {
+      var m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+      html = '<iframe src="https://www.youtube.com/embed/' + m[1] + '?autoplay=1&mute=1&loop=1&playlist=' + m[1] + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;height:100%;border:0;"></iframe>';
+    } else if (source === 'vimeo' && isVideoUrlValid(url, 'vimeo')) {
+      var v = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      html = '<iframe src="https://player.vimeo.com/video/' + v[1] + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" style="width:100%;height:100%;border:0;"></iframe>';
+    } else if (source === 'tiktok' && isVideoUrlValid(url, 'tiktok')) {
+      html = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;background:#000;gap:8px;"><div style="font-size:2.4rem;">🎵</div><div style="font-size:12px;opacity:.75;">TikTok preview</div></div>';
+    } else if (source === 'mp4' && videoState.file) {
+      var objUrl = URL.createObjectURL(videoState.file);
+      html = '<video src="' + objUrl + '" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video>';
+    }
+
+    if (html) {
+      el.innerHTML = html;
+      wrap.style.display = 'block';
+    } else {
+      el.innerHTML = '';
+      wrap.style.display = 'none';
+    }
+  }
+
+  // Image picker
+  $('img-drop').addEventListener('click', function () { $('f-image').click(); });
+  $('f-image').addEventListener('change', function () {
+    if (this.files && this.files[0]) pickImage(this.files[0]);
+  });
+  $('img-remove').addEventListener('click', function () {
+    imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+    $('f-image').value = '';
+    $('img-preview').classList.remove('show');
+    $('img-preview-img').src = '';
+  });
+  function pickImage(file) {
+    imgState.file = file;
+    imgState.compressed = null;
+    imgState.uploadedUrl = null;
+    $('img-preview').classList.add('show');
+    var reader = new FileReader();
+    reader.onload = function (e) { $('img-preview-img').src = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+
+  function resetAdForm() {
+    editingAdId = null;
+    $('create-form-title').textContent = 'Create a New Ad';
+    $('submit-ad-label').textContent = 'Submit Ad for Review';
+    $('f-ad-id').value = '';
+    $('f-title').value = '';
+    $('f-desc').value = '';
+    $('f-dest-type').value = '';
+    $('f-dest-url').value = '';
+    $('f-dest-url').type = 'text';
+    $('f-dest-url').placeholder = 'Choose a destination type above first';
+    $('dest-help').textContent = '';
+    $('f-start').value = todayISO();
+    $('f-end').value = '';
+    $('count-title').textContent = '0 / 60';
+    $('count-desc').textContent = '0 / 200';
+    $('create-error').style.display = 'none';
+    $('create-info').style.display = 'none';
+    imgState = { file: null, compressed: null, uploading: false, uploadedUrl: null };
+    $('f-image').value = '';
+    $('img-preview').classList.remove('show');
+    $('img-preview-img').src = '';
+    videoState = { mode: 'image', source: 'youtube', url: '', file: null, uploading: false, uploadedUrl: null, provider: null };
+    $('f-video-url').value = '';
+    $('f-video').value = '';
+    $('video-preview').style.display = 'none';
+    $('video-preview-inner').innerHTML = '';
+    $('media-image-mode').style.display = 'block';
+    $('media-video-mode').style.display = 'none';
+    $('video-url-wrap').style.display = 'block';
+    $('video-file-wrap').style.display = 'none';
+    document.querySelectorAll('.media-toggle-btn').forEach(function (b, i) {
+      var active = i === 0;
+      b.style.borderColor = active ? '#ff6000' : 'rgba(0,0,0,.1)';
+      b.style.color = active ? '#ff6000' : '#6b7280';
+    });
+    document.querySelectorAll('.video-source-btn').forEach(function (b, i) {
+      var active = i === 0;
+      b.style.borderColor = active ? '#ff6000' : 'rgba(0,0,0,.1)';
+      b.style.color = active ? '#ff6000' : '#6b7280';
+    });
+    document.querySelectorAll('#tab-create .py2-error').forEach(function (e) { e.classList.remove('show'); });
+    document.querySelectorAll('#tab-create .py2-input').forEach(function (e) { e.classList.remove('error'); });
+  }
+
+  $('btn-cancel-ad').addEventListener('click', function () { resetAdForm(); switchTab('ads'); });
+
+  function startEdit(ad) {
+    resetAdForm();
+    editingAdId = ad.id;
+    $('create-form-title').textContent = 'Edit Ad';
+    $('submit-ad-label').textContent = 'Save Changes & Resubmit';
+    $('f-ad-id').value = ad.id;
+    $('f-title').value = ad.title || '';
+    $('f-desc').value = ad.description || '';
+    $('f-dest-type').value = ad.destination_type || '';
+    $('f-dest-type').dispatchEvent(new Event('change'));
+    $('f-dest-url').value = ad.destination_url || '';
+    if (ad.start_date) $('f-start').value = ad.start_date.slice(0, 10);
+    if (ad.end_date)   $('f-end').value   = ad.end_date.slice(0, 10);
+
+    if (ad.media_type === 'video') {
+      videoState.mode = 'video';
+      $('media-image-mode').style.display = 'none';
+      $('media-video-mode').style.display = 'block';
+      document.querySelectorAll('.media-toggle-btn').forEach(function (b) {
+        var active = b.getAttribute('data-media') === 'video';
+        b.style.borderColor = active ? '#ff6000' : 'rgba(0,0,0,.1)';
+        b.style.color = active ? '#ff6000' : '#6b7280';
+      });
+      var prov = ad.video_provider || 'youtube';
+      videoState.source = prov;
+      document.querySelectorAll('.video-source-btn').forEach(function (b) {
+        var active = b.getAttribute('data-source') === prov;
+        b.style.borderColor = active ? '#ff6000' : 'rgba(0,0,0,.1)';
+        b.style.color = active ? '#ff6000' : '#6b7280';
+      });
+      if (prov === 'mp4') {
+        videoState.uploadedUrl = ad.media_url;
+        $('video-url-wrap').style.display = 'none';
+        $('video-file-wrap').style.display = 'block';
+      } else {
+        videoState.url = ad.media_url;
+        $('f-video-url').value = ad.media_url;
+      }
+      updateVideoPreview();
+    } else if (ad.media_url) {
+      imgState.uploadedUrl = ad.media_url;
+      $('img-preview').classList.add('show');
+      $('img-preview-img').src = ad.media_url;
+    }
+    $('count-title').textContent = $('f-title').value.length + ' / 60';
+    $('count-desc').textContent = $('f-desc').value.length + ' / 200';
+    if (ad.status === 'approved') {
+      $('create-info').style.display = 'flex';
+      $('create-info-text').textContent = 'Saving changes to a live ad will send it back for review.';
+    }
+    switchTab('create');
+  }
+
+  function makeSlug(title) {
+    var base = P.slugify(title || 'ad');
+    if (!base) base = 'ad';
+    return base + '-' + P.uniqueSuffix();
+  }
+  function setErr(id, show) {
+    var e = $('err-' + id);
+    if (e) e.classList.toggle('show', !!show);
+  }
+  function validateAdForm() {
+    var ok = true;
+    if (!$('f-title').value.trim()) { setErr('title', true); ok = false; } else setErr('title', false);
+    if (!$('f-dest-type').value)     { setErr('dest-type', true); ok = false; } else setErr('dest-type', false);
+    if (!$('f-dest-url').value.trim()) { setErr('dest-url', true); ok = false; } else setErr('dest-url', false);
+    var t = $('f-dest-type').value, u = $('f-dest-url').value.trim();
+    if (t === 'whatsapp') {
+      if (u.replace(/[^\d]/g, '').length < 9) { setErr('dest-url', true); ok = false; }
+    } else if (u && u.indexOf('http') !== 0) { setErr('dest-url', true); ok = false; }
+    if (videoState.mode === 'video') {
+      if (videoState.source === 'mp4') {
+        if (!videoState.uploadedUrl && !videoState.file) { P.toast('Please upload a video file', 'error'); ok = false; }
+      } else if (!isVideoUrlValid(videoState.url, videoState.source)) {
+        setErr('video-url', true); ok = false;
+      } else setErr('video-url', false);
+      setErr('image', false);
+    } else {
+      if (!imgState.uploadedUrl && !imgState.file) { setErr('image', true); ok = false; }
+      else setErr('image', false);
+    }
+    return ok;
+  }
+
+  $('btn-submit-ad').addEventListener('click', function () {
+    $('create-error').style.display = 'none';
+    $('create-info').style.display = 'none';
+    if (!validateAdForm()) { P.toast('Please fix the highlighted fields', 'error'); return; }
+
+    var btn = this;
+    var origHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="py2-spinner"></span> ' + (editingAdId ? 'Saving…' : 'Uploading…');
+
+    var finalMediaType = videoState.mode;
+    var finalProvider = null;
+    var mediaPromise;
+
+    if (videoState.mode === 'video') {
+      if (videoState.source === 'mp4') {
+        if (videoState.uploadedUrl) {
+          mediaPromise = Promise.resolve(videoState.uploadedUrl);
+          finalProvider = 'mp4';
+        } else {
+          var vidPath = 'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.mp4';
+          mediaPromise = P.storage.upload('ad-media', vidPath, videoState.file, { contentType: 'video/mp4' })
+            .then(function () { return P.storage.publicUrl('ad-media', vidPath); });
+          finalProvider = 'mp4';
+        }
+      } else {
+        mediaPromise = Promise.resolve(videoState.url);
+        finalProvider = videoState.source;
+      }
+    } else {
+      if (imgState.file && !imgState.uploadedUrl) {
+        mediaPromise = compressImage(imgState.file, 1200, 0.82).then(function (blob) {
+          var path = 'ads/' + advertiser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+          return P.storage.upload('ad-media', path, blob, { contentType: 'image/jpeg' })
+            .then(function () { return P.storage.publicUrl('ad-media', path); });
+        }).then(function (url) { imgState.uploadedUrl = url; return url; });
+      } else {
+        mediaPromise = Promise.resolve(imgState.uploadedUrl);
+      }
+    }
+
+    mediaPromise
+      .then(function (mediaUrl) {
+        btn.innerHTML = '<span class="py2-spinner"></span> Saving…';
+        var payload = {
+          title:            $('f-title').value.trim(),
+          description:      $('f-desc').value.trim() || null,
+          media_url:        mediaUrl,
+          media_type:       finalMediaType,
+          video_provider:   finalProvider,
+          destination_type: $('f-dest-type').value,
+          destination_url:  $('f-dest-url').value.trim(),
+          start_date:       $('f-start').value ? new Date($('f-start').value + 'T00:00:00').toISOString() : new Date().toISOString(),
+          end_date:         $('f-end').value ? new Date($('f-end').value + 'T23:59:59').toISOString() : null
+        };
+        if (editingAdId) {
+          var currentAd = ads.find(function (x) { return x.id === editingAdId; });
+          if (currentAd && currentAd.status === 'approved') payload.status = 'pending';
+          return P.db.update('ads', 'id=eq.' + editingAdId, payload, session.access_token);
+        } else {
+          payload.advertiser_id = advertiser.id;
+          payload.slug = makeSlug($('f-title').value);
+          payload.status = 'pending';
+          payload.weight = 1;
+          payload.placement = 'carousel';
+          return P.db.insert('ads', payload, session.access_token);
+        }
+      })
+      .then(function () {
+        P.toast(editingAdId ? 'Ad updated — pending review' : 'Ad submitted for review!', 'success');
+        resetAdForm();
+        return reloadAll();
+      })
+      .then(function () { switchTab('ads'); })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+        var msg = err && err.message ? err.message : 'Could not save ad.';
+        if (/row-level security|permission/i.test(msg)) msg = 'You do not have permission for that.';
+        $('create-error').style.display = 'flex';
+        $('create-error-text').textContent = msg;
+        P.toast(msg, 'error');
+      });
+  });
+
+  function setPaused(ad, shouldPause) {
+    P.db.update('ads', 'id=eq.' + ad.id, { status: shouldPause ? 'paused' : 'approved' }, session.access_token)
+      .then(function () { P.toast(shouldPause ? 'Ad paused' : 'Ad resumed', 'success'); return reloadAll(); })
+      .catch(function (err) { P.toast(err.message || 'Could not update ad', 'error'); });
+  }
+  function confirmDelete(ad) {
+    $('modal-confirm-title').textContent = 'Delete this ad?';
+    $('modal-confirm-body').innerHTML = 'The ad <strong>' + esc(ad.title) + '</strong> will be removed permanently.';
+    $('modal-confirm-action').innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+    $('modal-confirm-action').onclick = function () {
+      closeModal('modal-confirm');
+      P.db.delete('ads', 'id=eq.' + ad.id, session.access_token)
+        .then(function () { P.toast('Ad deleted', 'success'); return reloadAll(); })
+        .catch(function (err) { P.toast(err.message || 'Could not delete', 'error'); });
+    };
+    openModal('modal-confirm');
+  }
+  function showReason(ad) {
+    $('modal-reason-text').textContent = ad.rejection_reason || 'No reason provided.';
+    openModal('modal-reason');
+  }
+
+  document.querySelectorAll('[data-close]').forEach(function (btn) {
+    btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close')); });
+  });
+  document.querySelectorAll('.py2-modal-backdrop').forEach(function (bd) {
+    bd.addEventListener('click', function (e) { if (e.target === bd) bd.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.py2-modal-backdrop.open').forEach(function (m) { m.classList.remove('open'); });
+    }
+  });
+
+  // Expose upgrade modal to lock buttons
+  window.py2AdsShowUpgrade = function () {
+    renderTierGrid();
+    openModal('upgrade-modal');
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // RELOAD ALL
+  // ═══════════════════════════════════════════════════════════════════════
   function reloadAll() {
     return loadAds()
       .then(loadStats)
+      .then(loadProfile)
       .then(function () {
+        renderPlanCard();
         renderTopStats();
         renderAdsList();
         renderStatsTab();
         renderShareTab();
         if (advertiser) {
-          el.greeting.textContent  = 'Welcome back, ' + (advertiser.owner_name || advertiser.business_name);
-          el.topbarBiz.textContent = advertiser.business_name;
+          $('dash-greeting').textContent = 'Welcome back, ' + (advertiser.owner_name || advertiser.business_name);
+          $('topbar-biz').textContent = advertiser.business_name;
         }
       });
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // BOOT
+  // ═══════════════════════════════════════════════════════════════════════
   function bootDashboard() {
     session = P.auth.getSession();
     if (!session || !session.user) { showSignin(); return Promise.resolve(); }
     showLoading();
     return loadAdvertiser()
       .then(reloadAll)
-      .then(function () { showDashboard(); })
+      .then(function () {
+        showDashboard();
+        maybeAutoShowUpgrade();
+      })
       .catch(function (err) {
-        el.loading.innerHTML =
+        $('dash-loading').innerHTML =
           '<div style="text-align:center;padding:40px;">' +
           '<h3 style="font-family:var(--py2-font-head);margin-bottom:8px;">Something went wrong</h3>' +
           '<p style="color:var(--py2-muted);font-size:14px;max-width:400px;">' +
@@ -1922,7 +2867,7 @@
           '<button id="boot-signout" class="py2-btn py2-btn-secondary" style="margin-top:16px;margin-left:8px;">Sign Out</button>' +
           '</div>';
         var so = $('boot-signout');
-        if (so) so.addEventListener('click', function () { P.auth.signout().then(function () { showSignin(); }); });
+        if (so) so.addEventListener('click', function () { P.auth.signout().then(showSignin); });
       });
   }
 
