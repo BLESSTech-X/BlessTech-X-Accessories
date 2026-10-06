@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVNT6SQCS2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MVNT6SQCS2');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advertise on PhoneYa2 — Reach Zambian Customers</title>
+  <meta name="description" content="Create an advertiser account on PhoneYa2 and get your business in front of Zambian shoppers. Free to start.">
+  <meta name="theme-color" content="#ff6000">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/ads-shared.css">
+</head>
+<body class="py2-page">
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="py2-topbar">
+  <div class="py2-topbar-inner">
+    <a href="/" class="py2-topbar-brand">
+      <span style="font-size:22px;">📱</span>
+      <div>
+        PhoneYa2 <span>Ads</span>
+        <small>Advertise on PhoneYa2</small>
+      </div>
+    </a>
+    <nav class="py2-topbar-nav">
+      <a href="/">Back to Shop</a>
+      <a href="/advertiser/">Sign In</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ═══ AUTH WRAP ═══ -->
+<div class="py2-auth-wrap">
+  <div class="py2-auth-card">
+
+    <!-- ═══ FORM VIEW ═══ -->
+    <div id="py2-signup-view">
+      <div class="py2-auth-brand">
+        <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
+             alt="PhoneYa2"
+             onerror="this.style.display='none'">
+        <h1>Advertise on PhoneYa2</h1>
+        <p>Get your Zambian business in front of real shoppers. Free to start.</p>
+      </div>
+
+      <!-- Policy intro notice -->
+      <div class="py2-notice">
+        <span class="py2-notice-icon">🇿🇲</span>
+        <div>
+          Advertise directly to shoppers browsing PhoneYa2. Every ad is reviewed
+          before it goes live — we keep the marketplace clean and honest.
+        </div>
+      </div>
+
+      <!-- Error banner (hidden by default) -->
+      <div id="py2-error-banner" class="py2-notice py2-notice-danger" style="display:none;">
+        <span class="py2-notice-icon">⚠️</span>
+        <div id="py2-error-text">Something went wrong.</div>
+      </div>
+
+      <form id="py2-signup-form" novalidate>
+
+        <!-- Business name -->
+        <div class="py2-field">
+          <label class="py2-label" for="f-business">Business Name <span class="req">*</span></label>
+          <input class="py2-input" type="text" id="f-business" name="business_name"
+                 placeholder="e.g. ABC Mobile Zambia" required maxlength="80"
+                 autocomplete="organization">
+          <div class="py2-error" id="err-business">Please enter your business name.</div>
+        </div>
+
+        <!-- Owner name -->
+        <div class="py2-field">
+          <label class="py2-label" for="f-owner">Owner Name</label>
+          <input class="py2-input" type="text" id="f-owner" name="owner_name"
+                 placeholder="e.g. Brendan Fula" maxlength="80"
+                 autocomplete="name">
+        </div>
+
+        <!-- Phone -->
+        <div class="py2-field">
+          <label class="py2-label" for="f-phone">Phone / WhatsApp <span class="req">*</span></label>
+          <input class="py2-input" type="tel" id="f-phone" name="phone"
+                 placeholder="+260 9XX XXX XXX" required
+                 autocomplete="tel">
+          <div class="py2-help">We use this to verify your business. It will not appear publicly unless you choose to add it to an ad.</div>
+          <div class="py2-error" id="err-phone">Please enter a valid phone number.</div>
+        </div>
+
+        <!-- Email -->
+        <div class="py2-field">
+          <label class="py2-label" for="f-email">Email Address <span class="req">*</span></label>
+          <input class="py2-input" type="email" id="f-email" name="email"
+                 placeholder="you@yourbusiness.com" required
+                 autocomplete="email">
+          <div class="py2-error" id="err-email">Please enter a valid email address.</div>
+        </div>
+
+        <!-- Password -->
+        <div class="py2-field">
+          <label class="py2-label" for="f-password">Password <span class="req">*</span></label>
+          <input class="py2-input" type="password" id="f-password" name="password"
+                 placeholder="At least 8 characters" required minlength="8"
+                 autocomplete="new-password">
+          <div class="py2-error" id="err-password">Password must be at least 8 characters.</div>
+        </div>
+
+        <!-- Confirm password -->
+        <div class="py2-field">
+          <label class="py2-label" for="f-confirm">Confirm Password <span class="req">*</span></label>
+          <input class="py2-input" type="password" id="f-confirm" name="confirm_password"
+                 placeholder="Re-enter your password" required
+                 autocomplete="new-password">
+          <div class="py2-error" id="err-confirm">Passwords do not match.</div>
+        </div>
+
+        <!-- Policy checkbox -->
+        <label class="py2-check">
+          <input type="checkbox" id="f-terms" name="accepted_terms" required>
+          <span>
+            I confirm I have the right to advertise this business, product, image,
+            and destination. I have read the
+            <a href="/advertise/policy/" target="_blank" style="color:var(--py2-orange);font-weight:600;">advertising policy</a>
+            and agree to the terms.
+          </span>
+        </label>
+        <div class="py2-error" id="err-terms" style="margin-top:-4px;margin-bottom:12px;">You must accept the policy to continue.</div>
+
+        <!-- Submit -->
+        <button type="submit" class="py2-btn py2-btn-primary py2-btn-lg py2-btn-block" id="py2-submit-btn">
+          <i class="fa-solid fa-rocket"></i> Create Advertiser Account
+        </button>
+
+      </form>
+
+      <div class="py2-auth-alt">
+        Already have an account? <a href="/advertiser/">Sign in</a>
+      </div>
+    </div>
+
+    <!-- ═══ SUCCESS VIEW ═══ -->
+    <div id="py2-success-view" style="display:none;text-align:center;">
+      <div class="py2-auth-brand">
+        <div style="font-size:3.4rem;margin-bottom:12px;">✅</div>
+        <h1>Welcome to PhoneYa2 Ads</h1>
+        <p>Your advertiser account is ready. Redirecting to your dashboard…</p>
+      </div>
+      <div style="margin-top:20px;">
+        <div class="py2-spinner py2-spinner-dark" style="width:24px;height:24px;border-width:3px;"></div>
+      </div>
+      <div style="margin-top:24px;">
+        <a href="/advertiser/" class="py2-btn py2-btn-secondary">Go to Dashboard Now <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="/ads-config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var P = window.py2Ads;
+  if (!P) {
+    // ads-config.js failed to load — page is not usable.
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;">' +
+      '<h2>Configuration missing</h2><p>ads-config.js did not load. Please contact support.</p></div>';
+    return;
+  }
+
+  var form      = document.getElementById('py2-signup-form');
+  var submitBtn = document.getElementById('py2-submit-btn');
+  var errorBox  = document.getElementById('py2-error-banner');
+  var errorText = document.getElementById('py2-error-text');
+  var signupView  = document.getElementById('py2-signup-view');
+  var successView = document.getElementById('py2-success-view');
+
+  // ── Field refs ─────────────────────────────────────────────────────────
+  var fields = {
+    business: document.getElementById('f-business'),
+    owner:    document.getElementById('f-owner'),
+    phone:    document.getElementById('f-phone'),
+    email:    document.getElementById('f-email'),
+    password: document.getElementById('f-password'),
+    confirm:  document.getElementById('f-confirm'),
+    terms:    document.getElementById('f-terms')
+  };
+
+  // ── Validators ─────────────────────────────────────────────────────────
+  function isEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
+  }
+  function isPhone(v) {
+    // Accepts +260XXXXXXXXX, 097..., 09..., with spaces / dashes / parens.
+    var digits = String(v || '').replace(/[^\d]/g, '');
+    return digits.length >= 9 && digits.length <= 15;
+  }
+  function setError(id, show) {
+    var el = document.getElementById('err-' + id);
+    if (el) el.classList.toggle('show', !!show);
+    var input = fields[id] || document.getElementById(id);
+    if (input && input.classList) input.classList.toggle('error', !!show);
+  }
+
+  function validateAll() {
+    var ok = true;
+
+    if (!fields.business.value.trim()) { setError('business', true); ok = false; } else setError('business', false);
+    if (!isPhone(fields.phone.value))   { setError('phone', true);    ok = false; } else setError('phone', false);
+    if (!isEmail(fields.email.value))   { setError('email', true);    ok = false; } else setError('email', false);
+    if (fields.password.value.length < 8) { setError('password', true); ok = false; } else setError('password', false);
+    if (fields.password.value !== fields.confirm.value) { setError('confirm', true); ok = false; } else setError('confirm', false);
+    if (!fields.terms.checked) { setError('terms', true); ok = false; } else setError('terms', false);
+
+    return ok;
+  }
+
+  // Clear error on input
+  ['business','phone','email','password','confirm'].forEach(function (k) {
+    var el = fields[k];
+    if (!el) return;
+    el.addEventListener('input', function () { setError(k, false); });
+  });
+  fields.terms.addEventListener('change', function () { setError('terms', false); });
+
+  // ── Error banner helper ────────────────────────────────────────────────
+  function showError(msg) {
+    errorText.textContent = msg;
+    errorBox.style.display = 'flex';
+    // Scroll to top of card so the user sees it
+    try { errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+  }
+  function hideError() {
+    errorBox.style.display = 'none';
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────────────
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideError();
+
+    if (!validateAll()) {
+      P.toast('Please fix the highlighted fields', 'error');
+      return;
+    }
+
+    var payload = {
+      email:          fields.email.value.trim().toLowerCase(),
+      password:       fields.password.value,
+      business_name:  fields.business.value.trim(),
+      owner_name:     fields.owner.value.trim() || null,
+      phone:          fields.phone.value.trim(),
+      accepted_terms: true,
+      terms_version:  'v1'
+    };
+
+    // Lock the button
+    submitBtn.disabled = true;
+    var originalHTML = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="py2-spinner"></span> Creating account…';
+
+    P.auth.signup(payload)
+      .then(function (result) {
+        // Success — show success view then redirect
+        signupView.style.display  = 'none';
+        successView.style.display = 'block';
+        P.toast('Account created!', 'success');
+        setTimeout(function () {
+          window.location.href = '/advertiser/';
+        }, 1500);
+      })
+      .catch(function (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHTML;
+
+        var msg = err && err.message ? err.message : 'Signup failed. Please try again.';
+
+        // Friendlier messages for common cases
+        if (/already registered|already exists|user already/i.test(msg)) {
+          msg = 'An account with this email already exists. Try signing in instead.';
+        } else if (/password/i.test(msg) && /weak|short/i.test(msg)) {
+          msg = 'Password is too weak. Use at least 8 characters.';
+        } else if (/invalid.*email/i.test(msg)) {
+          msg = 'That email address looks invalid. Please check and try again.';
+        }
+
+        showError(msg);
+      });
+  });
+
+  // ── If already signed in, offer a fast path ────────────────────────────
+  var existing = P.auth.getSession();
+  if (existing && existing.user) {
+    // Prefill email for convenience
+    if (existing.user.email) fields.email.value = existing.user.email;
+    P.toast('You are already signed in', 'info');
+  }
+})();
+</script>
+
+</body>
+</html>
