@@ -1891,13 +1891,19 @@
   }
 
   function toast(msg, kind) {
-    var t = $('toast');
-    var icons = { success: '✅', error: '⚠️', info: '💬' };
-    t.textContent = (icons[kind] || '💬') + '  ' + msg;
-    t.classList.add('on');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(function () { t.classList.remove('on'); }, 2800);
+  var t = $('toast');
+  if (!t) {
+    // The toast element is missing on this page. Log to console only,
+    // so the success handler doesn't crash.
+    try { console.log('[toast]', msg); } catch (e) {}
+    return;
   }
+  var icons = { success: '✅', error: '⚠️', info: '💬' };
+  t.textContent = (icons[kind] || '💬') + '  ' + msg;
+  t.classList.add('on');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function () { t.classList.remove('on'); }, 2800);
+}
 
   function showScreen(name) {
     ['screen-signin','screen-loading','screen-error','screen-dashboard'].forEach(function (id) {
