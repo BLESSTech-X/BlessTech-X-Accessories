@@ -78,6 +78,9 @@
   .notice-info { background: rgba(84,160,255,.07); border: 1px solid rgba(84,160,255,.2); }
   .notice-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); }
   .notice-danger { background: rgba(230,57,70,.07); border: 1px solid rgba(230,57,70,.2); color: #b91c1c; }
+  .notice-success { background: rgba(22,163,74,.07); border: 1px solid rgba(22,163,74,.25); }
+  .notice-cta { background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid rgba(255,96,0,.25); }
+  .notice-cta .cta-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
   .topbar { background: var(--py2-dark); color: white; border-bottom: 1px solid rgba(255,255,255,.06); position: sticky; top: 0; z-index: 100; }
   .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .brand { display: flex; align-items: center; gap: 8px; font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; color: white; }
@@ -110,13 +113,25 @@
   .plan-card.premium { background: linear-gradient(135deg,#0a0a14,#1a1a3e); color: white; border-color: rgba(255,96,0,.4); }
   .plan-card.premium .plan-label { color: rgba(255,255,255,.6); }
   .plan-card.premium .plan-desc { color: rgba(255,255,255,.7); }
+  .plan-card.premium .plan-usage-label { color: rgba(255,255,255,.6); }
+  .plan-card.premium .plan-usage-text { color: rgba(255,255,255,.8); }
   .plan-top { display: flex; align-items: center; gap: 14px; }
   .plan-icon { width: 52px; height: 52px; border-radius: 14px; background: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 14px rgba(0,0,0,.08); flex-shrink: 0; }
   .plan-card.premium .plan-icon { background: rgba(255,255,255,.1); box-shadow: none; }
   .plan-info { flex: 1; min-width: 0; }
   .plan-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: var(--py2-muted); margin-bottom: 4px; }
   .plan-name { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.35rem; line-height: 1.1; margin-bottom: 3px; }
-  .plan-desc { font-size: 12.5px; color: var(--py2-muted); line-height: 1.4; }
+  .plan-desc { font-size: 12.5px; color: var(--py2-muted); line-height: 1.45; }
+  .plan-usage { margin-top: 10px; }
+  .plan-usage-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--py2-muted); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+  .plan-usage-label .val { color: var(--py2-text); }
+  .plan-card.premium .plan-usage-label .val { color: white; }
+  .plan-usage-bar { height: 6px; background: rgba(0,0,0,.08); border-radius: 100px; overflow: hidden; }
+  .plan-card.premium .plan-usage-bar { background: rgba(255,255,255,.12); }
+  .plan-usage-fill { height: 100%; background: linear-gradient(90deg,#16a34a,#22c55e); border-radius: 100px; transition: width .4s; }
+  .plan-usage-fill.warn { background: linear-gradient(90deg,#f59e0b,#fbbf24); }
+  .plan-usage-fill.danger { background: linear-gradient(90deg,#dc2626,#ef4444); }
+  .plan-usage-fill.premium { background: linear-gradient(90deg,#ff6000,#ff9f43); }
   .plan-progress { margin-top: 10px; height: 6px; background: rgba(0,0,0,.06); border-radius: 100px; overflow: hidden; display: none; }
   .plan-progress.on { display: block; }
   .plan-progress-fill { height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e); border-radius: 100px; transition: width .4s; }
@@ -240,7 +255,7 @@
   @media (min-width: 900px) { .upgrade-modal .modal-box { max-width: 900px; height: auto; max-height: 90vh; border-radius: 20px; } }
   .upgrade-head { background: linear-gradient(135deg, #0a0a14, #1a1a3e); color: white; padding: 22px 20px 18px; position: relative; flex-shrink: 0; }
   .upgrade-head h3 { font-size: 1.25rem; margin-bottom: 6px; padding-right: 40px; }
-  .upgrade-head p { color: rgba(255,255,255,.6); font-size: 13px; line-height: 1.5; margin: 0; }
+  .upgrade-head p { color: rgba(255,255,255,.65); font-size: 13px; line-height: 1.55; margin: 0; }
   .upgrade-head .modal-x { position: absolute; top: 12px; right: 12px; color: rgba(255,255,255,.7); }
   .tiers-wrap { overflow-y: auto; flex: 1; background: #f0f0f5; }
   .tiers { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--py2-border); border-radius: 0; }
@@ -249,7 +264,8 @@
   .tier { background: white; padding: 20px 16px; display: flex; flex-direction: column; position: relative; }
   .tier.current { background: linear-gradient(180deg, #fff7ed, #fff); padding-top: 34px; }
   .tier.current::before { content: 'YOUR CURRENT PLAN'; position: absolute; top: 0; left: 0; right: 0; background: var(--py2-orange); color: white; text-align: center; font-size: 9.5px; font-weight: 800; letter-spacing: 1px; padding: 5px 0; }
-  .tier-name { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; margin-bottom: 6px; }
+  .tier-name { font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; margin-bottom: 2px; }
+  .tier-pitch { font-size: 11.5px; color: var(--py2-muted); line-height: 1.45; margin-bottom: 10px; min-height: 34px; }
   .tier-price { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.55rem; color: var(--py2-text); line-height: 1; }
   .tier-price small { font-size: .7rem; color: var(--py2-muted); font-weight: 700; margin-left: 2px; }
   .tier-period { font-size: 11px; color: var(--py2-muted); margin-top: 3px; margin-bottom: 16px; }
@@ -286,6 +302,59 @@
   .data-table th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--py2-muted); border-bottom: 1px solid var(--py2-border); background: #fafbff; white-space: nowrap; }
   .data-table td { padding: 12px; border-bottom: 1px solid var(--py2-border); vertical-align: middle; }
   .data-table tr:last-child td { border-bottom: none; }
+
+  /* ── New: opportunity cards ────────────────────────────────────────── */
+  .opp-card {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1px solid rgba(255,96,0,.2);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .opp-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff6000, #ff9f43);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 20px;
+    flex-shrink: 0;
+  }
+  .opp-body { flex: 1; min-width: 0; }
+  .opp-title {
+    font-family: var(--py2-font-head);
+    font-weight: 800;
+    font-size: 14.5px;
+    color: var(--py2-text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .opp-text {
+    font-size: 13px;
+    color: #6b5530;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .opp-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .opp-dismiss {
+    background: none; border: none;
+    color: var(--py2-muted);
+    font-size: 16px; cursor: pointer;
+    padding: 4px 8px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .opportunity-card {
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    border: 1px solid rgba(124,58,237,.2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-top: 20px;
+  }
+  .opportunity-card .opp-title { color: #4c1d95; }
+  .opportunity-card .opp-text { color: #5b21b6; }
   </style>
 </head>
 <body>
@@ -362,13 +431,41 @@
       </button>
     </div>
 
+    <!-- Opportunity banner (dismissible, once per session) -->
+    <div id="opportunity-banner" class="opp-card" style="display:none;">
+      <div class="opp-icon">🚀</div>
+      <div class="opp-body">
+        <div class="opp-title" id="opp-title">Your ads are live on PhoneYa2</div>
+        <div class="opp-text" id="opp-text">Every day, shoppers browse PhoneYa2 looking for products and services. Your business is already in the mix — upgrade to be seen more often, add more ads, and unlock custom branding for your profile.</div>
+        <div class="opp-actions">
+          <button type="button" class="btn btn-primary btn-sm" onclick="AdsUI.openUpgrade()">
+            <i class="fa-solid fa-rocket"></i> See what upgrades unlock
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="dismissOpportunity()">
+            Not now
+          </button>
+        </div>
+      </div>
+      <button type="button" class="opp-dismiss" onclick="dismissOpportunity()" aria-label="Dismiss">✕</button>
+    </div>
+
     <div class="plan-card free" id="plan-card">
       <div class="plan-top">
         <div class="plan-icon" id="plan-icon">🎁</div>
         <div class="plan-info">
           <div class="plan-label">Your Plan</div>
           <div class="plan-name" id="plan-name">Free</div>
-          <div class="plan-desc" id="plan-desc">3 active ads · 1× rotation</div>
+          <div class="plan-desc" id="plan-desc">Loading…</div>
+          <div class="plan-usage" id="plan-usage-wrap" style="display:none;">
+            <div class="plan-usage-label">
+              <span>Active ads</span>
+              <span class="val" id="plan-usage-val">0 / 0</span>
+            </div>
+            <div class="plan-usage-bar">
+              <div class="plan-usage-fill" id="plan-usage-fill" style="width:0%"></div>
+            </div>
+            <div class="plan-usage-text" id="plan-usage-text" style="font-size:11.5px;margin-top:6px;line-height:1.45;"></div>
+          </div>
           <div class="plan-progress" id="plan-progress-wrap">
             <div class="plan-progress-fill" id="plan-progress-fill"></div>
           </div>
@@ -409,6 +506,7 @@
     </div>
 
     <section class="panel on" data-panel="ads">
+      <div id="opportunity-inline"></div>
       <div class="card" style="margin-bottom:16px;">
         <div class="card-body" style="padding:14px 16px;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
@@ -433,6 +531,11 @@
           <div id="form-error" class="notice notice-danger" style="display:none;">
             <i class="fa-solid fa-circle-exclamation"></i>
             <div id="form-error-text"></div>
+            <div class="cta-actions" id="form-error-cta" style="display:none;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="AdsUI.openUpgrade()">
+                <i class="fa-solid fa-rocket"></i> See plans
+              </button>
+            </div>
           </div>
           <div id="form-info" class="notice notice-info" style="display:none;">
             <i class="fa-solid fa-circle-info"></i>
@@ -676,6 +779,17 @@
               </button>
             </div>
           </div>
+
+          <!-- Opportunity card — shows if advertiser is on Free or Starter -->
+          <div class="opportunity-card" id="profile-opportunity" style="display:none;">
+            <div class="opp-title" id="profile-opp-title">Want your profile to look like this?</div>
+            <div class="opp-text" id="profile-opp-text">Business profiles with a logo, cover image, and brand colours get more clicks and look more trustworthy to shoppers. Standard unlocks all of that for K20/month.</div>
+            <div class="opp-actions" style="margin-top:12px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="AdsUI.openUpgrade()">
+                <i class="fa-solid fa-rocket"></i> See Standard
+              </button>
+            </div>
+          </div>
         </div>
         <div>
           <div class="preview-panel">
@@ -766,8 +880,8 @@
   <div class="modal-box wide">
     <div class="upgrade-head">
       <button type="button" class="modal-x" data-close="modal-upgrade">✕</button>
-      <h3>Upgrade your plan</h3>
-      <p>More active ads and higher rotation weight. Month-to-month — cancel anytime.</p>
+      <h3>Get seen by more PhoneYa2 shoppers</h3>
+      <p>Every plan puts your business in front of real customers browsing PhoneYa2. Higher plans mean more ads running at once, more visibility in the carousel, and a profile that looks more credible to shoppers. Month-to-month, cancel anytime.</p>
     </div>
     <div class="tiers-wrap">
       <div class="tiers" id="tiers-grid"></div>
@@ -859,10 +973,6 @@
   }
   var esc = P.esc;
 
-  // ── Defensive DOM helper ─────────────────────────────────────────────
-  // Every write in the render functions goes through this. If the element
-  // isn't in the DOM, the write is silently skipped. This is what makes
-  // the "Cannot set properties of null" crash impossible.
   function setText(id, val) {
     var el = document.getElementById(id);
     if (el) el.textContent = val;
@@ -876,15 +986,36 @@
     if (el) el.className = val;
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // TIER CONFIG
-  // ═══════════════════════════════════════════════════════════════════════
+  // ── Copy per tier ─────────────────────────────────────────────────────
+  // pitch: one sentence leading with the outcome, not the feature.
+  // short: usage line under the plan name on the dashboard.
+  // feats: list of what the tier actually unlocks.
   var TIER_META = {
-    free:     { name: 'Free',     price: 0,   icon: '🎁' },
-    starter:  { name: 'Starter',  price: 10,  icon: '🚀' },
-    standard: { name: 'Standard', price: 20,  icon: '⭐' },
-    business: { name: 'Business', price: 50,  icon: '💎' },
-    premium:  { name: 'Premium',  price: 100, icon: '👑' }
+    free: {
+      name: 'Free', price: 0, icon: '🎁',
+      pitch: 'Get your business seen on PhoneYa2 at no cost.',
+      short: 'Your ad is live on the PhoneYa2 homepage carousel'
+    },
+    starter: {
+      name: 'Starter', price: 10, icon: '🚀',
+      pitch: 'Be seen 3× more often than Free businesses.',
+      short: '3× more visibility than Free · add your business logo'
+    },
+    standard: {
+      name: 'Standard', price: 20, icon: '⭐',
+      pitch: 'Look credible — full branding on your mini-site.',
+      short: '6× visibility · cover image · brand colours · social links'
+    },
+    business: {
+      name: 'Business', price: 50, icon: '💎',
+      pitch: 'A verified presence customers can trust.',
+      short: '12× visibility · verified badge · custom profile URL'
+    },
+    premium: {
+      name: 'Premium', price: 100, icon: '👑',
+      pitch: 'The highest visibility we offer.',
+      short: '25× visibility · premium placements · direct support'
+    }
   };
   var TIER_ORDER = ['free', 'starter', 'standard', 'business', 'premium'];
   var TIERS = [];
@@ -892,12 +1023,11 @@
 
   function tierCfg(k) {
     for (var i = 0; i < TIERS.length; i++) if (TIERS[i].key === k) return TIERS[i];
+    var meta = TIER_META[k] || TIER_META.free;
     return {
       key: k, rank: 0, weight: 1, ad_limit: 3,
-      name: (TIER_META[k] || TIER_META.free).name,
-      price: (TIER_META[k] || TIER_META.free).price,
-      icon: (TIER_META[k] || TIER_META.free).icon,
-      short: '—', feats: []
+      name: meta.name, price: meta.price, icon: meta.icon,
+      pitch: meta.pitch, short: meta.short, feats: []
     };
   }
 
@@ -905,31 +1035,53 @@
     switch (key) {
       case 'free':
         return [
-          { t: '3 active ads' }, { t: '1× rotation weight' }, { t: 'Auto business profile' },
-          { t: 'Contact buttons' }, { t: 'Custom colors', off: true }, { t: 'Social links', off: true },
-          { t: 'Custom URL', off: true }, { t: 'Verified badge', off: true }
+          { t: '3 active ads' },
+          { t: 'Shown on the PhoneYa2 homepage carousel' },
+          { t: 'Auto business profile page' },
+          { t: 'WhatsApp, phone & email contact buttons' },
+          { t: 'Custom brand colours', off: true },
+          { t: 'Social links on profile', off: true },
+          { t: 'Custom profile URL', off: true },
+          { t: 'Verified badge', off: true }
         ];
       case 'starter':
         return [
-          { t: '5 active ads' }, { t: '3× rotation weight' }, { t: 'Business logo' },
-          { t: 'Contact buttons' }, { t: 'Custom colors', off: true }, { t: 'Social links', off: true },
-          { t: 'Custom URL', off: true }, { t: 'Verified badge', off: true }
+          { t: '5 active ads' },
+          { t: '3× the visibility of Free' },
+          { t: 'Business logo on your ads and profile' },
+          { t: 'WhatsApp, phone & email contact buttons' },
+          { t: 'Custom brand colours', off: true },
+          { t: 'Social links on profile', off: true },
+          { t: 'Custom profile URL', off: true },
+          { t: 'Verified badge', off: true }
         ];
       case 'standard':
         return [
-          { t: '10 active ads' }, { t: '6× rotation weight' }, { t: 'Everything in Starter' },
-          { t: 'Cover image' }, { t: 'Custom brand colors' }, { t: 'Social links row' },
-          { t: 'Custom URL', off: true }, { t: 'Verified badge', off: true }
+          { t: '10 active ads' },
+          { t: '6× the visibility of Free' },
+          { t: 'Cover image on your mini-site' },
+          { t: 'Custom brand colours applied site-wide' },
+          { t: 'Social links (Facebook, Instagram, TikTok, YouTube)' },
+          { t: 'Custom profile URL', off: true },
+          { t: 'Verified badge', off: true }
         ];
       case 'business':
         return [
-          { t: '20 active ads' }, { t: '12× rotation weight' }, { t: 'Everything in Standard' },
-          { t: 'Custom profile URL' }, { t: 'Verified badge' }
+          { t: '20 active ads' },
+          { t: '12× the visibility of Free' },
+          { t: 'Verified badge on your profile and ads' },
+          { t: 'Custom profile URL (yourbusiness.phoneya2.pages.dev/b/you)' },
+          { t: 'Featured placement eligibility' },
+          { t: 'Priority support' }
         ];
       case 'premium':
         return [
-          { t: '40 active ads' }, { t: '25× rotation weight' }, { t: 'Everything in Business' },
-          { t: 'White-glove onboarding' }, { t: 'Direct line to support' }
+          { t: '40 active ads' },
+          { t: '25× the visibility of Free — our highest priority' },
+          { t: 'Premium placements and homepage premium exposure' },
+          { t: 'Premium profile treatment' },
+          { t: 'White-glove onboarding' },
+          { t: 'Direct line to support' }
         ];
       default:
         return [];
@@ -939,7 +1091,12 @@
   function loadTierConfig() {
     try {
       var cached = sessionStorage.getItem('py2_tier_config');
-      if (cached) { TIERS = JSON.parse(cached); return Promise.resolve(TIERS); }
+      if (cached) {
+        TIERS = JSON.parse(cached);
+        RANK = {};
+        TIERS.forEach(function (t) { RANK[t.key] = t.rank; });
+        return Promise.resolve(TIERS);
+      }
     } catch (e) {}
     return P.db.select('tier_config', 'select=tier,rank,weight,ad_limit&order=rank.asc')
       .then(function (rows) {
@@ -954,7 +1111,7 @@
           return {
             key: key, rank: rank, weight: weight, ad_limit: ad_limit,
             name: meta.name, price: meta.price, icon: meta.icon,
-            short: ad_limit + ' active ads · ' + weight + '× rotation',
+            pitch: meta.pitch, short: meta.short,
             feats: featsFor(key)
           };
         });
@@ -965,9 +1122,6 @@
       });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // STATE
-  // ═══════════════════════════════════════════════════════════════════════
   var session = null;
   var advertiser = null;
   var profile = null;
@@ -1024,6 +1178,36 @@
     }
   }
 
+  // ── Opportunity banner dismissal ──────────────────────────────────────
+  window.dismissOpportunity = function () {
+    try { sessionStorage.setItem('py2_opportunity_dismissed', '1'); } catch (e) {}
+    var b = $('opportunity-banner');
+    if (b) b.style.display = 'none';
+  };
+
+  function maybeShowOpportunityBanner() {
+    var b = $('opportunity-banner');
+    if (!b) return;
+    try {
+      if (sessionStorage.getItem('py2_opportunity_dismissed')) { b.style.display = 'none'; return; }
+    } catch (e) {}
+    var eff = effectiveTier();
+    if (eff === 'free' || eff === 'starter') {
+      // Different copy depending on whether they have ads
+      var approvedCount = ads.filter(function (a) { return a.status === 'approved'; }).length;
+      if (approvedCount > 0) {
+        setText('opp-title', 'Your ads are live on PhoneYa2');
+        setText('opp-text', 'Every day, shoppers browse PhoneYa2 looking for products and services. Your business is already in the mix — upgrade to be seen more often, add more ads, and unlock custom branding for your profile.');
+      } else {
+        setText('opp-title', 'Get in front of PhoneYa2 shoppers');
+        setText('opp-text', 'PhoneYa2 shoppers are looking for what you sell. Publish your first ad to appear on the homepage carousel and get a free business profile. Upgrade any time to be seen more often.');
+      }
+      b.style.display = 'flex';
+    } else {
+      b.style.display = 'none';
+    }
+  }
+
   $('signin-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var errBox = $('signin-error');
@@ -1055,6 +1239,7 @@
   if (btnErrorSignout) btnErrorSignout.addEventListener('click', doSignout);
   function doSignout() {
     try { sessionStorage.removeItem('py2_tier_config'); } catch (e) {}
+    try { sessionStorage.removeItem('py2_opportunity_dismissed'); } catch (e) {}
     P.auth.signout().then(function () {
       session = null; advertiser = null; profile = null; ads = []; statsByAd = {}; TIERS = [];
       showScreen('screen-signin');
@@ -1111,6 +1296,9 @@
       renderAdsList();
       renderStatsTable();
       renderShareTab();
+      renderOpportunityInline();
+      renderProfileOpportunity();
+      maybeShowOpportunityBanner();
     });
   }
 
@@ -1136,19 +1324,47 @@
     setText('plan-name', cfg.name);
     setText('plan-desc', cfg.short);
 
+    // Active ad count vs limit
+    var active = ads.filter(function (a) { return a.status === 'approved' || a.status === 'pending'; }).length;
+    var limit = cfg.ad_limit;
+    var usageWrap = $('plan-usage-wrap');
+    if (usageWrap) {
+      if (limit > 0) {
+        var pct = Math.min(100, Math.round((active / limit) * 100));
+        var fill = $('plan-usage-fill');
+        var fillClass = 'plan-usage-fill';
+        if (pct >= 100) fillClass += ' danger';
+        else if (pct >= 60) fillClass += ' warn';
+        else if (eff === 'premium') fillClass += ' premium';
+        if (fill) { fill.style.width = pct + '%'; fill.className = fillClass; }
+        setText('plan-usage-val', active + ' / ' + limit);
+        var usageText = '';
+        if (pct >= 100) {
+          usageText = 'You have reached your ' + cfg.name + ' plan limit. Upgrade for more active ads.';
+        } else if (pct >= 60) {
+          usageText = 'You have used ' + pct + '% of your ' + cfg.name + ' plan. Consider upgrading soon.';
+        } else {
+          usageText = 'Keep publishing. Each approved ad gets equal share of your plan\u2019s visibility.';
+        }
+        setText('plan-usage-text', usageText);
+        usageWrap.style.display = 'block';
+      } else {
+        usageWrap.style.display = 'none';
+      }
+    }
+
     var progressWrap = $('plan-progress-wrap');
     if (progressWrap) {
-      if (isPaidActive()) {
+      if (isPaidActive() && advertiser.tier_expires_at) {
         var now = new Date();
         var exp = new Date(advertiser.tier_expires_at);
         var daysLeft = Math.max(0, Math.ceil((exp - now) / 86400000));
-        var pct = Math.max(0, Math.min(100, (daysLeft / 30) * 100));
-        setHtml('plan-desc', esc(cfg.short) + ' · <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left</strong>');
+        var pct2 = Math.max(0, Math.min(100, (daysLeft / 30) * 100));
         progressWrap.classList.add('on');
-        var fill = $('plan-progress-fill');
-        if (fill) {
-          fill.style.width = pct + '%';
-          fill.className = 'plan-progress-fill' + (daysLeft <= 5 ? ' danger' : daysLeft <= 10 ? ' warn' : '');
+        var fill2 = $('plan-progress-fill');
+        if (fill2) {
+          fill2.style.width = pct2 + '%';
+          fill2.className = 'plan-progress-fill' + (daysLeft <= 5 ? ' danger' : daysLeft <= 10 ? ' warn' : '');
         }
         setText('btn-upgrade-label', 'Upgrade');
       } else if (isExpired()) {
@@ -1168,6 +1384,56 @@
       expiredBanner.style.display = 'flex';
     } else if (expiredBanner) {
       expiredBanner.style.display = 'none';
+    }
+  }
+
+  function renderOpportunityInline() {
+    var el = $('opportunity-inline');
+    if (!el) return;
+    var eff = effectiveTier();
+    if (eff !== 'free' && eff !== 'starter') { el.innerHTML = ''; return; }
+    var approved = ads.filter(function (a) { return a.status === 'approved'; }).length;
+    if (approved >= 3) { el.innerHTML = ''; return; }
+    // Only show if user has 0-2 approved ads
+    var copy, title;
+    if (approved === 0) {
+      title = 'Publish your first ad to appear on PhoneYa2';
+      copy = 'Ads appear on the homepage carousel where shoppers browse every day. Once approved, your business is shown alongside established PhoneYa2 sellers.';
+    } else if (approved === 1) {
+      title = 'One live ad. Businesses with 3+ get ~2.4× more impressions';
+      copy = 'Every approved ad enters the same carousel rotation. The more ads you run, the more often your business appears to shoppers.';
+    } else {
+      title = 'You\u2019re on the way. Two more ads unlock ~2.4× the impressions';
+      copy = 'Advertisers with 3 or more live ads get significantly more visibility. Adding a third and fourth ad is the fastest way to grow your reach on PhoneYa2.';
+    }
+    el.innerHTML =
+      '<div class="opp-card">' +
+        '<div class="opp-icon">📈</div>' +
+        '<div class="opp-body">' +
+          '<div class="opp-title">' + esc(title) + '</div>' +
+          '<div class="opp-text">' + esc(copy) + '</div>' +
+          '<div class="opp-actions">' +
+            '<button type="button" class="btn btn-primary btn-sm" onclick="AdsUI.switchTab(\'create\')">' +
+              '<i class="fa-solid fa-plus"></i> Create another ad' +
+            '</button>' +
+            '<button type="button" class="btn btn-ghost btn-sm" onclick="AdsUI.openUpgrade()">' +
+              'See plans' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderProfileOpportunity() {
+    var el = $('profile-opportunity');
+    if (!el) return;
+    var eff = effectiveTier();
+    if (eff === 'free' || eff === 'starter') {
+      setText('profile-opp-title', 'Want your profile to look more trustworthy to shoppers?');
+      setText('profile-opp-text', 'Business profiles with a cover image, brand colours, and social links get more clicks and look more credible. Standard unlocks all of that for K20/month.');
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
     }
   }
 
@@ -1241,7 +1507,7 @@
     if (!ads.length) {
       container.innerHTML =
         '<div class="empty"><div class="e-icon">📣</div><h3>No ads yet</h3>' +
-        '<p>Create your first ad to start reaching Zambian customers.</p>' +
+        '<p>Create your first ad to start reaching Zambian customers on PhoneYa2.</p>' +
         '<button type="button" class="btn btn-primary btn-lg" onclick="AdsUI.switchTab(\'create\')"><i class="fa-solid fa-plus"></i> Create Ad</button>' +
         '</div>';
       return;
@@ -1381,6 +1647,7 @@
         : '<div class="tier-price">K' + t.price + '<small>/mo</small></div><div class="tier-period">30 days</div>';
       col.innerHTML =
         '<div class="tier-name">' + t.icon + ' ' + esc(t.name) + '</div>' +
+        '<div class="tier-pitch">' + esc(t.pitch || '') + '</div>' +
         priceHtml +
         '<ul class="tier-feats">' + feats + '</ul>' +
         action;
@@ -1425,13 +1692,12 @@
     openModal('modal-payment');
   }
 
+  // Note: auto-popup on load is intentionally removed. Instead, the
+  // dashboard shows a single dismissible inline banner (see
+  // maybeShowOpportunityBanner) once per session. This is deliberate —
+  // auto-opening modals are the number one reason users abandon dashboards.
   function maybeAutoUpgrade() {
-    if (effectiveTier() !== 'free') return;
-    try { if (sessionStorage.getItem('py2_upgrade_seen')) return; } catch(e) {}
-    setTimeout(function () {
-      openUpgradeModal();
-      try { sessionStorage.setItem('py2_upgrade_seen', '1'); } catch(e) {}
-    }, 4500);
+    maybeShowOpportunityBanner();
   }
 
   var DEST_HELP = {
@@ -1595,6 +1861,7 @@
     setText('count-title', '0 / 60');
     setText('count-desc', '0 / 200');
     var fe = $('form-error'); if (fe) fe.style.display = 'none';
+    var fec = $('form-error-cta'); if (fec) fec.style.display = 'none';
     var fi = $('form-info'); if (fi) fi.style.display = 'none';
     imgState = { file: null, uploadedUrl: null };
     f = $('f-image'); if (f) f.value = '';
@@ -1705,6 +1972,7 @@
   var btnSubmitAd = $('btn-submit-ad');
   if (btnSubmitAd) btnSubmitAd.addEventListener('click', function () {
     var fe = $('form-error'); if (fe) fe.style.display = 'none';
+    var fec = $('form-error-cta'); if (fec) fec.style.display = 'none';
     var fi = $('form-info'); if (fi) fi.style.display = 'none';
     if (!validateAdForm()) { toast('Please fix highlighted fields', 'error'); return; }
     var btn = this;
@@ -1766,7 +2034,7 @@
         return P.db.insert('ads', payload, session.access_token);
       }
     }).then(function () {
-      toast(editingAdId ? 'Ad updated — pending review' : 'Ad submitted!', 'success');
+      toast(editingAdId ? 'Ad updated — pending review' : 'Ad submitted for review', 'success');
       resetAdForm();
       return reloadAll();
     }).then(function () { switchTab('ads'); })
@@ -1776,8 +2044,13 @@
       var msg = err && err.message ? err.message : 'Could not save.';
       var fe2  = $('form-error');
       var fet  = $('form-error-text');
+      var fec2 = $('form-error-cta');
       if (fe2) fe2.style.display = 'flex';
       if (fet) fet.textContent = msg;
+      // If the error is the plan limit, show the upgrade CTA in the error banner
+      if (/active ad limit reached/i.test(msg) && fec2) {
+        fec2.style.display = 'flex';
+      }
       toast(msg, 'error');
     });
   });
@@ -2199,7 +2472,6 @@
         var tb = $('topbar-biz');
         if (tb) tb.textContent = advertiser.business_name;
         showScreen('screen-dashboard');
-        maybeAutoUpgrade();
       })
       .catch(function (err) {
         var et = $('screen-error-text');
