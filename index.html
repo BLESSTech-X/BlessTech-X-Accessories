@@ -472,7 +472,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   }
   50%{
     box-shadow:
-      0 0 0 10px rgba(255,159,67,0),
+      0 0 0 0 rgba(255,159,67,0),
       0 6px 22px rgba(255,96,0,.65),
       inset 0 1px 0 rgba(255,255,255,.4);
   }
@@ -1946,6 +1946,18 @@ init();
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  function mediaUrl(ad) {
+    return ad.image_url || ad.media_url || '';
+  }
+
+  function mediaIsImage(ad) {
+    var t = ad.media_type || '';
+    if (t === 'image') return true;
+    if (t === 'video') return false;
+    var u = mediaUrl(ad);
+    return /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(u);
+  }
+
   function tierFromAd(ad) {
     return (ad && ad.advertisers && ad.advertisers.tier) || 'free';
   }
@@ -2295,7 +2307,16 @@ card.innerHTML =
     var tierTag = (tier !== 'free' && TIER_LABEL[tier])
       ? '<span class="py2-ads-tier-badge py2-ads-tier-badge-' + tier + '" style="position:static;transform:none;display:inline-flex;margin-bottom:10px;">' + TIER_LABEL[tier] + '</span> '
       : '';
-    return renderMedia(ad) +
+
+    var isImg = mediaIsImage(ad) && mediaUrl(ad);
+    var mediaWrap =
+      '<div class="py2-ads-popup-media' + (isImg ? ' has-media' : '') + '"' +
+        (isImg ? ' style="--blur-bg:url(\'' + esc(mediaUrl(ad).replace(/'/g, "\\'")) + '\')"' : '') +
+      '>' +
+        renderMedia(ad) +
+      '</div>';
+
+    return mediaWrap +
       '<div class="py2-ads-popup-body">' +
         tierTag +
         '<span class="py2-ads-popup-tag">⭐ Featured Business</span>' +
@@ -2346,18 +2367,6 @@ card.innerHTML =
 
   fetchAds().then(boot).catch(function () { /* silent */ });
 })();
-  function mediaUrl(ad) {
-  return ad.image_url || ad.media_url || '';
-}
-
-function mediaIsImage(ad) {
-  var t = ad.media_type || '';
-  if (t === 'image') return true;
-  if (t === 'video') return false;
-  // Fallback: guess from the URL extension
-  var u = mediaUrl(ad);
-  return /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(u);
-}
 </script>
 
 <!--Start of Tawk.to Script-->
