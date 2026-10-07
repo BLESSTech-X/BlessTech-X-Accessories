@@ -1892,14 +1892,15 @@
 
   function toast(msg, kind) {
   var t = $('toast');
+  var icons = { success: '✅', error: '⚠️', info: '💬' };
+  var full = (icons[kind] || '💬') + '  ' + msg;
   if (!t) {
-    // The toast element is missing on this page. Log to console only,
-    // so the success handler doesn't crash.
-    try { console.log('[toast]', msg); } catch (e) {}
+    // Toast element missing from the page. Show the message another way
+    // so the user still sees what happened, instead of an error.
+    try { window.alert(full); } catch (e) { console.log(full); }
     return;
   }
-  var icons = { success: '✅', error: '⚠️', info: '💬' };
-  t.textContent = (icons[kind] || '💬') + '  ' + msg;
+  t.textContent = full;
   t.classList.add('on');
   clearTimeout(t._timer);
   t._timer = setTimeout(function () { t.classList.remove('on'); }, 2800);
@@ -2673,14 +2674,15 @@
       return reloadAll();
     }).then(function () { switchTab('ads'); })
     .catch(function (err) {
-      btn.disabled = false;
-      btn.innerHTML = orig;
-      var msg = err && err.message ? err.message : 'Could not save.';
-      $('form-error').style.display = 'flex';
-      $('form-error-text').textContent = msg;
-      toast(msg, 'error');
-    });
-  });
+  btn.disabled = false;
+  btn.innerHTML = orig;
+  var msg = err && err.message ? err.message : 'Could not save.';
+  var fe  = $('form-error');
+  var fet = $('form-error-text');
+  if (fe)  fe.style.display = 'flex';
+  if (fet) fet.textContent = msg;
+  toast(msg, 'error');
+});
 
   function setPaused(ad, should) {
     P.db.update('ads', 'id=eq.' + ad.id, { status: should ? 'paused' : 'approved' }, session.access_token)
@@ -2885,14 +2887,16 @@
       btn.innerHTML = orig;
       fillProfileForm();
     }).catch(function (err) {
-      btn.disabled = false;
-      btn.innerHTML = orig;
-      var msg = err && err.message ? err.message : 'Could not save.';
-      if (/standard plan or higher/i.test(msg)) msg = 'That field requires the Standard plan or higher.';
-      $('profile-error').style.display = 'flex';
-      $('profile-error-text').textContent = msg;
-      toast(msg, 'error');
-    });
+  btn.disabled = false;
+  btn.innerHTML = orig;
+  var msg = err && err.message ? err.message : 'Could not save.';
+  if (/standard plan or higher/i.test(msg)) msg = 'That field requires the Standard plan or higher.';
+  var pe  = $('profile-error');
+  var pet = $('profile-error-text');
+  if (pe)  pe.style.display = 'flex';
+  if (pet) pet.textContent = msg;
+  toast(msg, 'error');
+});
   });
 
   function fillAccountForm() {
