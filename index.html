@@ -394,7 +394,6 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 .pwa-install-btn-bar:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,211,102,.5);}
 @media(max-width:480px){.pwa-action-bar{padding:10px 12px;}.pwa-share-btn,.pwa-install-btn-bar{font-size:13px;padding:9px 18px;}}
 
-/* ═══ GLOWING ADVERTISE FOR FREE BUTTON ═══ */
 .pwa-advertise-btn{
   position:relative;
   display:inline-flex;
@@ -629,14 +628,12 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     <i class="fa-solid fa-share-nodes"></i> Share PhoneYa2
   </button>
 
-  <!-- ⬇️ GLOWING ADVERTISE FOR FREE BUTTON ⬇️ -->
   <a href="https://phoneya2.pages.dev/advertiser" class="pwa-advertise-btn" aria-label="Advertise for free" target="_blank" rel="noopener">
     <span class="adv-glow"></span>
     <i class="fa-solid fa-bullhorn"></i>
     <span>Advertise For <strong>FREE</strong></span>
     <i class="fa-solid fa-arrow-right adv-arrow"></i>
   </a>
-  <!-- ⬆️ END GLOWING ADVERTISE BUTTON ⬆️ -->
 
   <button class="pwa-install-btn-bar" id="pwa-install-bar-btn" onclick="installApp()" aria-label="Add to Home Screen" style="display:none">
     <i class="fa-solid fa-mobile-screen-button"></i> Add to Home Screen
@@ -748,7 +745,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
-  <!-- ═══ INTERSTITIAL 1 — first full-screen rotating ad band ═══ -->
+  <!-- ═══ INTERSTITIAL 1 ═══ -->
   <section class="py2-ads-interstitial" id="py2-ads-interstitial-1" aria-label="Sponsored businesses" style="display:none;">
     <div class="py2-ads-interstitial-head">
       <span class="label">Sponsored · Zambian Businesses</span>
@@ -796,7 +793,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
     </div>
   </div>
 
-  <!-- ═══ INTERSTITIAL 2 — second full-screen rotating ad band ═══ -->
+  <!-- ═══ INTERSTITIAL 2 ═══ -->
   <section class="py2-ads-interstitial" id="py2-ads-interstitial-2" aria-label="Sponsored businesses" style="display:none;">
     <div class="py2-ads-interstitial-head">
       <span class="label">Sponsored · Zambian Businesses</span>
@@ -1924,10 +1921,8 @@ init();
 
 
 <!-- ═══════════════════════════════════════════════════════════
-     PHONEYA2 ADS — Interstitials + popup loader (Step 5)
-     Delegates card rendering to the shared py2AdsCard module in
-     /ads-config.js. Tier badges, sizing, and front-of-carousel
-     ordering are all handled there.
+     PHONEYA2 ADS — Interstitials + popup loader (standalone)
+     Renders cards locally. No dependency on ads-config.js.
 ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
@@ -1941,12 +1936,18 @@ init();
   var ROTATE_MS = 6000;
   var POPUP_DELAY_MS = 6000;
   var POPUP_KEY = 'py2ads_popup_shown';
-  var FRONTLOAD_N = 3;
+
+  var TIER_RANK  = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
+  var TIER_LABEL = { starter: 'Starter', standard: 'Standard', business: 'Business', premium: 'Premium' };
 
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function tierFromAd(ad) {
+    return (ad && ad.advertisers && ad.advertisers.tier) || 'free';
   }
 
   function renderMedia(ad) {
@@ -2078,6 +2079,28 @@ init();
     return out;
   }
 
+  function sortByTier(list) {
+    return list.slice().sort(function (a, b) {
+      var ra = TIER_RANK[tierFromAd(a)] || 0;
+      var rb = TIER_RANK[tierFromAd(b)] || 0;
+      if (rb !== ra) return rb - ra;
+      var wa = parseInt(a.weight, 10) || 1;
+      var wb = parseInt(b.weight, 10) || 1;
+      if (wb !== wa) return wb - wa;
+      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
+  }
+
+  function frontloadByTier(list, shuffleFn, topN) {
+    topN = topN || 3;
+    if (!list.length) return list;
+    var sorted = sortByTier(list);
+    if (sorted.length <= topN) return sorted;
+    var front = sorted.slice(0, topN);
+    var rest  = sorted.slice(topN);
+    return front.concat(typeof shuffleFn === 'function' ? shuffleFn(rest) : rest);
+  }
+
   function ctaFor(ad) {
     var t = ad.destination_type, u = ad.destination_url || '';
     if (t === 'whatsapp') {
@@ -2103,24 +2126,38 @@ init();
     return 'Enter';
   }
 
-  // Delegates to the shared renderer in ads-config.js.
   function buildPortalCard(ad) {
-    if (!window.py2AdsCard || typeof window.py2AdsCard.build !== 'function') {
-      // Fallback: minimal card so a missing shared module degrades safely.
-      var c = document.createElement('div');
-      c.className = 'py2-ads-card';
-      c.innerHTML = '<div class="py2-ads-body"><div class="py2-ads-title">' + esc(ad.title || '') + '</div></div>';
-      return c;
-    }
-    return window.py2AdsCard.build(ad, {
-      esc:            esc,
-      renderMedia:    renderMedia,
-      ctaFor:         ctaFor,
-      ctaLabelShort:  ctaLabelShort,
-      onCardClick:    function (a) { window.location.href = '/ad/' + encodeURIComponent(a.slug); },
-      onClickCta:     function (a) { py2AdsClick(a.id); },
-      onReport:       function (id) { py2AdsReport(id); }
-    });
+    var biz  = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta  = ctaFor(ad);
+    var tier = tierFromAd(ad);
+    var tierBadgeHtml = (tier !== 'free' && TIER_LABEL[tier])
+      ? '<span class="py2-ads-tier-badge py2-ads-tier-badge-' + tier + '">' + TIER_LABEL[tier] + '</span>'
+      : '';
+
+    var card = document.createElement('div');
+    card.className = 'py2-ads-card py2-ads-tier-' + tier;
+    card.setAttribute('role', 'article');
+    card.setAttribute('aria-label', ad.title);
+    card.innerHTML =
+      '<div class="py2-ads-img">' +
+        '<span class="py2-ads-sponsored">Sponsored</span>' +
+        tierBadgeHtml +
+        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
+        renderMedia(ad) +
+      '</div>' +
+      '<div class="py2-ads-body">' +
+        '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
+        '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
+        (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
+        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+          '<span><i class="' + cta.icon + '"></i> ' + esc(ctaLabelShort(ad)) + '</span>' +
+          '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
+        '</a>' +
+      '</div>';
+    card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
+    var ctaEl = card.querySelector('.py2-ads-cta');
+    if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
+    return card;
   }
 
   function recordImpression(adId, placement) {
@@ -2157,7 +2194,7 @@ init();
   function setupInterstitial(sectionEl, adList) {
     if (!sectionEl || !adList.length) return;
 
-    var stage = sectionEl.querySelector('.py2-ads-interstitial-stage');
+    var stage  = sectionEl.querySelector('.py2-ads-interstitial-stage');
     var dotsEl = sectionEl.querySelector('.py2-ads-interstitial-dots');
     if (!stage) return;
 
@@ -2182,11 +2219,11 @@ init();
 
     if (adList.length < 2) return;
 
-    var current = 0;
+    var current  = 0;
     var slideEls = stage.querySelectorAll('.py2-ads-interstitial-slide');
-    var dotEls = dotsEl ? dotsEl.querySelectorAll('button') : [];
-    var timer = null;
-    var paused = false;
+    var dotEls   = dotsEl ? dotsEl.querySelectorAll('button') : [];
+    var timer    = null;
+    var paused   = false;
 
     function goTo(idx, fromUser) {
       if (idx === current || idx < 0 || idx >= slideEls.length) return;
@@ -2250,13 +2287,11 @@ init();
   });
 
   function buildPopupHTML(ad) {
-    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
-    var cta = ctaFor(ad);
-    var tier = (window.py2AdsCard && window.py2AdsCard.tierFromAd) ? window.py2AdsCard.tierFromAd(ad) : 'free';
-    var tierTag = (tier !== 'free' && window.py2AdsCard && window.py2AdsCard.TIER_LABEL && window.py2AdsCard.TIER_LABEL[tier])
-      ? '<span class="py2-ads-tier-badge py2-ads-tier-badge-' + tier + '" style="position:static;transform:none;display:inline-flex;margin-bottom:10px;">' +
-          window.py2AdsCard.TIER_LABEL[tier] +
-        '</span> '
+    var biz  = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
+    var cta  = ctaFor(ad);
+    var tier = tierFromAd(ad);
+    var tierTag = (tier !== 'free' && TIER_LABEL[tier])
+      ? '<span class="py2-ads-tier-badge py2-ads-tier-badge-' + tier + '" style="position:static;transform:none;display:inline-flex;margin-bottom:10px;">' + TIER_LABEL[tier] + '</span> '
       : '';
     return renderMedia(ad) +
       '<div class="py2-ads-popup-body">' +
@@ -2294,13 +2329,7 @@ init();
   function boot(rows) {
     if (!Array.isArray(rows) || !rows.length) return;
 
-    // Step 5 — front-load by tier, then weighted-shuffle the rest.
-    var ordered;
-    if (window.py2AdsCard && typeof window.py2AdsCard.frontloadByTier === 'function') {
-      ordered = window.py2AdsCard.frontloadByTier(rows, weightedShuffle, FRONTLOAD_N);
-    } else {
-      ordered = weightedShuffle(rows);
-    }
+    var ordered = frontloadByTier(rows, weightedShuffle, 3);
 
     var slot1 = ordered;
     var slot2 = ordered.length > 1
