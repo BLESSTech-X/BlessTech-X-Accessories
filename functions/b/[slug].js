@@ -8,9 +8,10 @@
    Cloudflare Pages auto-routes /b/anything-here to this file.
 
    Data sources:
-     · advertiser_profiles  — the branding + contact info
-     · advertisers          — tier, verification
+     · advertiser_profiles  — branding + contact info
+     · advertisers          — business name, logo, tier, status
      · ads                  — approved ads to list
+     · profiles (via RPC)   — profile view counter
 
    Records a profile view via record_profile_view() RPC on every hit.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -30,13 +31,24 @@ function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-// Validate a hex color; fall back if invalid
 function safeColor(c, fallback) {
   if (!c || typeof c !== 'string') return fallback;
   return /^#[0-9a-fA-F]{6}$/.test(c) ? c : fallback;
 }
 
-// Extract YouTube video ID
+// Slightly darker version of a hex color, for gradients / contrast
+function darken(hex, amount) {
+  const c = safeColor(hex, '#ff6000');
+  const num = parseInt(c.slice(1), 16);
+  let r = (num >> 16) & 0xff;
+  let g = (num >> 8)  & 0xff;
+  let b = num         & 0xff;
+  r = Math.max(0, Math.round(r * (1 - amount)));
+  g = Math.max(0, Math.round(g * (1 - amount)));
+  b = Math.max(0, Math.round(b * (1 - amount)));
+  return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+}
+
 function ytId(url) {
   const m = String(url).match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
   return m ? m[1] : null;
@@ -76,9 +88,17 @@ function ctaHref(ad) {
   return u;
 }
 
+const TIER_LABEL = {
+  free:     'Free',
+  starter:  'Starter',
+  standard: 'Standard',
+  business: 'Business',
+  premium:  'Premium'
+};
+const TIER_RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
+
 // ── Fetch the profile ─────────────────────────────────────────────────────
 async function fetchProfile(slug) {
-  // PostgREST nested select: profile + advertiser + ad count
   const qs =
     'advertiser_profiles?select=id,advertiser_id,slug,tagline,about,primary_color,accent_color,cover_image_url,social_links,contact_phone,contact_whatsapp,contact_email,verified,view_count,advertisers(business_name,logo_url,tier,tier_expires_at,status)' +
     '&slug=eq.' + encodeURIComponent(slug) +
@@ -100,13 +120,13 @@ async function fetchProfile(slug) {
 async function fetchAds(advertiserId) {
   const now = new Date().toISOString();
   const qs =
-    'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,start_date,end_date' +
+    'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,start_date,end_date,created_at' +
     '&advertiser_id=eq.' + encodeURIComponent(advertiserId) +
     '&status=eq.approved' +
     '&start_date=lte.' + encodeURIComponent(now) +
     '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
     '&order=weight.desc,created_at.desc' +
-    '&limit=12';
+    '&limit=50';
 
   const r = await fetch(SUPABASE_URL + '/rest/v1/' + qs, {
     headers: {
@@ -117,6 +137,39 @@ async function fetchAds(advertiserId) {
   });
   if (!r.ok) return [];
   return (await r.json()) || [];
+}
+
+// ── Fetch other businesses (for cross-promotion) ──────────────────────────
+async function fetchOtherBusinesses(excludeAdvertiserId, limit) {
+  limit = limit || 4;
+  // Fetch advertiser_profiles that have a verified flag or are on a paid tier
+  // and are not this one. Order by view_count desc, so popular ones show first.
+  const qs =
+    'advertiser_profiles?select=id,advertiser_id,slug,tagline,logo_url:advertisers(logo_url),advertisers(business_name,logo_url,tier,tier_expires_at,status)' +
+    '&advertiser_id=neq.' + encodeURIComponent(excludeAdvertiserId) +
+    '&limit=' + limit;
+
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/' + qs, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Accept': 'application/json'
+      }
+    });
+    if (!r.ok) return [];
+    const rows = await r.json();
+    if (!Array.isArray(rows)) return [];
+    // Filter out banned and expired, and only show ones with a business_name
+    return rows.filter(function (row) {
+      const adv = row.advertisers || {};
+      if (adv.status === 'banned') return false;
+      if (!adv.business_name) return false;
+      return true;
+    });
+  } catch (e) {
+    return [];
+  }
 }
 
 // ── Record a view (fire-and-forget) ───────────────────────────────────────
@@ -131,14 +184,13 @@ async function recordView(slug, source) {
       },
       body: JSON.stringify({
         p_slug:    slug,
-        p_visitor: null,       // set client-side for privacy; server-side is fine too
+        p_visitor: null,
         p_source:  source || 'direct'
       })
     });
   } catch (e) { /* silent */ }
 }
 
-// ── Detect source from referer ────────────────────────────────────────────
 function detectSource(referer) {
   if (!referer) return 'direct';
   if (/whatsapp|wa\.me/i.test(referer))  return 'whatsapp';
@@ -160,12 +212,12 @@ function renderAdCard(ad) {
     if (provider === 'youtube' || /youtube\.com|youtu\.be/i.test(url)) {
       const vid = ytId(url);
       mediaHtml = vid
-        ? '<iframe src="https://www.youtube.com/embed/' + esc(vid) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(vid) + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>'
+        ? '<iframe src="https://www.youtube.com/embed/' + esc(vid) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(vid) + '&controls=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>'
         : '<div class="ad-media-ph">▶</div>';
     } else if (provider === 'vimeo' || /vimeo\.com/i.test(url)) {
       const vid = vimeoId(url);
       mediaHtml = vid
-        ? '<iframe src="https://player.vimeo.com/video/' + esc(vid) + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>'
+        ? '<iframe src="https://player.vimeo.com/video/' + esc(vid) + '?autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay" allowfullscreen loading="lazy"></iframe>'
         : '<div class="ad-media-ph">▶</div>';
     } else if (provider === 'tiktok' || /tiktok\.com/i.test(url)) {
       mediaHtml = '<div class="ad-media-ph" style="background:linear-gradient(135deg,#000,#fe2c55);color:white">🎵</div>';
@@ -203,7 +255,7 @@ function notFoundPage(slug) {
         <div class="empty-icon">🔍</div>
         <h1>Business not found</h1>
         <p>We couldn't find a business with that address.</p>
-        <a class="btn-primary" href="/">Browse PhoneYa2</a>
+        <a class="btn-primary" href="/">Browse PhoneYa2 <i class="fa-solid fa-arrow-right"></i></a>
       </div>
     </div>
   `;
@@ -226,6 +278,8 @@ function notFoundPage(slug) {
 function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, primaryColor, accentColor, isProfile }) {
   const p = safeColor(primaryColor, '#ff6000');
   const a = safeColor(accentColor,  '#ff9f43');
+  const pDark = darken(p, 0.15);
+  const pDarker = darken(p, 0.35);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -238,7 +292,7 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
     gtag('config', 'G-MVNT6SQCS2');
   </script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
   <meta name="theme-color" content="${esc(p)}">
@@ -261,101 +315,175 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
   <style>
     :root {
       --brand: ${esc(p)};
+      --brand-dark: ${esc(pDark)};
+      --brand-darker: ${esc(pDarker)};
       --brand-2: ${esc(a)};
+      --ink: #e8e8f0;
+      --ink-soft: rgba(255,255,255,.62);
+      --ink-mute: rgba(255,255,255,.42);
+      --surface: #0a0a14;
+      --surface-2: #12122a;
+      --surface-3: #1a1a3e;
+      --card-border: rgba(255,255,255,.08);
+      --card-border-strong: rgba(255,255,255,.14);
     }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
     body {
-      background: #0a0a14;
-      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
-      color: #e8e8f0;
+      background: var(--surface);
+      font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      color: var(--ink);
       margin: 0;
       padding-bottom: 60px;
       -webkit-font-smoothing: antialiased;
+      line-height: 1.55;
     }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 40px; }
+    h1, h2, h3, h4 { font-family: 'Syne', system-ui, sans-serif; margin: 0; line-height: 1.15; }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
 
-    /* ── Top bar ── */
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    @media (min-width: 640px) { .wrap { padding: 28px 24px 60px; } }
+
+    /* ── Top bar ─────────────────────────────────────────────────── */
     .topbar-mini {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 0 22px; flex-wrap: wrap; gap: 10px;
+      padding: 6px 0 18px; flex-wrap: wrap; gap: 10px;
     }
     .brand-link {
       display: flex; align-items: center; gap: 8px;
       font-family: 'Syne', system-ui, sans-serif; font-weight: 800; font-size: 15px;
       text-decoration: none; color: white;
     }
-    .brand-link span { color: var(--brand); }
+    .brand-link .brand-mark {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px -4px var(--brand);
+    }
+    .brand-link .brand-text { line-height: 1; }
+    .brand-link .brand-text small {
+      display: block;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 2px;
+    }
+    .brand-link .brand-text b { font-weight: 800; }
+    .brand-link .brand-text b span { color: var(--brand); }
     .topbar-mini a.shop-link {
-      font-size: 13px; font-weight: 600;
-      color: var(--brand);
+      font-size: 13px; font-weight: 700;
+      color: white;
       text-decoration: none;
-      padding: 6px 14px; border-radius: 100px;
-      background: rgba(255,255,255,.05);
+      padding: 8px 16px; border-radius: 100px;
+      background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.1);
       transition: all .25s;
+      display: inline-flex; align-items: center; gap: 6px;
     }
     .topbar-mini a.shop-link:hover {
-      background: rgba(255,255,255,.1);
+      background: rgba(255,255,255,.12);
       border-color: var(--brand);
+      transform: translateY(-1px);
     }
 
-    /* ── Cover ── */
+    /* ── Cover ───────────────────────────────────────────────────── */
     .cover {
       position: relative;
       width: 100%;
       aspect-ratio: 3/1;
       border-radius: 20px;
       overflow: hidden;
-      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      background: linear-gradient(135deg, var(--brand-darker), var(--brand), var(--brand-2));
       margin-bottom: -60px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
     }
-    .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .cover::after {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 40%, rgba(10,10,20,.95));
+      background: linear-gradient(to bottom, transparent 35%, rgba(10,10,20,.95));
       pointer-events: none;
     }
+    .cover.no-image {
+      /* Animated gradient cover for advertisers without a cover image */
+      background: linear-gradient(135deg, var(--brand-darker) 0%, var(--brand) 40%, var(--brand-2) 100%);
+      background-size: 200% 200%;
+      animation: coverShift 12s ease-in-out infinite;
+    }
+    @keyframes coverShift {
+      0%, 100% { background-position: 0% 0%; }
+      50%      { background-position: 100% 100%; }
+    }
+    .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    /* ── Profile card ── */
+    /* ── Profile card ────────────────────────────────────────────── */
     .profile-card {
       position: relative;
-      background: linear-gradient(160deg, #12122a 0%, #0a0a14 100%);
+      background: linear-gradient(160deg, var(--surface-2) 0%, var(--surface) 100%);
       border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid var(--card-border);
       padding: 24px;
-      margin-bottom: 32px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.4);
+      margin-bottom: 28px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.45);
       z-index: 2;
     }
+    @media (max-width: 600px) { .profile-card { padding: 18px; } }
+
     .profile-head {
       display: flex; align-items: flex-start; gap: 20px;
-      margin-bottom: 20px; flex-wrap: wrap;
+      margin-bottom: 18px; flex-wrap: wrap;
     }
+    @media (max-width: 600px) { .profile-head { gap: 14px; } }
+
     .logo-box {
       width: 96px; height: 96px;
-      border-radius: 20px;
+      border-radius: 22px;
       background: linear-gradient(135deg, var(--brand), var(--brand-2));
       display: flex; align-items: center; justify-content: center;
       font-size: 2.4rem; font-weight: 800; color: white;
       font-family: 'Syne', sans-serif;
       flex-shrink: 0;
       overflow: hidden;
-      box-shadow: 0 8px 30px -6px var(--brand);
-      border: 2px solid rgba(255,255,255,.15);
+      box-shadow: 0 12px 34px -8px var(--brand), 0 0 0 3px rgba(255,255,255,.08) inset;
+      border: 2px solid rgba(255,255,255,.12);
     }
+    @media (max-width: 600px) { .logo-box { width: 76px; height: 76px; font-size: 1.9rem; border-radius: 18px; } }
     .logo-box img { width: 100%; height: 100%; object-fit: cover; }
-    .profile-info { flex: 1; min-width: 220px; }
+
+    .profile-info { flex: 1; min-width: 200px; }
+
     .profile-name {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-size: clamp(1.5rem, 4vw, 2.15rem);
       color: white;
       margin: 0 0 8px;
-      line-height: 1.1;
+      line-height: 1.08;
       letter-spacing: -.5px;
-      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     }
+
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 800;
+      padding: 4px 11px; border-radius: 100px;
+      letter-spacing: .8px; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .tier-badge.free     { background: rgba(107,114,128,.18); color: #9ca3af; border: 1px solid rgba(107,114,128,.3); }
+    .tier-badge.starter  { background: rgba(37,99,235,.2);   color: #93c5fd; border: 1px solid rgba(37,99,235,.35); }
+    .tier-badge.standard { background: rgba(124,58,237,.2);  color: #c4b5fd; border: 1px solid rgba(124,58,237,.35); }
+    .tier-badge.business { background: rgba(217,119,6,.22);  color: #fcd34d; border: 1px solid rgba(217,119,6,.4); }
+    .tier-badge.premium  { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; box-shadow: 0 4px 14px -4px var(--brand); }
+
     .verified-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: linear-gradient(135deg, #5f27cd, #54a0ff);
@@ -365,21 +493,23 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       letter-spacing: .8px; text-transform: uppercase;
       box-shadow: 0 4px 14px rgba(84,160,255,.4);
     }
+
     .profile-tagline {
       font-size: 15px;
-      color: rgba(255,255,255,.65);
-      line-height: 1.55;
+      color: var(--ink-soft);
+      line-height: 1.6;
       margin: 0;
+      max-width: 60ch;
     }
 
-    /* ── Contact row ── */
+    /* ── Contact & social ────────────────────────────────────────── */
     .contact-row {
       display: flex; flex-wrap: wrap; gap: 10px;
       margin-top: 6px;
     }
     .contact-btn {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 18px;
+      padding: 11px 20px;
       border-radius: 100px;
       font-size: 13px; font-weight: 700;
       text-decoration: none;
@@ -387,6 +517,7 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       border: 1px solid rgba(255,255,255,.1);
       background: rgba(255,255,255,.05);
       color: white;
+      min-height: 44px;
     }
     .contact-btn:hover {
       transform: translateY(-2px);
@@ -402,14 +533,13 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
     }
     .contact-btn i { font-size: 14px; }
 
-    /* ── Social row ── */
     .social-row {
       display: flex; flex-wrap: wrap; gap: 10px;
-      margin-top: 14px;
+      margin-top: 16px;
     }
     .social-pill {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 42px; height: 42px;
+      width: 44px; height: 44px;
       border-radius: 12px;
       background: rgba(255,255,255,.05);
       border: 1px solid rgba(255,255,255,.1);
@@ -426,7 +556,7 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       box-shadow: 0 8px 24px -6px var(--brand);
     }
 
-    /* ── About ── */
+    /* ── About ───────────────────────────────────────────────────── */
     .about-block {
       background: rgba(255,255,255,.03);
       border-radius: 16px;
@@ -437,33 +567,33 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
     .about-block h2 {
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 13px;
-      color: rgba(255,255,255,.5);
+      font-size: 12px;
+      color: var(--ink-mute);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin: 0 0 10px;
+      letter-spacing: 1.4px;
+      margin: 0 0 12px;
     }
     .about-block p {
-      font-size: 14.5px;
-      line-height: 1.7;
-      color: rgba(255,255,255,.8);
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(255,255,255,.82);
       margin: 0;
       white-space: pre-wrap;
     }
 
-    /* ── Ads section ── */
-    .ads-section { margin-top: 40px; }
+    /* ── Ads section ─────────────────────────────────────────────── */
+    .ads-section { margin-top: 36px; }
     .ads-section h2 {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       color: white;
       margin: 0 0 4px;
       letter-spacing: -.3px;
     }
     .ads-section .sub {
       font-size: 13px;
-      color: rgba(255,255,255,.5);
+      color: var(--ink-mute);
       margin: 0 0 20px;
     }
     .ads-grid {
@@ -471,18 +601,20 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 18px;
     }
+    @media (max-width: 600px) { .ads-grid { grid-template-columns: 1fr; gap: 14px; } }
+
     .ad-card {
-      background: linear-gradient(160deg, #12122a 0%, #0a0a14 100%);
+      background: linear-gradient(160deg, var(--surface-2) 0%, var(--surface) 100%);
       border-radius: 16px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid var(--card-border);
       transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
       display: flex; flex-direction: column;
     }
     .ad-card:hover {
       transform: translateY(-6px);
       box-shadow: 0 20px 50px rgba(0,0,0,.5), 0 0 40px -14px var(--brand);
-      border-color: rgba(255,255,255,.15);
+      border-color: var(--card-border-strong);
     }
     .ad-media {
       aspect-ratio: 16/9;
@@ -522,7 +654,7 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       margin-top: auto;
       display: flex; align-items: center; justify-content: space-between;
       gap: 10px;
-      padding: 10px 16px;
+      padding: 11px 16px;
       border-radius: 100px;
       font-size: 12.5px; font-weight: 800;
       color: white;
@@ -545,7 +677,7 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
     }
     .ad-cta:hover .arrow { transform: translateX(3px); }
 
-    /* ── Empty ads state ── */
+    /* ── Empty ads state ─────────────────────────────────────────── */
     .no-ads {
       text-align: center;
       padding: 40px 20px;
@@ -556,13 +688,79 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       border: 1px dashed rgba(255,255,255,.1);
     }
 
-    /* ── Not-found state ── */
+    /* ── Other businesses ────────────────────────────────────────── */
+    .others-section { margin-top: 36px; }
+    .others-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+      margin: 0 0 4px;
+    }
+    .others-section .sub {
+      font-size: 13px;
+      color: var(--ink-mute);
+      margin: 0 0 16px;
+    }
+    .others-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 600px) { .others-grid { grid-template-columns: 1fr; } }
+
+    .other-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(160deg, var(--surface-2) 0%, var(--surface) 100%);
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      text-decoration: none;
+      color: inherit;
+      transition: all .25s;
+    }
+    .other-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,159,67,.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+    .other-card .other-logo {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .other-card .other-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .other-card .other-body { flex: 1; min-width: 0; }
+    .other-card .other-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: white;
+      margin-bottom: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .other-card .other-tag {
+      font-size: 12px;
+      color: var(--ink-mute);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .other-card .other-arrow {
+      color: var(--brand);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── Not-found state ─────────────────────────────────────────── */
     .empty {
       text-align: center;
       padding: 80px 20px;
-      background: linear-gradient(160deg, #12122a 0%, #0a0a14 100%);
+      background: linear-gradient(160deg, var(--surface-2) 0%, var(--surface) 100%);
       border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid var(--card-border);
     }
     .empty-icon { font-size: 3rem; margin-bottom: 12px; }
     .empty h1 {
@@ -572,7 +770,7 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       margin: 0 0 8px;
       color: white;
     }
-    .empty p { color: rgba(255,255,255,.5); font-size: 14px; margin: 0 0 20px; }
+    .empty p { color: var(--ink-mute); font-size: 14px; margin: 0 0 20px; }
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px;
       background: linear-gradient(135deg, #ff6000, #ff9f43);
@@ -582,12 +780,12 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       box-shadow: 0 4px 16px rgba(255,96,0,.35);
     }
 
-    /* ── Footer strip ── */
+    /* ── Advertise strip (bottom CTA) ────────────────────────────── */
     .advertise-strip {
-      margin-top: 40px;
-      background: linear-gradient(135deg, #12122a, #0a0a14);
+      margin-top: 36px;
+      background: linear-gradient(135deg, var(--surface-2), var(--surface));
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid var(--card-border);
       padding: 24px 22px;
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
@@ -601,23 +799,28 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
     }
     .advertise-strip p {
       font-size: 13px;
-      color: rgba(255,255,255,.55);
+      color: var(--ink-mute);
       margin: 0; line-height: 1.5;
     }
     .advertise-strip a {
       background: linear-gradient(135deg, #ff6000, #ff9f43);
       color: white; font-weight: 700;
-      padding: 10px 18px; border-radius: 10px;
+      padding: 11px 20px; border-radius: 10px;
       text-decoration: none; white-space: nowrap;
       font-size: 13px;
+      display: inline-flex; align-items: center; gap: 6px;
+      box-shadow: 0 6px 20px -6px #ff6000;
+      transition: transform .2s;
     }
+    .advertise-strip a:hover { transform: translateY(-2px); }
 
+    /* Mobile tweaks */
     @media (max-width: 600px) {
-      .cover { aspect-ratio: 2/1; border-radius: 16px; margin-bottom: -40px; }
-      .profile-card { padding: 20px; }
-      .profile-head { gap: 14px; }
-      .logo-box { width: 72px; height: 72px; font-size: 1.8rem; border-radius: 16px; }
-      .ads-grid { grid-template-columns: 1fr; gap: 14px; }
+      .cover { aspect-ratio: 2.2/1; border-radius: 16px; margin-bottom: -40px; }
+      .contact-btn { padding: 10px 16px; font-size: 12.5px; }
+      .social-pill { width: 40px; height: 40px; font-size: 15px; }
+      .advertise-strip { padding: 18px 16px; }
+      .advertise-strip a { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -672,7 +875,7 @@ export async function onRequestGet(context) {
 
   if (!profile) return notFoundPage(slug);
 
-  // Block banned advertisers from having a public profile
+  // Block banned advertisers
   const adv = profile.advertisers || {};
   if (adv.status === 'banned') return notFoundPage(slug);
 
@@ -682,31 +885,36 @@ export async function onRequestGet(context) {
     ads = await fetchAds(profile.advertiser_id);
   } catch (e) { /* silent */ }
 
+  // Fetch other businesses for cross-promotion
+  let others = [];
+  try {
+    others = await fetchOtherBusinesses(profile.advertiser_id, 4);
+  } catch (e) { /* silent */ }
+
   // Effective tier (paid expired → treat as free for display)
   const rawTier = adv.tier || 'free';
   const expiresAt = adv.tier_expires_at ? new Date(adv.tier_expires_at) : null;
   const expired = expiresAt && expiresAt < new Date();
   const effectiveTier = (rawTier === 'free' || expired) ? 'free' : rawTier;
-  const tierRank = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
-  const rank = tierRank[effectiveTier] || 0;
+  const rank = TIER_RANK[effectiveTier] || 0;
 
-  // Is this advertiser allowed custom branding?
-  const canCustomize = rank >= 2; // standard and up
-  const canBeVerified = rank >= 3; // business and up
+  // Feature entitlements by tier
+  const canCustomize = rank >= 2; // Standard+
+  const canBeVerified = rank >= 3; // Business+
   const verified = profile.verified === true && canBeVerified;
 
-  // Brand colors
+  // Brand colors — only applied if Standard+
   const primaryColor = canCustomize ? safeColor(profile.primary_color, '#ff6000') : '#ff6000';
   const accentColor  = canCustomize ? safeColor(profile.accent_color,  '#ff9f43') : '#ff9f43';
 
   // Business identity
   const bizName = adv.business_name || 'Zambian Business';
-  const logo    = canCustomize ? (adv.logo_url || null) : (adv.logo_url || null); // logo allowed from starter up (RLS enforces)
+  const logo    = adv.logo_url || null;   // logo available from Starter+
   const cover   = canCustomize ? profile.cover_image_url : null;
   const tagline = profile.tagline || '';
   const about   = profile.about   || '';
 
-  // Social links — only Standard+
+  // Social links — Standard+
   const socials = canCustomize && profile.social_links && typeof profile.social_links === 'object'
     ? profile.social_links
     : {};
@@ -718,21 +926,25 @@ export async function onRequestGet(context) {
     { key: 'website',   icon: 'fa-solid fa-globe',       label: 'Website'   }
   ].filter(s => socials[s.key]);
 
-  // Contact info — always available if set
+  // Contact info
   const phone    = profile.contact_phone    || null;
   const whatsapp = profile.contact_whatsapp || null;
   const email    = profile.contact_email    || null;
-
   const waDigits = whatsapp ? String(whatsapp).replace(/[^\d]/g, '') : null;
 
-  // Build the profile HTML
+  // ── Build the profile HTML ────────────────────────────────────────
+
   const logoHtml = logo
     ? `<img src="${esc(logo)}" alt="${esc(bizName)}" onerror="this.parentElement.textContent='${esc(bizName.charAt(0))}'">`
     : esc(bizName.charAt(0).toUpperCase());
 
   const coverHtml = cover
-    ? `<div class="cover"><img src="${esc(cover)}" alt="" onerror="this.style.display='none'"></div>`
-    : `<div class="cover"></div>`;
+    ? `<div class="cover"><img src="${esc(cover)}" alt="" onerror="this.parentElement.classList.add('no-image');this.remove();"></div>`
+    : `<div class="cover no-image"></div>`;
+
+  const tierBadgeHtml = effectiveTier !== 'free'
+    ? `<span class="tier-badge ${effectiveTier}">${esc(TIER_LABEL[effectiveTier] || effectiveTier)}</span>`
+    : '';
 
   const verifiedBadge = verified
     ? `<span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>`
@@ -771,12 +983,43 @@ export async function onRequestGet(context) {
         <div class="no-ads">This business has no approved ads at the moment. Check back soon.</div>
       </section>`;
 
+  // Cross-promotion: other businesses on PhoneYa2
+  let othersHtml = '';
+  if (others.length) {
+    const cards = others.map(function (o) {
+      const oAdv  = o.advertisers || {};
+      const oName = oAdv.business_name || 'Business';
+      const oTag  = o.tagline || 'Visit profile';
+      const oLogo = oAdv.logo_url
+        ? `<img src="${esc(oAdv.logo_url)}" alt="" onerror="this.parentElement.textContent='${esc(oName.charAt(0).toUpperCase())}'">`
+        : esc(oName.charAt(0).toUpperCase());
+      return `
+        <a class="other-card" href="/b/${esc(o.slug)}">
+          <div class="other-logo">${oLogo}</div>
+          <div class="other-body">
+            <div class="other-name">${esc(oName)}</div>
+            <div class="other-tag">${esc(oTag)}</div>
+          </div>
+          <i class="fa-solid fa-arrow-right other-arrow"></i>
+        </a>`;
+    }).join('');
+    othersHtml = `
+      <section class="others-section">
+        <h2>🇿🇲 Discover other Zambian businesses</h2>
+        <p class="sub">More businesses on PhoneYa2</p>
+        <div class="others-grid">${cards}</div>
+      </section>`;
+  }
+
   const bodyHtml = `
     <div class="wrap">
       <div class="topbar-mini">
         <a class="brand-link" href="/">
-          <span style="font-size:22px;">📱</span>
-          <div>PhoneYa2 <span>Ads</span></div>
+          <span class="brand-mark">📱</span>
+          <div class="brand-text">
+            <b>PhoneYa2 <span>Ads</span></b>
+            <small>Zambian Businesses</small>
+          </div>
         </a>
         <a class="shop-link" href="/shop.html">Shop accessories <i class="fa-solid fa-arrow-right"></i></a>
       </div>
@@ -787,7 +1030,7 @@ export async function onRequestGet(context) {
         <div class="profile-head">
           <div class="logo-box">${logoHtml}</div>
           <div class="profile-info">
-            <h1 class="profile-name">${esc(bizName)} ${verifiedBadge}</h1>
+            <h1 class="profile-name">${esc(bizName)} ${verifiedBadge} ${tierBadgeHtml}</h1>
             ${tagline ? `<p class="profile-tagline">${esc(tagline)}</p>` : ''}
           </div>
         </div>
@@ -800,12 +1043,14 @@ export async function onRequestGet(context) {
 
       ${adsHtml}
 
+      ${othersHtml}
+
       <div class="advertise-strip">
         <div>
           <h3>Want a profile like this for your business?</h3>
-          <p>Advertise on PhoneYa2 and get a free business profile. Upgrade anytime for custom branding.</p>
+          <p>Advertise on PhoneYa2 and get a free business profile. Upgrade anytime for custom branding and more visibility.</p>
         </div>
-        <a href="/advertise/">Get started →</a>
+        <a href="/advertise/">Get started <i class="fa-solid fa-arrow-right"></i></a>
       </div>
     </div>
 
@@ -832,8 +1077,6 @@ export async function onRequestGet(context) {
     isProfile: true
   });
 
-  // Fire-and-forget server-side view record (client script will also
-  // fire, but this makes sure server-side hits are counted even if JS is off)
   const source = detectSource(request.headers.get('referer') || '');
   context.waitUntil(recordView(profile.slug, source));
 
@@ -841,7 +1084,7 @@ export async function onRequestGet(context) {
     status: 200,
     headers: {
       'content-type': 'text/html; charset=utf-8',
-      'cache-control': 'public, max-age=60, s-maxage=300'
+      'cache-control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
     }
   });
 }
