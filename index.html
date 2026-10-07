@@ -2135,25 +2135,27 @@ init();
       : '';
 
     var card = document.createElement('div');
-    card.className = 'py2-ads-card py2-ads-tier-' + tier;
-    card.setAttribute('role', 'article');
-    card.setAttribute('aria-label', ad.title);
-    card.innerHTML =
-      '<div class="py2-ads-img">' +
-        '<span class="py2-ads-sponsored">Sponsored</span>' +
-        tierBadgeHtml +
-        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
-        renderMedia(ad) +
-      '</div>' +
-      '<div class="py2-ads-body">' +
-        '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
-        '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
-        (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
-        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
-          '<span><i class="' + cta.icon + '"></i> ' + esc(ctaLabelShort(ad)) + '</span>' +
-          '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
-        '</a>' +
-      '</div>';
+card.className = 'py2-ads-card py2-ads-tier-' + tier;
+card.setAttribute('role', 'article');
+card.setAttribute('aria-label', ad.title);
+card.innerHTML =
+  '<div class="py2-ads-img' + (mediaIsImage(ad) && mediaUrl(ad) ? ' has-media' : '') + '"' +
+    (mediaIsImage(ad) && mediaUrl(ad) ? ' style="--blur-bg:url(\'' + esc(mediaUrl(ad).replace(/'/g, "\\'")) + '\')"' : '') +
+  '>' +
+    '<span class="py2-ads-sponsored">Sponsored</span>' +
+    tierBadgeHtml +
+    '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
+    renderMedia(ad) +
+  '</div>' +
+  '<div class="py2-ads-body">' +
+    '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
+    '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
+    (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
+    '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+      '<span><i class="' + cta.icon + '"></i> ' + esc(ctaLabelShort(ad)) + '</span>' +
+      '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
+    '</a>' +
+  '</div>';
     card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
     var ctaEl = card.querySelector('.py2-ads-cta');
     if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
@@ -2344,6 +2346,18 @@ init();
 
   fetchAds().then(boot).catch(function () { /* silent */ });
 })();
+  function mediaUrl(ad) {
+  return ad.image_url || ad.media_url || '';
+}
+
+function mediaIsImage(ad) {
+  var t = ad.media_type || '';
+  if (t === 'image') return true;
+  if (t === 'video') return false;
+  // Fallback: guess from the URL extension
+  var u = mediaUrl(ad);
+  return /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(u);
+}
 </script>
 
 <!--Start of Tawk.to Script-->
