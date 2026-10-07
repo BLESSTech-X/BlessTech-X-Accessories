@@ -1924,9 +1924,10 @@ init();
 
 
 <!-- ═══════════════════════════════════════════════════════════
-     PHONEYA2 ADS — Interstitials + popup loader
-     Fetches ads once, feeds both interstitials and the popup.
-     Interstitials rotate every 6s with crossfade.
+     PHONEYA2 ADS — Interstitials + popup loader (Step 5)
+     Delegates card rendering to the shared py2AdsCard module in
+     /ads-config.js. Tier badges, sizing, and front-of-carousel
+     ordering are all handled there.
 ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
@@ -1940,6 +1941,7 @@ init();
   var ROTATE_MS = 6000;
   var POPUP_DELAY_MS = 6000;
   var POPUP_KEY = 'py2ads_popup_shown';
+  var FRONTLOAD_N = 3;
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -2043,7 +2045,7 @@ init();
   function fetchAds() {
     var now = new Date().toISOString();
     var qs =
-      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
+      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,created_at,advertiser_id,advertisers(business_name,logo_url,tier)' +
       '&status=eq.approved' +
       '&placement=eq.carousel' +
       '&start_date=lte.' + encodeURIComponent(now) +
@@ -2101,32 +2103,24 @@ init();
     return 'Enter';
   }
 
+  // Delegates to the shared renderer in ads-config.js.
   function buildPortalCard(ad) {
-    var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
-    var cta = ctaFor(ad);
-    var card = document.createElement('div');
-    card.className = 'py2-ads-card';
-    card.setAttribute('role', 'article');
-    card.setAttribute('aria-label', ad.title);
-    card.innerHTML =
-      '<div class="py2-ads-img">' +
-        '<span class="py2-ads-sponsored">Sponsored</span>' +
-        '<button class="py2-ads-report" type="button" aria-label="Report this ad" onclick="event.stopPropagation();py2AdsReport(\'' + esc(ad.id) + '\')">Report</button>' +
-        renderMedia(ad) +
-      '</div>' +
-      '<div class="py2-ads-body">' +
-        '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
-        '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
-        (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
-        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
-          '<span><i class="' + cta.icon + '"></i> ' + esc(ctaLabelShort(ad)) + '</span>' +
-          '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
-        '</a>' +
-      '</div>';
-    card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
-    var ctaEl = card.querySelector('.py2-ads-cta');
-    if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
-    return card;
+    if (!window.py2AdsCard || typeof window.py2AdsCard.build !== 'function') {
+      // Fallback: minimal card so a missing shared module degrades safely.
+      var c = document.createElement('div');
+      c.className = 'py2-ads-card';
+      c.innerHTML = '<div class="py2-ads-body"><div class="py2-ads-title">' + esc(ad.title || '') + '</div></div>';
+      return c;
+    }
+    return window.py2AdsCard.build(ad, {
+      esc:            esc,
+      renderMedia:    renderMedia,
+      ctaFor:         ctaFor,
+      ctaLabelShort:  ctaLabelShort,
+      onCardClick:    function (a) { window.location.href = '/ad/' + encodeURIComponent(a.slug); },
+      onClickCta:     function (a) { py2AdsClick(a.id); },
+      onReport:       function (id) { py2AdsReport(id); }
+    });
   }
 
   function recordImpression(adId, placement) {
@@ -2258,8 +2252,15 @@ init();
   function buildPopupHTML(ad) {
     var biz = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
     var cta = ctaFor(ad);
+    var tier = (window.py2AdsCard && window.py2AdsCard.tierFromAd) ? window.py2AdsCard.tierFromAd(ad) : 'free';
+    var tierTag = (tier !== 'free' && window.py2AdsCard && window.py2AdsCard.TIER_LABEL && window.py2AdsCard.TIER_LABEL[tier])
+      ? '<span class="py2-ads-tier-badge py2-ads-tier-badge-' + tier + '" style="position:static;transform:none;display:inline-flex;margin-bottom:10px;">' +
+          window.py2AdsCard.TIER_LABEL[tier] +
+        '</span> '
+      : '';
     return renderMedia(ad) +
       '<div class="py2-ads-popup-body">' +
+        tierTag +
         '<span class="py2-ads-popup-tag">⭐ Featured Business</span>' +
         '<div class="py2-ads-popup-biz">' + esc(biz) + '</div>' +
         '<h2 class="py2-ads-popup-title">' + esc(ad.title) + '</h2>' +
@@ -2293,7 +2294,13 @@ init();
   function boot(rows) {
     if (!Array.isArray(rows) || !rows.length) return;
 
-    var ordered = weightedShuffle(rows);
+    // Step 5 — front-load by tier, then weighted-shuffle the rest.
+    var ordered;
+    if (window.py2AdsCard && typeof window.py2AdsCard.frontloadByTier === 'function') {
+      ordered = window.py2AdsCard.frontloadByTier(rows, weightedShuffle, FRONTLOAD_N);
+    } else {
+      ordered = weightedShuffle(rows);
+    }
 
     var slot1 = ordered;
     var slot2 = ordered.length > 1
