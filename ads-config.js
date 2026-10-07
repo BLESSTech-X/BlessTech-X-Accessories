@@ -32,6 +32,20 @@
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SESSION STORAGE
+  //
+  // Sessions live in sessionStorage under SESSION_KEY. sessionStorage is
+  // per-tab and per-origin. It is cleared when the tab closes, and it is
+  // NOT shared between tabs or between phoneya2.pages.dev and any other
+  // origin. This is intentional for security, but it means:
+  //
+  //   · If you sign in and then open the dashboard in a new tab, you will
+  //     be signed out in the new tab.
+  //   · If you sign in on one hostname and use another, the session will
+  //     not follow you.
+  //
+  // If you ever want cross-tab persistence, switch to localStorage. If you
+  // want cross-origin persistence, you need real Supabase cookies or a
+  // server-side session. Neither is done here.
   // ═══════════════════════════════════════════════════════════════════════════
   var SESSION_KEY = 'py2ads_session';
 
@@ -41,8 +55,15 @@
   function loadSession() {
     try {
       var raw = sessionStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      return parsed;
+    } catch (e) {
+      // Corrupted session blob. Clear it so the next call gets a clean miss.
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (e2) {}
+      return null;
+    }
   }
   function clearSession() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
@@ -135,10 +156,13 @@
             }
             throw new Error(msg);
           }
+          if (!data.access_token || !data.user) {
+            throw new Error('Sign in response was missing a token or user. Please try again.');
+          }
           var session = {
             access_token:  data.access_token,
             refresh_token: data.refresh_token,
-            expires_at:    data.expires_at,
+            expires_at:    data.expires_at,   // seconds since epoch
             user:          data.user
           };
           saveSession(session);
@@ -166,11 +190,20 @@
     /**
      * Return the current session if it exists and isn't expired.
      * Never makes a network call — cheap to call often.
+     *
+     * Expiry window: we treat the session as expired 30 seconds before the
+     * actual JWT expiry, so a slow request doesn't race the clock. If the
+     * session is expired or malformed, we clear it and return null.
      */
     getSession: function () {
       var s = loadSession();
       if (!s) return null;
-      // expires_at is seconds since epoch
+      if (!s.access_token || !s.user) {
+        // Malformed session object. Clear it.
+        clearSession();
+        return null;
+      }
+      // expires_at is seconds since epoch. If missing, treat as non-expiring.
       if (s.expires_at && Date.now() / 1000 > s.expires_at - 30) {
         clearSession();
         return null;
@@ -225,12 +258,24 @@
 
   // ═══════════════════════════════════════════════════════════════════════════
   // STORAGE
+  //
+  // Upload to Supabase Storage. Requires a valid session because the
+  // storage bucket has RLS that checks auth.uid(). If the session is
+  // missing, we throw a clear, actionable error — not the cryptic
+  // "Not signed in" that used to appear.
   // ═══════════════════════════════════════════════════════════════════════════
   var storage = {
     upload: function (bucket, path, file, opts) {
       opts = opts || {};
       var s = auth.getSession();
-      if (!s) return Promise.reject(new Error('Not signed in'));
+      if (!s) {
+        return Promise.reject(new Error(
+          'Your session has expired or is missing. Please sign in again, then try the upload.'
+        ));
+      }
+      if (!file) {
+        return Promise.reject(new Error('No file selected.'));
+      }
 
       var headers = {
         'apikey':        SUPABASE_KEY,
@@ -243,7 +288,17 @@
       return fetch(url, { method: 'POST', headers: headers, body: file })
         .then(function (r) {
           return r.json().catch(function () { return {}; }).then(function (data) {
-            if (!r.ok) throw new Error(data.message || ('Upload failed (' + r.status + ')'));
+            if (!r.ok) {
+              var msg = data.message || data.error || ('Upload failed (' + r.status + ')');
+              // If Supabase says we're not authorised, that means the token
+              // was rejected (expired mid-session, or RLS policy denied).
+              // Surface a friendly message so the user knows to sign in.
+              if (r.status === 401 || r.status === 403) {
+                msg = 'Your session has expired. Please sign in again, then re-upload.';
+                clearSession();
+              }
+              throw new Error(msg);
+            }
             return data;
           });
         });
@@ -329,6 +384,10 @@
   function toast(msg, kind) {
     var id = 'py2ads-toast';
     var el = document.getElementById(id);
+    var icons = { info: '💬', success: '✅', error: '⚠️' };
+    var icon  = icons[kind] || icons.info;
+    var text  = icon + '  ' + msg;
+
     if (!el) {
       el = document.createElement('div');
       el.id = id;
@@ -341,9 +400,7 @@
         'text-overflow:ellipsis;';
       document.body.appendChild(el);
     }
-    var icons = { info: '💬', success: '✅', error: '⚠️' };
-    var icon  = icons[kind] || icons.info;
-    el.textContent = icon + '  ' + msg;
+    el.textContent = text;
     el.style.opacity = '1';
     clearTimeout(el._timer);
     el._timer = setTimeout(function () { el.style.opacity = '0'; }, 2800);
@@ -380,147 +437,5 @@
     toast:        toast,
     formatDate:   formatDate,
     safe:         safe
-  };
-     // ═══════════════════════════════════════════════════════════════════════
-  // SHARED AD CARD RENDERER
-  //
-  // Renders a single sponsored-ad card. Used by the interstitials on
-  // index.html, shop.html, and product.html.
-  //
-  // Tier visuals (Step 5):
-  //   · free     — no badge, standard card
-  //   · starter  — small tier badge, standard card
-  //   · standard — tier badge, subtle accent border
-  //   · business — tier badge, stronger border + slight size increase
-  //   · premium  — tier badge, strongest border + size increase
-  //
-  // Tier ordering (Step 5):
-  //   · Carousel items are sorted by tier rank (descending) BEFORE the
-  //     weighted shuffle is applied. The first three slides therefore
-  //     always show the highest-tier ads available. From slide 4 onwards,
-  //     the existing weighted shuffle takes over. This gives paid tiers a
-  //     guaranteed front row without making Free/Starter invisible to
-  //     shoppers who scroll past the first three.
-  //
-  // Callers pass an ad object from the ads table. They are responsible for
-  // wiring click/impression tracking. This function only renders markup.
-  // ═══════════════════════════════════════════════════════════════════════
-
-  var TIER_RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
-  var TIER_LABEL = { starter: 'Starter', standard: 'Standard', business: 'Business', premium: 'Premium' };
-
-  function py2TierFromAd(ad) {
-    return (ad && ad.advertisers && ad.advertisers.tier) || 'free';
-  }
-
-  function py2TierRank(ad) {
-    return TIER_RANK[py2TierFromAd(ad)] || 0;
-  }
-
-  // Sort: highest tier first, ties broken by weight desc, then created_at desc.
-  function py2SortByTier(list) {
-    return list.slice().sort(function (a, b) {
-      var r = py2TierRank(b) - py2TierRank(a);
-      if (r !== 0) return r;
-      var w = (parseInt(b.weight, 10) || 1) - (parseInt(a.weight, 10) || 1);
-      if (w !== 0) return w;
-      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-    });
-  }
-
-  // Rotate the list so the top N remain at the front, and the rest is the
-  // weighted-shuffled remainder. The caller supplies the shuffle function
-  // because it lives on the ad-serving side.
-  function py2FrontloadByTier(list, weightedShuffleFn, topN) {
-    topN = topN || 3;
-    if (!list.length) return list;
-    var sorted = py2SortByTier(list);
-    if (sorted.length <= topN) return sorted;
-    var front = sorted.slice(0, topN);
-    var rest  = sorted.slice(topN);
-    var shuffledRest = typeof weightedShuffleFn === 'function' ? weightedShuffleFn(rest) : rest;
-    return front.concat(shuffledRest);
-  }
-
-  // Renders one sponsored-ad card as a DOM element.
-  // opts = {
-  //   esc,                    // HTML escaping function
-  //   renderMedia,            // function(ad) → HTML string for the media element
-  //   ctaFor,                 // function(ad) → { href, icon, label } for the CTA
-  //   ctaLabelShort,          // function(ad) → short label for the CTA
-  //   onCardClick,            // function(ad) → called when the card body is clicked
-  //   onClickCta,             // function(ad) → called when the CTA is clicked
-  //   onReport                // function(adId) → called when Report is clicked
-  // }
-  function py2BuildAdCard(ad, opts) {
-    opts = opts || {};
-    var esc            = opts.esc            || function (s) { return String(s == null ? '' : s); };
-    var renderMedia    = opts.renderMedia    || function () { return ''; };
-    var ctaFor         = opts.ctaFor         || function () { return { href: '#', icon: 'fa-solid fa-arrow-up-right-from-square', label: 'View' }; };
-    var ctaLabelShort  = opts.ctaLabelShort  || function () { return 'Open'; };
-    var onCardClick    = opts.onCardClick    || function () {};
-    var onClickCta     = opts.onClickCta     || function () {};
-    var onReport       = opts.onReport       || function () {};
-
-    var tier  = py2TierFromAd(ad);
-    var biz   = (ad.advertisers && ad.advertisers.business_name) || 'Zambian Business';
-    var cta   = ctaFor(ad);
-    var short = ctaLabelShort(ad);
-
-    var card = document.createElement('div');
-    card.className = 'py2-ads-card py2-ads-tier-' + tier;
-    card.setAttribute('role', 'article');
-    card.setAttribute('aria-label', ad.title);
-
-    var tierBadgeHtml = '';
-    if (tier !== 'free' && TIER_LABEL[tier]) {
-      tierBadgeHtml = '<span class="py2-ads-tier-badge py2-ads-tier-badge-' + tier + '">' + TIER_LABEL[tier] + '</span>';
-    }
-
-    card.innerHTML =
-      '<div class="py2-ads-img">' +
-        '<span class="py2-ads-sponsored">Sponsored</span>' +
-        tierBadgeHtml +
-        '<button class="py2-ads-report" type="button" aria-label="Report this ad">Report</button>' +
-        renderMedia(ad) +
-      '</div>' +
-      '<div class="py2-ads-body">' +
-        '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
-        '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
-        (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
-        '<a class="py2-ads-cta" href="' + esc(cta.href) + '" target="_blank" rel="noopener">' +
-          '<span><i class="' + cta.icon + '"></i> ' + esc(short) + '</span>' +
-          '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
-        '</a>' +
-      '</div>';
-
-    var reportBtn = card.querySelector('.py2-ads-report');
-    if (reportBtn) reportBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      onReport(ad.id);
-    });
-
-    var ctaEl = card.querySelector('.py2-ads-cta');
-    if (ctaEl) ctaEl.addEventListener('click', function (e) {
-      e.stopPropagation();
-      onClickCta(ad);
-    });
-
-    card.addEventListener('click', function () {
-      onCardClick(ad);
-    });
-
-    return card;
-  }
-
-  // Expose for the shop pages.
-  window.py2AdsCard = {
-    build:           py2BuildAdCard,
-    tierFromAd:      py2TierFromAd,
-    tierRank:        py2TierRank,
-    sortByTier:      py2SortByTier,
-    frontloadByTier: py2FrontloadByTier,
-    TIER_RANK:       TIER_RANK,
-    TIER_LABEL:      TIER_LABEL
   };
 })();
