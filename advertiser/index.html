@@ -18,23 +18,14 @@
   <style>
   *, *::before, *::after { box-sizing: border-box; }
   :root {
-    --py2-dark:      #0a0a14;
-    --py2-text:      #1a1a2e;
-    --py2-muted:     #6b7280;
-    --py2-light:     #f6f7fb;
-    --py2-white:     #ffffff;
-    --py2-border:    rgba(0,0,0,.08);
-    --py2-orange:    #ff6000;
-    --py2-orange-2:  #ff9f43;
-    --py2-green:     #25d366;
-    --py2-green-2:   #128c7e;
-    --py2-red:       #e63946;
-    --py2-amber:     #f59e0b;
-    --py2-radius-sm: 8px;
-    --py2-radius:    12px;
-    --py2-radius-lg: 16px;
+    --py2-dark: #0a0a14; --py2-text: #1a1a2e; --py2-muted: #6b7280;
+    --py2-light: #f6f7fb; --py2-white: #ffffff; --py2-border: rgba(0,0,0,.08);
+    --py2-orange: #ff6000; --py2-orange-2: #ff9f43;
+    --py2-green: #25d366; --py2-green-2: #128c7e;
+    --py2-red: #e63946; --py2-amber: #f59e0b;
+    --py2-radius-sm: 8px; --py2-radius: 12px; --py2-radius-lg: 16px;
     --py2-shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.06);
-    --py2-shadow:    0 4px 16px rgba(0,0,0,.06);
+    --py2-shadow: 0 4px 16px rgba(0,0,0,.06);
     --py2-shadow-lg: 0 12px 32px rgba(0,0,0,.14);
     --py2-font-body: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     --py2-font-head: 'Syne', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -77,16 +68,16 @@
   .input-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
   @media (min-width: 560px) { .input-row { grid-template-columns: 1fr 1fr; } }
   .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
-  .badge-pending  { background: rgba(245,158,11,.12); color: #b45309; }
+  .badge-pending { background: rgba(245,158,11,.12); color: #b45309; }
   .badge-approved { background: rgba(22,163,74,.12); color: #15803d; }
   .badge-rejected { background: rgba(230,57,70,.12); color: #b91c1c; }
-  .badge-paused   { background: rgba(107,114,128,.12); color: #4b5563; }
-  .badge-banned   { background: #0a0a14; color: white; }
+  .badge-paused { background: rgba(107,114,128,.12); color: #4b5563; }
+  .badge-banned { background: #0a0a14; color: white; }
   .notice { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--py2-radius-sm); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
   .notice i { flex-shrink: 0; margin-top: 1px; }
-  .notice-info    { background: rgba(84,160,255,.07); border: 1px solid rgba(84,160,255,.2); }
-  .notice-warn    { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); }
-  .notice-danger  { background: rgba(230,57,70,.07); border: 1px solid rgba(230,57,70,.2); color: #b91c1c; }
+  .notice-info { background: rgba(84,160,255,.07); border: 1px solid rgba(84,160,255,.2); }
+  .notice-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); }
+  .notice-danger { background: rgba(230,57,70,.07); border: 1px solid rgba(230,57,70,.2); color: #b91c1c; }
   .topbar { background: var(--py2-dark); color: white; border-bottom: 1px solid rgba(255,255,255,.06); position: sticky; top: 0; z-index: 100; }
   .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .brand { display: flex; align-items: center; gap: 8px; font-family: var(--py2-font-head); font-weight: 800; font-size: 15px; color: white; }
@@ -112,11 +103,11 @@
   .spinner-dark { border-color: rgba(0,0,0,.1); border-top-color: var(--py2-orange); width: 26px; height: 26px; border-width: 3px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .plan-card { background: white; border: 1px solid var(--py2-border); border-radius: 16px; padding: 18px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 14px; }
-  .plan-card.free     { background: linear-gradient(135deg,#f8f9ff,#eef0f8); }
-  .plan-card.starter  { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+  .plan-card.free { background: linear-gradient(135deg,#f8f9ff,#eef0f8); }
+  .plan-card.starter { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
   .plan-card.standard { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
   .plan-card.business { background: linear-gradient(135deg,#fef3c7,#fde68a); }
-  .plan-card.premium  { background: linear-gradient(135deg,#0a0a14,#1a1a3e); color: white; border-color: rgba(255,96,0,.4); }
+  .plan-card.premium { background: linear-gradient(135deg,#0a0a14,#1a1a3e); color: white; border-color: rgba(255,96,0,.4); }
   .plan-card.premium .plan-label { color: rgba(255,255,255,.6); }
   .plan-card.premium .plan-desc { color: rgba(255,255,255,.7); }
   .plan-top { display: flex; align-items: center; gap: 14px; }
@@ -139,23 +130,16 @@
   }
   .expired-banner { background: rgba(230,57,70,.08); border: 1px solid rgba(230,57,70,.25); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; color: #b91c1c; flex-direction: column; }
   .expired-banner strong { display: block; margin-bottom: 8px; }
-  @media (min-width: 560px) {
-    .expired-banner { flex-direction: row; }
-    .expired-banner i { margin-top: 2px; }
-  }
+  @media (min-width: 560px) { .expired-banner { flex-direction: row; } .expired-banner i { margin-top: 2px; } }
   .stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 22px; }
-  @media (min-width: 720px) {
-    .stat-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
-  }
+  @media (min-width: 720px) { .stat-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; } }
   .stat { background: white; border: 1px solid var(--py2-border); border-radius: 12px; padding: 14px; box-shadow: var(--py2-shadow-sm); }
   .stat-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--py2-muted); margin-bottom: 5px; }
   .stat-val { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.35rem; color: var(--py2-text); line-height: 1.1; }
   .stat-val.accent { color: var(--py2-orange); }
   .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--py2-border); margin-bottom: 20px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
   .tabs::-webkit-scrollbar { display: none; }
-  @media (min-width: 768px) {
-    .tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
-  }
+  @media (min-width: 768px) { .tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; } }
   .tab { flex: 0 0 auto; background: none; border: none; border-bottom: 3px solid transparent; color: var(--py2-muted); font-family: var(--py2-font-body); font-size: 13px; font-weight: 600; padding: 12px 14px; min-height: 44px; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: color .15s, border-color .15s; }
   .tab i { font-size: 14px; }
   .tab.on { color: var(--py2-orange); border-bottom-color: var(--py2-orange); }
@@ -164,13 +148,9 @@
   .panel { display: none; }
   .panel.on { display: block; }
   .ad-item { background: white; border: 1px solid var(--py2-border); border-radius: 12px; padding: 14px; box-shadow: var(--py2-shadow-sm); display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
-  @media (min-width: 640px) {
-    .ad-item { flex-direction: row; padding: 16px; gap: 16px; }
-  }
+  @media (min-width: 640px) { .ad-item { flex-direction: row; padding: 16px; gap: 16px; } }
   .ad-item-thumb { width: 100%; height: 160px; border-radius: 10px; background: var(--py2-light); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--py2-muted); flex-shrink: 0; }
-  @media (min-width: 640px) {
-    .ad-item-thumb { width: 130px; height: 90px; }
-  }
+  @media (min-width: 640px) { .ad-item-thumb { width: 130px; height: 90px; } }
   .ad-item-thumb img, .ad-item-thumb video { width: 100%; height: 100%; object-fit: cover; }
   .ad-item-main { flex: 1; min-width: 0; }
   .ad-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
@@ -182,9 +162,7 @@
   .ad-mini .l { font-size: 9px; text-transform: uppercase; letter-spacing: .4px; color: var(--py2-muted); margin-top: 2px; }
   .ad-item-actions { display: flex; flex-wrap: wrap; gap: 6px; }
   .ad-item-actions .btn { flex: 1 1 calc(50% - 3px); }
-  @media (min-width: 640px) {
-    .ad-item-actions .btn { flex: 0 0 auto; }
-  }
+  @media (min-width: 640px) { .ad-item-actions .btn { flex: 0 0 auto; } }
   .drop { border: 2px dashed rgba(0,0,0,.12); border-radius: var(--py2-radius); padding: 22px 16px; background: #fafbff; cursor: pointer; text-align: center; transition: all .15s; }
   .drop:hover { border-color: var(--py2-orange); background: #fff9f4; }
   .drop .d-icon { font-size: 2rem; margin-bottom: 8px; }
@@ -208,14 +186,10 @@
   .vpreview video, .vpreview iframe { width: 100%; height: 100%; object-fit: cover; border: 0; display: block; }
   .vpreview .x { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 50%; background: rgba(10,10,20,.7); color: white; border: none; z-index: 3; display: flex; align-items: center; justify-content: center; }
   .profile-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  @media (min-width: 900px) {
-    .profile-layout { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-  }
+  @media (min-width: 900px) { .profile-layout { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: start; } }
   .slug-row { background: var(--py2-light); border-radius: var(--py2-radius-sm); padding: 10px 12px; display: flex; align-items: center; gap: 8px; font-family: ui-monospace, monospace; font-size: 11.5px; color: var(--py2-muted); margin-bottom: 16px; flex-wrap: wrap; }
   .slug-row .s-val { flex: 1 1 100%; word-break: break-all; line-height: 1.4; }
-  @media (min-width: 640px) {
-    .slug-row .s-val { flex: 1; }
-  }
+  @media (min-width: 640px) { .slug-row .s-val { flex: 1; } }
   .slug-row button { background: white; border: 1px solid var(--py2-border); border-radius: 6px; padding: 6px 12px; font-size: 11.5px; font-weight: 700; min-height: 34px; width: 100%; }
   @media (min-width: 640px) { .slug-row button { width: auto; } }
   .locked { position: relative; opacity: .75; }
@@ -227,9 +201,7 @@
   .color-row input[type=color] { width: 100%; height: 46px; border: 1.5px solid var(--py2-border); border-radius: 8px; padding: 2px; cursor: pointer; background: white; }
   .color-row input[type=text] { width: 100%; padding: 10px 12px; min-height: 44px; font-size: 15px; font-family: ui-monospace, monospace; border: 1.5px solid rgba(0,0,0,.1); border-radius: 8px; background: white; outline: none; }
   .social-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-  @media (min-width: 560px) {
-    .social-row { flex-direction: row; align-items: center; gap: 10px; }
-  }
+  @media (min-width: 560px) { .social-row { flex-direction: row; align-items: center; gap: 10px; } }
   .social-icon { width: 100%; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 15px; flex-shrink: 0; }
   @media (min-width: 560px) { .social-icon { width: 42px; } }
   .social-row .input { flex: 1; }
@@ -237,51 +209,35 @@
   .preview-panel-head { padding: 10px 14px; background: #f8f9ff; border-bottom: 1px solid var(--py2-border); display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--py2-muted); }
   .preview-panel-head a { color: var(--py2-orange); font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 700; }
   .preview-iframe-wrap { aspect-ratio: 16 / 10; max-height: 480px; background: #0a0a14; position: relative; }
-  @media (max-width: 899px) {
-    .preview-iframe-wrap { max-height: 360px; }
-  }
+  @media (max-width: 899px) { .preview-iframe-wrap { max-height: 360px; } }
   .preview-iframe-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
   .preview-actions { padding: 12px 14px; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--py2-border); background: white; }
   .share-block { padding: 16px 0; border-bottom: 1px solid var(--py2-border); }
   .share-block:last-child { border-bottom: none; }
   .share-url-row { display: flex; flex-direction: column; gap: 8px; background: var(--py2-light); border-radius: 10px; padding: 10px; margin-top: 10px; }
-  @media (min-width: 640px) {
-    .share-url-row { flex-direction: row; align-items: center; }
-  }
+  @media (min-width: 640px) { .share-url-row { flex-direction: row; align-items: center; } }
   .share-url { flex: 1; min-width: 0; font-family: ui-monospace, monospace; font-size: 11px; color: var(--py2-muted); word-break: break-all; line-height: 1.4; }
   .qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; background: var(--py2-light); border-radius: 12px; margin-top: 10px; text-align: center; }
-  @media (min-width: 640px) {
-    .qr-wrap { flex-direction: row; text-align: left; }
-  }
+  @media (min-width: 640px) { .qr-wrap { flex-direction: row; text-align: left; } }
   .qr-wrap img { width: 150px; height: 150px; background: white; padding: 6px; border-radius: 8px; box-shadow: var(--py2-shadow-sm); }
   .qr-wrap .qr-note { font-size: 12.5px; color: var(--py2-muted); line-height: 1.5; }
   .modal { position: fixed; inset: 0; z-index: 500; background: rgba(10,10,20,.6); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; padding: 0; }
   .modal.on { display: flex; }
-  @media (min-width: 640px) {
-    .modal { align-items: center; padding: 20px; }
-  }
+  @media (min-width: 640px) { .modal { align-items: center; padding: 20px; } }
   .modal-box { background: white; width: 100%; max-width: 100%; max-height: 92vh; max-height: 92dvh; border-radius: 20px 20px 0 0; overflow: hidden; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom, 0px); animation: slideUp .28s ease; }
-  @media (min-width: 640px) {
-    .modal-box { max-width: 480px; border-radius: 20px; animation: popIn .2s ease; }
-    .modal-box.wide { max-width: 900px; }
-  }
+  @media (min-width: 640px) { .modal-box { max-width: 480px; border-radius: 20px; animation: popIn .2s ease; } .modal-box.wide { max-width: 900px; } }
   @keyframes slideUp { from { transform: translateY(40px); opacity: .5; } to { transform: translateY(0); opacity: 1; } }
-  @keyframes popIn   { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes popIn { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .modal-head { padding: 18px 20px 8px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
   .modal-head h3 { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.15rem; }
   .modal-x { background: none; border: none; width: 40px; height: 40px; border-radius: 50%; color: var(--py2-muted); font-size: 20px; display: flex; align-items: center; justify-content: center; padding: 0; }
   .modal-body { padding: 12px 20px 18px; overflow-y: auto; flex: 1; }
   .modal-foot { padding: 12px 20px 18px; border-top: 1px solid var(--py2-border); display: flex; flex-direction: column-reverse; gap: 8px; }
-  @media (min-width: 640px) {
-    .modal-foot { flex-direction: row; justify-content: flex-end; }
-    .modal-foot .btn { min-width: 100px; }
-  }
+  @media (min-width: 640px) { .modal-foot { flex-direction: row; justify-content: flex-end; } .modal-foot .btn { min-width: 100px; } }
   .modal-foot .btn { width: 100%; }
   @media (min-width: 640px) { .modal-foot .btn { width: auto; } }
   .upgrade-modal .modal-box { max-width: 100%; max-height: 100vh; max-height: 100dvh; height: 100%; border-radius: 0; }
-  @media (min-width: 900px) {
-    .upgrade-modal .modal-box { max-width: 900px; height: auto; max-height: 90vh; border-radius: 20px; }
-  }
+  @media (min-width: 900px) { .upgrade-modal .modal-box { max-width: 900px; height: auto; max-height: 90vh; border-radius: 20px; } }
   .upgrade-head { background: linear-gradient(135deg, #0a0a14, #1a1a3e); color: white; padding: 22px 20px 18px; position: relative; flex-shrink: 0; }
   .upgrade-head h3 { font-size: 1.25rem; margin-bottom: 6px; padding-right: 40px; }
   .upgrade-head p { color: rgba(255,255,255,.6); font-size: 13px; line-height: 1.5; margin: 0; }
@@ -319,9 +275,7 @@
   .pay-note { margin-top: 14px; background: rgba(84,160,255,.07); border: 1px solid rgba(84,160,255,.2); border-radius: 12px; padding: 12px 14px; font-size: 12.5px; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
   .pay-note i { color: #54a0ff; flex-shrink: 0; margin-top: 1px; }
   .toast { position: fixed; left: 12px; right: 12px; bottom: 20px; z-index: 9999; background: var(--py2-dark); color: white; font-size: 13px; font-weight: 500; padding: 12px 18px; border-radius: 12px; text-align: center; opacity: 0; transition: opacity .25s; pointer-events: none; box-shadow: 0 12px 32px rgba(0,0,0,.28); }
-  @media (min-width: 640px) {
-    .toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 32px; max-width: 420px; white-space: nowrap; }
-  }
+  @media (min-width: 640px) { .toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 32px; max-width: 420px; white-space: nowrap; } }
   .toast.on { opacity: 1; }
   .empty { text-align: center; padding: 48px 20px; color: var(--py2-muted); }
   .empty .e-icon { font-size: 2.6rem; margin-bottom: 10px; }
@@ -905,6 +859,26 @@
   }
   var esc = P.esc;
 
+  // ── Defensive DOM helper ─────────────────────────────────────────────
+  // Every write in the render functions goes through this. If the element
+  // isn't in the DOM, the write is silently skipped. This is what makes
+  // the "Cannot set properties of null" crash impossible.
+  function setText(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  function setHtml(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = val;
+  }
+  function setClass(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.className = val;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TIER CONFIG
+  // ═══════════════════════════════════════════════════════════════════════
   var TIER_META = {
     free:     { name: 'Free',     price: 0,   icon: '🎁' },
     starter:  { name: 'Starter',  price: 10,  icon: '🚀' },
@@ -974,13 +948,13 @@
         TIERS = TIER_ORDER.map(function (key) {
           var meta = TIER_META[key];
           var dbRow = byKey[key] || {};
+          var rank = (dbRow.rank != null) ? dbRow.rank : RANK[key];
+          var weight = (dbRow.weight != null) ? dbRow.weight : 1;
+          var ad_limit = (dbRow.ad_limit != null) ? dbRow.ad_limit : 3;
           return {
-            key: key,
-            rank: (dbRow.rank != null) ? dbRow.rank : RANK[key],
-            weight: (dbRow.weight != null) ? dbRow.weight : 1,
-            ad_limit: (dbRow.ad_limit != null) ? dbRow.ad_limit : 3,
+            key: key, rank: rank, weight: weight, ad_limit: ad_limit,
             name: meta.name, price: meta.price, icon: meta.icon,
-            short: ((dbRow.ad_limit != null) ? dbRow.ad_limit : 3) + ' active ads · ' + ((dbRow.weight != null) ? dbRow.weight : 1) + '× rotation',
+            short: ad_limit + ' active ads · ' + weight + '× rotation',
             feats: featsFor(key)
           };
         });
@@ -991,6 +965,9 @@
       });
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════════════════════════════════
   var session = null;
   var advertiser = null;
   var profile = null;
@@ -1014,8 +991,8 @@
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
 
-  function openModal(id) { $(id).classList.add('on'); document.body.style.overflow = 'hidden'; }
-  function closeModal(id) { $(id).classList.remove('on'); document.body.style.overflow = ''; }
+  function openModal(id) { var el = $(id); if (el) { el.classList.add('on'); document.body.style.overflow = 'hidden'; } }
+  function closeModal(id) { var el = $(id); if (el) { el.classList.remove('on'); document.body.style.overflow = ''; } }
   function closeAllModals() {
     document.querySelectorAll('.modal.on').forEach(function (m) { m.classList.remove('on'); });
     document.body.style.overflow = '';
@@ -1049,12 +1026,13 @@
 
   $('signin-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    $('signin-error').style.display = 'none';
+    var errBox = $('signin-error');
+    if (errBox) errBox.style.display = 'none';
     var email = $('si-email').value.trim();
     var pw    = $('si-password').value;
     if (!email || !pw) {
-      $('signin-error-text').textContent = 'Please enter your email and password.';
-      $('signin-error').style.display = 'flex';
+      setText('signin-error-text', 'Please enter your email and password.');
+      if (errBox) errBox.style.display = 'flex';
       return;
     }
     var btn = $('signin-submit');
@@ -1064,15 +1042,17 @@
     P.auth.signin(email, pw)
       .then(function () { return boot(); })
       .catch(function (err) {
-        $('signin-error-text').textContent = err.message || 'Sign in failed.';
-        $('signin-error').style.display = 'flex';
+        setText('signin-error-text', err.message || 'Sign in failed.');
+        if (errBox) errBox.style.display = 'flex';
         btn.disabled = false;
         btn.innerHTML = orig;
       });
   });
 
-  $('btn-signout').addEventListener('click', doSignout);
-  $('error-signout').addEventListener('click', doSignout);
+  var btnSignout = $('btn-signout');
+  var btnErrorSignout = $('error-signout');
+  if (btnSignout) btnSignout.addEventListener('click', doSignout);
+  if (btnErrorSignout) btnErrorSignout.addEventListener('click', doSignout);
   function doSignout() {
     try { sessionStorage.removeItem('py2_tier_config'); } catch (e) {}
     P.auth.signout().then(function () {
@@ -1151,36 +1131,43 @@
   function renderPlanCard() {
     var eff = effectiveTier();
     var cfg = tierCfg(eff);
-    var card = $('plan-card');
-    card.className = 'plan-card ' + eff;
-    $('plan-icon').textContent = cfg.icon;
-    $('plan-name').textContent = cfg.name;
-    $('plan-desc').textContent = cfg.short;
+    setClass('plan-card', 'plan-card ' + eff);
+    setText('plan-icon', cfg.icon);
+    setText('plan-name', cfg.name);
+    setText('plan-desc', cfg.short);
+
     var progressWrap = $('plan-progress-wrap');
-    if (isPaidActive()) {
-      var now = new Date();
-      var exp = new Date(advertiser.tier_expires_at);
-      var daysLeft = Math.max(0, Math.ceil((exp - now) / 86400000));
-      var pct = Math.max(0, Math.min(100, (daysLeft / 30) * 100));
-      $('plan-desc').innerHTML = esc(cfg.short) + ' · <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left</strong>';
-      progressWrap.classList.add('on');
-      var fill = $('plan-progress-fill');
-      fill.style.width = pct + '%';
-      fill.className = 'plan-progress-fill' + (daysLeft <= 5 ? ' danger' : daysLeft <= 10 ? ' warn' : '');
-      $('btn-upgrade-label').textContent = 'Upgrade';
-    } else if (isExpired()) {
-      progressWrap.classList.remove('on');
-      $('btn-upgrade-label').textContent = 'Renew';
-    } else {
-      progressWrap.classList.remove('on');
-      $('btn-upgrade-label').textContent = 'Upgrade';
+    if (progressWrap) {
+      if (isPaidActive()) {
+        var now = new Date();
+        var exp = new Date(advertiser.tier_expires_at);
+        var daysLeft = Math.max(0, Math.ceil((exp - now) / 86400000));
+        var pct = Math.max(0, Math.min(100, (daysLeft / 30) * 100));
+        setHtml('plan-desc', esc(cfg.short) + ' · <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left</strong>');
+        progressWrap.classList.add('on');
+        var fill = $('plan-progress-fill');
+        if (fill) {
+          fill.style.width = pct + '%';
+          fill.className = 'plan-progress-fill' + (daysLeft <= 5 ? ' danger' : daysLeft <= 10 ? ' warn' : '');
+        }
+        setText('btn-upgrade-label', 'Upgrade');
+      } else if (isExpired()) {
+        progressWrap.classList.remove('on');
+        setText('btn-upgrade-label', 'Renew');
+      } else {
+        progressWrap.classList.remove('on');
+        setText('btn-upgrade-label', 'Upgrade');
+      }
     }
-    if (isExpired()) {
+
+    var expiredBanner = $('expired-banner');
+    var expiredText = $('expired-text');
+    if (isExpired() && expiredBanner && expiredText) {
       var days = Math.max(1, Math.round((new Date() - new Date(advertiser.tier_expires_at)) / 86400000));
-      $('expired-text').innerHTML = 'Your <strong>' + esc(tierCfg(advertiser.tier).name) + '</strong> plan expired ' + days + ' day' + (days === 1 ? '' : 's') + ' ago.';
-      $('expired-banner').style.display = 'flex';
-    } else {
-      $('expired-banner').style.display = 'none';
+      expiredText.innerHTML = 'Your <strong>' + esc(tierCfg(advertiser.tier).name) + '</strong> plan expired ' + days + ' day' + (days === 1 ? '' : 's') + ' ago.';
+      expiredBanner.style.display = 'flex';
+    } else if (expiredBanner) {
+      expiredBanner.style.display = 'none';
     }
   }
 
@@ -1191,38 +1178,45 @@
       tImp += statsByAd[k].impressions || 0;
       tClk += statsByAd[k].clicks || 0;
     });
-    $('stat-active').textContent      = num(active);
-    $('stat-impressions').textContent = num(tImp);
-    $('stat-clicks').textContent      = num(tClk);
-    $('stat-ctr').textContent         = tImp ? ctr(tImp, tClk) : '—';
-    $('stat-views').textContent       = num(profile && profile.view_count ? profile.view_count : 0);
-    $('tab-count-ads').textContent    = num(ads.length);
+    setText('stat-active', num(active));
+    setText('stat-impressions', num(tImp));
+    setText('stat-clicks', num(tClk));
+    setText('stat-ctr', tImp ? ctr(tImp, tClk) : '—');
+    setText('stat-views', num(profile && profile.view_count ? profile.view_count : 0));
+    setText('tab-count-ads', num(ads.length));
+
     var sources = { adshare: 0, whatsapp: 0, facebook: 0, instagram: 0 };
     Object.keys(statsByAd).forEach(function (id) {
       var s = statsByAd[id].sources || {};
-      Object.keys(s).forEach(function (k) { if (sources[k] !== undefined) sources[k] += s[k]; });
+      Object.keys(s).forEach(function (k) {
+        if (sources[k] !== undefined) sources[k] += s[k];
+      });
     });
-    $('src-adshare').textContent = num(sources.adshare);
-    $('src-wa').textContent      = num(sources.whatsapp);
-    $('src-fb').textContent      = num(sources.facebook);
-    $('src-ig').textContent      = num(sources.instagram);
+    setText('src-adshare', num(sources.adshare));
+    setText('src-wa', num(sources.whatsapp));
+    setText('src-fb', num(sources.facebook));
+    setText('src-ig', num(sources.instagram));
   }
 
   function renderStatsTable() {
     var wrap = $('stats-table-wrap');
+    if (!wrap) return;
     if (!ads.length) {
       wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--py2-muted);font-size:14px;">No ads yet.</div>';
       return;
     }
     var rows = ads.map(function (a) {
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
-      return '<tr><td><strong>' + esc(a.title) + '</strong></td>' +
+      return '<tr>' +
+        '<td><strong>' + esc(a.title) + '</strong></td>' +
         '<td>' + statusBadge(a.status) + '</td>' +
         '<td>' + num(s.impressions) + '</td>' +
         '<td>' + num(s.clicks) + '</td>' +
-        '<td>' + ctr(s.impressions, s.clicks) + '</td></tr>';
+        '<td>' + ctr(s.impressions, s.clicks) + '</td>' +
+      '</tr>';
     }).join('');
-    wrap.innerHTML = '<div class="table-wrap"><table class="data-table">' +
+    wrap.innerHTML =
+      '<div class="table-wrap"><table class="data-table">' +
       '<thead><tr><th>Ad</th><th>Status</th><th>Views</th><th>Clicks</th><th>CTR</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>';
   }
@@ -1243,6 +1237,7 @@
     var list = ads.slice();
     if (adsFilter !== 'all') list = list.filter(function (a) { return a.status === adsFilter; });
     var container = $('ads-list');
+    if (!container) return;
     if (!ads.length) {
       container.innerHTML =
         '<div class="empty"><div class="e-icon">📣</div><h3>No ads yet</h3>' +
@@ -1344,18 +1339,22 @@
   });
   window.AdsUI = { switchTab: switchTab, openUpgrade: openUpgradeModal };
 
-  $('btn-new-ad-top').addEventListener('click', function () { resetAdForm(); switchTab('create'); });
+  var btnNewAdTop = $('btn-new-ad-top');
+  if (btnNewAdTop) btnNewAdTop.addEventListener('click', function () { resetAdForm(); switchTab('create'); });
 
   function openUpgradeModal() {
     renderTiers();
     openModal('modal-upgrade');
   }
-  $('btn-upgrade').addEventListener('click', openUpgradeModal);
-  $('btn-renew').addEventListener('click', openUpgradeModal);
+  var btnUpgrade = $('btn-upgrade');
+  var btnRenew = $('btn-renew');
+  if (btnUpgrade) btnUpgrade.addEventListener('click', openUpgradeModal);
+  if (btnRenew) btnRenew.addEventListener('click', openUpgradeModal);
 
   function renderTiers() {
     var eff = effectiveTier();
     var grid = $('tiers-grid');
+    if (!grid) return;
     grid.innerHTML = '';
     if (!TIERS.length) {
       grid.innerHTML = '<div style="padding:30px;text-align:center;color:var(--py2-muted);font-size:13px;">Loading plans…</div>';
@@ -1404,13 +1403,13 @@
     var waText = encodeURIComponent(msg);
     var mailSubject = encodeURIComponent('Upgrade to ' + cfg.name + ' — ' + biz);
     var mailBody = encodeURIComponent(msg);
-    $('payment-title').textContent = 'Pay for ' + cfg.name;
-    $('pay-summary').innerHTML =
+    setText('payment-title', 'Pay for ' + cfg.name);
+    setHtml('pay-summary',
       '<div class="prow"><span>Business</span><strong>' + esc(biz) + '</strong></div>' +
       '<div class="prow"><span>Plan</span><strong>' + cfg.icon + ' ' + esc(cfg.name) + '</strong></div>' +
       '<div class="prow"><span>Duration</span><strong>30 days</strong></div>' +
-      '<div class="prow"><span>Amount</span><span class="price">K' + cfg.price + '</span></div>';
-    $('pay-methods').innerHTML =
+      '<div class="prow"><span>Amount</span><span class="price">K' + cfg.price + '</span></div>');
+    setHtml('pay-methods',
       '<a class="pay-btn" href="https://wa.me/' + PAY_PHONE + '?text=' + waText + '" target="_blank" rel="noopener">' +
         '<div class="pay-icon" style="background:linear-gradient(135deg,#128c7e,#25d366);"><i class="fa-brands fa-whatsapp"></i></div>' +
         '<div class="pay-body"><div class="pay-title">WhatsApp</div><div class="pay-sub">Fastest — replies in minutes</div></div>' +
@@ -1422,7 +1421,7 @@
       '<a class="pay-btn" href="mailto:' + PAY_EMAIL + '?subject=' + mailSubject + '&body=' + mailBody + '">' +
         '<div class="pay-icon" style="background:linear-gradient(135deg,#ff6b6b,#feca57);"><i class="fa-solid fa-envelope"></i></div>' +
         '<div class="pay-body"><div class="pay-title">Email</div><div class="pay-sub">' + PAY_EMAIL + '</div></div>' +
-        '<i class="fa-solid fa-arrow-right p-arrow"></i></a>';
+        '<i class="fa-solid fa-arrow-right p-arrow"></i></a>');
     openModal('modal-payment');
   }
 
@@ -1444,27 +1443,33 @@
     youtube:   'YouTube channel or video URL'
   };
 
-  $('f-dest-type').addEventListener('change', function () {
+  var fDestType = $('f-dest-type');
+  if (fDestType) fDestType.addEventListener('change', function () {
     var t = this.value;
-    $('dest-help').textContent = DEST_HELP[t] || '';
+    setText('dest-help', DEST_HELP[t] || '');
+    var u = $('f-dest-url');
+    if (!u) return;
     if (t === 'whatsapp') {
-      $('f-dest-url').type = 'tel';
-      $('f-dest-url').placeholder = '+260 9XX XXX XXX';
+      u.type = 'tel';
+      u.placeholder = '+260 9XX XXX XXX';
     } else {
-      $('f-dest-url').type = 'url';
-      $('f-dest-url').placeholder = 'https://…';
+      u.type = 'url';
+      u.placeholder = 'https://…';
     }
   });
-  $('f-title').addEventListener('input', function () { $('count-title').textContent = this.value.length + ' / 60'; });
-  $('f-desc').addEventListener('input', function () { $('count-desc').textContent = this.value.length + ' / 200'; });
+  var fTitle = $('f-title');
+  if (fTitle) fTitle.addEventListener('input', function () { setText('count-title', this.value.length + ' / 60'); });
+  var fDesc = $('f-desc');
+  if (fDesc) fDesc.addEventListener('input', function () { setText('count-desc', this.value.length + ' / 200'); });
 
   document.querySelectorAll('.mtoggle-btn').forEach(function (b) {
     b.addEventListener('click', function () {
       var mode = b.getAttribute('data-media');
       videoState.mode = mode;
       document.querySelectorAll('.mtoggle-btn').forEach(function (x) { x.classList.toggle('on', x === b); });
-      $('mode-image').style.display = (mode === 'image') ? 'block' : 'none';
-      $('mode-video').style.display = (mode === 'video') ? 'block' : 'none';
+      var mi = $('mode-image'), mv = $('mode-video');
+      if (mi) mi.style.display = (mode === 'image') ? 'block' : 'none';
+      if (mv) mv.style.display = (mode === 'video') ? 'block' : 'none';
       updateVideoPreview();
     });
   });
@@ -1477,25 +1482,29 @@
       videoState.file = null;
       videoState.uploadedUrl = null;
       document.querySelectorAll('.vsrc-btn').forEach(function (x) { x.classList.toggle('on', x === b); });
+      var uw = $('v-url-wrap'), fw = $('v-file-wrap');
       if (src === 'mp4') {
-        $('v-url-wrap').style.display = 'none';
-        $('v-file-wrap').style.display = 'block';
+        if (uw) uw.style.display = 'none';
+        if (fw) fw.style.display = 'block';
       } else {
-        $('v-url-wrap').style.display = 'block';
-        $('v-file-wrap').style.display = 'none';
+        if (uw) uw.style.display = 'block';
+        if (fw) fw.style.display = 'none';
         var help = { youtube: 'https://youtube.com/watch?v=…', vimeo: 'https://vimeo.com/…', tiktok: 'https://tiktok.com/@user/video/…' };
-        $('v-url-help').textContent = 'Paste the full video URL, e.g. ' + help[src];
-        $('f-video-url').value = '';
+        setText('v-url-help', 'Paste the full video URL, e.g. ' + help[src]);
+        var fu = $('f-video-url');
+        if (fu) fu.value = '';
       }
       updateVideoPreview();
     });
   });
 
-  $('f-video-url').addEventListener('input', function () {
+  var fVideoUrl = $('f-video-url');
+  if (fVideoUrl) fVideoUrl.addEventListener('input', function () {
     videoState.url = this.value.trim();
     updateVideoPreview();
   });
-  $('f-video').addEventListener('change', function () {
+  var fVideo = $('f-video');
+  if (fVideo) fVideo.addEventListener('change', function () {
     if (this.files && this.files[0]) {
       var f = this.files[0];
       if (f.size > 5 * 1024 * 1024) { toast('Video too large (max 5MB)', 'error'); this.value = ''; return; }
@@ -1504,12 +1513,16 @@
       updateVideoPreview();
     }
   });
-  $('vid-drop').addEventListener('click', function () { $('f-video').click(); });
-  $('v-preview-remove').addEventListener('click', function () {
+  var vidDrop = $('vid-drop');
+  if (vidDrop) vidDrop.addEventListener('click', function () { var fv = $('f-video'); if (fv) fv.click(); });
+  var vPreviewRemove = $('v-preview-remove');
+  if (vPreviewRemove) vPreviewRemove.addEventListener('click', function () {
     videoState.url = ''; videoState.file = null; videoState.uploadedUrl = null;
-    $('f-video-url').value = ''; $('f-video').value = '';
-    $('v-preview').classList.remove('on');
-    $('v-preview-inner').innerHTML = '';
+    var fu = $('f-video-url'), fv = $('f-video');
+    if (fu) fu.value = ''; if (fv) fv.value = '';
+    var vp = $('v-preview');
+    if (vp) vp.classList.remove('on');
+    setHtml('v-preview-inner', '');
   });
 
   function videoUrlValid(url, src) {
@@ -1522,6 +1535,7 @@
   function updateVideoPreview() {
     var inner = $('v-preview-inner');
     var wrap = $('v-preview');
+    if (!inner || !wrap) return;
     var src = videoState.src;
     var url = videoState.url;
     var html = '';
@@ -1541,82 +1555,87 @@
     else { inner.innerHTML = ''; wrap.classList.remove('on'); }
   }
 
-  $('img-drop').addEventListener('click', function () { $('f-image').click(); });
-  $('f-image').addEventListener('change', function () {
+  var imgDrop = $('img-drop');
+  if (imgDrop) imgDrop.addEventListener('click', function () { var fi = $('f-image'); if (fi) fi.click(); });
+  var fImage = $('f-image');
+  if (fImage) fImage.addEventListener('change', function () {
     if (this.files && this.files[0]) {
       imgState.file = this.files[0];
       imgState.uploadedUrl = null;
       var r = new FileReader();
       r.onload = function (e) {
-        $('img-preview').classList.add('on');
-        $('img-preview-img').src = e.target.result;
+        var p = $('img-preview'); if (p) p.classList.add('on');
+        var im = $('img-preview-img'); if (im) im.src = e.target.result;
       };
       r.readAsDataURL(imgState.file);
     }
   });
-  $('img-remove').addEventListener('click', function () {
+  var imgRemove = $('img-remove');
+  if (imgRemove) imgRemove.addEventListener('click', function () {
     imgState = { file: null, uploadedUrl: null };
-    $('f-image').value = '';
-    $('img-preview').classList.remove('on');
-    $('img-preview-img').src = '';
+    var fi = $('f-image'); if (fi) fi.value = '';
+    var p = $('img-preview'); if (p) p.classList.remove('on');
+    var im = $('img-preview-img'); if (im) im.src = '';
   });
 
   function resetAdForm() {
     editingAdId = null;
-    $('form-title').textContent = 'Create a New Ad';
-    $('submit-label').textContent = 'Submit Ad';
-    $('f-ad-id').value = '';
-    $('f-title').value = '';
-    $('f-desc').value = '';
-    $('f-dest-type').value = '';
-    $('f-dest-url').value = '';
-    $('f-dest-url').type = 'text';
-    $('f-dest-url').placeholder = 'Choose a destination type above first';
-    $('dest-help').textContent = '';
-    $('f-start').value = todayISO();
-    $('f-end').value = '';
-    $('count-title').textContent = '0 / 60';
-    $('count-desc').textContent = '0 / 200';
-    $('form-error').style.display = 'none';
-    $('form-info').style.display = 'none';
+    setText('form-title', 'Create a New Ad');
+    setText('submit-label', 'Submit Ad');
+    var f;
+    f = $('f-ad-id'); if (f) f.value = '';
+    f = $('f-title'); if (f) f.value = '';
+    f = $('f-desc'); if (f) f.value = '';
+    f = $('f-dest-type'); if (f) f.value = '';
+    f = $('f-dest-url');
+    if (f) { f.value = ''; f.type = 'text'; f.placeholder = 'Choose a destination type above first'; }
+    setText('dest-help', '');
+    f = $('f-start'); if (f) f.value = todayISO();
+    f = $('f-end'); if (f) f.value = '';
+    setText('count-title', '0 / 60');
+    setText('count-desc', '0 / 200');
+    var fe = $('form-error'); if (fe) fe.style.display = 'none';
+    var fi = $('form-info'); if (fi) fi.style.display = 'none';
     imgState = { file: null, uploadedUrl: null };
-    $('f-image').value = '';
-    $('img-preview').classList.remove('on');
-    $('img-preview-img').src = '';
+    f = $('f-image'); if (f) f.value = '';
+    var ip = $('img-preview'); if (ip) ip.classList.remove('on');
+    var ii = $('img-preview-img'); if (ii) ii.src = '';
     videoState = { mode: 'image', src: 'youtube', url: '', file: null, uploadedUrl: null };
-    $('f-video-url').value = '';
-    $('f-video').value = '';
-    $('v-preview').classList.remove('on');
-    $('v-preview-inner').innerHTML = '';
-    $('mode-image').style.display = 'block';
-    $('mode-video').style.display = 'none';
-    $('v-url-wrap').style.display = 'block';
-    $('v-file-wrap').style.display = 'none';
+    f = $('f-video-url'); if (f) f.value = '';
+    f = $('f-video'); if (f) f.value = '';
+    var vp = $('v-preview'); if (vp) vp.classList.remove('on');
+    setHtml('v-preview-inner', '');
+    var mi = $('mode-image'); if (mi) mi.style.display = 'block';
+    var mv = $('mode-video'); if (mv) mv.style.display = 'none';
+    var uw = $('v-url-wrap'); if (uw) uw.style.display = 'block';
+    var fw = $('v-file-wrap'); if (fw) fw.style.display = 'none';
     document.querySelectorAll('.mtoggle-btn').forEach(function (b, i) { b.classList.toggle('on', i === 0); });
     document.querySelectorAll('.vsrc-btn').forEach(function (b, i) { b.classList.toggle('on', i === 0); });
     document.querySelectorAll('.error-msg').forEach(function (e) { e.classList.remove('show'); });
     document.querySelectorAll('.input.err, .textarea.err').forEach(function (e) { e.classList.remove('err'); });
   }
 
-  $('btn-cancel-ad').addEventListener('click', function () { resetAdForm(); switchTab('ads'); });
+  var btnCancelAd = $('btn-cancel-ad');
+  if (btnCancelAd) btnCancelAd.addEventListener('click', function () { resetAdForm(); switchTab('ads'); });
 
   function startEdit(ad) {
     resetAdForm();
     editingAdId = ad.id;
-    $('form-title').textContent = 'Edit Ad';
-    $('submit-label').textContent = 'Save Changes';
-    $('f-ad-id').value = ad.id;
-    $('f-title').value = ad.title || '';
-    $('f-desc').value = ad.description || '';
-    $('f-dest-type').value = ad.destination_type || '';
-    $('f-dest-type').dispatchEvent(new Event('change'));
-    $('f-dest-url').value = ad.destination_url || '';
-    if (ad.start_date) $('f-start').value = ad.start_date.slice(0, 10);
-    if (ad.end_date)   $('f-end').value = ad.end_date.slice(0, 10);
+    setText('form-title', 'Edit Ad');
+    setText('submit-label', 'Save Changes');
+    var f;
+    f = $('f-ad-id'); if (f) f.value = ad.id;
+    f = $('f-title'); if (f) f.value = ad.title || '';
+    f = $('f-desc'); if (f) f.value = ad.description || '';
+    f = $('f-dest-type'); if (f) f.value = ad.destination_type || '';
+    var dt = $('f-dest-type'); if (dt) dt.dispatchEvent(new Event('change'));
+    f = $('f-dest-url'); if (f) f.value = ad.destination_url || '';
+    f = $('f-start'); if (f && ad.start_date) f.value = ad.start_date.slice(0, 10);
+    f = $('f-end'); if (f && ad.end_date) f.value = ad.end_date.slice(0, 10);
     if (ad.media_type === 'video') {
       videoState.mode = 'video';
-      $('mode-image').style.display = 'none';
-      $('mode-video').style.display = 'block';
+      var mi = $('mode-image'); if (mi) mi.style.display = 'none';
+      var mv = $('mode-video'); if (mv) mv.style.display = 'block';
       document.querySelectorAll('.mtoggle-btn').forEach(function (b) {
         b.classList.toggle('on', b.getAttribute('data-media') === 'video');
       });
@@ -1627,23 +1646,23 @@
       });
       if (prov === 'mp4') {
         videoState.uploadedUrl = ad.media_url;
-        $('v-url-wrap').style.display = 'none';
-        $('v-file-wrap').style.display = 'block';
+        var uw = $('v-url-wrap'); if (uw) uw.style.display = 'none';
+        var fw = $('v-file-wrap'); if (fw) fw.style.display = 'block';
       } else {
         videoState.url = ad.media_url;
-        $('f-video-url').value = ad.media_url;
+        var fu = $('f-video-url'); if (fu) fu.value = ad.media_url;
       }
       updateVideoPreview();
     } else if (ad.media_url) {
       imgState.uploadedUrl = ad.media_url;
-      $('img-preview').classList.add('on');
-      $('img-preview-img').src = ad.media_url;
+      var ip = $('img-preview'); if (ip) ip.classList.add('on');
+      var ii = $('img-preview-img'); if (ii) ii.src = ad.media_url;
     }
-    $('count-title').textContent = $('f-title').value.length + ' / 60';
-    $('count-desc').textContent = $('f-desc').value.length + ' / 200';
+    var ft = $('f-title'); setText('count-title', (ft ? ft.value.length : 0) + ' / 60');
+    var fd = $('f-desc'); setText('count-desc', (fd ? fd.value.length : 0) + ' / 200');
     if (ad.status === 'approved') {
-      $('form-info').style.display = 'flex';
-      $('form-info-text').textContent = 'Saving changes to a live ad sends it back for review.';
+      var fi = $('form-info'); if (fi) fi.style.display = 'flex';
+      setText('form-info-text', 'Saving changes to a live ad sends it back for review.');
     }
     switchTab('create');
   }
@@ -1658,13 +1677,15 @@
   }
   function validateAdForm() {
     var ok = true;
-    if (!$('f-title').value.trim())   { setErr('title', true); ok = false; }     else setErr('title', false);
-    if (!$('f-dest-type').value)      { setErr('dest-type', true); ok = false; } else setErr('dest-type', false);
-    if (!$('f-dest-url').value.trim()){ setErr('dest-url', true); ok = false; }  else setErr('dest-url', false);
-    var t = $('f-dest-type').value, u = $('f-dest-url').value.trim();
-    if (t === 'whatsapp') {
-      if (u.replace(/[^\d]/g, '').length < 9) { setErr('dest-url', true); ok = false; }
-    } else if (u && u.indexOf('http') !== 0) { setErr('dest-url', true); ok = false; }
+    var t = $('f-title') ? $('f-title').value.trim() : '';
+    var dt = $('f-dest-type') ? $('f-dest-type').value : '';
+    var du = $('f-dest-url') ? $('f-dest-url').value.trim() : '';
+    if (!t)  { setErr('title', true); ok = false; }     else setErr('title', false);
+    if (!dt) { setErr('dest-type', true); ok = false; } else setErr('dest-type', false);
+    if (!du) { setErr('dest-url', true); ok = false; }  else setErr('dest-url', false);
+    if (dt === 'whatsapp') {
+      if (du.replace(/[^\d]/g, '').length < 9) { setErr('dest-url', true); ok = false; }
+    } else if (du && du.indexOf('http') !== 0) { setErr('dest-url', true); ok = false; }
     if (videoState.mode === 'video') {
       if (videoState.src === 'mp4') {
         if (!videoState.uploadedUrl && !videoState.file) { toast('Please upload a video', 'error'); ok = false; }
@@ -1681,9 +1702,10 @@
     return ok;
   }
 
-  $('btn-submit-ad').addEventListener('click', function () {
-    $('form-error').style.display = 'none';
-    $('form-info').style.display = 'none';
+  var btnSubmitAd = $('btn-submit-ad');
+  if (btnSubmitAd) btnSubmitAd.addEventListener('click', function () {
+    var fe = $('form-error'); if (fe) fe.style.display = 'none';
+    var fi = $('form-info'); if (fi) fi.style.display = 'none';
     if (!validateAdForm()) { toast('Please fix highlighted fields', 'error'); return; }
     var btn = this;
     var orig = btn.innerHTML;
@@ -1721,15 +1743,15 @@
     mediaPromise.then(function (mediaUrl) {
       btn.innerHTML = '<span class="spinner"></span> Saving…';
       var payload = {
-        title:            $('f-title').value.trim(),
-        description:      $('f-desc').value.trim() || null,
+        title:            $('f-title') ? $('f-title').value.trim() : '',
+        description:      $('f-desc') ? ($('f-desc').value.trim() || null) : null,
         media_url:        mediaUrl,
         media_type:       finalMediaType,
         video_provider:   finalProvider,
-        destination_type: $('f-dest-type').value,
-        destination_url:  $('f-dest-url').value.trim(),
-        start_date:       $('f-start').value ? new Date($('f-start').value + 'T00:00:00').toISOString() : new Date().toISOString(),
-        end_date:         $('f-end').value ? new Date($('f-end').value + 'T23:59:59').toISOString() : null
+        destination_type: $('f-dest-type') ? $('f-dest-type').value : '',
+        destination_url:  $('f-dest-url') ? $('f-dest-url').value.trim() : '',
+        start_date:       ($('f-start') && $('f-start').value) ? new Date($('f-start').value + 'T00:00:00').toISOString() : new Date().toISOString(),
+        end_date:         ($('f-end') && $('f-end').value) ? new Date($('f-end').value + 'T23:59:59').toISOString() : null
       };
       if (editingAdId) {
         var cur = ads.find(function (x) { return x.id === editingAdId; });
@@ -1737,7 +1759,7 @@
         return P.db.update('ads', 'id=eq.' + editingAdId, payload, session.access_token);
       } else {
         payload.advertiser_id = advertiser.id;
-        payload.slug = makeSlug($('f-title').value);
+        payload.slug = makeSlug($('f-title') ? $('f-title').value : '');
         payload.status = 'pending';
         payload.weight = 1;
         payload.placement = 'carousel';
@@ -1752,9 +1774,9 @@
       btn.disabled = false;
       btn.innerHTML = orig;
       var msg = err && err.message ? err.message : 'Could not save.';
-      var fe  = $('form-error');
-      var fet = $('form-error-text');
-      if (fe)  fe.style.display = 'flex';
+      var fe2  = $('form-error');
+      var fet  = $('form-error-text');
+      if (fe2) fe2.style.display = 'flex';
       if (fet) fet.textContent = msg;
       toast(msg, 'error');
     });
@@ -1766,9 +1788,11 @@
       .catch(function (e) { toast(e.message || 'Failed', 'error'); });
   }
   function confirmDelete(ad) {
-    $('confirm-title').textContent = 'Delete this ad?';
-    $('confirm-body').innerHTML = 'The ad <strong>' + esc(ad.title) + '</strong> will be permanently removed.';
-    $('confirm-action').onclick = function () {
+    setText('confirm-title', 'Delete this ad?');
+    var cb = $('confirm-body');
+    if (cb) cb.innerHTML = 'The ad <strong>' + esc(ad.title) + '</strong> will be permanently removed.';
+    var ca = $('confirm-action');
+    if (ca) ca.onclick = function () {
       closeModal('modal-confirm');
       P.db.delete('ads', 'id=eq.' + ad.id, session.access_token)
         .then(function () { toast('Ad deleted', 'success'); return reloadAll(); })
@@ -1777,7 +1801,7 @@
     openModal('modal-confirm');
   }
   function showReason(ad) {
-    $('reason-text').textContent = ad.rejection_reason || 'No reason provided.';
+    setText('reason-text', ad.rejection_reason || 'No reason provided.');
     openModal('modal-reason');
   }
 
@@ -1786,38 +1810,40 @@
     var eff = effectiveTier();
     var rank = RANK[eff] || 0;
     var url = window.location.origin + '/b/' + profile.slug;
-    $('profile-url').textContent = url;
-    $('preview-open-link').href = url;
-    $('pf-tagline').value = profile.tagline || '';
-    $('pf-about').value = profile.about || '';
+    setText('profile-url', url);
+    var ol = $('preview-open-link'); if (ol) ol.href = url;
+    var f;
+    f = $('pf-tagline'); if (f) f.value = profile.tagline || '';
+    f = $('pf-about'); if (f) f.value = profile.about || '';
     if (advertiser.logo_url) {
-      $('pf-logo-preview').classList.add('on');
-      $('pf-logo-img').src = advertiser.logo_url;
+      var lp = $('pf-logo-preview'); if (lp) lp.classList.add('on');
+      var li = $('pf-logo-img'); if (li) li.src = advertiser.logo_url;
     } else {
-      $('pf-logo-preview').classList.remove('on');
+      var lp2 = $('pf-logo-preview'); if (lp2) lp2.classList.remove('on');
     }
     if (profile.cover_image_url) {
-      $('pf-cover-preview').classList.add('on');
-      $('pf-cover-img').src = profile.cover_image_url;
+      var cp = $('pf-cover-preview'); if (cp) cp.classList.add('on');
+      var ci = $('pf-cover-img'); if (ci) ci.src = profile.cover_image_url;
     } else {
-      $('pf-cover-preview').classList.remove('on');
+      var cp2 = $('pf-cover-preview'); if (cp2) cp2.classList.remove('on');
     }
-    $('pf-color-primary').value = profile.primary_color || '#ff6000';
-    $('pf-color-primary-hex').value = profile.primary_color || '#ff6000';
-    $('pf-color-accent').value = profile.accent_color || '#ff9f43';
-    $('pf-color-accent-hex').value = profile.accent_color || '#ff9f43';
+    f = $('pf-color-primary'); if (f) f.value = profile.primary_color || '#ff6000';
+    f = $('pf-color-primary-hex'); if (f) f.value = profile.primary_color || '#ff6000';
+    f = $('pf-color-accent'); if (f) f.value = profile.accent_color || '#ff9f43';
+    f = $('pf-color-accent-hex'); if (f) f.value = profile.accent_color || '#ff9f43';
     var s = profile.social_links || {};
-    $('pf-social-facebook').value = s.facebook || '';
-    $('pf-social-instagram').value = s.instagram || '';
-    $('pf-social-tiktok').value = s.tiktok || '';
-    $('pf-social-youtube').value = s.youtube || '';
-    $('pf-social-website').value = s.website || '';
-    $('pf-contact-phone').value = profile.contact_phone || '';
-    $('pf-contact-whatsapp').value = profile.contact_whatsapp || '';
-    $('pf-contact-email').value = profile.contact_email || '';
+    f = $('pf-social-facebook'); if (f) f.value = s.facebook || '';
+    f = $('pf-social-instagram'); if (f) f.value = s.instagram || '';
+    f = $('pf-social-tiktok'); if (f) f.value = s.tiktok || '';
+    f = $('pf-social-youtube'); if (f) f.value = s.youtube || '';
+    f = $('pf-social-website'); if (f) f.value = s.website || '';
+    f = $('pf-contact-phone'); if (f) f.value = profile.contact_phone || '';
+    f = $('pf-contact-whatsapp'); if (f) f.value = profile.contact_whatsapp || '';
+    f = $('pf-contact-email'); if (f) f.value = profile.contact_email || '';
     var locked = rank < 2;
     ['fld-cover','fld-colors','fld-socials'].forEach(function (id) {
-      $(id).classList.toggle('locked', locked);
+      var el = $(id);
+      if (el) el.classList.toggle('locked', locked);
     });
     refreshPreview();
   }
@@ -1828,84 +1854,103 @@
     if (frame) frame.src = '/b/' + profile.slug + '?preview=' + Date.now();
   }
 
-  $('btn-preview-refresh').addEventListener('click', function () { refreshPreview(); toast('Preview refreshed', 'success'); });
-  $('btn-preview-qr').addEventListener('click', function () {
+  var btnPreviewRefresh = $('btn-preview-refresh');
+  if (btnPreviewRefresh) btnPreviewRefresh.addEventListener('click', function () { refreshPreview(); toast('Preview refreshed', 'success'); });
+  var btnPreviewQr = $('btn-preview-qr');
+  if (btnPreviewQr) btnPreviewQr.addEventListener('click', function () {
     if (!profile) return;
     var url = window.location.origin + '/b/' + profile.slug;
-    $('qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(url);
+    var q = $('qr-img');
+    if (q) q.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(url);
     openModal('modal-qr');
   });
-  $('btn-copy-profile-url').addEventListener('click', function () {
+  var btnCopyProfileUrl = $('btn-copy-profile-url');
+  if (btnCopyProfileUrl) btnCopyProfileUrl.addEventListener('click', function () {
     if (!profile) return;
     var url = window.location.origin + '/b/' + profile.slug;
     navigator.clipboard.writeText(url).then(function () { toast('Link copied!', 'success'); })
       .catch(function () { toast('Could not copy', 'error'); });
   });
 
-  $('pf-logo-drop').addEventListener('click', function () { $('pf-logo-file').click(); });
-  $('pf-logo-file').addEventListener('change', function () {
+  var pfLogoDrop = $('pf-logo-drop');
+  if (pfLogoDrop) pfLogoDrop.addEventListener('click', function () { var f = $('pf-logo-file'); if (f) f.click(); });
+  var pfLogoFile = $('pf-logo-file');
+  if (pfLogoFile) pfLogoFile.addEventListener('change', function () {
     if (this.files && this.files[0]) {
       logoFile = this.files[0];
       var r = new FileReader();
       r.onload = function (e) {
-        $('pf-logo-preview').classList.add('on');
-        $('pf-logo-img').src = e.target.result;
+        var p = $('pf-logo-preview'); if (p) p.classList.add('on');
+        var i = $('pf-logo-img'); if (i) i.src = e.target.result;
       };
       r.readAsDataURL(logoFile);
     }
   });
-  $('pf-logo-remove').addEventListener('click', function () {
-    logoFile = null; $('pf-logo-file').value = '';
-    $('pf-logo-preview').classList.remove('on'); $('pf-logo-img').src = '';
+  var pfLogoRemove = $('pf-logo-remove');
+  if (pfLogoRemove) pfLogoRemove.addEventListener('click', function () {
+    logoFile = null;
+    var f = $('pf-logo-file'); if (f) f.value = '';
+    var p = $('pf-logo-preview'); if (p) p.classList.remove('on');
+    var i = $('pf-logo-img'); if (i) i.src = '';
   });
 
-  $('pf-cover-drop').addEventListener('click', function () { $('pf-cover-file').click(); });
-  $('pf-cover-file').addEventListener('change', function () {
+  var pfCoverDrop = $('pf-cover-drop');
+  if (pfCoverDrop) pfCoverDrop.addEventListener('click', function () { var f = $('pf-cover-file'); if (f) f.click(); });
+  var pfCoverFile = $('pf-cover-file');
+  if (pfCoverFile) pfCoverFile.addEventListener('change', function () {
     if (this.files && this.files[0]) {
       coverFile = this.files[0];
       var r = new FileReader();
       r.onload = function (e) {
-        $('pf-cover-preview').classList.add('on');
-        $('pf-cover-img').src = e.target.result;
+        var p = $('pf-cover-preview'); if (p) p.classList.add('on');
+        var i = $('pf-cover-img'); if (i) i.src = e.target.result;
       };
       r.readAsDataURL(coverFile);
     }
   });
-  $('pf-cover-remove').addEventListener('click', function () {
-    coverFile = null; $('pf-cover-file').value = '';
-    $('pf-cover-preview').classList.remove('on'); $('pf-cover-img').src = '';
+  var pfCoverRemove = $('pf-cover-remove');
+  if (pfCoverRemove) pfCoverRemove.addEventListener('click', function () {
+    coverFile = null;
+    var f = $('pf-cover-file'); if (f) f.value = '';
+    var p = $('pf-cover-preview'); if (p) p.classList.remove('on');
+    var i = $('pf-cover-img'); if (i) i.src = '';
   });
 
-  $('pf-color-primary').addEventListener('input', function () { $('pf-color-primary-hex').value = this.value; });
-  $('pf-color-primary-hex').addEventListener('input', function () { if (isHex(this.value)) $('pf-color-primary').value = this.value; });
-  $('pf-color-accent').addEventListener('input', function () { $('pf-color-accent-hex').value = this.value; });
-  $('pf-color-accent-hex').addEventListener('input', function () { if (isHex(this.value)) $('pf-color-accent').value = this.value; });
+  var pfColorPrimary = $('pf-color-primary');
+  var pfColorPrimaryHex = $('pf-color-primary-hex');
+  if (pfColorPrimary) pfColorPrimary.addEventListener('input', function () { if (pfColorPrimaryHex) pfColorPrimaryHex.value = this.value; });
+  if (pfColorPrimaryHex) pfColorPrimaryHex.addEventListener('input', function () { if (isHex(this.value) && pfColorPrimary) pfColorPrimary.value = this.value; });
+  var pfColorAccent = $('pf-color-accent');
+  var pfColorAccentHex = $('pf-color-accent-hex');
+  if (pfColorAccent) pfColorAccent.addEventListener('input', function () { if (pfColorAccentHex) pfColorAccentHex.value = this.value; });
+  if (pfColorAccentHex) pfColorAccentHex.addEventListener('input', function () { if (isHex(this.value) && pfColorAccent) pfColorAccent.value = this.value; });
 
-  $('btn-save-profile').addEventListener('click', function () {
+  var btnSaveProfile = $('btn-save-profile');
+  if (btnSaveProfile) btnSaveProfile.addEventListener('click', function () {
     if (!profile || !advertiser) return;
     var btn = this;
     var orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Saving…';
-    $('profile-error').style.display = 'none';
+    var pe = $('profile-error'); if (pe) pe.style.display = 'none';
     var eff = effectiveTier();
     var rank = RANK[eff] || 0;
     var patch = {
-      tagline: $('pf-tagline').value.trim() || null,
-      about:   $('pf-about').value.trim() || null,
-      contact_phone:    $('pf-contact-phone').value.trim() || null,
-      contact_whatsapp: $('pf-contact-whatsapp').value.trim() || null,
-      contact_email:    $('pf-contact-email').value.trim() || null
+      tagline: ($('pf-tagline') && $('pf-tagline').value.trim()) || null,
+      about:   ($('pf-about') && $('pf-about').value.trim()) || null,
+      contact_phone:    ($('pf-contact-phone') && $('pf-contact-phone').value.trim()) || null,
+      contact_whatsapp: ($('pf-contact-whatsapp') && $('pf-contact-whatsapp').value.trim()) || null,
+      contact_email:    ($('pf-contact-email') && $('pf-contact-email').value.trim()) || null
     };
     if (rank >= 2) {
-      if (isHex($('pf-color-primary-hex').value)) patch.primary_color = $('pf-color-primary-hex').value;
-      if (isHex($('pf-color-accent-hex').value))  patch.accent_color  = $('pf-color-accent-hex').value;
+      if (isHex($('pf-color-primary-hex') ? $('pf-color-primary-hex').value : '')) patch.primary_color = $('pf-color-primary-hex').value;
+      if (isHex($('pf-color-accent-hex') ? $('pf-color-accent-hex').value : ''))  patch.accent_color  = $('pf-color-accent-hex').value;
       var socials = {};
-      var fb = $('pf-social-facebook').value.trim();
-      var ig = $('pf-social-instagram').value.trim();
-      var tt = $('pf-social-tiktok').value.trim();
-      var yt = $('pf-social-youtube').value.trim();
-      var wb = $('pf-social-website').value.trim();
+      var fb = $('pf-social-facebook') ? $('pf-social-facebook').value.trim() : '';
+      var ig = $('pf-social-instagram') ? $('pf-social-instagram').value.trim() : '';
+      var tt = $('pf-social-tiktok') ? $('pf-social-tiktok').value.trim() : '';
+      var yt = $('pf-social-youtube') ? $('pf-social-youtube').value.trim() : '';
+      var wb = $('pf-social-website') ? $('pf-social-website').value.trim() : '';
       if (fb) socials.facebook = fb;
       if (ig) socials.instagram = ig;
       if (tt) socials.tiktok = tt;
@@ -1950,9 +1995,9 @@
       btn.innerHTML = orig;
       var msg = err && err.message ? err.message : 'Could not save.';
       if (/standard plan or higher/i.test(msg)) msg = 'That field requires the Standard plan or higher.';
-      var pe  = $('profile-error');
+      var pe2 = $('profile-error');
       var pet = $('profile-error-text');
-      if (pe)  pe.style.display = 'flex';
+      if (pe2) pe2.style.display = 'flex';
       if (pet) pet.textContent = msg;
       toast(msg, 'error');
     });
@@ -1960,22 +2005,24 @@
 
   function fillAccountForm() {
     if (!advertiser) return;
-    $('a-business').value = advertiser.business_name || '';
-    $('a-owner').value    = advertiser.owner_name    || '';
-    $('a-phone').value    = advertiser.phone         || '';
-    $('a-email').value    = advertiser.email         || '';
+    var f;
+    f = $('a-business'); if (f) f.value = advertiser.business_name || '';
+    f = $('a-owner'); if (f) f.value = advertiser.owner_name || '';
+    f = $('a-phone'); if (f) f.value = advertiser.phone || '';
+    f = $('a-email'); if (f) f.value = advertiser.email || '';
   }
 
-  $('btn-save-account').addEventListener('click', function () {
+  var btnSaveAccount = $('btn-save-account');
+  if (btnSaveAccount) btnSaveAccount.addEventListener('click', function () {
     var btn = this, orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Saving…';
-    var biz = $('a-business').value.trim();
-    var phone = $('a-phone').value.trim();
-    var owner = $('a-owner').value.trim() || null;
+    var biz = $('a-business') ? $('a-business').value.trim() : '';
+    var phone = $('a-phone') ? $('a-phone').value.trim() : '';
+    var owner = $('a-owner') ? ($('a-owner').value.trim() || null) : null;
     var ok = true;
-    if (!biz) { $('err-a-business').classList.add('show'); ok = false; } else $('err-a-business').classList.remove('show');
-    if (!isPhone(phone)) { $('err-a-phone').classList.add('show'); ok = false; } else $('err-a-phone').classList.remove('show');
+    if (!biz) { var e1 = $('err-a-business'); if (e1) e1.classList.add('show'); ok = false; } else { var e1b = $('err-a-business'); if (e1b) e1b.classList.remove('show'); }
+    if (!isPhone(phone)) { var e2 = $('err-a-phone'); if (e2) e2.classList.add('show'); ok = false; } else { var e2b = $('err-a-phone'); if (e2b) e2b.classList.remove('show'); }
     if (!ok) { btn.disabled = false; btn.innerHTML = orig; toast('Please fix highlighted fields', 'error'); return; }
     P.db.update('advertisers', 'id=eq.' + advertiser.id, { business_name: biz, owner_name: owner, phone: phone }, session.access_token)
       .then(function () { toast('Account updated', 'success'); return reloadAll(); })
@@ -1983,13 +2030,16 @@
       .catch(function (err) { btn.disabled = false; btn.innerHTML = orig; toast(err.message || 'Failed', 'error'); });
   });
 
-  $('btn-save-password').addEventListener('click', function () {
-    $('err-p-new').classList.remove('show');
-    $('err-p-confirm').classList.remove('show');
-    var cur = $('p-current').value, nw = $('p-new').value, cf = $('p-confirm').value;
+  var btnSavePassword = $('btn-save-password');
+  if (btnSavePassword) btnSavePassword.addEventListener('click', function () {
+    var en = $('err-p-new'); if (en) en.classList.remove('show');
+    var ec = $('err-p-confirm'); if (ec) ec.classList.remove('show');
+    var cur = $('p-current') ? $('p-current').value : '';
+    var nw  = $('p-new') ? $('p-new').value : '';
+    var cf  = $('p-confirm') ? $('p-confirm').value : '';
     if (!cur) { toast('Enter current password', 'error'); return; }
-    if (nw.length < 8) { $('err-p-new').classList.add('show'); return; }
-    if (nw !== cf) { $('err-p-confirm').classList.add('show'); return; }
+    if (nw.length < 8) { var e1 = $('err-p-new'); if (e1) e1.classList.add('show'); return; }
+    if (nw !== cf) { var e2 = $('err-p-confirm'); if (e2) e2.classList.add('show'); return; }
     var btn = this, orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Updating…';
@@ -2012,7 +2062,9 @@
     })
     .then(function () {
       toast('Password updated', 'success');
-      $('p-current').value = ''; $('p-new').value = ''; $('p-confirm').value = '';
+      var a = $('p-current'); if (a) a.value = '';
+      var b = $('p-new'); if (b) b.value = '';
+      var c = $('p-confirm'); if (c) c.value = '';
       btn.disabled = false; btn.innerHTML = orig;
     })
     .catch(function (err) { btn.disabled = false; btn.innerHTML = orig; toast(err.message, 'error'); });
@@ -2020,6 +2072,7 @@
 
   function renderShareTab() {
     var c = $('share-list');
+    if (!c) return;
     var slug = profile && profile.slug ? profile.slug : '';
     var profileUrl = slug ? (window.location.origin + '/b/' + slug) : '';
     var html = '';
@@ -2141,13 +2194,16 @@
       .then(function () { return loadAdvertiser(); })
       .then(reloadAll)
       .then(function () {
-        $('greeting').textContent = 'Welcome back, ' + (advertiser.owner_name || advertiser.business_name);
-        $('topbar-biz').textContent = advertiser.business_name;
+        var greeting = $('greeting');
+        if (greeting) greeting.textContent = 'Welcome back, ' + (advertiser.owner_name || advertiser.business_name);
+        var tb = $('topbar-biz');
+        if (tb) tb.textContent = advertiser.business_name;
         showScreen('screen-dashboard');
         maybeAutoUpgrade();
       })
       .catch(function (err) {
-        $('screen-error-text').textContent = err.message || 'Could not load your dashboard.';
+        var et = $('screen-error-text');
+        if (et) et.textContent = err.message || 'Could not load your dashboard.';
         showScreen('screen-error');
       });
   }
