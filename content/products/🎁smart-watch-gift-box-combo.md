@@ -1,5 +1,5 @@
 ---
-title: 🎁Smart Watch Gift Box Combo
+title: Smart Watch Gift Box Combo – Smartwatch Price in Zambia | ZMW 300
 price: 300
 original_price: 350
 stock: 1000
