@@ -315,21 +315,19 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   IMAGE CONTAINER — full-image visible, blurred backdrop fills bars
+   IMAGE CONTAINER — bigger frame, full image visible, blurred backdrop
    ───────────────────────────────────────────────────────────────────── */
 .py2-ads-img {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;          /* ← was 16/9, now taller = bigger media */
   overflow: hidden;
   background: #05050c;
   flex-shrink: 0;
   z-index: 1;
 }
 
-/* Blurred backdrop fills the letterbox bars behind non-16:9 images.
-   Activated by adding .has-media to the wrapper and setting --blur-bg
-   to url("...") inline from JS. */
+/* Blurred backdrop fills the letterbox bars behind non-matching images. */
 .py2-ads-img.has-media::before {
   content: '';
   position: absolute;
@@ -350,7 +348,7 @@
 .py2-ads-img iframe {
   width: 100%;
   height: 100%;
-  object-fit: contain;          /* ← full image always visible, no cropping */
+  object-fit: contain;          /* ← full image always visible */
   display: block;
   border: 0;
   position: relative;
@@ -448,6 +446,11 @@
   text-align: center; padding: 20px;
 }
 .py2-ads-video-fallback .vf-icon { font-size: 2.4rem; }
+
+/* Mobile: card media becomes square so portrait photos get real space */
+@media (max-width: 600px) {
+  .py2-ads-img { aspect-ratio: 1 / 1; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    INTERSTITIAL
@@ -609,11 +612,13 @@
   z-index: 4;
 }
 
-/* Popup media — full image visible with blurred backdrop */
+/* Popup media — works with OR without a .py2-ads-popup-media wrapper.
+   If a wrapper exists, it gets the taller aspect ratio + blur backdrop.
+   If not, the direct img/video still gets contain + a dark background. */
 .py2-ads-popup .py2-ads-popup-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 3 / 2;         /* ← was 16/9, now taller = bigger media */
   overflow: hidden;
   background: #05050c;
 }
@@ -639,7 +644,20 @@
   position: relative;
   z-index: 1;
 }
-.py2-ads-popup .py2-ads-popup-img-ph { width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#0a0a14,#1a1a3e); font-size: 3rem; }
+
+/* Fallback for popups WITHOUT the wrapper — direct children of the popup */
+.py2-ads-popup > img,
+.py2-ads-popup > video,
+.py2-ads-popup > iframe {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  background: #05050c;
+  display: block;
+  border: 0;
+}
+
+.py2-ads-popup .py2-ads-popup-img-ph { width: 100%; aspect-ratio: 3 / 2; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#0a0a14,#1a1a3e); font-size: 3rem; }
 .py2-ads-popup-body { padding: 22px 26px 26px; }
 
 .py2-ads-popup-tag {
@@ -689,6 +707,15 @@
 .py2-ads-popup-report { text-align: center; margin-top: 16px; font-size: 12px; color: rgba(255,255,255,.4); }
 .py2-ads-popup-report a { color: rgba(255,255,255,.4); text-decoration: underline; cursor: pointer; transition: color .2s; }
 .py2-ads-popup-report a:hover { color: rgba(255,255,255,.75); }
+
+/* Popup on phone: media square, so portrait photos fill more */
+@media (max-width: 600px) {
+  .py2-ads-popup .py2-ads-popup-media,
+  .py2-ads-popup .py2-ads-popup-img-ph { aspect-ratio: 1 / 1; }
+  .py2-ads-popup > img,
+  .py2-ads-popup > video,
+  .py2-ads-popup > iframe { aspect-ratio: 1 / 1; }
+}
 
 @media (max-width: 480px) {
   .py2-ads-popup-body { padding: 18px 18px 22px; }
@@ -760,7 +787,7 @@
 .ad-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;          /* ← was 16/9, now taller = bigger media */
   overflow: hidden;
   background: #05050c;
 }
@@ -779,11 +806,14 @@
 .ad-media iframe {
   width: 100%;
   height: 100%;
-  object-fit: contain;      /* ← full image visible */
+  object-fit: contain;          /* ← full image visible */
   display: block;
   border: 0;
   position: relative;
   z-index: 1;
+}
+@media (max-width: 600px) {
+  .ad-media { aspect-ratio: 1 / 1; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
