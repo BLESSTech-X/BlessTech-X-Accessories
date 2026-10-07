@@ -314,11 +314,51 @@
   box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 0 1px var(--accent) inset, 0 0 60px -15px var(--accent);
 }
 
-.py2-ads-img { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #05050c; flex-shrink: 0; z-index: 1; }
+/* ─────────────────────────────────────────────────────────────────────
+   IMAGE CONTAINER — full-image visible, blurred backdrop fills bars
+   ───────────────────────────────────────────────────────────────────── */
+.py2-ads-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #05050c;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+/* Blurred backdrop fills the letterbox bars behind non-16:9 images.
+   Activated by adding .has-media to the wrapper and setting --blur-bg
+   to url("...") inline from JS. */
+.py2-ads-img.has-media::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image: var(--blur-bg, none);
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) saturate(1.4) brightness(.55);
+  z-index: 0;
+  opacity: 1;
+  transition: opacity .3s;
+}
+
 .py2-ads-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, transparent 45%, rgba(10,10,20,.55) 75%, rgba(10,10,20,.95) 100%); pointer-events: none; z-index: 2; }
+
 .py2-ads-img img,
 .py2-ads-img video,
-.py2-ads-img iframe { width: 100%; height: 100%; object-fit: cover; display: block; border: 0; transform-origin: center; animation: py2KenBurns 16s ease-in-out infinite alternate; will-change: transform; }
+.py2-ads-img iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;          /* ← full image always visible, no cropping */
+  display: block;
+  border: 0;
+  position: relative;
+  z-index: 1;
+  transform-origin: center;
+  animation: py2KenBurns 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
 .py2-ads-card:hover .py2-ads-img img,
 .py2-ads-card:hover .py2-ads-img video { animation-play-state: paused; }
 
@@ -568,9 +608,37 @@
   pointer-events: none;
   z-index: 4;
 }
-.py2-ads-popup img,
-.py2-ads-popup video,
-.py2-ads-popup iframe { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #05050c; display: block; border: 0; }
+
+/* Popup media — full image visible with blurred backdrop */
+.py2-ads-popup .py2-ads-popup-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: #05050c;
+}
+.py2-ads-popup .py2-ads-popup-media.has-media::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image: var(--blur-bg, none);
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) saturate(1.4) brightness(.55);
+  z-index: 0;
+}
+.py2-ads-popup .py2-ads-popup-media img,
+.py2-ads-popup .py2-ads-popup-media video,
+.py2-ads-popup .py2-ads-popup-media iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: transparent;
+  display: block;
+  border: 0;
+  position: relative;
+  z-index: 1;
+}
 .py2-ads-popup .py2-ads-popup-img-ph { width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#0a0a14,#1a1a3e); font-size: 3rem; }
 .py2-ads-popup-body { padding: 22px 26px 26px; }
 
@@ -683,6 +751,39 @@
   .py2-ads-card.py2-ads-tier-premium  { transform: none; }
   .py2-ads-card.py2-ads-tier-business:hover,
   .py2-ads-card.py2-ads-tier-premium:hover { transform: translateY(-4px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PROFILE PAGE AD CARDS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.ad-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #05050c;
+}
+.ad-media.has-media::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image: var(--blur-bg, none);
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) saturate(1.4) brightness(.55);
+  z-index: 0;
+}
+.ad-media img,
+.ad-media video,
+.ad-media iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;      /* ← full image visible */
+  display: block;
+  border: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
