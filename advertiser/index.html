@@ -16,11 +16,6 @@
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-  /* ═══════════════════════════════════════════════════════════════════════════
-     ADVERTISER DASHBOARD — single-file stylesheet
-     Mobile-first. Desktop expanded from 640px and up.
-     Every rule is scoped to #py2app to avoid collisions.
-     ═══════════════════════════════════════════════════════════════════════════ */
   *, *::before, *::after { box-sizing: border-box; }
 
   :root {
@@ -64,14 +59,12 @@
   img { max-width: 100%; display: block; }
   button { font-family: var(--py2-font-body); cursor: pointer; }
 
-  /* ── LAYOUT PRIMITIVES ─────────────────────────────────────────────── */
   .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
   @media (min-width: 768px) { .wrap { padding: 0 24px; } }
 
   .stack > * + * { margin-top: 16px; }
   .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
-  /* ── CARDS ─────────────────────────────────────────────────────────── */
   .card {
     background: var(--py2-white);
     border: 1px solid var(--py2-border);
@@ -97,7 +90,6 @@
     display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
   }
 
-  /* ── BUTTONS ───────────────────────────────────────────────────────── */
   .btn {
     display: inline-flex; align-items: center; justify-content: center;
     gap: 6px;
@@ -126,7 +118,6 @@
   .btn-sm { min-height: 34px; padding: 7px 12px; font-size: 12.5px; }
   .btn-lg { min-height: 48px; padding: 13px 22px; font-size: 15px; }
 
-  /* ── FORM FIELDS ──────────────────────────────────────────────────── */
   .field { margin-bottom: 14px; }
   .field:last-child { margin-bottom: 0; }
   .lbl {
@@ -143,7 +134,7 @@
     border: 1.5px solid rgba(0,0,0,.1);
     border-radius: var(--py2-radius-sm);
     font-family: var(--py2-font-body);
-    font-size: 16px;   /* prevents iOS zoom */
+    font-size: 16px;
     color: var(--py2-text);
     background: white;
     outline: none;
@@ -165,7 +156,6 @@
   .input-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
   @media (min-width: 560px) { .input-row { grid-template-columns: 1fr 1fr; } }
 
-  /* ── BADGES ───────────────────────────────────────────────────────── */
   .badge {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 10px;
@@ -180,7 +170,6 @@
   .badge-paused   { background: rgba(107,114,128,.12); color: #4b5563; }
   .badge-banned   { background: #0a0a14; color: white; }
 
-  /* ── NOTICES ──────────────────────────────────────────────────────── */
   .notice {
     display: flex; gap: 10px; align-items: flex-start;
     padding: 12px 14px;
@@ -193,7 +182,6 @@
   .notice-warn    { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); }
   .notice-danger  { background: rgba(230,57,70,.07); border: 1px solid rgba(230,57,70,.2); color: #b91c1c; }
 
-  /* ── TOP BAR ──────────────────────────────────────────────────────── */
   .topbar {
     background: var(--py2-dark);
     color: white;
@@ -234,7 +222,6 @@
     #topbar-biz { display: inline; color: rgba(255,255,255,.85); font-size: 13px; padding: 0 10px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   }
 
-  /* ── LOADING / SIGNIN ─────────────────────────────────────────────── */
   .screen-center {
     min-height: 100vh;
     display: flex; flex-direction: column;
@@ -303,7 +290,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── PLAN CARD (top of dashboard) ─────────────────────────────────── */
   .plan-card {
     background: white;
     border: 1px solid var(--py2-border);
@@ -383,7 +369,6 @@
     .expired-banner i { margin-top: 2px; }
   }
 
-  /* ── STATS GRID ───────────────────────────────────────────────────── */
   .stat-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -411,18 +396,15 @@
   }
   .stat-val.accent { color: var(--py2-orange); }
 
-  /* ── TABS ─────────────────────────────────────────────────────────── */
   .tabs {
     display: flex;
     gap: 2px;
     border-bottom: 1px solid var(--py2-border);
     margin-bottom: 20px;
-    /* Horizontal scroll on mobile */
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    /* Let tab bar bleed to the edge on mobile */
     margin-left: -16px; margin-right: -16px;
     padding-left: 16px; padding-right: 16px;
   }
@@ -452,11 +434,9 @@
   }
   .tab.on .count { background: rgba(255,96,0,.15); color: var(--py2-orange); }
 
-  /* ── TAB PANELS ───────────────────────────────────────────────────── */
   .panel { display: none; }
   .panel.on { display: block; }
 
-  /* ── AD LIST ITEMS ────────────────────────────────────────────────── */
   .ad-item {
     background: white;
     border: 1px solid var(--py2-border);
@@ -512,7 +492,6 @@
     .ad-item-actions .btn { flex: 0 0 auto; }
   }
 
-  /* ── FILE DROP ZONES ──────────────────────────────────────────────── */
   .drop {
     border: 2px dashed rgba(0,0,0,.12);
     border-radius: var(--py2-radius);
@@ -545,7 +524,6 @@
     display: flex; align-items: center; justify-content: center;
   }
 
-  /* ── MEDIA TOGGLE (image/video) ───────────────────────────────────── */
   .mtoggle {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     margin-bottom: 14px;
@@ -609,7 +587,6 @@
     display: flex; align-items: center; justify-content: center;
   }
 
-  /* ── PROFILE TAB (2 columns on desktop, stacked on mobile) ────────── */
   .profile-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -672,7 +649,6 @@
     font-family: var(--py2-font-body);
   }
 
-  /* Color pickers */
   .color-row {
     display: grid;
     grid-template-columns: 56px 1fr;
@@ -700,7 +676,6 @@
     outline: none;
   }
 
-  /* Social inputs */
   .social-row {
     display: flex;
     flex-direction: column;
@@ -720,7 +695,6 @@
   @media (min-width: 560px) { .social-icon { width: 42px; } }
   .social-row .input { flex: 1; }
 
-  /* Live preview iframe */
   .preview-panel {
     background: white;
     border: 1px solid var(--py2-border);
@@ -761,7 +735,6 @@
     .preview-actions .btn { flex: 0 0 auto; }
   }
 
-  /* ── SHARE TAB ────────────────────────────────────────────────────── */
   .share-block {
     padding: 16px 0;
     border-bottom: 1px solid var(--py2-border);
@@ -807,13 +780,12 @@
   }
   .qr-wrap .qr-note { font-size: 12.5px; color: var(--py2-muted); line-height: 1.5; }
 
-  /* ── MODALS ───────────────────────────────────────────────────────── */
   .modal {
     position: fixed; inset: 0; z-index: 500;
     background: rgba(10,10,20,.6);
     backdrop-filter: blur(4px);
     display: none;
-    align-items: flex-end;             /* bottom sheet on mobile */
+    align-items: flex-end;
     justify-content: center;
     padding: 0;
   }
@@ -877,7 +849,6 @@
   .modal-foot .btn { width: 100%; }
   @media (min-width: 640px) { .modal-foot .btn { width: auto; } }
 
-  /* ── UPGRADE MODAL ────────────────────────────────────────────────── */
   .upgrade-modal .modal-box {
     max-width: 100%;
     max-height: 100vh; max-height: 100dvh;
@@ -955,7 +926,6 @@
     padding: 12px;
   }
 
-  /* ── PAYMENT MODAL ────────────────────────────────────────────────── */
   .pay-summary {
     background: linear-gradient(135deg, #fff7ed, #ffedd5);
     border: 1px solid rgba(255,96,0,.2);
@@ -1007,7 +977,6 @@
   }
   .pay-note i { color: #54a0ff; flex-shrink: 0; margin-top: 1px; }
 
-  /* ── TOAST ────────────────────────────────────────────────────────── */
   .toast {
     position: fixed;
     left: 12px; right: 12px; bottom: 20px;
@@ -1033,7 +1002,6 @@
   }
   .toast.on { opacity: 1; }
 
-  /* ── EMPTY STATE ──────────────────────────────────────────────────── */
   .empty {
     text-align: center;
     padding: 48px 20px;
@@ -1043,7 +1011,6 @@
   .empty h3 { font-size: 1.1rem; color: var(--py2-text); margin-bottom: 6px; font-family: var(--py2-font-head); font-weight: 700; }
   .empty p { font-size: 13.5px; line-height: 1.5; margin-bottom: 16px; }
 
-  /* ── TABLE (stats) ────────────────────────────────────────────────── */
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .data-table {
     width: 100%;
@@ -1067,17 +1034,10 @@
     vertical-align: middle;
   }
   .data-table tr:last-child td { border-bottom: none; }
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-     END OF STYLESHEET
-     ═══════════════════════════════════════════════════════════════════════════ */
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     SIGNIN SCREEN
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div id="screen-signin" class="screen-center auth-bg" style="display:none;">
   <div class="auth-card">
     <div class="auth-logo">📱</div>
@@ -1107,17 +1067,11 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     LOADING
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div id="screen-loading" class="screen-center" style="display:none;">
   <div class="spinner spinner-dark"></div>
   <p style="color:var(--py2-muted);margin-top:14px;font-size:14px;">Loading your dashboard…</p>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     ERROR
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div id="screen-error" class="screen-center" style="display:none;">
   <div style="max-width:400px;">
     <div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div>
@@ -1128,12 +1082,8 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     DASHBOARD
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div id="screen-dashboard" style="display:none;">
 
-  <!-- Top bar -->
   <div class="topbar">
     <div class="topbar-inner">
       <a href="/" class="brand">
@@ -1155,7 +1105,6 @@
 
   <div class="wrap" style="padding-top:20px;padding-bottom:60px;">
 
-    <!-- Header -->
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px;">
       <div style="flex:1;">
         <h1 id="greeting" style="font-family:var(--py2-font-head);font-weight:800;font-size:1.5rem;margin-bottom:4px;">Welcome back</h1>
@@ -1166,14 +1115,13 @@
       </button>
     </div>
 
-    <!-- Plan card -->
     <div class="plan-card free" id="plan-card">
       <div class="plan-top">
         <div class="plan-icon" id="plan-icon">🎁</div>
         <div class="plan-info">
           <div class="plan-label">Your Plan</div>
           <div class="plan-name" id="plan-name">Free</div>
-          <div class="plan-desc" id="plan-desc">3 ads max · Basic rotation</div>
+          <div class="plan-desc" id="plan-desc">3 active ads · 1× rotation</div>
           <div class="plan-progress" id="plan-progress-wrap">
             <div class="plan-progress-fill" id="plan-progress-fill"></div>
           </div>
@@ -1186,7 +1134,6 @@
       </div>
     </div>
 
-    <!-- Expired banner -->
     <div id="expired-banner" class="expired-banner" style="display:none;">
       <i class="fa-solid fa-triangle-exclamation" style="font-size:20px;"></i>
       <div style="flex:1;">
@@ -1197,7 +1144,6 @@
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="stat-grid">
       <div class="stat">
         <div class="stat-lbl">Active Ads</div>
@@ -1221,7 +1167,6 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs" role="tablist">
       <button class="tab on" data-tab="ads" type="button">
         <i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span>
@@ -1243,7 +1188,6 @@
       </button>
     </div>
 
-    <!-- ── PANEL: MY ADS ───────────────────────────────────────────── -->
     <section class="panel on" data-panel="ads">
       <div class="card" style="margin-bottom:16px;">
         <div class="card-body" style="padding:14px 16px;">
@@ -1260,7 +1204,6 @@
       <div id="ads-list"></div>
     </section>
 
-    <!-- ── PANEL: CREATE AD ────────────────────────────────────────── -->
     <section class="panel" data-panel="create">
       <div class="card" style="max-width:720px;margin:0 auto;">
         <div class="card-head">
@@ -1307,7 +1250,6 @@
                 </button>
               </div>
 
-              <!-- Image mode -->
               <div id="mode-image">
                 <div class="drop" id="img-drop">
                   <input type="file" id="f-image" accept="image/*">
@@ -1324,7 +1266,6 @@
                 <div class="error-msg" id="err-image">Please add an image.</div>
               </div>
 
-              <!-- Video mode -->
               <div id="mode-video" style="display:none;">
                 <div class="vsrc">
                   <button type="button" class="vsrc-btn on" data-src="youtube">
@@ -1417,7 +1358,6 @@
       </div>
     </section>
 
-    <!-- ── PANEL: STATS ────────────────────────────────────────────── -->
     <section class="panel" data-panel="stats">
       <div class="card">
         <div class="card-head">
@@ -1443,7 +1383,6 @@
       </div>
     </section>
 
-    <!-- ── PANEL: MY PROFILE ───────────────────────────────────────── -->
     <section class="panel" data-panel="profile">
       <div class="slug-row">
         <i class="fa-solid fa-link" style="color:var(--py2-orange);"></i>
@@ -1452,7 +1391,6 @@
       </div>
 
       <div class="profile-layout">
-        <!-- LEFT: Editor -->
         <div>
           <div class="card">
             <div class="card-head">
@@ -1581,7 +1519,6 @@
           </div>
         </div>
 
-        <!-- RIGHT: Live preview -->
         <div>
           <div class="preview-panel">
             <div class="preview-panel-head">
@@ -1604,7 +1541,6 @@
       </div>
     </section>
 
-    <!-- ── PANEL: ACCOUNT ──────────────────────────────────────────── -->
     <section class="panel" data-panel="account">
       <div class="card">
         <div class="card-head"><h2>🏢 Business Information</h2></div>
@@ -1662,7 +1598,6 @@
       </div>
     </section>
 
-    <!-- ── PANEL: SHARE ────────────────────────────────────────────── -->
     <section class="panel" data-panel="share">
       <div class="card">
         <div class="card-head">
@@ -1681,15 +1616,12 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: UPGRADE
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal upgrade-modal" id="modal-upgrade">
   <div class="modal-box wide">
     <div class="upgrade-head">
       <button type="button" class="modal-x" data-close="modal-upgrade">✕</button>
       <h3>Upgrade your plan</h3>
-      <p>More ads, higher rotation weight, a full mini-website, custom branding, priority support. Month-to-month — cancel anytime.</p>
+      <p>More active ads and higher rotation weight. Month-to-month — cancel anytime.</p>
     </div>
     <div class="tiers-wrap">
       <div class="tiers" id="tiers-grid"></div>
@@ -1697,9 +1629,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: PAYMENT
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal" id="modal-payment">
   <div class="modal-box">
     <div class="modal-head">
@@ -1723,9 +1652,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: QR CODE
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal" id="modal-qr">
   <div class="modal-box" style="max-width:420px;">
     <div class="modal-head">
@@ -1739,9 +1665,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: CONFIRM (delete)
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal" id="modal-confirm">
   <div class="modal-box" style="max-width:420px;">
     <div class="modal-head">
@@ -1760,9 +1683,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: REJECTION REASON
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal" id="modal-reason">
   <div class="modal-box" style="max-width:420px;">
     <div class="modal-head">
@@ -1782,9 +1702,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     TOAST
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 
 <script src="/ads-config.js"></script>
@@ -1801,49 +1718,142 @@
   var esc = P.esc;
 
   // ═══════════════════════════════════════════════════════════════════════
-  // TIER DEFINITIONS
+  // TIER CONFIG — loaded from public.tier_config at boot.
+  //
+  // The five tier KEYS and their display cosmetics (name, icon, price) live
+  // here. The authoritative numbers (rank, weight, ad_limit) come from the
+  // DB and are merged in at runtime by loadTierConfig(). This keeps the
+  // dashboard in sync with what the server actually enforces.
   // ═══════════════════════════════════════════════════════════════════════
-  var TIERS = [
-    { key: 'free', name: 'Free', price: 0, icon: '🎁', short: '3 ads · basic rotation',
-      feats: [
-        { t: '3 active ads' }, { t: 'Basic rotation (1×)' }, { t: 'Auto profile page' },
-        { t: 'Contact buttons' }, { t: '7 days stats' },
-        { t: 'Custom colors', off: true }, { t: 'Social links', off: true },
-        { t: 'Custom slug', off: true }, { t: 'Verified badge', off: true }
-      ] },
-    { key: 'starter', name: 'Starter', price: 10, icon: '🚀', short: '5 ads · 3× rotation',
-      feats: [
-        { t: '5 active ads' }, { t: '3× rotation weight' }, { t: 'Business logo' },
-        { t: 'Contact buttons' }, { t: '30 days stats' },
-        { t: 'Custom colors', off: true }, { t: 'Social links', off: true },
-        { t: 'Custom slug', off: true }, { t: 'Verified badge', off: true }
-      ] },
-    { key: 'standard', name: 'Standard', price: 20, icon: '⭐', short: '10 ads · 6× rotation',
-      feats: [
-        { t: '10 active ads' }, { t: '6× rotation weight' }, { t: 'Logo + cover image' },
-        { t: 'Custom brand colors' }, { t: 'All social links' }, { t: 'Popup eligibility' },
-        { t: '90 days stats' },
-        { t: 'Custom slug', off: true }, { t: 'Verified badge', off: true }
-      ] },
-    { key: 'business', name: 'Business', price: 50, icon: '💎', short: '20 ads · 12× rotation',
-      feats: [
-        { t: '20 active ads' }, { t: '12× rotation weight' }, { t: 'Everything in Standard' },
-        { t: 'Custom profile URL' }, { t: 'Verified badge ✓' },
-        { t: 'Featured on share pages' }, { t: '180 days stats' }, { t: 'Priority support' }
-      ] },
-    { key: 'premium', name: 'Premium', price: 100, icon: '👑', short: '40 ads · 25× rotation',
-      feats: [
-        { t: '40 active ads' }, { t: '25× rotation weight' }, { t: 'Everything in Business' },
-        { t: 'Always featured' }, { t: '365 days stats' },
-        { t: 'White-glove onboarding' }, { t: 'Direct line to support' }
-      ] }
-  ];
+  var TIER_META = {
+    free:     { name: 'Free',     price: 0,   icon: '🎁' },
+    starter:  { name: 'Starter',  price: 10,  icon: '🚀' },
+    standard: { name: 'Standard', price: 20,  icon: '⭐' },
+    business: { name: 'Business', price: 50,  icon: '💎' },
+    premium:  { name: 'Premium',  price: 100, icon: '👑' }
+  };
+  var TIER_ORDER = ['free', 'starter', 'standard', 'business', 'premium'];
+
+  // Populated by loadTierConfig(). Each entry: { key, rank, weight, ad_limit, name, price, icon, short, feats }
+  var TIERS = [];
 
   var RANK = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
 
   function tierCfg(k) {
     for (var i = 0; i < TIERS.length; i++) if (TIERS[i].key === k) return TIERS[i];
-    return TIERS[0];
+    // Fallback to a safe default if the list hasn't loaded yet
+    return {
+      key: k, rank: 0, weight: 1, ad_limit: 3,
+      name: (TIER_META[k] || TIER_META.free).name,
+      price: (TIER_META[k] || TIER_META.free).price,
+      icon: (TIER_META[k] || TIER_META.free).icon,
+      short: '—', feats: []
+    };
+  }
+
+  // Feature list copy per tier. Only claims things the backend actually does:
+  //   - ad limit comes from tier_config.ad_limit (Step 2)
+  //   - rotation weight comes from tier_config.weight (Step 3)
+  //   - profile features come from profiles_guard_tier_fields (Standard = colors/cover/socials, Business = custom slug + verified)
+  // Nothing here claims analytics differences, guaranteed placement, "always featured", or popup eligibility, because the backend does not enforce those.
+  function featsFor(key) {
+    switch (key) {
+      case 'free':
+        return [
+          { t: '3 active ads' },
+          { t: '1× rotation weight' },
+          { t: 'Auto business profile' },
+          { t: 'Contact buttons' },
+          { t: 'Custom colors', off: true },
+          { t: 'Social links', off: true },
+          { t: 'Custom URL', off: true },
+          { t: 'Verified badge', off: true }
+        ];
+      case 'starter':
+        return [
+          { t: '5 active ads' },
+          { t: '3× rotation weight' },
+          { t: 'Business logo' },
+          { t: 'Contact buttons' },
+          { t: 'Custom colors', off: true },
+          { t: 'Social links', off: true },
+          { t: 'Custom URL', off: true },
+          { t: 'Verified badge', off: true }
+        ];
+      case 'standard':
+        return [
+          { t: '10 active ads' },
+          { t: '6× rotation weight' },
+          { t: 'Everything in Starter' },
+          { t: 'Cover image' },
+          { t: 'Custom brand colors' },
+          { t: 'Social links row' },
+          { t: 'Custom URL', off: true },
+          { t: 'Verified badge', off: true }
+        ];
+      case 'business':
+        return [
+          { t: '20 active ads' },
+          { t: '12× rotation weight' },
+          { t: 'Everything in Standard' },
+          { t: 'Custom profile URL' },
+          { t: 'Verified badge' }
+        ];
+      case 'premium':
+        return [
+          { t: '40 active ads' },
+          { t: '25× rotation weight' },
+          { t: 'Everything in Business' },
+          { t: 'White-glove onboarding' },
+          { t: 'Direct line to support' }
+        ];
+      default:
+        return [];
+    }
+  }
+
+  function loadTierConfig() {
+    // Fetch once per session; safe to call repeatedly.
+    try {
+      var cached = sessionStorage.getItem('py2_tier_config');
+      if (cached) {
+        TIERS = JSON.parse(cached);
+        return Promise.resolve(TIERS);
+      }
+    } catch (e) { /* ignore */ }
+
+    return P.db.select('tier_config', 'select=tier,rank,weight,ad_limit&order=rank.asc')
+      .then(function (rows) {
+        var byKey = {};
+        (rows || []).forEach(function (r) { byKey[r.tier] = r; });
+
+        TIERS = TIER_ORDER.map(function (key) {
+          var meta = TIER_META[key];
+          var dbRow = byKey[key] || {};
+          var rank = (dbRow.rank != null) ? dbRow.rank : RANK[key];
+          var weight = (dbRow.weight != null) ? dbRow.weight : 1;
+          var ad_limit = (dbRow.ad_limit != null) ? dbRow.ad_limit : 3;
+          return {
+            key: key,
+            rank: rank,
+            weight: weight,
+            ad_limit: ad_limit,
+            name: meta.name,
+            price: meta.price,
+            icon: meta.icon,
+            short: ad_limit + ' active ads · ' + weight + '× rotation',
+            feats: featsFor(key)
+          };
+        });
+
+        // Rebuild RANK from server-provided ranks so "is this an upgrade"
+        // decisions use the same ordering the DB uses.
+        RANK = {};
+        TIERS.forEach(function (t) { RANK[t.key] = t.rank; });
+
+        try { sessionStorage.setItem('py2_tier_config', JSON.stringify(TIERS)); } catch (e) {}
+        return TIERS;
+      });
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -1889,9 +1899,6 @@
     t._timer = setTimeout(function () { t.classList.remove('on'); }, 2800);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // SCREEN SWITCHER
-  // ═══════════════════════════════════════════════════════════════════════
   function showScreen(name) {
     ['screen-signin','screen-loading','screen-error','screen-dashboard'].forEach(function (id) {
       var el = $(id);
@@ -1904,9 +1911,6 @@
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // SIGN IN
-  // ═══════════════════════════════════════════════════════════════════════
   $('signin-form').addEventListener('submit', function (e) {
     e.preventDefault();
     $('signin-error').style.display = 'none';
@@ -1937,15 +1941,13 @@
   $('btn-signout').addEventListener('click', doSignout);
   $('error-signout').addEventListener('click', doSignout);
   function doSignout() {
+    try { sessionStorage.removeItem('py2_tier_config'); } catch (e) {}
     P.auth.signout().then(function () {
-      session = null; advertiser = null; profile = null; ads = []; statsByAd = {};
+      session = null; advertiser = null; profile = null; ads = []; statsByAd = {}; TIERS = [];
       showScreen('screen-signin');
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // DATA LOADING
-  // ═══════════════════════════════════════════════════════════════════════
   function loadAdvertiser() {
     return P.db.select('advertisers', 'auth_user_id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token)
       .then(function (rows) {
@@ -2001,6 +2003,11 @@
 
   // ═══════════════════════════════════════════════════════════════════════
   // TIER HELPERS
+  //
+  // effectiveTier() mirrors public.effective_tier_for() in SQL. It reads the
+  // advertiser row the client has already loaded, avoiding a network round
+  // trip. Keep the two in sync: if the SQL function's rules change, update
+  // this function to match.
   // ═══════════════════════════════════════════════════════════════════════
   function effectiveTier() {
     if (!advertiser) return 'free';
@@ -2018,9 +2025,6 @@
     return new Date(advertiser.tier_expires_at) <= new Date();
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // PLAN CARD
-  // ═══════════════════════════════════════════════════════════════════════
   function renderPlanCard() {
     var eff = effectiveTier();
     var cfg = tierCfg(eff);
@@ -2038,7 +2042,7 @@
       var exp = new Date(advertiser.tier_expires_at);
       var daysLeft = Math.max(0, Math.ceil((exp - now) / 86400000));
       var pct = Math.max(0, Math.min(100, (daysLeft / 30) * 100));
-      $('plan-desc').innerHTML = cfg.short + ' · <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left</strong>';
+      $('plan-desc').innerHTML = esc(cfg.short) + ' · <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' left</strong>';
       progressWrap.classList.add('on');
       var fill = $('plan-progress-fill');
       fill.style.width = pct + '%';
@@ -2052,19 +2056,15 @@
       $('btn-upgrade-label').textContent = 'Upgrade';
     }
 
-    // Expired banner
     if (isExpired()) {
       var days = Math.max(1, Math.round((new Date() - new Date(advertiser.tier_expires_at)) / 86400000));
-      $('expired-text').innerHTML = 'Your <strong>' + tierCfg(advertiser.tier).name + '</strong> plan expired ' + days + ' day' + (days === 1 ? '' : 's') + ' ago.';
+      $('expired-text').innerHTML = 'Your <strong>' + esc(tierCfg(advertiser.tier).name) + '</strong> plan expired ' + days + ' day' + (days === 1 ? '' : 's') + ' ago.';
       $('expired-banner').style.display = 'flex';
     } else {
       $('expired-banner').style.display = 'none';
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // STATS
-  // ═══════════════════════════════════════════════════════════════════════
   function renderStats() {
     var active = ads.filter(function (a) { return a.status === 'approved'; }).length;
     var tImp = 0, tClk = 0;
@@ -2114,9 +2114,6 @@
       '<tbody>' + rows + '</tbody></table></div>';
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // ADS LIST
-  // ═══════════════════════════════════════════════════════════════════════
   function statusBadge(status) {
     var map = {
       pending:  ['badge-pending',  'Pending'],
@@ -2215,7 +2212,6 @@
     });
   }
 
-  // Filter buttons
   document.querySelectorAll('.filter-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('on'); });
@@ -2225,9 +2221,6 @@
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // TAB SWITCHER
-  // ═══════════════════════════════════════════════════════════════════════
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(function (t) {
       t.classList.toggle('on', t.getAttribute('data-tab') === name);
@@ -2248,9 +2241,6 @@
 
   $('btn-new-ad-top').addEventListener('click', function () { resetAdForm(); switchTab('create'); });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // UPGRADE MODAL
-  // ═══════════════════════════════════════════════════════════════════════
   function openUpgradeModal() {
     renderTiers();
     openModal('modal-upgrade');
@@ -2262,6 +2252,10 @@
     var eff = effectiveTier();
     var grid = $('tiers-grid');
     grid.innerHTML = '';
+    if (!TIERS.length) {
+      grid.innerHTML = '<div style="padding:30px;text-align:center;color:var(--py2-muted);font-size:13px;">Loading plans…</div>';
+      return;
+    }
     TIERS.forEach(function (t) {
       var isCur = t.key === eff;
       var col = document.createElement('div');
@@ -2277,7 +2271,7 @@
       } else if (t.price === 0) {
         action = '<button class="btn btn-secondary" disabled>Free tier</button>';
       } else {
-        var downgrade = RANK[t.key] < RANK[eff];
+        var downgrade = (RANK[t.key] || 0) < (RANK[eff] || 0);
         action = '<button class="btn btn-primary" data-pick="' + t.key + '">' +
           (downgrade ? 'Switch to ' : 'Upgrade to ') + t.name + '</button>';
       }
@@ -2287,7 +2281,7 @@
         : '<div class="tier-price">K' + t.price + '<small>/mo</small></div><div class="tier-period">30 days</div>';
 
       col.innerHTML =
-        '<div class="tier-name">' + t.icon + ' ' + t.name + '</div>' +
+        '<div class="tier-name">' + t.icon + ' ' + esc(t.name) + '</div>' +
         priceHtml +
         '<ul class="tier-feats">' + feats + '</ul>' +
         action;
@@ -2303,9 +2297,6 @@
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // PAYMENT MODAL
-  // ═══════════════════════════════════════════════════════════════════════
   var PAY_PHONE = '260979603741';
   var PAY_EMAIL = 'singbless89@gmail.com';
 
@@ -2321,7 +2312,7 @@
     $('payment-title').textContent = 'Pay for ' + cfg.name;
     $('pay-summary').innerHTML =
       '<div class="prow"><span>Business</span><strong>' + esc(biz) + '</strong></div>' +
-      '<div class="prow"><span>Plan</span><strong>' + cfg.icon + ' ' + cfg.name + '</strong></div>' +
+      '<div class="prow"><span>Plan</span><strong>' + cfg.icon + ' ' + esc(cfg.name) + '</strong></div>' +
       '<div class="prow"><span>Duration</span><strong>30 days</strong></div>' +
       '<div class="prow"><span>Amount</span><span class="price">K' + cfg.price + '</span></div>';
 
@@ -2345,7 +2336,6 @@
     openModal('modal-payment');
   }
 
-  // Auto-show upgrade modal for free users (once per session)
   function maybeAutoUpgrade() {
     if (effectiveTier() !== 'free') return;
     try { if (sessionStorage.getItem('py2_upgrade_seen')) return; } catch(e) {}
@@ -2355,9 +2345,6 @@
     }, 4500);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // CREATE / EDIT AD
-  // ═══════════════════════════════════════════════════════════════════════
   var DEST_HELP = {
     whatsapp:  'Full phone number with country code, e.g. +260971234567',
     website:   'Full URL, e.g. https://yourbusiness.com',
@@ -2381,7 +2368,6 @@
   $('f-title').addEventListener('input', function () { $('count-title').textContent = this.value.length + ' / 60'; });
   $('f-desc').addEventListener('input', function () { $('count-desc').textContent = this.value.length + ' / 200'; });
 
-  // Media toggle
   document.querySelectorAll('.mtoggle-btn').forEach(function (b) {
     b.addEventListener('click', function () {
       var mode = b.getAttribute('data-media');
@@ -2393,7 +2379,6 @@
     });
   });
 
-  // Video source
   document.querySelectorAll('.vsrc-btn').forEach(function (b) {
     b.addEventListener('click', function () {
       var src = b.getAttribute('data-src');
@@ -2468,7 +2453,6 @@
     else { inner.innerHTML = ''; wrap.classList.remove('on'); }
   }
 
-  // Image picker
   $('img-drop').addEventListener('click', function () { $('f-image').click(); });
   $('f-image').addEventListener('change', function () {
     if (this.files && this.files[0]) {
@@ -2713,9 +2697,6 @@
     openModal('modal-reason');
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // PROFILE TAB
-  // ═══════════════════════════════════════════════════════════════════════
   function fillProfileForm() {
     if (!profile || !advertiser) return;
     var eff = effectiveTier();
@@ -2908,9 +2889,6 @@
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // ACCOUNT TAB
-  // ═══════════════════════════════════════════════════════════════════════
   function fillAccountForm() {
     if (!advertiser) return;
     $('a-business').value = advertiser.business_name || '';
@@ -2976,9 +2954,6 @@
     .catch(function (err) { btn.disabled = false; btn.innerHTML = orig; toast(err.message, 'error'); });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // SHARE TAB
-  // ═══════════════════════════════════════════════════════════════════════
   function renderShareTab() {
     var c = $('share-list');
     var slug = profile && profile.slug ? profile.slug : '';
@@ -3068,9 +3043,6 @@
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // IMAGE COMPRESSION
-  // ═══════════════════════════════════════════════════════════════════════
   function compressImage(file, maxW, quality) {
     return new Promise(function (resolve, reject) {
       if (!file.type || file.type.indexOf('image/') !== 0) { reject(new Error('Not an image')); return; }
@@ -3093,9 +3065,6 @@
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // MODAL CLOSE HANDLERS
-  // ═══════════════════════════════════════════════════════════════════════
   document.querySelectorAll('[data-close]').forEach(function (b) {
     b.addEventListener('click', function () { closeModal(b.getAttribute('data-close')); });
   });
@@ -3104,15 +3073,13 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllModals(); });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // BOOT
-  // ═══════════════════════════════════════════════════════════════════════
   function boot() {
     session = P.auth.getSession();
     if (!session || !session.user) { showScreen('screen-signin'); return Promise.resolve(); }
     showScreen('screen-loading');
 
-    return loadAdvertiser()
+    return loadTierConfig()
+      .then(function () { return loadAdvertiser(); })
       .then(reloadAll)
       .then(function () {
         $('greeting').textContent = 'Welcome back, ' + (advertiser.owner_name || advertiser.business_name);
