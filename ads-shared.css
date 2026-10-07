@@ -1,18 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    PhoneYa2 Ads — ads-shared.css
-   ────────────────────────────────────────────────────────────────────────
-   Styles for:
-     · The new pages (advertise, advertiser, ads-admin, ad/[slug])
-     · Sponsored ad cards (portal design) across all shop pages
-     · Interstitial rotating ad bands between page sections
-     · Popup ads shown on page load
-
-   Loaded by every shop page + every ads page.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
-/* ── TOKENS ──────────────────────────────────────────────────────────── */
 :root {
   --py2-dark:      #0a0a14;
   --py2-dark-2:    #12122a;
@@ -50,57 +41,24 @@
   --py2-font-head:  'Syne', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
 
-/* ── KEYFRAMES ───────────────────────────────────────────────────────── */
-@keyframes py2GlowRotate {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-@keyframes py2KenBurns {
-  0%   { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.14) translate(-1.5%, -1.5%); }
-}
-@keyframes py2ShimmerSweep {
-  0%   { transform: translateX(-130%) skewX(-20deg); opacity: 0; }
-  15%  { opacity: .55; }
-  100% { transform: translateX(230%) skewX(-20deg); opacity: 0; }
-}
-@keyframes py2FadeUp {
-  from { opacity: 0; transform: translateY(28px) scale(.98); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
-}
-@keyframes py2PulseDot {
-  0%, 100% { opacity: .35; transform: scale(.85); }
-  50%      { opacity: 1;   transform: scale(1); }
-}
+@keyframes py2GlowRotate { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes py2KenBurns { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.14) translate(-1.5%, -1.5%); } }
+@keyframes py2ShimmerSweep { 0% { transform: translateX(-130%) skewX(-20deg); opacity: 0; } 15% { opacity: .55; } 100% { transform: translateX(230%) skewX(-20deg); opacity: 0; } }
+@keyframes py2FadeUp { from { opacity: 0; transform: translateY(28px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes py2PulseDot { 0%, 100% { opacity: .35; transform: scale(.85); } 50% { opacity: 1; transform: scale(1); } }
 @keyframes py2Spin { to { transform: rotate(360deg); } }
-@keyframes py2Pop {
-  from { opacity: 0; transform: scale(.94); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes py2BorderRotate {
-  0%   { --py2-border-angle: 0deg; }
-  100% { --py2-border-angle: 360deg; }
-}
-@keyframes py2SlideIn {
-  from { opacity: 0; transform: translateY(12px) scale(.97); }
-  to   { opacity: 1; transform: translateY(0)     scale(1); }
-}
-@keyframes py2SlideOut {
-  from { opacity: 1; transform: translateY(0)     scale(1); }
-  to   { opacity: 0; transform: translateY(-12px) scale(.97); }
-}
-@keyframes py2BgRotate {
-  0%   { background-position: 0% 0%; }
-  50%  { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
+@keyframes py2Pop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+@keyframes py2BorderRotate { 0% { --py2-border-angle: 0deg; } 100% { --py2-border-angle: 360deg; } }
+@keyframes py2SlideIn { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes py2SlideOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-12px) scale(.97); } }
+@keyframes py2BgRotate { 0% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } 100% { background-position: 0% 0%; } }
+@keyframes py2PremiumGlow {
+  0%, 100% { box-shadow: 0 26px 66px rgba(0,0,0,.55), 0 0 0 1px rgba(255,96,0,.65) inset, 0 0 60px -16px #ff6000; }
+  50%      { box-shadow: 0 28px 72px rgba(0,0,0,.6),  0 0 0 1px rgba(255,96,0,.85) inset, 0 0 72px -12px #ff6000; }
 }
 
-/* ── RESET (scoped) ──────────────────────────────────────────────────── */
-.py2-page *, .py2-page *::before, .py2-page *::after {
-  margin: 0; padding: 0; box-sizing: border-box;
-}
+.py2-page *, .py2-page *::before, .py2-page *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ── PAGE SHELL ──────────────────────────────────────────────────────── */
 .py2-page {
   font-family: var(--py2-font-body);
   background: var(--py2-light);
@@ -109,105 +67,37 @@
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-.py2-page h1, .py2-page h2, .py2-page h3, .py2-page h4 {
-  font-family: var(--py2-font-head);
-  line-height: 1.2;
-}
+.py2-page h1, .py2-page h2, .py2-page h3, .py2-page h4 { font-family: var(--py2-font-head); line-height: 1.2; }
 .py2-page a { color: inherit; text-decoration: none; }
 .py2-page img { max-width: 100%; display: block; }
 .py2-page button { font-family: var(--py2-font-body); }
 
-/* ── TOP BAR ─────────────────────────────────────────────────────────── */
-.py2-topbar {
-  background: var(--py2-dark);
-  color: white;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  position: sticky; top: 0; z-index: 200;
-}
-.py2-topbar-inner {
-  max-width: 1280px; margin: 0 auto;
-  padding: 12px 20px;
-  display: flex; align-items: center; gap: 16px;
-}
-.py2-topbar-brand {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--py2-font-head);
-  font-weight: 800; font-size: 16px; color: white; white-space: nowrap;
-}
+.py2-topbar { background: var(--py2-dark); color: white; border-bottom: 1px solid rgba(255,255,255,.06); position: sticky; top: 0; z-index: 200; }
+.py2-topbar-inner { max-width: 1280px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 16px; }
+.py2-topbar-brand { display: flex; align-items: center; gap: 10px; font-family: var(--py2-font-head); font-weight: 800; font-size: 16px; color: white; white-space: nowrap; }
 .py2-topbar-brand span { color: var(--py2-orange); }
-.py2-topbar-brand small {
-  display: block; font-size: 10px; font-weight: 600;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  color: rgba(255,255,255,.45);
-}
-.py2-topbar-nav {
-  display: flex; align-items: center; gap: 4px;
-  margin-left: auto; flex-wrap: wrap;
-}
-.py2-topbar-nav a, .py2-topbar-nav button {
-  background: none; border: none;
-  color: rgba(255,255,255,.75);
-  font-size: 13px; font-weight: 500;
-  padding: 8px 12px; border-radius: 8px;
-  cursor: pointer; transition: all .2s;
-  text-decoration: none; white-space: nowrap;
-}
-.py2-topbar-nav a:hover, .py2-topbar-nav button:hover {
-  background: rgba(255,255,255,.08); color: white;
-}
+.py2-topbar-brand small { display: block; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.45); }
+.py2-topbar-nav { display: flex; align-items: center; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.py2-topbar-nav a, .py2-topbar-nav button { background: none; border: none; color: rgba(255,255,255,.75); font-size: 13px; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: all .2s; text-decoration: none; white-space: nowrap; }
+.py2-topbar-nav a:hover, .py2-topbar-nav button:hover { background: rgba(255,255,255,.08); color: white; }
 .py2-topbar-nav a.active { color: white; background: rgba(255,255,255,.1); }
 
-/* ── CONTAINER ───────────────────────────────────────────────────────── */
-.py2-container {
-  max-width: 1280px; margin: 0 auto;
-  padding: 32px 20px 80px;
-}
-.py2-container-narrow {
-  max-width: 560px; margin: 0 auto;
-  padding: 40px 20px 80px;
-}
+.py2-container { max-width: 1280px; margin: 0 auto; padding: 32px 20px 80px; }
+.py2-container-narrow { max-width: 560px; margin: 0 auto; padding: 40px 20px 80px; }
 
-/* ── HEADINGS ────────────────────────────────────────────────────────── */
 .py2-h1 { font-family: var(--py2-font-head); font-weight: 800; font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 8px; }
 .py2-h2 { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.4rem; margin-bottom: 6px; }
 .py2-h3 { font-family: var(--py2-font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 6px; }
 .py2-sub { color: var(--py2-muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
 
-/* ── CARD (form/admin pages) ─────────────────────────────────────────── */
-.py2-card {
-  background: var(--py2-white);
-  border: 1px solid var(--py2-border-soft);
-  border-radius: var(--py2-radius-lg);
-  box-shadow: var(--py2-shadow-sm);
-  overflow: hidden;
-}
+.py2-card { background: var(--py2-white); border: 1px solid var(--py2-border-soft); border-radius: var(--py2-radius-lg); box-shadow: var(--py2-shadow-sm); overflow: hidden; }
 .py2-card + .py2-card { margin-top: 16px; }
-.py2-card-head {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--py2-border-soft);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap;
-}
+.py2-card-head { padding: 16px 20px; border-bottom: 1px solid var(--py2-border-soft); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .py2-card-head h2, .py2-card-head h3 { font-family: var(--py2-font-head); font-weight: 700; font-size: 15px; }
 .py2-card-body { padding: 20px; }
-.py2-card-foot {
-  padding: 14px 20px;
-  border-top: 1px solid var(--py2-border-soft);
-  background: #fafbff;
-  display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
-}
+.py2-card-foot { padding: 14px 20px; border-top: 1px solid var(--py2-border-soft); background: #fafbff; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 
-/* ── BUTTONS ─────────────────────────────────────────────────────────── */
-.py2-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 6px; padding: 10px 18px;
-  border: none; border-radius: var(--py2-radius-sm);
-  font-family: var(--py2-font-body);
-  font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  transition: transform .15s, box-shadow .2s, background .2s;
-  text-decoration: none; white-space: nowrap; line-height: 1.2;
-}
+.py2-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border: none; border-radius: var(--py2-radius-sm); font-family: var(--py2-font-body); font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .15s, box-shadow .2s, background .2s; text-decoration: none; white-space: nowrap; line-height: 1.2; }
 .py2-btn:disabled, .py2-btn.disabled { opacity: .55; cursor: not-allowed; }
 .py2-btn:not(:disabled):not(.disabled):hover { transform: translateY(-1px); }
 .py2-btn-primary { background: var(--py2-grad-orange); color: white; box-shadow: 0 4px 14px rgba(255,96,0,.32); }
@@ -224,24 +114,11 @@
 .py2-btn-sm { padding: 7px 12px; font-size: 12.5px; }
 .py2-btn-lg { padding: 14px 24px; font-size: 15px; }
 
-/* ── FORMS ───────────────────────────────────────────────────────────── */
 .py2-field { margin-bottom: 16px; }
 .py2-label { display: block; font-size: 13px; font-weight: 600; color: var(--py2-text); margin-bottom: 6px; }
 .py2-label .req { color: var(--py2-c1); margin-left: 2px; }
-.py2-input, .py2-select, .py2-textarea {
-  width: 100%;
-  border: 1.5px solid rgba(0,0,0,.1);
-  border-radius: var(--py2-radius-sm);
-  padding: 11px 14px;
-  font-size: 14px;
-  font-family: var(--py2-font-body);
-  color: var(--py2-text); background: white; outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-.py2-input:focus, .py2-select:focus, .py2-textarea:focus {
-  border-color: var(--py2-orange);
-  box-shadow: 0 0 0 3px rgba(255,96,0,.1);
-}
+.py2-input, .py2-select, .py2-textarea { width: 100%; border: 1.5px solid rgba(0,0,0,.1); border-radius: var(--py2-radius-sm); padding: 11px 14px; font-size: 14px; font-family: var(--py2-font-body); color: var(--py2-text); background: white; outline: none; transition: border-color .2s, box-shadow .2s; }
+.py2-input:focus, .py2-select:focus, .py2-textarea:focus { border-color: var(--py2-orange); box-shadow: 0 0 0 3px rgba(255,96,0,.1); }
 .py2-input.error, .py2-textarea.error { border-color: var(--py2-red); }
 .py2-textarea { min-height: 110px; resize: vertical; }
 .py2-help { font-size: 12px; color: var(--py2-muted); margin-top: 5px; line-height: 1.4; }
@@ -250,47 +127,19 @@
 .py2-input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 520px) { .py2-input-group { grid-template-columns: 1fr; } }
 
-/* ── FILE INPUT ──────────────────────────────────────────────────────── */
-.py2-file {
-  border: 2px dashed rgba(0,0,0,.12);
-  border-radius: var(--py2-radius);
-  padding: 22px; text-align: center;
-  background: #fafbff; cursor: pointer;
-  transition: all .2s;
-}
+.py2-file { border: 2px dashed rgba(0,0,0,.12); border-radius: var(--py2-radius); padding: 22px; text-align: center; background: #fafbff; cursor: pointer; transition: all .2s; }
 .py2-file:hover { border-color: var(--py2-orange); background: #fff9f4; }
 .py2-file.dragover { border-color: var(--py2-orange); background: #fff4ec; }
 .py2-file-input { display: none; }
 .py2-file-icon { font-size: 2rem; margin-bottom: 8px; }
 .py2-file-text { font-size: 13px; color: var(--py2-muted); }
 .py2-file-text strong { color: var(--py2-text); }
-.py2-file-preview {
-  margin-top: 12px; display: none;
-  position: relative; border-radius: var(--py2-radius-sm);
-  overflow: hidden; max-width: 100%;
-}
+.py2-file-preview { margin-top: 12px; display: none; position: relative; border-radius: var(--py2-radius-sm); overflow: hidden; max-width: 100%; }
 .py2-file-preview.show { display: block; }
-.py2-file-preview img, .py2-file-preview video {
-  width: 100%; max-height: 220px; object-fit: cover;
-  border-radius: var(--py2-radius-sm);
-}
-.py2-file-remove {
-  position: absolute; top: 8px; right: 8px;
-  background: rgba(10,10,20,.7); color: white;
-  border: none; border-radius: 50%;
-  width: 30px; height: 30px;
-  cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
-}
+.py2-file-preview img, .py2-file-preview video { width: 100%; max-height: 220px; object-fit: cover; border-radius: var(--py2-radius-sm); }
+.py2-file-remove { position: absolute; top: 8px; right: 8px; background: rgba(10,10,20,.7); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
 
-/* ── BADGES ──────────────────────────────────────────────────────────── */
-.py2-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; font-weight: 700;
-  padding: 3px 10px; border-radius: 100px;
-  text-transform: uppercase; letter-spacing: .4px;
-  white-space: nowrap;
-}
+.py2-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
 .py2-badge-pending  { background: rgba(245,158,11,.12); color: #b45309; border: 1px solid rgba(245,158,11,.25); }
 .py2-badge-approved { background: rgba(22,163,74,.12); color: #15803d; border: 1px solid rgba(22,163,74,.25); }
 .py2-badge-rejected { background: rgba(230,57,70,.12); color: #b91c1c; border: 1px solid rgba(230,57,70,.25); }
@@ -300,125 +149,49 @@
 .py2-badge-tier-paid     { background: rgba(84,160,255,.12); color: #2563eb; }
 .py2-badge-tier-premium  { background: linear-gradient(135deg,#5f27cd,#54a0ff); color: white; }
 
-/* ── TABS ────────────────────────────────────────────────────────────── */
-.py2-tabs {
-  display: flex; gap: 4px;
-  border-bottom: 1px solid var(--py2-border-soft);
-  overflow-x: auto; margin-bottom: 20px;
-  -ms-overflow-style: none; scrollbar-width: none;
-}
+.py2-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--py2-border-soft); overflow-x: auto; margin-bottom: 20px; -ms-overflow-style: none; scrollbar-width: none; }
 .py2-tabs::-webkit-scrollbar { display: none; }
-.py2-tab {
-  padding: 12px 18px; background: none;
-  border: none; border-bottom: 2px solid transparent;
-  color: var(--py2-muted); font-size: 14px; font-weight: 600;
-  cursor: pointer; white-space: nowrap;
-  transition: all .2s;
-  font-family: var(--py2-font-body);
-  display: flex; align-items: center; gap: 6px;
-}
+.py2-tab { padding: 12px 18px; background: none; border: none; border-bottom: 2px solid transparent; color: var(--py2-muted); font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .2s; font-family: var(--py2-font-body); display: flex; align-items: center; gap: 6px; }
 .py2-tab:hover { color: var(--py2-text); }
 .py2-tab.active { color: var(--py2-orange); border-bottom-color: var(--py2-orange); }
 .py2-tab .count { font-size: 11px; background: rgba(0,0,0,.06); padding: 1px 7px; border-radius: 100px; }
 .py2-tab.active .count { background: rgba(255,96,0,.15); color: var(--py2-orange); }
 
-/* ── TABLES ──────────────────────────────────────────────────────────── */
 .py2-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.py2-table th {
-  text-align: left; padding: 12px 16px;
-  font-weight: 700; font-size: 11px;
-  color: var(--py2-muted);
-  text-transform: uppercase; letter-spacing: .8px;
-  border-bottom: 1px solid var(--py2-border-soft);
-  background: #fafbff;
-}
-.py2-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--py2-border-soft);
-  vertical-align: middle;
-}
+.py2-table th { text-align: left; padding: 12px 16px; font-weight: 700; font-size: 11px; color: var(--py2-muted); text-transform: uppercase; letter-spacing: .8px; border-bottom: 1px solid var(--py2-border-soft); background: #fafbff; }
+.py2-table td { padding: 12px 16px; border-bottom: 1px solid var(--py2-border-soft); vertical-align: middle; }
 .py2-table tr:last-child td { border-bottom: none; }
 .py2-table tr:hover td { background: #fbfcff; }
 .py2-table-empty { text-align: center; padding: 40px 20px; color: var(--py2-muted); font-size: 14px; }
 
-/* ── MODAL ───────────────────────────────────────────────────────────── */
-.py2-modal-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(10,10,20,.55);
-  backdrop-filter: blur(4px);
-  z-index: 900; display: none;
-  align-items: center; justify-content: center;
-  padding: 20px;
-}
+.py2-modal-backdrop { position: fixed; inset: 0; background: rgba(10,10,20,.55); backdrop-filter: blur(4px); z-index: 900; display: none; align-items: center; justify-content: center; padding: 20px; }
 .py2-modal-backdrop.open { display: flex; }
-.py2-modal {
-  background: white; border-radius: var(--py2-radius-lg);
-  max-width: 480px; width: 100%;
-  max-height: 90vh; overflow-y: auto;
-  box-shadow: var(--py2-shadow-lg);
-  animation: py2Pop .25s ease;
-}
-.py2-modal-head {
-  padding: 20px 24px 0;
-  display: flex; justify-content: space-between;
-  align-items: flex-start; gap: 12px;
-}
+.py2-modal { background: white; border-radius: var(--py2-radius-lg); max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--py2-shadow-lg); animation: py2Pop .25s ease; }
+.py2-modal-head { padding: 20px 24px 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .py2-modal-head h3 { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.15rem; }
 .py2-modal-close { background: none; border: none; font-size: 20px; color: var(--py2-muted); cursor: pointer; padding: 4px; line-height: 1; }
 .py2-modal-body { padding: 16px 24px; }
 .py2-modal-foot { padding: 0 24px 20px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 
-/* ── EMPTY / LOADING ─────────────────────────────────────────────────── */
 .py2-empty { text-align: center; padding: 60px 24px; color: var(--py2-muted); }
 .py2-empty-icon { font-size: 3rem; margin-bottom: 12px; }
 .py2-empty h3 { font-family: var(--py2-font-head); font-weight: 700; font-size: 1.1rem; color: var(--py2-text); margin-bottom: 6px; }
 .py2-empty p { font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
 
-.py2-spinner {
-  display: inline-block;
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,.35);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: py2Spin .7s linear infinite;
-  vertical-align: middle;
-}
+.py2-spinner { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: white; border-radius: 50%; animation: py2Spin .7s linear infinite; vertical-align: middle; }
 .py2-spinner-dark { border-color: rgba(0,0,0,.1); border-top-color: var(--py2-orange); }
 
-/* ── DASHBOARD ───────────────────────────────────────────────────────── */
 .py2-dash-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
 .py2-dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
-.py2-stat {
-  background: white;
-  border: 1px solid var(--py2-border-soft);
-  border-radius: var(--py2-radius);
-  padding: 16px;
-  box-shadow: var(--py2-shadow-sm);
-}
+.py2-stat { background: white; border: 1px solid var(--py2-border-soft); border-radius: var(--py2-radius); padding: 16px; box-shadow: var(--py2-shadow-sm); }
 .py2-stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--py2-muted); margin-bottom: 6px; }
 .py2-stat-value { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.5rem; color: var(--py2-text); }
 .py2-stat-value.accent { color: var(--py2-orange); }
 
-/* ── AD LIST ITEM ────────────────────────────────────────────────────── */
-.py2-ad-item {
-  display: flex; gap: 16px; padding: 16px;
-  background: white;
-  border: 1px solid var(--py2-border-soft);
-  border-radius: var(--py2-radius);
-  box-shadow: var(--py2-shadow-sm);
-  align-items: flex-start;
-  transition: box-shadow .2s;
-}
+.py2-ad-item { display: flex; gap: 16px; padding: 16px; background: white; border: 1px solid var(--py2-border-soft); border-radius: var(--py2-radius); box-shadow: var(--py2-shadow-sm); align-items: flex-start; transition: box-shadow .2s; }
 .py2-ad-item + .py2-ad-item { margin-top: 12px; }
 .py2-ad-item:hover { box-shadow: var(--py2-shadow); }
-.py2-ad-thumb {
-  width: 110px; height: 78px;
-  border-radius: var(--py2-radius-sm);
-  background: var(--py2-light);
-  object-fit: cover; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; overflow: hidden;
-}
+.py2-ad-thumb { width: 110px; height: 78px; border-radius: var(--py2-radius-sm); background: var(--py2-light); object-fit: cover; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; overflow: hidden; }
 .py2-ad-thumb img, .py2-ad-thumb video { width: 100%; height: 100%; object-fit: cover; }
 .py2-ad-main { flex: 1; min-width: 0; }
 .py2-ad-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
@@ -430,37 +203,12 @@
   .py2-ad-thumb { width: 100%; height: 140px; }
 }
 
-/* ── SHARE ROW ───────────────────────────────────────────────────────── */
-.py2-share-row {
-  display: flex; gap: 8px; align-items: center;
-  background: var(--py2-light);
-  padding: 10px 12px;
-  border-radius: var(--py2-radius-sm);
-  font-size: 13px; margin-top: 8px; flex-wrap: wrap;
-}
-.py2-share-url {
-  flex: 1; min-width: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px; color: var(--py2-muted);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
+.py2-share-row { display: flex; gap: 8px; align-items: center; background: var(--py2-light); padding: 10px 12px; border-radius: var(--py2-radius-sm); font-size: 13px; margin-top: 8px; flex-wrap: wrap; }
+.py2-share-url { flex: 1; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--py2-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* ── AUTH SCREENS ────────────────────────────────────────────────────── */
-.py2-auth-wrap {
-  min-height: 100vh;
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px 16px;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%),
-    radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%),
-    var(--py2-light);
-}
-.py2-auth-card {
-  width: 100%; max-width: 480px;
-  background: white; border-radius: var(--py2-radius-xl);
-  box-shadow: var(--py2-shadow-lg);
-  padding: 36px 32px;
-}
+.py2-auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+  background: radial-gradient(circle at 20% 10%, rgba(255,96,0,.12), transparent 55%), radial-gradient(circle at 90% 90%, rgba(84,160,255,.1), transparent 55%), var(--py2-light); }
+.py2-auth-card { width: 100%; max-width: 480px; background: white; border-radius: var(--py2-radius-xl); box-shadow: var(--py2-shadow-lg); padding: 36px 32px; }
 @media (max-width: 520px) { .py2-auth-card { padding: 28px 20px; } }
 .py2-auth-brand { text-align: center; margin-bottom: 22px; }
 .py2-auth-brand img { height: 56px; width: 56px; border-radius: var(--py2-radius); margin: 0 auto 12px; }
@@ -469,34 +217,14 @@
 .py2-auth-alt { text-align: center; margin-top: 20px; font-size: 13px; color: var(--py2-muted); }
 .py2-auth-alt a { color: var(--py2-orange); font-weight: 600; }
 
-/* ── NOTICES ─────────────────────────────────────────────────────────── */
-.py2-notice {
-  background: rgba(84,160,255,.07);
-  border: 1px solid rgba(84,160,255,.2);
-  border-radius: var(--py2-radius-sm);
-  padding: 12px 14px;
-  font-size: 13px; line-height: 1.55;
-  color: var(--py2-text);
-  display: flex; gap: 10px; align-items: flex-start;
-  margin-bottom: 16px;
-}
+.py2-notice { background: rgba(84,160,255,.07); border: 1px solid rgba(84,160,255,.2); border-radius: var(--py2-radius-sm); padding: 12px 14px; font-size: 13px; line-height: 1.55; color: var(--py2-text); display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px; }
 .py2-notice-warn { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.25); }
 .py2-notice-danger { background: rgba(230,57,70,.07); border-color: rgba(230,57,70,.2); }
 .py2-notice-icon { flex-shrink: 0; font-size: 1.05rem; line-height: 1.4; }
 
-/* ── CHECKBOX ────────────────────────────────────────────────────────── */
-.py2-check {
-  display: flex; gap: 10px; align-items: flex-start;
-  font-size: 13px; line-height: 1.5;
-  color: var(--py2-text); cursor: pointer; padding: 10px 0;
-}
-.py2-check input[type="checkbox"] {
-  width: 18px; height: 18px; margin-top: 1px;
-  accent-color: var(--py2-orange);
-  cursor: pointer; flex-shrink: 0;
-}
+.py2-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: var(--py2-text); cursor: pointer; padding: 10px 0; }
+.py2-check input[type="checkbox"] { width: 18px; height: 18px; margin-top: 1px; accent-color: var(--py2-orange); cursor: pointer; flex-shrink: 0; }
 
-/* ── RESPONSIVE (containers) ─────────────────────────────────────────── */
 @media (max-width: 900px) {
   .py2-container { padding: 20px 14px 60px; }
   .py2-topbar-inner { padding: 10px 14px; gap: 8px; }
@@ -511,18 +239,14 @@
   .py2-table th, .py2-table td { padding: 10px 12px; }
 }
 
-/* ── FOCUS (a11y) ────────────────────────────────────────────────────── */
 .py2-page a:focus-visible,
 .py2-page button:focus-visible,
 .py2-page input:focus-visible,
 .py2-page select:focus-visible,
-.py2-page textarea:focus-visible {
-  outline: 2px solid var(--py2-orange);
-  outline-offset: 2px;
-}
+.py2-page textarea:focus-visible { outline: 2px solid var(--py2-orange); outline-offset: 2px; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   PORTAL CARDS (used inside interstitials)
+   PORTAL CARDS
    ═══════════════════════════════════════════════════════════════════════ */
 
 .py2-ads-card {
@@ -539,18 +263,12 @@
   flex-direction: column;
   background: linear-gradient(160deg, #12122a 0%, #0a0a14 100%);
   border: 1px solid rgba(255,255,255,.08);
-  box-shadow:
-    0 20px 50px rgba(0,0,0,.45),
-    0 0 0 1px rgba(255,255,255,.03) inset,
-    0 0 40px -20px var(--accent);
-  transition:
-    transform .45s cubic-bezier(.2,.8,.2,1),
-    box-shadow .45s cubic-bezier(.2,.8,.2,1);
+  box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset, 0 0 40px -20px var(--accent);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s cubic-bezier(.2,.8,.2,1);
   animation: py2FadeUp .6s cubic-bezier(.2,.8,.2,1) both;
   isolation: isolate;
 }
 
-/* Rotating accent palette */
 .py2-ads-card:nth-child(7n+1) { --accent: #ff6b6b; --accent-2: #ff9ff3; }
 .py2-ads-card:nth-child(7n+2) { --accent: #feca57; --accent-2: #ff9f43; }
 .py2-ads-card:nth-child(7n+3) { --accent: #48dbfb; --accent-2: #54a0ff; }
@@ -559,24 +277,14 @@
 .py2-ads-card:nth-child(7n+6) { --accent: #5f27cd; --accent-2: #ff9ff3; }
 .py2-ads-card:nth-child(7n+7) { --accent: #25d366; --accent-2: #48dbfb; }
 
-/* Animated conic border on hover */
 .py2-ads-card::before {
   content: '';
   position: absolute;
   inset: 0;
   padding: 2px;
   border-radius: inherit;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    var(--accent) 25%,
-    var(--accent-2) 50%,
-    var(--accent) 75%,
-    transparent 100%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
+  background: conic-gradient(from 0deg, transparent 0%, var(--accent) 25%, var(--accent-2) 50%, var(--accent) 75%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   opacity: 0;
@@ -587,7 +295,6 @@
 }
 .py2-ads-card:hover::before { opacity: 1; }
 
-/* Glow */
 .py2-ads-card::after {
   content: '';
   position: absolute;
@@ -604,46 +311,14 @@
 
 .py2-ads-card:hover {
   transform: translateY(-6px) scale(1.01);
-  box-shadow:
-    0 30px 70px rgba(0,0,0,.55),
-    0 0 0 1px var(--accent) inset,
-    0 0 60px -15px var(--accent);
+  box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 0 1px var(--accent) inset, 0 0 60px -15px var(--accent);
 }
 
-/* Media */
-.py2-ads-img {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #05050c;
-  flex-shrink: 0;
-  z-index: 1;
-}
-.py2-ads-img::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent 45%,
-    rgba(10,10,20,.55) 75%,
-    rgba(10,10,20,.95) 100%
-  );
-  pointer-events: none;
-  z-index: 2;
-}
+.py2-ads-img { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #05050c; flex-shrink: 0; z-index: 1; }
+.py2-ads-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, transparent 45%, rgba(10,10,20,.55) 75%, rgba(10,10,20,.95) 100%); pointer-events: none; z-index: 2; }
 .py2-ads-img img,
 .py2-ads-img video,
-.py2-ads-img iframe {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  border: 0;
-  transform-origin: center;
-  animation: py2KenBurns 16s ease-in-out infinite alternate;
-  will-change: transform;
-}
+.py2-ads-img iframe { width: 100%; height: 100%; object-fit: cover; display: block; border: 0; transform-origin: center; animation: py2KenBurns 16s ease-in-out infinite alternate; will-change: transform; }
 .py2-ads-card:hover .py2-ads-img img,
 .py2-ads-card:hover .py2-ads-img video { animation-play-state: paused; }
 
@@ -658,12 +333,7 @@
   border: 1px solid rgba(255,255,255,.18);
   box-shadow: 0 4px 14px rgba(0,0,0,.4);
 }
-.py2-ads-sponsored::before {
-  content: '';
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #25d366; box-shadow: 0 0 10px #25d366;
-  animation: py2PulseDot 1.4s ease-in-out infinite;
-}
+.py2-ads-sponsored::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #25d366; box-shadow: 0 0 10px #25d366; animation: py2PulseDot 1.4s ease-in-out infinite; }
 .py2-ads-report {
   position: absolute; top: 14px; right: 14px; z-index: 4;
   padding: 5px 12px; border-radius: 100px;
@@ -677,15 +347,7 @@
 .py2-ads-card:hover .py2-ads-report { opacity: 1; }
 .py2-ads-report:hover { background: rgba(230,57,70,.85); color: white; border-color: rgba(255,255,255,.3); }
 
-.py2-ads-body {
-  position: relative;
-  z-index: 2;
-  padding: 16px 20px 20px;
-  margin-top: -50px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
+.py2-ads-body { position: relative; z-index: 2; padding: 16px 20px 20px; margin-top: -50px; display: flex; flex-direction: column; flex: 1; }
 
 .py2-ads-biz {
   display: inline-flex; align-items: center; align-self: flex-start;
@@ -730,30 +392,12 @@
   position: relative; overflow: hidden;
 }
 .py2-ads-cta span:first-child { display: inline-flex; align-items: center; gap: 8px; }
-.py2-ads-cta .arrow {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: rgba(0,0,0,.2);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  transition: transform .3s;
-}
-.py2-ads-card:hover .py2-ads-cta {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 32px -6px var(--accent), 0 0 0 1px rgba(255,255,255,.2) inset;
-  letter-spacing: .6px;
-}
+.py2-ads-cta .arrow { width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.2); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; transition: transform .3s; }
+.py2-ads-card:hover .py2-ads-cta { transform: translateY(-2px); box-shadow: 0 14px 32px -6px var(--accent), 0 0 0 1px rgba(255,255,255,.2) inset; letter-spacing: .6px; }
 .py2-ads-card:hover .py2-ads-cta .arrow { transform: translateX(4px); }
-.py2-ads-cta::after {
-  content: '';
-  position: absolute; top: 0; left: -60%;
-  width: 40%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
-  transform: skewX(-20deg);
-  opacity: 0;
-}
+.py2-ads-cta::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); transform: skewX(-20deg); opacity: 0; }
 .py2-ads-card:hover .py2-ads-cta::after { animation: py2ShimmerSweep 1s ease forwards; }
 
-/* Video fallback */
 .py2-ads-video-fallback {
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
@@ -766,7 +410,7 @@
 .py2-ads-video-fallback .vf-icon { font-size: 2.4rem; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   INTERSTITIAL — cinematic rotating band between page sections
+   INTERSTITIAL
    ═══════════════════════════════════════════════════════════════════════ */
 
 .py2-ads-interstitial {
@@ -782,18 +426,12 @@
     radial-gradient(circle at 85% 80%, rgba(84,160,255,.2), transparent 45%),
     radial-gradient(circle at 50% 50%, rgba(95,39,205,.14), transparent 60%),
     linear-gradient(140deg, #0a0a14 0%, #12122a 50%, #0a0a14 100%);
-  box-shadow:
-    0 24px 60px rgba(10,10,20,.4),
-    0 0 0 1px rgba(255,255,255,.05) inset;
+  box-shadow: 0 24px 60px rgba(10,10,20,.4), 0 0 0 1px rgba(255,255,255,.05) inset;
 }
-
-/* Faint animated grid behind everything */
 .py2-ads-interstitial::before {
   content: '';
   position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
   background-size: 44px 44px;
   pointer-events: none;
   mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
@@ -801,7 +439,6 @@
   z-index: 0;
 }
 
-/* Header strip in the interstitial */
 .py2-ads-interstitial-head {
   position: absolute;
   top: 20px; left: 24px; right: 24px;
@@ -820,12 +457,7 @@
   border: 1px solid rgba(255,255,255,.14);
   backdrop-filter: blur(10px);
 }
-.py2-ads-interstitial-head .label::before {
-  content: '';
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #25d366; box-shadow: 0 0 10px #25d366;
-  animation: py2PulseDot 1.4s ease-in-out infinite;
-}
+.py2-ads-interstitial-head .label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #25d366; box-shadow: 0 0 10px #25d366; animation: py2PulseDot 1.4s ease-in-out infinite; }
 .py2-ads-interstitial-head .adv-link {
   pointer-events: auto;
   font-size: 12px; font-weight: 700;
@@ -837,13 +469,8 @@
   text-decoration: none;
   display: inline-flex; align-items: center; gap: 6px;
 }
-.py2-ads-interstitial-head .adv-link:hover {
-  background: rgba(255,96,0,.25);
-  border-color: rgba(255,159,67,.45);
-  color: white;
-}
+.py2-ads-interstitial-head .adv-link:hover { background: rgba(255,96,0,.25); border-color: rgba(255,159,67,.45); color: white; }
 
-/* Stage: single-ad area that crossfades */
 .py2-ads-interstitial-stage {
   position: relative;
   z-index: 2;
@@ -855,41 +482,22 @@
   padding: 62px 24px 46px;
 }
 
-/* Each ad slide is absolutely positioned, crossfades in/out */
 .py2-ads-interstitial-slide {
   position: absolute;
   top: 62px; bottom: 46px; left: 24px; right: 24px;
   opacity: 0;
   transform: scale(.96) translateY(8px);
-  transition:
-    opacity .7s cubic-bezier(.2,.8,.2,1),
-    transform .7s cubic-bezier(.2,.8,.2,1);
+  transition: opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.py2-ads-interstitial-slide.is-active {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-  pointer-events: auto;
-  z-index: 2;
-}
-.py2-ads-interstitial-slide.is-leaving {
-  opacity: 0;
-  transform: scale(1.04) translateY(-8px);
-  z-index: 1;
-}
+.py2-ads-interstitial-slide.is-active { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; z-index: 2; }
+.py2-ads-interstitial-slide.is-leaving { opacity: 0; transform: scale(1.04) translateY(-8px); z-index: 1; }
 
-/* The card inside a slide — bigger, more presence than grid cards */
-.py2-ads-interstitial-slide .py2-ads-card {
-  max-width: 640px;
-  width: 100%;
-  min-width: 0;
-  animation: none; /* no fade-up, since the slide handles the transition */
-}
+.py2-ads-interstitial-slide .py2-ads-card { max-width: 640px; width: 100%; min-width: 0; animation: none; }
 
-/* Dots for manual navigation */
 .py2-ads-interstitial-dots {
   position: absolute;
   bottom: 18px; left: 50%;
@@ -901,19 +509,9 @@
   border: 1px solid rgba(255,255,255,.1);
   backdrop-filter: blur(10px);
 }
-.py2-ads-interstitial-dots button {
-  width: 8px; height: 8px;
-  border-radius: 50%; border: none;
-  background: rgba(255,255,255,.35);
-  cursor: pointer; padding: 0;
-  transition: all .3s;
-}
+.py2-ads-interstitial-dots button { width: 8px; height: 8px; border-radius: 50%; border: none; background: rgba(255,255,255,.35); cursor: pointer; padding: 0; transition: all .3s; }
 .py2-ads-interstitial-dots button:hover { background: rgba(255,255,255,.65); }
-.py2-ads-interstitial-dots button.is-active {
-  width: 22px; border-radius: 100px;
-  background: white;
-  box-shadow: 0 0 12px rgba(255,255,255,.6);
-}
+.py2-ads-interstitial-dots button.is-active { width: 22px; border-radius: 100px; background: white; box-shadow: 0 0 12px rgba(255,255,255,.6); }
 
 @media (max-width: 900px) {
   .py2-ads-interstitial { margin: 28px 12px; border-radius: 18px; min-height: 380px; }
@@ -930,7 +528,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   POPUP — big cinematic ad on page load
+   POPUP
    ═══════════════════════════════════════════════════════════════════════ */
 
 #py2-ads-popup-backdrop {
@@ -942,10 +540,7 @@
   justify-content: center;
   padding: 20px;
 }
-#py2-ads-popup-backdrop.open {
-  display: flex;
-  animation: py2Pop .3s ease;
-}
+#py2-ads-popup-backdrop.open { display: flex; animation: py2Pop .3s ease; }
 
 .py2-ads-popup {
   --accent: #ff6b6b;
@@ -958,27 +553,15 @@
   border-radius: 22px;
   background: linear-gradient(160deg, #12122a 0%, #0a0a14 100%);
   border: 1px solid rgba(255,255,255,.08);
-  box-shadow:
-    0 40px 90px rgba(0,0,0,.6),
-    0 0 0 1px rgba(255,255,255,.03) inset,
-    0 0 60px -20px var(--accent);
+  box-shadow: 0 40px 90px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03) inset, 0 0 60px -20px var(--accent);
   animation: py2Pop .35s cubic-bezier(.2,.8,.2,1);
 }
 .py2-ads-popup::before {
   content: '';
   position: absolute; inset: 0;
   padding: 2px; border-radius: inherit;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    var(--accent) 25%,
-    var(--accent-2) 50%,
-    var(--accent) 75%,
-    transparent 100%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
+  background: conic-gradient(from 0deg, transparent 0%, var(--accent) 25%, var(--accent-2) 50%, var(--accent) 75%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   animation: py2BorderRotate 5s linear infinite;
@@ -987,20 +570,8 @@
 }
 .py2-ads-popup img,
 .py2-ads-popup video,
-.py2-ads-popup iframe {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  background: #05050c;
-  display: block;
-  border: 0;
-}
-.py2-ads-popup .py2-ads-popup-img-ph {
-  width: 100%; aspect-ratio: 16/9;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg,#0a0a14,#1a1a3e);
-  font-size: 3rem;
-}
+.py2-ads-popup iframe { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #05050c; display: block; border: 0; }
+.py2-ads-popup .py2-ads-popup-img-ph { width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#0a0a14,#1a1a3e); font-size: 3rem; }
 .py2-ads-popup-body { padding: 22px 26px 26px; }
 
 .py2-ads-popup-tag {
@@ -1013,23 +584,9 @@
   box-shadow: 0 4px 14px -4px var(--accent);
   margin-bottom: 14px;
 }
-.py2-ads-popup-biz {
-  font-size: 11px; font-weight: 800;
-  color: rgba(255,255,255,.5);
-  text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.py2-ads-popup-title {
-  font-family: var(--py2-font-head);
-  font-weight: 800; font-size: 1.5rem;
-  line-height: 1.15; color: white;
-  margin-bottom: 12px; letter-spacing: -.4px;
-}
-.py2-ads-popup-desc {
-  font-size: 14px; line-height: 1.6;
-  color: rgba(255,255,255,.6);
-  margin-bottom: 22px;
-}
+.py2-ads-popup-biz { font-size: 11px; font-weight: 800; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.py2-ads-popup-title { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.5rem; line-height: 1.15; color: white; margin-bottom: 12px; letter-spacing: -.4px; }
+.py2-ads-popup-desc { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.6); margin-bottom: 22px; }
 .py2-ads-popup-cta {
   display: flex; align-items: center; justify-content: space-between;
   gap: 10px; width: 100%;
@@ -1043,27 +600,10 @@
   position: relative; overflow: hidden;
 }
 .py2-ads-popup-cta span:first-child { display: inline-flex; align-items: center; gap: 8px; }
-.py2-ads-popup-cta .arrow {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: rgba(0,0,0,.22);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  transition: transform .3s;
-}
-.py2-ads-popup-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px -6px var(--accent), 0 0 0 1px rgba(255,255,255,.2) inset;
-  letter-spacing: .6px;
-}
+.py2-ads-popup-cta .arrow { width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.22); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; transition: transform .3s; }
+.py2-ads-popup-cta:hover { transform: translateY(-2px); box-shadow: 0 16px 40px -6px var(--accent), 0 0 0 1px rgba(255,255,255,.2) inset; letter-spacing: .6px; }
 .py2-ads-popup-cta:hover .arrow { transform: translateX(4px); }
-.py2-ads-popup-cta::after {
-  content: '';
-  position: absolute; top: 0; left: -60%;
-  width: 40%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
-  transform: skewX(-20deg);
-  opacity: 0;
-}
+.py2-ads-popup-cta::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); opacity: 0; }
 .py2-ads-popup-cta:hover::after { animation: py2ShimmerSweep 1s ease forwards; }
 
 .py2-ads-popup-close {
@@ -1077,22 +617,9 @@
   display: flex; align-items: center; justify-content: center;
   transition: all .25s;
 }
-.py2-ads-popup-close:hover {
-  background: rgba(230,57,70,.9);
-  transform: rotate(90deg);
-  border-color: rgba(255,255,255,.35);
-}
-.py2-ads-popup-report {
-  text-align: center; margin-top: 16px;
-  font-size: 12px;
-  color: rgba(255,255,255,.4);
-}
-.py2-ads-popup-report a {
-  color: rgba(255,255,255,.4);
-  text-decoration: underline;
-  cursor: pointer;
-  transition: color .2s;
-}
+.py2-ads-popup-close:hover { background: rgba(230,57,70,.9); transform: rotate(90deg); border-color: rgba(255,255,255,.35); }
+.py2-ads-popup-report { text-align: center; margin-top: 16px; font-size: 12px; color: rgba(255,255,255,.4); }
+.py2-ads-popup-report a { color: rgba(255,255,255,.4); text-decoration: underline; cursor: pointer; transition: color .2s; }
 .py2-ads-popup-report a:hover { color: rgba(255,255,255,.75); }
 
 @media (max-width: 480px) {
@@ -1102,7 +629,64 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   REDUCED MOTION — kill the animations for users who ask for it
+   TIER VISUALS — badges, borders, sizing
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.py2-ads-tier-badge {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: .9px;
+  text-transform: uppercase;
+  color: white;
+  border: 1px solid rgba(255,255,255,.25);
+  box-shadow: 0 4px 14px rgba(0,0,0,.35);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.py2-ads-tier-badge-starter  { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.py2-ads-tier-badge-standard { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+.py2-ads-tier-badge-business { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.py2-ads-tier-badge-premium  { background: linear-gradient(135deg, #ff6000, #ff9f43); box-shadow: 0 4px 18px rgba(255,96,0,.5); }
+
+.py2-ads-card.py2-ads-tier-starter {
+  box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(37,99,235,.35) inset, 0 0 40px -22px #2563eb;
+}
+.py2-ads-card.py2-ads-tier-standard {
+  box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(124,58,237,.45) inset, 0 0 44px -20px #7c3aed;
+}
+.py2-ads-card.py2-ads-tier-business {
+  transform: scale(1.015);
+  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(217,119,6,.55) inset, 0 0 50px -18px #d97706;
+}
+.py2-ads-card.py2-ads-tier-business:hover { transform: scale(1.025) translateY(-6px); }
+
+.py2-ads-card.py2-ads-tier-premium {
+  transform: scale(1.03);
+  box-shadow: 0 26px 66px rgba(0,0,0,.55), 0 0 0 1px rgba(255,96,0,.65) inset, 0 0 60px -16px #ff6000;
+  animation: py2PremiumGlow 3.2s ease-in-out infinite;
+}
+.py2-ads-card.py2-ads-tier-premium:hover { transform: scale(1.04) translateY(-6px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .py2-ads-card.py2-ads-tier-premium { animation: none; }
+}
+
+@media (max-width: 600px) {
+  .py2-ads-card.py2-ads-tier-business { transform: none; }
+  .py2-ads-card.py2-ads-tier-premium  { transform: none; }
+  .py2-ads-card.py2-ads-tier-business:hover,
+  .py2-ads-card.py2-ads-tier-premium:hover { transform: translateY(-4px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
    ═══════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   .py2-ads-card,
@@ -1118,7 +702,5 @@
     animation: none !important;
     transition-duration: .01ms !important;
   }
-  .py2-ads-interstitial-slide {
-    transition-duration: .01ms !important;
-  }
+  .py2-ads-interstitial-slide { transition-duration: .01ms !important; }
 }
