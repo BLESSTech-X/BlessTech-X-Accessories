@@ -5,8 +5,7 @@ const path = require('path');
 const baseUrl = 'https://phoneya2.pages.dev';
 const productsDir = path.join(__dirname, 'content', 'products');
 const indexFile = path.join(productsDir, 'index.json');
-const sitemapFile = path.join(__dirname, 'sitemap.xml');
-
+const sitemapFile = path.join(__dirname, 'sitemap-test.xml');
 // Static pages (verified to exist in the site root)
 const staticPages = [
   { loc: '/', priority: 1.0, changefreq: 'daily' },
