@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require('fs');
+const crypto = require('crypto');
 const path = require('path');
 
 const baseUrl = 'https://phoneya2.pages.dev';
@@ -63,6 +64,14 @@ function absoluteUrl(value) {
   return baseUrl + '/' + value.replace(/^\.\//, '');
 }
 
+function merchantProductId(slug) {
+  // Google Merchant Center limits product IDs to 50 characters.
+  // Keep existing short IDs unchanged; shorten only long slugs deterministically.
+  if (slug.length <= 50) return slug;
+  const hash = crypto.createHash('sha1').update(slug).digest('hex').slice(0, 8);
+  return `${slug.slice(0, 41)}-${hash}`;
+}
+
 function cleanDescription(value, title) {
   const description = String(value || '').replace(/<[^>]*>/g, '').trim();
   return description || title;
@@ -102,9 +111,10 @@ function generateFeed() {
 
     const availability = Number.isFinite(stock) && stock > 0 ? 'in_stock' : 'out_of_stock';
     const link = `${baseUrl}/product.html?id=${encodeURIComponent(slug)}`;
+    const merchantId = merchantProductId(slug);
 
     items.push(`    <item>
-      <g:id>${xmlEscape(slug)}</g:id>
+      <g:id>${xmlEscape(merchantId)}</g:id>
       <g:title>${xmlEscape(title)}</g:title>
       <g:description>${xmlEscape(cleanDescription(product.description, title))}</g:description>
       <g:link>${xmlEscape(link)}</g:link>
