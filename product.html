@@ -949,6 +949,11 @@ async function loadProductPage() {
   } catch(e) {}
   if (!product) { renderNotFound(slug); return; }
   renderProduct(product);
+  gtag('event', 'view_product', {
+  product_name: product.name || slug,
+  product_price: product.price || 0,
+  product_category: product.category || 'Unknown'
+});
   try {
     const allProds = await fetchAllProducts();
     renderRelated(allProds, slug, product.category);
