@@ -79,6 +79,23 @@ async function requireAdmin(request, env) {
   if (!user?.email || String(user.email).toLowerCase() !== adminEmail) return null;
   return user;
 }
+async function sendOrderNtfy(env, order) {
+  const topic = String(env.NTFY_TOPIC || "").trim();
+  if (!topic || !/^[A-Za-z0-9_-]{16,128}$/.test(topic)) return false;
+  const response = await fetch("https://ntfy.sh/" + encodeURIComponent(topic), {
+    method: "POST",
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "title": "New PhoneYa2 order",
+      "priority": "high",
+      "tags": "shopping_bags"
+    },
+    body: "New order " + String(order.order_number || "received") +
+      " | Total: ZMW " + Number(order.total_amount || 0).toFixed(2) +
+      " | Open the PhoneYa2 admin dashboard to review."
+  });
+  return response.ok;
+}
 async function sendOrderEmail(env, order, customer, items) {
   const apiKey = env.RESEND_API_KEY;
   const from = env.RESEND_FROM;
@@ -173,16 +190,22 @@ export async function onRequest(context) {
         return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
       const order = await rpc.json();
-      let emailSent = false;
-      try { emailSent = await sendOrderEmail(env, order, { name, email, phone, address }, items); }
-      catch (error) { console.error("PhoneYa2 order email failed:", String(error)); }
-      if (!emailSent) console.error("Order saved but notification email was not sent for", order.order_number);
+      let notificationSent = false;
+      if (env.NTFY_TOPIC) {
+        try { notificationSent = await sendOrderNtfy(env, order); }
+        catch (error) { console.error("PhoneYa2 ntfy notification failed:", String(error)); }
+        if (!notificationSent) console.error("Order saved but ntfy notification was not sent for", order.order_number);
+      } else {
+        try { notificationSent = await sendOrderEmail(env, order, { name, email, phone, address }, items); }
+        catch (error) { console.error("PhoneYa2 order email failed:", String(error)); }
+        if (!notificationSent) console.error("Order saved but notification email was not sent for", order.order_number);
+      }
       return json({
         success: true,
         order_number: order.order_number,
         total_amount: order.total_amount,
         currency: "ZMW",
-        notification_sent: emailSent
+        notification_sent: notificationSent
       }, 201);
     } catch (error) {
       console.error("PhoneYa2 order submission failed:", String(error));
