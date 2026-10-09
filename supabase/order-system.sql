@@ -4,12 +4,16 @@
 -- This function calculates totals from the server-validated item snapshots and inserts
 -- the order and all order items atomically in one PostgreSQL transaction.
 
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS customer_note TEXT NOT NULL DEFAULT '' CHECK (char_length(customer_note) <= 1000);
+DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB);
+
 CREATE OR REPLACE FUNCTION public.create_phoneya2_order(
   p_customer_name TEXT,
   p_customer_email TEXT,
   p_customer_phone TEXT,
   p_delivery_address TEXT,
-  p_items JSONB
+  p_items JSONB,
+  p_customer_note TEXT DEFAULT ''
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -28,6 +32,7 @@ DECLARE
   v_line_total NUMERIC(12,2);
   v_stock INTEGER;
   v_item_count INTEGER := 0;
+  v_customer_note TEXT := trim(coalesce(p_customer_note, ''));
 BEGIN
   IF length(trim(coalesce(p_customer_name, ''))) < 2 OR length(p_customer_name) > 120 THEN
     RAISE EXCEPTION 'Invalid customer name';
@@ -41,6 +46,9 @@ BEGIN
   END IF;
   IF length(trim(coalesce(p_delivery_address, ''))) < 5 OR length(p_delivery_address) > 500 THEN
     RAISE EXCEPTION 'Invalid delivery address';
+  END IF;
+  IF char_length(v_customer_note) > 1000 THEN
+    RAISE EXCEPTION 'Order note must be 1000 characters or fewer';
   END IF;
   IF p_items IS NULL OR jsonb_typeof(p_items) IS DISTINCT FROM 'array' THEN
     RAISE EXCEPTION 'Order items must be an array';
@@ -71,11 +79,11 @@ BEGIN
   END LOOP;
 
   INSERT INTO public.orders (
-    customer_name, customer_email, customer_phone, delivery_address,
+    customer_name, customer_email, customer_phone, delivery_address, customer_note,
     status, total_amount, currency
   ) VALUES (
     trim(p_customer_name), lower(trim(p_customer_email)), trim(p_customer_phone),
-    trim(p_delivery_address), 'pending', v_total, 'ZMW'
+    trim(p_delivery_address), v_customer_note, 'pending', v_total, 'ZMW'
   )
   RETURNING id, order_number INTO v_order_id, v_order_number;
 
@@ -103,6 +111,6 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB) FROM anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB) TO service_role;
+REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT) FROM anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT) TO service_role;
