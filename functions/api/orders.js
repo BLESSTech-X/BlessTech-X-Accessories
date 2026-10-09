@@ -213,10 +213,15 @@ export async function onRequest(context) {
     }
   }
 
-  if (url.searchParams.get("admin") === "1" && (request.method === "GET" || request.method === "PATCH")) {
+  if (url.searchParams.get("admin") === "1" && (request.method === "GET" || request.method === "PATCH" || request.method === "POST")) {
     const user = await requireAdmin(request, env);
     if (!user) return json({ error: "Administrator sign-in required." }, 401);
     try {
+      if (request.method === "POST") {
+        const sent = await sendOrderNtfy(env, { order_number: "TEST", total_amount: 0 });
+        if (!sent) return json({ error: "ntfy test failed. Check that NTFY_TOPIC is set correctly and the topic name matches your subscription." }, 502);
+        return json({ success: true, message: "Test notification sent to ntfy." });
+      }
       if (request.method === "GET") {
         const response = await supabaseFetch(env,
           "/rest/v1/orders?select=*,order_items(*)&order=created_at.desc&limit=200",
