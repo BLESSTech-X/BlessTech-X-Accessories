@@ -42,7 +42,10 @@ BEGIN
   IF length(trim(coalesce(p_delivery_address, ''))) < 5 OR length(p_delivery_address) > 500 THEN
     RAISE EXCEPTION 'Invalid delivery address';
   END IF;
-  IF jsonb_typeof(p_items) <> 'array' OR jsonb_array_length(p_items) < 1 OR jsonb_array_length(p_items) > 30 THEN
+  IF p_items IS NULL OR jsonb_typeof(p_items) IS DISTINCT FROM 'array' THEN
+    RAISE EXCEPTION 'Order items must be an array';
+  END IF;
+  IF jsonb_array_length(p_items) < 1 OR jsonb_array_length(p_items) > 30 THEN
     RAISE EXCEPTION 'Order must contain between 1 and 30 product lines';
   END IF;
 
