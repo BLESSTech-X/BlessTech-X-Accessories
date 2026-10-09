@@ -79,9 +79,22 @@ async function requireAdmin(request, env) {
   if (!user?.email || String(user.email).toLowerCase() !== adminEmail) return null;
   return user;
 }
-async function sendOrderNtfy(env, order) {
+async function sendOrderNtfy(env, order, customer = {}, items = []) {
   const topic = String(env.NTFY_TOPIC || "").trim();
   if (!topic || !/^[A-Za-z0-9_-]{16,128}$/.test(topic)) return false;
+  const itemSummary = items.slice(0, 5).map(item =>
+    String(item.product_name || item.title || "Product") + " x" + Number(item.quantity || 1)
+  ).join(", ");
+  const details = [
+    "Order: " + String(order.order_number || "received"),
+    "Customer: " + String(customer.name || "Not provided"),
+    "Phone/WhatsApp: " + String(customer.phone || "Not provided"),
+    "Email: " + String(customer.email || "Not provided"),
+    itemSummary ? "Items: " + itemSummary : "",
+    "Total: ZMW " + Number(order.total_amount || 0).toFixed(2),
+    "Status: Pending",
+    "Review in the PhoneYa2 admin dashboard."
+  ].filter(Boolean).join("\n");
   const response = await fetch("https://ntfy.sh/" + encodeURIComponent(topic), {
     method: "POST",
     headers: {
@@ -90,11 +103,27 @@ async function sendOrderNtfy(env, order) {
       "priority": "high",
       "tags": "shopping_bags"
     },
-    body: "New order " + String(order.order_number || "received") +
-      " | Total: ZMW " + Number(order.total_amount || 0).toFixed(2) +
-      " | Open the PhoneYa2 admin dashboard to review."
+    body: details
   });
   return response.ok;
+}
+async function inviteCustomerAccount(env, email, name) {
+  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
+  const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+  if (!base || !key) return false;
+  const redirect = "https://phoneya2.pages.dev/account.html";
+  const response = await fetch(base + "/auth/v1/invite?redirect_to=" + encodeURIComponent(redirect), {
+    method: "POST",
+    headers: { apikey: key, authorization: "Bearer " + key, "content-type": "application/json" },
+    body: JSON.stringify({ email, data: { full_name: name, name } })
+  });
+  if (response.ok) return true;
+  const detail = await response.text();
+  // Existing auth accounts are expected for repeat customers; their order still saves.
+  if (response.status !== 422 && response.status !== 400) {
+    console.error("PhoneYa2 customer invite failed:", response.status, detail.slice(0, 250));
+  }
+  return false;
 }
 async function sendOrderEmail(env, order, customer, items) {
   const apiKey = env.RESEND_API_KEY;
@@ -190,9 +219,14 @@ export async function onRequest(context) {
         return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
       const order = await rpc.json();
+      // Customer orders are saved first; account invitations are best-effort and
+      // must never cause a successful order to fail. Existing accounts are left alone.
+      let accountInvited = false;
+      try { accountInvited = await inviteCustomerAccount(env, email, name); }
+      catch (error) { console.error("PhoneYa2 customer invitation failed:", String(error)); }
       let notificationSent = false;
       if (env.NTFY_TOPIC) {
-        try { notificationSent = await sendOrderNtfy(env, order); }
+        try { notificationSent = await sendOrderNtfy(env, order, { name, email, phone }, items); }
         catch (error) { console.error("PhoneYa2 ntfy notification failed:", String(error)); }
         if (!notificationSent) console.error("Order saved but ntfy notification was not sent for", order.order_number);
       } else {
@@ -205,7 +239,8 @@ export async function onRequest(context) {
         order_number: order.order_number,
         total_amount: order.total_amount,
         currency: "ZMW",
-        notification_sent: notificationSent
+        notification_sent: notificationSent,
+        account_invited: accountInvited
       }, 201);
     } catch (error) {
       console.error("PhoneYa2 order submission failed:", String(error));
