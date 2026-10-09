@@ -42,7 +42,8 @@ function parseProductMarkdown(markdown, slug) {
   const price = Number(scalar("price"));
   const stock = Number(scalar("stock"));
   if (!title || !Number.isFinite(price) || price < 0 || !Number.isFinite(stock)) return null;
-  return { slug, title, price: Math.round(price * 100) / 100, stock: Math.max(0, Math.floor(stock)) };
+  const image = scalar("image");
+  return { slug, title, price: Math.round(price * 100) / 100, stock: Math.max(0, Math.floor(stock)), image: image.startsWith("/") && !image.startsWith("//") ? image : "" };
 }
 async function fetchStaticAsset(context, path) {
   const url = new URL(path, context.request.url);
@@ -91,6 +92,7 @@ async function sendOrderNtfy(env, order, customer = {}, items = []) {
     "Phone/WhatsApp: " + String(customer.phone || "Not provided"),
     "Email: " + String(customer.email || "Not provided"),
     itemSummary ? "Items: " + itemSummary : "",
+    customer.note ? "Customer note: " + String(customer.note).slice(0, 1000) : "",
     "Total: ZMW " + Number(order.total_amount || 0).toFixed(2),
     "Status: Pending",
     "Review in the PhoneYa2 admin dashboard."
@@ -141,6 +143,7 @@ async function sendOrderEmail(env, order, customer, items) {
     "<p><b>Email:</b> " + escapeHtml(customer.email) + "</p>" +
     "<p><b>Phone:</b> " + escapeHtml(customer.phone) + "</p>" +
     "<p><b>Delivery address:</b> " + escapeHtml(customer.address) + "</p>" +
+    (customer.note ? "<p><b>Customer note / specifications:</b><br>" + escapeHtml(customer.note).replace(/\n/g, "<br>") + "</p>" : "") +
     "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th align=\"left\">Product</th><th>Qty</th><th align=\"right\">Line total</th></tr></thead><tbody>" + rows + "</tbody></table>" +
     "<h3 style=\"text-align:right\">Total: ZMW " + Number(order.total_amount).toFixed(2) + "</h3>" +
     "<p>Status: Pending</p></div>";
@@ -169,6 +172,7 @@ export async function onRequest(context) {
     const email = cleanText(body.email, 254).toLowerCase();
     const phone = cleanText(body.phone, 40);
     const address = cleanText(body.address, 500);
+    const note = cleanText(body.note, 1000);
     if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
         phone.length < 7 || address.length < 5) {
       return json({ error: "Please complete your name, valid email, phone number and delivery address." }, 400);
@@ -210,13 +214,21 @@ export async function onRequest(context) {
           p_customer_email: email,
           p_customer_phone: phone,
           p_delivery_address: address,
-          p_items: items
+          p_items: items,
+          p_customer_note: note
         })
       });
+      if (!rpc.ok && !note) {
+        // Keep ordinary checkout working until the database note migration is applied.
+        rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
+          method: "POST",
+          body: JSON.stringify({ p_customer_name: name, p_customer_email: email, p_customer_phone: phone, p_delivery_address: address, p_items: items })
+        });
+      }
       if (!rpc.ok) {
         const detail = await rpc.text();
         console.error("PhoneYa2 order RPC failed:", rpc.status, detail.slice(0, 500));
-        return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
+        return json({ error: note ? "Order notes are being enabled. Please try again shortly, or remove the note and submit the order." : "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
       const order = await rpc.json();
       // Customer orders are saved first; account invitations are best-effort and
@@ -226,11 +238,11 @@ export async function onRequest(context) {
       catch (error) { console.error("PhoneYa2 customer invitation failed:", String(error)); }
       let notificationSent = false;
       if (env.NTFY_TOPIC) {
-        try { notificationSent = await sendOrderNtfy(env, order, { name, email, phone }, items); }
+        try { notificationSent = await sendOrderNtfy(env, order, { name, email, phone, note }, items); }
         catch (error) { console.error("PhoneYa2 ntfy notification failed:", String(error)); }
         if (!notificationSent) console.error("Order saved but ntfy notification was not sent for", order.order_number);
       } else {
-        try { notificationSent = await sendOrderEmail(env, order, { name, email, phone, address }, items); }
+        try { notificationSent = await sendOrderEmail(env, order, { name, email, phone, address, note }, items); }
         catch (error) { console.error("PhoneYa2 order email failed:", String(error)); }
         if (!notificationSent) console.error("Order saved but notification email was not sent for", order.order_number);
       }
@@ -263,7 +275,12 @@ export async function onRequest(context) {
           { method: "GET", headers: { accept: "application/json" } }
         );
         if (!response.ok) throw new Error("Order list request failed: " + response.status);
-        return json({ orders: await response.json() });
+        const orders = await response.json();
+        const slugs = [...new Set(orders.flatMap(order => (order.order_items || []).map(item => item.product_slug).filter(Boolean)))];
+        const productMap = new Map();
+        await Promise.all(slugs.map(async slug => { try { const product = await loadProduct(context, slug); if (product) productMap.set(slug, product); } catch {} }));
+        const enriched = orders.map(order => ({ ...order, order_items: (order.order_items || []).map(item => ({ ...item, product_image: productMap.get(item.product_slug)?.image || "" })) }));
+        return json({ orders: enriched });
       }
       let body;
       try { body = await request.json(); } catch { return json({ error: "Invalid update." }, 400); }
