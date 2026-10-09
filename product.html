@@ -314,6 +314,23 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "y3vs9g67cu");
 </script>
+
+<style id="phoneya2-cart-styles">
+.header-cart-cta{display:inline-flex;align-items:center;justify-content:center;gap:7px;position:relative;flex:0 0 auto;margin:0 10px;padding:10px 13px;border:1px solid #ffd4bd;border-radius:12px;background:#fff7f1;color:#a83c00;text-decoration:none;font-size:13px;font-weight:800;white-space:nowrap;transition:transform .18s,box-shadow .18s}
+.header-cart-cta:hover{transform:translateY(-1px);box-shadow:0 5px 16px #ff600022}
+.cart-count{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;padding:0 5px;border-radius:999px;background:#ff6000;color:#fff;font-size:11px;font-weight:900;line-height:1}
+.dnav-cart{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #ffd4bd;border-radius:9px;background:#fff7f1;color:#a83c00;text-decoration:none;font-weight:800;font-size:13px;white-space:nowrap}
+.mob-nav-cart{display:flex;align-items:center;gap:10px;margin:12px 16px;padding:13px 14px;border:1px solid #ffd4bd;border-radius:12px;background:#fff7f1;color:#a83c00;text-decoration:none;font-weight:800}
+.pc-actions,.pcard-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.py2-add-cart{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:0;width:100%;padding:10px 9px;border:1px solid #ffd4bd;border-radius:9px;background:#fff7f1;color:#a83c00;font:800 12px/1.2 system-ui,sans-serif;cursor:pointer;transition:background .18s,transform .18s}
+.py2-add-cart:hover{background:#ffeadc;transform:translateY(-1px)}
+.pc-actions .pc-wa,.pc-actions .pc-order-link,.pcard-actions .btn-order{display:flex;align-items:center;justify-content:center;min-width:0;width:100%;margin:0;padding:10px 9px;font-size:12px;border-radius:9px}
+.product-main-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.product-main-actions .btn-order-main,.product-main-actions .py2-add-cart{min-height:52px;font-size:14px;padding:12px}
+@media(max-width:900px){.header-cart-cta{margin-left:auto;margin-right:2px;padding:9px 10px}.header-cart-cta .cart-word{display:none}.pc-actions,.pcard-actions{gap:6px}.py2-add-cart{font-size:11px;padding:10px 6px}}
+@media(max-width:380px){.header-cart-cta{gap:5px;padding:8px}.product-main-actions{grid-template-columns:1fr}.pc-actions,.pcard-actions{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 
@@ -336,6 +353,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
         <button onclick="doHeaderSearch()" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
     </div>
+    <a href="/checkout.html" class="header-cart-cta" aria-label="Open shopping cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-word">Cart</span><span class="cart-count" data-cart-count>0</span></a>
     <nav class="desk-nav">
       <a href="index.html" class="dnav-link">Home</a>
       <a href="shop.html" class="dnav-link active">Shop</a>
@@ -385,6 +403,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
         <a href="about.html" class=""><i class="fa-solid fa-circle-info"></i> About</a>
         <a href="contact.html" class=""><i class="fa-solid fa-envelope"></i> Contact</a>
     </div>
+    <a href="/checkout.html" class="mob-nav-cart"><i class="fa-solid fa-bag-shopping"></i> Shopping Cart <span class="cart-count" data-cart-count>0</span><span style="margin-left:auto;font-size:12px">Checkout →</span></a>
     <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
   </div>
 </div>
@@ -689,7 +708,7 @@ window.changeQty = function(delta) {
   qty = Math.max(1, Math.min(99, qty+delta));
   const disp = document.getElementById('qty-disp');
   const total = document.getElementById('qty-total');
-  const btnMain = document.getElementById('btn-wa-main');
+  const btnMain = document.getElementById('btn-order-main');
   if (disp) disp.textContent = qty;
   if (currentProd) {
     if (total) total.innerHTML = 'Total: <strong>ZMW '+(currentProd.price*qty).toLocaleString()+'</strong>';
@@ -796,7 +815,7 @@ function renderProduct(p) {
     : '';
 
   const mainCTA = st.canOrder
-    ? '<a href="'+orderUrl(p,1)+'" class="btn-order-main" id="btn-order-main"><i class="fa-solid fa-clipboard-list" style="font-size:1.2rem"></i> Order Now</a>'
+    ? '<div class="product-main-actions"><button type="button" class="py2-add-cart" onclick="PhoneYa2Cart.add(\''+p.slug+'\',qty,'+Number(p.stock||0)+')"><i class="fa-solid fa-cart-plus"></i> Add to cart</button><a href="'+orderUrl(p,1)+'" class="btn-order-main" id="btn-order-main"><i class="fa-solid fa-bolt" style="font-size:1.1rem"></i> Buy now</a></div>'
     : '<button class="btn-wa-notify" onclick="notifyMe(\''+escJs(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify Me When Back in Stock</button>';
 
   const detailEl = document.getElementById('product-detail');
@@ -1414,5 +1433,6 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+<script src="/cart.js" defer></script>
 </body>
 </html>
