@@ -74,7 +74,8 @@
   "use strict";
   const $ = id => document.getElementById(id);
   const products = new Map();
-  const cart = new Map();\n  let orderReviewed = false;
+  const cart = new Map();
+  let orderReviewed = false;
   const money = n => "ZMW " + Number(n || 0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
   function notice(message, type){const el=$("notice");el.textContent=message;el.className="notice "+type;el.scrollIntoView({behavior:"smooth",block:"center"});}
   function clearNotice(){const el=$("notice");el.textContent="";el.className="notice";}
