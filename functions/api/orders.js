@@ -207,7 +207,7 @@ export async function onRequest(context) {
         });
       }
 
-      const rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
+      let rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
         method: "POST",
         body: JSON.stringify({
           p_customer_name: name,
