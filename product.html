@@ -329,6 +329,67 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 .product-main-actions .btn-order-main,.product-main-actions .py2-add-cart{min-height:52px;font-size:14px;padding:12px}
 @media(max-width:900px){.header-cart-cta{margin-left:auto;margin-right:2px;padding:9px 10px}.header-cart-cta .cart-word{display:none}.pc-actions,.pcard-actions{gap:6px}.py2-add-cart{font-size:11px;padding:10px 6px}}
 @media(max-width:380px){.header-cart-cta{gap:5px;padding:8px}.product-main-actions{grid-template-columns:1fr}.pc-actions,.pcard-actions{grid-template-columns:1fr}}
+
+/* PhoneYa2 header layout: separate brand/search/cart from primary navigation. */
+.top-header-inner{
+  height:auto;
+  min-height:68px;
+  flex-wrap:wrap;
+  column-gap:clamp(8px,1.2vw,16px);
+  row-gap:8px;
+  padding-top:10px;
+  padding-bottom:0;
+}
+.top-header-inner > .logo-wrap{order:1;min-width:0;}
+.top-header-inner > .header-search{order:2;flex:1 1 260px;max-width:none;min-width:140px;}
+.top-header-inner > .header-cart-cta{order:3;margin:0;flex:0 0 auto;}
+.top-header-inner > .desk-nav{
+  order:4;
+  flex:0 0 100%;
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:0 0 8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:4px;
+  border-top:1px solid #f0f0f0;
+}
+.header-cart-cta{margin:0;flex-shrink:0;}
+.dnav-link{padding:8px 12px;}
+@media(max-width:1024px){
+  .top-header-inner{padding-bottom:10px;}
+  .top-header-inner > .desk-nav{display:none;}
+  .top-header-inner > .hamburger{display:block;order:0;flex:0 0 auto;}
+  .top-header-inner > .logo-wrap{order:1;}
+  .top-header-inner > .header-search{order:2;flex:1 1 180px;}
+  .top-header-inner > .header-cart-cta{order:3;margin-left:auto;}
+  .header-cart-cta .cart-word{display:inline;}
+}
+@media(max-width:600px){
+  .top-header-inner{padding:8px 12px;column-gap:8px;row-gap:0;min-height:60px;}
+  .top-header-inner > .header-search{display:none;}
+  .top-header-inner > .logo-wrap{gap:7px;}
+  .logo-img{width:40px;height:40px;}
+  .logo-brand-name{font-size:15px;}
+  .logo-brand-sub{font-size:9px;letter-spacing:1px;}
+  .header-cart-cta{
+    padding:8px 10px;
+    gap:6px;
+    border-radius:10px;
+    font-size:12px;
+    margin-left:auto;
+  }
+  .cart-count{min-width:19px;height:19px;padding:0 4px;font-size:10px;}
+}
+@media(max-width:360px){
+  .top-header-inner{padding-left:8px;padding-right:8px;column-gap:6px;}
+  .logo-img{width:36px;height:36px;}
+  .logo-brand-name{font-size:14px;}
+  .logo-brand-sub{font-size:8px;letter-spacing:.8px;}
+  .header-cart-cta{padding:7px 8px;gap:5px;}
+}
+
 </style>
 
 </head>
