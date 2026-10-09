@@ -17,7 +17,7 @@
     .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 6px 24px #1b1b2b08;margin-bottom:18px}
     h2{font-size:18px;margin:0 0 16px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}.field label{font-weight:700;font-size:13px}.field input,.field textarea,.field select{font:inherit;border:1px solid #d9dbe5;border-radius:9px;padding:12px;background:white;width:100%;min-width:0}.field input:focus,.field textarea:focus,.field select:focus{outline:2px solid #ff600044;border-color:var(--orange)}.field textarea{resize:vertical;min-height:82px}
     .add-row{display:grid;grid-template-columns:minmax(0,1fr) 82px auto;gap:8px;align-items:end}.add-row .field{margin:0}.qty{max-width:82px}.btn{border:0;border-radius:9px;padding:12px 15px;font:inherit;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--orange);color:white}.secondary{background:#fff2e9;color:#c94b00}.btn:disabled{opacity:.55;cursor:not-allowed}
-    .hint{font-size:12px;color:var(--muted);margin:10px 0 0}.cart-empty{color:var(--muted);padding:18px 0;text-align:center}.cart-item{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);align-items:center}.cart-image{width:58px;height:58px;object-fit:contain;border:1px solid var(--line);border-radius:9px;background:#fff}.cart-item:last-child{border-bottom:0}.cart-title{font-weight:800}.cart-meta{font-size:13px;color:var(--muted)}.cart-actions{display:flex;align-items:center;gap:7px}.cart-actions button{border:1px solid var(--line);background:#fff;border-radius:7px;min-width:30px;height:30px;cursor:pointer}.remove{color:#b42318}.total-row{border-top:1px solid var(--line);padding-top:15px;margin-top:8px;display:flex;justify-content:space-between;font-weight:900;font-size:18px}.notice{display:none;border-radius:10px;padding:12px 14px;margin:0 0 16px}.notice.error{display:block;background:#fff0f0;color:#9b1c1c}.notice.success{display:block;background:#e9f8f0;color:#11633a}.small{font-size:12px;color:var(--muted)}.submit{width:100%;padding:15px}.required{color:#c2410c}.receipt{font-size:16px;font-weight:800}.hidden{display:none!important}
+    .hint{font-size:12px;color:var(--muted);margin:10px 0 0}.cart-empty{color:var(--muted);padding:18px 0;text-align:center}.cart-item{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);align-items:center}.cart-image{width:58px;height:58px;object-fit:contain;border:1px solid var(--line);border-radius:9px;background:#fff}.cart-item:last-child{border-bottom:0}.cart-title{font-weight:800}.cart-meta{font-size:13px;color:var(--muted)}.cart-actions{display:flex;align-items:center;gap:7px}.cart-actions button{border:1px solid var(--line);background:#fff;border-radius:7px;min-width:30px;height:30px;cursor:pointer}.remove{color:#b42318}.total-row{border-top:1px solid var(--line);padding-top:15px;margin-top:8px;display:flex;justify-content:space-between;font-weight:900;font-size:18px}.notice{display:none;border-radius:10px;padding:12px 14px;margin:0 0 16px}.notice.error{display:block;background:#fff0f0;color:#9b1c1c}.notice.success{display:block;background:#e9f8f0;color:#11633a}.small{font-size:12px;color:var(--muted)}.submit{width:100%;padding:15px}.required{color:#c2410c}.receipt{font-size:16px;font-weight:800}.hidden{display:none!important}.review-modal{position:fixed;inset:0;background:#111827b8;z-index:999;display:flex;align-items:center;justify-content:center;padding:16px}.review-card{background:#fff;border-radius:18px;max-width:620px;width:100%;max-height:90vh;overflow:auto;padding:24px;box-shadow:0 20px 80px #0004}.review-card h2{font-size:23px;margin-bottom:5px}.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.review-detail{background:#f7f7fa;border-radius:9px;padding:10px;overflow-wrap:anywhere}.review-detail strong{display:block;font-size:11px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}.review-line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.review-line img{width:48px;height:48px;object-fit:contain;border:1px solid var(--line);border-radius:8px}.review-line .review-product{flex:1;min-width:0}.review-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}@media(max-width:500px){.review-card{padding:17px}.review-grid{grid-template-columns:1fr}}
     @media(max-width:760px){main{margin-top:20px}.layout{grid-template-columns:1fr}.layout .summary{order:0}.layout .details{order:1}.panel{padding:17px}.add-row{grid-template-columns:minmax(0,1fr) 72px}.add-row .add-button{grid-column:1/-1}.add-row .qty{max-width:none}}
   </style>
 </head>
@@ -57,12 +57,24 @@
     </aside>
   </div>
 </main>
+  <div id="review-modal" class="review-modal hidden" role="dialog" aria-modal="true" aria-labelledby="review-title">
+    <div class="review-card">
+      <h2 id="review-title">Review your order</h2>
+      <p class="small">Check the products, total and delivery information before placing your order.</p>
+      <div id="review-customer" class="review-grid"></div>
+      <div id="review-items"></div>
+      <div class="total-row"><span>Total payable</span><span id="review-total">ZMW 0.00</span></div>
+      <p class="hint">Your order will be pending confirmation. No payment is taken on this page.</p>
+      <div class="review-actions"><button class="btn secondary" id="edit-order" type="button">Go back and edit</button><button class="btn primary" id="confirm-order" type="button">Confirm & place order</button></div>
+    </div>
+  </div>
+
 <script>
 (function(){
   "use strict";
   const $ = id => document.getElementById(id);
   const products = new Map();
-  const cart = new Map();
+  const cart = new Map();\n  let orderReviewed = false;
   const money = n => "ZMW " + Number(n || 0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
   function notice(message, type){const el=$("notice");el.textContent=message;el.className="notice "+type;el.scrollIntoView({behavior:"smooth",block:"center"});}
   function clearNotice(){const el=$("notice");el.textContent="";el.className="notice";}
@@ -142,9 +154,34 @@
     if(!Number.isInteger(qty)||qty<1||qty>99){notice("Choose a quantity from 1 to 99.","error");return;}
     addProduct($("product").value,qty);$("quantity").value="1";
   });
+  function addReviewDetail(host,label,value){
+    const box=document.createElement("div");box.className="review-detail";const strong=document.createElement("strong");strong.textContent=label;const text=document.createElement("div");text.textContent=value||"—";box.append(strong,text);host.append(box);
+  }
+  function renderReview(){
+    const customer=$("review-customer");customer.replaceChildren();
+    addReviewDetail(customer,"Customer name",$("name").value.trim());
+    addReviewDetail(customer,"Email",$("email").value.trim());
+    addReviewDetail(customer,"Phone / WhatsApp",$("phone").value.trim());
+    addReviewDetail(customer,"Delivery / collection",$("address").value.trim());
+    const host=$("review-items");host.replaceChildren();
+    cart.forEach((qty,slug)=>{
+      const p=products.get(slug);if(!p)return;
+      const row=document.createElement("div");row.className="review-line";
+      const img=document.createElement("img");img.alt=p.title;img.loading="lazy";if(p.image){img.src=p.image;img.onerror=()=>{img.style.visibility="hidden";};}else{img.style.visibility="hidden";}
+      const product=document.createElement("div");product.className="review-product";
+      const title=document.createElement("strong");title.textContent=p.title;
+      const meta=document.createElement("div");meta.className="small";meta.textContent="Qty "+qty+" × "+money(p.price);
+      product.append(title,meta);const line=document.createElement("strong");line.textContent=money(p.price*qty);
+      row.append(img,product,line);host.append(row);
+    });
+    $("review-total").textContent=$("total").textContent;
+  }
+  $("edit-order").addEventListener("click",()=>{$("review-modal").classList.add("hidden");orderReviewed=false;});
+  $("confirm-order").addEventListener("click",()=>{orderReviewed=true;$("review-modal").classList.add("hidden");$("order-form").requestSubmit();});
   $("order-form").addEventListener("submit",async event=>{
     event.preventDefault();clearNotice();
     if(!cart.size){notice("Please add at least one product to your order.","error");return;}
+    if(!orderReviewed){renderReview();$("review-modal").classList.remove("hidden");return;}
     const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
     const body={
       name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),
@@ -156,7 +193,7 @@
       if(!response.ok||!result.success)throw new Error(result.error||"Your order could not be submitted.");
       $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">You can access your order history after activating an account. If you already have an account, sign in from <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
       cart.clear();renderCart();
-    }catch(error){notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
+    }catch(error){orderReviewed=false;notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
   });
   loadProducts().catch(error=>{notice(error.message||"Could not load the shop.","error");$("product").disabled=true;$("add").disabled=true;});
 })();
