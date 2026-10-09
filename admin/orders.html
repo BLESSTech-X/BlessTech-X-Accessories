@@ -85,7 +85,7 @@ function renderOrderCards(orders){
   const body=document.createElement("div");body.className="order-body";
   const detail=(label,value)=>{const el=document.createElement("div");el.className="detail";const strong=document.createElement("strong");strong.textContent=label;const text=document.createElement("span");text.textContent=value||"—";el.append(strong,text);return el;};
   body.append(detail("Customer",order.customer_name),detail("Phone",order.customer_phone),detail("Email",order.customer_email),detail("Delivery address",order.delivery_address));
-  const phoneDigits=String(order.customer_phone||"").replace(/\\D/g,"");
+  const phoneDigits=String(order.customer_phone||"").replace(/\D/g,"");
   const contact=document.createElement("div");contact.className="items";
   const contactActions=document.createElement("div");contactActions.className="contact-actions";
   if(phoneDigits){const call=document.createElement("a");call.className="call";call.href="tel:"+String(order.customer_phone).replace(/[^+0-9]/g,"");call.textContent="Call customer";contactActions.append(call);const wa=document.createElement("a");wa.href="https://wa.me/"+phoneDigits;wa.target="_blank";wa.rel="noopener";wa.textContent="WhatsApp customer";contactActions.append(wa);}
@@ -100,7 +100,7 @@ async function showDashboard(){ const data=await api("/api/orders?admin=1"); $("
 function exportCsv(){
  const rows=[["Order number","Created at","Status","Customer","Email","Phone","Delivery address","Products","Total","Currency"]];
  allOrders.forEach(o=>rows.push([o.order_number,o.created_at,o.status,o.customer_name,o.customer_email,o.customer_phone,o.delivery_address,(o.order_items||[]).map(i=>i.product_name+" x"+i.quantity).join("; "),o.total_amount,o.currency||"ZMW"]));
- const csv=rows.map(row=>row.map(value=>'"'+String(value??"").replace(/"/g,'""')+'"').join(",")).join("\\r\\n");
+ const csv=rows.map(row=>row.map(value=>'"'+String(value??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="phoneya2-orders-"+new Date().toISOString().slice(0,10)+".csv";a.click();URL.revokeObjectURL(url);
 }
 async function init(){
