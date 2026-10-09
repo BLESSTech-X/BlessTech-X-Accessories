@@ -1,0 +1,218 @@
+const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
+const ALLOWED_STATUSES = new Set(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]);
+const MAX_LINES = 30;
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
+}
+function cleanText(value, max) {
+  return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]);
+}
+function sameOrigin(request) {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try { return new URL(origin).host === new URL(request.url).host; } catch { return false; }
+}
+function getSecret(env, ...keys) {
+  for (const key of keys) if (env[key]) return env[key];
+  return "";
+}
+async function supabaseFetch(env, path, init = {}) {
+  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
+  const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+  if (!base || !key) throw new Error("Server database secrets are not configured.");
+  const headers = new Headers(init.headers || {});
+  headers.set("apikey", key);
+  headers.set("authorization", "Bearer " + key);
+  headers.set("content-type", "application/json");
+  return fetch(base + path, { ...init, headers });
+}
+function parseProductMarkdown(markdown, slug) {
+  const front = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);
+  if (!front) return null;
+  const scalar = key => {
+    const match = front[1].match(new RegExp("^" + key + ":\\s*(.*?)\\s*$", "m"));
+    if (!match) return "";
+    return match[1].trim().replace(/^["']|["']$/g, "");
+  };
+  const title = scalar("title");
+  const price = Number(scalar("price"));
+  const stock = Number(scalar("stock"));
+  if (!title || !Number.isFinite(price) || price < 0 || !Number.isFinite(stock)) return null;
+  return { slug, title, price: Math.round(price * 100) / 100, stock: Math.max(0, Math.floor(stock)) };
+}
+async function loadProduct(request, slug) {
+  if (!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug)) return null;
+  const indexResponse = await fetch(new URL("/content/products/index.json", request.url), { headers: { "accept": "application/json" } });
+  if (!indexResponse.ok) throw new Error("Product catalog is temporarily unavailable.");
+  const slugs = await indexResponse.json();
+  if (!Array.isArray(slugs) || !slugs.includes(slug)) return null;
+  const response = await fetch(new URL("/content/products/" + slug + ".md", request.url));
+  if (!response.ok) return null;
+  return parseProductMarkdown(await response.text(), slug);
+}
+async function requireAdmin(request, env) {
+  const authorization = request.headers.get("authorization") || "";
+  const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
+  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
+  const anonKey = getSecret(env, "SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
+  const adminEmail = String(env.ADMIN_EMAIL || "").trim().toLowerCase();
+  if (!token || !base || !anonKey || !adminEmail) return null;
+  const response = await fetch(base + "/auth/v1/user", {
+    headers: { apikey: anonKey, authorization: "Bearer " + token }
+  });
+  if (!response.ok) return null;
+  const user = await response.json();
+  if (!user?.email || String(user.email).toLowerCase() !== adminEmail) return null;
+  return user;
+}
+async function sendOrderEmail(env, order, customer, items) {
+  const apiKey = env.RESEND_API_KEY;
+  const from = env.RESEND_FROM;
+  const to = env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com";
+  if (!apiKey || !from) return false;
+  const rows = items.map(item =>
+    "<tr><td style=\"padding:8px;border-bottom:1px solid #eee\">" + escapeHtml(item.product_name) +
+    "</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:center\">" + item.quantity +
+    "</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:right\">ZMW " + Number(item.line_total).toFixed(2) + "</td></tr>"
+  ).join("");
+  const html = "<div style=\"font-family:Arial,sans-serif;color:#222;max-width:640px;margin:auto\">" +
+    "<h2>New PhoneYa2 order: " + escapeHtml(order.order_number) + "</h2>" +
+    "<p><b>Customer:</b> " + escapeHtml(customer.name) + "</p>" +
+    "<p><b>Email:</b> " + escapeHtml(customer.email) + "</p>" +
+    "<p><b>Phone:</b> " + escapeHtml(customer.phone) + "</p>" +
+    "<p><b>Delivery address:</b> " + escapeHtml(customer.address) + "</p>" +
+    "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th align=\"left\">Product</th><th>Qty</th><th align=\"right\">Line total</th></tr></thead><tbody>" + rows + "</tbody></table>" +
+    "<h3 style=\"text-align:right\">Total: ZMW " + Number(order.total_amount).toFixed(2) + "</h3>" +
+    "<p>Status: Pending</p></div>";
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject: "New PhoneYa2 order " + order.order_number,
+      html
+    })
+  });
+  return response.ok;
+}
+
+export async function onRequest(context) {
+  const { request, env } = context;
+  if (!sameOrigin(request)) return json({ error: "Cross-origin request blocked." }, 403);
+  const url = new URL(request.url);
+
+  if (request.method === "POST" && !url.searchParams.has("admin")) {
+    let body;
+    try { body = await request.json(); } catch { return json({ error: "Please submit valid order details." }, 400); }
+    const name = cleanText(body.name, 120);
+    const email = cleanText(body.email, 254).toLowerCase();
+    const phone = cleanText(body.phone, 40);
+    const address = cleanText(body.address, 500);
+    if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+        phone.length < 7 || address.length < 5) {
+      return json({ error: "Please complete your name, valid email, phone number and delivery address." }, 400);
+    }
+    if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > MAX_LINES) {
+      return json({ error: "Add between 1 and 30 different product lines." }, 400);
+    }
+    try {
+      const quantities = new Map();
+      for (const item of body.items) {
+        const slug = cleanText(item?.slug, 101);
+        const quantity = Number(item?.quantity);
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+          return json({ error: "Each product quantity must be between 1 and 99." }, 400);
+        }
+        quantities.set(slug, (quantities.get(slug) || 0) + quantity);
+      }
+      if (quantities.size > MAX_LINES) return json({ error: "Too many product lines." }, 400);
+
+      const items = [];
+      for (const [slug, quantity] of quantities) {
+        const product = await loadProduct(request, slug);
+        if (!product) return json({ error: "A selected product could not be found. Please refresh the shop and try again." }, 400);
+        if (product.stock < quantity) return json({ error: product.title + " has only " + product.stock + " in stock." }, 400);
+        const unitPrice = product.price;
+        items.push({
+          product_slug: slug,
+          product_name: product.title,
+          quantity,
+          unit_price: unitPrice,
+          line_total: Math.round(unitPrice * quantity * 100) / 100
+        });
+      }
+
+      const rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
+        method: "POST",
+        body: JSON.stringify({
+          p_customer_name: name,
+          p_customer_email: email,
+          p_customer_phone: phone,
+          p_delivery_address: address,
+          p_items: items
+        })
+      });
+      if (!rpc.ok) {
+        const detail = await rpc.text();
+        console.error("PhoneYa2 order RPC failed:", rpc.status, detail.slice(0, 500));
+        return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
+      }
+      const order = await rpc.json();
+      let emailSent = false;
+      try { emailSent = await sendOrderEmail(env, order, { name, email, phone, address }, items); }
+      catch (error) { console.error("PhoneYa2 order email failed:", String(error)); }
+      if (!emailSent) console.error("Order saved but notification email was not sent for", order.order_number);
+      return json({
+        success: true,
+        order_number: order.order_number,
+        total_amount: order.total_amount,
+        currency: "ZMW",
+        notification_sent: emailSent
+      }, 201);
+    } catch (error) {
+      console.error("PhoneYa2 order submission failed:", String(error));
+      return json({ error: "Ordering is temporarily unavailable. Please try again shortly." }, 503);
+    }
+  }
+
+  if (url.searchParams.get("admin") === "1" && (request.method === "GET" || request.method === "PATCH")) {
+    const user = await requireAdmin(request, env);
+    if (!user) return json({ error: "Administrator sign-in required." }, 401);
+    try {
+      if (request.method === "GET") {
+        const response = await supabaseFetch(env,
+          "/rest/v1/orders?select=*,order_items(*)&order=created_at.desc&limit=200",
+          { method: "GET", headers: { accept: "application/json" } }
+        );
+        if (!response.ok) throw new Error("Order list request failed: " + response.status);
+        return json({ orders: await response.json() });
+      }
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid update." }, 400); }
+      const id = cleanText(body.id, 40);
+      const status = cleanText(body.status, 20);
+      if (!/^[0-9a-f-]{36}$/i.test(id) || !ALLOWED_STATUSES.has(status)) {
+        return json({ error: "Invalid order or status." }, 400);
+      }
+      const response = await supabaseFetch(env,
+        "/rest/v1/orders?id=eq." + encodeURIComponent(id),
+        { method: "PATCH", headers: { prefer: "return=representation" },
+          body: JSON.stringify({ status, updated_at: new Date().toISOString() }) }
+      );
+      if (!response.ok) throw new Error("Order status update failed: " + response.status);
+      const updated = await response.json();
+      if (!updated.length) return json({ error: "Order not found." }, 404);
+      return json({ success: true, order: updated[0] });
+    } catch (error) {
+      console.error("PhoneYa2 admin order action failed:", String(error));
+      return json({ error: "Could not complete the request. Please try again." }, 503);
+    }
+  }
+
+  return json({ error: "Method not allowed." }, 405);
+}
