@@ -4,9 +4,11 @@ This change adds the checkout page, server-side order API, database transaction 
 
 ## 1. Install the database transaction function
 
-In Supabase Dashboard → SQL Editor, run the contents of `supabase/order-system.sql`.
+For a fresh setup, in Supabase Dashboard → SQL Editor, run `supabase/order-system.sql`.
 
-The `orders` and `order_items` tables must already exist. The function inserts the order and every item in a single database transaction. It is executable only by `service_role`; never call it from browser code with a secret key.
+For the existing PhoneYa2 production database, run `supabase/order-note-migration.sql` in Supabase SQL Editor once before using the optional customer order-note field. This adds the note column and safely updates the transaction function. The `orders` and `order_items` tables must already exist.
+
+The function inserts the order and every item in a single database transaction. It is executable only by `service_role`; never call it from browser code with a secret key.
 
 ## 2. Add Cloudflare Pages production secrets and variables
 
