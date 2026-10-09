@@ -515,10 +515,8 @@ const FORM_ENTRY = 'entry.1497396155';
 const WA         = '260979603741';
 
 function orderUrl(p, qty) {
-  qty = qty || 1;
-  let detail = (p.title || 'Product') + ' – ZMW ' + (p.price || 0);
-  if (qty > 1) detail += ' (×' + qty + ', Total: ZMW ' + (p.price * qty) + ')';
-  return FORM_BASE + '&' + FORM_ENTRY + '=' + encodeURIComponent(detail);
+  qty = Math.max(1, Number(qty) || 1);
+  return '/checkout.html?product=' + encodeURIComponent(p.slug) + '&qty=' + encodeURIComponent(qty);
 }
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
 const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
@@ -799,7 +797,7 @@ function renderProduct(p) {
     : '';
 
   const mainCTA = st.canOrder
-    ? '<a href="'+orderUrl(p,1)+'" target="_blank" rel="noopener" class="btn-order-main" id="btn-order-main"><i class="fa-solid fa-clipboard-list" style="font-size:1.2rem"></i> Order Now</a>'
+    ? '<a href="'+orderUrl(p,1)+'" class="btn-order-main" id="btn-order-main"><i class="fa-solid fa-clipboard-list" style="font-size:1.2rem"></i> Order Now</a>'
     : '<button class="btn-wa-notify" onclick="notifyMe(\''+escJs(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify Me When Back in Stock</button>';
 
   const detailEl = document.getElementById('product-detail');
