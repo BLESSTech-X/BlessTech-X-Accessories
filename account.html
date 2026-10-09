@@ -70,7 +70,8 @@ $("forgot").addEventListener("click",async()=>{const email=$("email").value.trim
 $("signout").addEventListener("click",async()=>{await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
 const urlParams=new URLSearchParams(location.search);
 let needsPassword=["invite","recovery"].includes(new URLSearchParams(location.hash.slice(1)).get("type"))||urlParams.get("reset")==="1";
-let updatingPassword=false;\nlet passwordPanel=null;
+let updatingPassword=false;
+let passwordPanel=null;
 function showPasswordSetup(session){
  $("auth-panel").classList.add("hidden");$("account-panel").classList.add("hidden");
  if(passwordPanel)passwordPanel.remove();
