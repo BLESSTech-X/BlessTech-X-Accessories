@@ -44,13 +44,23 @@ function parseProductMarkdown(markdown, slug) {
   if (!title || !Number.isFinite(price) || price < 0 || !Number.isFinite(stock)) return null;
   return { slug, title, price: Math.round(price * 100) / 100, stock: Math.max(0, Math.floor(stock)) };
 }
-async function loadProduct(request, slug) {
+async function fetchStaticAsset(context, path) {
+  const url = new URL(path, context.request.url);
+  // Use the platform's static asset binding when available to avoid a network
+  // loopback request to the same site; retain a same-origin fallback.
+  if (context.env.ASSETS && typeof context.env.ASSETS.fetch === "function") {
+    const response = await context.env.ASSETS.fetch(new Request(url.toString(), { headers: { accept: "*/*" } }));
+    if (response.status !== 404) return response;
+  }
+  return fetch(url);
+}
+async function loadProduct(context, slug) {
   if (!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug)) return null;
-  const indexResponse = await fetch(new URL("/content/products/index.json", request.url), { headers: { "accept": "application/json" } });
+  const indexResponse = await fetchStaticAsset(context, "/content/products/index.json");
   if (!indexResponse.ok) throw new Error("Product catalog is temporarily unavailable.");
   const slugs = await indexResponse.json();
   if (!Array.isArray(slugs) || !slugs.includes(slug)) return null;
-  const response = await fetch(new URL("/content/products/" + slug + ".md", request.url));
+  const response = await fetchStaticAsset(context, "/content/products/" + slug + ".md");
   if (!response.ok) return null;
   return parseProductMarkdown(await response.text(), slug);
 }
@@ -134,7 +144,7 @@ export async function onRequest(context) {
 
       const items = [];
       for (const [slug, quantity] of quantities) {
-        const product = await loadProduct(request, slug);
+        const product = await loadProduct(context, slug);
         if (!product) return json({ error: "A selected product could not be found. Please refresh the shop and try again." }, 400);
         if (product.stock < quantity) return json({ error: product.title + " has only " + product.stock + " in stock." }, 400);
         const unitPrice = product.price;
