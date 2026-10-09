@@ -80,7 +80,7 @@ function showPasswordSetup(session){
   e.preventDefault();const password=$("new-password").value;
   if(password!==$("confirm-password").value){message("The passwords do not match.","error");return;}
   const button=passwordPanel.querySelector("button");button.disabled=true;message("Securing your account…");
-  const {error}=await client.auth.updateUser({password});
+  updatingPassword=true;const {error}=await client.auth.updateUser({password});updatingPassword=false;
   button.disabled=false;
   if(error){message(error.message,"error");return;}
   needsPassword=false;history.replaceState({},document.title,location.pathname);passwordPanel.remove();passwordPanel=null;
