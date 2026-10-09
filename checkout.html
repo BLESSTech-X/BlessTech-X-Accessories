@@ -119,7 +119,7 @@
       const remove=document.createElement("button");remove.type="button";remove.className="remove";remove.innerHTML='<i class="fa-solid fa-trash"></i>';remove.setAttribute("aria-label","Remove "+p.title);remove.onclick=()=>{cart.delete(slug);renderCart();};
       actions.append(minus,count,plus,remove);row.append(info,actions);host.append(row);
     });
-    $("total").textContent=money(total);$("submit").disabled=!cart.size;
+    $("total").textContent=money(total);const submitButton=$("submit");if(submitButton)submitButton.disabled=!cart.size;
   }
   $("add").addEventListener("click",()=>{
     const qty=Number($("quantity").value);
