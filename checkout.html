@@ -35,7 +35,7 @@
           <div class="field qty"><label for="quantity">Qty</label><input id="quantity" type="number" min="1" max="99" value="1" inputmode="numeric"></div>
           <button class="btn secondary add-button" id="add" type="button" disabled><i class="fa-solid fa-plus"></i> Add product</button>
         </div>
-        <p class="hint">Prices and stock are checked again by the server when you submit.</p>
+        <p class="hint">Prices and stock are checked again by the server when you submit. Your cart is saved on this device while you shop.</p>
       </div>
       <form id="order-form" class="panel">
         <h2><i class="fa-solid fa-user"></i> Customer and delivery details</h2>
@@ -43,6 +43,7 @@
         <div class="field"><label for="email">Email address <span class="required">*</span></label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
         <div class="field"><label for="phone">Phone / WhatsApp number <span class="required">*</span></label><input id="phone" name="phone" type="tel" autocomplete="tel" required minlength="7" maxlength="40" placeholder="+260…" ></div>
         <div class="field"><label for="address">Delivery address or preferred collection details <span class="required">*</span></label><textarea id="address" name="address" autocomplete="street-address" required minlength="5" maxlength="500" placeholder="Area, street or landmark in Zambia"></textarea></div>
+        <div class="field"><label for="order-note">Order note or special specifications <span class="small">(optional)</span></label><textarea id="order-note" name="note" maxlength="1000" placeholder="E.g. preferred colour, model compatibility, delivery instructions, or anything we should know."></textarea><p class="hint">Please don’t include passwords or payment details. We’ll contact you if anything needs clarification.</p></div>
         <p class="small">Submitting places a pending order; it does not take a payment. PhoneYa2 will contact you to confirm the order and delivery arrangements.</p>
         <button class="btn primary submit" id="submit" type="submit"><i class="fa-solid fa-lock"></i> Place order</button>
       </form>
@@ -75,6 +76,7 @@
   const $ = id => document.getElementById(id);
   const products = new Map();
   const cart = new Map();
+  const CART_STORAGE_KEY = "phoneya2-checkout-cart-v1";
   let orderReviewed = false;
   const money = n => "ZMW " + Number(n || 0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
   function notice(message, type){const el=$("notice");el.textContent=message;el.className="notice "+type;el.scrollIntoView({behavior:"smooth",block:"center"});}
@@ -120,6 +122,14 @@
     }else{
       const slug=params.get("product")||params.get("id");
       if(slug&&products.has(slug)){select.value=slug;addProduct(slug,Math.max(1,Math.min(99,Number(params.get("qty"))||1)));}
+      else {
+        try {
+          const saved=JSON.parse(localStorage.getItem(CART_STORAGE_KEY)||"[]");
+          if(Array.isArray(saved)) saved.slice(0,30).forEach(entry=>{
+            if(Array.isArray(entry)&&products.has(entry[0])) addProduct(entry[0],Math.max(1,Math.min(99,Number(entry[1])||1)));
+          });
+        } catch {}
+      }
     }
     renderCart();
   }
@@ -149,6 +159,7 @@
       actions.append(minus,count,plus,remove);row.append(image,info,actions);host.append(row);
     });
     $("total").textContent=money(total);const submitButton=$("submit");if(submitButton)submitButton.disabled=!cart.size;
+    try { if(cart.size) localStorage.setItem(CART_STORAGE_KEY,JSON.stringify([...cart.entries()])); else localStorage.removeItem(CART_STORAGE_KEY); } catch {}
   }
   $("add").addEventListener("click",()=>{
     const qty=Number($("quantity").value);
@@ -164,6 +175,7 @@
     addReviewDetail(customer,"Email",$("email").value.trim());
     addReviewDetail(customer,"Phone / WhatsApp",$("phone").value.trim());
     addReviewDetail(customer,"Delivery / collection",$("address").value.trim());
+    addReviewDetail(customer,"Order note / specifications",$("order-note").value.trim()||"No special instructions");
     const host=$("review-items");host.replaceChildren();
     cart.forEach((qty,slug)=>{
       const p=products.get(slug);if(!p)return;
@@ -185,7 +197,7 @@
     if(!orderReviewed){renderReview();$("review-modal").classList.remove("hidden");return;}
     const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
     const body={
-      name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),
+      name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
       items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity}))
     };
     try{
