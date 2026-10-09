@@ -84,7 +84,7 @@
     const val=key=>{const x=m[1].match(new RegExp("^"+key+":\\s*(.*?)\\s*$","m"));return x?x[1].trim().replace(/^["']|["']$/g,""):"";};
     const title=val("title"),price=Number(val("price")),stock=Number(val("stock"));
     if(!title||!Number.isFinite(price)||!Number.isFinite(stock))return null;
-    return {slug,title,price,stock:Math.max(0,Math.floor(stock))};
+    return {slug,title,price,stock:Math.max(0,Math.floor(stock)),image:val("image")};
   }
   async function loadProducts(){
     const response=await fetch("/content/products/index.json",{cache:"no-store"});
