@@ -70,7 +70,7 @@ $("forgot").addEventListener("click",async()=>{const email=$("email").value.trim
 $("signout").addEventListener("click",async()=>{await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
 const urlParams=new URLSearchParams(location.search);
 let needsPassword=["invite","recovery"].includes(new URLSearchParams(location.hash.slice(1)).get("type"))||urlParams.get("reset")==="1";
-let passwordPanel=null;
+let updatingPassword=false;\nlet passwordPanel=null;
 function showPasswordSetup(session){
  $("auth-panel").classList.add("hidden");$("account-panel").classList.add("hidden");
  if(passwordPanel)passwordPanel.remove();
@@ -87,7 +87,7 @@ function showPasswordSetup(session){
   message("Password saved. Your PhoneYa2 account is ready.","success");await showSession(session);
  });
 }
-client.auth.onAuthStateChange((_event,session)=>{if(session){if(needsPassword)showPasswordSetup(session);else showSession(session);}});
+client.auth.onAuthStateChange((_event,session)=>{if(session){if(needsPassword&&!updatingPassword)showPasswordSetup(session);else if(!needsPassword)showSession(session);}});
 client.auth.getSession().then(({data})=>{if(data.session){if(needsPassword)showPasswordSetup(data.session);else showSession(data.session);}});
 if(needsPassword&&!location.hash.includes("access_token"))message("Open the secure link from your email to finish setting your password.","info");
 })();
