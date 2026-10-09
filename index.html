@@ -1157,10 +1157,8 @@ const FORM_ENTRY = 'entry.1497396155';
 const WA         = '260979603741';
 
 function orderUrl(p, qty) {
-  qty = qty || 1;
-  let detail = (p.title || 'Product') + ' – ZMW ' + (p.price || 0);
-  if (qty > 1) detail += ' (×' + qty + ', Total: ZMW ' + (p.price * qty) + ')';
-  return FORM_BASE + '&' + FORM_ENTRY + '=' + encodeURIComponent(detail);
+  qty = Math.max(1, Number(qty) || 1);
+  return '/checkout.html?product=' + encodeURIComponent(p.slug) + '&qty=' + encodeURIComponent(qty);
 }
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
 
@@ -1357,7 +1355,7 @@ function buildCard(p) {
     ? '<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'📱\'">'
     : '📱';
   const btn = st.canOrder
-    ? '<a href="'+orderUrl(p)+'" target="_blank" rel="noopener" class="pc-wa" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>'
+    ? '<a href="'+orderUrl(p)+'" class="pc-wa" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>'
     : '<button class="pc-notify" onclick="event.stopPropagation();notifyMe(\''+escHtml(p.title).replace(/'/g,"\\'")+'\')" ><i class="fa-regular fa-bell"></i> Notify Me</button>';
   const div = document.createElement('div');
   div.className='pc';
@@ -1676,7 +1674,7 @@ slide.innerHTML =
     '</div>' +
     '<div class="showcase-desc">' + escHtml(p.description || '') + '</div>' +
     '<div class="showcase-ctas">' +
-      '<a href="' + orderLink + '" target="_blank" rel="noopener" class="showcase-order-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>' +
+      '<a href="' + orderLink + '" class="showcase-order-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-clipboard-list"></i> Order Now</a>' +
       '<a href="product.html?id=' + p.slug + '" class="showcase-view-btn" onclick="event.stopPropagation()"><i class="fa-solid fa-eye"></i> View Details</a>' +
     '</div>' +
   '</div>';
