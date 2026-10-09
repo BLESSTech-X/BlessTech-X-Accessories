@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ff6000"><title>My Account — PhoneYa2</title>
+<meta name="description" content="View PhoneYa2 orders, track purchases and reorder accessories.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--orange:#ff6000;--ink:#171725;--muted:#6b7280;--line:#e8e8ef;--bg:#f4f5f9;--green:#128c7e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}a{color:inherit;text-decoration:none}
+header{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{font-weight:900;font-size:21px}.brand span{color:var(--orange)}header nav{display:flex;gap:16px;align-items:center;font-weight:700;color:var(--muted)}
+main{max-width:1000px;margin:30px auto;padding:0 16px 60px}.hero h1{font-size:clamp(28px,4vw,38px);margin:0}.hero p{color:var(--muted);margin:5px 0 22px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 6px 24px #1b1b2b08}h2{margin:0 0 14px;font-size:20px}.muted{color:var(--muted)}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}.field label{font-size:13px;font-weight:800}.field input{font:inherit;padding:12px;border:1px solid #d9dbe5;border-radius:9px;width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:9px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer}.primary{background:var(--orange);color:white}.secondary{background:#fff0e6;color:#b84500}.dark{background:var(--ink);color:white}.btn:disabled{opacity:.6;cursor:wait}.notice{padding:12px 14px;border-radius:9px;margin-bottom:16px;display:none}.notice.error,.notice.success,.notice.info{display:block}.notice.error{background:#fff0f0;color:#9b1c1c}.notice.success{background:#e9f8f0;color:#11633a}.notice.info{background:#edf4ff;color:#234c83}
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.hidden{display:none!important}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.order{border:1px solid var(--line);border-radius:13px;padding:17px;margin-top:13px}.order-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.number{font-weight:900;font-size:17px}.pill{display:inline-block;border-radius:99px;padding:4px 10px;background:#fff0e6;color:#a94300;font-weight:800;text-transform:capitalize}.items{display:grid;gap:9px;margin:14px 0}.item{display:flex;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f3}.item-name{font-weight:750}.item-meta{font-size:13px;color:var(--muted)}.order-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.total{font-size:19px;font-weight:900}.empty{text-align:center;padding:35px 15px;color:var(--muted)}.small{font-size:12px;color:var(--muted)}
+@media(max-width:680px){.auth-grid{grid-template-columns:1fr}.panel{padding:17px}header{padding:12px 15px}header nav{gap:10px;font-size:13px}}
+</style></head>
+<body>
+<header><a class="brand" href="/"><span>Phone</span>Ya2</a><nav><a href="/shop.html">Shop</a><a href="/checkout.html">Checkout</a></nav></header>
+<main>
+<section class="hero"><h1>My PhoneYa2</h1><p>Your orders, your history, your next favourite accessory.</p></section>
+<div id="notice" class="notice" role="status" aria-live="polite"></div>
+<section id="auth-panel" class="panel">
+<h2>Welcome back</h2><p class="muted" style="margin:-8px 0 18px">Sign in to see your order history. If this is your first order, use the account activation link sent to your email to set your password.</p>
+<div class="auth-grid">
+<form id="login-form"><h3>Sign in</h3><div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="254"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required minlength="8"></div><button class="btn primary" id="login-button" type="submit">Sign in</button> <button class="btn secondary" id="forgot" type="button">Forgot password?</button></form>
+<div><h3>First order?</h3><p class="muted" style="margin:8px 0 16px">No sign-up is needed before shopping. Place your first order as a guest, then activate your account from the email invitation.</p><a class="btn dark" href="/shop.html">Browse products</a></div>
+</div>
+</section>
+<section id="account-panel" class="hidden">
+<div class="panel"><div class="toolbar"><div><h2 style="margin-bottom:3px">My orders</h2><div id="customer-email" class="muted"></div></div><button class="btn secondary" id="signout" type="button">Sign out</button></div><p class="small" style="margin-top:8px">Reordering checks current prices and stock. Previous orders remain unchanged.</p></div>
+<div id="orders"><div class="empty">Loading your orders…</div></div>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+const SUPABASE_URL="https://signnapmkdctdcfpnsiu.supabase.co";
+const SUPABASE_KEY="sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const money=n=>"ZMW "+Number(n||0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
+function message(text,type="info"){const el=$("notice");el.textContent=text;el.className="notice "+type;}
+function encodeCart(items){const bytes=new TextEncoder().encode(JSON.stringify(items));let binary="";bytes.forEach(b=>binary+=String.fromCharCode(b));return btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
+async function loadOrders(session){
+ const response=await fetch("/api/customer",{headers:{authorization:"Bearer "+session.access_token}});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||"Could not load your orders.");
+ $("customer-email").textContent=data.customer?.email||session.user.email||"";
+ const host=$("orders");host.replaceChildren();
+ if(!data.orders?.length){const empty=document.createElement("div");empty.className="panel empty";empty.textContent="No orders are linked to this email yet. Your next PhoneYa2 order will appear here.";host.append(empty);return;}
+ data.orders.forEach(order=>{
+  const card=document.createElement("article");card.className="panel order";
+  const top=document.createElement("div");top.className="order-top";
+  const number=document.createElement("div");number.className="number";number.textContent=order.order_number||"PhoneYa2 order";
+  const status=document.createElement("span");status.className="pill";status.textContent=order.status||"pending";
+  top.append(number,status);card.append(top);
+  const date=document.createElement("p");date.className="muted";date.style.marginTop="4px";date.textContent=new Date(order.created_at).toLocaleString();card.append(date);
+  const items=document.createElement("div");items.className="items";
+  (order.order_items||[]).forEach(item=>{const row=document.createElement("div");row.className="item";const left=document.createElement("div");const title=document.createElement("div");title.className="item-name";title.textContent=item.product_name||"Product";const meta=document.createElement("div");meta.className="item-meta";meta.textContent="Qty "+item.quantity+" × "+money(item.unit_price);left.append(title,meta);const price=document.createElement("strong");price.textContent=money(item.line_total);row.append(left,price);items.append(row);});
+  card.append(items);
+  const bottom=document.createElement("div");bottom.className="order-bottom";const total=document.createElement("div");total.innerHTML='<div class="small">Order total</div><div class="total"></div>';total.querySelector(".total").textContent=money(order.total_amount);
+  const reorder=document.createElement("a");reorder.className="btn primary";reorder.textContent="Reorder items";reorder.href="/checkout.html?items="+encodeURIComponent(encodeCart((order.order_items||[]).map(i=>({slug:i.product_slug,quantity:Number(i.quantity)}))));
+  bottom.append(total,reorder);card.append(bottom);host.append(card);
+ });
+}
+async function showSession(session){$("auth-panel").classList.add("hidden");$("account-panel").classList.remove("hidden");try{await loadOrders(session);}catch(e){message(e.message,"error");}}
+$("login-form").addEventListener("submit",async e=>{e.preventDefault();$("login-button").disabled=true;message("Signing you in…");try{const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;message("Signed in successfully.","success");await showSession(data.session);}catch(error){message(error.message||"Sign-in failed.","error");}finally{$("login-button").disabled=false;}});
+$("forgot").addEventListener("click",async()=>{const email=$("email").value.trim();if(!email){message("Enter your email address first.","error");$("email").focus();return;}message("Sending password reset email…");const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+"/account.html?reset=1"});message(error?error.message:"If an account exists for that email, a password reset link has been sent.","info");});
+$("signout").addEventListener("click",async()=>{await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
+client.auth.onAuthStateChange((_event,session)=>{if(session)showSession(session);});
+client.auth.getSession().then(({data})=>{if(data.session)showSession(data.session);});
+if(new URLSearchParams(location.search).get("reset")==="1"){
+ $("auth-panel").classList.remove("hidden");
+ const reset=document.createElement("form");reset.className="panel";reset.innerHTML='<h2>Set a new password</h2><div class="field"><label for="new-password">New password</label><input id="new-password" type="password" minlength="8" required autocomplete="new-password"></div><button class="btn primary" type="submit">Update password</button>';
+ $("auth-panel").after(reset);reset.addEventListener("submit",async e=>{e.preventDefault();const {error}=await client.auth.updateUser({password:$("new-password").value});if(error)message(error.message,"error");else{message("Password updated. You can now use your account.","success");reset.remove();}});
+}
+})();
+</script></body></html>
