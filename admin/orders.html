@@ -53,7 +53,23 @@ async function api(path,options={}){
  if(!response.ok)throw new Error(data.error||"Request failed.");
  return data;
 }
-function renderOrders(orders){
+function updateStats(orders){
+ $("stat-total").textContent=orders.length;
+ $("stat-pending").textContent=orders.filter(o=>o.status==="pending").length;
+ $("stat-delivered").textContent=orders.filter(o=>o.status==="delivered").length;
+ const sales=orders.filter(o=>o.status!=="cancelled").reduce((sum,o)=>sum+Number(o.total_amount||0),0);
+ $("stat-sales").textContent=money(sales);
+}
+function renderOrders(orders){allOrders=orders;updateStats(orders);applyFilters();}
+function applyFilters(){
+ const term=$("order-search").value.trim().toLowerCase(),status=$("status-filter").value;
+ const filtered=allOrders.filter(order=>{
+  const hay=[order.order_number,order.customer_name,order.customer_email,order.customer_phone,order.delivery_address].join(" ").toLowerCase();
+  return (!term||hay.includes(term))&&(status==="all"||order.status===status);
+ });
+ renderOrderCards(filtered);
+}
+function renderOrderCards(orders){
  const host=$("orders");host.replaceChildren();
  if(!orders.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No orders have been received yet.";host.append(empty);return;}
  orders.forEach(order=>{
