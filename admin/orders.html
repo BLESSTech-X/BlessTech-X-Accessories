@@ -115,7 +115,8 @@ async function init(){
 $("login-form").addEventListener("submit",async e=>{e.preventDefault();const button=$("login-button");button.disabled=true;showMessage("login-message","","");try{if(!client)throw new Error("Sign-in service is not ready. Refresh the page.");const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;session=data.session;await showDashboard();}catch(err){if(client)await client.auth.signOut();session=null;showMessage("login-message",err.message||"Sign-in failed.","error");}finally{button.disabled=false;}});
 $("refresh").addEventListener("click",loadOrders);
 $("order-search").addEventListener("input",applyFilters);
-$("status-filter").addEventListener("change",applyFilters);\n$("export-csv").addEventListener("click",exportCsv);
+$("status-filter").addEventListener("change",applyFilters);
+$("export-csv").addEventListener("click",exportCsv);
 $("test-ntfy").addEventListener("click",async()=>{const button=$("test-ntfy");button.disabled=true;showMessage("message","Sending test notification…","");try{const result=await api("/api/orders?admin=1",{method:"POST",body:JSON.stringify({action:"test-ntfy"})});showMessage("message",result.message||"Test notification sent. Check ntfy on your phone.","success");}catch(e){showMessage("message",e.message,"error");}finally{button.disabled=false;}});
 $("logout").addEventListener("click",async()=>{if(client)await client.auth.signOut();session=null;$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");});
 init().catch(e=>showMessage("login-message",e.message||"Could not initialize admin sign-in.","error"));
