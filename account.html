@@ -68,12 +68,27 @@ async function showSession(session){$("auth-panel").classList.add("hidden");$("a
 $("login-form").addEventListener("submit",async e=>{e.preventDefault();$("login-button").disabled=true;message("Signing you in…");try{const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;message("Signed in successfully.","success");await showSession(data.session);}catch(error){message(error.message||"Sign-in failed.","error");}finally{$("login-button").disabled=false;}});
 $("forgot").addEventListener("click",async()=>{const email=$("email").value.trim();if(!email){message("Enter your email address first.","error");$("email").focus();return;}message("Sending password reset email…");const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+"/account.html?reset=1"});message(error?error.message:"If an account exists for that email, a password reset link has been sent.","info");});
 $("signout").addEventListener("click",async()=>{await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
-client.auth.onAuthStateChange((_event,session)=>{if(session)showSession(session);});
-client.auth.getSession().then(({data})=>{if(data.session)showSession(data.session);});
-if(new URLSearchParams(location.search).get("reset")==="1"){
- $("auth-panel").classList.remove("hidden");
- const reset=document.createElement("form");reset.className="panel";reset.innerHTML='<h2>Set a new password</h2><div class="field"><label for="new-password">New password</label><input id="new-password" type="password" minlength="8" required autocomplete="new-password"></div><button class="btn primary" type="submit">Update password</button>';
- $("auth-panel").after(reset);reset.addEventListener("submit",async e=>{e.preventDefault();const {error}=await client.auth.updateUser({password:$("new-password").value});if(error)message(error.message,"error");else{message("Password updated. You can now use your account.","success");reset.remove();}});
+const urlParams=new URLSearchParams(location.search);
+let needsPassword=["invite","recovery"].includes(new URLSearchParams(location.hash.slice(1)).get("type"))||urlParams.get("reset")==="1";
+let passwordPanel=null;
+function showPasswordSetup(session){
+ $("auth-panel").classList.add("hidden");$("account-panel").classList.add("hidden");
+ if(passwordPanel)passwordPanel.remove();
+ passwordPanel=document.createElement("form");passwordPanel.className="panel";passwordPanel.innerHTML='<h2>Set your PhoneYa2 password</h2><p class="muted" style="margin:-7px 0 16px">Choose a password to secure your account and access your order history.</p><div class="field"><label for="new-password">New password</label><input id="new-password" type="password" minlength="8" required autocomplete="new-password"></div><div class="field"><label for="confirm-password">Confirm password</label><input id="confirm-password" type="password" minlength="8" required autocomplete="new-password"></div><button class="btn primary" type="submit">Save password</button>';
+ $("auth-panel").after(passwordPanel);
+ passwordPanel.addEventListener("submit",async e=>{
+  e.preventDefault();const password=$("new-password").value;
+  if(password!==$("confirm-password").value){message("The passwords do not match.","error");return;}
+  const button=passwordPanel.querySelector("button");button.disabled=true;message("Securing your account…");
+  const {error}=await client.auth.updateUser({password});
+  button.disabled=false;
+  if(error){message(error.message,"error");return;}
+  needsPassword=false;history.replaceState({},document.title,location.pathname);passwordPanel.remove();passwordPanel=null;
+  message("Password saved. Your PhoneYa2 account is ready.","success");await showSession(session);
+ });
 }
+client.auth.onAuthStateChange((_event,session)=>{if(session){if(needsPassword)showPasswordSetup(session);else showSession(session);}});
+client.auth.getSession().then(({data})=>{if(data.session){if(needsPassword)showPasswordSetup(data.session);else showSession(data.session);}});
+if(needsPassword&&!location.hash.includes("access_token"))message("Open the secure link from your email to finish setting your password.","info");
 })();
 </script></body></html>
