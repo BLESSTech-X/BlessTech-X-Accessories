@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ff6000">
+  <title>Checkout — PhoneYa2-ZM</title>
+  <meta name="description" content="Place your PhoneYa2-ZM order securely.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{--orange:#ff6000;--ink:#171725;--muted:#6b7280;--line:#e8e8ef;--bg:#f4f5f9;--green:#128c7e}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+    a{color:inherit;text-decoration:none}.top{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:900;font-size:21px;letter-spacing:-.7px}.brand span{color:var(--orange)}.top a:last-child{color:var(--orange);font-weight:700}
+    main{max-width:1000px;margin:28px auto;padding:0 16px 60px}.intro h1{font-size:clamp(27px,4vw,38px);margin:0 0 5px}.intro p{color:var(--muted);margin:0 0 24px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(290px,.8fr);gap:20px;align-items:start}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 6px 24px #1b1b2b08;margin-bottom:18px}
+    h2{font-size:18px;margin:0 0 16px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}.field label{font-weight:700;font-size:13px}.field input,.field textarea,.field select{font:inherit;border:1px solid #d9dbe5;border-radius:9px;padding:12px;background:white;width:100%;min-width:0}.field input:focus,.field textarea:focus,.field select:focus{outline:2px solid #ff600044;border-color:var(--orange)}.field textarea{resize:vertical;min-height:82px}
+    .add-row{display:grid;grid-template-columns:minmax(0,1fr) 82px auto;gap:8px;align-items:end}.add-row .field{margin:0}.qty{max-width:82px}.btn{border:0;border-radius:9px;padding:12px 15px;font:inherit;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--orange);color:white}.secondary{background:#fff2e9;color:#c94b00}.btn:disabled{opacity:.55;cursor:not-allowed}
+    .hint{font-size:12px;color:var(--muted);margin:10px 0 0}.cart-empty{color:var(--muted);padding:18px 0;text-align:center}.cart-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}.cart-item:last-child{border-bottom:0}.cart-title{font-weight:800}.cart-meta{font-size:13px;color:var(--muted)}.cart-actions{display:flex;align-items:center;gap:7px}.cart-actions button{border:1px solid var(--line);background:#fff;border-radius:7px;min-width:30px;height:30px;cursor:pointer}.remove{color:#b42318}.total-row{border-top:1px solid var(--line);padding-top:15px;margin-top:8px;display:flex;justify-content:space-between;font-weight:900;font-size:18px}.notice{display:none;border-radius:10px;padding:12px 14px;margin:0 0 16px}.notice.error{display:block;background:#fff0f0;color:#9b1c1c}.notice.success{display:block;background:#e9f8f0;color:#11633a}.small{font-size:12px;color:var(--muted)}.submit{width:100%;padding:15px}.required{color:#c2410c}.receipt{font-size:16px;font-weight:800}.hidden{display:none!important}
+    @media(max-width:760px){main{margin-top:20px}.layout{grid-template-columns:1fr}.layout .summary{order:0}.layout .details{order:1}.panel{padding:17px}.add-row{grid-template-columns:minmax(0,1fr) 72px}.add-row .add-button{grid-column:1/-1}.add-row .qty{max-width:none}}
+  </style>
+</head>
+<body>
+<header class="top"><a class="brand" href="/"><span>Phone</span>Ya2-ZM</a><a href="/shop.html"><i class="fa-solid fa-arrow-left"></i> Back to shop</a></header>
+<main>
+  <div class="intro"><h1>Checkout</h1><p>Add one or more products, confirm your details, and place your order.</p></div>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <div class="layout">
+    <section class="details">
+      <div class="panel">
+        <h2><i class="fa-solid fa-bag-shopping"></i> Your products</h2>
+        <div class="add-row">
+          <div class="field"><label for="product">Choose a product</label><select id="product" disabled><option>Loading products…</option></select></div>
+          <div class="field qty"><label for="quantity">Qty</label><input id="quantity" type="number" min="1" max="99" value="1" inputmode="numeric"></div>
+          <button class="btn secondary add-button" id="add" type="button" disabled><i class="fa-solid fa-plus"></i> Add product</button>
+        </div>
+        <p class="hint">Prices and stock are checked again by the server when you submit.</p>
+      </div>
+      <form id="order-form" class="panel">
+        <h2><i class="fa-solid fa-user"></i> Customer and delivery details</h2>
+        <div class="field"><label for="name">Full name <span class="required">*</span></label><input id="name" name="name" autocomplete="name" required maxlength="120"></div>
+        <div class="field"><label for="email">Email address <span class="required">*</span></label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
+        <div class="field"><label for="phone">Phone / WhatsApp number <span class="required">*</span></label><input id="phone" name="phone" type="tel" autocomplete="tel" required minlength="7" maxlength="40" placeholder="+260…" ></div>
+        <div class="field"><label for="address">Delivery address or preferred collection details <span class="required">*</span></label><textarea id="address" name="address" autocomplete="street-address" required minlength="5" maxlength="500" placeholder="Area, street or landmark in Zambia"></textarea></div>
+        <p class="small">Submitting places a pending order; it does not take a payment. PhoneYa2 will contact you to confirm the order and delivery arrangements.</p>
+        <button class="btn primary submit" id="submit" type="submit"><i class="fa-solid fa-lock"></i> Place order</button>
+      </form>
+    </section>
+    <aside class="summary">
+      <div class="panel">
+        <h2>Order summary</h2>
+        <div id="cart"><div class="cart-empty">Your order is empty. Add a product above.</div></div>
+        <div class="total-row"><span>Total</span><span id="total">ZMW 0.00</span></div>
+        <p class="hint">Currency: Zambian kwacha (ZMW).</p>
+      </div>
+    </aside>
+  </div>
+</main>
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const products = new Map();
+  const cart = new Map();
+  const money = n => "ZMW " + Number(n || 0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
+  function notice(message, type){const el=$("notice");el.textContent=message;el.className="notice "+type;el.scrollIntoView({behavior:"smooth",block:"center"});}
+  function clearNotice(){const el=$("notice");el.textContent="";el.className="notice";}
+  function parseMarkdown(text, slug){
+    const m=text.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);if(!m)return null;
+    const val=key=>{const x=m[1].match(new RegExp("^"+key+":\\s*(.*?)\\s*$","m"));return x?x[1].trim().replace(/^["']|["']$/g,""):"";};
+    const title=val("title"),price=Number(val("price")),stock=Number(val("stock"));
+    if(!title||!Number.isFinite(price)||!Number.isFinite(stock))return null;
+    return {slug,title,price,stock:Math.max(0,Math.floor(stock))};
+  }
+  async function loadProducts(){
+    const response=await fetch("/content/products/index.json",{cache:"no-store"});
+    if(!response.ok)throw new Error("Could not load the product catalog.");
+    const slugs=await response.json();if(!Array.isArray(slugs))throw new Error("Product catalog format is invalid.");
+    const results=await Promise.allSettled(slugs.map(async slug=>{
+      if(typeof slug!=="string"||!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug))return null;
+      const r=await fetch("/content/products/"+slug+".md");if(!r.ok)return null;
+      return parseMarkdown(await r.text(),slug);
+    }));
+    results.forEach(r=>{if(r.status==="fulfilled"&&r.value)products.set(r.value.slug,r.value);});
+    const select=$("product");select.replaceChildren();
+    [...products.values()].sort((a,b)=>a.title.localeCompare(b.title)).forEach(p=>{
+      const option=document.createElement("option");option.value=p.slug;
+      option.textContent=p.title+" — "+money(p.price)+(p.stock<1?" (Out of stock)":"");
+      option.disabled=p.stock<1;select.append(option);
+    });
+    if(!select.options.length)throw new Error("No products are currently available.");
+    select.disabled=false;$("add").disabled=false;
+    const params=new URLSearchParams(location.search);
+    const slug=params.get("product")||params.get("id");
+    if(slug&&products.has(slug)){select.value=slug;addProduct(slug,Math.max(1,Math.min(99,Number(params.get("qty"))||1)));}
+    renderCart();
+  }
+  function addProduct(slug,qty){
+    const p=products.get(slug);if(!p||p.stock<1){notice("That product is currently unavailable.","error");return;}
+    const existing=cart.get(slug)||0;
+    if(existing+qty>Math.min(99,p.stock)){notice("Only "+p.stock+" unit(s) of "+p.title+" are currently available.","error");return;}
+    cart.set(slug,existing+qty);renderCart();clearNotice();
+  }
+  function renderCart(){
+    const host=$("cart");host.replaceChildren();let total=0;
+    if(!cart.size){const empty=document.createElement("div");empty.className="cart-empty";empty.textContent="Your order is empty. Add a product above.";host.append(empty);}
+    cart.forEach((qty,slug)=>{
+      const p=products.get(slug);if(!p)return;const line=p.price*qty;total+=line;
+      const row=document.createElement("div");row.className="cart-item";
+      const info=document.createElement("div");
+      const title=document.createElement("div");title.className="cart-title";title.textContent=p.title;
+      const meta=document.createElement("div");meta.className="cart-meta";meta.textContent=money(p.price)+" each · "+money(line);
+      info.append(title,meta);
+      const actions=document.createElement("div");actions.className="cart-actions";
+      const minus=document.createElement("button");minus.type="button";minus.textContent="−";minus.setAttribute("aria-label","Decrease "+p.title);minus.onclick=()=>{if(qty<=1)cart.delete(slug);else cart.set(slug,qty-1);renderCart();};
+      const count=document.createElement("span");count.textContent=qty;count.setAttribute("aria-label","Quantity");
+      const plus=document.createElement("button");plus.type="button";plus.textContent="+";plus.setAttribute("aria-label","Increase "+p.title);plus.disabled=qty>=Math.min(99,p.stock);plus.onclick=()=>{if(qty<Math.min(99,p.stock))cart.set(slug,qty+1);renderCart();};
+      const remove=document.createElement("button");remove.type="button";remove.className="remove";remove.innerHTML='<i class="fa-solid fa-trash"></i>';remove.setAttribute("aria-label","Remove "+p.title);remove.onclick=()=>{cart.delete(slug);renderCart();};
+      actions.append(minus,count,plus,remove);row.append(info,actions);host.append(row);
+    });
+    $("total").textContent=money(total);$("submit").disabled=!cart.size;
+  }
+  $("add").addEventListener("click",()=>{
+    const qty=Number($("quantity").value);
+    if(!Number.isInteger(qty)||qty<1||qty>99){notice("Choose a quantity from 1 to 99.","error");return;}
+    addProduct($("product").value,qty);$("quantity").value="1";
+  });
+  $("order-form").addEventListener("submit",async event=>{
+    event.preventDefault();clearNotice();
+    if(!cart.size){notice("Please add at least one product to your order.","error");return;}
+    const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
+    const body={
+      name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),
+      items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity}))
+    };
+    try{
+      const response=await fetch("/api/orders",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok||!result.success)throw new Error(result.error||"Your order could not be submitted.");
+      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p>'+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
+      cart.clear();renderCart();
+    }catch(error){notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
+  });
+  loadProducts().catch(error=>{notice(error.message||"Could not load the shop.","error");$("product").disabled=true;$("add").disabled=true;});
+})();
+</script>
+</body>
+</html>
