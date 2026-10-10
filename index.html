@@ -2112,6 +2112,7 @@ function addCarouselDrag(id) {
 
   let pointerId = null;
   let startX = 0;
+  let startY = 0;
   let lastX = 0;
   let startOffset = 0;
   let isDragging = false;
@@ -2159,6 +2160,7 @@ function addCarouselDrag(id) {
 
     pointerId = event.pointerId;
     startX = lastX = event.clientX;
+    startY = event.clientY;
     startOffset = (trackPos[id] || 0) * cardWidth();
     isDragging = false;
     userPaused[id] = true;
@@ -2169,8 +2171,15 @@ function addCarouselDrag(id) {
     if (pointerId === null || event.pointerId !== pointerId) return;
     lastX = event.clientX;
     const deltaX = event.clientX - startX;
+    const deltaY = event.clientY - startY;
 
-    if (!isDragging && Math.abs(deltaX) > 5) {
+    /* Let the browser keep native vertical page scrolling; only capture a clear horizontal drag. */
+    if (!isDragging && Math.abs(deltaY) > 7 && Math.abs(deltaY) >= Math.abs(deltaX)) {
+      pointerId = null;
+      resumeAuto(1200);
+      return;
+    }
+    if (!isDragging && Math.abs(deltaX) > 5 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
       isDragging = true;
       track.classList.add('is-dragging');
       track.style.transition = 'none';
