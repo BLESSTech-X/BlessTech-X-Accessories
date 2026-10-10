@@ -135,6 +135,29 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
  body>header.top .top-actions a,body>header.top>a:not(.brand){font-size:12px!important;}
 }
 </style>
+<style id="phoneya2-subscribe-and-scroll-polish">
+  html { scroll-behavior: auto !important; overscroll-behavior-y: auto; }
+  body::before { animation: none !important; will-change: auto !important; transform: none !important; }
+  .py2-subscribe-card {
+    display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center;
+    gap: 14px; margin: 20px 0; padding: 19px; border: 1px solid #ffd7bf;
+    border-radius: 15px; background: linear-gradient(120deg, #fff7f1, #fff);
+    box-shadow: 0 8px 24px rgba(35, 25, 18, .045);
+  }
+  .py2-subscribe-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #ff6000, #ff8b45); font-size: 19px; }
+  .py2-subscribe-copy { min-width: 0; }
+  .py2-subscribe-copy h2 { margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: #171725; }
+  .py2-subscribe-copy p { margin: 0; color: #687080; font-size: 13px; line-height: 1.55; }
+  .py2-subscribe-copy .py2-subscribe-note { margin-top: 7px; color: #8b430f; font-size: 12px; }
+  .py2-subscribe-note i { margin-right: 4px; }
+  .py2-subscribe-button { justify-self: end; white-space: nowrap; min-height: 43px; }
+  @media (max-width: 680px) {
+    .py2-subscribe-card { grid-template-columns: 40px minmax(0, 1fr); gap: 11px; padding: 15px; }
+    .py2-subscribe-icon { width: 40px; height: 40px; font-size: 17px; }
+    .py2-subscribe-copy h2 { font-size: 16px; }
+    .py2-subscribe-button { grid-column: 1 / -1; justify-self: stretch; width: 100%; }
+  }
+</style>
 </head>
 <body>
 <header class="top"><a class="brand py2-checkout-brand" href="/" aria-label="PhoneYa2 Accessories home"><img class="py2-checkout-logo" src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 logo" onerror="this.style.display='none'"><span class="py2-checkout-wordmark"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span><span class="py2-checkout-subtitle">Accessories</span></span></a><a href="/shop.html"><i class="fa-solid fa-arrow-left"></i> Back to shop</a></header>
@@ -180,6 +203,17 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       </div>
     </aside>
   </div>
+
+  <section class="py2-subscribe-card" aria-labelledby="py2-checkout-subscribe-title">
+    <div class="py2-subscribe-icon" aria-hidden="true"><i class="fa-solid fa-envelope-open-text"></i></div>
+    <div class="py2-subscribe-copy">
+      <h2 id="py2-checkout-subscribe-title">Stay updated with PhoneYa2</h2>
+      <p>Get new-arrival news and special offers by email. Subscribing is optional and separate from placing your order.</p>
+      <p class="py2-subscribe-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> After subscribing, check your inbox and Spam/Junk folder for the confirmation email. If it lands there, mark it as Not spam and click the confirmation link.</p>
+    </div>
+    <a class="btn secondary py2-subscribe-button" href="/newsletter.html">Subscribe for updates <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+  </section>
+
 </main>
   <div id="review-modal" class="review-modal hidden" role="dialog" aria-modal="true" aria-labelledby="review-title">
     <div class="review-card">
