@@ -466,7 +466,20 @@ footer{background:var(--dark);padding:64px 24px 0;}
   @media (prefers-reduced-motion: reduce) {
     body::before { animation: none !important; will-change: auto; }
   }
-</style>
+
+  /* PhoneYa2 wordmark: Phone black, Ya green, 2 orange */
+  .brand-phone-ya { color: #159447 !important; }
+  .brand-phone-two { color: #ff6500 !important; }
+  .logo-brand-name > .brand-phone-ya,
+  .logo-brand-name > .brand-phone-two,
+  .mob-nav-hdr-brand > .brand-phone-ya,
+  .mob-nav-hdr-brand > .brand-phone-two { display: inline; }
+  .header-cart-cta .cart-word { display: inline !important; }
+  .header-cart-cta .cart-emoji { order: initial; }
+  @media (max-width: 480px) {
+    .header-cart-cta .cart-word { display: inline !important; }
+  }
+ </style>
 </head>
 <body>
 
@@ -475,7 +488,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
   <div class="header-inner">
     <a href="index.html" class="logo">
       <div class="logo-icon">📱</div>
-      <div class="logo-text"><div class="brand">PhoneYa2<span class="brand-zm">ZM</span></div><div class="sub">Accessories</div></div>
+      <div class="logo-text"><div class="brand">Phone<span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div><div class="sub">Accessories</div></div>
     </a>
     <nav>
       <a href="index.html">Home</a>
