@@ -733,7 +733,6 @@ body::before{
       transform: translateX(-50%);
       width: calc(100% - 24px);
       max-width: 1280px;
-      max-width: 430px;
       height: 62px;
       box-sizing: border-box;
       padding: 6px 8px;
@@ -788,7 +787,10 @@ body::before{
     .bottom-nav .bnav-order i { font-size: 18px; line-height: 1; }
     .bottom-nav a { -webkit-tap-highlight-color: transparent; }
   }
-  @media (max-width: 380px) {
+  @media (max-width: 600px) {
+    .bottom-nav { width: calc(100% - 24px); max-width: none; }
+  }
+  @media (max-width: 360px) {
     .bottom-nav { width: calc(100% - 16px); }
   }
 </style>
