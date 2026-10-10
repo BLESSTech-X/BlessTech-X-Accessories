@@ -679,6 +679,41 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   .top-header-inner > .header-cart-cta .cart-count{min-width:17px;height:17px;font-size:9px;padding:0 3px;}
 }
 
+
+/* Subtle animated PhoneYa2 brand watermark behind page content. */
+body{
+  isolation:isolate;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background-image:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
+  background-repeat:no-repeat;
+  background-position:center 56%;
+  background-size:min(62vw, 620px) auto;
+  opacity:.055;
+  filter:grayscale(1) saturate(0);
+  mix-blend-mode:multiply;
+  transform:translate3d(0,0,0) scale(1);
+  animation:phoneya2WatermarkDrift 22s ease-in-out infinite;
+}
+@keyframes phoneya2WatermarkDrift{
+  0%,100%{opacity:.045;transform:translate3d(0,0,0) scale(1);}
+  50%{opacity:.075;transform:translate3d(0,-8px,0) scale(1.035);}
+}
+@media(max-width:600px){
+  body::before{
+    background-size:min(88vw, 420px) auto;
+    background-position:center 48%;
+    opacity:.045;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body::before{animation:none;opacity:.045;}
+}
 </style>
 
 </head>
