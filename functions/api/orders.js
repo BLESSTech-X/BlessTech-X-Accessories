@@ -138,6 +138,39 @@ async function inviteCustomerAccount(env, email, name) {
   }
   return false;
 }
+async function sendOrderTelegram(env, order, customer = {}, items = []) {
+  const token = String(env.TELEGRAM_BOT_TOKEN || "").trim();
+  const chatId = String(env.TELEGRAM_CHAT_ID || "").trim();
+  if (!token || !chatId) return { ok: false, reason: "Telegram is not configured." };
+  const itemSummary = items.slice(0, 8).map(item =>
+    String(item.product_name || item.title || "Product") + " x" + Number(item.quantity || 1)
+  ).join("\n");
+  const text = [
+    "🛍️ NEW PHONEYA2 ORDER",
+    "Order: " + String(order.order_number || "received"),
+    "Customer: " + String(customer.name || "Not provided"),
+    "Phone/WhatsApp: " + String(customer.phone || "Not provided"),
+    "Email: " + String(customer.email || "Not provided"),
+    customer.address ? "Delivery address: " + String(customer.address) : "",
+    itemSummary ? "Items:\n" + itemSummary : "",
+    customer.note ? "Customer note: " + String(customer.note).slice(0, 500) : "",
+    "Total: ZMW " + Number(order.total_amount || 0).toFixed(2),
+    "Status: Pending",
+    "Review in the PhoneYa2 admin dashboard."
+  ].filter(Boolean).join("\n");
+  try {
+    const response = await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true })
+    });
+    if (!response.ok) return { ok: false, reason: "Telegram API returned HTTP " + response.status + "." };
+    const result = await response.json();
+    return result.ok ? { ok: true, reason: "" } : { ok: false, reason: "Telegram API rejected the message." };
+  } catch (error) {
+    return { ok: false, reason: "Could not reach Telegram API: " + String(error).slice(0, 120) };
+  }
+}
 async function sendOrderEmail(env, order, customer, items) {
   const apiKey = env.RESEND_API_KEY;
   const from = env.RESEND_FROM;
@@ -247,32 +280,27 @@ export async function onRequest(context) {
       let accountInvited = false;
       try { accountInvited = await inviteCustomerAccount(env, email, name); }
       catch (error) { console.error("PhoneYa2 customer invitation failed:", String(error)); }
-      let notificationSent = false;
-      if (env.NTFY_TOPIC) {
-        let ntfyReason = "ntfy request did not complete.";
-        try {
-          const ntfyResult = await sendOrderNtfy(env, order, { name, email, phone, note }, items);
-          notificationSent = ntfyResult.ok;
-          ntfyReason = ntfyResult.reason || ntfyReason;
-        } catch (error) {
-          ntfyReason = String(error).slice(0, 160);
+      const orderCustomer = { name, email, phone, address, note };
+      // Attempt app push (Telegram) and email independently so either can alert the owner.
+      let telegramSent = false;
+      let emailSent = false;
+      try {
+        const result = await sendOrderTelegram(env, order, orderCustomer, items);
+        telegramSent = result.ok;
+        if (!result.ok && result.reason !== "Telegram is not configured.") {
+          console.error("PhoneYa2 Telegram notification failed for", order.order_number, result.reason);
         }
-        if (!notificationSent) {
-          console.error("PhoneYa2 ntfy notification failed for", order.order_number, ntfyReason);
-          // Cloudflare-to-ntfy can fail at the network edge (including HTTP 522).
-          // Fall back to email so a saved order can still alert the store owner.
-          try {
-            notificationSent = await sendOrderEmail(env, order, { name, email, phone, address, note }, items);
-            if (notificationSent) console.log("PhoneYa2 notification delivered by email fallback for", order.order_number);
-            else console.error("PhoneYa2 email fallback also failed for", order.order_number);
-          } catch (error) {
-            console.error("PhoneYa2 email fallback failed:", String(error));
-          }
-        }
-      } else {
-        try { notificationSent = await sendOrderEmail(env, order, { name, email, phone, address, note }, items); }
-        catch (error) { console.error("PhoneYa2 order email failed:", String(error)); }
-        if (!notificationSent) console.error("Order saved but notification email was not sent for", order.order_number);
+      } catch (error) {
+        console.error("PhoneYa2 Telegram notification failed:", String(error));
+      }
+      try {
+        emailSent = await sendOrderEmail(env, order, orderCustomer, items);
+      } catch (error) {
+        console.error("PhoneYa2 order email failed:", String(error));
+      }
+      const notificationSent = telegramSent || emailSent;
+      if (!telegramSent && !emailSent) {
+        console.error("Order saved but both Telegram and email notifications failed for", order.order_number);
       }
       return json({
         success: true,
@@ -293,24 +321,28 @@ export async function onRequest(context) {
     if (!user) return json({ error: "Administrator sign-in required." }, 401);
     try {
       if (request.method === "POST") {
-        const result = await sendOrderNtfy(env, { order_number: "TEST", total_amount: 0 });
-        if (result.ok) return json({ success: true, message: "Test notification sent to ntfy." });
-        const ntfyError = result.reason || "Unknown ntfy error.";
+        const testOrder = { order_number: "TEST", total_amount: 0 };
+        const testCustomer = { name: "PhoneYa2 notification test", email: "", phone: "", address: "Admin test only", note: "Internal notification test." };
+        let telegramSent = false;
         let emailSent = false;
+        let telegramReason = "Telegram is not configured.";
         try {
-          emailSent = await sendOrderEmail(
-            env,
-            { order_number: "TEST", total_amount: 0 },
-            { name: "PhoneYa2 notification test", email: "", phone: "", address: "Admin test only", note: "ntfy failed: " + ntfyError },
-            []
-          );
+          const result = await sendOrderTelegram(env, testOrder, testCustomer, []);
+          telegramSent = result.ok;
+          telegramReason = result.reason || "";
+        } catch (error) {
+          telegramReason = String(error).slice(0, 140);
+        }
+        try {
+          emailSent = await sendOrderEmail(env, testOrder, testCustomer, []);
         } catch (error) {
           console.error("PhoneYa2 notification test email failed:", String(error));
         }
-        if (emailSent) {
-          return json({ success: true, message: "ntfy is unreachable (" + ntfyError + "). A fallback test email was sent to ORDER_NOTIFY_EMAIL." });
-        }
-        return json({ error: "ntfy failed: " + ntfyError + " Email fallback also failed. Check RESEND_API_KEY, RESEND_FROM, and ORDER_NOTIFY_EMAIL in Cloudflare Pages settings." }, 502);
+        const outcomes = [];
+        outcomes.push(telegramSent ? "Telegram app notification sent." : "Telegram failed: " + telegramReason);
+        outcomes.push(emailSent ? "Test email sent to ORDER_NOTIFY_EMAIL." : "Email failed; check RESEND_API_KEY, RESEND_FROM, and ORDER_NOTIFY_EMAIL.");
+        if (telegramSent || emailSent) return json({ success: true, message: outcomes.join(" ") });
+        return json({ error: outcomes.join(" ") }, 502);
       }
       if (request.method === "GET") {
         const response = await supabaseFetch(env,
