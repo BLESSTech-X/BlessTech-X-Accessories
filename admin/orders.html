@@ -80,7 +80,22 @@ function renderOrderCards(orders){
   const pill=document.createElement("span");pill.className="pill";pill.textContent=order.status;
   const select=document.createElement("select");select.className="status";select.setAttribute("aria-label","Update status for "+order.order_number);
   statuses.forEach(status=>{const option=document.createElement("option");option.value=status;option.textContent=status[0].toUpperCase()+status.slice(1);option.selected=status===order.status;select.append(option);});
-  select.addEventListener("change",async()=>{select.disabled=true;try{await api("/api/orders?admin=1",{method:"PATCH",body:JSON.stringify({id:order.id,status:select.value})});showMessage("message","Order "+order.order_number+" updated.","success");await loadOrders();}catch(e){showMessage("message",e.message,"error");select.value=order.status;}finally{select.disabled=false;}});
+  select.addEventListener("change",async()=>{
+    const nextStatus=select.value, previousStatus=order.status;
+    select.disabled=true;
+    try{
+      const result=await api("/api/orders?admin=1",{method:"PATCH",body:JSON.stringify({id:order.id,status:nextStatus})});
+      let statusMessage="Order "+order.order_number+" updated.";
+      let statusKind="success";
+      if(nextStatus==="delivered" && previousStatus!=="delivered"){
+        if(result.delivery_email_sent) statusMessage+=" Delivery update email sent with an optional feedback link.";
+        else {statusMessage+=" The order is marked delivered, but the delivery email could not be confirmed. Check the Communications Centre.";statusKind="error";}
+      }
+      showMessage("message",statusMessage,statusKind);
+      await loadOrders();
+    }catch(e){showMessage("message",e.message,"error");select.value=order.status;}
+    finally{select.disabled=false;}
+  });
   right.append(pill,select);head.append(left,right);
   const body=document.createElement("div");body.className="order-body";
   const detail=(label,value)=>{const el=document.createElement("div");el.className="detail";const strong=document.createElement("strong");strong.textContent=label;const text=document.createElement("span");text.textContent=value||"—";el.append(strong,text);return el;};
