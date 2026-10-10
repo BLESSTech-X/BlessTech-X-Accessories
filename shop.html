@@ -11,7 +11,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shop — PhoneYa2-ZM Accessories</title>
+<title>Shop — PhoneYa2 Accessories</title>
 <meta name="description"
 <meta name="theme-color" content="#ff6000">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +19,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PhoneYa2">
 <link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-512x512.jpg"> <meta name="description" content="Browse all phone accessories at PhoneYa2-ZM. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
+<link rel="apple-touch-icon" href="/icon-512x512.jpg"> <meta name="description" content="Browse all phone accessories at PhoneYa2. Cases, chargers, cables, earphones, power banks and more. Order on WhatsApp for same-day delivery in Lusaka.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/ads-shared.css">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -677,6 +677,10 @@ body::before{
   @media (max-width: 480px) {
     .header-cart-cta .cart-word { display: inline !important; }
   }
+ 
+  .brand-phone-word { color: #111111 !important; }
+  .brand-phone-ya { color: #159447 !important; }
+  .brand-phone-two { color: #ff6500 !important; }
  </style>
 </head>
 <body>
@@ -687,10 +691,10 @@ body::before{
     <button class="hamburger" id="hamburger" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
     <a href="index.html" class="logo-wrap">
       <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2-ZM Accessories" class="logo-img"
+           alt="PhoneYa2 Accessories" class="logo-img"
            onerror="this.style.display='none'">
       <div class="logo-text-block">
-        <div class="logo-brand-name">Phone<span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
+        <div class="logo-brand-name"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
         <div class="logo-brand-sub">Accessories</div>
       </div>
     </a>
@@ -707,7 +711,7 @@ body::before{
       <a href="/account.html" class="dnav-link">My Account</a>
       <a href="about.html" class="dnav-link">About</a>
       <a href="contact.html" class="dnav-link">Contact</a>
-      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" rel="noopener" class="dnav-order"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
+      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2." target="_blank" rel="noopener" class="dnav-order"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
     </nav>
   </div>
 </div>
@@ -733,9 +737,9 @@ body::before{
     <div class="mob-nav-hdr">
       <div style="display:flex;align-items:center;gap:10px;">
         <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-             alt="PhoneYa2-ZM" style="height:36px;border-radius:6px;" onerror="this.style.display='none'">
+             alt="PhoneYa2" style="height:36px;border-radius:6px;" onerror="this.style.display='none'">
         <div class="mob-nav-hdr-text">
-          <div class="mob-nav-hdr-brand">Phone<span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
+          <div class="mob-nav-hdr-brand"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
           <div class="mob-nav-hdr-sub">Accessories</div>
         </div>
       </div>
@@ -751,7 +755,7 @@ body::before{
         <a href="contact.html" class=""><i class="fa-solid fa-envelope"></i> Contact</a>
     </div>
     <a href="/cart.html" class="mob-nav-cart"><span aria-hidden="true">🛒</span> View Your Cart <span class="cart-count" data-cart-count>0</span><span style="margin-left:auto;font-size:12px">Open →</span></a>
-    <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
+    <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
   </div>
 </div>
 
@@ -873,7 +877,7 @@ body::before{
 <footer>
   <div class="footer-grid">
     <div>
-      <div class="footer-brand">PhoneYa2-ZM 📱</div>
+      <div class="footer-brand">PhoneYa2 📱</div>
       <p class="footer-tag">Phone accessories and everyday tech essentials. Browse online and contact us for product or order support.</p>
       <div class="footer-socs">
         <a href="https://wa.me/260979603741" target="_blank" class="soc-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
@@ -995,7 +999,7 @@ let allProducts = [], activeCat = 'all', searchQuery = '', loadFailed = false;
 function shareProduct(p) {
   const productUrl = window.location.origin + '/product.html?id=' + p.slug;
   const waText = encodeURIComponent(
-    '👋 Check this out at PhoneYa2-ZM:\n\n' +
+    '👋 Check this out at PhoneYa2:\n\n' +
     '*' + p.title + '*\n' +
     'Price: *ZMW ' + p.price + '*\n' +
     (p.description ? p.description.slice(0, 80) + '...\n' : '') +
