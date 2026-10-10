@@ -533,11 +533,15 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 <section class="hero"><h1>My PhoneYa2</h1><p>Your orders, your history, your next favourite accessory.</p></section>
 <div id="notice" class="notice" role="status" aria-live="polite"></div>
 <section id="auth-panel" class="panel">
-<h2>Welcome back</h2><p class="muted" style="margin:-8px 0 18px">Sign in to see your order history. If this is your first order, use the account activation link sent to your email to set your password.</p>
-<div class="auth-grid">
-<form id="login-form"><h3>Sign in</h3><div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="254"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required minlength="8"></div><button class="btn primary" id="login-button" type="submit">Sign in</button> <button class="btn secondary" id="forgot" type="button">Forgot password?</button></form>
-<div><h3>First order?</h3><p class="muted" style="margin:8px 0 16px">No sign-up is needed before shopping. Place your first order as a guest, then activate your account from the email invitation.</p><a class="btn dark" href="/shop.html">Browse products</a></div>
-</div>
+<h2>Your order history, without a password</h2>
+<p class="muted" style="margin:-8px 0 18px">Enter the email address used for your PhoneYa2 orders. We'll email you a secure link; open it once and your order history will appear. On this device, we'll remember your secure session so you won't need to repeat this step unless you sign out or your session expires.</p>
+<form id="login-form">
+  <div class="field"><label for="email">Email address used for your orders</label><input id="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></div>
+  <button class="btn primary" id="login-button" type="submit">Email me a secure access link</button>
+  <p class="small" style="margin-top:12px">Check your inbox and Spam/Junk folder. If the message lands in Spam, mark it as Not spam, then open the secure link. For your privacy, order history is only shown after email verification.</p>
+</form>
+<p class="muted" style="margin-top:18px">First order? No account is needed to shop. Place your order as usual; use the same email address here to access your history.</p>
+<a class="btn dark" href="/shop.html">Browse products</a>
 </section>
 <section id="account-panel" class="hidden">
 <div class="panel"><div class="toolbar"><div><h2 style="margin-bottom:3px">My orders</h2><div id="customer-email" class="muted"></div></div><button class="btn secondary" id="signout" type="button">Sign out</button></div><p class="small" style="margin-top:8px">Reordering checks current prices and stock. Previous orders remain unchanged.</p></div>
@@ -578,8 +582,22 @@ async function loadOrders(session){
  });
 }
 async function showSession(session){$("auth-panel").classList.add("hidden");$("account-panel").classList.remove("hidden");try{await loadOrders(session);}catch(e){message(e.message,"error");}}
-$("login-form").addEventListener("submit",async e=>{e.preventDefault();$("login-button").disabled=true;message("Signing you in…");try{const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;message("Signed in successfully.","success");await showSession(data.session);}catch(error){message(error.message||"Sign-in failed.","error");}finally{$("login-button").disabled=false;}});
-$("forgot").addEventListener("click",async()=>{const email=$("email").value.trim();if(!email){message("Enter your email address first.","error");$("email").focus();return;}message("Sending password reset email…");const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+"/account.html?reset=1"});message(error?error.message:"If an account exists for that email, a password reset link has been sent.","info");});
+$("login-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const email=$("email").value.trim().toLowerCase();
+ if(!email)return;
+ const button=$("login-button");button.disabled=true;message("Sending your secure access link…");
+ try{
+  const {error}=await client.auth.signInWithOtp({
+   email,
+   options:{shouldCreateUser:false,emailRedirectTo:location.origin+"/account.html"}
+  });
+  if(error)throw error;
+  message("If this email is registered with PhoneYa2, a secure access link has been sent. Check your inbox and Spam/Junk folder; mark it as Not spam if needed, then open the link.","success");
+ }catch(error){
+  message("We couldn't send the access link right now. Check the email address and try again, or contact PhoneYa2 for help.","error");
+ }finally{button.disabled=false;}
+});
 $("signout").addEventListener("click",async()=>{await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
 const urlParams=new URLSearchParams(location.search);
 let needsPassword=["invite","recovery"].includes(new URLSearchParams(location.hash.slice(1)).get("type"))||urlParams.get("reset")==="1";
