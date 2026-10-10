@@ -1896,15 +1896,44 @@ function parseFrontmatter(text, slug) {
 }
 
 async function fetchAllProducts() {
-  const res = await fetch('/content/products/index.json?t='+Date.now());
-  if (!res.ok) throw new Error('index.json '+res.status);
-  const slugs = await res.json();
+  const indexController = new AbortController();
+  const indexTimer = setTimeout(() => indexController.abort(), 10000);
+  let slugs;
+  try {
+    const res = await fetch('/content/products/index.json?t='+Date.now(), {
+      cache: 'no-store',
+      signal: indexController.signal
+    });
+    if (!res.ok) throw new Error('index.json '+res.status);
+    slugs = await res.json();
+  } finally {
+    clearTimeout(indexTimer);
+  }
+
   if (!Array.isArray(slugs)||!slugs.length) throw new Error('index.json empty');
-  const results = await Promise.allSettled(
-    slugs.map(s=>fetch('/content/products/'+s+'.md').then(r=>r.ok?r.text():null).then(t=>t?parseFrontmatter(t,s):null))
-  );
-  const products = results.filter(r=>r.status==='fulfilled'&&r.value).map(r=>r.value);
-  if(!products.length) throw new Error('No products parsed');
+
+  // Fetch product files independently so one slow or unusual filename cannot
+  // hold the entire homepage hostage. Encode slugs to support emoji/special chars.
+  const results = await Promise.allSettled(slugs.map(async s => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    try {
+      const res = await fetch('/content/products/'+encodeURIComponent(s)+'.md', {
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      if (!res.ok) return null;
+      const text = await res.text();
+      return text ? parseFrontmatter(text, s) : null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }));
+
+  const products = results
+    .filter(r => r.status === 'fulfilled' && r.value)
+    .map(r => r.value);
+  if (!products.length) throw new Error('No products parsed');
   return products;
 }
 
