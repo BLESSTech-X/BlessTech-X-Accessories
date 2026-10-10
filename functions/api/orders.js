@@ -82,7 +82,10 @@ async function requireAdmin(request, env) {
 }
 async function sendOrderNtfy(env, order, customer = {}, items = []) {
   const topic = String(env.NTFY_TOPIC || "").trim();
-  if (!topic || !/^[A-Za-z0-9_-]{16,128}$/.test(topic)) return false;
+  if (!topic) return { ok: false, reason: "NTFY_TOPIC is missing from this Cloudflare deployment." };
+  if (!/^[A-Za-z0-9_-]{16,128}$/.test(topic)) {
+    return { ok: false, reason: "NTFY_TOPIC has an invalid format. Enter only the topic name, not a URL." };
+  }
   const itemSummary = items.slice(0, 5).map(item =>
     String(item.product_name || item.title || "Product") + " x" + Number(item.quantity || 1)
   ).join(", ");
@@ -97,17 +100,25 @@ async function sendOrderNtfy(env, order, customer = {}, items = []) {
     "Status: Pending",
     "Review in the PhoneYa2 admin dashboard."
   ].filter(Boolean).join("\n");
-  const response = await fetch("https://ntfy.sh/" + encodeURIComponent(topic), {
-    method: "POST",
-    headers: {
-      "content-type": "text/plain; charset=utf-8",
-      "title": "New PhoneYa2 order",
-      "priority": "high",
-      "tags": "shopping_bags"
-    },
-    body: details
-  });
-  return response.ok;
+  let response;
+  try {
+    response = await fetch("https://ntfy.sh/" + encodeURIComponent(topic), {
+      method: "POST",
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "title": "New PhoneYa2 order",
+        "priority": "high",
+        "tags": "shopping_bags"
+      },
+      body: details
+    });
+  } catch (error) {
+    return { ok: false, reason: "Could not reach ntfy.sh: " + String(error).slice(0, 160) };
+  }
+  if (!response.ok) {
+    return { ok: false, reason: "ntfy.sh returned HTTP " + response.status + "." };
+  }
+  return { ok: true, reason: "" };
 }
 async function inviteCustomerAccount(env, email, name) {
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
@@ -238,9 +249,13 @@ export async function onRequest(context) {
       catch (error) { console.error("PhoneYa2 customer invitation failed:", String(error)); }
       let notificationSent = false;
       if (env.NTFY_TOPIC) {
-        try { notificationSent = await sendOrderNtfy(env, order, { name, email, phone, note }, items); }
-        catch (error) { console.error("PhoneYa2 ntfy notification failed:", String(error)); }
-        if (!notificationSent) console.error("Order saved but ntfy notification was not sent for", order.order_number);
+        try {
+          const ntfyResult = await sendOrderNtfy(env, order, { name, email, phone, note }, items);
+          notificationSent = ntfyResult.ok;
+          if (!notificationSent) console.error("Order saved but ntfy notification was not sent for", order.order_number, ntfyResult.reason);
+        } catch (error) {
+          console.error("PhoneYa2 ntfy notification failed:", String(error));
+        }
       } else {
         try { notificationSent = await sendOrderEmail(env, order, { name, email, phone, address, note }, items); }
         catch (error) { console.error("PhoneYa2 order email failed:", String(error)); }
@@ -265,8 +280,8 @@ export async function onRequest(context) {
     if (!user) return json({ error: "Administrator sign-in required." }, 401);
     try {
       if (request.method === "POST") {
-        const sent = await sendOrderNtfy(env, { order_number: "TEST", total_amount: 0 });
-        if (!sent) return json({ error: "ntfy test failed. Check that NTFY_TOPIC is set correctly and the topic name matches your subscription." }, 502);
+        const result = await sendOrderNtfy(env, { order_number: "TEST", total_amount: 0 });
+        if (!result.ok) return json({ error: "ntfy test failed: " + result.reason }, 502);
         return json({ success: true, message: "Test notification sent to ntfy." });
       }
       if (request.method === "GET") {
