@@ -80,6 +80,39 @@ async function requireAdmin(request, env) {
   if (!user?.email || String(user.email).toLowerCase() !== adminEmail) return null;
   return user;
 }
+async function logEmailActivity(env, record) {
+  try {
+    const response = await supabaseFetch(env, "/rest/v1/email_activity", {
+      method: "POST",
+      headers: { prefer: "return=minimal" },
+      body: JSON.stringify({
+        event_type: record.eventType || "transactional",
+        source: record.source || "automatic",
+        trigger_source: record.triggerSource || "",
+        recipient_email: String(record.recipientEmail || "").slice(0, 254),
+        recipient_name: String(record.recipientName || "").slice(0, 120),
+        subject: String(record.subject || "").slice(0, 300),
+        status: record.status || "failed",
+        provider: "resend",
+        provider_message_id: record.providerMessageId || "",
+        error_message: String(record.error || "").slice(0, 1000),
+        related_order_number: record.orderNumber || "",
+        related_product_slug: record.productSlug || "",
+        retry_count: 0,
+        sent_at: record.status === "sent" ? new Date().toISOString() : null,
+        metadata: record.metadata || {}
+      })
+    });
+    if (!response.ok) {
+      console.error("PhoneYa2 email activity log write failed:", response.status, (await response.text()).slice(0, 240));
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("PhoneYa2 email activity logging failed:", String(error).slice(0, 240));
+    return false;
+  }
+}
 async function sendOrderNtfy(env, order, customer = {}, items = []) {
   const topic = String(env.NTFY_TOPIC || "").trim();
   if (!topic) return { ok: false, reason: "NTFY_TOPIC is missing from this Cloudflare deployment." };
@@ -175,7 +208,7 @@ async function sendOrderEmail(env, order, customer, items) {
   const apiKey = env.RESEND_API_KEY;
   const from = env.RESEND_FROM;
   const to = env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com";
-  if (!apiKey || !from) return false;
+  if (!apiKey || !from) return { ok: false, error: "Resend API key or sender is not configured." };
   const rows = items.map(item =>
     "<tr><td style=\"padding:8px;border-bottom:1px solid #eee\">" + escapeHtml(item.product_name) +
     "</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:center\">" + item.quantity +
@@ -191,17 +224,54 @@ async function sendOrderEmail(env, order, customer, items) {
     "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th align=\"left\">Product</th><th>Qty</th><th align=\"right\">Line total</th></tr></thead><tbody>" + rows + "</tbody></table>" +
     "<h3 style=\"text-align:right\">Total: ZMW " + Number(order.total_amount).toFixed(2) + "</h3>" +
     "<p>Status: Pending</p></div>";
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject: "New PhoneYa2 order " + order.order_number,
-      html
-    })
-  });
-  return response.ok;
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
+      body: JSON.stringify({ from, to: [to], subject: "New PhoneYa2 order " + order.order_number, html })
+    });
+    const result = await response.json().catch(() => ({}));
+    return response.ok
+      ? { ok: true, providerMessageId: result.id || "" }
+      : { ok: false, error: "Resend returned HTTP " + response.status + ": " + String(result.message || result.name || "").slice(0, 240) };
+  } catch (error) {
+    return { ok: false, error: String(error).slice(0, 240) };
+  }
+}
+async function sendCustomerOrderConfirmation(env, order, customer, items) {
+  const apiKey = env.RESEND_API_KEY;
+  const from = env.RESEND_FROM;
+  if (!apiKey || !from) return { ok: false, error: "Resend API key or sender is not configured." };
+  if (!customer.email) return { ok: false, error: "Customer email is missing." };
+  const rows = items.map(item =>
+    "<tr><td style=\"padding:10px;border-bottom:1px solid #e9edf3\">" + escapeHtml(item.product_name) +
+    "</td><td style=\"padding:10px;border-bottom:1px solid #e9edf3;text-align:center\">" + Number(item.quantity) +
+    "</td><td style=\"padding:10px;border-bottom:1px solid #e9edf3;text-align:right\">ZMW " + Number(item.line_total).toFixed(2) + "</td></tr>"
+  ).join("");
+  const html = "<div style=\"font-family:Arial,sans-serif;color:#18202b;max-width:640px;margin:auto;line-height:1.55\">" +
+    "<div style=\"background:#151827;color:#fff;padding:22px;border-radius:14px 14px 0 0\"><div style=\"font-size:12px;letter-spacing:2px;color:#ff8b45;font-weight:bold\">PHONEYA2 ACCESSORIES</div><h1 style=\"font-size:24px;margin:8px 0 0\">We received your order!</h1></div>" +
+    "<div style=\"padding:22px;border:1px solid #e7eaf0;border-top:0;border-radius:0 0 14px 14px\">" +
+    "<p>Hello " + escapeHtml(customer.name || "there") + ",</p><p>Thank you for shopping with PhoneYa2. Your order has been saved and is currently <strong>pending confirmation</strong>. We will contact you using the details you provided.</p>" +
+    "<div style=\"background:#fff5ee;padding:14px;border-radius:10px;margin:18px 0\"><div style=\"font-size:12px;color:#8a4b24\">YOUR ORDER NUMBER</div><strong style=\"font-size:20px\">" + escapeHtml(order.order_number) + "</strong></div>" +
+    "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th align=\"left\" style=\"padding:8px 10px\">Product</th><th style=\"padding:8px\">Qty</th><th align=\"right\" style=\"padding:8px 10px\">Line total</th></tr></thead><tbody>" + rows + "</tbody></table>" +
+    "<h2 style=\"text-align:right;font-size:20px\">Total: ZMW " + Number(order.total_amount).toFixed(2) + "</h2>" +
+    "<p><strong>Delivery address:</strong><br>" + escapeHtml(customer.address) + "</p>" +
+    (customer.note ? "<p><strong>Your note:</strong><br>" + escapeHtml(customer.note).replace(/\n/g, "<br>") + "</p>" : "") +
+    "<p>If you need help, reply to this email or contact PhoneYa2 using the contact details on our website.</p><p>Thank you,<br><strong>PhoneYa2 Team</strong></p>" +
+    "</div></div>";
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
+      body: JSON.stringify({ from, to: [customer.email], subject: "We received your PhoneYa2 order " + order.order_number, html })
+    });
+    const result = await response.json().catch(() => ({}));
+    return response.ok
+      ? { ok: true, providerMessageId: result.id || "" }
+      : { ok: false, error: "Resend returned HTTP " + response.status + ": " + String(result.message || result.name || "").slice(0, 240) };
+  } catch (error) {
+    return { ok: false, error: String(error).slice(0, 240) };
+  }
 }
 
 export async function onRequest(context) {
@@ -293,11 +363,38 @@ export async function onRequest(context) {
       } catch (error) {
         console.error("PhoneYa2 Telegram notification failed:", String(error));
       }
+      let ownerEmailResult = { ok: false, error: "Email notification was not attempted." };
       try {
-        emailSent = await sendOrderEmail(env, order, orderCustomer, items);
+        ownerEmailResult = await sendOrderEmail(env, order, orderCustomer, items);
+        emailSent = ownerEmailResult.ok;
       } catch (error) {
+        ownerEmailResult = { ok: false, error: String(error).slice(0, 240) };
         console.error("PhoneYa2 order email failed:", String(error));
       }
+      await logEmailActivity(env, {
+        eventType: "new_order_alert", source: "automatic", triggerSource: "order_created",
+        recipientEmail: env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com", recipientName: "PhoneYa2 store owner",
+        subject: "New PhoneYa2 order " + order.order_number, status: emailSent ? "sent" : "failed",
+        providerMessageId: ownerEmailResult.providerMessageId || "", error: ownerEmailResult.error || "",
+        orderNumber: order.order_number, metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length }
+      });
+
+      let customerEmailResult = { ok: false, error: "Customer confirmation was not attempted." };
+      try {
+        customerEmailResult = await sendCustomerOrderConfirmation(env, order, orderCustomer, items);
+      } catch (error) {
+        customerEmailResult = { ok: false, error: String(error).slice(0, 240) };
+        console.error("PhoneYa2 customer order confirmation failed:", String(error));
+      }
+      await logEmailActivity(env, {
+        eventType: "order_confirmation", source: "automatic", triggerSource: "order_created",
+        recipientEmail: orderCustomer.email, recipientName: orderCustomer.name,
+        subject: "We received your PhoneYa2 order " + order.order_number,
+        status: customerEmailResult.ok ? "sent" : "failed",
+        providerMessageId: customerEmailResult.providerMessageId || "", error: customerEmailResult.error || "",
+        orderNumber: order.order_number, metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length }
+      });
+
       const notificationSent = telegramSent || emailSent;
       if (!telegramSent && !emailSent) {
         console.error("Order saved but both Telegram and email notifications failed for", order.order_number);
@@ -333,11 +430,21 @@ export async function onRequest(context) {
         } catch (error) {
           telegramReason = String(error).slice(0, 140);
         }
+        let testEmailResult = { ok: false, error: "Email test was not attempted." };
         try {
-          emailSent = await sendOrderEmail(env, testOrder, testCustomer, []);
+          testEmailResult = await sendOrderEmail(env, testOrder, testCustomer, []);
+          emailSent = testEmailResult.ok;
         } catch (error) {
+          testEmailResult = { ok: false, error: String(error).slice(0, 240) };
           console.error("PhoneYa2 notification test email failed:", String(error));
         }
+        await logEmailActivity(env, {
+          eventType: "notification_test", source: "manual", triggerSource: "admin_test_button",
+          recipientEmail: env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com", recipientName: "PhoneYa2 store owner",
+          subject: "New PhoneYa2 order TEST", status: emailSent ? "sent" : "failed",
+          providerMessageId: testEmailResult.providerMessageId || "", error: testEmailResult.error || "",
+          orderNumber: "TEST", metadata: { test: true }
+        });
         const outcomes = [];
         outcomes.push(telegramSent ? "Telegram app notification sent." : "Telegram failed: " + telegramReason);
         outcomes.push(emailSent ? "Test email sent to ORDER_NOTIFY_EMAIL." : "Email failed; check RESEND_API_KEY, RESEND_FROM, and ORDER_NOTIFY_EMAIL.");
