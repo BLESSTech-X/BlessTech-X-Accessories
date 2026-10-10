@@ -537,7 +537,32 @@ iframe[src*="tawk.to"]{bottom:20px !important;}
   .showcase-ctas{flex-direction:column;}
   .showcase-order-btn,.showcase-view-btn{font-size:13px;padding:11px 16px;}
 }
-</style>
+  /* Final wordmark override: strong, legible tricolour brand treatment */
+  .logo-brand-name { font-size: 23px !important; font-weight: 900 !important; letter-spacing: -.65px !important; line-height: 1.05 !important; }
+  .logo-brand-name > .brand-phone-word,
+  .mob-nav-hdr-brand > .brand-phone-word,
+  .logo-text .brand > .brand-phone-word,
+  header .brand > .brand-phone-word,
+  body > header .brand-phone-word { color: #111111 !important; }
+  .logo-brand-name > .brand-phone-ya,
+  .mob-nav-hdr-brand > .brand-phone-ya,
+  .logo-text .brand > .brand-phone-ya,
+  header .brand > .brand-phone-ya,
+  body > header .brand-phone-ya { color: #159447 !important; }
+  .logo-brand-name > .brand-phone-two,
+  .mob-nav-hdr-brand > .brand-phone-two,
+  .logo-text .brand > .brand-phone-two,
+  header .brand > .brand-phone-two,
+  body > header .brand-phone-two { color: #ff6500 !important; }
+  .mob-nav-hdr-brand { font-size: 22px !important; font-weight: 900 !important; letter-spacing: -.55px !important; }
+  .logo-text .brand, header .brand, body > header .brand { font-size: 25px !important; font-weight: 900 !important; letter-spacing: -.6px !important; line-height: 1.05 !important; }
+  @media (max-width: 480px) {
+    .logo-brand-name { font-size: 17px !important; letter-spacing: -.45px !important; }
+    .mob-nav-hdr-brand { font-size: 20px !important; }
+    .logo-text .brand, header .brand, body > header .brand { font-size: 23px !important; }
+  }
+
+ </style>
   <link rel="manifest" href="https://progressier.app/Qn40PARc0DxCTLIapBvJ/progressier.json">
 <script defer src="https://progressier.app/Qn40PARc0DxCTLIapBvJ/script.js"></script>
 
@@ -831,9 +856,6 @@ body::before{
   /* PhoneYa2 brand/header polish */
   .logo-brand-name { letter-spacing: -.35px; }
   .brand .brand-name { color: inherit !important; }
-  .logo-brand-name span,
-  .mob-nav-hdr-brand span,
-  .brand-zm { color: #ff6500 !important; }
   .top-header {
     position: fixed !important;
     top: 0 !important;
