@@ -881,6 +881,20 @@ body>.top-header,body>header,body>header.top{position:sticky!important;top:0!imp
 }
 @media(prefers-reduced-motion:reduce){.py2-page-logo-ambient,.phoneya2-home-intro::before,.heading::before,.hero::before,#product-detail::before{animation:none!important;}}
 </style>
+<style id="phoneya2-fixed-header-final-v5">
+/* FIXED means attached to the viewport, not merely sticky within a scrolling container. */
+body>.top-header,body>header,body>header.top{
+  position:fixed!important;top:0!important;left:0!important;right:0!important;
+  width:100%!important;z-index:1500!important;transform:none!important;
+}
+body>.py2-quick-tabs,body>nav.py2-quick-tabs{
+  position:fixed!important;top:var(--py2-header-height,72px)!important;
+  left:0!important;right:0!important;width:max-content!important;
+  max-width:calc(100% - 16px)!important;margin:0 auto!important;
+  z-index:1490!important;transform:none!important;
+}
+body{padding-top:calc(var(--py2-header-height,72px) + var(--py2-tabs-height,44px) + 10px)!important;}
+</style>
 </head>
 <body>
 
@@ -1789,6 +1803,9 @@ s0.parentNode.insertBefore(s1,s0);
 <script src="/cart.js" defer></script>
 <script id="phoneya2-sticky-header-height-v4">
 (()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
+</script>
+<script id="phoneya2-fixed-header-layout-v5">
+(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');if(h)ro.observe(h);if(n)ro.observe(n)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
 </script>
 </body>
 </html>
