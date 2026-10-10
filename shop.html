@@ -664,7 +664,20 @@ body::before{
   @media (prefers-reduced-motion: reduce) {
     body::before { animation: none !important; will-change: auto; }
   }
-</style>
+
+  /* PhoneYa2 wordmark: Phone black, Ya green, 2 orange */
+  .brand-phone-ya { color: #159447 !important; }
+  .brand-phone-two { color: #ff6500 !important; }
+  .logo-brand-name > .brand-phone-ya,
+  .logo-brand-name > .brand-phone-two,
+  .mob-nav-hdr-brand > .brand-phone-ya,
+  .mob-nav-hdr-brand > .brand-phone-two { display: inline; }
+  .header-cart-cta .cart-word { display: inline !important; }
+  .header-cart-cta .cart-emoji { order: initial; }
+  @media (max-width: 480px) {
+    .header-cart-cta .cart-word { display: inline !important; }
+  }
+ </style>
 </head>
 <body>
 
@@ -677,7 +690,7 @@ body::before{
            alt="PhoneYa2-ZM Accessories" class="logo-img"
            onerror="this.style.display='none'">
       <div class="logo-text-block">
-        <div class="logo-brand-name">PhoneYa2<span>ZM</span></div>
+        <div class="logo-brand-name">Phone<span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
         <div class="logo-brand-sub">Accessories</div>
       </div>
     </a>
@@ -687,7 +700,7 @@ body::before{
         <button onclick="doHeaderSearch()" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
     </div>
-    <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Cart</span><span class="cart-count" data-cart-count>0</span></a>
+    <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-word">View Cart</span><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-count" data-cart-count>0</span></a>
     <nav class="desk-nav">
       <a href="index.html" class="dnav-link">Home</a>
       <a href="shop.html" class="dnav-link active">Shop</a>
@@ -722,7 +735,7 @@ body::before{
         <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
              alt="PhoneYa2-ZM" style="height:36px;border-radius:6px;" onerror="this.style.display='none'">
         <div class="mob-nav-hdr-text">
-          <div class="mob-nav-hdr-brand">PhoneYa2<span>ZM</span></div>
+          <div class="mob-nav-hdr-brand">Phone<span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
           <div class="mob-nav-hdr-sub">Accessories</div>
         </div>
       </div>
