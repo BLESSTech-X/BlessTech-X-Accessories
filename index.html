@@ -45,7 +45,7 @@
   --grad-orange:linear-gradient(135deg,#ff6000,#ff9f43);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:auto;overscroll-behavior-y:auto;}
 body{font-family:'DM Sans',sans-serif;background:#f2f3f7;color:var(--text);overflow-x:hidden;padding-bottom:0;}
 h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
 a{text-decoration:none;color:inherit;}
@@ -173,7 +173,8 @@ button{font-family:'DM Sans',sans-serif;}
 .section-body{padding:14px 18px;overflow:visible;}
 
 .h-track-wrap{overflow:hidden;width:100%;position:relative;}
-.h-track{display:flex;gap:12px;transition:transform .4s cubic-bezier(.4,0,.2,1);will-change:transform;min-height:220px;align-items:stretch;}
+.h-track{display:flex;gap:12px;transition:transform .32s cubic-bezier(.2,.65,.3,1);will-change:transform;min-height:220px;align-items:stretch;touch-action:pan-y pinch-zoom;cursor:grab;}
+.h-track.is-dragging{transition:none!important;cursor:grabbing;user-select:none;-webkit-user-select:none;}
 
 .pc{width:180px;flex-shrink:0;background:white;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;border:1px solid #f0f0f0;position:relative;}
 .pc:hover{box-shadow:0 8px 24px rgba(0,0,0,.12);transform:translateY(-4px);}
@@ -1257,6 +1258,11 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
  body>header.top .top-actions a,body>header.top>a:not(.brand){font-size:12px!important;}
 }
 </style>
+<style id="phoneya2-scroll-performance-v1">
+  html { scroll-behavior: auto !important; overscroll-behavior-y: auto; }
+  /* Keep the watermark static: animating blur/filter on a fixed full-screen layer can tax scrolling on phones. */
+  body::before { animation: none !important; will-change: auto !important; transform: none !important; filter: grayscale(1) saturate(0) blur(.45px) !important; }
+</style>
 </head>
 <body>
 
@@ -2100,55 +2106,94 @@ window.scrollTrack = function(id, dir) {
 };
 
 function addCarouselDrag(id) {
-  const wrap = document.getElementById(id);
-  if (!wrap || wrap._dragInit) return;
-  wrap._dragInit = true;
+  const track = document.getElementById(id);
+  if (!track || track._dragInit) return;
+  track._dragInit = true;
 
-  let startX = 0, startPos = 0, isDragging = false;
+  let pointerId = null;
+  let startX = 0;
+  let lastX = 0;
+  let startOffset = 0;
+  let isDragging = false;
+  let suppressClickUntil = 0;
 
-  wrap.addEventListener('touchstart', e => {
-    startX   = e.touches[0].clientX;
-    startPos = trackPos[id] || 0;
+  const cardWidth = () => Math.max(1, getCardW(id));
+  const maxOffset = () => getMaxPos(id) * cardWidth();
+  const clampOffset = offset => Math.max(0, Math.min(offset, maxOffset()));
+
+  function resumeAuto(delay) {
     userPaused[id] = true;
-  }, { passive: true });
+    clearTimeout(window['_pt_' + id]);
+    window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, delay || 1200);
+  }
 
-  wrap.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) {
-      const dir = dx < 0 ? 1 : -1;
-      scrollTrack(id, dir);
+  function finishDrag(event) {
+    if (pointerId === null) return;
+    if (event && event.pointerId !== undefined && event.pointerId !== pointerId) return;
+
+    const endX = event && Number.isFinite(event.clientX) ? event.clientX : lastX;
+    const wasDragging = isDragging;
+
+    if (wasDragging) {
+      const offset = clampOffset(startOffset - (endX - startX));
+      trackPos[id] = Math.max(0, Math.min(Math.round(offset / cardWidth()), getMaxPos(id)));
+      track.classList.remove('is-dragging');
+      track.style.transition = '';
+      applyPos(id);
+      suppressClickUntil = Date.now() + 350;
     }
-    clearTimeout(window['_pt_' + id]);
-    window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 4000);
-  }, { passive: true });
 
-  wrap.addEventListener('mousedown', e => {
-    isDragging = true;
-    startX     = e.clientX;
-    startPos   = trackPos[id] || 0;
-    userPaused[id] = true;
-    wrap.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const cardW = getCardW(id);
-    const track = document.getElementById(id);
-    if (track) track.style.transform = 'translateX(-' + (startPos * cardW - dx) + 'px)';
-  });
-  window.addEventListener('mouseup', e => {
-    if (!isDragging) return;
+    const activePointer = pointerId;
+    pointerId = null;
     isDragging = false;
-    wrap.style.cursor = '';
-    const dx = e.clientX - startX;
-    if (Math.abs(dx) > 40) scrollTrack(id, dx < 0 ? 1 : -1);
-    else applyPos(id);
-    clearTimeout(window['_pt_' + id]);
-    window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 4000);
-  });
-}
+    track.style.cursor = '';
+    if (activePointer !== null && track.hasPointerCapture && track.hasPointerCapture(activePointer)) {
+      try { track.releasePointerCapture(activePointer); } catch (_) {}
+    }
+    resumeAuto(1200);
+  }
 
+  track.addEventListener('pointerdown', event => {
+    if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    if (event.target.closest('button,a,input,select,textarea,[role="button"]')) return;
+
+    pointerId = event.pointerId;
+    startX = lastX = event.clientX;
+    startOffset = (trackPos[id] || 0) * cardWidth();
+    isDragging = false;
+    userPaused[id] = true;
+    clearTimeout(window['_pt_' + id]);
+  });
+
+  track.addEventListener('pointermove', event => {
+    if (pointerId === null || event.pointerId !== pointerId) return;
+    lastX = event.clientX;
+    const deltaX = event.clientX - startX;
+
+    if (!isDragging && Math.abs(deltaX) > 5) {
+      isDragging = true;
+      track.classList.add('is-dragging');
+      track.style.transition = 'none';
+      try { track.setPointerCapture(pointerId); } catch (_) {}
+    }
+    if (!isDragging) return;
+
+    if (event.cancelable) event.preventDefault();
+    const offset = clampOffset(startOffset - deltaX);
+    track.style.transform = 'translate3d(-' + offset + 'px, 0, 0)';
+  });
+
+  track.addEventListener('pointerup', finishDrag);
+  track.addEventListener('pointercancel', finishDrag);
+  track.addEventListener('dragstart', event => event.preventDefault());
+  track.addEventListener('click', event => {
+    if (Date.now() < suppressClickUntil) {
+      event.preventDefault();
+      event.stopPropagation();
+      suppressClickUntil = 0;
+    }
+  }, true);
+}
 let allProducts = [];
 let currentCsCat = 'case';
 
@@ -2364,14 +2409,16 @@ slide.innerHTML =
   const section = document.getElementById('showcase-section');
   if (section) {
     let tsx = 0;
-    section.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; showcasePaused = true; }, { passive: true });
-    section.addEventListener('touchend',   e => {
+    section.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; showcasePaused = true; clearTimeout(window._showcasePauseTimer); }, { passive: true });
+    section.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - tsx;
-      if (Math.abs(dx) > 40) goShowcase(showcaseIdx + (dx < 0 ? 1 : -1));
-      setTimeout(() => { showcasePaused = false; }, 3000);
+      if (Math.abs(dx) > 40) {
+        goShowcase(showcaseIdx + (dx < 0 ? 1 : -1));
+      } else {
+        clearTimeout(window._showcasePauseTimer);
+        window._showcasePauseTimer = setTimeout(() => { showcasePaused = false; }, 1200);
+      }
     }, { passive: true });
-    section.addEventListener('mouseenter', () => { showcasePaused = true; });
-    section.addEventListener('mouseleave', () => { setTimeout(() => { showcasePaused = false; }, 1000); });
   }
 
   startShowcaseAuto();
@@ -2392,7 +2439,7 @@ function goShowcase(n) {
 
   showcasePaused = true;
   clearTimeout(window._showcasePauseTimer);
-  window._showcasePauseTimer = setTimeout(() => { showcasePaused = false; }, 4000);
+  window._showcasePauseTimer = setTimeout(() => { showcasePaused = false; }, 1200);
 
   resetShowcaseProgress();
 }
@@ -2572,14 +2619,6 @@ function startCarouselAuto() {
       applyPos(id);
     }, interval);
 
-    const wrap = document.getElementById(id);
-    if (wrap) {
-      wrap.addEventListener('mouseenter', () => { userPaused[id] = true; });
-      wrap.addEventListener('mouseleave', () => {
-        clearTimeout(window['_pt_' + id]);
-        window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 800);
-      });
-    }
   });
 }
 
