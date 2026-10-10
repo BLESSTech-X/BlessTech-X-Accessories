@@ -36,7 +36,32 @@
     footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 16px;border-top:1px solid var(--line);background:#fff}
     @media(max-width:800px){main{margin-top:22px}.layout{grid-template-columns:1fr}.summary{position:static;order:-1}.benefits{grid-template-columns:1fr}.summary{padding:18px}.items{padding:0 16px}}
     @media(max-width:480px){.top{padding:12px}.brand{font-size:18px}.top-actions{gap:10px;font-size:12px}.top-actions .back-label{display:none}main{padding:0 12px 40px}.heading{align-items:start}.heading h1{font-size:29px}.cart-count-label{font-size:12px}.panel-title{padding:15px}.items{padding:0 13px}.cart-item{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:16px 0;align-items:start}.product-image{width:68px;height:68px;grid-row:span 2}.details{grid-column:2}.item-right{grid-column:2;flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.line-total{font-size:14px}.qty-tools{gap:6px}.qty-btn{width:29px;height:29px}.summary{padding:16px}}
-  </style>
+  /* Final wordmark override: strong, legible tricolour brand treatment */
+  .logo-brand-name { font-size: 23px !important; font-weight: 900 !important; letter-spacing: -.65px !important; line-height: 1.05 !important; }
+  .logo-brand-name > .brand-phone-word,
+  .mob-nav-hdr-brand > .brand-phone-word,
+  .logo-text .brand > .brand-phone-word,
+  header .brand > .brand-phone-word,
+  body > header .brand-phone-word { color: #111111 !important; }
+  .logo-brand-name > .brand-phone-ya,
+  .mob-nav-hdr-brand > .brand-phone-ya,
+  .logo-text .brand > .brand-phone-ya,
+  header .brand > .brand-phone-ya,
+  body > header .brand-phone-ya { color: #159447 !important; }
+  .logo-brand-name > .brand-phone-two,
+  .mob-nav-hdr-brand > .brand-phone-two,
+  .logo-text .brand > .brand-phone-two,
+  header .brand > .brand-phone-two,
+  body > header .brand-phone-two { color: #ff6500 !important; }
+  .mob-nav-hdr-brand { font-size: 22px !important; font-weight: 900 !important; letter-spacing: -.55px !important; }
+  .logo-text .brand, header .brand, body > header .brand { font-size: 25px !important; font-weight: 900 !important; letter-spacing: -.6px !important; line-height: 1.05 !important; }
+  @media (max-width: 480px) {
+    .logo-brand-name { font-size: 17px !important; letter-spacing: -.45px !important; }
+    .mob-nav-hdr-brand { font-size: 20px !important; }
+    .logo-text .brand, header .brand, body > header .brand { font-size: 23px !important; }
+  }
+
+ </style>
 
 <!-- PhoneYa2 responsive layout hardening: preserves the existing visual design. -->
 <style id="phoneya2-responsive-hardening">
@@ -161,8 +186,6 @@
   /* PhoneYa2 brand/header polish */
   .logo-brand-name { letter-spacing: -.35px; }
   .brand .brand-name { color: inherit !important; }
-  .logo-brand-name span,
-  .brand-zm { color: #ff6500 !important; }
   .top-header {
     position: fixed !important;
     top: 0 !important;
