@@ -205,6 +205,75 @@ footer{background:var(--dark);padding:64px 24px 0;}
   .py2-ads-head-l h2{font-size:1.2rem;}
 }
 </style>
+
+<!-- PhoneYa2 bottom-navigation layout fix -->
+<style id="phoneya2-bottom-nav-layout-fix">
+  /* The bottom bar is a mobile navigation pattern; desktop uses the main nav. */
+  .bottom-nav { display: none; }
+  @media (max-width: 768px) {
+    body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
+    .bottom-nav {
+      display: flex;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(64px + env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom, 0px));
+      margin: 0;
+      align-items: stretch;
+      justify-content: space-around;
+      gap: 2px;
+      z-index: 1000;
+      background: rgba(255,255,255,.98);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 -5px 24px rgba(15,23,42,.09);
+    }
+    .bottom-nav .bnav-item {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
+      padding: 4px 2px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      line-height: 1.15;
+      font-size: 10px;
+      white-space: nowrap;
+      box-sizing: border-box;
+      border-radius: 12px;
+    }
+    .bottom-nav .bnav-item i { font-size: 18px; line-height: 1; }
+    .bottom-nav .bnav-item span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+    .bottom-nav .bnav-item.active { color: var(--c5, #2563eb); font-weight: 700; }
+    .bottom-nav .bnav-order {
+      flex: 1 1 0;
+      min-width: 0;
+      max-width: 100px;
+      margin: 0 2px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 10px;
+      line-height: 1.15;
+      white-space: nowrap;
+      box-shadow: 0 3px 10px rgba(37,211,102,.25);
+    }
+    .bottom-nav .bnav-order i { font-size: 18px; line-height: 1; }
+    .bottom-nav a { -webkit-tap-highlight-color: transparent; }
+  }
+</style>
+
 </head>
 <body>
 
