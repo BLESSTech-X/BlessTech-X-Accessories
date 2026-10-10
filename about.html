@@ -759,31 +759,33 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 </head>
 <body>
 
-<header>
-  <div class="rainbow-streak"></div>
-  <div class="header-inner">
-    <a href="index.html" class="logo">
-      <img class="py2-site-logo" src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 logo" onerror="this.style.display='none'">
-      <div class="logo-text"><div class="brand"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div><div class="sub">Accessories</div></div>
+<!-- SHARED PHONEYA2 HEADER -->
+<div class="top-header">
+  <div class="top-header-inner">
+    <a href="/" class="logo-wrap" aria-label="PhoneYa2 Accessories home">
+      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 Accessories" class="logo-img" onerror="this.style.display='none'">
+      <div class="logo-text-block">
+        <div class="logo-brand-name"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
+        <div class="logo-brand-sub">Accessories</div>
+      </div>
     </a>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="about.html" class="active">About</a>
-      <a href="contact.html">Contact</a>
-      <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2." target="_blank" class="btn-order-header"><i class="fa-brands fa-whatsapp"></i> Order Now</a>
-    </nav>
-    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+    <div class="header-search">
+      <div class="search-box">
+        <input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products" onkeydown="if(event.key==='Enter'){const q=this.value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)}">
+        <button type="button" onclick="const q=document.getElementById('main-search').value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+    </div>
+    <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a>
   </div>
-</header>
+</div>
 
 <nav class="py2-quick-tabs" aria-label="Quick site navigation">
-  <a href="/" class="" ><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
-  <a href="/shop.html" class="" ><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a>
-  <a href="/account.html" class="" ><i class="fa-solid fa-user" aria-hidden="true"></i><span>Account</span></a>
+  <a href="/"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
+  <a href="/shop.html"><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a>
+  <a href="/account.html"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Account</span></a>
   <a href="/about.html" class="is-active" aria-current="page"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>About</span></a>
-  <a href="/contact.html" class="" ><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a>
-  <a href="/cart.html" class="" ><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
+  <a href="/contact.html"><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a>
+  <a href="/cart.html"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
 </nav>
 
 <div class="mobile-nav" id="mobile-nav">
