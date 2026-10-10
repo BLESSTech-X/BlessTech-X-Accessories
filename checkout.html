@@ -6,6 +6,14 @@
   <meta name="theme-color" content="#ff6000">
   <title>Checkout — PhoneYa2</title>
   <meta name="description" content="Place your PhoneYa2 order securely.">
+  <!-- Google Analytics 4: PhoneYa2 ecommerce funnel -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVNT6SQCS2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MVNT6SQCS2');
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root{--orange:#ff6000;--ink:#171725;--muted:#6b7280;--line:#e8e8ef;--bg:#f4f5f9;--green:#128c7e}
@@ -235,6 +243,17 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
   const cart = new Map();
   const CART_STORAGE_KEY = "phoneya2-checkout-cart-v1";
   let orderReviewed = false;
+  let orderSubmitting = false;
+  let checkoutStartedTracked = false;
+  function trackEvent(name, params){
+    if(typeof window.gtag === "function") window.gtag("event", name, params || {});
+  }
+  function analyticsItems(){
+    return [...cart.entries()].map(([slug, quantity])=>{
+      const p=products.get(slug);
+      return p ? {item_id:slug,item_name:p.title,price:Number(p.price)||0,quantity:Number(quantity)||1} : null;
+    }).filter(Boolean);
+  }
   const money = n => "ZMW " + Number(n || 0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
   function notice(message, type){const el=$("notice");el.textContent=message;el.className="notice "+type;el.scrollIntoView({behavior:"smooth",block:"center"});}
   function clearNotice(){const el=$("notice");el.textContent="";el.className="notice";}
@@ -289,6 +308,10 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       }
     }
     renderCart();
+    if(!checkoutStartedTracked && cart.size){
+      checkoutStartedTracked = true;
+      trackEvent("begin_checkout", {currency:"ZMW", value:[...cart.entries()].reduce((sum,[slug,qty])=>sum+(products.get(slug)?.price||0)*qty,0), items:analyticsItems()});
+    }
   }
   function addProduct(slug,qty){
     const p=products.get(slug);if(!p||p.stock<1){notice("That product is currently unavailable.","error");return;}
@@ -321,7 +344,10 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
   $("add").addEventListener("click",()=>{
     const qty=Number($("quantity").value);
     if(!Number.isInteger(qty)||qty<1||qty>99){notice("Choose a quantity from 1 to 99.","error");return;}
-    addProduct($("product").value,qty);$("quantity").value="1";
+    const slug=$("product").value, p=products.get(slug), before=cart.get(slug)||0;
+    addProduct(slug,qty);
+    if(p && (cart.get(slug)||0)>before) trackEvent("add_to_cart",{currency:"ZMW",value:p.price*qty,items:[{item_id:p.slug,item_name:p.title,price:p.price,quantity:qty}]});
+    $("quantity").value="1";
   });
   function addReviewDetail(host,label,value){
     const box=document.createElement("div");box.className="review-detail";const strong=document.createElement("strong");strong.textContent=label;const text=document.createElement("div");text.textContent=value||"—";box.append(strong,text);host.append(box);
@@ -352,6 +378,8 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
     event.preventDefault();clearNotice();
     if(!cart.size){notice("Please add at least one product to your order.","error");return;}
     if(!orderReviewed){renderReview();$("review-modal").classList.remove("hidden");return;}
+    if(orderSubmitting)return;
+    orderSubmitting=true;
     const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
     const body={
       name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
@@ -361,9 +389,15 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       const response=await fetch("/api/orders",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
       const result=await response.json().catch(()=>({}));
       if(!response.ok||!result.success)throw new Error(result.error||"Your order could not be submitted.");
-      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">Your order is saved. If you do not receive an account invitation, contact PhoneYa2 to get help activating access to your order history. <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
+      trackEvent("purchase",{
+        transaction_id:String(result.order_number||""),
+        value:Number(result.total_amount)||0,
+        currency:"ZMW",
+        items:analyticsItems()
+      });
+      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p><p class="small">Delivery is usually within 24 hours. In some circumstances, please allow up to 3 days.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">Your order is saved. If you do not receive an account invitation, contact PhoneYa2 to get help activating access to your order history. <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
       cart.clear();renderCart();
-    }catch(error){orderReviewed=false;notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
+    }catch(error){orderReviewed=false;orderSubmitting=false;notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
   });
   loadProducts().catch(error=>{notice(error.message||"Could not load the shop.","error");$("product").disabled=true;$("add").disabled=true;});
 })();
