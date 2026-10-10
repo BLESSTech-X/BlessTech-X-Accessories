@@ -1,0 +1,77 @@
+name: PhoneYa2 New Product Announcements
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/products/*.md"
+
+permissions:
+  contents: read
+
+jobs:
+  announce-new-products:
+    if: ${{ github.event.before != github.event.after }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find newly added product records
+        id: products
+        shell: bash
+        run: |
+          git diff --name-status "${{ github.event.before }}" "${{ github.sha }}" \
+            | awk '$1 == "A" && $2 ~ /^content\/products\/.*\.md$/ { print $2 }' > /tmp/new-products.txt
+          echo "count=$(wc -l < /tmp/new-products.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          cat /tmp/new-products.txt
+
+      - name: Announce new products to opted-in subscribers
+        if: steps.products.outputs.count != '0'
+        env:
+          ANNOUNCEMENT_SECRET: ${{ secrets.PHONEYA2_PRODUCT_ANNOUNCEMENT_SECRET }}
+          PRODUCT_FILES: /tmp/new-products.txt
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$ANNOUNCEMENT_SECRET" ]; then
+            echo "Missing repository secret PHONEYA2_PRODUCT_ANNOUNCEMENT_SECRET." >&2
+            exit 1
+          fi
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            slug="$(basename "$file" .md)"
+            title="$(node -e 'const fs=require("fs");const s=fs.readFileSync(process.argv[1],"utf8");const m=s.match(/^---\s*\n([\s\S]*?)\n---/);const t=m&&m[1].match(/^title:\s*(.*?)\s*$/m);console.log(t?t[1].trim().replace(/^["'\''"]|["'\''"]$/g,""):"")' "$file")"
+            price="$(node -e 'const fs=require("fs");const s=fs.readFileSync(process.argv[1],"utf8");const m=s.match(/^---\s*\n([\s\S]*?)\n---/);const p=m&&m[1].match(/^price:\s*([0-9]+(?:\.[0-9]+)?)/m);console.log(p?p[1]:"")' "$file")"
+            if [ -z "$title" ] || [ -z "$price" ]; then
+              echo "Skipping $file because title or price frontmatter is missing."
+              continue
+            fi
+            prepared="$(jq -n --arg slug "$slug" --arg title "$title" --argjson price "$price" '{action:"prepare",slug:$slug,title:$title,price:$price}' | curl --fail-with-body -sS https://phoneya2.pages.dev/api/product-announcement -H "Authorization: Bearer $ANNOUNCEMENT_SECRET" -H 'Content-Type: application/json' --data-binary @-)"
+            if [ "$(echo "$prepared" | jq -r '.disabled // false')" = "true" ]; then
+              echo "Product announcement automation is disabled; no email sent for $slug."
+              continue
+            fi
+            if [ "$(echo "$prepared" | jq -r '.success // false')" != "true" ]; then
+              echo "Could not prepare announcement for $slug: $prepared" >&2
+              exit 1
+            fi
+            job_id="$(echo "$prepared" | jq -r '.job_id // empty')"
+            if [ -z "$job_id" ]; then
+              echo "Announcement already exists for $slug; status: $(echo "$prepared" | jq -r '.status // "unknown"')."
+              continue
+            fi
+            complete=false
+            for attempt in $(seq 1 50); do
+              result="$(jq -n --arg id "$job_id" '{action:"send",job_id:$id}' | curl --fail-with-body -sS https://phoneya2.pages.dev/api/product-announcement -H "Authorization: Bearer $ANNOUNCEMENT_SECRET" -H 'Content-Type: application/json' --data-binary @-)"
+              echo "$result"
+              if [ "$(echo "$result" | jq -r '.done // false')" = "true" ]; then complete=true; break; fi
+              if [ "$(echo "$result" | jq -r '.disabled // false')" = "true" ]; then break; fi
+            done
+            if [ "$complete" != "true" ]; then
+              echo "Announcement for $slug did not finish within 50 batches. Re-run the workflow to resume." >&2
+              exit 1
+            fi
+          done < "$PRODUCT_FILES"
