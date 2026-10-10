@@ -624,6 +624,28 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
   .header-cart-cta{padding:7px 8px;gap:5px;}
 }
 
+
+/* Cart CTA: keep the full label visible without letting the header overflow. */
+.header-cart-cta{gap:6px;max-width:100%;min-width:0;padding:9px 11px;font-size:12px;line-height:1.2;}
+.header-cart-cta .cart-emoji{font-size:17px;line-height:1;flex:0 0 auto;}
+.header-cart-cta .cart-word{display:inline !important;white-space:nowrap;}
+.header-cart-cta .cart-count{flex:0 0 auto;}
+@media(max-width:900px){
+  .top-header-inner{gap:8px;padding-left:10px;padding-right:10px;}
+  .top-header-inner > .header-cart-cta{margin-left:auto;margin-right:0;}
+  .header-cart-cta{padding:8px 9px;font-size:11px;gap:5px;}
+  .header-cart-cta .cart-emoji{font-size:16px;}
+}
+@media(max-width:380px){
+  .top-header-inner{gap:6px;padding-left:8px;padding-right:8px;}
+  .logo-img{width:36px;height:36px;}
+  .logo-wrap{gap:6px;min-width:0;}
+  .logo-brand-name{font-size:14px;}
+  .logo-brand-sub{font-size:8px;letter-spacing:1px;}
+  .header-cart-cta{padding:7px 7px;font-size:10px;gap:4px;}
+  .header-cart-cta .cart-emoji{font-size:15px;}
+  .hamburger{padding:4px;font-size:20px;}
+}
 </style>
 
 </head>
@@ -648,7 +670,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
         <button onclick="doHeaderSearch()" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
     </div>
-    <a href="/cart.html" class="header-cart-cta" aria-label="Open shopping cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-word">Cart</span><span class="cart-count" data-cart-count>0</span></a>
+    <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a>
     <nav class="desk-nav">
       <a href="index.html" class="dnav-link active">Home</a>
       <a href="shop.html" class="dnav-link">Shop</a>
@@ -698,7 +720,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
         <a href="about.html" class=""><i class="fa-solid fa-circle-info"></i> About</a>
         <a href="contact.html" class=""><i class="fa-solid fa-envelope"></i> Contact</a>
     </div>
-    <a href="/cart.html" class="mob-nav-cart"><i class="fa-solid fa-bag-shopping"></i> Shopping Cart <span class="cart-count" data-cart-count>0</span><span style="margin-left:auto;font-size:12px">Checkout →</span></a>
+    <a href="/cart.html" class="mob-nav-cart"><span aria-hidden="true">🛒</span> View Your Cart <span class="cart-count" data-cart-count>0</span><span style="margin-left:auto;font-size:12px">Open →</span></a>
     <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2-ZM." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
   </div>
 </div>
