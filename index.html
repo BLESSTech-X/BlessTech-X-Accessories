@@ -1896,59 +1896,27 @@ function parseFrontmatter(text, slug) {
 }
 
 async function fetchAllProducts() {
-  const indexController = new AbortController();
-  const indexTimer = setTimeout(() => indexController.abort(), 12000);
-  let slugs;
-  try {
-    const res = await fetch('/content/products/index.json?t=' + Date.now(), {
-      cache: 'no-store',
-      signal: indexController.signal
-    });
-    if (!res.ok) throw new Error('Product index request failed (' + res.status + ')');
-    slugs = await res.json();
-  } finally {
-    clearTimeout(indexTimer);
-  }
+  // Match the proven loader used by shop.html. Keeping this path identical
+  // removes homepage-only URL encoding, abort, and worker-pool differences.
+  const res = await fetch('/content/products/index.json?t=' + Date.now());
+  if (!res.ok) throw new Error('Product index request failed (' + res.status + ')');
+  const slugs = await res.json();
+  if (!Array.isArray(slugs) || !slugs.length) throw new Error('Product index is empty or invalid');
 
-  if (!Array.isArray(slugs) || !slugs.length) {
-    throw new Error('Product index is empty or invalid');
-  }
+  const results = await Promise.allSettled(
+    slugs.map(slug =>
+      fetch('/content/products/' + slug + '.md')
+        .then(response => response.ok ? response.text() : null)
+        .then(text => text ? parseFrontmatter(text, slug) : null)
+    )
+  );
 
-  // Do not launch dozens of Markdown requests at once. A small worker pool
-  // is more reliable on mobile connections and still allows partial results.
-  const products = [];
-  let next = 0;
-  const workerCount = Math.min(8, slugs.length);
+  const products = results
+    .filter(result => result.status === 'fulfilled' && result.value)
+    .map(result => result.value);
 
-  async function worker() {
-    while (next < slugs.length) {
-      const slug = slugs[next++];
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 12000);
-      try {
-        const res = await fetch('/content/products/' + encodeURIComponent(slug) + '.md', {
-          cache: 'no-store',
-          signal: controller.signal
-        });
-        if (!res.ok) {
-          console.warn('[PhoneYa2] Product file unavailable:', slug, res.status);
-          continue;
-        }
-        const text = await res.text();
-        if (!text) continue;
-        const product = parseFrontmatter(text, slug);
-        if (product) products.push(product);
-        else console.warn('[PhoneYa2] Product frontmatter could not be parsed:', slug);
-      } catch (err) {
-        console.warn('[PhoneYa2] Product request failed:', slug, err);
-      } finally {
-        clearTimeout(timer);
-      }
-    }
-  }
-
-  await Promise.all(Array.from({ length: workerCount }, () => worker()));
-  if (!products.length) throw new Error('No product files could be loaded; check /content/products/ and deployment output');
+  if (!products.length) throw new Error('No product files could be loaded from /content/products/');
+  console.info('[PhoneYa2] Homepage products loaded:', products.length);
   return products;
 }
 
