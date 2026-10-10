@@ -309,16 +309,18 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       }
     }
     renderCart();
-    if(!checkoutStartedTracked && cart.size){
-      checkoutStartedTracked = true;
-      trackEvent("begin_checkout", {currency:"ZMW", value:[...cart.entries()].reduce((sum,[slug,qty])=>sum+(products.get(slug)?.price||0)*qty,0), items:analyticsItems()});
-    }
+    trackBeginCheckout();
+  }
+  function trackBeginCheckout(){
+    if(checkoutStartedTracked || !cart.size) return;
+    checkoutStartedTracked = true;
+    trackEvent("begin_checkout", {currency:"ZMW", value:[...cart.entries()].reduce((sum,[slug,qty])=>sum+(products.get(slug)?.price||0)*qty,0), items:analyticsItems()});
   }
   function addProduct(slug,qty){
     const p=products.get(slug);if(!p||p.stock<1){notice("That product is currently unavailable.","error");return;}
     const existing=cart.get(slug)||0;
     if(existing+qty>Math.min(99,p.stock)){notice("Only "+p.stock+" unit(s) of "+p.title+" are currently available.","error");return;}
-    cart.set(slug,existing+qty);renderCart();clearNotice();
+    cart.set(slug,existing+qty);renderCart();clearNotice();trackBeginCheckout();
   }
   function renderCart(){
     const host=$("cart");host.replaceChildren();let total=0;
