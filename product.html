@@ -497,7 +497,8 @@ body::before{
       right: auto;
       bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       transform: translateX(-50%);
-      width: min(calc(100% - 32px), var(--container-width, 1200px));
+      width: calc(100% - 24px);
+      max-width: 1280px;
       max-width: 430px;
       height: 62px;
       box-sizing: border-box;
@@ -552,6 +553,9 @@ body::before{
     }
     .bottom-nav .bnav-order i { font-size: 18px; line-height: 1; }
     .bottom-nav a { -webkit-tap-highlight-color: transparent; }
+  }
+  @media (max-width: 380px) {
+    .bottom-nav { width: calc(100% - 16px); }
   }
 </style>
 
