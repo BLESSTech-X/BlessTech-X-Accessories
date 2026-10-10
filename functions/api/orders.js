@@ -274,6 +274,39 @@ async function sendCustomerOrderConfirmation(env, order, customer, items) {
   }
 }
 
+async function sendDeliveredOrderEmail(env, order) {
+  const apiKey = env.RESEND_API_KEY;
+  const from = env.RESEND_FROM;
+  const email = cleanText(order.customer_email, 254).toLowerCase();
+  if (!apiKey || !from) return { ok: false, error: "Resend API key or sender is not configured." };
+  if (!email) return { ok: false, error: "Customer email is missing." };
+  const orderNumber = cleanText(order.order_number, 80);
+  const name = cleanText(order.customer_name, 120) || "there";
+  const feedbackUrl = "https://wa.me/260979603741?text=" + encodeURIComponent(
+    "Hi PhoneYa2, my order " + orderNumber + " has been delivered. I'd like to share honest feedback about my experience."
+  );
+  const html = "<div style=\"font-family:Arial,sans-serif;color:#18202b;max-width:620px;margin:auto;line-height:1.6\">" +
+    "<div style=\"background:#151827;color:#fff;padding:22px;border-radius:14px 14px 0 0\"><div style=\"font-size:12px;letter-spacing:2px;color:#ff8b45;font-weight:bold\">PHONEYA2 ACCESSORIES</div><h1 style=\"font-size:24px;margin:8px 0 0\">Your order has been delivered</h1></div>" +
+    "<div style=\"padding:22px;border:1px solid #e7eaf0;border-top:0;border-radius:0 0 14px 14px\">" +
+    "<p>Hello " + escapeHtml(name) + ",</p><p>Our records show that your PhoneYa2 order <strong>" + escapeHtml(orderNumber) + "</strong> has been marked as delivered. Thank you for shopping with us.</p>" +
+    "<p>We'd appreciate your honest feedback about the product and delivery experience. Your feedback helps us improve; sharing it is completely optional.</p>" +
+    "<p style=\"margin:24px 0\"><a href=\"" + escapeHtml(feedbackUrl) + "\" style=\"display:inline-block;background:#128c7e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:bold\">Share feedback on WhatsApp</a></p>" +
+    "<p>If you have not received your order, please contact us so we can investigate.</p><p>Thank you,<br><strong>PhoneYa2 Team</strong></p></div></div>";
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
+      body: JSON.stringify({ from, to: [email], subject: "PhoneYa2 order " + orderNumber + " — delivery update", html })
+    });
+    const result = await response.json().catch(() => ({}));
+    return response.ok
+      ? { ok: true, providerMessageId: result.id || "" }
+      : { ok: false, error: "Resend returned HTTP " + response.status + ": " + String(result.message || result.name || "").slice(0, 240) };
+  } catch (error) {
+    return { ok: false, error: String(error).slice(0, 240) };
+  }
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   if (!sameOrigin(request)) return json({ error: "Cross-origin request blocked." }, 403);
@@ -471,6 +504,14 @@ export async function onRequest(context) {
       if (!/^[0-9a-f-]{36}$/i.test(id) || !ALLOWED_STATUSES.has(status)) {
         return json({ error: "Invalid order or status." }, 400);
       }
+      const currentResponse = await supabaseFetch(env,
+        "/rest/v1/orders?id=eq." + encodeURIComponent(id) + "&select=id,status,order_number,customer_name,customer_email",
+        { method: "GET", headers: { accept: "application/json" } }
+      );
+      if (!currentResponse.ok) throw new Error("Could not verify the current order status: " + currentResponse.status);
+      const currentRows = await currentResponse.json();
+      if (!currentRows.length) return json({ error: "Order not found." }, 404);
+      const currentOrder = currentRows[0];
       const response = await supabaseFetch(env,
         "/rest/v1/orders?id=eq." + encodeURIComponent(id),
         { method: "PATCH", headers: { prefer: "return=representation" },
@@ -479,7 +520,21 @@ export async function onRequest(context) {
       if (!response.ok) throw new Error("Order status update failed: " + response.status);
       const updated = await response.json();
       if (!updated.length) return json({ error: "Order not found." }, 404);
-      return json({ success: true, order: updated[0] });
+      let deliveryEmailSent = false;
+      if (status === "delivered" && currentOrder.status !== "delivered") {
+        const deliveryEmail = await sendDeliveredOrderEmail(env, updated[0]);
+        deliveryEmailSent = deliveryEmail.ok;
+        await logEmailActivity(env, {
+          eventType: "delivery_update", source: "automatic", triggerSource: "order_marked_delivered",
+          recipientEmail: updated[0].customer_email || "", recipientName: updated[0].customer_name || "",
+          subject: "PhoneYa2 order " + (updated[0].order_number || "") + " — delivery update",
+          status: deliveryEmail.ok ? "sent" : "failed",
+          providerMessageId: deliveryEmail.providerMessageId || "", error: deliveryEmail.error || "",
+          orderNumber: updated[0].order_number || "", metadata: { orderStatus: "delivered" }
+        });
+        if (!deliveryEmail.ok) console.error("PhoneYa2 delivery email failed for", updated[0].order_number, deliveryEmail.error);
+      }
+      return json({ success: true, order: updated[0], delivery_email_sent: deliveryEmailSent });
     } catch (error) {
       console.error("PhoneYa2 admin order action failed:", String(error));
       return json({ error: "Could not complete the request. Please try again." }, 503);
