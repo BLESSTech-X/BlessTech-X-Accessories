@@ -1159,6 +1159,27 @@ body::before{
   }
   @media(prefers-reduced-motion:reduce){.py2-page-logo-ambient,.phoneya2-home-intro::before,.heading::before,.hero::before,#product-detail::before{animation:none!important;will-change:auto}.py2-quick-tabs a{transition:none}}
 </style>
+<style id="phoneya2-header-animation-fix-v4">
+/* Keep the brand header visible and pin its compact navigation directly underneath. */
+:root{--py2-header-height:72px;--py2-logo-url:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");}
+body>.top-header,body>header,body>header.top{position:sticky!important;top:0!important;z-index:1300!important;}
+.py2-quick-tabs{position:sticky!important;top:var(--py2-header-height,72px)!important;z-index:1290!important;margin-top:0!important;margin-bottom:12px!important;border-top:1px solid rgba(21,148,71,.16)!important;border-radius:0 0 13px 13px!important;}
+/* Set the correct sticky offset from the actual header height on each layout. */
+.brand-phone-two{display:inline-block!important;font-size:1.32em!important;line-height:.9!important;vertical-align:-.035em!important;font-weight:950!important;}
+.logo-brand-sub,.logo-text .sub,.brand-subtitle,.py2-checkout-subtitle{display:block!important;color:#1677e8!important;font-size:14px!important;line-height:1.15!important;font-weight:800!important;letter-spacing:1.1px!important;margin-top:3px!important;opacity:1!important;}
+/* Make the logo recognizable: almost no blur, more opacity and a little more size. */
+.py2-page-logo-ambient{width:clamp(205px,32vw,330px)!important;height:clamp(205px,32vw,330px)!important;filter:blur(.35px) grayscale(.08)!important;opacity:.24!important;mix-blend-mode:multiply!important;}
+.phoneya2-home-intro::before{filter:blur(.35px) grayscale(.08) saturate(.95)!important;opacity:.25!important;background-size:contain!important;}
+.heading::before,.hero::before,#product-detail::before{filter:blur(.35px) grayscale(.08)!important;opacity:.22!important;}
+@media(max-width:600px){
+ :root{--py2-header-height:62px;}
+ .logo-brand-sub,.logo-text .sub,.brand-subtitle,.py2-checkout-subtitle{font-size:13px!important;letter-spacing:.9px!important;margin-top:2px!important;}
+ .py2-page-logo-ambient{width:205px!important;height:205px!important;opacity:.23!important;}
+ .phoneya2-home-intro::before{width:205px!important;height:205px!important;opacity:.25!important;}
+ .py2-quick-tabs{margin-bottom:9px!important;}
+}
+@media(prefers-reduced-motion:reduce){.py2-page-logo-ambient,.phoneya2-home-intro::before,.heading::before,.hero::before,#product-detail::before{animation:none!important;}}
+</style>
 </head>
 <body>
 
@@ -2952,5 +2973,8 @@ s0.parentNode.insertBefore(s1,s0);
 <!--End of Tawk.to Script-->
 
 <script src="/cart.js" defer></script>
+<script id="phoneya2-sticky-header-height-v4">
+(()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
+</script>
 </body>
 </html>
