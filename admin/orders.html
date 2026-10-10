@@ -25,7 +25,7 @@
   </section>
   <section id="dashboard" class="hidden">
     <div class="panel">
-      <div class="toolbar"><div><h1>Orders</h1><p class="muted">Customer information is shown only after administrator authentication.</p></div><div><button class="btn" id="refresh">Refresh orders</button> <button class="btn" id="export-csv" style="background:#45475a">Export CSV</button> <button class="btn" id="test-ntfy" style="background:#286749">Test ntfy</button> <button class="btn" id="logout" style="background:#45475a">Sign out</button></div></div>
+      <div class="toolbar"><div><h1>Orders</h1><p class="muted">Customer information is shown only after administrator authentication.</p></div><div><button class="btn" id="refresh">Refresh orders</button> <button class="btn" id="export-csv" style="background:#45475a">Export CSV</button> <button class="btn" id="test-ntfy" style="background:#286749">Test notifications</button> <button class="btn" id="logout" style="background:#45475a">Sign out</button></div></div>
       <div class="stats" aria-label="Order overview">
         <div class="stat"><span>Total orders</span><strong id="stat-total">0</strong></div>
         <div class="stat"><span>Pending</span><strong id="stat-pending">0</strong></div>
@@ -117,7 +117,7 @@ $("refresh").addEventListener("click",loadOrders);
 $("order-search").addEventListener("input",applyFilters);
 $("status-filter").addEventListener("change",applyFilters);
 $("export-csv").addEventListener("click",exportCsv);
-$("test-ntfy").addEventListener("click",async()=>{const button=$("test-ntfy");button.disabled=true;showMessage("message","Sending test notification…","");try{const result=await api("/api/orders?admin=1",{method:"POST",body:JSON.stringify({action:"test-ntfy"})});showMessage("message",result.message||"Test notification sent. Check ntfy on your phone.","success");}catch(e){showMessage("message",e.message,"error");}finally{button.disabled=false;}});
+$("test-ntfy").addEventListener("click",async()=>{const button=$("test-ntfy");button.disabled=true;showMessage("message","Sending test notification…","");try{const result=await api("/api/orders?admin=1",{method:"POST",body:JSON.stringify({action:"test-ntfy"})});showMessage("message",result.message||"Test notifications sent. Check Telegram and email.","success");}catch(e){showMessage("message",e.message,"error");}finally{button.disabled=false;}});
 $("logout").addEventListener("click",async()=>{if(client)await client.auth.signOut();session=null;$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");});
 init().catch(e=>showMessage("login-message",e.message||"Could not initialize admin sign-in.","error"));
 })();
