@@ -2283,8 +2283,8 @@ window.addEventListener('appinstalled', () => {
   window._installPrompt = null;
 });
 
-document.getElementById('hamburger').addEventListener('click',()=>{
-  document.getElementById('mob-nav').classList.add('open');
+document.getElementById('hamburger')?.addEventListener('click',()=>{
+  document.getElementById('mob-nav')?.classList.add('open');
 });
 document.getElementById('mob-nav-close').addEventListener('click',()=>{
   document.getElementById('mob-nav').classList.remove('open');
