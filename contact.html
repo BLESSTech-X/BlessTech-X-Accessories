@@ -405,6 +405,67 @@ footer{background:var(--dark);padding:64px 24px 0;}
   }
 </style>
 
+<style id="phoneya2-brand-header-polish">
+  /* PhoneYa2 brand/header polish */
+  .logo-brand-name { letter-spacing: -.35px; }
+  .logo-brand-name span,
+  .brand-zm { color: #ff6500 !important; }
+  .top-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1200 !important;
+    background: rgba(255,255,255,.96) !important;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 5px 22px rgba(12,18,28,.10) !important;
+    border-bottom: 1px solid rgba(255,101,0,.18) !important;
+  }
+  body { padding-top: 68px; }
+  .header-cart-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    gap: 7px;
+    border-radius: 10px;
+    min-height: 38px;
+  }
+  .header-cart-cta .cart-word { display: inline !important; }
+  .header-cart-cta .cart-emoji { line-height: 1; }
+  /* Soft-focus, low-distraction animated brand mark behind page content. */
+  body::before {
+    filter: grayscale(1) saturate(0) blur(.7px) !important;
+    background-position: center 52%;
+    animation: phoneya2LogoFocus 22s ease-in-out infinite !important;
+    will-change: opacity, filter, transform;
+  }
+  @keyframes phoneya2LogoFocus {
+    0%, 100% { opacity: .028; filter: grayscale(1) saturate(0) blur(1.4px); transform: translate3d(0,0,0); }
+    50% { opacity: .052; filter: grayscale(1) saturate(0) blur(.35px); transform: translate3d(0,-5px,0); }
+  }
+  @media (max-width: 480px) {
+    body { padding-top: 60px; }
+    .top-header { min-height: 60px; }
+    .top-header-inner { min-height: 60px; height: auto; }
+    .top-header-inner > .logo-wrap { max-width: 43%; }
+    .top-header-inner > .logo-wrap .logo-brand-name { font-size: 12px; }
+    .header-cart-cta {
+      padding: 7px 8px !important;
+      gap: 4px !important;
+      font-size: 10px !important;
+      min-height: 34px;
+    }
+    .header-cart-cta .cart-word { display: inline !important; }
+    .header-cart-cta .cart-emoji { font-size: 14px !important; }
+    .header-cart-cta .cart-count { flex-shrink: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body::before { animation: none !important; will-change: auto; }
+  }
+</style>
 </head>
 <body>
 
@@ -413,7 +474,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
   <div class="header-inner">
     <a href="index.html" class="logo">
       <div class="logo-icon">📱</div>
-      <div class="logo-text"><div class="brand">PhoneYa2</div><div class="sub">Accessories</div></div>
+      <div class="logo-text"><div class="brand">PhoneYa2<span class="brand-zm">ZM</span></div><div class="sub">Accessories</div></div>
     </a>
     <nav>
       <a href="index.html">Home</a>
