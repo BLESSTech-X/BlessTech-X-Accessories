@@ -249,12 +249,25 @@ export async function onRequest(context) {
       catch (error) { console.error("PhoneYa2 customer invitation failed:", String(error)); }
       let notificationSent = false;
       if (env.NTFY_TOPIC) {
+        let ntfyReason = "ntfy request did not complete.";
         try {
           const ntfyResult = await sendOrderNtfy(env, order, { name, email, phone, note }, items);
           notificationSent = ntfyResult.ok;
-          if (!notificationSent) console.error("Order saved but ntfy notification was not sent for", order.order_number, ntfyResult.reason);
+          ntfyReason = ntfyResult.reason || ntfyReason;
         } catch (error) {
-          console.error("PhoneYa2 ntfy notification failed:", String(error));
+          ntfyReason = String(error).slice(0, 160);
+        }
+        if (!notificationSent) {
+          console.error("PhoneYa2 ntfy notification failed for", order.order_number, ntfyReason);
+          // Cloudflare-to-ntfy can fail at the network edge (including HTTP 522).
+          // Fall back to email so a saved order can still alert the store owner.
+          try {
+            notificationSent = await sendOrderEmail(env, order, { name, email, phone, address, note }, items);
+            if (notificationSent) console.log("PhoneYa2 notification delivered by email fallback for", order.order_number);
+            else console.error("PhoneYa2 email fallback also failed for", order.order_number);
+          } catch (error) {
+            console.error("PhoneYa2 email fallback failed:", String(error));
+          }
         }
       } else {
         try { notificationSent = await sendOrderEmail(env, order, { name, email, phone, address, note }, items); }
@@ -281,8 +294,23 @@ export async function onRequest(context) {
     try {
       if (request.method === "POST") {
         const result = await sendOrderNtfy(env, { order_number: "TEST", total_amount: 0 });
-        if (!result.ok) return json({ error: "ntfy test failed: " + result.reason }, 502);
-        return json({ success: true, message: "Test notification sent to ntfy." });
+        if (result.ok) return json({ success: true, message: "Test notification sent to ntfy." });
+        const ntfyError = result.reason || "Unknown ntfy error.";
+        let emailSent = false;
+        try {
+          emailSent = await sendOrderEmail(
+            env,
+            { order_number: "TEST", total_amount: 0 },
+            { name: "PhoneYa2 notification test", email: "", phone: "", address: "Admin test only", note: "ntfy failed: " + ntfyError },
+            []
+          );
+        } catch (error) {
+          console.error("PhoneYa2 notification test email failed:", String(error));
+        }
+        if (emailSent) {
+          return json({ success: true, message: "ntfy is unreachable (" + ntfyError + "). A fallback test email was sent to ORDER_NOTIFY_EMAIL." });
+        }
+        return json({ error: "ntfy failed: " + ntfyError + " Email fallback also failed. Check RESEND_API_KEY, RESEND_FROM, and ORDER_NOTIFY_EMAIL in Cloudflare Pages settings." }, 502);
       }
       if (request.method === "GET") {
         const response = await supabaseFetch(env,
