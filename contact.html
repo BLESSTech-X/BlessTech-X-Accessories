@@ -285,6 +285,131 @@ footer{background:var(--dark);padding:64px 24px 0;}
   
 </style>
 
+
+<!-- PhoneYa2 responsive layout hardening: preserves the existing visual design. -->
+<style id="phoneya2-responsive-hardening">
+  *, *::before, *::after { box-sizing: border-box; }
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  img, video, canvas, svg { max-width: 100%; }
+  img { height: auto; }
+  input, select, textarea, button { max-width: 100%; }
+  main, section, article, aside, header, footer, nav,
+  .top-header-inner, .header-inner, .main-wrap, .footer-grid,
+  .cat-nav, .cat-nav-inner, .product-detail, .product-layout,
+  .contact-layout, .story-inner, .values-grid, .stats-grid,
+  .auth-grid, .layout, .items, .summary {
+    min-width: 0;
+  }
+  .footer-grid > *, .product-layout > *, .contact-layout > *,
+  .story-inner > *, .values-grid > *, .stats-grid > *,
+  .auth-grid > *, .layout > *, .main-wrap > * {
+    min-width: 0;
+  }
+  .footer-grid img, .footer-logo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Keep category scrolling inside its own strip, not the page. */
+  .cat-nav {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .cat-nav-inner {
+    width: 100%;
+    max-width: 1280px;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cat-nav-item { flex-shrink: 0; }
+
+  /* Stable shared header sizing; keep the cart icon/count usable on phones. */
+  .top-header-inner {
+    width: 100%;
+    max-width: 1280px;
+    box-sizing: border-box;
+  }
+  .top-header-inner > .logo-wrap,
+  .top-header-inner > .header-search,
+  .top-header-inner > .header-cart-cta,
+  .top-header-inner > .hamburger {
+    min-width: 0;
+  }
+  .top-header-inner > .header-search { flex-shrink: 1; }
+  .header-cart-cta { max-width: 100%; }
+  .header-cart-cta .cart-count { flex-shrink: 0; }
+
+  /* Subtle, softened brand watermark. It stays fixed and cannot widen layout. */
+  body { isolation: isolate; }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
+    background-repeat: no-repeat;
+    background-position: center 52%;
+    background-size: min(88vw, 420px) auto;
+    opacity: .035;
+    filter: grayscale(1) saturate(0) blur(.45px);
+    transform: translate3d(0, 0, 0);
+    animation: phoneya2WatermarkDrift 24s ease-in-out infinite;
+  }
+  @keyframes phoneya2WatermarkDrift {
+    0%, 100% { opacity: .03; transform: translate3d(0, 0, 0); }
+    50% { opacity: .045; transform: translate3d(0, -5px, 0); }
+  }
+  @media (max-width: 900px) {
+    .footer-grid > *, .product-layout > *, .contact-layout > *,
+    .story-inner > *, .values-grid > *, .stats-grid > *,
+    .auth-grid > *, .layout > * { min-width: 0; }
+    .top-header-inner { max-width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .top-header-inner { max-width: 100%; }
+    .top-header-inner > .header-cart-cta {
+      flex: 0 0 auto;
+      min-width: 0;
+      margin-right: 0;
+    }
+    .top-header-inner > .header-cart-cta .cart-word {
+      display: none !important;
+    }
+    .header-cart-cta { padding: 8px 9px; gap: 5px; }
+    .cat-nav-inner { padding-left: 10px; padding-right: 10px; }
+    .footer-grid { grid-template-columns: minmax(0, 1fr); }
+    .main-wrap, main, .product-detail, .breadcrumb {
+      max-width: 100%;
+    }
+    body::before {
+      background-size: min(82vw, 340px) auto;
+      background-position: center 48%;
+      opacity: .03;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body::before { animation: none; transform: none; }
+  }
+</style>
+
 </head>
 <body>
 
