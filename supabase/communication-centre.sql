@@ -88,3 +88,32 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION public.phoneya2_email_stats() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.phoneya2_email_stats() TO service_role;
+
+
+-- Phase 2: explicit opt-in confirmation and resumable manual campaigns.
+ALTER TABLE public.customer_subscribers
+  ADD COLUMN IF NOT EXISTS confirmation_token UUID,
+  ADD COLUMN IF NOT EXISTS confirmation_sent_at TIMESTAMPTZ;
+CREATE UNIQUE INDEX IF NOT EXISTS customer_subscribers_confirmation_token_idx
+  ON public.customer_subscribers (confirmation_token)
+  WHERE confirmation_token IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS public.email_campaigns (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_by TEXT NOT NULL DEFAULT '',
+  name TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body_text TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','sending','sent','failed')),
+  audience TEXT NOT NULL DEFAULT 'subscribed' CHECK (audience IN ('subscribed')),
+  total_recipients INTEGER NOT NULL DEFAULT 0,
+  sent_count INTEGER NOT NULL DEFAULT 0,
+  failed_count INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT NOT NULL DEFAULT '',
+  completed_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS email_campaigns_created_at_idx ON public.email_campaigns (created_at DESC);
+ALTER TABLE public.email_campaigns ENABLE ROW LEVEL SECURITY;
+-- No browser access; the server uses the service-role key after administrator authentication.
