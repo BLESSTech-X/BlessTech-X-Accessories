@@ -117,3 +117,22 @@ CREATE TABLE IF NOT EXISTS public.email_campaigns (
 CREATE INDEX IF NOT EXISTS email_campaigns_created_at_idx ON public.email_campaigns (created_at DESC);
 ALTER TABLE public.email_campaigns ENABLE ROW LEVEL SECURITY;
 -- No browser access; the server uses the service-role key after administrator authentication.
+
+
+-- Phase 3: product-publish announcement queue. The automation remains disabled by default.
+CREATE TABLE IF NOT EXISTS public.product_announcement_jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_slug TEXT NOT NULL UNIQUE,
+  product_title TEXT NOT NULL,
+  product_price NUMERIC(12,2) NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','sending','sent','disabled','failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  total_recipients INTEGER NOT NULL DEFAULT 0,
+  sent_count INTEGER NOT NULL DEFAULT 0,
+  failed_count INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT NOT NULL DEFAULT '',
+  completed_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS product_announcement_jobs_status_idx ON public.product_announcement_jobs (status, created_at DESC);
+ALTER TABLE public.product_announcement_jobs ENABLE ROW LEVEL SECURITY;
