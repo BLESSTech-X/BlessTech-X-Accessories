@@ -1897,43 +1897,58 @@ function parseFrontmatter(text, slug) {
 
 async function fetchAllProducts() {
   const indexController = new AbortController();
-  const indexTimer = setTimeout(() => indexController.abort(), 10000);
+  const indexTimer = setTimeout(() => indexController.abort(), 12000);
   let slugs;
   try {
-    const res = await fetch('/content/products/index.json?t='+Date.now(), {
+    const res = await fetch('/content/products/index.json?t=' + Date.now(), {
       cache: 'no-store',
       signal: indexController.signal
     });
-    if (!res.ok) throw new Error('index.json '+res.status);
+    if (!res.ok) throw new Error('Product index request failed (' + res.status + ')');
     slugs = await res.json();
   } finally {
     clearTimeout(indexTimer);
   }
 
-  if (!Array.isArray(slugs)||!slugs.length) throw new Error('index.json empty');
+  if (!Array.isArray(slugs) || !slugs.length) {
+    throw new Error('Product index is empty or invalid');
+  }
 
-  // Fetch product files independently so one slow or unusual filename cannot
-  // hold the entire homepage hostage. Encode slugs to support emoji/special chars.
-  const results = await Promise.allSettled(slugs.map(async s => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10000);
-    try {
-      const res = await fetch('/content/products/'+encodeURIComponent(s)+'.md', {
-        cache: 'no-store',
-        signal: controller.signal
-      });
-      if (!res.ok) return null;
-      const text = await res.text();
-      return text ? parseFrontmatter(text, s) : null;
-    } finally {
-      clearTimeout(timer);
+  // Do not launch dozens of Markdown requests at once. A small worker pool
+  // is more reliable on mobile connections and still allows partial results.
+  const products = [];
+  let next = 0;
+  const workerCount = Math.min(8, slugs.length);
+
+  async function worker() {
+    while (next < slugs.length) {
+      const slug = slugs[next++];
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch('/content/products/' + encodeURIComponent(slug) + '.md', {
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        if (!res.ok) {
+          console.warn('[PhoneYa2] Product file unavailable:', slug, res.status);
+          continue;
+        }
+        const text = await res.text();
+        if (!text) continue;
+        const product = parseFrontmatter(text, slug);
+        if (product) products.push(product);
+        else console.warn('[PhoneYa2] Product frontmatter could not be parsed:', slug);
+      } catch (err) {
+        console.warn('[PhoneYa2] Product request failed:', slug, err);
+      } finally {
+        clearTimeout(timer);
+      }
     }
-  }));
+  }
 
-  const products = results
-    .filter(r => r.status === 'fulfilled' && r.value)
-    .map(r => r.value);
-  if (!products.length) throw new Error('No products parsed');
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  if (!products.length) throw new Error('No product files could be loaded; check /content/products/ and deployment output');
   return products;
 }
 
