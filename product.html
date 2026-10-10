@@ -1680,6 +1680,11 @@ async function loadProductPage() {
   product_price: product.price || 0,
   product_category: product.category || 'Unknown'
 });
+  gtag('event', 'view_item', {
+    currency: 'ZMW',
+    value: Number(product.price) || 0,
+    items: [{item_id: product.slug || slug, item_name: product.title || product.name || slug, item_category: product.category || 'Other', price: Number(product.price) || 0, quantity: 1}]
+  });
   try {
     const allProds = await fetchAllProducts();
     renderRelated(allProds, slug, product.category);
@@ -1687,6 +1692,16 @@ async function loadProductPage() {
   setTimeout(showSalesNotif, 10000);
 }
 
+document.addEventListener('click', function(event) {
+  const button = event.target && event.target.closest ? event.target.closest('.py2-add-cart') : null;
+  if (!button || !currentProd || typeof window.gtag !== 'function') return;
+  const quantity = Math.max(1, Number(qty) || 1);
+  window.gtag('event', 'add_to_cart', {
+    currency: 'ZMW',
+    value: (Number(currentProd.price) || 0) * quantity,
+    items: [{item_id: currentProd.slug, item_name: currentProd.title, item_category: currentProd.category || 'Other', price: Number(currentProd.price) || 0, quantity}]
+  });
+});
 loadProductPage();
 </script>
 
