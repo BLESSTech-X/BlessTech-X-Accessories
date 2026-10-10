@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101322">
+<meta name="robots" content="noindex,nofollow">
+<title>Command Centre — PhoneYa2</title>
+<script src="/ads-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--ink:#151827;--navy:#101322;--orange:#ff6500;--blue:#3478f6;--green:#159c68;--red:#d84a4a;--muted:#747b8e;--line:#e7eaf1;--bg:#f5f7fb;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}a{color:inherit;text-decoration:none}.hidden{display:none!important}
+.topbar{background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px clamp(16px,4vw,42px);position:sticky;top:0;z-index:10;box-shadow:0 4px 20px #11132218}.brand{font-size:18px;font-weight:850;letter-spacing:-.4px}.brand span{color:var(--orange)}.top-right{display:flex;align-items:center;gap:12px;color:#c7ccdb;font-size:12px}.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#33d69f;margin-right:6px;box-shadow:0 0 0 4px #33d69f20}
+.wrap{max-width:1420px;margin:auto;padding:28px clamp(14px,3vw,36px) 50px}.intro{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:22px}.eyebrow{text-transform:uppercase;letter-spacing:1.8px;color:var(--orange);font-size:10px;font-weight:900}.intro h1{font-size:clamp(26px,3vw,38px);letter-spacing:-1.1px;margin:4px 0}.intro p{color:var(--muted);margin:0}.intro-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:white;color:var(--ink);border-radius:9px;padding:10px 14px;font-weight:750;cursor:pointer;min-height:40px}.btn.primary{background:var(--orange);border-color:var(--orange);color:white}.btn.dark{background:#252a3b;color:white;border-color:#252a3b}.btn:disabled{opacity:.55;cursor:wait}
+.panel{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 24px #1c254008}.login-panel{max-width:450px;margin:6vh auto;padding:28px}.login-panel h1{font-size:26px;margin:0 0 7px}.muted{color:var(--muted)}.field{margin:18px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px}.field input{width:100%;padding:12px;border:1px solid #d9deea;border-radius:9px;background:white;outline:none}.field input:focus{border-color:var(--orange);box-shadow:0 0 0 3px #ff650019}.message{padding:10px 12px;border-radius:9px;margin:12px 0}.error{background:#fff0f0;color:#9d2525}.success{background:#eaf9f1;color:#116a45}.note{font-size:12px;color:var(--muted);margin-top:16px}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:17px}.stat{padding:17px;min-width:0}.stat-top{display:flex;justify-content:space-between;gap:10px;align-items:center;color:var(--muted);font-size:12px;font-weight:750}.icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#fff0e6;color:var(--orange);font-size:17px}.stat strong{display:block;font-size:clamp(20px,2.3vw,29px);letter-spacing:-.8px;margin:12px 0 2px;overflow-wrap:anywhere}.stat small{font-size:11px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:16px;margin-bottom:17px}.section{padding:20px;min-width:0}.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.section-head h2{font-size:16px;margin:0 0 3px}.section-head p{font-size:12px;color:var(--muted);margin:0}.chart-wrap{height:240px;position:relative}.chart-wrap canvas{width:100%;height:100%;display:block}.chart-legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:5px}
+.status-bars{display:grid;gap:12px}.status-row{display:grid;grid-template-columns:95px 1fr 32px;align-items:center;gap:9px;font-size:12px}.status-track{height:9px;background:#eef0f5;border-radius:99px;overflow:hidden}.status-fill{height:100%;border-radius:99px;background:var(--orange);min-width:0}.status-count{text-align:right;font-weight:850}
+.health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.health-item{border:1px solid var(--line);border-radius:11px;padding:13px;display:flex;align-items:flex-start;gap:10px}.health-symbol{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:#eaf9f1;color:var(--green);flex:0 0 auto;font-weight:900}.health-symbol.warn{background:#fff5e6;color:#b87500}.health-item strong{display:block;font-size:12px}.health-item small{display:block;color:var(--muted);font-size:11px;margin-top:3px;overflow-wrap:anywhere}
+.modules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-top:17px}.module{padding:18px;display:flex;flex-direction:column;min-height:175px;transition:transform .18s,border-color .18s}.module:hover{transform:translateY(-2px);border-color:#ffb98c}.module-icon{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:#fff0e6;color:var(--orange);font-size:19px;margin-bottom:14px}.module h3{font-size:15px;margin:0 0 5px}.module p{font-size:12px;color:var(--muted);margin:0 0 16px;flex:1}.module .module-link{color:var(--orange);font-size:12px;font-weight:850}
+.footer-note{text-align:center;color:#9096a6;font-size:11px;padding:24px 0 0}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.health-grid,.modules{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media(max-width:580px){.topbar{padding:14px}.top-right .live-text{display:none}.wrap{padding-top:20px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:13px}.stat strong{font-size:23px}.health-grid,.modules{grid-template-columns:1fr 1fr}.section{padding:15px}.chart-wrap{height:205px}.status-row{grid-template-columns:78px 1fr 24px;gap:7px}.intro-actions{width:100%}.intro-actions .btn{flex:1}.module{padding:14px;min-height:180px}}
+@media(max-width:360px){.health-grid,.modules{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">PhoneYa<span>2</span> <span style="color:#fff;font-weight:600">/ Command Centre</span></a><div class="top-right"><span><i class="live-dot"></i><span class="live-text">ADMIN WORKSPACE</span></span><span id="clock">Checking…</span></div></header>
+<main class="wrap">
+<section id="login" class="panel login-panel">
+  <div class="eyebrow">Restricted access</div><h1>Welcome back.</h1><p class="muted">Sign in to open the PhoneYa2 control room.</p>
+  <div id="login-message" role="status" aria-live="polite"></div>
+  <form id="login-form">
+    <div class="field"><label for="email">Administrator email</label><input id="email" type="email" autocomplete="username" required value="singbless89@gmail.com"></div>
+    <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Enter your admin password"></div>
+    <button class="btn primary" id="login-button" type="submit" style="width:100%">Unlock Command Centre →</button>
+  </form>
+  <p class="note">Secure sign-in uses PhoneYa2’s Supabase authentication. Your password is not stored in this page.</p>
+</section>
+<section id="dashboard" class="hidden">
+  <div class="intro"><div><div class="eyebrow">Business overview · live data</div><h1>Command Centre</h1><p>Your central view of PhoneYa2 orders, catalogue, systems and operations.</p></div><div class="intro-actions"><button class="btn" id="refresh">↻ Refresh data</button><button class="btn dark" id="logout">Sign out</button></div></div>
+  <div id="global-message" role="status" aria-live="polite"></div>
+  <div class="stats">
+    <article class="panel stat"><div class="stat-top"><span>Total orders</span><span class="icon">▤</span></div><strong id="stat-orders">—</strong><small id="orders-sub">Orders recorded</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Sales value</span><span class="icon">ZK</span></div><strong id="stat-sales">—</strong><small>Excludes cancelled orders</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Pending orders</span><span class="icon">◷</span></div><strong id="stat-pending">—</strong><small>Need follow-up</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Delivered</span><span class="icon">✓</span></div><strong id="stat-delivered">—</strong><small>Marked delivered</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Catalogue items</span><span class="icon">▦</span></div><strong id="stat-products">—</strong><small id="products-sub">Product index</small></article>
+  </div>
+  <div class="grid2">
+    <section class="panel section"><div class="section-head"><div><h2>Order activity</h2><p>Orders created across the last 7 days</p></div><span class="muted" id="range-label" style="font-size:11px"></span></div><div class="chart-wrap"><canvas id="orders-chart" aria-label="Order activity chart"></canvas></div><div class="chart-legend"><span><i class="legend-dot" style="background:#ff6500"></i>Orders</span><span><i class="legend-dot" style="background:#3478f6"></i>Sales value (ZMW)</span></div></section>
+    <section class="panel section"><div class="section-head"><div><h2>Order pipeline</h2><p>Current status of recorded orders</p></div></div><div class="status-bars" id="status-bars"><p class="muted">Loading order status…</p></div><div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;gap:10px"><span class="muted">Average order value</span><strong id="stat-aov">—</strong></div></section>
+  </div>
+  <section class="panel section"><div class="section-head"><div><h2>System health</h2><p>Basic availability checks for the storefront and connected services.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
+  <div class="section-head" style="margin:24px 0 12px"><div><h2 style="font-size:19px;margin:0">Operations & dashboards</h2><p class="muted" style="font-size:12px;margin:4px 0 0">Jump directly to each PhoneYa2 management area.</p></div></div>
+  <div class="modules">
+    <a class="panel module" href="/admin/orders.html"><span class="module-icon">▤</span><h3>Orders & Fulfilment</h3><p>Review customer orders, update status, export records and test order notifications.</p><span class="module-link">Open order dashboard ↗</span></a>
+    <a class="panel module" href="/admin/"><span class="module-icon">▦</span><h3>Product CMS</h3><p>Manage product catalogue content and product details through the CMS.</p><span class="module-link">Open product manager ↗</span></a>
+    <a class="panel module" href="/ads-admin/"><span class="module-icon">◉</span><h3>Advertising</h3><p>Review advertising activity, advertiser accounts and promotional placements.</p><span class="module-link">Open ads admin ↗</span></a>
+    <a class="panel module" href="/agents/admin.html"><span class="module-icon">♙</span><h3>Agent Network</h3><p>Manage the PhoneYa2 agent network, applications, leads and sales records.</p><span class="module-link">Open agent admin ↗</span></a>
+  </div>
+  <div class="footer-note">PhoneYa2 Command Centre · Private administration area · <span id="last-updated">Data not refreshed yet</span></div>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const ADMIN_EMAIL='singbless89@gmail.com';
+let client=null,session=null,orders=[];
+const statusNames=['pending','confirmed','processing','shipped','delivered','cancelled'];
+const money=n=>'ZMW '+Number(n||0).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
+function message(target,text,type){const el=$(target);el.textContent=text||'';el.className=text?'message '+(type||''):'';}
+async function api(path,options={}){if(!session?.access_token)throw new Error('Please sign in again.');const res=await fetch(path,{...options,headers:{...(options.headers||{}),authorization:'Bearer '+session.access_token,'content-type':'application/json'}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Request failed ('+res.status+').');return data;}
+function safeDate(s){const d=new Date(s);return Number.isNaN(d.getTime())?null:d;}
+function renderStats(){
+ const total=orders.length,pending=orders.filter(o=>o.status==='pending').length,delivered=orders.filter(o=>o.status==='delivered').length;
+ const valid=orders.filter(o=>o.status!=='cancelled'),sales=valid.reduce((s,o)=>s+Number(o.total_amount||0),0);
+ $('stat-orders').textContent=total.toLocaleString();$('orders-sub').textContent=orders.filter(o=>{const d=safeDate(o.created_at);return d&&Date.now()-d.getTime()<30*86400000;}).length+' in the last 30 days';
+ $('stat-sales').textContent=money(sales);$('stat-pending').textContent=pending.toLocaleString();$('stat-delivered').textContent=delivered.toLocaleString();$('stat-aov').textContent=money(valid.length?sales/valid.length:0);
+ renderStatuses();drawChart();
+}
+function renderStatuses(){
+ const host=$('status-bars');host.replaceChildren();const max=Math.max(1,...statusNames.map(s=>orders.filter(o=>o.status===s).length));
+ statusNames.forEach((status,i)=>{const count=orders.filter(o=>o.status===status).length,row=document.createElement('div');row.className='status-row';const name=document.createElement('span');name.textContent=status[0].toUpperCase()+status.slice(1);const track=document.createElement('div');track.className='status-track';const fill=document.createElement('div');fill.className='status-fill';fill.style.width=(count/max*100)+'%';if(status==='delivered')fill.style.background='#159c68';if(status==='cancelled')fill.style.background='#d84a4a';if(status==='processing'||status==='shipped')fill.style.background='#3478f6';track.append(fill);const n=document.createElement('strong');n.className='status-count';n.textContent=count;row.append(name,track,n);host.append(row);});
+}
+function drawChart(){
+ const canvas=$('orders-chart'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;if(!rect.width||!rect.height)return;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+ const w=rect.width,h=rect.height,pad={l:34,r:12,t:18,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;ctx.clearRect(0,0,w,h);
+ const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push(d);}
+ const counts=days.map(d=>orders.filter(o=>{const od=safeDate(o.created_at);return od&&od.toDateString()===d.toDateString();}).length);
+ const vals=days.map(d=>orders.filter(o=>{const od=safeDate(o.created_at);return od&&od.toDateString()===d.toDateString()&&o.status!=='cancelled';}).reduce((s,o)=>s+Number(o.total_amount||0),0));
+ const maxC=Math.max(4,...counts),maxV=Math.max(100,...vals);
+ ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;ctx.strokeStyle='#edf0f5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#858b9b';ctx.fillText(String(Math.round(maxC*(1-i/4))),pad.l-8,y);}
+ const pts=counts.map((v,i)=>({x:pad.l+(cw/6)*i,y:pad.t+ch-(v/maxC)*ch}));ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ff6500';ctx.lineWidth=2.5;ctx.stroke();pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.3,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
+ const maxSales=Math.max(...vals,1);const salesPts=vals.map((v,i)=>({x:pad.l+(cw/6)*i,y:pad.t+ch-(v/maxSales)*ch*.76}));ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+ ctx.textAlign='center';ctx.textBaseline='top';days.forEach((d,i)=>{ctx.fillStyle='#858b9b';ctx.fillText(d.toLocaleDateString('en-GB',{weekday:'short'}),pad.l+(cw/6)*i,h-pad.b+10);});
+ $('range-label').textContent=days[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+}
+async function checkHealth(){
+ const host=$('health-grid');host.replaceChildren();
+ const items=[
+  ['Storefront','/','Main store page'],
+  ['Shop page','/shop.html','Product browsing'],
+  ['Product index','/content/products/index.json','Catalogue data'],
+  ['Orders API','/api/orders?admin=1','Authenticated order service']
+ ];
+ const results=await Promise.all(items.map(async item=>{try{const headers=item[0]==='Orders API'?{authorization:'Bearer '+session.access_token}:{};const r=await fetch(item[1],{method:'GET',headers,cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);if(item[0]==='Product index'){const data=await r.json();$('stat-products').textContent=Array.isArray(data)?data.length.toLocaleString():'—';$('products-sub').textContent='Slugs in product index';}return {...item,ok:true,detail:item[0]==='Orders API'?'Admin endpoint responding':item[0]==='Product index'?'Catalogue index responding':'Page responding (HTTP '+r.status+')'};}catch(e){return {...item,ok:false,detail:e.message||'Could not reach'};}}));
+ results.forEach(item=>{const el=document.createElement('div');el.className='health-item';const icon=document.createElement('span');icon.className='health-symbol'+(item.ok?'':' warn');icon.textContent=item.ok?'✓':'!';const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=item[0];detail.textContent=(item.ok?'Operational · ':'Needs attention · ')+item.detail;body.append(name,detail);el.append(icon,body);host.append(el);});
+}
+async function refreshData(){const button=$('refresh');button.disabled=true;message('global-message','Refreshing live business data…','');try{const data=await api('/api/orders?admin=1');orders=Array.isArray(data.orders)?data.orders:[];renderStats();await checkHealth();$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();message('global-message','Live data refreshed successfully.','success');}catch(e){message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{button.disabled=false;}}
+async function signOut(){if(client)await client.auth.signOut();session=null;orders=[];$('dashboard').classList.add('hidden');$('login').classList.remove('hidden');$('password').value='';}
+async function init(){const cfg=window.PY2_ADS_CONFIG;if(!cfg?.url||!cfg?.key||!window.supabase?.createClient){message('login-message','Sign-in service could not load. Refresh the page and try again.','error');return;}client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:false}});const {data}=await client.auth.getSession();if(data.session&&data.session.user?.email?.toLowerCase()===ADMIN_EMAIL){session=data.session;try{await api('/api/orders?admin=1');$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await refreshData();}catch{await client.auth.signOut();session=null;}}}
+$('login-form').addEventListener('submit',async e=>{e.preventDefault();const button=$('login-button');button.disabled=true;message('login-message','','');try{if(!client)throw new Error('Sign-in service is not ready. Refresh this page.');const email=$('email').value.trim().toLowerCase();if(email!==ADMIN_EMAIL)throw new Error('This email is not authorized for the PhoneYa2 Command Centre.');const {data,error}=await client.auth.signInWithPassword({email,password:$('password').value});if(error)throw error;if(data.user?.email?.toLowerCase()!==ADMIN_EMAIL){await client.auth.signOut();throw new Error('This account is not authorized.');}session=data.session;await api('/api/orders?admin=1');$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await refreshData();}catch(err){if(client)await client.auth.signOut();session=null;message('login-message',err.message||'Sign-in failed. Check your credentials.','error');}finally{button.disabled=false;}});
+$('refresh').addEventListener('click',refreshData);$('health-refresh').addEventListener('click',checkHealth);$('logout').addEventListener('click',signOut);window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))drawChart();});$('clock').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});init().catch(e=>message('login-message',e.message||'Could not initialize sign-in.','error'));
+})();
+</script>
+</body>
+</html>
