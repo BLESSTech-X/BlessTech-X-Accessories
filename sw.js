@@ -1,6 +1,6 @@
 // ─── PhoneYa2 Service Worker ─────────────────────────────────────────────────
 // Version: bump this number any time you want to force a cache refresh
-const VERSION   = 'phoneya2-v6';
+const VERSION   = 'phoneya2-v7';
 const CACHE     = VERSION;
 
 // Files that get cached on first install (the app shell)
