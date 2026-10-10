@@ -1194,6 +1194,30 @@ body>.py2-quick-tabs,body>nav.py2-quick-tabs{
 }
 body{padding-top:calc(var(--py2-header-height,72px) + var(--py2-tabs-height,44px) + 10px)!important;}
 </style>
+<style id="phoneya2-tab-width-and-blue-accessories-v6">
+/* The attached navigation strip must span exactly the viewport width like the header. */
+body>nav.py2-quick-tabs,body>.py2-quick-tabs{
+  position:fixed!important;left:0!important;right:0!important;
+  width:100%!important;max-width:none!important;min-width:100%!important;
+  box-sizing:border-box!important;margin:0!important;
+  border-left:0!important;border-right:0!important;
+  border-radius:0 0 12px 12px!important;
+  justify-content:center!important;
+}
+/* Strong selectors ensure the subtitle is blue on every version of the header. */
+body .logo-brand-sub,body .logo-text .sub,body .brand-subtitle,
+body .py2-checkout-subtitle,body .logo-text-block .logo-brand-sub{
+  color:#1677e8!important;font-size:14px!important;font-weight:800!important;
+  line-height:1.15!important;letter-spacing:1.1px!important;opacity:1!important;
+}
+@media(max-width:600px){
+ body .logo-brand-sub,body .logo-text .sub,body .brand-subtitle,
+ body .py2-checkout-subtitle,body .logo-text-block .logo-brand-sub{
+  color:#1677e8!important;font-size:13px!important;letter-spacing:.9px!important;
+ }
+ body>nav.py2-quick-tabs,body>.py2-quick-tabs{width:100%!important;max-width:none!important;min-width:100%!important;}
+}
+</style>
 </head>
 <body>
 
