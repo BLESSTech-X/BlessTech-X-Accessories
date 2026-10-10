@@ -742,6 +742,20 @@ body{padding-top:calc(var(--py2-header-height,72px) + var(--py2-tabs-height,44px
 @media(max-width:380px){body .logo-img,body .py2-site-logo,body .py2-checkout-logo{width:34px!important;height:34px!important;flex-basis:34px!important;}body .logo-brand-name,body .logo-text .brand,body .brand-wordmark,body .py2-checkout-wordmark{font-size:19px!important;}body>.top-header .header-search{min-width:42px!important;}body>.top-header .header-cart-cta .cart-word{display:none!important;}}
 @media(prefers-reduced-motion:reduce){body>nav.py2-quick-tabs a{transition:none!important;}}
 </style>
+<style id="phoneya2-header-consistency-override-v8">
+/* Avoid a second competing navigation row: the shared icon tab is the canonical nav. */
+body>.top-header .desk-nav{display:none!important;}
+body>header:not(.top) > nav:not(.py2-quick-tabs){display:none!important;}
+/* Shared brand alignment even where the page's original header used different markup. */
+body>header.top .brand{display:flex!important;align-items:center!important;}
+body>header.top .brand-subtitle,body>header.top .py2-checkout-subtitle{color:#1677e8!important;}
+body>header:not(.top) .header-inner>.logo{margin-right:auto!important;}
+body>.top-header .logo-wrap{margin-right:auto!important;}
+@media(max-width:760px){
+ body>.top-header .top-header-inner{justify-content:space-between!important;}
+ body>header.top .top-actions a,body>header.top>a:not(.brand){font-size:12px!important;}
+}
+</style>
 </head>
 <body>
 
