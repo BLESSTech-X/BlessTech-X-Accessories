@@ -578,7 +578,18 @@ async function loadOrders(session){
   if(order.customer_note){const note=document.createElement("div");note.className="order-note";const label=document.createElement("strong");label.textContent="Your order note";const text=document.createElement("div");text.textContent=order.customer_note;note.append(label,text);card.append(note);}
   const bottom=document.createElement("div");bottom.className="order-bottom";const total=document.createElement("div");total.innerHTML='<div class="small">Order total</div><div class="total"></div>';total.querySelector(".total").textContent=money(order.total_amount);
   const reorder=document.createElement("a");reorder.className="btn primary";reorder.textContent="Reorder items";reorder.href="/checkout.html?items="+encodeURIComponent(encodeCart((order.order_items||[]).map(i=>({slug:i.product_slug,quantity:Number(i.quantity)}))));
-  bottom.append(total,reorder);card.append(bottom);host.append(card);
+  bottom.append(total,reorder);
+  if(String(order.status||"").toLowerCase()==="delivered"){
+    const feedback=document.createElement("a");
+    feedback.className="btn secondary";
+    feedback.textContent="Share feedback";
+    feedback.href="https://wa.me/260979603741?text="+encodeURIComponent("Hi PhoneYa2, my order "+(order.order_number||"")+" has been delivered. I'd like to share honest feedback about my experience.");
+    feedback.target="_blank";
+    feedback.rel="noopener noreferrer";
+    feedback.setAttribute("aria-label","Share feedback about delivered order "+(order.order_number||""));
+    bottom.append(feedback);
+  }
+  card.append(bottom);host.append(card);
  });
 }
 async function showSession(session){$("auth-panel").classList.add("hidden");$("account-panel").classList.remove("hidden");try{await loadOrders(session);}catch(e){message(e.message,"error");}}
