@@ -15,7 +15,7 @@ const PRECACHE = [
   '/cart.js',
   '/account.html',
   '/manifest.json',
-  '/icon-512x512.png',
+  '/icon-512x512.jpg',
 ];
 
 // ─── INSTALL ──────────────────────────────────────────────────────────
