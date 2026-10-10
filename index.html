@@ -1047,6 +1047,74 @@ body::before{
   }
 </style>
 
+<style id="phoneya2-home-intro-v1">
+  .phoneya2-home-intro{
+    --intro-ink:#111827; --intro-green:#159447; --intro-orange:#ff6500;
+    position:relative; isolation:isolate; overflow:hidden;
+    display:flex !important; flex-direction:column !important; align-items:center !important;
+    justify-content:center !important; gap:15px !important;
+    padding:24px 18px 22px !important; margin:0 !important;
+    border-bottom:1px solid rgba(21,148,71,.14) !important;
+    background:linear-gradient(115deg,#ffffff 0%,#f8fcf9 55%,#fff8f2 100%) !important;
+    text-align:center;
+  }
+  .phoneya2-home-intro::before{
+    content:""; position:absolute; z-index:-2; pointer-events:none;
+    width:230px; height:230px; right:clamp(8px,8vw,130px); top:50%;
+    transform:translateY(-50%); border-radius:50%;
+    background-image:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
+    background-position:center; background-size:cover; background-repeat:no-repeat;
+    filter:blur(8px) grayscale(1); opacity:.13;
+    animation:phoneya2LogoDrift 10s ease-in-out infinite alternate;
+  }
+  .phoneya2-home-intro::after{
+    content:""; position:absolute; z-index:-1; pointer-events:none; inset:0;
+    background:radial-gradient(ellipse at 18% 20%,rgba(21,148,71,.07),transparent 40%),
+               radial-gradient(ellipse at 84% 85%,rgba(255,101,0,.08),transparent 42%);
+  }
+  .phoneya2-intro-copy,.pwa-action-buttons{position:relative;z-index:1}
+  .phoneya2-intro-copy{max-width:760px}
+  .phoneya2-intro-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;margin-bottom:7px;
+    color:#15803d;font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+  }
+  .phoneya2-live-dot{width:7px;height:7px;border-radius:50%;background:#159447;box-shadow:0 0 0 4px rgba(21,148,71,.12)}
+  .phoneya2-intro-copy h2{
+    margin:0;color:var(--intro-ink);font-family:'Syne','DM Sans',sans-serif;
+    font-size:clamp(24px,3.2vw,34px);font-weight:900;line-height:1.12;letter-spacing:-.8px;
+  }
+  .phoneya2-intro-copy p{margin:9px 0 0;color:#475569;font-size:clamp(12px,1.5vw,14px);font-weight:600;line-height:1.6}
+  .phoneya2-intro-copy p span{color:#ff6500;padding:0 3px}
+  .phoneya2-intro-note{display:block;margin-top:5px;color:#64748b;font-size:12px;line-height:1.5}
+  .pwa-action-buttons{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
+  .pwa-action-buttons .pwa-share-btn,.pwa-action-buttons .pwa-advertise-btn,.pwa-action-buttons .pwa-install-btn-bar{margin:0}
+  .pwa-action-buttons .pwa-share-btn{background:#111827;box-shadow:0 5px 15px rgba(17,24,39,.15)}
+  .pwa-action-buttons .pwa-share-btn:hover{background:#159447}
+  @keyframes phoneya2LogoDrift{
+    0%{transform:translate3d(0,-48%,0) scale(.94);opacity:.09}
+    100%{transform:translate3d(10px,-52%,0) scale(1.06);opacity:.17}
+  }
+  @media(max-width:600px){
+    .phoneya2-home-intro{padding:21px 12px 18px !important;gap:13px !important}
+    .phoneya2-home-intro::before{width:165px;height:165px;right:-24px;opacity:.12}
+    .phoneya2-intro-eyebrow{font-size:9px;letter-spacing:1.6px}
+    .phoneya2-intro-copy h2{font-size:25px;letter-spacing:-.55px}
+    .phoneya2-intro-copy p{max-width:330px;margin-left:auto;margin-right:auto;font-size:12px}
+    .phoneya2-intro-note{font-size:11px}
+    .pwa-action-buttons{gap:8px}
+    .pwa-action-buttons .pwa-share-btn,.pwa-action-buttons .pwa-advertise-btn{padding:10px 14px;font-size:12px}
+  }
+  @media(max-width:360px){
+    .phoneya2-intro-copy h2{font-size:22px}
+    .phoneya2-intro-copy p{font-size:11px}
+    .pwa-action-buttons{width:100%}
+    .pwa-action-buttons .pwa-share-btn,.pwa-action-buttons .pwa-advertise-btn{justify-content:center;flex:1 1 auto}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .phoneya2-home-intro::before{animation:none}
+    .pwa-action-buttons *{scroll-behavior:auto;transition:none}
+  }
+</style>
 </head>
 <body>
 
@@ -1124,23 +1192,29 @@ body::before{
   </div>
 </div>
 
-<!-- PWA SHARE + INSTALL BUTTONS -->
-<div class="pwa-action-bar" id="pwa-action-bar">
-  <button class="pwa-share-btn" onclick="shareApp()" aria-label="Share PhoneYa2">
-    <i class="fa-solid fa-share-nodes"></i> Share PhoneYa2
-  </button>
-
-  <a href="https://phoneya2.pages.dev/advertiser" class="pwa-advertise-btn" aria-label="Advertise for free" target="_blank" rel="noopener">
-    <span class="adv-glow"></span>
-    <i class="fa-solid fa-bullhorn"></i>
-    <span>Advertise For <strong>FREE</strong></span>
-    <i class="fa-solid fa-arrow-right adv-arrow"></i>
-  </a>
-
-  <button class="pwa-install-btn-bar" id="pwa-install-bar-btn" onclick="installApp()" aria-label="Add to Home Screen" style="display:none">
-    <i class="fa-solid fa-mobile-screen-button"></i> Add to Home Screen
-  </button>
-</div>
+<!-- PHONEYA2 INTRO + SHARE / ADVERTISE ACTIONS -->
+<section class="pwa-action-bar phoneya2-home-intro" id="pwa-action-bar" aria-labelledby="phoneya2-intro-title">
+  <div class="phoneya2-intro-copy">
+    <span class="phoneya2-intro-eyebrow"><span class="phoneya2-live-dot"></span> PHONEYA2 · ACCESSORIES</span>
+    <h2 id="phoneya2-intro-title">Shop All Accessories</h2>
+    <p>Product details <span aria-hidden="true">·</span> Cart &amp; checkout <span aria-hidden="true">·</span> WhatsApp support</p>
+    <span class="phoneya2-intro-note">Find your everyday tech essentials, all in one place.</span>
+  </div>
+  <div class="pwa-action-buttons" aria-label="PhoneYa2 actions">
+    <button class="pwa-share-btn" onclick="shareApp()" aria-label="Share PhoneYa2">
+      <i class="fa-solid fa-share-nodes"></i> Share PhoneYa2
+    </button>
+    <a href="https://phoneya2.pages.dev/advertiser" class="pwa-advertise-btn" aria-label="Advertise for free" target="_blank" rel="noopener">
+      <span class="adv-glow"></span>
+      <i class="fa-solid fa-bullhorn"></i>
+      <span>Advertise For <strong>FREE</strong></span>
+      <i class="fa-solid fa-arrow-right adv-arrow"></i>
+    </a>
+    <button class="pwa-install-btn-bar" id="pwa-install-bar-btn" onclick="installApp()" aria-label="Add to Home Screen" style="display:none">
+      <i class="fa-solid fa-mobile-screen-button"></i> Add to Home Screen
+    </button>
+  </div>
+</section>
 
 <!-- ═══ MAIN CONTENT ═══ -->
 <div class="main-wrap">
