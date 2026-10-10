@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ff6000">
+  <title>Your Shopping Cart | PhoneYa2-ZM</title>
+  <meta name="description" content="Review your PhoneYa2-ZM shopping cart before checkout.">
+  <meta name="robots" content="noindex,follow">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{--orange:#ff6000;--ink:#171725;--muted:#687080;--line:#e7e8ef;--bg:#f5f6fa;--green:#128c7e;--soft:#fff3eb}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit;text-decoration:none}button{font:inherit}
+    .top{background:#fff;border-bottom:1px solid var(--line);padding:13px max(16px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:5}
+    .brand{font-size:21px;font-weight:900;letter-spacing:-.7px;white-space:nowrap}.brand .orange{color:var(--orange)}
+    .top-actions{display:flex;align-items:center;gap:16px;font-weight:700;font-size:13px}.top-actions a:hover{color:var(--orange)}
+    main{max-width:1160px;margin:30px auto;padding:0 18px 60px}
+    .crumb{font-size:13px;color:var(--muted);margin-bottom:12px}.crumb a{color:var(--orange);font-weight:700}
+    .heading{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}.heading h1{font-size:clamp(28px,4vw,38px);line-height:1.15;letter-spacing:-1px;margin:0 0 6px}.heading p{margin:0;color:var(--muted)}
+    .cart-count-label{background:#fff;border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-weight:800;font-size:13px;white-space:nowrap}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 28px #15152a08;overflow:hidden}
+    .panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:19px 21px;border-bottom:1px solid var(--line)}.panel-title h2{margin:0;font-size:17px}
+    .clear-btn{border:0;background:transparent;color:#b42318;font-weight:700;font-size:12px;cursor:pointer;padding:6px}
+    .items{padding:0 21px}.cart-item{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:15px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}.cart-item:last-child{border-bottom:0}
+    .product-image{width:92px;height:92px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:12px}.details{min-width:0}.title{font-size:15px;font-weight:800;line-height:1.35;margin:0 0 6px;overflow-wrap:anywhere}.sku-meta{color:var(--muted);font-size:12px}.unit-price{font-size:13px;font-weight:700;margin-top:6px}
+    .stock{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;margin-top:7px;color:var(--green)}.stock.out{color:#b42318}
+    .item-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px}.line-total{font-size:15px;font-weight:900;white-space:nowrap}.qty-tools{display:flex;align-items:center;gap:8px}.qty-btn{width:31px;height:31px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-weight:800}.qty-btn:disabled{opacity:.4;cursor:not-allowed}.qty-num{min-width:18px;text-align:center;font-weight:800}.remove{border:0;background:transparent;color:#8a909d;font-size:12px;cursor:pointer;padding:2px}.remove:hover{color:#b42318}
+    .empty{padding:45px 22px;text-align:center}.empty-icon{font-size:44px;margin-bottom:12px}.empty h2{font-size:21px;margin:0 0 8px}.empty p{color:var(--muted);margin:0 auto 20px;max-width:420px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:11px;padding:13px 17px;font-weight:850;cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:center}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--orange);color:white;box-shadow:0 7px 18px #ff60002c}.btn-secondary{background:#fff;border:1px solid var(--line);color:var(--ink)}.btn:focus-visible,.qty-btn:focus-visible,.remove:focus-visible{outline:3px solid #ff600066;outline-offset:2px}
+    .summary{padding:21px;position:sticky;top:90px}.summary h2{margin:0 0 17px;font-size:19px}.summary-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;color:var(--muted)}.summary-row strong{color:var(--ink);text-align:right}.summary-row.total{border-top:1px solid var(--line);margin-top:9px;padding-top:17px;color:var(--ink);font-weight:900;font-size:19px}.summary-row.total strong{color:var(--orange)}
+    .checkout{width:100%;margin-top:14px;font-size:15px;min-height:52px}.checkout:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}.shipping-note{font-size:12px;color:var(--muted);line-height:1.5;margin:13px 0 0}.secure-note{display:flex;align-items:flex-start;gap:8px;background:#eefaf5;border:1px solid #cceee0;color:#176a50;border-radius:10px;padding:12px;font-size:12px;margin-top:15px}.continue{display:flex;justify-content:center;margin-top:16px;font-size:13px;font-weight:800;color:var(--orange)}
+    .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.benefit{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.benefit i{color:var(--orange);font-size:17px;margin-top:2px}.benefit strong{display:block;font-size:12px}.benefit span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .notice{display:none;background:#fff0f0;border:1px solid #ffd0d0;color:#982020;border-radius:10px;padding:12px 14px;margin-bottom:16px}.notice.show{display:block}
+    footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 16px;border-top:1px solid var(--line);background:#fff}
+    @media(max-width:800px){main{margin-top:22px}.layout{grid-template-columns:1fr}.summary{position:static;order:-1}.benefits{grid-template-columns:1fr}.summary{padding:18px}.items{padding:0 16px}}
+    @media(max-width:480px){.top{padding:12px}.brand{font-size:18px}.top-actions{gap:10px;font-size:12px}.top-actions .back-label{display:none}main{padding:0 12px 40px}.heading{align-items:start}.heading h1{font-size:29px}.cart-count-label{font-size:12px}.panel-title{padding:15px}.items{padding:0 13px}.cart-item{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:16px 0;align-items:start}.product-image{width:68px;height:68px;grid-row:span 2}.details{grid-column:2}.item-right{grid-column:2;flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.line-total{font-size:14px}.qty-tools{gap:6px}.qty-btn{width:29px;height:29px}.summary{padding:16px}}
+  </style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/" aria-label="PhoneYa2 home"><span class="orange">Phone</span>Ya2-ZM</a>
+  <div class="top-actions"><a href="/shop.html"><i class="fa-solid fa-arrow-left"></i> <span class="back-label">Continue shopping</span></a></div>
+</header>
+<main>
+  <div class="crumb"><a href="/">Home</a> / <a href="/shop.html">Shop</a> / Your cart</div>
+  <section class="heading"><div><h1>Your shopping cart 🛒</h1><p>Check your items and quantities before you continue to checkout.</p></div><span class="cart-count-label" id="count-label">0 items</span></section>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <div class="layout">
+    <section class="panel" aria-label="Cart items">
+      <div class="panel-title"><h2>Items in your cart</h2><button class="clear-btn" id="clear-cart" type="button">Clear cart</button></div>
+      <div id="items" class="items"><div class="empty"><div class="empty-icon">🛒</div><h2>Your cart is empty</h2><p>Find accessories you love and add them to your cart. They’ll be waiting here when you return.</p><a class="btn btn-primary" href="/shop.html"><i class="fa-solid fa-store"></i> Browse products</a></div></div>
+    </section>
+    <aside class="panel summary" aria-label="Order summary">
+      <h2>Order summary</h2>
+      <div class="summary-row"><span>Items (<span id="summary-count">0</span>)</span><strong id="subtotal">ZMW 0.00</strong></div>
+      <div class="summary-row"><span>Delivery</span><strong>Confirmed at checkout</strong></div>
+      <div class="summary-row total"><span>Subtotal</span><strong id="total">ZMW 0.00</strong></div>
+      <p class="shipping-note">Delivery or collection arrangements will be confirmed with you before your order is finalised. No delivery fee is assumed here.</p>
+      <button class="btn btn-primary checkout" id="proceed" type="button" disabled>🛒 Proceed to checkout <i class="fa-solid fa-arrow-right"></i></button>
+      <a class="continue" href="/shop.html"><i class="fa-solid fa-arrow-left"></i> Continue shopping</a>
+      <div class="secure-note"><i class="fa-solid fa-circle-check"></i><span><strong>Review before you order.</strong><br>Your next step is to provide contact and delivery details. Submitting the checkout creates a pending order; PhoneYa2 will contact you to confirm arrangements.</span></div>
+    </aside>
+  </div>
+  <section class="benefits" aria-label="Shopping information">
+    <div class="benefit"><i class="fa-solid fa-box-open"></i><div><strong>Clear order summary</strong><span>Review products and quantities before checkout.</span></div></div>
+    <div class="benefit"><i class="fa-solid fa-headset"></i><div><strong>Help when you need it</strong><span>Contact PhoneYa2 if you need product guidance.</span></div></div>
+    <div class="benefit"><i class="fa-solid fa-mobile-screen-button"></i><div><strong>Made for mobile</strong><span>Manage your cart from your phone or computer.</span></div></div>
+  </section>
+</main>
+<footer>© <span id="year"></span> PhoneYa2-ZM Accessories · Zambia</footer>
+<script>
+(function(){
+  "use strict";
+  const KEY="phoneya2-checkout-cart-v1";
+  const $=id=>document.getElementById(id);
+  const products=new Map();
+  const money=n=>"ZMW "+Number(n||0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
+  function readCart(){
+    try{
+      const raw=JSON.parse(localStorage.getItem(KEY)||"[]");
+      if(!Array.isArray(raw))return [];
+      const merged=new Map();
+      raw.forEach(row=>{
+        if(!Array.isArray(row)||typeof row[0]!=="string"||!/^[a-z0-9][a-z0-9-]{0,100}$/.test(row[0]))return;
+        const qty=Math.max(0,Math.min(99,Math.floor(Number(row[1])||0)));
+        if(qty)merged.set(row[0],Math.min(99,(merged.get(row[0])||0)+qty));
+      });
+      return [...merged.entries()];
+    }catch(_){return [];}
+  }
+  function saveCart(rows){try{localStorage.setItem(KEY,JSON.stringify(rows));window.dispatchEvent(new CustomEvent("phoneya2:cart-updated"));return true;}catch(_){showNotice("Your browser could not save this change. Check your device storage settings.");return false;}}
+  function parseProduct(text,slug){
+    const match=text.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);if(!match)return null;
+    const val=key=>{const m=match[1].match(new RegExp("^"+key+":\\s*(.*?)\\s*$","m"));return m?m[1].trim().replace(/^["']|["']$/g,""):"";};
+    const title=val("title"),price=Number(val("price")),stock=Number(val("stock"));
+    if(!title||!Number.isFinite(price)||!Number.isFinite(stock)||price<0)return null;
+    return {slug,title,price,stock:Math.max(0,Math.floor(stock)),image:val("image")};
+  }
+  async function loadProducts(){
+    try{
+      const response=await fetch("/content/products/index.json",{cache:"no-store"});
+      if(!response.ok)throw new Error();
+      const slugs=await response.json();if(!Array.isArray(slugs))throw new Error();
+      const results=await Promise.allSettled(slugs.map(async slug=>{
+        if(typeof slug!=="string"||!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug))return null;
+        const r=await fetch("/content/products/"+slug+".md",{cache:"no-store"});if(!r.ok)return null;
+        return parseProduct(await r.text(),slug);
+      }));
+      results.forEach(result=>{if(result.status==="fulfilled"&&result.value)products.set(result.value.slug,result.value);});
+      render();
+    }catch(_){showNotice("We couldn't load current product details. Please refresh the page or return to the shop.");render(true);}
+  }
+  function showNotice(message){$("notice").textContent=message;$("notice").classList.add("show");}
+  function hideNotice(){$("notice").textContent="";$("notice").classList.remove("show");}
+  function updateSaved(rows){saveCart(rows);render();}
+  function render(catalogFailed){
+    const rows=readCart(),host=$("items");host.replaceChildren();
+    let count=0,subtotal=0;
+    rows.forEach(([slug,qty])=>{const p=products.get(slug);if(p){count+=qty;subtotal+=p.price*qty;}});
+    $("count-label").textContent=count+" "+(count===1?"item":"items");
+    $("summary-count").textContent=String(count);
+    $("subtotal").textContent=money(subtotal);$("total").textContent=money(subtotal);
+    $("proceed").disabled=count===0||!!catalogFailed;
+    $("clear-cart").hidden=rows.length===0;
+    if(!rows.length){
+      const empty=document.createElement("div");empty.className="empty";
+      empty.innerHTML='<div class="empty-icon">🛒</div><h2>Your cart is empty</h2><p>Find accessories you love and add them to your cart. They’ll be waiting here when you return.</p><a class="btn btn-primary" href="/shop.html"><i class="fa-solid fa-store"></i> Browse products</a>';
+      host.append(empty);return;
+    }
+    rows.forEach(([slug,qty])=>{
+      const p=products.get(slug);
+      if(!p){
+        const row=document.createElement("div");row.className="cart-item";
+        const details=document.createElement("div");details.className="details";details.style.gridColumn="1/-1";
+        const title=document.createElement("p");title.className="title";title.textContent="An item in your cart is no longer available";
+        const message=document.createElement("p");message.className="sku-meta";message.textContent="Remove this item to continue, or return to the shop to choose a replacement.";
+        const remove=document.createElement("button");remove.className="btn btn-secondary";remove.type="button";remove.textContent="Remove item";remove.onclick=()=>updateSaved(readCart().filter(item=>item[0]!==slug));
+        details.append(title,message,remove);row.append(details);host.append(row);return;
+      }
+      const row=document.createElement("article");row.className="cart-item";
+      const img=document.createElement("img");img.className="product-image";img.alt=p.title;img.loading="lazy";img.src=p.image||"";if(!p.image)img.style.visibility="hidden";img.onerror=()=>{img.style.visibility="hidden";};
+      const details=document.createElement("div");details.className="details";
+      const title=document.createElement("h3");title.className="title";title.textContent=p.title;
+      const unit=document.createElement("div");unit.className="unit-price";unit.textContent=money(p.price)+" each";
+      const stock=document.createElement("div");stock.className="stock"+(p.stock<1?" out":"");stock.innerHTML=p.stock>0?'<i class="fa-solid fa-circle-check"></i> Available':'<i class="fa-solid fa-circle-exclamation"></i> Out of stock';
+      if(p.stock>0&&qty>p.stock){stock.className="stock out";stock.textContent="Only "+p.stock+" currently available";}
+      details.append(title,unit,stock);
+      const right=document.createElement("div");right.className="item-right";
+      const line=document.createElement("div");line.className="line-total";line.textContent=money(p.price*qty);
+      const tools=document.createElement("div");tools.className="qty-tools";
+      const minus=document.createElement("button");minus.type="button";minus.className="qty-btn";minus.textContent="−";minus.setAttribute("aria-label","Decrease quantity of "+p.title);minus.onclick=()=>changeQty(slug,qty-1);
+      const number=document.createElement("span");number.className="qty-num";number.textContent=String(qty);number.setAttribute("aria-label","Quantity");
+      const plus=document.createElement("button");plus.type="button";plus.className="qty-btn";plus.textContent="+";plus.setAttribute("aria-label","Increase quantity of "+p.title);plus.disabled=qty>=Math.min(99,p.stock);plus.onclick=()=>changeQty(slug,qty+1);
+      tools.append(minus,number,plus);
+      const remove=document.createElement("button");remove.type="button";remove.className="remove";remove.innerHTML='<i class="fa-regular fa-trash-can"></i> Remove';remove.onclick=()=>updateSaved(readCart().filter(item=>item[0]!==slug));
+      right.append(line,tools,remove);row.append(img,details,right);host.append(row);
+    });
+  }
+  function changeQty(slug,next){
+    const rows=readCart();
+    const item=rows.find(row=>row[0]===slug),p=products.get(slug);
+    if(!item||!p)return;
+    if(next<=0){updateSaved(rows.filter(row=>row[0]!==slug));return;}
+    if(next>Math.min(99,p.stock)){showNotice("Only "+p.stock+" unit(s) are currently available for "+p.title+".");return;}
+    hideNotice();updateSaved(rows.map(row=>row[0]===slug?[slug,next]:row));
+  }
+  $("clear-cart").addEventListener("click",()=>{if(!readCart().length)return;if(window.confirm("Remove all items from your cart?")){updateSaved([]);hideNotice();}});
+  $("proceed").addEventListener("click",()=>{if(readCart().length)location.href="/checkout.html";});
+  window.addEventListener("storage",()=>render());
+  window.addEventListener("phoneya2:cart-updated",()=>render());
+  $("year").textContent=String(new Date().getFullYear());
+  loadProducts();
+})();
+</script>
+</body>
+</html>
