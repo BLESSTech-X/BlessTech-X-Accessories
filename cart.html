@@ -522,6 +522,29 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 .top-header .search-box button:hover{background:#e9670a;}
 @media(max-width:760px){.top-header .header-search{display:none!important;}}
 </style>
+<style id="phoneya2-subscribe-and-scroll-polish">
+  html { scroll-behavior: auto !important; overscroll-behavior-y: auto; }
+  body::before { animation: none !important; will-change: auto !important; transform: none !important; }
+  .py2-subscribe-card {
+    display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center;
+    gap: 14px; margin: 20px 0; padding: 19px; border: 1px solid #ffd7bf;
+    border-radius: 15px; background: linear-gradient(120deg, #fff7f1, #fff);
+    box-shadow: 0 8px 24px rgba(35, 25, 18, .045);
+  }
+  .py2-subscribe-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #ff6000, #ff8b45); font-size: 19px; }
+  .py2-subscribe-copy { min-width: 0; }
+  .py2-subscribe-copy h2 { margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: #171725; }
+  .py2-subscribe-copy p { margin: 0; color: #687080; font-size: 13px; line-height: 1.55; }
+  .py2-subscribe-copy .py2-subscribe-note { margin-top: 7px; color: #8b430f; font-size: 12px; }
+  .py2-subscribe-note i { margin-right: 4px; }
+  .py2-subscribe-button { justify-self: end; white-space: nowrap; min-height: 43px; }
+  @media (max-width: 680px) {
+    .py2-subscribe-card { grid-template-columns: 40px minmax(0, 1fr); gap: 11px; padding: 15px; }
+    .py2-subscribe-icon { width: 40px; height: 40px; font-size: 17px; }
+    .py2-subscribe-copy h2 { font-size: 16px; }
+    .py2-subscribe-button { grid-column: 1 / -1; justify-self: stretch; width: 100%; }
+  }
+</style>
 </head>
 <body>
 <!-- SHARED PHONEYA2 HEADER -->
@@ -572,6 +595,17 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       <div class="secure-note"><i class="fa-solid fa-circle-check"></i><span><strong>Review before you order.</strong><br>Your next step is to provide contact and delivery details. Submitting the checkout creates a pending order; PhoneYa2 will contact you to confirm arrangements.</span></div>
     </aside>
   </div>
+
+  <section class="py2-subscribe-card" aria-labelledby="py2-cart-subscribe-title">
+    <div class="py2-subscribe-icon" aria-hidden="true"><i class="fa-solid fa-envelope-open-text"></i></div>
+    <div class="py2-subscribe-copy">
+      <h2 id="py2-cart-subscribe-title">Get PhoneYa2 updates</h2>
+      <p>Be first to hear about new accessories, useful updates and special offers.</p>
+      <p class="py2-subscribe-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> After subscribing, check your inbox and Spam/Junk folder for the confirmation email. If it lands there, mark it as Not spam and click the confirmation link.</p>
+    </div>
+    <a class="btn btn-secondary py2-subscribe-button" href="/newsletter.html">Subscribe for updates <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+  </section>
+
   <section class="benefits" aria-label="Shopping information">
     <div class="benefit"><i class="fa-solid fa-box-open"></i><div><strong>Clear order summary</strong><span>Review products and quantities before checkout.</span></div></div>
     <div class="benefit"><i class="fa-solid fa-headset"></i><div><strong>Help when you need it</strong><span>Contact PhoneYa2 if you need product guidance.</span></div></div>
