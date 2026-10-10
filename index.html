@@ -773,6 +773,8 @@ body::before{
     .bottom-nav .bnav-item i { font-size: 18px; line-height: 1; flex: 0 0 auto; }
     .bottom-nav .bnav-item span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
     .bottom-nav .bnav-item.active { color: var(--c5, #2563eb); font-weight: 700; }
+    .bottom-nav .bnav-whatsapp { color: #128c4a; font-weight: 700; }
+    .bottom-nav .bnav-whatsapp i { color: #25d366; font-size: 20px; }
     .bottom-nav a { -webkit-tap-highlight-color: transparent; }
   }
 </style>
@@ -1264,13 +1266,7 @@ body::before{
   </div>
 </div>
 
-<!-- WHATSAPP STICKY -->
-<div class="wa-sticky">
-  <div class="wa-sticky-pulse"></div>
-  <a href="https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20order%20from%20PhoneYa2-ZM." target="_blank" rel="noopener" class="wa-sticky-btn" aria-label="Order on WhatsApp">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
-</div>
+<!-- WhatsApp access is integrated into the mobile bottom navigation. -->
 
 <!-- FOOTER -->
 <footer>
@@ -1323,6 +1319,7 @@ body::before{
   <a href="index.html" class="bnav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
   <a href="shop.html" class="bnav-item"><i class="fa-solid fa-bag-shopping"></i><span>Shop</span></a>
   <a href="contact.html" class="bnav-item"><i class="fa-solid fa-envelope"></i><span>Contact</span></a>
+  <a href="https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20order%20from%20PhoneYa2-ZM." class="bnav-item bnav-whatsapp" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></a>
 </nav>
 
 <script>
