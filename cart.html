@@ -377,12 +377,58 @@
   }
 </style>
 
+<style id="phoneya2-global-polish-v3">
+  :root{--py2-logo-url:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");}
+  /* Consistent brand proportions on every page */
+  .brand-phone-two{display:inline-block!important;font-size:1.28em!important;line-height:.9!important;vertical-align:-.035em!important;font-weight:950!important;}
+  .logo-brand-sub,.logo-text .sub,.brand-subtitle{display:block!important;font-size:12px!important;line-height:1.15!important;font-weight:750!important;letter-spacing:1.25px!important;margin-top:3px!important;opacity:.96!important;}
+  /* Small attached navigation tab */
+  .py2-quick-tabs{position:relative;z-index:1190;display:flex;align-items:center;justify-content:center;gap:4px;width:max-content;max-width:calc(100% - 20px);margin:-1px auto 12px;padding:5px 7px;background:rgba(255,255,255,.97);border:1px solid rgba(21,148,71,.18);border-top:0;border-radius:0 0 13px 13px;box-shadow:0 5px 14px rgba(17,24,39,.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+  .py2-quick-tabs a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding:6px 10px;border-radius:8px;color:#334155!important;text-decoration:none!important;font-size:11px!important;font-weight:750!important;line-height:1.1;white-space:nowrap;transition:background .2s ease,color .2s ease,transform .2s ease;}
+  .py2-quick-tabs a i{font-size:12px;color:#159447}
+  .py2-quick-tabs a:hover{background:#f0fdf4;color:#15803d!important;transform:translateY(-1px)}
+  .py2-quick-tabs a.is-active{background:#111827;color:#fff!important}
+  .py2-quick-tabs a.is-active i{color:#ff8a3d}
+  /* Match the site header logo on About and Contact to the rest of the store */
+  .header-inner .py2-site-logo{display:block!important;flex:0 0 44px;width:44px;height:44px;object-fit:contain;border-radius:10px;}
+  body>header,body>header.top{position:relative;z-index:1200}
+  /* Quiet, recognizable logo watermark behind each page's existing top content */
+  .py2-page-logo-ambient{position:absolute;z-index:1;pointer-events:none;width:clamp(170px,25vw,270px);height:clamp(170px,25vw,270px);left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background-image:var(--py2-logo-url);background-position:center;background-size:contain;background-repeat:no-repeat;filter:blur(1.2px) grayscale(.15);opacity:.13;mix-blend-mode:multiply;animation:py2AmbientFloat 10s ease-in-out infinite alternate;will-change:transform;}
+  .shop-hero,.about-hero,.contact-hero{position:relative;isolation:isolate;overflow:hidden}
+  .shop-hero>.py2-page-logo-ambient,.about-hero>.py2-page-logo-ambient,.contact-hero>.py2-page-logo-ambient{z-index:1}
+  .shop-hero-inner,.about-hero-content,.contact-hero-content{position:relative;z-index:2}
+  .heading,.hero,#product-detail{position:relative;isolation:isolate;overflow:hidden}
+  .heading::before,.hero::before,#product-detail::before{content:"";position:absolute;z-index:0;pointer-events:none;width:clamp(170px,25vw,260px);height:clamp(170px,25vw,260px);left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background-image:var(--py2-logo-url);background-position:center;background-size:contain;background-repeat:no-repeat;filter:blur(1.2px) grayscale(.15);opacity:.12;mix-blend-mode:multiply;animation:py2AmbientFloat 10s ease-in-out infinite alternate;}
+  .heading>* ,.hero>* ,#product-detail>*{position:relative;z-index:1}
+  .heading::before,.hero::before{opacity:.10}
+  @keyframes py2AmbientFloat{0%{transform:translate(-52%,-50%) scale(.97)}100%{transform:translate(-48%,-50%) scale(1.035)}}
+  /* Home keeps its dedicated intro, but the logo blur is intentionally light. */
+  .phoneya2-home-intro::before{filter:blur(1.2px) grayscale(.15) saturate(.9)!important;opacity:.14!important;animation:py2HomeLogoDrift 9s ease-in-out infinite alternate!important;background-size:contain!important;}
+  @keyframes py2HomeLogoDrift{0%{transform:translate(-52%,-50%) scale(.97)}100%{transform:translate(-48%,-50%) scale(1.035)}}
+  @media(max-width:600px){
+    .py2-quick-tabs{width:calc(100% - 16px);max-width:420px;gap:1px;padding:5px 4px;margin-bottom:9px;}
+    .py2-quick-tabs a{flex:1 1 0;flex-direction:column;gap:3px;padding:5px 1px;font-size:9px!important;border-radius:7px;}
+    .py2-quick-tabs a i{font-size:12px}
+    .logo-brand-sub,.logo-text .sub,.brand-subtitle{font-size:11px!important;letter-spacing:1px!important;margin-top:2px!important}
+    .header-inner .py2-site-logo{width:39px;height:39px;flex-basis:39px}
+    .py2-page-logo-ambient{width:175px;height:175px;opacity:.12}
+  }
+  @media(prefers-reduced-motion:reduce){.py2-page-logo-ambient,.phoneya2-home-intro::before,.heading::before,.hero::before,#product-detail::before{animation:none!important;will-change:auto}.py2-quick-tabs a{transition:none}}
+</style>
 </head>
 <body>
 <header class="top">
   <a class="brand" href="/" aria-label="PhoneYa2 Accessories home"><span class="brand-wordmark"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></span><span class="brand-subtitle">Accessories</span></a>
   <div class="top-actions"><a href="/shop.html"><i class="fa-solid fa-arrow-left"></i> <span class="back-label">Continue shopping</span></a></div>
 </header>
+<nav class="py2-quick-tabs" aria-label="Quick site navigation">
+  <a href="/" class="" ><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
+  <a href="/shop.html" class="" ><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a>
+  <a href="/account.html" class="" ><i class="fa-solid fa-user" aria-hidden="true"></i><span>Account</span></a>
+  <a href="/about.html" class="" ><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>About</span></a>
+  <a href="/contact.html" class="" ><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a>
+  <a href="/cart.html" class="is-active" aria-current="page"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
+</nav>
 <main>
   <div class="crumb"><a href="/">Home</a> / <a href="/shop.html">Shop</a> / Your cart</div>
   <section class="heading"><div><h1>Your shopping cart 🛒</h1><p>Check your items and quantities before you continue to checkout.</p></div><span class="cart-count-label" id="count-label">0 items</span></section>
