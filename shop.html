@@ -412,6 +412,7 @@ body::before{
 <style id="phoneya2-bottom-nav-layout-fix">
   /* The bottom bar is a mobile navigation pattern; desktop uses the main nav. */
   .bottom-nav { display: none; }
+  body { padding-bottom: 0 !important; }
   @media (max-width: 768px) {
     body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
     .bottom-nav {
