@@ -47,12 +47,22 @@
     <article class="panel stat"><div class="stat-top"><span>Pending orders</span><span class="icon">◷</span></div><strong id="stat-pending">—</strong><small>Need follow-up</small></article>
     <article class="panel stat"><div class="stat-top"><span>Delivered</span><span class="icon">✓</span></div><strong id="stat-delivered">—</strong><small>Marked delivered</small></article>
     <article class="panel stat"><div class="stat-top"><span>Catalogue items</span><span class="icon">▦</span></div><strong id="stat-products">—</strong><small id="products-sub">Product index</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Sales · last 30 days</span><span class="icon">↗</span></div><strong id="stat-sales-30">—</strong><small>Non-cancelled order value</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Orders · last 30 days</span><span class="icon">30d</span></div><strong id="stat-orders-30">—</strong><small>Order volume</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Unique customers</span><span class="icon">♙</span></div><strong id="stat-customers">—</strong><small id="customers-sub">Based on order contact details</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Cancellation rate</span><span class="icon">!</span></div><strong id="stat-cancel-rate">—</strong><small id="cancel-sub">Cancelled / all orders</small></article>
+    <article class="panel stat"><div class="stat-top"><span>Low-stock products</span><span class="icon">▤</span></div><strong id="stat-low-stock">—</strong><small id="stock-sub">Three or fewer units</small></article>
   </div>
   <div class="grid2">
     <section class="panel section"><div class="section-head"><div><h2>Order activity</h2><p>Orders created across the last 7 days</p></div><span class="muted" id="range-label" style="font-size:11px"></span></div><div class="chart-wrap"><canvas id="orders-chart" aria-label="Order activity chart"></canvas></div><div class="chart-legend"><span><i class="legend-dot" style="background:#ff6500"></i>Orders</span><span><i class="legend-dot" style="background:#3478f6"></i>Sales value (ZMW)</span></div></section>
     <section class="panel section"><div class="section-head"><div><h2>Order pipeline</h2><p>Current status of recorded orders</p></div></div><div class="status-bars" id="status-bars"><p class="muted">Loading order status…</p></div><div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;gap:10px"><span class="muted">Average order value</span><strong id="stat-aov">—</strong></div></section>
   </div>
-  <section class="panel section"><div class="section-head"><div><h2>System health</h2><p>Basic availability checks for the storefront and connected services.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
+  <div class="grid2">
+    <section class="panel section"><div class="section-head"><div><h2>Best-selling products</h2><p>Ranked by units in recorded orders</p></div></div><div id="top-products" class="status-bars"><p class="muted">Loading product performance…</p></div></section>
+    <section class="panel section"><div class="section-head"><div><h2>Recent orders</h2><p>Latest activity from the order database</p></div><a class="btn" href="/admin/orders.html">Manage orders ↗</a></div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:460px;font-size:12px"><thead><tr style="text-align:left;color:var(--muted);border-bottom:1px solid var(--line)"><th style="padding:9px 6px">Order</th><th style="padding:9px 6px">Customer</th><th style="padding:9px 6px">Status</th><th style="padding:9px 6px;text-align:right">Total</th></tr></thead><tbody id="recent-orders"><tr><td colspan="4" style="padding:14px 6px;color:var(--muted)">Loading recent orders…</td></tr></tbody></table></div></section>
+  </div>
+  <section class="panel section"><div class="section-head"><div><h2>Inventory overview</h2><p>Based on stock and price fields in your published product files. Verify stock values are kept current.</p></div></div><div class="health-grid" id="inventory-grid"><div class="health-item"><div><strong>Loading catalogue inventory…</strong></div></div></div></section>
+  <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Basic availability checks for the storefront and connected services.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
   <div class="section-head" style="margin:24px 0 12px"><div><h2 style="font-size:19px;margin:0">Operations & dashboards</h2><p class="muted" style="font-size:12px;margin:4px 0 0">Jump directly to each PhoneYa2 management area.</p></div></div>
   <div class="modules">
     <a class="panel module" href="/admin/orders.html"><span class="module-icon">▤</span><h3>Orders & Fulfilment</h3><p>Review customer orders, update status, export records and test order notifications.</p><span class="module-link">Open order dashboard ↗</span></a>
@@ -68,18 +78,79 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const ADMIN_EMAIL='singbless89@gmail.com';
-let client=null,session=null,orders=[];
+let client=null,session=null,orders=[],products=[];
 const statusNames=['pending','confirmed','processing','shipped','delivered','cancelled'];
 const money=n=>'ZMW '+Number(n||0).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
 function message(target,text,type){const el=$(target);el.textContent=text||'';el.className=text?'message '+(type||''):'';}
 async function api(path,options={}){if(!session?.access_token)throw new Error('Please sign in again.');const res=await fetch(path,{...options,headers:{...(options.headers||{}),authorization:'Bearer '+session.access_token,'content-type':'application/json'}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Request failed ('+res.status+').');return data;}
 function safeDate(s){const d=new Date(s);return Number.isNaN(d.getTime())?null:d;}
+function withinDays(o,days){const d=safeDate(o.created_at);return !!d&&Date.now()-d.getTime()>=0&&Date.now()-d.getTime()<days*86400000;}
 function renderStats(){
- const total=orders.length,pending=orders.filter(o=>o.status==='pending').length,delivered=orders.filter(o=>o.status==='delivered').length;
- const valid=orders.filter(o=>o.status!=='cancelled'),sales=valid.reduce((s,o)=>s+Number(o.total_amount||0),0);
- $('stat-orders').textContent=total.toLocaleString();$('orders-sub').textContent=orders.filter(o=>{const d=safeDate(o.created_at);return d&&Date.now()-d.getTime()<30*86400000;}).length+' in the last 30 days';
+ const total=orders.length,pending=orders.filter(o=>o.status==='pending').length,delivered=orders.filter(o=>o.status==='delivered').length,cancelled=orders.filter(o=>o.status==='cancelled').length;
+ const valid=orders.filter(o=>o.status!=='cancelled'),sales=valid.reduce((s,o)=>s+Number(o.total_amount||0),0),recent=orders.filter(o=>withinDays(o,30)),recentValid=recent.filter(o=>o.status!=='cancelled'),sales30=recentValid.reduce((s,o)=>s+Number(o.total_amount||0),0);
+ const customerKeys=new Set(orders.map(o=>String(o.customer_email||o.customer_phone||o.customer_name||'').trim().toLowerCase()).filter(Boolean));
+ $('stat-orders').textContent=total.toLocaleString();$('orders-sub').textContent=recent.length+' in the last 30 days';
  $('stat-sales').textContent=money(sales);$('stat-pending').textContent=pending.toLocaleString();$('stat-delivered').textContent=delivered.toLocaleString();$('stat-aov').textContent=money(valid.length?sales/valid.length:0);
- renderStatuses();drawChart();
+ $('stat-sales-30').textContent=money(sales30);$('stat-orders-30').textContent=recent.length.toLocaleString();$('stat-customers').textContent=customerKeys.size.toLocaleString();$('customers-sub').textContent='Distinct email / phone / name';$('stat-cancel-rate').textContent=(total?(cancelled/total*100):0).toFixed(1)+'%';$('cancel-sub').textContent=cancelled+' cancelled of '+total+' orders';
+ renderStatuses();renderRecentOrders();renderTopProducts();drawChart();
+}
+function renderRecentOrders(){
+ const host=$('recent-orders');host.replaceChildren();const list=[...orders].sort((a,b)=>(safeDate(b.created_at)?.getTime()||0)-(safeDate(a.created_at)?.getTime()||0)).slice(0,7);
+ if(!list.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=4;td.textContent='No orders have been recorded yet.';td.style.cssText='padding:14px 6px;color:var(--muted)';tr.append(td);host.append(tr);return;}
+ list.forEach(o=>{const tr=document.createElement('tr');tr.style.borderBottom='1px solid var(--line)';const values=[o.order_number||'Order',o.customer_name||'Customer',o.status||'unknown'];values.forEach((v,i)=>{const td=document.createElement('td');td.textContent=String(v);td.style.padding='10px 6px';if(i===2){td.style.textTransform='capitalize';td.style.color=v==='delivered'?'#159c68':v==='cancelled'?'#d84a4a':v==='pending'?'#b87500':'var(--ink)';}tr.append(td);});const total=document.createElement('td');total.textContent=money(o.total_amount);total.style.cssText='padding:10px 6px;text-align:right;white-space:nowrap;font-weight:750';tr.append(total);host.append(tr);});
+}
+function renderTopProducts(){
+ const totals=new Map();orders.forEach(o=>(o.order_items||[]).forEach(i=>{const name=String(i.product_name||i.title||i.product_slug||'Product');const prev=totals.get(name)||{name,units:0,revenue:0};prev.units+=Number(i.quantity||1);prev.revenue+=Number(i.line_total||Number(i.unit_price||0)*Number(i.quantity||1));totals.set(name,prev);}));
+ const host=$('top-products');host.replaceChildren();const list=[...totals.values()].sort((a,b)=>b.units-a.units).slice(0,6);if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='Product sales will appear here as order items are recorded.';host.append(p);return;}
+ const max=Math.max(1,...list.map(x=>x.units));list.forEach(item=>{const row=document.createElement('div');row.className='status-row';row.style.gridTemplateColumns='minmax(85px,1.2fr) 1fr 34px';const name=document.createElement('span');name.textContent=item.name;name.title=item.name;name.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap';const track=document.createElement('div');track.className='status-track';const fill=document.createElement('div');fill.className='status-fill';fill.style.width=(item.units/max*100)+'%';track.append(fill);const n=document.createElement('strong');n.className='status-count';n.textContent=item.units;row.append(name,track,n);const small=document.createElement('small');small.textContent=money(item.revenue)+' recorded product value';small.style.cssText='grid-column:1/-1;color:var(--muted);margin:-5px 0 4px';host.append(row,small);});
+}
+async function loadInventory(){
+ const host=$('inventory-grid');host.replaceChildren();try{
+  const indexRes=await fetch('/content/products/index.json',{cache:'no-store'});if(!indexRes.ok)throw new Error('Catalogue index unavailable');const slugs=await indexRes.json();if(!Array.isArray(slugs))throw new Error('Catalogue index format is not recognised');
+  const records=[];for(let i=0;i<slugs.length;i+=8){const batch=slugs.slice(i,i+8);const found=await Promise.all(batch.map(async slug=>{try{const res=await fetch('/content/products/'+encodeURIComponent(slug)+'.md',{cache:'no-store'});if(!res.ok)return null;const text=await res.text(),front=text.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);if(!front)return null;const val=k=>{const m=front[1].match(new RegExp('^'+k+':\\s*(.*?)\\s*
+function renderStatuses(){
+ const host=$('status-bars');host.replaceChildren();const max=Math.max(1,...statusNames.map(s=>orders.filter(o=>o.status===s).length));
+ statusNames.forEach((status,i)=>{const count=orders.filter(o=>o.status===status).length,row=document.createElement('div');row.className='status-row';const name=document.createElement('span');name.textContent=status[0].toUpperCase()+status.slice(1);const track=document.createElement('div');track.className='status-track';const fill=document.createElement('div');fill.className='status-fill';fill.style.width=(count/max*100)+'%';if(status==='delivered')fill.style.background='#159c68';if(status==='cancelled')fill.style.background='#d84a4a';if(status==='processing'||status==='shipped')fill.style.background='#3478f6';track.append(fill);const n=document.createElement('strong');n.className='status-count';n.textContent=count;row.append(name,track,n);host.append(row);});
+}
+function drawChart(){
+ const canvas=$('orders-chart'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;if(!rect.width||!rect.height)return;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+ const w=rect.width,h=rect.height,pad={l:34,r:12,t:18,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;ctx.clearRect(0,0,w,h);
+ const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push(d);}
+ const counts=days.map(d=>orders.filter(o=>{const od=safeDate(o.created_at);return od&&od.toDateString()===d.toDateString();}).length);
+ const vals=days.map(d=>orders.filter(o=>{const od=safeDate(o.created_at);return od&&od.toDateString()===d.toDateString()&&o.status!=='cancelled';}).reduce((s,o)=>s+Number(o.total_amount||0),0));
+ const maxC=Math.max(4,...counts),maxV=Math.max(100,...vals);
+ ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;ctx.strokeStyle='#edf0f5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#858b9b';ctx.fillText(String(Math.round(maxC*(1-i/4))),pad.l-8,y);}
+ const pts=counts.map((v,i)=>({x:pad.l+(cw/6)*i,y:pad.t+ch-(v/maxC)*ch}));ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ff6500';ctx.lineWidth=2.5;ctx.stroke();pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.3,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
+ const maxSales=Math.max(...vals,1);const salesPts=vals.map((v,i)=>({x:pad.l+(cw/6)*i,y:pad.t+ch-(v/maxSales)*ch*.76}));ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+ ctx.textAlign='center';ctx.textBaseline='top';days.forEach((d,i)=>{ctx.fillStyle='#858b9b';ctx.fillText(d.toLocaleDateString('en-GB',{weekday:'short'}),pad.l+(cw/6)*i,h-pad.b+10);});
+ $('range-label').textContent=days[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+}
+async function checkHealth(){
+ const host=$('health-grid');host.replaceChildren();
+ const items=[
+  ['Storefront','/','Main store page'],
+  ['Shop page','/shop.html','Product browsing'],
+  ['Product index','/content/products/index.json','Catalogue data'],
+  ['Orders API','/api/orders?admin=1','Authenticated order service']
+ ];
+ const results=await Promise.all(items.map(async item=>{try{const headers=item[0]==='Orders API'?{authorization:'Bearer '+session.access_token}:{};const r=await fetch(item[1],{method:'GET',headers,cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);if(item[0]==='Product index'){const data=await r.json();$('stat-products').textContent=Array.isArray(data)?data.length.toLocaleString():'—';$('products-sub').textContent='Slugs in product index';}return {...item,ok:true,detail:item[0]==='Orders API'?'Admin endpoint responding':item[0]==='Product index'?'Catalogue index responding':'Page responding (HTTP '+r.status+')'};}catch(e){return {...item,ok:false,detail:e.message||'Could not reach'};}}));
+ results.forEach(item=>{const el=document.createElement('div');el.className='health-item';const icon=document.createElement('span');icon.className='health-symbol'+(item.ok?'':' warn');icon.textContent=item.ok?'✓':'!';const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=item[0];detail.textContent=(item.ok?'Operational · ':'Needs attention · ')+item.detail;body.append(name,detail);el.append(icon,body);host.append(el);});
+}
+async function refreshData(){const button=$('refresh');button.disabled=true;message('global-message','Refreshing live business data…','');try{const data=await api('/api/orders?admin=1');orders=Array.isArray(data.orders)?data.orders:[];renderStats();await Promise.all([checkHealth(),loadInventory()]);$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();message('global-message','Live data refreshed successfully.','success');}catch(e){message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{button.disabled=false;}}
+async function signOut(){if(client)await client.auth.signOut();session=null;orders=[];$('dashboard').classList.add('hidden');$('login').classList.remove('hidden');$('password').value='';}
+async function init(){const cfg=window.PY2_ADS_CONFIG;if(!cfg?.url||!cfg?.key||!window.supabase?.createClient){message('login-message','Sign-in service could not load. Refresh the page and try again.','error');return;}client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:false}});const {data}=await client.auth.getSession();if(data.session&&data.session.user?.email?.toLowerCase()===ADMIN_EMAIL){session=data.session;try{await api('/api/orders?admin=1');$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await refreshData();}catch{await client.auth.signOut();session=null;}}}
+$('login-form').addEventListener('submit',async e=>{e.preventDefault();const button=$('login-button');button.disabled=true;message('login-message','','');try{if(!client)throw new Error('Sign-in service is not ready. Refresh this page.');const email=$('email').value.trim().toLowerCase();if(email!==ADMIN_EMAIL)throw new Error('This email is not authorized for the PhoneYa2 Command Centre.');const {data,error}=await client.auth.signInWithPassword({email,password:$('password').value});if(error)throw error;if(data.user?.email?.toLowerCase()!==ADMIN_EMAIL){await client.auth.signOut();throw new Error('This account is not authorized.');}session=data.session;await api('/api/orders?admin=1');$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await refreshData();}catch(err){if(client)await client.auth.signOut();session=null;message('login-message',err.message||'Sign-in failed. Check your credentials.','error');}finally{button.disabled=false;}});
+$('refresh').addEventListener('click',refreshData);$('health-refresh').addEventListener('click',checkHealth);$('logout').addEventListener('click',signOut);window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))drawChart();});$('clock').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});init().catch(e=>message('login-message',e.message||'Could not initialize sign-in.','error'));
+})();
+</script>
+</body>
+</html>,'m'));return m?m[1].trim().replace(/^["']|["']$/g,''):'';};const stock=Number(val('stock')),price=Number(val('price'));return {slug,title:val('title')||slug,stock:Number.isFinite(stock)?Math.max(0,stock):null,price:Number.isFinite(price)?Math.max(0,price):null};}catch{return null;}}));records.push(...found.filter(Boolean));}
+  products=records;$('stat-products').textContent=slugs.length.toLocaleString();$('products-sub').textContent=records.length+' product files readable';
+  const known=records.filter(p=>p.stock!==null),low=known.filter(p=>p.stock<=3),out=known.filter(p=>p.stock===0),units=known.reduce((s,p)=>s+p.stock,0),retail=known.reduce((s,p)=>s+p.stock*(p.price||0),0);
+  $('stat-low-stock').textContent=low.length.toLocaleString();$('stock-sub').textContent=out.length+' out of stock · '+known.length+' stock values found';
+  const items=[['Products read',records.length+' / '+slugs.length,'Published product files parsed'],['Units in stock',units.toLocaleString(),'Sum of listed stock quantities'],['Estimated retail stock value',money(retail),'Listed stock × listed selling price'],['Stock alerts',low.length+' low · '+out.length+' out','Low stock threshold: 3 units']];
+  items.forEach((it,i)=>{const el=document.createElement('div');el.className='health-item';const icon=document.createElement('span');icon.className='health-symbol'+(i===3&&low.length?' warn':'');icon.textContent=i===3&&low.length?'!':'✓';const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=it[0];detail.textContent=it[1]+' · '+it[2];body.append(name,detail);el.append(icon,body);host.append(el);});
+ }catch(e){const p=document.createElement('p');p.className='muted';p.textContent='Inventory metrics unavailable: '+e.message;host.append(p);$('stat-low-stock').textContent='—';}
 }
 function renderStatuses(){
  const host=$('status-bars');host.replaceChildren();const max=Math.max(1,...statusNames.map(s=>orders.filter(o=>o.status===s).length));
