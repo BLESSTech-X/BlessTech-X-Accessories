@@ -499,6 +499,9 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 .top-header .search-box button:hover{background:#e9670a;}
 @media(max-width:760px){.top-header .header-search{display:none!important;}}
 </style>
+<style id="phoneya2-order-management">
+.account-actions{display:flex;gap:8px;flex-wrap:wrap}.order-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:17px 0 10px;padding:13px 15px;background:#f8fafc;border:1px solid var(--line);border-radius:11px}.account-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.filter-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #e0e3eb;border-radius:999px;background:#fff;color:#414758;padding:8px 12px;font:700 13px/1.2 system-ui;cursor:pointer}.filter-chip span{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#f0f1f5;font-size:11px}.filter-chip.active{background:#171725;color:#fff;border-color:#171725}.filter-chip.active span{background:#ff6500;color:#fff}.account-sort{display:flex;align-items:center;justify-content:flex-end;gap:9px;color:var(--muted);font-size:13px;font-weight:700}.account-sort select{border:1px solid #d9dbe5;border-radius:8px;background:#fff;padding:9px;font:inherit;color:var(--ink)}.order .pill{background:#fff0e6;color:#a94300}.order .pill.status-delivered{background:#e7f7ee;color:#11633a}.order .pill.status-cancelled{background:#f1f2f5;color:#626879}.order .pill.status-shipped{background:#eaf2ff;color:#2454a6}.order .pill.status-processing,.order .pill.status-confirmed{background:#f0ebff;color:#5b3ba5}.orders-filter-empty{background:#fff;border:1px dashed #d5d9e3;border-radius:14px;padding:28px;text-align:center;color:var(--muted)}#refresh-orders[disabled]{opacity:.6;cursor:wait}@media(max-width:600px){.account-actions{width:100%}.account-actions .btn{flex:1}.account-filters{gap:6px}.filter-chip{padding:8px 10px;font-size:12px}.account-sort{justify-content:space-between}.order-bottom .btn{flex:1}}
+</style>
 </head>
 <body>
 <!-- SHARED PHONEYA2 HEADER -->
@@ -544,7 +547,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 <a class="btn dark" href="/shop.html">Browse products</a>
 </section>
 <section id="account-panel" class="hidden">
-<div class="panel"><div class="toolbar"><div><h2 style="margin-bottom:3px">My orders</h2><div id="customer-email" class="muted"></div></div><button class="btn secondary" id="signout" type="button">Sign out</button></div><p class="small" style="margin-top:8px">Reordering checks current prices and stock. Previous orders remain unchanged.</p></div>
+<div class="panel"><div class="toolbar"><div><h2 style="margin-bottom:3px">My orders</h2><div id="customer-email" class="muted"></div></div><div class="account-actions"><button class="btn secondary" id="refresh-orders" type="button">↻ Refresh orders</button><button class="btn dark" id="signout" type="button">Sign out</button></div></div><p class="small" style="margin-top:8px">Your order status updates when PhoneYa2 processes your order. Refresh to check the latest update. Reordering checks current prices and stock.</p><div id="order-summary" class="order-summary" aria-live="polite"></div><div class="account-filters" role="group" aria-label="Filter your order history"><button class="filter-chip active" type="button" data-order-filter="all">All orders <span id="count-all">0</span></button><button class="filter-chip" type="button" data-order-filter="recent">Recent <span id="count-recent">0</span></button><button class="filter-chip" type="button" data-order-filter="older">Older <span id="count-older">0</span></button><button class="filter-chip" type="button" data-order-filter="pending">Pending <span id="count-pending">0</span></button><button class="filter-chip" type="button" data-order-filter="progress">In progress <span id="count-progress">0</span></button><button class="filter-chip" type="button" data-order-filter="delivered">Delivered <span id="count-delivered">0</span></button><button class="filter-chip" type="button" data-order-filter="cancelled">Cancelled <span id="count-cancelled">0</span></button></div><div class="account-sort"><span id="order-refresh-message" aria-live="polite">Order status updates automatically when you return to this page.</span><label for="order-sort">Sort orders</label><select id="order-sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></div></div>
 <div id="orders"><div class="empty">Loading your orders…</div></div>
 </section>
 </main>
@@ -558,18 +561,41 @@ const $=id=>document.getElementById(id);
 const money=n=>"ZMW "+Number(n||0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
 function message(text,type="info"){const el=$("notice");el.textContent=text;el.className="notice "+type;}
 function encodeCart(items){const bytes=new TextEncoder().encode(JSON.stringify(items));let binary="";bytes.forEach(b=>binary+=String.fromCharCode(b));return btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
-async function loadOrders(session){
- const response=await fetch("/api/customer",{headers:{authorization:"Bearer "+session.access_token}});
- const data=await response.json().catch(()=>({}));
- if(!response.ok)throw new Error(data.error||"Could not load your orders.");
- $("customer-email").textContent=data.customer?.email||session.user.email||"";
+let cachedOrders=[];
+let activeOrderFilter="all";
+function orderStatus(order){return String(order.status||"pending").toLowerCase();}
+function renderOrderFilters(orders){
+ const now=Date.now(),recentMs=30*24*60*60*1000;
+ const count=(filter)=>orders.filter(order=>{
+  const status=orderStatus(order),age=now-new Date(order.created_at).getTime();
+  if(filter==="all")return true;
+  if(filter==="recent")return age<=recentMs;
+  if(filter==="older")return age>recentMs;
+  if(filter==="progress")return ["confirmed","processing","shipped"].includes(status);
+  return status===filter;
+ }).length;
+ const labels={all:"All orders",recent:"Recent orders (last 30 days)",older:"Older orders (over 30 days)",pending:"Pending orders",progress:"Orders in progress",delivered:"Delivered orders",cancelled:"Cancelled orders"};
+ ["all","recent","older","pending","progress","delivered","cancelled"].forEach(filter=>{const el=$("count-"+filter);if(el)el.textContent=count(filter);});
+ $("order-summary").textContent=orders.length?orders.length+" order"+(orders.length===1?"":"s")+" in your history · "+orders.filter(o=>orderStatus(o)==="pending").length+" pending":"Your order history";
+ document.querySelectorAll("[data-order-filter]").forEach(button=>{const active=button.dataset.orderFilter===activeOrderFilter;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
+}
+function renderCustomerOrders(orders){
  const host=$("orders");host.replaceChildren();
- if(!data.orders?.length){const empty=document.createElement("div");empty.className="panel empty";empty.textContent="No orders are linked to this email yet. Your next PhoneYa2 order will appear here.";host.append(empty);return;}
- data.orders.forEach(order=>{
+ const now=Date.now(),recentMs=30*24*60*60*1000;
+ const filtered=orders.filter(order=>{
+  const status=orderStatus(order),age=now-new Date(order.created_at).getTime();
+  if(activeOrderFilter==="all")return true;
+  if(activeOrderFilter==="recent")return age<=recentMs;
+  if(activeOrderFilter==="older")return age>recentMs;
+  if(activeOrderFilter==="progress")return ["confirmed","processing","shipped"].includes(status);
+  return status===activeOrderFilter;
+ }).sort((a,b)=>{const delta=new Date(a.created_at).getTime()-new Date(b.created_at).getTime();return $("order-sort").value==="oldest"?delta:-delta;});
+ if(!filtered.length){const empty=document.createElement("div");empty.className="orders-filter-empty";empty.textContent=orders.length?("No "+({all:"",recent:"recent",older:"older",pending:"pending",progress:"in-progress",delivered:"delivered",cancelled:"cancelled"}[activeOrderFilter]||"matching")+" orders found. Choose another filter to see more of your history."): "No orders are linked to this email yet. Your next PhoneYa2 order will appear here.";host.append(empty);return;}
+ filtered.forEach(order=>{
   const card=document.createElement("article");card.className="panel order";
   const top=document.createElement("div");top.className="order-top";
   const number=document.createElement("div");number.className="number";number.textContent=order.order_number||"PhoneYa2 order";
-  const status=document.createElement("span");status.className="pill";status.textContent=order.status||"pending";
+  const status=document.createElement("span");const statusValue=orderStatus(order);status.className="pill status-"+statusValue;status.textContent=statusValue.replace(/_/g," ");
   top.append(number,status);card.append(top);
   const date=document.createElement("p");date.className="muted";date.style.marginTop="4px";date.textContent=new Date(order.created_at).toLocaleString();card.append(date);
   const items=document.createElement("div");items.className="items";
@@ -579,18 +605,24 @@ async function loadOrders(session){
   const bottom=document.createElement("div");bottom.className="order-bottom";const total=document.createElement("div");total.innerHTML='<div class="small">Order total</div><div class="total"></div>';total.querySelector(".total").textContent=money(order.total_amount);
   const reorder=document.createElement("a");reorder.className="btn primary";reorder.textContent="Reorder items";reorder.href="/checkout.html?items="+encodeURIComponent(encodeCart((order.order_items||[]).map(i=>({slug:i.product_slug,quantity:Number(i.quantity)}))));
   bottom.append(total,reorder);
-  if(String(order.status||"").toLowerCase()==="delivered"){
-    const feedback=document.createElement("a");
-    feedback.className="btn secondary";
-    feedback.textContent="Share feedback";
-    feedback.href="https://wa.me/260979603741?text="+encodeURIComponent("Hi PhoneYa2, my order "+(order.order_number||"")+" has been delivered. I'd like to share honest feedback about my experience.");
-    feedback.target="_blank";
-    feedback.rel="noopener noreferrer";
-    feedback.setAttribute("aria-label","Share feedback about delivered order "+(order.order_number||""));
-    bottom.append(feedback);
-  }
+  if(statusValue==="delivered"){const feedback=document.createElement("a");feedback.className="btn secondary";feedback.textContent="Share feedback";feedback.href="https://wa.me/260979603741?text="+encodeURIComponent("Hi PhoneYa2, my order "+(order.order_number||"")+" has been delivered. I'd like to share honest feedback about my experience.");feedback.target="_blank";feedback.rel="noopener noreferrer";feedback.setAttribute("aria-label","Share feedback about delivered order "+(order.order_number||""));bottom.append(feedback);}
   card.append(bottom);host.append(card);
  });
+}
+function applyCustomerOrderFilters(){renderOrderFilters(cachedOrders);renderCustomerOrders(cachedOrders);}
+async function loadOrders(session){
+ const button=$("refresh-orders");if(button)button.disabled=true;
+ const host=$("orders");if(!cachedOrders.length)host.innerHTML='<div class="empty">Loading your orders…</div>';
+ try{
+  const response=await fetch("/api/customer",{cache:"no-store",headers:{authorization:"Bearer "+session.access_token,"cache-control":"no-cache"}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||"Could not load your orders.");
+  $("customer-email").textContent=data.customer?.email||session.user.email||"";
+  cachedOrders=Array.isArray(data.orders)?data.orders:[];
+  applyCustomerOrderFilters();
+  const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Updated just now";
+ }catch(e){if(!cachedOrders.length){host.replaceChildren();const empty=document.createElement("div");empty.className="panel empty";empty.textContent=e.message||"Could not load your orders.";host.append(empty);}throw e;}
+ finally{if(button)button.disabled=false;}
 }
 async function showSession(session){$("auth-panel").classList.add("hidden");$("account-panel").classList.remove("hidden");try{await loadOrders(session);}catch(e){message(e.message,"error");}}
 $("login-form").addEventListener("submit",async e=>{
@@ -609,7 +641,14 @@ $("login-form").addEventListener("submit",async e=>{
   message("We couldn't send the access link right now. Check the email address and try again, or contact PhoneYa2 for help.","error");
  }finally{button.disabled=false;}
 });
-$("signout").addEventListener("click",async()=>{await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
+document.querySelectorAll("[data-order-filter]").forEach(button=>button.addEventListener("click",()=>{activeOrderFilter=button.dataset.orderFilter;applyCustomerOrderFilters();}));
+$("order-sort").addEventListener("change",applyCustomerOrderFilters);
+$("refresh-orders").addEventListener("click",async()=>{const {data}=await client.auth.getSession();if(data.session){try{await loadOrders(data.session);message("Your order history is up to date.","success");}catch(e){message(e.message,"error");}}});
+let lastOrderRefresh=0,refreshingOrders=false;
+async function refreshOrdersIfVisible(){if(document.visibilityState!=="visible"||refreshingOrders||Date.now()-lastOrderRefresh<5000)return;const {data}=await client.auth.getSession();if(!data.session||$("account-panel").classList.contains("hidden"))return;refreshingOrders=true;try{await loadOrders(data.session);lastOrderRefresh=Date.now();}catch(e){message(e.message,"error");}finally{refreshingOrders=false;}}
+window.addEventListener("focus",refreshOrdersIfVisible);
+document.addEventListener("visibilitychange",refreshOrdersIfVisible);
+$("signout").addEventListener("click",async()=>{cachedOrders=[];await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
 const urlParams=new URLSearchParams(location.search);
 let needsPassword=["invite","recovery"].includes(new URLSearchParams(location.hash.slice(1)).get("type"))||urlParams.get("reset")==="1";
 let updatingPassword=false;
