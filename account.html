@@ -619,6 +619,7 @@ async function loadOrders(session){
   if(!response.ok)throw new Error(data.error||"Could not load your orders.");
   $("customer-email").textContent=data.customer?.email||session.user.email||"";
   cachedOrders=Array.isArray(data.orders)?data.orders:[];
+  lastOrderRefresh=Date.now();
   applyCustomerOrderFilters();
   const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Updated just now";
  }catch(e){if(!cachedOrders.length){host.replaceChildren();const empty=document.createElement("div");empty.className="panel empty";empty.textContent=e.message||"Could not load your orders.";host.append(empty);}throw e;}
@@ -648,6 +649,7 @@ let lastOrderRefresh=0,refreshingOrders=false;
 async function refreshOrdersIfVisible(){if(document.visibilityState!=="visible"||refreshingOrders||Date.now()-lastOrderRefresh<5000)return;const {data}=await client.auth.getSession();if(!data.session||$("account-panel").classList.contains("hidden"))return;refreshingOrders=true;try{await loadOrders(data.session);lastOrderRefresh=Date.now();}catch(e){message(e.message,"error");}finally{refreshingOrders=false;}}
 window.addEventListener("focus",refreshOrdersIfVisible);
 document.addEventListener("visibilitychange",refreshOrdersIfVisible);
+window.setInterval(refreshOrdersIfVisible,30000);
 $("signout").addEventListener("click",async()=>{cachedOrders=[];await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
 const urlParams=new URLSearchParams(location.search);
 let needsPassword=["invite","recovery"].includes(new URLSearchParams(location.hash.slice(1)).get("type"))||urlParams.get("reset")==="1";
