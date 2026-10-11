@@ -7,7 +7,7 @@
 <title>Order Admin — PhoneYa2</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f9;color:#171725;font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}header{background:#171725;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px}header strong{font-size:19px}header a{color:#fff;text-decoration:none}.wrap{max-width:1180px;margin:28px auto;padding:0 16px}.panel{background:white;border:1px solid #e4e6ed;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 5px 20px #11112208}h1{margin:0 0 8px;font-size:28px}h2{margin:0 0 14px;font-size:19px}.muted{color:#697386}.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}.field label{font-weight:700}.field input{border:1px solid #d8dce6;border-radius:8px;padding:12px;font:inherit}.btn{border:0;border-radius:8px;padding:11px 15px;background:#ff6000;color:#fff;font:inherit;font-weight:800;cursor:pointer}.btn:disabled{opacity:.55}.error{color:#a61b1b;background:#fff0f0;padding:10px;border-radius:8px;margin:10px 0}.success{color:#12663a;background:#e8f8ee;padding:10px;border-radius:8px;margin:10px 0}.hidden{display:none!important}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.order{border:1px solid #e5e7ee;border-radius:12px;margin-top:12px;overflow:hidden}.order-head{padding:15px;background:#fafbfe;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.order-body{padding:15px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.detail strong{display:block;font-size:12px;color:#6b7280}.items{grid-column:1/-1;border-top:1px solid #eceef4;padding-top:10px}.items div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0}.item-thumb{width:52px;height:52px;object-fit:contain;border:1px solid #e5e7ee;border-radius:8px;background:#fff;flex:0 0 52px}.item-name-wrap{display:flex;align-items:center;gap:10px;min-width:0}.customer-note{grid-column:1/-1;background:#fff7f0;border:1px solid #ffe0cc;border-radius:9px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}.customer-note strong{display:block;font-size:12px;color:#a94300;margin-bottom:4px}.status{border:1px solid #d7dae5;border-radius:7px;padding:8px;font:inherit;max-width:180px}.order-num{font-weight:900;font-size:16px}.total{font-size:18px;font-weight:900}.empty{padding:24px;text-align:center;color:#697386}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#fff2e9;color:#a94300;font-weight:800;text-transform:capitalize}.loading{color:#697386;padding:20px 0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.stat{border:1px solid #e5e7ee;border-radius:10px;padding:13px;background:#fafbfe}.stat strong{display:block;font-size:22px}.stat span{font-size:12px;color:#697386}.filters{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;margin:16px 0}.filters input,.filters select{width:100%;border:1px solid #d8dce6;border-radius:8px;padding:11px;font:inherit;background:white}.contact-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.contact-actions a{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:7px;background:#e8f8ee;color:#12663a;font-weight:800;font-size:12px}.contact-actions a.call{background:#edf4ff;color:#234c83}@media(max-width:620px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.filters{grid-template-columns:1fr}.order-body{grid-template-columns:1fr}.items{grid-column:auto}.panel{padding:16px}.wrap{margin-top:18px}}
-</style>
+.admin-quick-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.admin-filter-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #dfe3ec;border-radius:999px;background:#fff;color:#3c4352;padding:8px 12px;font:750 12px system-ui;cursor:pointer}.admin-filter-chip span{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:99px;background:#f0f1f5;padding:0 5px}.admin-filter-chip.active{background:#171725;color:#fff;border-color:#171725}.admin-filter-chip.active span{background:#ff6500;color:#fff}.filters .sort-wrap{display:flex;align-items:center;gap:8px}.filters .sort-wrap select{width:100%}.order-head{align-items:center}.order-head .pill{white-space:nowrap}.order.is-pending{border-color:#ffbf91;box-shadow:0 0 0 1px #fff0e6}.order.is-cancelled{opacity:.86}.stat{cursor:pointer;transition:border-color .15s,transform .15s}.stat:hover{border-color:#ff9c61;transform:translateY(-1px)}.stat:focus-visible,.admin-filter-chip:focus-visible{outline:3px solid #ffb27d;outline-offset:2px}@media(max-width:620px){.admin-quick-filters{gap:6px}.admin-filter-chip{padding:7px 9px;font-size:11px}.filters .sort-wrap{display:block}}</style>
 <script src="/ads-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -32,7 +32,7 @@
         <div class="stat"><span>Delivered</span><strong id="stat-delivered">0</strong></div>
         <div class="stat"><span>Order value (excl. cancelled)</span><strong id="stat-sales">ZMW 0.00</strong></div>
       </div>
-      <div class="filters"><input id="order-search" type="search" placeholder="Search order number, customer, email, phone or note" aria-label="Search orders"><select id="status-filter" aria-label="Filter orders by status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div>
+      <div class="admin-quick-filters" role="group" aria-label="Quick order filters"><button type="button" class="admin-filter-chip active" data-admin-filter="all">All orders <span id="quick-all">0</span></button><button type="button" class="admin-filter-chip" data-admin-filter="pending">Needs action <span id="quick-pending">0</span></button><button type="button" class="admin-filter-chip" data-admin-filter="progress">In progress <span id="quick-progress">0</span></button><button type="button" class="admin-filter-chip" data-admin-filter="delivered">Delivered <span id="quick-delivered">0</span></button><button type="button" class="admin-filter-chip" data-admin-filter="cancelled">Cancelled <span id="quick-cancelled">0</span></button></div><div class="filters"><input id="order-search" type="search" placeholder="Search order number, customer, email, phone, product or note" aria-label="Search orders"><select id="status-filter" aria-label="Filter orders by status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select><div class="sort-wrap"><label for="order-sort">Sort</label><select id="order-sort" aria-label="Sort orders"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="value-high">Highest value</option><option value="value-low">Lowest value</option></select></div></div>
       <div id="message" role="status"></div><div id="orders"><div class="loading">Loading orders…</div></div>
     </div>
   </section>
@@ -41,7 +41,7 @@
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-let client=null, session=null, allOrders=[];
+let client=null, session=null, allOrders=[], activeQuickFilter="all";
 const statuses=["pending","confirmed","processing","shipped","delivered","cancelled"];
 function showMessage(target,text,kind){const el=$(target);el.className=text?(kind||""):"";el.textContent=text||"";}
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -60,12 +60,23 @@ function updateStats(orders){
  const sales=orders.filter(o=>o.status!=="cancelled").reduce((sum,o)=>sum+Number(o.total_amount||0),0);
  $("stat-sales").textContent=money(sales);
 }
-function renderOrders(orders){allOrders=orders;updateStats(orders);applyFilters();}
+function renderOrders(orders){allOrders=orders;updateStats(orders);updateQuickFilters();applyFilters();}
+function updateQuickFilters(){
+ const counts={"all":allOrders.length,"pending":allOrders.filter(o=>o.status==="pending").length,"progress":allOrders.filter(o=>["confirmed","processing","shipped"].includes(o.status)).length,"delivered":allOrders.filter(o=>o.status==="delivered").length,"cancelled":allOrders.filter(o=>o.status==="cancelled").length};
+ Object.entries(counts).forEach(([key,value])=>{const el=$("quick-"+key);if(el)el.textContent=value;});
+ document.querySelectorAll("[data-admin-filter]").forEach(button=>{const active=button.dataset.adminFilter===activeQuickFilter;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
+}
 function applyFilters(){
- const term=$("order-search").value.trim().toLowerCase(),status=$("status-filter").value;
+ const term=$("order-search").value.trim().toLowerCase(),status=$("status-filter").value,sort=$("order-sort").value;
  const filtered=allOrders.filter(order=>{
-  const hay=[order.order_number,order.customer_name,order.customer_email,order.customer_phone,order.delivery_address,order.customer_note].join(" ").toLowerCase();
-  return (!term||hay.includes(term))&&(status==="all"||order.status===status);
+  const hay=[order.order_number,order.customer_name,order.customer_email,order.customer_phone,order.delivery_address,order.customer_note,...(order.order_items||[]).map(item=>item.product_name)].join(" ").toLowerCase();
+  const quick=activeQuickFilter==="all"||(activeQuickFilter==="progress"?["confirmed","processing","shipped"].includes(order.status):order.status===activeQuickFilter);
+  return quick&&(!term||hay.includes(term))&&(status==="all"||order.status===status);
+ }).sort((a,b)=>{
+  if(sort==="oldest")return new Date(a.created_at)-new Date(b.created_at);
+  if(sort==="value-high")return Number(b.total_amount||0)-Number(a.total_amount||0);
+  if(sort==="value-low")return Number(a.total_amount||0)-Number(b.total_amount||0);
+  return new Date(b.created_at)-new Date(a.created_at);
  });
  renderOrderCards(filtered);
 }
@@ -73,7 +84,7 @@ function renderOrderCards(orders){
  const host=$("orders");host.replaceChildren();
  if(!orders.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No orders have been received yet.";host.append(empty);return;}
  orders.forEach(order=>{
-  const card=document.createElement("article");card.className="order";
+  const card=document.createElement("article");card.className="order"+(order.status==="pending"?" is-pending":order.status==="cancelled"?" is-cancelled":"");
   const head=document.createElement("div");head.className="order-head";
   const left=document.createElement("div");left.innerHTML='<div class="order-num">'+escapeHtml(order.order_number)+'</div><div class="muted">'+escapeHtml(new Date(order.created_at).toLocaleString())+'</div>';
   const right=document.createElement("div");right.style.display="flex";right.style.alignItems="center";right.style.gap="8px";right.style.flexWrap="wrap";
@@ -131,6 +142,8 @@ $("login-form").addEventListener("submit",async e=>{e.preventDefault();const but
 $("refresh").addEventListener("click",loadOrders);
 $("order-search").addEventListener("input",applyFilters);
 $("status-filter").addEventListener("change",applyFilters);
+$("order-sort").addEventListener("change",applyFilters);
+document.querySelectorAll("[data-admin-filter]").forEach(button=>button.addEventListener("click",()=>{activeQuickFilter=button.dataset.adminFilter;$("status-filter").value="all";applyFilters();updateQuickFilters();}));
 $("export-csv").addEventListener("click",exportCsv);
 $("test-ntfy").addEventListener("click",async()=>{const button=$("test-ntfy");button.disabled=true;showMessage("message","Sending test notification…","");try{const result=await api("/api/orders?admin=1",{method:"POST",body:JSON.stringify({action:"test-ntfy"})});showMessage("message",result.message||"Test notifications sent. Check Telegram and email.","success");}catch(e){showMessage("message",e.message,"error");}finally{button.disabled=false;}});
 $("logout").addEventListener("click",async()=>{if(client)await client.auth.signOut();session=null;$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");});
