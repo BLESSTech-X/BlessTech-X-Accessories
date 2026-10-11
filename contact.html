@@ -136,6 +136,14 @@ textarea.form-input{min-height:130px;resize:vertical;}
 /* FOOTER */
 footer{background:var(--dark);padding:64px 24px 0;}
 .footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
+.contact-resource-strip{max-width:1280px;margin:30px auto 22px;padding:18px 20px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.035);}
+.contact-resource-title{display:flex;align-items:center;gap:9px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:.4px;margin-bottom:12px;}
+.contact-resource-title i{color:#ff9b55;}
+.contact-resource-links{display:flex;flex-wrap:wrap;gap:8px;}
+.contact-resource-links a{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 11px;color:rgba(255,255,255,.72);font-size:12px;transition:background .2s,color .2s,border-color .2s;}
+.contact-resource-links a i{color:#ff9b55;}
+.contact-resource-links a:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.28);}
+
 .footer-brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:white;margin-bottom:10px;}
 .footer-tagline{color:rgba(255,255,255,0.45);font-size:13px;line-height:1.6;margin-bottom:20px;}
 .footer-socials{display:flex;gap:10px;}
@@ -162,7 +170,7 @@ footer{background:var(--dark);padding:64px 24px 0;}
 .bnav-order i{font-size:22px;}
 .bnav-order:hover{transform:translateY(-2px);}
 
-@media(max-width:900px){nav{display:none;}.hamburger{display:block;}.contact-layout{grid-template-columns:1fr;}.footer-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.contact-resource-strip{padding:15px 12px;margin:22px auto 18px}.contact-resource-links{gap:7px}.contact-resource-links a{padding:8px 9px;font-size:11px}}\n@media(max-width:900px){nav{display:none;}.hamburger{display:block;}.contact-layout{grid-template-columns:1fr;}.footer-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){.form-row{grid-template-columns:1fr;}.footer-grid{grid-template-columns:1fr;}.contact-form-card{padding:24px;}}
 
 
@@ -1016,6 +1024,19 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       <div class="footer-contact-item"><i class="fa-solid fa-clock"></i><span>Mon–Sat, 8am – 7pm</span></div>
     </div>
   </div>
+
+  <div class="contact-resource-strip" aria-label="Useful PhoneYa2 links">
+    <div class="contact-resource-title"><i class="fa-solid fa-link" aria-hidden="true"></i> Useful links</div>
+    <div class="contact-resource-links">
+      <a href="/index.html"><i class="fa-solid fa-house" aria-hidden="true"></i> Home</a>
+      <a href="/shop.html"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Shop accessories</a>
+      <a href="/about.html"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About PhoneYa2</a>
+      <a href="/newsletter.html"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Get updates</a>
+      <a href="https://blesstech-x.vercel.app" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> BLESSTech-X</a>
+      <a href="https://wa.me/260979603741" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp support</a>
+    </div>
+  </div>
+
   <div class="footer-bottom">
     <span class="footer-bottom-left">© 2026 PhoneYa2 Accessories · Barack Blessings. All rights reserved.</span>
     <span class="footer-bottom-right">Jesus loves you. ❤️</span>
