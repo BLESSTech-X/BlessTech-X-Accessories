@@ -58,9 +58,24 @@
     <section class="panel growth-card"><div class="section-head"><div><h2>Priority actions</h2><p>Operational next steps based on current order and stock data</p></div><span class="icon">⚡</span></div><div id="priority-list" class="priority-list"><p class="muted">Preparing recommendations…</p></div></section>
   </div>
   <div class="growth-grid">
-    <section class="panel growth-card"><div class="section-head"><div><h2>Traffic &amp; acquisition</h2><p>Use source dashboards for real visitor counts and acquisition channels</p></div><span class="icon">📈</span></div><p class="muted">Website visitor and source metrics are not pulled directly into this page yet. This panel deliberately avoids showing invented traffic numbers. Open the connected analytics tools to check visitors, search clicks, and where people leave the buying journey.</p><div class="growth-links"><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer">Google Analytics ↗</a><a href="https://clarity.microsoft.com/" target="_blank" rel="noopener noreferrer">Visitor recordings ↗</a><a href="https://search.google.com/search-console/" target="_blank" rel="noopener noreferrer">Search performance ↗</a><a href="https://merchants.google.com/" target="_blank" rel="noopener noreferrer">Product listings ↗</a></div></section>
+    <section class="panel growth-card"><div class="section-head"><div><h2>Traffic &amp; acquisition</h2><p>Use source dashboards for real visitor counts and acquisition channels</p></div><span class="icon">📈</span></div><p class="muted">Live visitor, session, and page-view reports appear in the Google Analytics panel below. Search performance and visitor recordings remain available in their source dashboards.</p><div class="growth-links"><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer">Google Analytics ↗</a><a href="https://clarity.microsoft.com/" target="_blank" rel="noopener noreferrer">Visitor recordings ↗</a><a href="https://search.google.com/search-console/" target="_blank" rel="noopener noreferrer">Search performance ↗</a><a href="https://merchants.google.com/" target="_blank" rel="noopener noreferrer">Product listings ↗</a></div></section>
     <section class="panel growth-card"><div class="section-head"><div><h2>Measurement guide</h2><p>Check these signals during your weekly growth test</p></div><span class="icon">✓</span></div><div class="priority-list"><div class="priority-item"><span class="priority-dot">1</span><div><strong>Reach</strong><small>Visitors and traffic sources in Google Analytics.</small></div></div><div class="priority-item"><span class="priority-dot">2</span><div><strong>Intent</strong><small>Product views, search terms and visitor behaviour in Analytics, Search Console and Clarity.</small></div></div><div class="priority-item"><span class="priority-dot">3</span><div><strong>Conversion</strong><small>Compare visits with recorded orders; investigate where interest fails to become an order.</small></div></div></div></section>
   </div>
+  <section class="panel section" id="analytics-live-panel" style="margin:17px 0">
+    <div class="section-head"><div><h2>Live Google Analytics</h2><p id="ga4-period">Real GA4 reporting · last 30 days</p></div><button class="btn" id="ga4-refresh">Refresh traffic</button></div>
+    <div id="ga4-message" class="muted" style="font-size:12px;margin:0 0 12px">Loading Google Analytics reports…</div>
+    <div class="stats" style="margin-bottom:16px">
+      <div class="stat"><span>Active users</span><strong id="ga4-users">—</strong><small>Unique active visitors</small></div>
+      <div class="stat"><span>Sessions</span><strong id="ga4-sessions">—</strong><small>Visits to the website</small></div>
+      <div class="stat"><span>Page views</span><strong id="ga4-views">—</strong><small>Total page views</small></div>
+      <div class="stat"><span>Events</span><strong id="ga4-events">—</strong><small>Tracked interactions</small></div>
+    </div>
+    <div class="grid2">
+      <div><h3 style="font-size:13px;margin:0 0 10px">Top traffic sources</h3><div id="ga4-sources" class="status-bars"><p class="muted">Waiting for data…</p></div></div>
+      <div><h3 style="font-size:13px;margin:0 0 10px">Most-viewed pages</h3><div id="ga4-pages" class="status-bars"><p class="muted">Waiting for data…</p></div></div>
+    </div>
+    <p class="muted" id="ga4-updated" style="font-size:11px;margin:12px 0 0"></p>
+  </section>
   <div class="grid2">
     <section class="panel section"><div class="section-head"><div><h2>Order activity</h2><p>Orders created across the last 7 days</p></div><span class="muted" id="range-label" style="font-size:11px"></span></div><div class="chart-wrap"><canvas id="orders-chart" aria-label="Order activity chart"></canvas></div><div class="chart-legend"><span><i class="legend-dot" style="background:#ff6500"></i>Orders</span><span><i class="legend-dot" style="background:#3478f6"></i>Order value (ZMW)</span></div></section>
     <section class="panel section"><div class="section-head"><div><h2>Order pipeline</h2><p>Current status of recorded orders</p></div></div><div class="status-bars" id="status-bars"><p class="muted">Loading order status…</p></div><div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;gap:10px"><span class="muted">Average order value</span><strong id="stat-aov">—</strong></div></section>
@@ -197,11 +212,45 @@ async function checkHealth(){
  const results=await Promise.all(items.map(async item=>{try{const headers=item[0]==='Orders API'?{authorization:'Bearer '+session.access_token}:{};const r=await fetch(item[1],{method:'GET',headers,cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);if(item[0]==='Product index'){const data=await r.json();$('stat-products').textContent=Array.isArray(data)?data.length.toLocaleString():'—';}return {...item,ok:true,detail:item[0]==='Orders API'?'Admin endpoint responding':item[0]==='Product index'?'Catalogue index responding':item[0]==='Sitemap'?'Sitemap file responding':item[0]==='Robots file'?'Crawler rules responding':'Page responding (HTTP '+r.status+')'};}catch(e){return {...item,ok:false,detail:e.message||'Could not reach'};}}));
  results.forEach(item=>{const el=document.createElement('div');el.className='health-item';const icon=document.createElement('span');icon.className='health-symbol'+(item.ok?'':' warn');icon.textContent=item.ok?'✓':'!';const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=item[0];detail.textContent=(item.ok?'Operational · ':'Needs attention · ')+item.detail;body.append(name,detail);el.append(icon,body);host.append(el);});
 }
-async function refreshData(){const button=$('refresh');button.disabled=true;message('global-message','Refreshing live business data…','');try{const data=await api('/api/orders?admin=1');orders=Array.isArray(data.orders)?data.orders:[];renderStats();await Promise.all([checkHealth(),loadInventory()]);$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();message('global-message','Live data refreshed successfully.','success');}catch(e){message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{button.disabled=false;}}
+function fmtCount(value){return Number(value||0).toLocaleString('en-US');}
+function renderGa4List(id,items,labelKey,valueKey,subKey){
+ const host=$(id);host.replaceChildren();
+ if(!items?.length){const p=document.createElement('p');p.className='muted';p.textContent='No report rows returned for this period.';host.append(p);return;}
+ const max=Math.max(1,...items.map(x=>Number(x[valueKey]||0)));
+ items.forEach(item=>{const row=document.createElement('div');row.className='status-row';row.style.gridTemplateColumns='minmax(90px,1.5fr) 1fr 45px';
+ const label=document.createElement('span');label.textContent=String(item[labelKey]||'(not set)');label.title=label.textContent;label.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px';
+ const track=document.createElement('div');track.className='status-track';const fill=document.createElement('div');fill.className='status-fill';fill.style.width=(Number(item[valueKey]||0)/max*100)+'%';track.append(fill);
+ const value=document.createElement('strong');value.className='status-count';value.textContent=fmtCount(item[valueKey]);row.append(label,track,value);
+ const sub=document.createElement('small');sub.textContent=fmtCount(item[subKey])+(subKey==='users'?' active users':'');sub.style.cssText='grid-column:1/-1;color:var(--muted);font-size:10px;margin:-4px 0 6px';
+ host.append(row,sub);
+ });
+}
+async function refreshGa4(){
+ const button=$('ga4-refresh');if(button)button.disabled=true;
+ $('ga4-message').textContent='Loading real Google Analytics data…';
+ try{
+  const data=await api('/api/analytics');
+  $('ga4-users').textContent=fmtCount(data.summary?.active_users);
+  $('ga4-sessions').textContent=fmtCount(data.summary?.sessions);
+  $('ga4-views').textContent=fmtCount(data.summary?.page_views);
+  $('ga4-events').textContent=fmtCount(data.summary?.events);
+  $('ga4-period').textContent=(data.period||'Last 30 days')+' · Property '+data.property_id;
+  renderGa4List('ga4-sources',data.sources,'source','sessions','users');
+  renderGa4List('ga4-pages',data.pages,'path','views','users');
+  $('ga4-message').textContent='Connected to Google Analytics. Values below are returned by the GA4 Data API.';
+  $('ga4-updated').textContent='Report retrieved '+new Date(data.generated_at||Date.now()).toLocaleString();
+ }catch(e){
+  ['ga4-users','ga4-sessions','ga4-views','ga4-events'].forEach(id=>$(id).textContent='—');
+  $('ga4-message').textContent='Analytics unavailable: '+e.message;
+  $('ga4-updated').textContent='Check the service-account permissions, Cloudflare secrets, and deployment status.';
+  ['ga4-sources','ga4-pages'].forEach(id=>{$(id).replaceChildren();const p=document.createElement('p');p.className='muted';p.textContent='No report data available until the connection succeeds.';$(id).append(p);});
+ }finally{if(button)button.disabled=false;}
+}
+async function refreshData(){const button=$('refresh');button.disabled=true;message('global-message','Refreshing live business data…','');try{const data=await api('/api/orders?admin=1');orders=Array.isArray(data.orders)?data.orders:[];renderStats();await Promise.all([checkHealth(),loadInventory(),refreshGa4()]);$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();message('global-message','Live data refreshed successfully.','success');}catch(e){message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{button.disabled=false;}}
 async function signOut(){if(client)await client.auth.signOut();session=null;orders=[];$('dashboard').classList.add('hidden');$('login').classList.remove('hidden');$('password').value='';}
 async function init(){const cfg=window.PY2_ADS_CONFIG;if(!cfg?.url||!cfg?.key||!window.supabase?.createClient){message('login-message','Sign-in service could not load. Refresh the page and try again.','error');return;}client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:false}});const {data}=await client.auth.getSession();if(data.session&&data.session.user?.email?.toLowerCase()===ADMIN_EMAIL){session=data.session;try{await api('/api/orders?admin=1');$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await refreshData();}catch{await client.auth.signOut();session=null;}}}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();const button=$('login-button');button.disabled=true;message('login-message','','');try{if(!client)throw new Error('Sign-in service is not ready. Refresh this page.');const email=$('email').value.trim().toLowerCase();if(email!==ADMIN_EMAIL)throw new Error('This email is not authorized for the PhoneYa2 Command Centre.');const {data,error}=await client.auth.signInWithPassword({email,password:$('password').value});if(error)throw error;if(data.user?.email?.toLowerCase()!==ADMIN_EMAIL){await client.auth.signOut();throw new Error('This account is not authorized.');}session=data.session;await api('/api/orders?admin=1');$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await refreshData();}catch(err){if(client)await client.auth.signOut();session=null;message('login-message',err.message||'Sign-in failed.','error');}finally{button.disabled=false;}});
-$('refresh').addEventListener('click',refreshData);$('health-refresh').addEventListener('click',checkHealth);$('logout').addEventListener('click',signOut);window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))drawChart();});$('clock').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});init().catch(e=>message('login-message',e.message||'Could not initialize sign-in.','error'));
+$('refresh').addEventListener('click',refreshData);$('ga4-refresh').addEventListener('click',refreshGa4);$('health-refresh').addEventListener('click',checkHealth);$('logout').addEventListener('click',signOut);window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))drawChart();});$('clock').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});init().catch(e=>message('login-message',e.message||'Could not initialize sign-in.','error'));
 })();
 </script>
 </body>
