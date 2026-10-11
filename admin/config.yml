@@ -8,6 +8,10 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
+site_url: "https://phoneya2.pages.dev"
+display_url: "https://phoneya2.pages.dev"
+locale: "en"
+
 collections:
   - name: "products"
     label: "Products"
@@ -25,3 +29,76 @@ collections:
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
+
+  - name: "site_content"
+    label: "Website Content"
+    description: "Edit existing website wording and contact details. These forms edit existing JSON files; they do not change the page layout or product system."
+    format: "json"
+    files:
+      - label: "Homepage"
+        name: "homepage"
+        file: "content/settings/homepage.json"
+        fields:
+          - { label: "Hero line 1", name: "hero_line1", widget: "string", hint: "Keep this short; it appears in the main homepage heading." }
+          - { label: "Hero line 2", name: "hero_line2", widget: "string", hint: "Second line of the main homepage heading." }
+          - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Stat 1", name: "stat1", widget: "string" }
+          - { label: "Stat 2", name: "stat2", widget: "string" }
+          - { label: "Stat 3", name: "stat3", widget: "string" }
+          - { label: "Stat 4", name: "stat4", widget: "string" }
+
+      - label: "About Page"
+        name: "about"
+        file: "content/settings/about.json"
+        fields:
+          - { label: "Hero line 1", name: "hero_line1", widget: "string" }
+          - { label: "Hero line 2", name: "hero_line2", widget: "string" }
+          - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Story heading", name: "story_heading", widget: "string" }
+          - { label: "Story paragraph 1", name: "story_p1", widget: "text" }
+          - { label: "Story paragraph 2", name: "story_p2", widget: "text" }
+          - { label: "Story paragraph 3", name: "story_p3", widget: "text" }
+          - { label: "Owner name", name: "owner_name", widget: "string" }
+          - { label: "Owner role", name: "owner_role", widget: "string" }
+          - { label: "Owner bio", name: "owner_bio", widget: "text" }
+          - { label: "Co-founder name", name: "cofounder_name", widget: "string" }
+          - { label: "Co-founder role", name: "cofounder_role", widget: "string" }
+          - { label: "Co-founder bio", name: "cofounder_bio", widget: "text" }
+
+      - label: "Contact Details"
+        name: "contact"
+        file: "content/settings/contact.json"
+        fields:
+          - { label: "WhatsApp number", name: "whatsapp", widget: "string", hint: "Use the international format, including country code." }
+          - { label: "Display phone number", name: "phone", widget: "string" }
+          - { label: "Email address", name: "email", widget: "string" }
+          - { label: "Location", name: "location", widget: "string" }
+          - { label: "Business hours", name: "hours", widget: "string" }
+
+      - label: "Site-wide Wording"
+        name: "sitewide"
+        file: "content/settings/sitewide.json"
+        fields:
+          - { label: "Business name", name: "business_name", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Copyright name", name: "copyright_name", widget: "string" }
+          - { label: "Sign-off", name: "signoff", widget: "string", required: false }
+          - { label: "Default WhatsApp message", name: "wa_default_msg", widget: "string" }
+          - { label: "Shop heading", name: "shop_heading", widget: "string" }
+          - { label: "Shop subtitle", name: "shop_sub", widget: "string" }
+
+      - label: "Recent Sales Notifications"
+        name: "recent_sales"
+        file: "content/settings/recent-sales.json"
+        fields:
+          - { label: "Internal editing note", name: "_comment", widget: "hidden", default: "Only publish genuine orders. Keep the displayed time accurate and deactivate entries that are no longer current." }
+          - label: "Sales notifications"
+            name: "sales"
+            widget: "list"
+            hint: "Only include genuine customer purchases. Keep product, city and time accurate. Turn Active off to hide an entry; do not invent orders or urgency."
+            summary: "{{fields.product}} — {{fields.city}} ({{fields.time}})"
+            fields:
+              - { label: "Product", name: "product", widget: "string" }
+              - { label: "City", name: "city", widget: "string" }
+              - { label: "Displayed time", name: "time", widget: "string", hint: "Use wording that remains accurate, such as 'yesterday' only when true." }
+              - { label: "Active", name: "active", widget: "boolean", default: true }
