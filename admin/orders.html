@@ -141,7 +141,7 @@ async function init(){
 $("login-form").addEventListener("submit",async e=>{e.preventDefault();const button=$("login-button");button.disabled=true;showMessage("login-message","","");try{if(!client)throw new Error("Sign-in service is not ready. Refresh the page.");const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;session=data.session;await showDashboard();}catch(err){if(client)await client.auth.signOut();session=null;showMessage("login-message",err.message||"Sign-in failed.","error");}finally{button.disabled=false;}});
 $("refresh").addEventListener("click",loadOrders);
 $("order-search").addEventListener("input",applyFilters);
-$("status-filter").addEventListener("change",applyFilters);
+$("status-filter").addEventListener("change",()=>{activeQuickFilter="all";updateQuickFilters();applyFilters();});
 $("order-sort").addEventListener("change",applyFilters);
 document.querySelectorAll("[data-admin-filter]").forEach(button=>button.addEventListener("click",()=>{activeQuickFilter=button.dataset.adminFilter;$("status-filter").value="all";applyFilters();updateQuickFilters();}));
 $("export-csv").addEventListener("click",exportCsv);
