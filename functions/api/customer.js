@@ -63,7 +63,7 @@ export async function onRequest(context) {
     }
     const buildQuery = includeNote => new URLSearchParams({
       select: "id,order_number,customer_name,customer_email,customer_phone,delivery_address," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-      "customer_email": "eq." + email,
+      "customer_email": "ilike." + email.replace(/[\\%_]/g, ch => "\\" + ch),
       order: "created_at.desc",
       limit: "100"
     });
