@@ -1297,6 +1297,8 @@ function notifyMe(title) {
 }
 
 let allProducts = [], activeCat = 'all', searchQuery = '', loadFailed = false;
+const initialProductQuery = new URLSearchParams(window.location.search).get('q') || '';
+searchQuery = initialProductQuery;
 
 function shareProduct(p) {
   const productUrl = window.location.origin + '/product.html?id=' + p.slug;
@@ -1454,6 +1456,7 @@ document.querySelectorAll('.fpill').forEach(btn => {
 document.getElementById('sort-sel').addEventListener('change', renderGrid);
 
 const searchInput = document.getElementById('search-input');
+if (initialProductQuery) searchInput.value = initialProductQuery;
 const searchClear = document.getElementById('search-clear');
 let searchTimer;
 searchInput.addEventListener('input', () => {
