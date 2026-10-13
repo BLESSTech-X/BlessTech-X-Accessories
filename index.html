@@ -1285,6 +1285,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
   .top-header-inner > .py2-global-blog-button{padding:5px 6px!important;}
 }
 </style>
+<link rel="stylesheet" href="/site-header.css?v=20261013">
 </head>
 <body>
 
@@ -1298,17 +1299,17 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
         <div class="logo-brand-sub">Accessories</div>
       </div>
     </a>
+    <a href="/blog.html" class="py2-global-blog-button" aria-label="Visit the PhoneYa2 Blog"><span aria-hidden="true">🌐</span><span>Blog</span></a>
     <div class="header-search">
       <div class="search-box">
         <input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products" onkeydown="if(event.key==='Enter'){const q=this.value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)}">
-        <button type="button" onclick="const q=document.getElementById('main-search').value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button type="button" onclick="const q=document.getElementById('main-search').value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)" aria-label="Search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
       </div>
     </div>
     <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a>
     <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="mob-nav" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
   </div>
 </div>
-
 <nav class="py2-quick-tabs" aria-label="Quick site navigation">
   <a href="/" class="is-active" aria-current="page"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
   <a href="/shop.html"><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a>
@@ -1317,19 +1318,17 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
   <a href="/contact.html"><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a>
   <a href="/cart.html"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
 </nav>
-
-<!-- CAT NAV STRIP -->
-<div class="cat-nav">
+<div class="cat-nav" aria-label="Shop categories">
   <div class="cat-nav-inner">
-    <a href="shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store"></i> All Products</a>
-    <a href="shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen"></i> Cases</a>
-    <a href="shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt"></i> Chargers</a>
-    <a href="shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug"></i> Cables</a>
-    <a href="shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones"></i> Earphones</a>
-    <a href="shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full"></i> Power Banks</a>
-    <a href="shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved"></i> Protectors</a>
-    <a href="shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile"></i> Phones</a>
-    <a href="about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info"></i> About Us</a>
+    <a href="/shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store" aria-hidden="true"></i> All Products</a>
+    <a href="/shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Cases</a>
+    <a href="/shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Chargers</a>
+    <a href="/shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug" aria-hidden="true"></i> Cables</a>
+    <a href="/shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones" aria-hidden="true"></i> Earphones</a>
+    <a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full" aria-hidden="true"></i> Power Banks</a>
+    <a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Protectors</a>
+    <a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile" aria-hidden="true"></i> Phones</a>
+    <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
   </div>
 </div>
 
@@ -3130,13 +3129,10 @@ s0.parentNode.insertBefore(s1,s0);
 <!--End of Tawk.to Script-->
 
 <script src="/cart.js" defer></script>
-<script id="phoneya2-sticky-header-height-v4">
-(()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
-</script>
-<script id="phoneya2-fixed-header-layout-v5">
-(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');if(h)ro.observe(h);if(n)ro.observe(n)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
-</script>
+
+
   <script src="/blog-widgets.js" defer></script>
 <script src="/blog-header-button.js" defer></script>
+<script src="/site-header.js?v=20261013" defer></script>
 </body>
 </html>
