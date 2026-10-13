@@ -1,7 +1,19 @@
 // ─── PhoneYa2 Service Worker ─────────────────────────────────────────────────
 // Version: bump this number any time you want to force a cache refresh
-const VERSION   = 'phoneya2-v9';
+const VERSION   = 'phoneya2-v10';
 const CACHE     = VERSION;
+// Navigation documents are reused for five minutes, then refreshed from the network.
+const PAGE_TTL_MS = 5 * 60 * 1000;
+
+function stampResponse(response) {
+  const headers = new Headers(response.headers);
+  headers.set('X-PhoneYa2-Cached-At', String(Date.now()));
+  return new Response(response.clone().body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
 
 // Files that get cached on first install (the app shell)
 // These load instantly even when offline
@@ -65,6 +77,55 @@ self.addEventListener('fetch', event => {
 
   // Skip XML and text files (sitemap.xml, robots.txt) — let network handle directly
   if (url.pathname.endsWith('.xml') || url.pathname.endsWith('.txt')) {
+    return;
+  }
+
+  // Navigation: reuse a recently visited HTML page instantly, but refresh it after 5 minutes.
+  // Browser back/forward can additionally restore the exact previous page from BFCache.
+  if (request.mode === 'navigate') {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE);
+      const cached = await cache.match(request);
+      const cachedAt = cached ? Number(cached.headers.get('X-PhoneYa2-Cached-At') || 0) : 0;
+      const isFresh = cached && cachedAt > 0 && (Date.now() - cachedAt) < PAGE_TTL_MS;
+      if (isFresh) return cached;
+      try {
+        const response = await fetch(request);
+        if (response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
+          const stamped = stampResponse(response);
+          await cache.put(request, stamped.clone());
+          return stamped;
+        }
+        return response;
+      } catch (error) {
+        if (cached) return cached;
+        const home = await cache.match('/index.html');
+        if (home) return home;
+        return new Response('You appear to be offline. Reconnect and try again.', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+      }
+    })());
+    return;
+  }
+
+  // Link-intent prefetches are cached with the same five-minute freshness window.
+  if (request.headers.get('X-PhoneYa2-Prefetch') === '1') {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request);
+        if (response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
+          const cache = await caches.open(CACHE);
+          const stamped = stampResponse(response);
+          await cache.put(new Request(url.href), stamped.clone());
+          return stamped;
+        }
+        return response;
+      } catch (error) {
+        return caches.match(new Request(url.href)).then(cached => cached || new Response('', {status: 504}));
+      }
+    })());
     return;
   }
 
