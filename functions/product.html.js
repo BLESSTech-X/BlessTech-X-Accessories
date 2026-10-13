@@ -61,7 +61,7 @@ export async function onRequest(context) {
   const slug = url.searchParams.get('id');
 
   // Only handle the existing product.html?id=<slug> route and safe CMS slugs.
-  if (!slug || slug.length > 180 || !/^[a-zA-Z0-9_-]+$/.test(slug)) {
+  if (!slug || slug.length > 180 || slug === '.' || slug === '..' || /[\/\\\u0000-\u001f]/.test(slug)) {
     return context.next();
   }
 
