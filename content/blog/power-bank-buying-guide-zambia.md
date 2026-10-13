@@ -3,7 +3,7 @@ title: "Buying a Power Bank? 6 Things to Check Before You Pay"
 date: "2026-10-11T08:00:00Z"
 category: "Buying Guides"
 excerpt: "Capacity is only one part of a useful power bank. Compare real-world needs, output ports, charging speed, size and product condition before choosing one."
-featured_image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=1200&q=85"
+featured_image: "/assets/images/uploads/1000152689.jpg"
 author: "PhoneYa2"
 featured: true
 publish: true
