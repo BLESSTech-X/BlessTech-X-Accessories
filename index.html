@@ -1263,6 +1263,28 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
   /* Keep the watermark static: animating blur/filter on a fixed full-screen layer can tax scrolling on phones. */
   body::before { animation: none !important; will-change: auto !important; transform: none !important; filter: grayscale(1) saturate(0) blur(.45px) !important; }
 </style>
+<style id="phoneya2-home-menu-layout-fix">
+/* Homepage menu control: keep it beside the cart, never beside the logo. */
+.top-header-inner > .header-cart-cta{order:3!important;flex:0 0 auto!important;margin-left:0!important;}
+.top-header-inner > #hamburger.hamburger{order:4!important;flex:0 0 40px!important;width:40px!important;height:40px!important;align-items:center!important;justify-content:center!important;border:1px solid #dbe2ea!important;border-radius:11px!important;background:#fff!important;color:#172033!important;font-size:19px!important;box-shadow:0 2px 7px rgba(15,23,42,.08)!important;transition:background .18s,border-color .18s,box-shadow .18s!important;}
+.top-header-inner > #hamburger.hamburger:hover{background:#f8fafc!important;border-color:#b9c5d4!important;box-shadow:0 4px 12px rgba(15,23,42,.12)!important;}
+.top-header-inner > #hamburger.hamburger:focus-visible{outline:3px solid #60a5fa!important;outline-offset:2px!important;}
+.top-header-inner > .py2-global-blog-button{order:2!important;flex:0 0 auto!important;}
+.mob-nav{top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,44px))!important;bottom:0!important;z-index:300!important;}
+.mob-nav-panel{height:100%!important;height:calc(100vh - var(--py2-header-height,68px) - var(--py2-tabs-height,44px))!important;height:calc(100dvh - var(--py2-header-height,68px) - var(--py2-tabs-height,44px))!important;max-height:100%!important;}
+@media(max-width:1024px){
+  .top-header-inner > #hamburger.hamburger{display:inline-flex!important;visibility:visible!important;opacity:1!important;}
+}
+@media(min-width:1025px){
+  .top-header-inner > #hamburger.hamburger{display:none!important;}
+}
+@media(max-width:380px){
+  .top-header-inner{gap:5px!important;padding-left:7px!important;padding-right:7px!important;}
+  .top-header-inner > #hamburger.hamburger{flex-basis:36px!important;width:36px!important;height:36px!important;}
+  .top-header-inner > .header-cart-cta{padding:7px 6px!important;}
+  .top-header-inner > .py2-global-blog-button{padding:5px 6px!important;}
+}
+</style>
 </head>
 <body>
 
@@ -1283,6 +1305,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       </div>
     </div>
     <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="mob-nav" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
   </div>
 </div>
 
@@ -2337,14 +2360,22 @@ window.addEventListener('appinstalled', () => {
   window._installPrompt = null;
 });
 
-document.getElementById('hamburger')?.addEventListener('click',()=>{
-  document.getElementById('mob-nav')?.classList.add('open');
+const menuToggle = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mob-nav');
+const closeMobileMenu = () => {
+  mobileMenu?.classList.remove('open');
+  menuToggle?.setAttribute('aria-expanded', 'false');
+};
+menuToggle?.addEventListener('click',()=>{
+  mobileMenu?.classList.add('open');
+  menuToggle.setAttribute('aria-expanded', 'true');
 });
-document.getElementById('mob-nav-close').addEventListener('click',()=>{
-  document.getElementById('mob-nav').classList.remove('open');
+document.getElementById('mob-nav-close')?.addEventListener('click',closeMobileMenu);
+mobileMenu?.addEventListener('click',e=>{
+  if(e.target===e.currentTarget) closeMobileMenu();
 });
-document.getElementById('mob-nav').addEventListener('click',e=>{
-  if(e.target===e.currentTarget) e.currentTarget.classList.remove('open');
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeMobileMenu();
 });
 
 window.doHeaderSearch = function(mobile) {
