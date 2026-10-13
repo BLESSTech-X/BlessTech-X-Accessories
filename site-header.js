@@ -1,5 +1,25 @@
 (()=>{'use strict';
 const btn=document.getElementById('hamburger');
+const root=document.documentElement,body=document.body;
+const header=document.querySelector('body>.top-header');
+const tabs=document.querySelector('body>nav.py2-quick-tabs');
+const cats=document.querySelector('body>.cat-nav');
+let measureFrame=0;
+const measure=()=>{
+ cancelAnimationFrame(measureFrame);
+ measureFrame=requestAnimationFrame(()=>{
+  const hh=header?Math.ceil(header.getBoundingClientRect().height):72;
+  const th=tabs?Math.ceil(tabs.getBoundingClientRect().height):44;
+  root.style.setProperty('--py2-header-height',hh+'px');
+  root.style.setProperty('--py2-tabs-height',th+'px');
+  body.style.setProperty('padding-top',(hh+th)+'px','important');
+  if(cats)cats.style.setProperty('top',(hh+th)+'px','important');
+ });
+};
+measure();
+window.addEventListener('resize',measure,{passive:true});
+window.addEventListener('load',measure,{once:true});
+if('ResizeObserver'in window){const ro=new ResizeObserver(measure);if(header)ro.observe(header);if(tabs)ro.observe(tabs);}
 if(!btn)return;
 let drawer=document.getElementById('mob-nav')||document.getElementById('mobile-nav');
 if(drawer){btn.setAttribute('aria-controls',drawer.id);return;}
