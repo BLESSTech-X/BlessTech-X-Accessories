@@ -79,3 +79,16 @@ body>header .header-inner>nav{display:none!important}
 .py2-header-drawer-links a{display:flex;align-items:center;gap:11px;padding:13px 12px;border-radius:9px;color:#334155;text-decoration:none;font-weight:700}
 .py2-header-drawer-links a:hover{background:#f0fdf4;color:#15803d}
 .py2-header-drawer-order{display:flex;align-items:center;gap:8px;margin:8px 14px 0;padding:13px;border-radius:10px;background:#ff6500;color:#fff!important;text-decoration:none;font-weight:800}
+
+body>.top-header .py2-global-blog-button{position:relative!important;isolation:isolate!important;flex:0 0 auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:0 2px!important;padding:7px 10px!important;border:1px solid #65aaff!important;border-radius:100px!important;background:linear-gradient(135deg,#eff8ff,#d9eaff)!important;color:#0754ad!important;font:900 12px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif!important;text-decoration:none!important;white-space:nowrap!important;box-shadow:0 0 0 1px #68b6ff40,0 0 13px #168bff4d,0 0 25px #168bff20!important;transition:transform .2s,box-shadow .2s!important}
+body>.top-header .py2-global-blog-button span:first-child{font-size:15px!important;filter:drop-shadow(0 0 4px #168bff70)}
+body>.top-header .py2-global-blog-button:hover{transform:translateY(-1px)!important;box-shadow:0 0 0 1px #168bff80,0 0 18px #168bff70!important}
+body>.top-header .py2-global-blog-button:focus-visible{outline:3px solid #168bff!important;outline-offset:3px!important}
+@media(max-width:520px){
+ body>.top-header .py2-global-blog-button{padding:6px 7px!important;font-size:10px!important;gap:3px!important;margin:0!important}
+ body>.top-header .py2-global-blog-button span:first-child{font-size:13px!important}
+ body>.top-header .logo-wrap{max-width:calc(100% - 44px)!important}
+ body>.top-header .header-search{flex:1 1 50px!important;min-width:40px!important}
+ body>.top-header .header-cart-cta .cart-word{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){body>.top-header .py2-global-blog-button{transition:none!important}}
