@@ -1,0 +1,17 @@
+/* Shared PhoneYa2 blog teasers: published posts only, fail-safe if content is unavailable. */
+(function(){
+'use strict';
+if(location.pathname==='/blog.html'||location.pathname==='/blog-post.html'||document.querySelector('[data-py2-blog-widget]'))return;
+function track(n,p){try{if(typeof gtag==='function')gtag('event',n,Object.assign({content_group:'PhoneYa2 Blog Widget'},p||{}))}catch(e){}}
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function dateLabel(v){var d=new Date(v);return v&&!isNaN(d)?d.toLocaleDateString(undefined,{month:'short',day:'numeric'}):'Latest update'}
+function card(p){var href='/blog-post.html?slug='+encodeURIComponent(p.slug);var image=p.image?'<img class="py2-card-img" loading="lazy" src="'+esc(p.image)+'" alt="">':'<div class="py2-card-noimg">PhoneYa2</div>';return '<article class="py2-blog-card">'+image+'<div class="py2-card-content"><div class="py2-meta"><span class="py2-pill">'+esc(p.category)+'</span><span>'+esc(dateLabel(p.date))+'</span></div><h3><a href="'+href+'" data-py2-blog-open="'+esc(p.slug)+'">'+esc(p.title)+'</a></h3><p class="py2-excerpt">'+esc(p.excerpt)+'</p><a class="py2-read" href="'+href+'" data-py2-blog-open="'+esc(p.slug)+'">Read more ↗</a></div></article>'}
+var css=document.createElement('link');css.rel='stylesheet';css.href='/blog-shared.css';document.head.appendChild(css);
+function inject(posts){if(!posts.length)return;var section=document.createElement('section');section.className='py2-blog-widget';section.setAttribute('data-py2-blog-widget','');section.innerHTML='<div class="py2-blog-widget-inner"><div class="py2-section-head"><div><div class="py2-eyebrow">From the PhoneYa2 blog</div><h2>Offers, updates & useful tech tips</h2><p>Fresh stories and deals worth checking out.</p></div><a class="py2-read" href="/blog.html">View all ↗</a></div><div class="py2-grid">'+posts.slice(0,3).map(card).join('')+'</div></div>';
+section.addEventListener('click',function(e){var a=e.target.closest('[data-py2-blog-open]');if(a)track('blog_widget_click',{post_slug:a.dataset.py2BlogOpen,link_location:location.pathname})});
+var target=document.querySelector('footer')||document.querySelector('main')||document.querySelector('.main-wrap')||document.body;
+if(target.tagName.toLowerCase()==='footer')target.parentNode.insertBefore(section,target);else target.appendChild(section);
+if('IntersectionObserver'in window){var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){track('blog_widget_impression',{link_location:location.pathname,post_count:Math.min(3,posts.length)});io.disconnect()}})});io.observe(section)}else track('blog_widget_impression',{link_location:location.pathname,post_count:Math.min(3,posts.length)});
+}
+fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error();return r.json()}).then(function(posts){if(Array.isArray(posts))inject(posts.filter(function(p){return p&&p.publish===true}).sort(function(a,b){return String(b.date).localeCompare(String(a.date))}))}).catch(function(){/* Keep the existing store usable if the blog index is unavailable. */});
+})();
