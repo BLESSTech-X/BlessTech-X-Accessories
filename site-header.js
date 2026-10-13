@@ -30,8 +30,8 @@ if(drawer)drawer.addEventListener('click',e=>{const a=e.target.closest('a[href]'
 
 function runSearch(value){const q=String(value||'').trim();if(!q){const input=drawer&&drawer.querySelector('#py2-menu-search-input');if(input){input.focus();input.setCustomValidity('Enter a product name to search.');input.reportValidity();input.addEventListener('input',()=>input.setCustomValidity(''),{once:true});}return;}window.location.href='/shop.html?q='+encodeURIComponent(q);}
 document.addEventListener('submit',e=>{const form=e.target;if(form.matches('.py2-menu-search')){e.preventDefault();runSearch(form.querySelector('input')?.value);return;}if(form.matches('.header-search form,[role="search"].header-search')){e.preventDefault();runSearch(form.querySelector('input')?.value);}},true);
-document.addEventListener('click',e=>{const button=e.target.closest('.header-search button, .header-search [type="submit"]');if(button){const area=button.closest('.header-search');const input=area&&area.querySelector('input');if(input){e.preventDefault();runSearch(input.value);}}},true);
-document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target;if(input.matches('.header-search input, #main-search, #mob-search, #py2-menu-search-input')){e.preventDefault();runSearch(input.value);}});
+document.addEventListener('click',e=>{const button=e.target.closest('.header-search button, .header-search [type="submit"]');if(button){const area=button.closest('.header-search');const input=area&&area.querySelector('input');if(input){e.preventDefault();e.stopImmediatePropagation();runSearch(input.value);}}},true);
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target;if(input.matches('.header-search input, #main-search, #mob-search, #py2-menu-search-input')){e.preventDefault();e.stopImmediatePropagation();runSearch(input.value);}});
 const query=new URLSearchParams(location.search).get('q');
 if(query){document.querySelectorAll('body>.top-header .header-search input, #main-search').forEach(i=>{i.value=query;});}
 })();
