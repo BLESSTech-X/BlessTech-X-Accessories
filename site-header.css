@@ -92,3 +92,10 @@ body>.top-header .py2-global-blog-button:focus-visible{outline:3px solid #168bff
  body>.top-header .header-cart-cta .cart-word{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){body>.top-header .py2-global-blog-button{transition:none!important}}
+
+
+/* UX correction: product search and category navigation belong on the Shop page only. */
+body>.top-header .header-search{display:none!important}
+body.shop-page>.top-header .header-search{display:flex!important}
+body>.cat-nav{display:none!important}
+body.shop-page>.cat-nav{display:block!important}
