@@ -1,6 +1,7 @@
 {
   "version": 1,
   "include": [
+    "/api/*",
     "/product.html",
     "/blog-post.html"
   ],
