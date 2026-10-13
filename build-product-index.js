@@ -2,19 +2,71 @@
 const fs = require('fs');
 const path = require('path');
 
-const productsDir = path.join(__dirname, 'content', 'products');
-const outputFile = path.join(productsDir, 'index.json');
+const root = __dirname;
+const productsDir = path.join(root, 'content', 'products');
+const blogDir = path.join(root, 'content', 'blog');
+
+function parseFrontmatter(markdown) {
+  const match = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/);
+  if (!match) return {};
+  const result = {};
+  const lines = match[1].split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!m) continue;
+    const key = m[1];
+    let value = m[2].trim();
+    if (value === '' && i + 1 < lines.length && /^\s+-\s+/.test(lines[i + 1])) {
+      const items = [];
+      while (i + 1 < lines.length && /^\s+-\s+/.test(lines[i + 1])) {
+        items.push(lines[++i].replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, ''));
+      }
+      result[key] = items;
+      continue;
+    }
+    value = value.replace(/^['"]|['"]$/g, '');
+    if (value === 'true') value = true;
+    else if (value === 'false') value = false;
+    result[key] = value;
+  }
+  return result;
+}
 
 try {
-  const files = fs.readdirSync(productsDir)
+  const productSlugs = fs.readdirSync(productsDir)
     .filter(f => f.endsWith('.md') && f !== 'README.md')
-    .map(f => f.replace('.md', ''))
+    .map(f => f.replace(/\.md$/, ''))
     .sort();
+  fs.writeFileSync(path.join(productsDir, 'index.json'), JSON.stringify(productSlugs, null, 2));
+  console.log('Product index built: ' + productSlugs.length + ' products');
 
-  fs.writeFileSync(outputFile, JSON.stringify(files, null, 2));
-  console.log(`✅ Product index built: ${files.length} products`);
-  files.forEach(f => console.log(`   - ${f}`));
+  fs.mkdirSync(blogDir, { recursive: true });
+  const blogPosts = fs.readdirSync(blogDir)
+    .filter(f => f.endsWith('.md') && f !== 'README.md')
+    .map(file => {
+      const slug = file.replace(/\.md$/, '');
+      const source = fs.readFileSync(path.join(blogDir, file), 'utf8');
+      const meta = parseFrontmatter(source);
+      if (meta.publish !== true) return null;
+      return {
+        slug,
+        title: String(meta.title || 'PhoneYa2 Update'),
+        date: String(meta.date || ''),
+        category: String(meta.category || 'PhoneYa2 Updates'),
+        excerpt: String(meta.excerpt || ''),
+        image: String(meta.featured_image || ''),
+        author: String(meta.author || 'PhoneYa2'),
+        featured: meta.featured === true,
+        publish: true,
+        tags: Array.isArray(meta.tags) ? meta.tags : [],
+        related_products: Array.isArray(meta.related_products) ? meta.related_products : []
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  fs.writeFileSync(path.join(blogDir, 'index.json'), JSON.stringify(blogPosts, null, 2));
+  console.log('Published blog index built: ' + blogPosts.length + ' posts');
 } catch (err) {
-  console.error('❌ Failed to build product index:', err.message);
+  console.error('Failed to build content indexes:', err.message);
   process.exit(1);
 }

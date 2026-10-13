@@ -12,6 +12,7 @@ const staticPages = [
   { loc: '/shop.html', priority: 0.9, changefreq: 'daily' },
   { loc: '/about.html', priority: 0.7, changefreq: 'monthly' },
   { loc: '/contact.html', priority: 0.7, changefreq: 'monthly' },
+  { loc: '/blog.html', priority: 0.9, changefreq: 'daily' },
 ];
 
 try {
@@ -32,7 +33,20 @@ try {
     changefreq: 'weekly',
   }));
 
-  const allEntries = [...staticPages, ...productEntries];
+  const blogIndexFile = path.join(__dirname, 'content', 'blog', 'index.json');
+  let blogEntries = [];
+  if (fs.existsSync(blogIndexFile)) {
+    const posts = JSON.parse(fs.readFileSync(blogIndexFile, 'utf8'));
+    if (Array.isArray(posts)) {
+      blogEntries = posts.filter(post => post && post.slug).map(post => ({
+        loc: `/blog-post.html?slug=${encodeURIComponent(post.slug)}`,
+        priority: post.featured ? 0.8 : 0.6,
+        changefreq: 'weekly',
+      }));
+    }
+  }
+
+  const allEntries = [...staticPages, ...productEntries, ...blogEntries];
 
   const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
   const xmlNamespace = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -53,6 +67,7 @@ try {
   console.log(`✅ Sitemap generated: ${sitemapFile}`);
   console.log(`   - Static pages: ${staticPages.length}`);
   console.log(`   - Products: ${productEntries.length}`);
+  console.log(`   - Published blog posts: ${blogEntries.length}`);
   console.log(`   - Total URLs: ${allEntries.length}`);
 } catch (err) {
   console.error('❌ Failed to generate sitemap:', err.message);

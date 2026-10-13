@@ -30,6 +30,30 @@ collections:
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
 
+
+  - name: "blog_posts"
+    label: "Blog & Updates"
+    label_singular: "Post"
+    folder: "content/blog"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    summary: "{{title}} — {{date}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - { label: "Post Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ" }
+      - { label: "Category", name: "category", widget: "select", options: ["Offers", "Product News", "Buying Guides", "Tips & Tricks", "PhoneYa2 Updates", "Community"] }
+      - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
+      - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
+      - { label: "Author", name: "author", widget: "string", default: "PhoneYa2" }
+      - { label: "Featured Post", name: "featured", widget: "boolean", default: false }
+      - { label: "Publish This Post", name: "publish", widget: "boolean", default: false, hint: "Keep off while drafting. Only published posts appear publicly." }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Related Product Slugs", name: "related_products", widget: "list", required: false, hint: "Optional product slugs, for example 10000mah-powerbank." }
+      - { label: "Article Body", name: "body", widget: "markdown" }
+
   - name: "site_content"
     label: "Website Content"
     description: "Edit existing website wording and contact details. These forms edit existing JSON files; they do not change the page layout or product system."
