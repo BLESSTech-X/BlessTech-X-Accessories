@@ -39,7 +39,7 @@ const menuRoots = () => Array.from(document.querySelectorAll(
 ));
 const syncMenuLock = () => {
   const isOpen = menuRoots().some(menu => menu.classList.contains('open'));
-  body.classList.toggle('py2-menu-open', isOpen);
+  document.body.classList.toggle('py2-menu-open', isOpen);
 };
 const closeMenuRoot = menu => {
   if (!menu) return;
