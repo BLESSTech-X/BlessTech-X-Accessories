@@ -1109,6 +1109,42 @@ body > .cat-nav .cat-nav-item{flex:0 0 auto!important;}
   body > .cat-nav .cat-nav-item{padding:9px 11px!important;font-size:12px!important;}
 }
 </style>
+<style id="phoneya2-quick-nav-fixed-alignment-v1">
+/* The Home / Shop / Account / About strip is fixed to the viewport directly below the header. */
+body>.top-header + nav.py2-quick-tabs,
+body>header + nav.py2-quick-tabs,
+body>header.top + nav.py2-quick-tabs,
+body>nav.py2-quick-tabs{
+  position:fixed!important;
+  top:var(--py2-header-height,72px)!important;
+  left:0!important;right:0!important;
+  width:100%!important;min-width:100%!important;max-width:none!important;
+  margin:0!important;transform:none!important;
+  box-sizing:border-box!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;padding:6px clamp(8px,2vw,24px)!important;
+  background:rgba(255,255,255,.98)!important;
+  border:0!important;border-bottom:1px solid rgba(21,148,71,.16)!important;
+  border-radius:0 0 12px 12px!important;
+  box-shadow:0 5px 15px rgba(15,23,42,.08)!important;
+  z-index:1590!important;
+  -webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;
+}
+body>nav.py2-quick-tabs>a{
+  flex:0 1 112px!important;min-width:0!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:7px!important;padding:8px 12px!important;
+  white-space:nowrap!important;border-radius:9px!important;
+}
+@media(max-width:760px){
+  body>.top-header + nav.py2-quick-tabs,
+  body>header + nav.py2-quick-tabs,
+  body>header.top + nav.py2-quick-tabs,
+  body>nav.py2-quick-tabs{top:var(--py2-header-height,62px)!important;gap:1px!important;padding:5px 3px!important;}
+  body>nav.py2-quick-tabs>a{flex:1 1 0!important;flex-direction:column!important;gap:3px!important;padding:5px 1px!important;font-size:10px!important;}
+}
+@media(prefers-reduced-motion:reduce){body>nav.py2-quick-tabs>a{transition:none!important;}}
+</style>
 
 </head>
 <body>
@@ -2024,8 +2060,8 @@ s0.parentNode.insertBefore(s1,s0);
 <script id="phoneya2-sticky-header-height-v4">
 (()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
 </script>
-<script id="phoneya2-fixed-header-layout-v6">
-(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');const cats=document.querySelector('body>.cat-nav');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);const ch=cats?Math.ceil(cats.getBoundingClientRect().height):0;document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.documentElement.style.setProperty('--py2-category-height',ch+'px');if(header.classList.contains('top-header')&&getComputedStyle(header).position==='sticky'){document.body.style.setProperty('padding-top','0px','important');tabs.style.setProperty('position','sticky','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('margin','0 auto 12px','important');}else{document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');}if(cats){cats.style.setProperty('top',(hh+th)+'px','important');}});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');const c=document.querySelector('body>.cat-nav');if(h)ro.observe(h);if(n)ro.observe(n);if(c)ro.observe(c)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
+<script id="phoneya2-fixed-header-layout-v7">
+(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');const cats=document.querySelector('body>.cat-nav');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');tabs.style.setProperty('position','fixed','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('left','0','important');tabs.style.setProperty('right','0','important');tabs.style.setProperty('width','100%','important');tabs.style.setProperty('margin','0','important');const th=Math.ceil(tabs.getBoundingClientRect().height);const ch=cats?Math.ceil(cats.getBoundingClientRect().height):0;document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.documentElement.style.setProperty('--py2-category-height',ch+'px');document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');if(cats)cats.style.setProperty('top',(hh+th)+'px','important');});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');const c=document.querySelector('body>.cat-nav');if(h)ro.observe(h);if(n)ro.observe(n);if(c)ro.observe(c)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
 </script>
   <script src="/blog-widgets.js" defer></script>
 <script src="/blog-header-button.js" defer></script>
