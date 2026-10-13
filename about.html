@@ -765,6 +765,56 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 .top-header .search-box button:hover{background:#e9670a;}
 @media(max-width:760px){.top-header .header-search{display:none!important;}}
 </style>
+
+<style id="phoneya2-sticky-tabs-and-hero-logo-v2">
+/* Keep the quick site tabs attached to the header as the page scrolls. */
+body>.top-header + .py2-quick-tabs,
+body>header + .py2-quick-tabs,
+body>header.top + .py2-quick-tabs{
+  position:sticky!important;
+  top:var(--py2-header-height,68px)!important;
+  z-index:1190!important;
+  margin:0 auto 12px!important;
+  border-top:1px solid rgba(21,148,71,.18);
+  border-radius:0 0 13px 13px;
+  box-shadow:0 7px 18px rgba(17,24,39,.12);
+}
+body>.top-header + .py2-quick-tabs{margin-bottom:12px!important}
+:root{--py2-header-height:68px;--py2-tabs-height:42px}
+.filter-bar{top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px))!important}
+/* Larger, clearly visible logo animation behind each page's opening content. */
+.py2-page-logo-ambient{
+  width:clamp(280px,48vw,560px)!important;
+  height:clamp(280px,48vw,560px)!important;
+  left:50%!important;top:50%!important;
+  opacity:.19!important;
+  filter:drop-shadow(0 0 22px rgba(37,211,102,.20)) saturate(1.08)!important;
+  mix-blend-mode:normal!important;
+  animation:py2HeroLogoPulse 8s ease-in-out infinite alternate!important;
+  will-change:transform,opacity,filter;
+}
+.shop-hero>.py2-page-logo-ambient,
+.about-hero>.py2-page-logo-ambient,
+.contact-hero>.py2-page-logo-ambient{z-index:1!important;pointer-events:none!important}
+.shop-hero-inner,.about-hero-content,.contact-hero-content{position:relative;z-index:2!important}
+.shop-hero-orb1,.shop-hero-orb2,.about-hero-orb1,.about-hero-orb2,.contact-hero-orb1,.contact-hero-orb2{z-index:0}
+@keyframes py2HeroLogoPulse{
+  0%{transform:translate(-51%,-50%) scale(.94);opacity:.12;filter:drop-shadow(0 0 12px rgba(37,211,102,.12)) saturate(.92)}
+  50%{opacity:.2}
+  100%{transform:translate(-49%,-50%) scale(1.045);opacity:.17;filter:drop-shadow(0 0 30px rgba(255,96,0,.22)) saturate(1.12)}
+}
+@media(max-width:600px){
+  .py2-page-logo-ambient{width:clamp(240px,76vw,380px)!important;height:clamp(240px,76vw,380px)!important;opacity:.15!important}
+  body>.top-header + .py2-quick-tabs,
+  body>header + .py2-quick-tabs,
+  body>header.top + .py2-quick-tabs{max-width:calc(100% - 12px);gap:1px;padding:4px}
+  .py2-quick-tabs a{padding:7px 8px!important;font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .py2-page-logo-ambient{animation:none!important;transform:translate(-50%,-50%)!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -1301,7 +1351,7 @@ s0.parentNode.insertBefore(s1,s0);
 (()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
 </script>
 <script id="phoneya2-fixed-header-layout-v5">
-(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');if(h)ro.observe(h);if(n)ro.observe(n)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
+(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');if(header.classList.contains('top-header')&&getComputedStyle(header).position==='sticky'){document.body.style.setProperty('padding-top','0px','important');tabs.style.setProperty('position','sticky','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('margin','0 auto 12px','important');}else{document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');}});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');if(h)ro.observe(h);if(n)ro.observe(n)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
 </script>
   <script src="/blog-widgets.js" defer></script>
 <script src="/blog-header-button.js" defer></script>
