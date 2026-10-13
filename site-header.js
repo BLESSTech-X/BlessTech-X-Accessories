@@ -1,4 +1,38 @@
 (()=>{'use strict';
+// Register the shared service worker on every storefront page, not just product.html.
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('/sw.js').catch(() => {
+    // Navigation remains fully functional if offline caching is unavailable.
+  });
+}
+
+// Warm same-origin HTML pages after a short hover intent so the first click feels faster.
+const py2Prefetched = new Set();
+function py2PrefetchLink(link) {
+  if (!link || link.target && link.target !== '_self' || link.hasAttribute('download')) return;
+  let target;
+  try { target = new URL(link.href, location.href); } catch (_) { return; }
+  if (target.origin !== location.origin || target.pathname.startsWith('/admin')) return;
+  if (!(target.pathname === '/' || target.pathname.endsWith('.html'))) return;
+  if (target.href === location.href || py2Prefetched.has(target.href)) return;
+  py2Prefetched.add(target.href);
+  fetch(target.href, {
+    credentials: 'same-origin',
+    headers: { 'X-PhoneYa2-Prefetch': '1' }
+  }).catch(() => { /* Normal navigation remains the fallback. */ });
+}
+document.addEventListener('pointerover', event => {
+  if (event.pointerType !== 'mouse') return;
+  const link = event.target.closest && event.target.closest('a[href]');
+  if (link) setTimeout(() => {
+    if (link.matches(':hover')) py2PrefetchLink(link);
+  }, 140);
+}, { passive: true });
+document.addEventListener('touchstart', event => {
+  const link = event.target.closest && event.target.closest('a[href]');
+  if (link) py2PrefetchLink(link);
+}, { passive: true });
+
 const btn=document.getElementById('hamburger');
 const root=document.documentElement,body=document.body;
 const header=document.querySelector('body>.top-header');
