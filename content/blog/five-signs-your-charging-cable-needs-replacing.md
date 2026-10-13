@@ -3,7 +3,7 @@ title: "5 Signs Your Charging Cable Needs Replacing"
 date: "2026-10-12T08:00:00Z"
 category: "Tips & Tricks"
 excerpt: "Intermittent charging, exposed wires and loose connectors are more than annoyances. Learn when a cable needs replacing and how to make your next one last longer."
-featured_image: "https://images.unsplash.com/photo-1609592424830-3c7a0e5c7c1c?auto=format&fit=crop&w=1200&q=85"
+featured_image: "/assets/images/uploads/1000066515.jpg"
 author: "PhoneYa2"
 featured: true
 publish: true
