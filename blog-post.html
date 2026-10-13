@@ -3,7 +3,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PhoneYa2 Blog</title><meta name="description" content="Offers, buying guides and tech tips from PhoneYa2 in Zambia."><meta name="theme-color" content="#ff6000">
 <meta property="og:title" content="PhoneYa2 Blog"><meta property="og:description" content="Offers, buying guides and tech tips from PhoneYa2."><meta property="og:type" content="article">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVNT6SQCS2"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-MVNT6SQCS2');</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/blog-shared.css"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/blog-shared.css"><link rel="stylesheet" href="/site-header.css?v=20261013">
+</head>
 <body class="py2-blog-page"><div class="top-header py2-blog-home-header">
   <div class="top-header-inner">
     <a href="/" class="logo-wrap" aria-label="PhoneYa2 Accessories home">
@@ -21,25 +22,46 @@
     <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a>
   </div>
 </div>
+<div class="top-header">
+  <div class="top-header-inner">
+    <a href="/" class="logo-wrap" aria-label="PhoneYa2 Accessories home">
+      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 Accessories" class="logo-img" onerror="this.style.display='none'">
+      <div class="logo-text-block">
+        <div class="logo-brand-name"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
+        <div class="logo-brand-sub">Accessories</div>
+      </div>
+    </a>
+    <div class="header-search">
+      <div class="search-box">
+        <input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products" onkeydown="if(event.key==='Enter'){const q=this.value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)}">
+        <button type="button" onclick="const q=document.getElementById('main-search').value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)" aria-label="Search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+      </div>
+    </div>
+    <a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="mob-nav" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+  </div>
+</div>
 <nav class="py2-quick-tabs" aria-label="Quick site navigation">
-  <a href="/" ><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
+  <a href="/"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
   <a href="/shop.html"><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a>
   <a href="/account.html"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Account</span></a>
   <a href="/about.html"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>About</span></a>
   <a href="/contact.html"><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a>
   <a href="/cart.html"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
-  <a href="/blog.html" class="is-active" aria-current="page"><i class="fa-solid fa-globe" aria-hidden="true"></i><span>Blog</span></a>
 </nav>
-<div class="cat-nav"><div class="cat-nav-inner">
-  <a href="/shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store"></i> All Products</a>
-  <a href="/shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen"></i> Cases</a>
-  <a href="/shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt"></i> Chargers</a>
-  <a href="/shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug"></i> Cables</a>
-  <a href="/shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones"></i> Earphones</a>
-  <a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full"></i> Power Banks</a>
-  <a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved"></i> Protectors</a>
-  <a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile"></i> Phones</a>
-  <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info"></i> About Us</a>
-</div></div>
+<div class="cat-nav" aria-label="Shop categories">
+  <div class="cat-nav-inner">
+    <a href="/shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store" aria-hidden="true"></i> All Products</a>
+    <a href="/shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Cases</a>
+    <a href="/shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Chargers</a>
+    <a href="/shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug" aria-hidden="true"></i> Cables</a>
+    <a href="/shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones" aria-hidden="true"></i> Earphones</a>
+    <a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full" aria-hidden="true"></i> Power Banks</a>
+    <a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Protectors</a>
+    <a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile" aria-hidden="true"></i> Phones</a>
+    <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
+  </div>
+</div>
 <main class="py2-article" id="article"><a href="/blog.html" class="py2-read">← Back to Blog</a><section class="py2-advertise-banner py2-post-advertise"><div class="py2-advertise-icon" aria-hidden="true">📣</div><div class="py2-advertise-copy"><span class="py2-advertise-kicker">FOR ZAMBIAN BUSINESSES</span><h2>Your business could be featured here.</h2><p>Start with free advertising on PhoneYa2.</p></div><a class="py2-advertise-cta" href="/advertiser">Advertise for FREE ↗</a></section><div id="article-content" class="py2-related" style="margin-top:20px">Loading article…</div><section class="py2-related"><div class="py2-eyebrow">Explore PhoneYa2</div><h2 style="margin:6px 0">Turn good advice into a great choice.</h2><p style="color:#6b7280">Browse accessories featured in our posts and discover more everyday tech essentials.</p><a class="py2-nav-cta" href="/shop.html">Shop PhoneYa2 ↗</a></section><section id="related" class="py2-related" hidden><h2>Related products</h2><div id="related-products"></div></section><section class="py2-related"><h2>Keep exploring</h2><p style="color:#6b7280">Read more offers, guides and updates.</p><a class="py2-read" href="/blog.html">More from PhoneYa2 ↗</a></section></main>
-<footer class="py2-footer"><div class="py2-footer-brand">PhoneYa<span>2</span> <small>ACCESSORIES · SMART CHOICES. BETTER CONNECTED.</small></div><div class="py2-footer-links"><a href="/">Home</a><a href="/shop.html">Shop</a><a href="/blog.html">Blog</a><a href="/advertiser">Advertise for FREE</a><a href="/contact.html">Contact</a></div><p>Useful tech tips and product discoveries from PhoneYa2.</p></footer><script src="/ads-config.js"></script><script src="/blog-sponsored.js" defer></script><script src="/blog-product-spotlight.js" defer></script><script src="/blog-post.js" defer></script><script src="/blog-page-actions.js" defer></script></body></html>
+<footer class="py2-footer"><div class="py2-footer-brand">PhoneYa<span>2</span> <small>ACCESSORIES · SMART CHOICES. BETTER CONNECTED.</small></div><div class="py2-footer-links"><a href="/">Home</a><a href="/shop.html">Shop</a><a href="/blog.html">Blog</a><a href="/advertiser">Advertise for FREE</a><a href="/contact.html">Contact</a></div><p>Useful tech tips and product discoveries from PhoneYa2.</p></footer><script src="/ads-config.js"></script><script src="/blog-sponsored.js" defer></script><script src="/blog-product-spotlight.js" defer></script><script src="/blog-post.js" defer></script><script src="/blog-page-actions.js" defer></script><script src="/site-header.js?v=20261013" defer></script>
+</body></html>
