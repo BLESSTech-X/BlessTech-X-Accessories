@@ -33,6 +33,46 @@ document.addEventListener('touchstart', event => {
   if (link) py2PrefetchLink(link);
 }, { passive: true });
 
+// Normalize open/close behavior across all page-specific drawer variants.
+const menuRoots = () => Array.from(document.querySelectorAll(
+  'body > .mob-nav, body > #mob-nav, body > .mobile-nav, body > #mobile-nav, body > .py2-header-drawer'
+));
+const syncMenuLock = () => {
+  const isOpen = menuRoots().some(menu => menu.classList.contains('open'));
+  body.classList.toggle('py2-menu-open', isOpen);
+};
+const closeMenuRoot = menu => {
+  if (!menu) return;
+  menu.classList.remove('open');
+  syncMenuLock();
+  const trigger = document.getElementById('hamburger');
+  if (trigger) {
+    trigger.setAttribute('aria-expanded', 'false');
+    const icon = trigger.querySelector('i');
+    if (icon) icon.className = 'fa-solid fa-bars';
+  }
+};
+document.addEventListener('click', event => {
+  const menu = event.target.closest && event.target.closest(
+    'body > .mob-nav, body > #mob-nav, body > .mobile-nav, body > #mobile-nav, body > .py2-header-drawer'
+  );
+  if (menu && event.target === menu) closeMenuRoot(menu);
+  const closeButton = event.target.closest && event.target.closest(
+    '.mob-nav-close, .mobile-nav-close, .py2-header-drawer-close, [data-menu-close]'
+  );
+  if (closeButton) closeMenuRoot(closeButton.closest(
+    '.mob-nav, #mob-nav, .mobile-nav, #mobile-nav, .py2-header-drawer'
+  ));
+}, true);
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  const opened = menuRoots().filter(menu => menu.classList.contains('open'));
+  opened.forEach(closeMenuRoot);
+});
+const menuObserver = new MutationObserver(syncMenuLock);
+menuRoots().forEach(menu => menuObserver.observe(menu, { attributes: true, attributeFilter: ['class'] }));
+syncMenuLock();
+
 const btn=document.getElementById('hamburger');
 const root=document.documentElement,body=document.body;
 const header=document.querySelector('body>.top-header');
