@@ -978,7 +978,7 @@ footer{background:#111827!important;padding-top:48px!important}
 
 
 
-<link rel="stylesheet" href="/site-header.css?v=20261013">
+<link rel="stylesheet" href="/site-header.css?v=20261014">
 </head>
 <body class="shop-page">
 
@@ -1297,6 +1297,8 @@ function notifyMe(title) {
 }
 
 let allProducts = [], activeCat = 'all', searchQuery = '', loadFailed = false;
+const initialProductQuery = new URLSearchParams(window.location.search).get('q') || '';
+searchQuery = initialProductQuery;
 
 function shareProduct(p) {
   const productUrl = window.location.origin + '/product.html?id=' + p.slug;
@@ -1454,6 +1456,7 @@ document.querySelectorAll('.fpill').forEach(btn => {
 document.getElementById('sort-sel').addEventListener('change', renderGrid);
 
 const searchInput = document.getElementById('search-input');
+if (initialProductQuery) searchInput.value = initialProductQuery;
 const searchClear = document.getElementById('search-clear');
 let searchTimer;
 searchInput.addEventListener('input', () => {
@@ -1914,6 +1917,6 @@ s0.parentNode.insertBefore(s1,s0);
 <script src="/blog-widgets.js" defer></script>
 <script src="/blog-header-button.js" defer></script>
 
-<script src="/site-header.js?v=20261013" defer></script>
+<script src="/site-header.js?v=20261014" defer></script>
 </body>
 </html>
