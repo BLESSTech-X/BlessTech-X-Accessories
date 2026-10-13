@@ -8,15 +8,20 @@ function rest(path,options){options=options||{};options.headers=Object.assign({'
 function track(name,params){try{if(typeof gtag==='function')gtag('event',name,Object.assign({content_group:'PhoneYa2 Sponsored Content'},params||{}))}catch(e){}}
 function record(table,body){hash().then(function(v){body.visitor_hash=v;return rest(table,{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(body),keepalive:true})}).catch(function(){})}
 function videoMarkup(ad){
-var url=String(ad.media_url||'').trim(),provider=String(ad.video_provider||'').toLowerCase();
+var url=String(ad.media_url||'').trim(),provider=String(ad.video_provider||'').toLowerCase(),u=null;
 if(!url)return '';
-if(provider==='youtube'||/youtu\\.be|youtube\\.com/i.test(url)){
-var id='';try{var u=new URL(url);if(u.hostname.indexOf('youtu.be')>=0)id=u.pathname.split('/').filter(Boolean)[0]||'';else id=u.searchParams.get('v')||((u.pathname.match(/\\/(?:embed|shorts)\\/([^/?]+)/)||[])[1]||'')}catch(e){}
+try{u=new URL(url,window.location.href)}catch(e){}
+var host=u?u.hostname.toLowerCase():'',path=u?u.pathname.toLowerCase():url.toLowerCase();
+if(provider==='youtube'||host==='youtu.be'||host.indexOf('youtube.com')>=0){
+var id='';
+if(host==='youtu.be'&&u)id=u.pathname.split('/').filter(Boolean)[0]||'';
+else if(u){id=u.searchParams.get('v')||'';var parts=u.pathname.split('/').filter(Boolean);if(!id&&(parts[0]==='embed'||parts[0]==='shorts'))id=parts[1]||''}
 if(id)return '<iframe class="py2-sponsored-video-frame" src="https://www.youtube-nocookie.com/embed/'+esc(id)+'" title="'+esc(ad.title||'Sponsored video')+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
 }
-if(provider==='vimeo'||/vimeo\\.com/i.test(url)){var vm=(url.match(/vimeo\\.com\\/(?:video\\/)?(\\d+)/)||[])[1];if(vm)return '<iframe class="py2-sponsored-video-frame" src="https://player.vimeo.com/video/'+esc(vm)+'" title="'+esc(ad.title||'Sponsored video')+'" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'}
-if(provider==='tiktok'||/tiktok\\.com/i.test(url))return '<a class="py2-sponsored-external-video" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer"><span>▶</span><strong>Watch video promotion</strong><small>Opens the original video</small></a>';
-return '<video class="py2-sponsored-video-player" controls playsinline preload="metadata" aria-label="'+esc(ad.title||'Sponsored video')+'"><source src="'+esc(url)+'" type="'+(/\\.webm(?:[?#]|$)/i.test(url)?'video/webm':/\\.ogg(?:[?#]|$)/i.test(url)?'video/ogg':'video/mp4')+'">Your browser does not support video playback. <a href="'+esc(url)+'">Open video</a>.</video>';
+if(provider==='vimeo'||host.indexOf('vimeo.com')>=0){var partsV=u?u.pathname.split('/').filter(Boolean):[],vm=partsV[partsV.length-1]||'';if(/^\\d+$/.test(vm))return '<iframe class="py2-sponsored-video-frame" src="https://player.vimeo.com/video/'+esc(vm)+'" title="'+esc(ad.title||'Sponsored video')+'" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'}
+if(provider==='tiktok'||host.indexOf('tiktok.com')>=0)return '<a class="py2-sponsored-external-video" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer"><span>▶</span><strong>Watch video promotion</strong><small>Opens the original video</small></a>';
+var mime=path.endsWith('.webm')?'video/webm':path.endsWith('.ogg')?'video/ogg':'video/mp4';
+return '<video class="py2-sponsored-video-player" controls playsinline preload="metadata" aria-label="'+esc(ad.title||'Sponsored video')+'"><source src="'+esc(url)+'" type="'+mime+'">Your browser does not support video playback. <a href="'+esc(url)+'">Open video</a>.</video>';
 }
 function card(ad,placement){
 placement=placement||'blog_featured';
