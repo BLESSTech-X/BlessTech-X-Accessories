@@ -1,1 +1,60 @@
-[]
+[
+  {
+    "slug": "choose-the-right-phone-charger",
+    "title": "How to Choose the Right Phone Charger Without Guessing",
+    "date": "2026-10-13T08:00:00Z",
+    "category": "Buying Guides",
+    "excerpt": "A charger can look right and still be wrong for your phone. Use this simple checklist to compare connector type, charging support, power output and safety before you buy.",
+    "image": "/assets/images/uploads/whatsapp-image-2026-08-16-at-10.36.28.jpeg",
+    "author": "PhoneYa2",
+    "featured": true,
+    "publish": true,
+    "tags": [
+      "charger",
+      "charging",
+      "buying guide",
+      "phone accessories"
+    ],
+    "related_products": [
+      "braided-usb-c-cable"
+    ]
+  },
+  {
+    "slug": "five-signs-your-charging-cable-needs-replacing",
+    "title": "5 Signs Your Charging Cable Needs Replacing",
+    "date": "2026-10-12T08:00:00Z",
+    "category": "Tips & Tricks",
+    "excerpt": "Intermittent charging, exposed wires and loose connectors are more than annoyances. Learn when a cable needs replacing and how to make your next one last longer.",
+    "image": "/assets/images/uploads/1000066515.jpg",
+    "author": "PhoneYa2",
+    "featured": true,
+    "publish": true,
+    "tags": [
+      "cables",
+      "charging",
+      "phone care",
+      "tips"
+    ],
+    "related_products": [
+      "braided-usb-c-cable"
+    ]
+  },
+  {
+    "slug": "power-bank-buying-guide-zambia",
+    "title": "Buying a Power Bank? 6 Things to Check Before You Pay",
+    "date": "2026-10-11T08:00:00Z",
+    "category": "Buying Guides",
+    "excerpt": "Capacity is only one part of a useful power bank. Compare real-world needs, output ports, charging speed, size and product condition before choosing one.",
+    "image": "/assets/images/uploads/1000152689.jpg",
+    "author": "PhoneYa2",
+    "featured": true,
+    "publish": true,
+    "tags": [
+      "power bank",
+      "travel",
+      "charging",
+      "buying guide"
+    ],
+    "related_products": []
+  }
+]
