@@ -326,7 +326,6 @@ body>.mob-nav .py2-menu-search input{min-width:0!important;width:100%!important;
 body>.mob-nav .py2-menu-search button{display:flex!important;align-items:center!important;justify-content:center!important;min-width:44px!important;border:0!important;background:#ff6500!important;color:#fff!important;cursor:pointer!important}
 body>.mob-nav .mob-nav-links{padding:12px 14px!important}
 body>.mob-nav .mob-nav-links a{border:1px solid transparent!important}
-body>.mob-nav .mob-nav-links a[href="/x"]{display:flex}
 body>.mob-nav .mob-nav-cart,body>.mob-nav .mob-nav-wa{min-height:46px!important;display:flex!important;align-items:center!important;gap:9px!important;padding:12px 14px!important;border-radius:10px!important;text-decoration:none!important;font-weight:800!important}
 body>.mob-nav .mob-nav-cart{margin:2px 14px 8px!important;background:#f1f5f9!important;color:#17212f!important}
 body>.mob-nav .mob-nav-wa{margin:0 14px 18px!important;background:#159447!important;color:#fff!important}
