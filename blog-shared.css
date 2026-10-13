@@ -6,7 +6,6 @@
 @media(max-width:800px){.py2-grid,.py2-blog-widget .py2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.py2-nav{gap:10px}.py2-nav a:not(.py2-nav-cta){display:none}.py2-wrap{padding-top:18px}}@media(max-width:520px){.py2-grid,.py2-blog-widget .py2-grid{grid-template-columns:1fr}.py2-top-inner{min-height:60px;padding:0 14px}.py2-brand{font-size:19px}.py2-hero{border-radius:15px;padding:24px 20px}.py2-hero h1{letter-spacing:-1px}.py2-card-img,.py2-card-noimg{aspect-ratio:16/9}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 /* Blog redesign: homepage-matched PhoneYa2 shell, editorial layout and commercial discovery */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap');
 .py2-blog-page{font-family:'DM Sans',system-ui,sans-serif;background:#f2f3f7;color:#1a1a2e;overflow-x:hidden}
 .py2-blog-page h1,.py2-blog-page h2,.py2-blog-page h3{font-family:'Syne',sans-serif}
 .py2-blog-home-header{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #e8e8e8;box-shadow:0 2px 16px rgba(0,0,0,.07)}
