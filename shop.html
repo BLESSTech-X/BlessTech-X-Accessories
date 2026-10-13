@@ -627,524 +627,23 @@ body::before{
   }
 </style>
 
-<style id="phoneya2-brand-header-polish">
-  /* PhoneYa2 brand/header polish */
-  .logo-brand-name { letter-spacing: -.35px; }
-  .brand .brand-name { color: inherit !important; }
-  .top-header {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 1200 !important;
-    background: rgba(255,255,255,.96) !important;
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 5px 22px rgba(12,18,28,.10) !important;
-    border-bottom: 1px solid rgba(255,101,0,.18) !important;
-  }
-  body:has(.top-header) { padding-top: 68px; }
-  .header-cart-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-    gap: 7px;
-    border-radius: 10px;
-    min-height: 38px;
-  }
-  .header-cart-cta .cart-word { display: inline !important; }
-  .header-cart-cta .cart-emoji { line-height: 1; }
-  /* Soft-focus, low-distraction animated brand mark behind page content. */
-  body::before {
-    filter: grayscale(1) saturate(0) blur(.7px) !important;
-    background-position: center 52%;
-    animation: phoneya2LogoFocus 22s ease-in-out infinite !important;
-    will-change: opacity, filter, transform;
-  }
-  @keyframes phoneya2LogoFocus {
-    0%, 100% { opacity: .028; filter: grayscale(1) saturate(0) blur(1.4px); transform: translate3d(0,0,0); }
-    50% { opacity: .052; filter: grayscale(1) saturate(0) blur(.35px); transform: translate3d(0,-5px,0); }
-  }
-  @media (max-width: 480px) {
-    body:has(.top-header) { padding-top: 60px; }
-    .top-header { min-height: 60px; }
-    .top-header-inner { min-height: 60px; height: auto; }
-    .top-header-inner > .logo-wrap { max-width: 43%; }
-    .top-header-inner > .logo-wrap .logo-brand-name { font-size: 12px; }
-    .header-cart-cta {
-      padding: 7px 8px !important;
-      gap: 4px !important;
-      font-size: 10px !important;
-      min-height: 34px;
-    }
-    .header-cart-cta .cart-word { display: inline !important; }
-    .header-cart-cta .cart-emoji { font-size: 14px !important; }
-    .header-cart-cta .cart-count { flex-shrink: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    body::before { animation: none !important; will-change: auto; }
-  }
-
-  /* PhoneYa2 wordmark: Phone black, Ya green, 2 orange */
-  .brand-phone-ya { color: #159447 !important; }
-  .brand-phone-two { color: #ff6500 !important; }
-  .logo-brand-name > .brand-phone-ya,
-  .logo-brand-name > .brand-phone-two,
-  .mob-nav-hdr-brand > .brand-phone-ya,
-  .mob-nav-hdr-brand > .brand-phone-two { display: inline; }
-  .header-cart-cta .cart-word { display: inline !important; }
-  .header-cart-cta .cart-emoji { order: initial; }
-  @media (max-width: 480px) {
-    .header-cart-cta .cart-word { display: inline !important; }
-  }
- 
-  .brand-phone-word { color: #111111 !important; }
-  .brand-phone-ya { color: #159447 !important; }
-  .brand-phone-two { color: #ff6500 !important; }
- </style>
-
-<style id="phoneya2-standard-header-v2">
-  /* PhoneYa2 standard header: stable layout, clear tricolour identity and visible Accessories descriptor */
-  :root { --py2-ink: #111111; --py2-green: #159447; --py2-orange: #ff6500; }
-  .top-header, body > header, body > .top {
-    background: rgba(255,255,255,.98) !important;
-    color: var(--py2-ink) !important;
-    border-bottom: 1px solid rgba(21,148,71,.18) !important;
-    box-shadow: 0 4px 18px rgba(17,24,39,.08) !important;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-  }
-  .top-header { position: sticky !important; top: 0 !important; left: auto !important; right: auto !important; width: 100% !important; z-index: 1200 !important; }
-  body:has(.top-header) { padding-top: 0 !important; }
-  .top-header-inner {
-    min-height: 72px !important; height: auto !important;
-    display: flex !important; align-items: center !important;
-    overflow: visible !important; gap: 12px !important;
-  }
-  .top-header-inner > .logo-wrap {
-    display: flex !important; align-items: center !important;
-    flex: 0 1 auto !important; min-width: 0 !important; max-width: none !important;
-    gap: 9px !important; overflow: visible !important;
-    text-decoration: none !important;
-  }
-  .top-header-inner > .logo-wrap .logo-img {
-    flex: 0 0 44px !important; width: 44px !important; height: 44px !important;
-    object-fit: contain !important; border-radius: 10px !important;
-  }
-  .top-header-inner > .logo-wrap .logo-text-block {
-    display: flex !important; flex-direction: column !important;
-    justify-content: center !important; align-items: flex-start !important;
-    min-width: 0 !important; overflow: visible !important; line-height: 1.05 !important;
-  }
-  .top-header-inner > .logo-wrap .logo-brand-name {
-    display: block !important; white-space: nowrap !important;
-    font-family: 'Syne', 'DM Sans', sans-serif !important;
-    font-size: clamp(18px, 1.65vw, 24px) !important;
-    font-weight: 900 !important; letter-spacing: -.65px !important;
-    line-height: 1.05 !important; overflow: visible !important;
-    text-overflow: clip !important; opacity: 1 !important;
-    visibility: visible !important;
-  }
-  .logo-brand-name > .brand-phone-word,
-  .logo-text .brand > .brand-phone-word,
-  header .brand > .brand-phone-word,
-  body > header .brand-phone-word,
-  body > .top .brand-phone-word { color: #111111 !important; -webkit-text-fill-color: #111111 !important; }
-  .logo-brand-name > .brand-phone-ya,
-  .logo-text .brand > .brand-phone-ya,
-  header .brand > .brand-phone-ya,
-  body > header .brand-phone-ya,
-  body > .top .brand-phone-ya { color: #159447 !important; -webkit-text-fill-color: #159447 !important; }
-  .logo-brand-name > .brand-phone-two,
-  .logo-text .brand > .brand-phone-two,
-  header .brand > .brand-phone-two,
-  body > header .brand-phone-two,
-  body > .top .brand-phone-two { color: #ff6500 !important; -webkit-text-fill-color: #ff6500 !important; }
-  .top-header-inner > .logo-wrap .logo-brand-sub,
-  .logo-text .sub,
-  .logo-text .brand-sub,
-  .brand-subtitle {
-    display: block !important; margin: 3px 0 0 !important;
-    color: #475569 !important; font-family: 'DM Sans', sans-serif !important;
-    font-size: 9px !important; font-weight: 800 !important;
-    line-height: 1.15 !important; letter-spacing: 1.8px !important;
-    text-transform: uppercase !important; white-space: nowrap !important;
-    opacity: 1 !important; visibility: visible !important;
-  }
-  .top-header-inner > .logo-wrap .logo-brand-sub { color: #159447 !important; }
-  .top-header-inner > .hamburger { flex: 0 0 auto !important; }
-  .top-header-inner > .header-search { min-width: 0 !important; }
-  .top-header-inner > .header-cart-cta {
-    flex: 0 0 auto !important; margin-left: auto !important;
-    min-height: 40px !important; padding: 9px 12px !important;
-    background: #fff5ed !important; color: #9a3900 !important;
-    border: 1px solid #ffd0b5 !important; border-radius: 11px !important;
-    font-size: 12px !important; font-weight: 850 !important;
-    white-space: nowrap !important;
-  }
-  .header-cart-cta .cart-word { display: inline !important; }
-  .header-cart-cta .cart-emoji { display: inline-block !important; }
-  body > header:not(.top-header), body > .top {
-    position: sticky !important; top: 0 !important; z-index: 1200 !important;
-    min-height: 66px; padding-top: 10px !important; padding-bottom: 10px !important;
-  }
-  body > header .brand, body > .top .brand {
-    display: inline-flex !important; flex-direction: column !important;
-    align-items: flex-start !important; justify-content: center !important;
-    font-family: 'Syne', 'DM Sans', sans-serif !important;
-    font-size: 24px !important; font-weight: 900 !important;
-    letter-spacing: -.65px !important; line-height: 1.02 !important;
-    white-space: nowrap !important; overflow: visible !important;
-  }
-  @media (max-width: 600px) {
-    .top-header-inner { min-height: 62px !important; padding: 7px 10px !important; gap: 7px !important; }
-    .top-header-inner > .logo-wrap { flex: 0 1 auto !important; min-width: 0 !important; max-width: calc(100% - 126px) !important; gap: 6px !important; overflow: visible !important; }
-    .top-header-inner > .logo-wrap .logo-img { flex-basis: 36px !important; width: 36px !important; height: 36px !important; }
-    .top-header-inner > .logo-wrap .logo-text-block { min-width: 0 !important; overflow: visible !important; }
-    .top-header-inner > .logo-wrap .logo-brand-name { font-size: clamp(15px, 4.2vw, 19px) !important; letter-spacing: -.45px !important; }
-    .top-header-inner > .logo-wrap .logo-brand-sub { font-size: 8px !important; letter-spacing: 1.2px !important; margin-top: 3px !important; }
-    .top-header-inner > .header-cart-cta { padding: 8px 8px !important; min-height: 36px !important; gap: 4px !important; font-size: 11px !important; }
-    .top-header-inner > .header-cart-cta .cart-emoji { font-size: 14px !important; }
-    .top-header-inner > .header-cart-cta .cart-count { min-width: 17px !important; height: 17px !important; font-size: 9px !important; }
-    body > header:not(.top-header), body > .top { min-height: 60px; padding: 10px 14px !important; }
-    body > header .brand, body > .top .brand { font-size: 21px !important; }
-    .logo-text .sub, .logo-text .brand-sub, .brand-subtitle { font-size: 8px !important; letter-spacing: 1.3px !important; }
-  }
-  @media (max-width: 360px) {
-    .top-header-inner { gap: 5px !important; padding-left: 7px !important; padding-right: 7px !important; }
-    .top-header-inner > .logo-wrap { max-width: calc(100% - 116px) !important; gap: 5px !important; }
-    .top-header-inner > .logo-wrap .logo-img { flex-basis: 31px !important; width: 31px !important; height: 31px !important; }
-    .top-header-inner > .logo-wrap .logo-brand-name { font-size: 15px !important; }
-    .top-header-inner > .logo-wrap .logo-brand-sub { font-size: 7px !important; letter-spacing: .9px !important; }
-    .top-header-inner > .header-cart-cta { padding: 7px 6px !important; font-size: 10px !important; gap: 3px !important; }
-  }
-</style>
-
-<style id="phoneya2-global-polish-v3">
-  :root{--py2-logo-url:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");}
-  /* Consistent brand proportions on every page */
-  .brand-phone-two{display:inline-block!important;font-size:1.28em!important;line-height:.9!important;vertical-align:-.035em!important;font-weight:950!important;}
-  .logo-brand-sub,.logo-text .sub,.brand-subtitle{display:block!important;font-size:12px!important;line-height:1.15!important;font-weight:750!important;letter-spacing:1.25px!important;margin-top:3px!important;opacity:.96!important;}
-  /* Small attached navigation tab */
-  .py2-quick-tabs{position:relative;z-index:1190;display:flex;align-items:center;justify-content:center;gap:4px;width:max-content;max-width:calc(100% - 20px);margin:-1px auto 12px;padding:5px 7px;background:rgba(255,255,255,.97);border:1px solid rgba(21,148,71,.18);border-top:0;border-radius:0 0 13px 13px;box-shadow:0 5px 14px rgba(17,24,39,.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
-  .py2-quick-tabs a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding:6px 10px;border-radius:8px;color:#334155!important;text-decoration:none!important;font-size:11px!important;font-weight:750!important;line-height:1.1;white-space:nowrap;transition:background .2s ease,color .2s ease,transform .2s ease;}
-  .py2-quick-tabs a i{font-size:12px;color:#159447}
-  .py2-quick-tabs a:hover{background:#f0fdf4;color:#15803d!important;transform:translateY(-1px)}
-  .py2-quick-tabs a.is-active{background:#111827;color:#fff!important}
-  .py2-quick-tabs a.is-active i{color:#ff8a3d}
-  /* Match the site header logo on About and Contact to the rest of the store */
-  .header-inner .py2-site-logo{display:block!important;flex:0 0 44px;width:44px;height:44px;object-fit:contain;border-radius:10px;}
-  body>header,body>header.top{position:relative;z-index:1200}
-  /* Quiet, recognizable logo watermark behind each page's existing top content */
-  .py2-page-logo-ambient{position:absolute;z-index:1;pointer-events:none;width:clamp(170px,25vw,270px);height:clamp(170px,25vw,270px);left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background-image:var(--py2-logo-url);background-position:center;background-size:contain;background-repeat:no-repeat;filter:blur(1.2px) grayscale(.15);opacity:.13;mix-blend-mode:multiply;animation:py2AmbientFloat 10s ease-in-out infinite alternate;will-change:transform;}
-  .shop-hero,.about-hero,.contact-hero{position:relative;isolation:isolate;overflow:hidden}
-  .shop-hero>.py2-page-logo-ambient,.about-hero>.py2-page-logo-ambient,.contact-hero>.py2-page-logo-ambient{z-index:1}
-  .shop-hero-inner,.about-hero-content,.contact-hero-content{position:relative;z-index:2}
-  .heading,.hero,#product-detail{position:relative;isolation:isolate;overflow:hidden}
-  .heading::before,.hero::before,#product-detail::before{content:"";position:absolute;z-index:0;pointer-events:none;width:clamp(170px,25vw,260px);height:clamp(170px,25vw,260px);left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background-image:var(--py2-logo-url);background-position:center;background-size:contain;background-repeat:no-repeat;filter:blur(1.2px) grayscale(.15);opacity:.12;mix-blend-mode:multiply;animation:py2AmbientFloat 10s ease-in-out infinite alternate;}
-  .heading>* ,.hero>* ,#product-detail>*{position:relative;z-index:1}
-  .heading::before,.hero::before{opacity:.10}
-  @keyframes py2AmbientFloat{0%{transform:translate(-52%,-50%) scale(.97)}100%{transform:translate(-48%,-50%) scale(1.035)}}
-  /* Home keeps its dedicated intro, but the logo blur is intentionally light. */
-  .phoneya2-home-intro::before{filter:blur(1.2px) grayscale(.15) saturate(.9)!important;opacity:.14!important;animation:py2HomeLogoDrift 9s ease-in-out infinite alternate!important;background-size:contain!important;}
-  @keyframes py2HomeLogoDrift{0%{transform:translate(-52%,-50%) scale(.97)}100%{transform:translate(-48%,-50%) scale(1.035)}}
-  @media(max-width:600px){
-    .py2-quick-tabs{width:calc(100% - 16px);max-width:420px;gap:1px;padding:5px 4px;margin-bottom:9px;}
-    .py2-quick-tabs a{flex:1 1 0;flex-direction:column;gap:3px;padding:5px 1px;font-size:9px!important;border-radius:7px;}
-    .py2-quick-tabs a i{font-size:12px}
-    .logo-brand-sub,.logo-text .sub,.brand-subtitle{font-size:11px!important;letter-spacing:1px!important;margin-top:2px!important}
-    .header-inner .py2-site-logo{width:39px;height:39px;flex-basis:39px}
-    .py2-page-logo-ambient{width:175px;height:175px;opacity:.12}
-  }
-  @media(prefers-reduced-motion:reduce){.py2-page-logo-ambient,.phoneya2-home-intro::before,.heading::before,.hero::before,#product-detail::before{animation:none!important;will-change:auto}.py2-quick-tabs a{transition:none}}
-</style>
-<style id="phoneya2-header-animation-fix-v4">
-/* Keep the brand header visible and pin its compact navigation directly underneath. */
-:root{--py2-header-height:72px;--py2-logo-url:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");}
-body>.top-header,body>header,body>header.top{position:sticky!important;top:0!important;z-index:1300!important;}
-.py2-quick-tabs{position:sticky!important;top:var(--py2-header-height,72px)!important;z-index:1290!important;margin-top:0!important;margin-bottom:12px!important;border-top:1px solid rgba(21,148,71,.16)!important;border-radius:0 0 13px 13px!important;}
-/* Set the correct sticky offset from the actual header height on each layout. */
-.brand-phone-two{display:inline-block!important;font-size:1.32em!important;line-height:.9!important;vertical-align:-.035em!important;font-weight:950!important;}
-.logo-brand-sub,.logo-text .sub,.brand-subtitle,.py2-checkout-subtitle{display:block!important;color:#1677e8!important;font-size:14px!important;line-height:1.15!important;font-weight:800!important;letter-spacing:1.1px!important;margin-top:3px!important;opacity:1!important;}
-/* Make the logo recognizable: almost no blur, more opacity and a little more size. */
-.py2-page-logo-ambient{width:clamp(205px,32vw,330px)!important;height:clamp(205px,32vw,330px)!important;filter:blur(.35px) grayscale(.08)!important;opacity:.24!important;mix-blend-mode:multiply!important;}
-.phoneya2-home-intro::before{filter:blur(.35px) grayscale(.08) saturate(.95)!important;opacity:.25!important;background-size:contain!important;}
-.heading::before,.hero::before,#product-detail::before{filter:blur(.35px) grayscale(.08)!important;opacity:.22!important;}
-@media(max-width:600px){
- :root{--py2-header-height:62px;}
- .logo-brand-sub,.logo-text .sub,.brand-subtitle,.py2-checkout-subtitle{font-size:13px!important;letter-spacing:.9px!important;margin-top:2px!important;}
- .py2-page-logo-ambient{width:205px!important;height:205px!important;opacity:.23!important;}
- .phoneya2-home-intro::before{width:205px!important;height:205px!important;opacity:.25!important;}
- .py2-quick-tabs{margin-bottom:9px!important;}
-}
-@media(prefers-reduced-motion:reduce){.py2-page-logo-ambient,.phoneya2-home-intro::before,.heading::before,.hero::before,#product-detail::before{animation:none!important;}}
-</style>
-<style id="phoneya2-fixed-header-final-v5">
-/* FIXED means attached to the viewport, not merely sticky within a scrolling container. */
-body>.top-header,body>header,body>header.top{
-  position:fixed!important;top:0!important;left:0!important;right:0!important;
-  width:100%!important;z-index:1500!important;transform:none!important;
-}
-body>.py2-quick-tabs,body>nav.py2-quick-tabs{
-  position:fixed!important;top:var(--py2-header-height,72px)!important;
-  left:0!important;right:0!important;width:max-content!important;
-  max-width:calc(100% - 16px)!important;margin:0 auto!important;
-  z-index:1490!important;transform:none!important;
-}
-body{padding-top:calc(var(--py2-header-height,72px) + var(--py2-tabs-height,44px) + 10px)!important;}
-</style>
-<style id="phoneya2-tab-width-and-blue-accessories-v6">
-/* The attached navigation strip must span exactly the viewport width like the header. */
-body>nav.py2-quick-tabs,body>.py2-quick-tabs{
-  position:fixed!important;left:0!important;right:0!important;
-  width:100%!important;max-width:none!important;min-width:100%!important;
-  box-sizing:border-box!important;margin:0!important;
-  border-left:0!important;border-right:0!important;
-  border-radius:0 0 12px 12px!important;
-  justify-content:center!important;
-}
-/* Strong selectors ensure the subtitle is blue on every version of the header. */
-body .logo-brand-sub,body .logo-text .sub,body .brand-subtitle,
-body .py2-checkout-subtitle,body .logo-text-block .logo-brand-sub{
-  color:#1677e8!important;font-size:14px!important;font-weight:800!important;
-  line-height:1.15!important;letter-spacing:1.1px!important;opacity:1!important;
-}
-@media(max-width:600px){
- body .logo-brand-sub,body .logo-text .sub,body .brand-subtitle,
- body .py2-checkout-subtitle,body .logo-text-block .logo-brand-sub{
-  color:#1677e8!important;font-size:13px!important;letter-spacing:.9px!important;
- }
- body>nav.py2-quick-tabs,body>.py2-quick-tabs{width:100%!important;max-width:none!important;min-width:100%!important;}
-}
-</style>
-<style id="phoneya2-unified-header-v7">
-:root{--py2-logo-url:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");--py2-header-height:72px;}
-body>.top-header,body>header,body>header.top{position:fixed!important;inset:0 0 auto 0!important;width:100%!important;min-height:72px!important;height:auto!important;box-sizing:border-box!important;z-index:1600!important;margin:0!important;transform:none!important;background:rgba(255,255,255,.98)!important;border-bottom:1px solid rgba(21,148,71,.16)!important;box-shadow:0 5px 20px rgba(15,23,42,.08)!important;-webkit-backdrop-filter:blur(14px)!important;backdrop-filter:blur(14px)!important;}
-body>.top-header{padding:0!important;}
-body>.top-header .top-header-inner,body>header .header-inner{width:100%!important;max-width:1440px!important;min-height:72px!important;height:auto!important;margin:0 auto!important;padding:9px clamp(12px,2.2vw,28px)!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:14px!important;}
-body>header .header-inner{justify-content:flex-start!important;}
-body>header .rainbow-streak{display:none!important;}
-body .logo-wrap,body .header-inner>.logo,body>header.top>.brand,body>header>.brand{display:flex!important;align-items:center!important;gap:9px!important;flex:0 0 auto!important;min-width:0!important;text-decoration:none!important;line-height:1!important;}
-body .logo-img,body .py2-site-logo,body .py2-checkout-logo{display:block!important;width:44px!important;height:44px!important;flex:0 0 44px!important;max-width:44px!important;object-fit:contain!important;border-radius:9px!important;}
-body .logo-text-block,body .logo-text,body .py2-checkout-wordmark{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;min-width:0!important;line-height:1!important;}
-body .logo-brand-name,body .logo-text .brand,body .brand-wordmark,body .py2-checkout-wordmark{display:flex!important;align-items:baseline!important;gap:0!important;white-space:nowrap!important;font-family:'Syne','DM Sans',sans-serif!important;font-size:25px!important;font-weight:900!important;letter-spacing:-.8px!important;line-height:1!important;}
-body .brand-phone-word{color:#111!important;}body .brand-phone-ya{color:#159447!important;}
-body .brand-phone-two{display:inline-block!important;color:#ff6500!important;font-size:1.3em!important;font-weight:950!important;line-height:.82!important;vertical-align:-.04em!important;}
-body .logo-brand-sub,body .logo-text .sub,body .brand-subtitle,body .py2-checkout-subtitle{display:block!important;color:#1677e8!important;font-family:'DM Sans',sans-serif!important;font-size:14px!important;font-weight:800!important;letter-spacing:1.15px!important;line-height:1.1!important;margin:4px 0 0!important;opacity:1!important;}
-body>nav.py2-quick-tabs{position:fixed!important;top:var(--py2-header-height,72px)!important;left:0!important;right:0!important;width:100%!important;min-width:100%!important;max-width:none!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;margin:0!important;padding:6px clamp(8px,2vw,24px)!important;background:rgba(255,255,255,.98)!important;border:0!important;border-bottom:1px solid rgba(21,148,71,.15)!important;border-radius:0 0 12px 12px!important;box-shadow:0 5px 15px rgba(15,23,42,.06)!important;z-index:1590!important;transform:none!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;}
-body>nav.py2-quick-tabs a{display:inline-flex!important;flex:0 1 112px!important;min-width:0!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:8px 12px!important;border-radius:9px!important;white-space:nowrap!important;color:#334155!important;text-decoration:none!important;font:700 12px/1.1 'DM Sans',sans-serif!important;transition:background .18s ease,color .18s ease!important;}
-body>nav.py2-quick-tabs a i{font-size:13px!important;color:#159447!important;}body>nav.py2-quick-tabs a:hover{background:#f0fdf4!important;color:#15803d!important;}body>nav.py2-quick-tabs a.is-active{background:#111827!important;color:#fff!important;}body>nav.py2-quick-tabs a.is-active i{color:#ff8a3d!important;}
-body>header .header-inner>nav{display:none!important;}body>header .header-inner>.hamburger{display:none!important;}
-body>.top-header .header-search{flex:1 1 220px!important;min-width:100px!important;max-width:520px!important;margin:0!important;}body>.top-header .header-cart-cta{flex:0 0 auto!important;white-space:nowrap!important;}
-body>header.top>.top-actions,body>header.top>a:not(.brand),body>header>nav:not(.py2-quick-tabs){margin-left:auto!important;}body>header.top .top-actions a,body>header.top>a:not(.brand){display:inline-flex!important;align-items:center!important;gap:7px!important;white-space:nowrap!important;}
-body{padding-top:calc(var(--py2-header-height,72px) + var(--py2-tabs-height,44px) + 10px)!important;}
-@media(max-width:760px){:root{--py2-header-height:62px;}body>.top-header,body>header,body>header.top{min-height:62px!important;}body>.top-header .top-header-inner,body>header .header-inner{min-height:62px!important;padding:7px 10px!important;gap:8px!important;}body .logo-img,body .py2-site-logo,body .py2-checkout-logo{width:38px!important;height:38px!important;flex-basis:38px!important;max-width:38px!important;}body .logo-brand-name,body .logo-text .brand,body .brand-wordmark,body .py2-checkout-wordmark{font-size:21px!important;letter-spacing:-.6px!important;}body .logo-brand-sub,body .logo-text .sub,body .brand-subtitle,body .py2-checkout-subtitle{font-size:12px!important;letter-spacing:.9px!important;margin-top:3px!important;}body>.top-header .header-search{flex:1 1 90px!important;min-width:60px!important;}body>.top-header .header-cart-cta{padding:7px 8px!important;font-size:11px!important;}body>.top-header .desk-nav{display:none!important;}body>nav.py2-quick-tabs{top:var(--py2-header-height,62px)!important;gap:1px!important;padding:5px 3px!important;}body>nav.py2-quick-tabs a{flex:1 1 0!important;flex-direction:column!important;gap:3px!important;padding:5px 1px!important;font-size:10px!important;border-radius:7px!important;}body>nav.py2-quick-tabs a i{font-size:12px!important;}}
-@media(max-width:380px){body .logo-img,body .py2-site-logo,body .py2-checkout-logo{width:34px!important;height:34px!important;flex-basis:34px!important;}body .logo-brand-name,body .logo-text .brand,body .brand-wordmark,body .py2-checkout-wordmark{font-size:19px!important;}body>.top-header .header-search{min-width:42px!important;}body>.top-header .header-cart-cta .cart-word{display:none!important;}}
-@media(prefers-reduced-motion:reduce){body>nav.py2-quick-tabs a{transition:none!important;}}
-</style>
-<style id="phoneya2-header-consistency-override-v8">
-/* Avoid a second competing navigation row: the shared icon tab is the canonical nav. */
-body>.top-header .desk-nav{display:none!important;}
-body>header:not(.top) > nav:not(.py2-quick-tabs){display:none!important;}
-/* Shared brand alignment even where the page's original header used different markup. */
-body>header.top .brand{display:flex!important;align-items:center!important;}
-body>header.top .brand-subtitle,body>header.top .py2-checkout-subtitle{color:#1677e8!important;}
-body>header:not(.top) .header-inner>.logo{margin-right:auto!important;}
-body>.top-header .logo-wrap{margin-right:auto!important;}
-@media(max-width:760px){
- body>.top-header .top-header-inner{justify-content:space-between!important;}
- body>header.top .top-actions a,body>header.top>a:not(.brand){font-size:12px!important;}
-}
-</style>
-
-<style id="phoneya2-shop-catalog-polish-v1">
-/* Compact, category-first catalogue: show more products without hiding useful actions. */
-.products-section{padding:18px clamp(12px,2vw,24px) 28px}
-.products-grid{grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:14px;align-items:stretch}
-.pcard{border:1px solid #edf0f4;border-radius:13px;box-shadow:0 3px 12px rgba(15,23,42,.055);animation:py2CardRise .32s ease both}
-.pcard:hover{transform:translateY(-3px);box-shadow:0 9px 22px rgba(15,23,42,.12);border-color:#ffd0b5}
-.pcard-img{height:clamp(118px,14vw,158px);background:linear-gradient(145deg,#f8fafc,#f1f5f9);padding:8px}
-.pcard-img img{object-fit:contain!important;mix-blend-mode:multiply;transition:transform .35s ease}
-.pcard:hover .pcard-img img{transform:scale(1.045)}
-.cat-badge,.stock-badge{top:8px;font-size:9px;padding:4px 7px}
-.cat-badge{left:8px}.stock-badge{right:8px}
-.pcard-body{padding:11px 11px 12px}
-.pcard-cat{font-size:9px;letter-spacing:1.1px;margin-bottom:4px}
-.pcard-name{font-size:13px;line-height:1.35;margin-bottom:5px;min-height:2.5em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.pcard-desc{font-size:11px;line-height:1.4;margin-bottom:8px;-webkit-line-clamp:2}
-.pcard-price-row{gap:6px;margin-bottom:9px}
-.pcard-price{font-size:1.05rem}
-.pcard-orig{font-size:.75rem}
-.pcard-save{font-size:9px}
-.price-drop-banner{font-size:10px;padding:4px 7px;margin-bottom:7px}
-.pcard-actions{gap:5px;margin-top:7px}
-.pcard-actions .py2-add-cart,.pcard-actions .btn-order{font-size:11px;padding:9px 5px;min-height:36px;gap:4px}
-.btn-notify{font-size:11px;padding:9px 6px}
-.card-share-row{margin-top:7px!important;gap:5px!important}
-.card-share-btn{font-size:10px!important;padding:6px 5px!important}
-.filter-bar{top:0;position:relative;z-index:80;padding:0 14px}
-.filter-bar-inner{padding:10px 0}
-.filter-pills{width:100%;display:flex;flex-wrap:wrap;gap:7px}
-.fpill{font-size:12px;padding:7px 11px;gap:5px;border-radius:10px;border-color:#e5e7eb}
-.fpill.active{background:#111827;border-color:#111827;box-shadow:0 3px 9px rgba(17,24,39,.16)}
-.fpill .cnt{font-size:10px}
-.shop-topbar{padding:16px clamp(12px,2vw,24px) 0}
-.prod-count{font-size:12px}
-.sort-sel{padding:8px 10px;font-size:12px}
-.shop-hero{padding:34px 20px 36px}
-.shop-hero h1{letter-spacing:-.04em}
-.shop-hero .sec-tag{letter-spacing:2px}
-.top-header .logo-img{animation:py2LogoBreath 5s ease-in-out infinite;transform-origin:center}
-.top-header .logo-brand-name{position:relative}
-.top-header .logo-brand-name .brand-phone-ya{display:inline-block;animation:py2YaGlow 5s ease-in-out infinite}
-.top-header .logo-brand-name .brand-phone-two{display:inline-block;animation:py2TwoGlow 5s ease-in-out infinite}
-.shop-hero .py2-page-logo-ambient{opacity:.17;animation:py2AmbientFloat 8s ease-in-out infinite alternate}
-@keyframes py2CardRise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-@keyframes py2LogoBreath{0%,100%{filter:drop-shadow(0 0 0 rgba(21,148,71,0));transform:scale(1)}50%{filter:drop-shadow(0 3px 7px rgba(21,148,71,.18));transform:scale(1.035)}}
-@keyframes py2YaGlow{0%,100%{text-shadow:0 0 0 rgba(21,148,71,0)}50%{text-shadow:0 0 10px rgba(21,148,71,.24)}}
-@keyframes py2TwoGlow{0%,100%{text-shadow:0 0 0 rgba(255,101,0,0)}50%{text-shadow:0 0 10px rgba(255,101,0,.28)}}
-@media(min-width:1100px){.products-grid{grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:16px}}
-@media(max-width:700px){
- .products-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
- .products-section{padding:13px 10px 22px}
- .pcard-img{height:clamp(112px,34vw,145px);padding:6px}
- .pcard-body{padding:9px}
- .pcard-name{font-size:12px;min-height:2.6em}
- .pcard-price{font-size:1rem}
- .pcard-actions{grid-template-columns:1fr 1fr!important;gap:4px}
- .pcard-actions .py2-add-cart,.pcard-actions .btn-order{font-size:10px;padding:8px 3px}
- .filter-pills{gap:6px}
- .fpill{padding:7px 9px;font-size:11px}
- .shop-hero{padding:28px 15px 30px}
- .shop-hero p{font-size:13px;line-height:1.6}
-}
-@media(max-width:360px){.pcard-actions{grid-template-columns:1fr!important}.pcard-img{height:110px}.card-share-row{display:none!important}}
-@media(prefers-reduced-motion:reduce){
- .pcard,.top-header .logo-img,.top-header .logo-brand-name .brand-phone-ya,.top-header .logo-brand-name .brand-phone-two,.shop-hero .py2-page-logo-ambient{animation:none!important;transition:none!important}
-}
-</style>
 
 
-<style id="phoneya2-sticky-tabs-and-hero-logo-v2">
-/* Keep the quick site tabs attached to the header as the page scrolls. */
-body>.top-header + .py2-quick-tabs,
-body>header + .py2-quick-tabs,
-body>header.top + .py2-quick-tabs{
-  position:sticky!important;
-  top:var(--py2-header-height,68px)!important;
-  z-index:1190!important;
-  margin:0 auto 12px!important;
-  border-top:1px solid rgba(21,148,71,.18);
-  border-radius:0 0 13px 13px;
-  box-shadow:0 7px 18px rgba(17,24,39,.12);
-}
-body>.top-header + .py2-quick-tabs{margin-bottom:12px!important}
-:root{--py2-header-height:68px;--py2-tabs-height:42px}
-.filter-bar{top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px))!important}
-/* Larger, clearly visible logo animation behind each page's opening content. */
-.py2-page-logo-ambient{
-  width:clamp(280px,48vw,560px)!important;
-  height:clamp(280px,48vw,560px)!important;
-  left:50%!important;top:50%!important;
-  opacity:.19!important;
-  filter:drop-shadow(0 0 22px rgba(37,211,102,.20)) saturate(1.08)!important;
-  mix-blend-mode:normal!important;
-  animation:py2HeroLogoPulse 8s ease-in-out infinite alternate!important;
-  will-change:transform,opacity,filter;
-}
-.shop-hero>.py2-page-logo-ambient,
-.about-hero>.py2-page-logo-ambient,
-.contact-hero>.py2-page-logo-ambient{z-index:1!important;pointer-events:none!important}
-.shop-hero-inner,.about-hero-content,.contact-hero-content{position:relative;z-index:2!important}
-.shop-hero-orb1,.shop-hero-orb2,.about-hero-orb1,.about-hero-orb2,.contact-hero-orb1,.contact-hero-orb2{z-index:0}
-@keyframes py2HeroLogoPulse{
-  0%{transform:translate(-51%,-50%) scale(.94);opacity:.12;filter:drop-shadow(0 0 12px rgba(37,211,102,.12)) saturate(.92)}
-  50%{opacity:.2}
-  100%{transform:translate(-49%,-50%) scale(1.045);opacity:.17;filter:drop-shadow(0 0 30px rgba(255,96,0,.22)) saturate(1.12)}
-}
-@media(max-width:600px){
-  .py2-page-logo-ambient{width:clamp(240px,76vw,380px)!important;height:clamp(240px,76vw,380px)!important;opacity:.15!important}
-  body>.top-header + .py2-quick-tabs,
-  body>header + .py2-quick-tabs,
-  body>header.top + .py2-quick-tabs{max-width:calc(100% - 12px);gap:1px;padding:4px}
-  .py2-quick-tabs a{padding:7px 8px!important;font-size:10px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  .py2-page-logo-ambient{animation:none!important;transform:translate(-50%,-50%)!important}
-}
-</style>
-<style id="phoneya2-shop-category-tabs-sticky-v1">
-/* Keep the product-category strip in its own row, attached beneath the header + quick tabs. */
-body > .cat-nav{
-  position:sticky!important;
-  top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px))!important;
-  z-index:1180!important;
-  display:block!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-  background:#fff!important;
-  box-shadow:0 5px 14px rgba(17,24,39,.08);
-}
-body > .cat-nav > .cat-nav-inner{
-  width:100%!important;
-  max-width:1280px!important;
-  min-width:0!important;
-  margin:0 auto!important;
-  display:flex!important;
-  justify-content:flex-start!important;
-  overflow-x:auto!important;
-  box-sizing:border-box!important;
-}
-body > .cat-nav .cat-nav-item{flex:0 0 auto!important;}
-.filter-bar{
-  top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px) + var(--py2-category-height,44px))!important;
-}
-@media(max-width:600px){
-  body > .cat-nav > .cat-nav-inner{padding-left:8px!important;padding-right:8px!important;}
-  body > .cat-nav .cat-nav-item{padding:9px 11px!important;font-size:12px!important;}
-}
-</style>
-<style id="phoneya2-quick-nav-fixed-alignment-v1">
-/* The Home / Shop / Account / About strip is fixed to the viewport directly below the header. */
-body>.top-header + nav.py2-quick-tabs,
-body>header + nav.py2-quick-tabs,
-body>header.top + nav.py2-quick-tabs,
-body>nav.py2-quick-tabs{
-  position:fixed!important;
-  top:var(--py2-header-height,72px)!important;
-  left:0!important;right:0!important;
-  width:100%!important;min-width:100%!important;max-width:none!important;
-  margin:0!important;transform:none!important;
-  box-sizing:border-box!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  gap:6px!important;padding:6px clamp(8px,2vw,24px)!important;
-  background:rgba(255,255,255,.98)!important;
-  border:0!important;border-bottom:1px solid rgba(21,148,71,.16)!important;
-  border-radius:0 0 12px 12px!important;
-  box-shadow:0 5px 15px rgba(15,23,42,.08)!important;
-  z-index:1590!important;
-  -webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;
-}
-body>nav.py2-quick-tabs>a{
-  flex:0 1 112px!important;min-width:0!important;
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  gap:7px!important;padding:8px 12px!important;
-  white-space:nowrap!important;border-radius:9px!important;
-}
-@media(max-width:760px){
-  body>.top-header + nav.py2-quick-tabs,
-  body>header + nav.py2-quick-tabs,
-  body>header.top + nav.py2-quick-tabs,
-  body>nav.py2-quick-tabs{top:var(--py2-header-height,62px)!important;gap:1px!important;padding:5px 3px!important;}
-  body>nav.py2-quick-tabs>a{flex:1 1 0!important;flex-direction:column!important;gap:3px!important;padding:5px 1px!important;font-size:10px!important;}
-}
-@media(prefers-reduced-motion:reduce){body>nav.py2-quick-tabs>a{transition:none!important;}}
-</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <style id="phoneya2-shop-redesign-premium-v1">
@@ -1278,37 +777,207 @@ footer{background:#111827!important;padding-top:48px!important}
  .py2-shop-hero-actions a,.pcard,.pcard:hover,.pcard-img img{transition:none!important;animation:none!important}
 }
 </style>
-
-
-<style id="phoneya2-nav-stack-lock-v2">
-/* Shared header + quick navigation geometry across all storefront pages. */
-:root{--py2-header-height:68px;--py2-tabs-height:42px}
-body>.top-header + nav.py2-quick-tabs,
-body>header + nav.py2-quick-tabs,
-body>header.top + nav.py2-quick-tabs,
+<style id="phoneya2-shop-unified-system-v2">
+/* PhoneYa2 shop layout — one authoritative responsive system */
+:root{
+  --py2-orange:#ff6500;--py2-green:#159447;--py2-ink:#17212f;
+  --py2-muted:#64748b;--py2-line:#e5eaf0;--py2-soft:#f6f8fb;
+  --py2-header-height:72px;--py2-tabs-height:42px;
+  --py2-radius:14px;--py2-shadow:0 8px 26px rgba(15,23,42,.06);
+}
+html{scroll-padding-top:calc(var(--py2-header-height) + var(--py2-tabs-height) + 18px);overflow-x:clip}
+body{background:#f6f8fb!important;color:var(--py2-ink)!important;overflow-x:clip!important;padding-top:calc(var(--py2-header-height) + var(--py2-tabs-height))!important;padding-bottom:0!important}
+body::before{display:none!important}
+.top-header{
+  position:fixed!important;inset:0 0 auto!important;width:100%!important;z-index:1300!important;
+  background:rgba(255,255,255,.97)!important;border-bottom:1px solid rgba(21,148,71,.16)!important;
+  box-shadow:0 5px 22px rgba(15,23,42,.08)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+}
+.top-header-inner{width:100%;max-width:1320px!important;min-height:72px;height:auto!important;margin:0 auto;padding:9px clamp(10px,2.2vw,26px)!important;gap:clamp(7px,1.2vw,16px)!important}
+.top-header-inner>.logo-wrap{flex:0 0 auto!important;min-width:0;gap:8px!important}
+.top-header-inner>.logo-wrap .logo-img{width:44px!important;height:44px!important;flex:0 0 44px!important}
+.logo-brand-name{font-size:clamp(17px,1.7vw,22px)!important;letter-spacing:-.6px!important;font-weight:900!important;white-space:nowrap}
+.brand-phone-word{color:#111!important}.brand-phone-ya{color:var(--py2-green)!important}.brand-phone-two{color:var(--py2-orange)!important}
+.top-header-inner>.logo-wrap .logo-brand-sub{color:#187b42!important;font-size:9px!important;font-weight:800!important;letter-spacing:1.55px!important;margin-top:3px!important}
+.header-search{flex:1 1 280px!important;max-width:470px!important;min-width:80px}
+.search-box{height:42px!important;border:1px solid #dce3eb!important;border-radius:11px!important;box-shadow:none!important}
+.search-box:focus-within{border-color:var(--py2-orange)!important;box-shadow:0 0 0 3px rgba(255,101,0,.10)!important}
+.search-box input{font-size:13px!important;padding:0 12px!important;min-width:0}
+.search-box button{background:var(--py2-orange)!important;padding:0 14px!important}
+.header-cart-cta{margin:0!important;min-height:40px!important;padding:9px 11px!important;border-radius:10px!important;background:#fff5ee!important;border:1px solid #ffd8c3!important;color:#a33d00!important;font-size:12px!important;font-weight:800!important;gap:6px!important}
+.header-cart-cta .cart-word{display:inline!important}.header-cart-cta .cart-count{flex-shrink:0}
+.desk-nav{display:none!important}
+.hamburger{display:block!important;order:3;flex:0 0 auto;font-size:20px!important}
 body>nav.py2-quick-tabs{
- position:fixed!important;top:var(--py2-header-height,68px)!important;left:0!important;right:0!important;
- width:100%!important;min-width:100%!important;max-width:none!important;margin:0!important;transform:none!important;
- box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;
- gap:6px!important;padding:6px clamp(8px,2vw,24px)!important;background:rgba(255,255,255,.98)!important;
- border:0!important;border-bottom:1px solid rgba(21,148,71,.18)!important;border-radius:0!important;
- box-shadow:0 5px 15px rgba(15,23,42,.09)!important;z-index:1590!important;
- -webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;
+  position:fixed!important;inset:var(--py2-header-height) 0 auto!important;width:100%!important;max-width:none!important;
+  min-height:var(--py2-tabs-height);height:auto!important;margin:0!important;padding:5px clamp(8px,2vw,20px)!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  z-index:1290!important;background:rgba(255,255,255,.97)!important;
+  border:0!important;border-bottom:1px solid #e8edf2!important;border-radius:0!important;
+  box-shadow:0 4px 12px rgba(15,23,42,.045)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)
 }
-body>nav.py2-quick-tabs>a{flex:0 1 112px!important;min-width:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:8px 12px!important;white-space:nowrap!important;border-radius:9px!important}
+body>nav.py2-quick-tabs>a{
+  display:inline-flex!important;flex:0 1 116px!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+  min-width:0!important;padding:8px 12px!important;border-radius:9px!important;color:#475569!important;
+  font-size:12px!important;font-weight:750!important;line-height:1.1!important;white-space:nowrap!important;
+  text-decoration:none!important;transition:background .18s,color .18s!important
+}
+body>nav.py2-quick-tabs>a i{font-size:13px!important;color:var(--py2-green)!important}
+body>nav.py2-quick-tabs>a:hover{background:#f0fdf4!important;color:#166534!important}
+body>nav.py2-quick-tabs>a.is-active{background:#17212f!important;color:#fff!important}
+body>nav.py2-quick-tabs>a.is-active i{color:#ff985c!important}
+body>.cat-nav{
+  position:sticky!important;top:calc(var(--py2-header-height) + var(--py2-tabs-height))!important;
+  z-index:1180!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;
+  overflow:hidden!important;background:#fff!important;border-bottom:1px solid #e5eaf0!important;
+  box-shadow:0 5px 14px rgba(15,23,42,.045)!important
+}
+body>.cat-nav>.cat-nav-inner{
+  width:100%!important;max-width:1320px!important;margin:0 auto!important;padding:0 clamp(8px,2vw,22px)!important;
+  min-width:0!important;display:flex!important;align-items:center!important;gap:2px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain!important;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none!important
+}
+body>.cat-nav>.cat-nav-inner::-webkit-scrollbar{display:none!important}
+body>.cat-nav .cat-nav-item{flex:0 0 auto!important;min-height:43px;padding:11px clamp(10px,1.2vw,16px)!important;font-size:12px!important;font-weight:700!important;color:#536174!important;border-bottom:2px solid transparent!important}
+body>.cat-nav .cat-nav-item:hover,body>.cat-nav .cat-nav-item.active{color:var(--py2-orange)!important;border-bottom-color:var(--py2-orange)!important;background:#fff8f3!important}
+.shop-hero{min-height:0!important;padding:clamp(30px,4.4vw,54px) clamp(16px,4vw,56px) 36px!important;background:linear-gradient(112deg,#111b2a 0%,#17283a 58%,#124331 100%)!important;border-bottom:4px solid var(--py2-orange)!important}
+.shop-hero:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 84% 40%,rgba(21,148,71,.25),transparent 34%),radial-gradient(ellipse at 100% 0%,rgba(255,101,0,.16),transparent 38%)}
+.shop-hero-inner{max-width:1240px!important;z-index:2!important}
+.shop-hero .sec-tag{display:inline-flex!important;align-items:center;gap:8px;margin-bottom:12px!important;background:none!important;color:#a3e8b5!important;-webkit-text-fill-color:#a3e8b5!important;font-size:11px!important;letter-spacing:2px!important}
+.shop-hero .sec-tag:before{content:"";width:22px;height:2px;background:var(--py2-orange);border-radius:2px}
+.shop-hero h1{max-width:760px;margin:0 0 13px!important;font-size:clamp(2rem,4.4vw,3.55rem)!important;line-height:1.06!important;letter-spacing:-.05em!important;text-wrap:balance}
+.shop-hero p{max-width:640px;font-size:15px!important;line-height:1.75!important;color:#cbd5e1!important}
+.shop-hero p span{color:#fff!important}
+.py2-shop-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.py2-shop-hero-actions a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 17px;border-radius:10px;font-size:13px;font-weight:800;transition:transform .18s,box-shadow .18s,background .18s}
+.py2-shop-hero-actions a:hover{transform:translateY(-2px)}
+.py2-hero-primary{background:var(--py2-orange);color:white!important;box-shadow:0 7px 20px rgba(255,101,0,.2)}
+.py2-hero-primary:hover{background:#e85c00}
+.py2-hero-secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.24);color:white!important}
+.py2-hero-secondary i{color:#5be08b}
+.py2-hero-note{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:18px;color:#b8c5d3;font-size:11px;font-weight:650}
+.py2-hero-note i{color:#9de2af}.py2-hero-note span{color:#ff9b5b}
+.shop-hero-orb1{opacity:.45!important}.shop-hero-orb2{opacity:.35!important}
+.shop-hero .py2-page-logo-ambient{opacity:.055!important}
+.py2-ads-interstitial{max-width:1240px;margin:22px auto;padding:0 clamp(12px,3vw,24px)}
+.trust-strip{background:#fff!important;padding:13px clamp(12px,3vw,28px)!important;border-bottom:1px solid var(--py2-line)!important}
+.trust-strip-inner{max-width:1240px!important;justify-content:flex-start!important;gap:9px!important}
+.tbadge{background:#f8fafc!important;border:1px solid #e7edf3!important;border-radius:9px!important;padding:8px 11px!important;font-size:11px!important;color:#334155!important}
+.tbadge.g i{color:var(--py2-green)!important}.tbadge.b i{color:#2563eb!important}.tbadge.o i{color:var(--py2-orange)!important}.tdiv{display:none!important}
+.search-bar{background:transparent!important;border:0!important;padding:22px clamp(12px,3vw,28px) 10px!important}
+.search-inner{max-width:1240px!important}.search-wrap{max-width:720px!important}
+#search-input{height:49px!important;border:1px solid #dfe5ec!important;border-radius:12px!important;padding:0 42px 0 44px!important;box-shadow:0 4px 16px rgba(15,23,42,.035)!important;font-size:14px!important}
+.search-wrap>i{left:16px!important;color:#8290a2!important}
+#search-input:focus{border-color:var(--py2-orange)!important;box-shadow:0 0 0 3px rgba(255,101,0,.1)!important}
+.howto-mini{background:transparent!important;border:0!important;padding:0 clamp(12px,3vw,28px)!important}
+.howto-mini-inner{max-width:1240px!important;background:#fff!important;border:1px solid var(--py2-line)!important;border-radius:12px!important;padding:0 16px!important;box-shadow:0 3px 12px rgba(15,23,42,.025)}
+.howto-mini-hdr{padding:14px 0!important}.howto-mini-hdr h3{font-size:12px!important;color:#334155!important}.howto-mini-hdr h3 i{color:var(--py2-orange)!important}
+.howto-mini-body.open{max-height:650px!important}
+.howto-mini-steps{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important}
+.hms{min-width:0;border:1px solid #edf0f4!important;border-radius:10px!important;padding:10px!important;gap:8px!important;background:#fbfcfe!important}
+.hms-num{background:var(--py2-orange)!important;width:24px!important;height:24px!important}.hms-txt strong{font-size:11px!important}.hms-txt span{font-size:10px!important}
+.filter-bar{position:relative!important;top:auto!important;z-index:10!important;background:transparent!important;border:0!important;padding:20px clamp(12px,3vw,28px) 0!important}
+.filter-bar-inner{max-width:1240px!important;overflow:visible!important;padding:0!important}
+.filter-pills{width:100%!important;display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+.fpill{background:#fff!important;border:1px solid #e1e7ee!important;color:#526174!important;border-radius:9px!important;padding:9px 13px!important;font-size:12px!important;font-weight:750!important;box-shadow:0 2px 6px rgba(15,23,42,.025)!important}
+.fpill:hover{border-color:#ffb17f!important;color:#c44b00!important;background:#fffaf6!important}
+.fpill.active{background:#172334!important;border-color:#172334!important;color:#fff!important;box-shadow:0 4px 12px rgba(17,24,39,.12)!important}
+.shop-topbar{max-width:1240px!important;padding:24px clamp(12px,3vw,28px) 0!important}
+.prod-count{font-size:13px!important;color:#64748b!important}.prod-count strong{color:#111827!important;font-size:17px!important}
+.sort-sel{border:1px solid #dfe5ec!important;border-radius:9px!important;padding:10px 12px!important;background:#fff!important;font-size:12px!important;font-weight:700!important}
+.products-section{max-width:1290px!important;padding:16px clamp(12px,3vw,28px) 42px!important}
+.products-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important;align-items:stretch!important}
+.pcard{min-width:0;background:#fff!important;border:1px solid #e8edf2!important;border-radius:14px!important;box-shadow:0 3px 12px rgba(15,23,42,.045)!important;overflow:hidden!important}
+.pcard:hover{transform:translateY(-4px)!important;border-color:#ffd1b6!important;box-shadow:0 12px 28px rgba(15,23,42,.1)!important}
+.pcard-img{height:clamp(150px,17vw,205px)!important;padding:14px!important;background:linear-gradient(145deg,#fbfcfd,#f2f5f8)!important;border-bottom:1px solid #f0f2f5!important}
+.pcard-img img{width:100%;height:100%;object-fit:contain!important;mix-blend-mode:multiply!important}
+.cat-badge{background:#172334!important;top:10px!important;left:10px!important;border-radius:6px!important;letter-spacing:.45px!important}
+.stock-badge{top:10px!important;right:10px!important;border-radius:6px!important;background:#fff!important;box-shadow:0 2px 8px rgba(15,23,42,.06)!important}
+.sb-in{color:#16803d!important;border-color:#b7e5c4!important;background:#f0fbf3!important}.sb-low{color:#b45309!important;border-color:#fed7aa!important;background:#fff7ed!important}.sb-out{color:#64748b!important;border-color:#e2e8f0!important;background:#f8fafc!important}
+.pcard-body{padding:13px!important}.pcard-cat{color:#718096!important;font-size:9px!important;font-weight:800!important;letter-spacing:1.2px!important}
+.pcard-name{font-size:14px!important;line-height:1.35!important;color:#172334!important;min-height:2.6em!important}
+.pcard-desc{font-size:11px!important;line-height:1.55!important;color:#728095!important}
+.pcard-price-row{min-height:28px;align-items:center!important;gap:7px!important}
+.pcard-price{font-size:1.13rem!important;background:none!important;-webkit-text-fill-color:var(--py2-orange)!important;color:var(--py2-orange)!important;font-weight:900!important;animation:none!important}
+.pcard-orig{font-size:11px!important}.pcard-save{background:#fff3e9!important;color:#c44b00!important;border:1px solid #ffddc6!important}
+.price-drop-banner{border-radius:7px!important;background:#fff7ed!important;border-color:#fed7aa!important;color:#b45309!important}
+.pcard-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important}
+.pcard-actions .py2-add-cart,.pcard-actions .btn-order{min-height:39px!important;padding:9px 5px!important;font-size:11px!important;border-radius:8px!important}
+.py2-add-cart{background:#fff7f1!important;border-color:#ffd4bd!important;color:#a83c00!important}
+.btn-order{background:var(--py2-orange)!important;box-shadow:none!important}.btn-order:hover{background:#e85c00!important;box-shadow:0 4px 12px rgba(255,101,0,.17)!important}
+.card-share-row{gap:7px!important;margin-top:9px!important}.card-share-btn{border:1px solid #e8edf2!important;border-radius:8px!important;background:#fff!important;padding:7px 5px!important;color:#64748b!important}
+.card-share-btn:hover{background:#f0fdf4!important;border-color:#b7e5c4!important;color:#15803d!important}
+.state-box{padding:64px 18px!important;background:#fff!important;border:1px dashed #d7dfe8!important;border-radius:14px!important}
+.state-box h3{font-size:20px!important}.state-box p{max-width:440px;margin:0 auto!important}
+footer{background:#111827!important;padding-top:48px!important}
+.footer-grid{max-width:1240px!important;gap:32px!important}.footer-brand{font-size:21px!important}.footer-tag{max-width:270px!important}
+.fcol-title{color:#f8fafc!important;font-size:11px!important;letter-spacing:1.3px!important}.footer-btm{border-top-color:rgba(255,255,255,.12)!important}
+.mob-nav{z-index:1500!important}.mob-nav-panel{box-shadow:12px 0 35px rgba(15,23,42,.2)}.mob-nav-cart{display:flex;align-items:center;gap:10px;margin:12px 16px;padding:13px;border:1px solid #e5eaf0;border-radius:10px;font-size:13px;font-weight:750}
+.bottom-nav .bnav-item.active{color:var(--py2-orange)!important}
+@media(max-width:1100px){
+ .top-header-inner>.logo-wrap .logo-brand-sub{letter-spacing:1px!important}
+ .header-search{flex-basis:180px!important}
+ .products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .howto-mini-steps{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
 @media(max-width:760px){
- body>.top-header + nav.py2-quick-tabs,body>header + nav.py2-quick-tabs,body>header.top + nav.py2-quick-tabs,body>nav.py2-quick-tabs{gap:1px!important;padding:4px 3px!important}
+ .top-header-inner{min-height:62px!important;padding:7px 10px!important;gap:8px!important}
+ .top-header-inner>.logo-wrap{gap:6px!important;max-width:calc(100% - 120px)!important}
+ .top-header-inner>.logo-wrap .logo-img{width:36px!important;height:36px!important;flex-basis:36px!important}
+ .top-header-inner>.logo-wrap .logo-brand-name{font-size:clamp(15px,4.3vw,19px)!important}
+ .top-header-inner>.logo-wrap .logo-brand-sub{font-size:8px!important;letter-spacing:1px!important}
+ .top-header-inner>.header-search{display:none!important}
+ .top-header-inner>.header-cart-cta{padding:8px 8px!important;min-height:36px!important;font-size:11px!important;gap:4px!important}
+ .top-header-inner>.header-cart-cta .cart-emoji{font-size:14px!important}
+ .hamburger{order:0!important;margin-left:auto!important;padding:5px!important}
+ body>nav.py2-quick-tabs{justify-content:space-around!important;gap:2px!important;padding:4px 5px!important}
  body>nav.py2-quick-tabs>a{flex:1 1 0!important;flex-direction:column!important;gap:3px!important;padding:5px 1px!important;font-size:10px!important}
+ body>nav.py2-quick-tabs>a i{font-size:13px!important}
+ body>.cat-nav .cat-nav-item{min-height:40px;padding:10px 11px!important;font-size:11px!important}
+ .shop-hero{padding:27px 16px 25px!important}
+ .shop-hero h1{font-size:clamp(1.9rem,8vw,2.6rem)!important}
+ .shop-hero p{font-size:13px!important}
+ .py2-shop-hero-actions{margin-top:17px;gap:8px}
+ .py2-shop-hero-actions a{min-height:42px;padding:0 12px;font-size:12px}
+ .py2-hero-note{font-size:10px;line-height:1.6;margin-top:15px}
+ .trust-strip{padding:10px!important}.trust-strip-inner{gap:6px!important}
+ .tbadge{padding:7px 8px!important;font-size:10px!important;gap:5px!important}
+ .search-bar{padding:16px 10px 9px!important}#search-input{height:46px!important;font-size:13px!important}
+ .howto-mini{padding:0 10px!important}.howto-mini-inner{padding:0 12px!important}
+ .howto-mini-steps{grid-template-columns:1fr!important}.hms{padding:9px!important}
+ .filter-bar{padding:15px 10px 0!important}
+ .filter-pills{flex-wrap:nowrap!important;overflow-x:auto!important;overscroll-behavior-x:contain;padding:0 0 5px!important;scrollbar-width:none!important}
+ .filter-pills::-webkit-scrollbar{display:none!important}.fpill{flex:0 0 auto!important;padding:8px 10px!important;font-size:11px!important}
+ .shop-topbar{padding:18px 10px 0!important}.prod-count strong{font-size:15px!important}
+ .sort-sel{max-width:175px!important;padding:9px 8px!important}
+ .products-section{padding:12px 10px 30px!important}
+ .products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .pcard{border-radius:11px!important}.pcard-img{height:clamp(115px,36vw,165px)!important;padding:8px!important}
+ .pcard-body{padding:9px!important}.pcard-name{font-size:12px!important;min-height:2.55em!important}
+ .pcard-desc{font-size:10px!important;margin-bottom:7px!important}.pcard-price{font-size:1rem!important}
+ .pcard-actions{gap:4px!important}.pcard-actions .py2-add-cart,.pcard-actions .btn-order{font-size:10px!important;padding:8px 3px!important;min-height:36px!important}
+ .card-share-btn{font-size:9px!important;gap:3px!important}
+ footer{padding:36px 16px 0!important}.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:26px 18px!important}
+}
+@media(max-width:380px){
+ .top-header-inner>.logo-wrap{max-width:calc(100% - 112px)!important;gap:5px!important}
+ .top-header-inner>.logo-wrap .logo-img{width:31px!important;height:31px!important;flex-basis:31px!important}
+ .top-header-inner>.logo-wrap .logo-brand-name{font-size:15px!important}
+ .top-header-inner>.logo-wrap .logo-brand-sub{font-size:7px!important;letter-spacing:.7px!important}
+ .top-header-inner>.header-cart-cta{padding:7px 6px!important;font-size:10px!important}
+ .py2-shop-hero-actions a{flex:1 1 100%}
+ .pcard-actions{grid-template-columns:1fr!important}.card-share-row{display:none!important}
+ .footer-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 </style>
-<style id="phoneya2-shop-category-attached-v2">
-/* Category strip sits flush below the fixed quick-nav and remains attached during scroll. */
-body>.cat-nav{position:sticky!important;top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px))!important;z-index:1180!important;display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;border-radius:0!important;border-top:0!important;background:#fff!important;box-shadow:0 5px 14px rgba(17,24,39,.08)!important}
-body>.cat-nav>.cat-nav-inner{width:100%!important;max-width:1240px!important;min-width:0!important;margin:0 auto!important;display:flex!important;justify-content:flex-start!important;overflow-x:auto!important;box-sizing:border-box!important;padding:0 clamp(10px,3vw,28px)!important;scrollbar-width:none!important}
-body>.cat-nav>.cat-nav-inner::-webkit-scrollbar{display:none}
-body>.cat-nav .cat-nav-item{flex:0 0 auto!important;white-space:nowrap!important}
-@media(max-width:760px){body>.cat-nav>.cat-nav-inner{padding:0 8px!important}body>.cat-nav .cat-nav-item{padding:10px 11px!important;font-size:11px!important}}
-</style>
+
+
+
+
 </head>
 <body>
 
@@ -2222,16 +1891,39 @@ s0.parentNode.insertBefore(s1,s0);
 </script>
 <!--End of Tawk.to Script-->
 <script src="/cart.js" defer></script>
-<script id="phoneya2-sticky-header-height-v4">
-(()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
+
+
+  <script id="phoneya2-shop-layout-controller-v2">
+(()=>{'use strict';
+ const root=document.documentElement,body=document.body;
+ let raf=0,ro=null;
+ const header=document.querySelector('.top-header');
+ const tabs=document.querySelector('body>nav.py2-quick-tabs');
+ const cats=document.querySelector('body>.cat-nav');
+ const measure=()=>{
+   cancelAnimationFrame(raf);
+   raf=requestAnimationFrame(()=>{
+     const hh=header?Math.ceil(header.getBoundingClientRect().height):72;
+     const th=tabs?Math.ceil(tabs.getBoundingClientRect().height):42;
+     root.style.setProperty('--py2-header-height',hh+'px');
+     root.style.setProperty('--py2-tabs-height',th+'px');
+     if(cats)cats.style.setProperty('top',(hh+th)+'px','important');
+     body.style.setProperty('padding-top',(hh+th)+'px','important');
+   });
+ };
+ measure();
+ window.addEventListener('resize',measure,{passive:true});
+ window.addEventListener('load',measure,{once:true});
+ if('ResizeObserver'in window){
+   ro=new ResizeObserver(measure);
+   if(header)ro.observe(header);
+   if(tabs)ro.observe(tabs);
+ }
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+})();
 </script>
-<script id="phoneya2-fixed-header-layout-v7">
-(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');const cats=document.querySelector('body>.cat-nav');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');tabs.style.setProperty('position','fixed','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('left','0','important');tabs.style.setProperty('right','0','important');tabs.style.setProperty('width','100%','important');tabs.style.setProperty('margin','0','important');const th=Math.ceil(tabs.getBoundingClientRect().height);const ch=cats?Math.ceil(cats.getBoundingClientRect().height):0;document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.documentElement.style.setProperty('--py2-category-height',ch+'px');document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');if(cats)cats.style.setProperty('top',(hh+th)+'px','important');});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');const c=document.querySelector('body>.cat-nav');if(h)ro.observe(h);if(n)ro.observe(n);if(c)ro.observe(c)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
-</script>
-  <script src="/blog-widgets.js" defer></script>
+<script src="/blog-widgets.js" defer></script>
 <script src="/blog-header-button.js" defer></script>
-<script id="phoneya2-nav-stack-lock-v2">
-(()=>{let raf=0,observer;const update=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');tabs.style.setProperty('position','fixed','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('left','0','important');tabs.style.setProperty('right','0','important');tabs.style.setProperty('width','100%','important');tabs.style.setProperty('margin','0','important');const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.body.style.setProperty('padding-top',(hh+th)+'px','important');const cats=document.querySelector('body>.cat-nav');if(cats){cats.style.setProperty('position','sticky','important');cats.style.setProperty('top',(hh+th)+'px','important');cats.style.setProperty('margin','0','important');cats.style.setProperty('z-index','1180','important');}});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){observer=new ResizeObserver(update);const observe=()=>{['body>.top-header,body>header,body>header.top','body>nav.py2-quick-tabs','body>.cat-nav'].forEach(sel=>{const el=document.querySelector(sel);if(el)observer.observe(el);});};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
-</script>
+
 </body>
 </html>
