@@ -1380,19 +1380,27 @@ document.getElementById('btn-copy-link').addEventListener('click', () => {
   document.getElementById('share-overlay').classList.remove('open');
   document.body.style.overflow='';
 });
+function buildProductShareCaption(product, productUrl) {
+  const title = product && product.title ? product.title : 'Product';
+  return '*' + title + '*\n\n' +
+    '🛍️ Discover your next favourite affordable gadget with PhoneYa2.\n\n' +
+    '📲 View product & order here:\n' + productUrl + '\n\n' +
+    '*Smart CHOICES. Better CONNECTED* 💙';
+}
+
+window.shareProductWhatsApp = function() {
+  if (!currentProd) return;
+  const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(currentProd.slug);
+  const message = buildProductShareCaption(currentProd, productUrl);
+  window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener');
+};
+
 function buildShareOpts() {
   if (!currentProd) return;
-  const productUrl = window.location.origin + '/product.html?id=' + currentProd.slug;
+  const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(currentProd.slug);
   const encodedUrl = encodeURIComponent(productUrl);
-  const waText = encodeURIComponent(
-    '👋 Check this out at PhoneYa2:\n\n' +
-    '*' + currentProd.title + '*\n' +
-    'Price: *ZMW ' + currentProd.price + '*\n' +
-    (currentProd.description ? currentProd.description.slice(0,80) + '...\n' : '') +
-    '\n🔗 ' + productUrl + '\n\n' +
-    'Same-day delivery in Lusaka! 🚀'
-  );
-  const txt = encodeURIComponent(currentProd.title + ' – ZMW ' + currentProd.price + ' at PhoneYa2');
+  const waText = encodeURIComponent(buildProductShareCaption(currentProd, productUrl));
+  const txt = encodeURIComponent(currentProd.title + ' | PhoneYa2 — Smart CHOICES. Better CONNECTED 💙');
   const opts = [
     {lbl:'WhatsApp',  icon:'fa-brands fa-whatsapp',   bg:'#25d366', href:'https://wa.me/?text='+waText},
     {lbl:'Facebook',  icon:'fa-brands fa-facebook-f',  bg:'#1877f2', href:'https://www.facebook.com/sharer/sharer.php?u='+encodedUrl},
@@ -1405,8 +1413,13 @@ function buildShareOpts() {
     const d = document.createElement('div'); d.className='share-opt';
     d.innerHTML='<div class="so-icon" style="background:'+o.bg+'"><i class="'+o.icon+'"></i></div><span class="so-lbl">'+o.lbl+'</span>';
     d.addEventListener('click', () => {
-      if (o.action==='copy') { const copyUrl = o.copyUrl || window.location.href; navigator.clipboard.writeText(copyUrl).catch(()=>{ try { const ta=document.createElement('textarea'); ta.value=copyUrl; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } catch(e){} }); showToast('🔗 Link copied!'); }
-      else window.open(o.href,'_blank','noopener');
+      if (o.action==='copy') {
+        const copyUrl = o.copyUrl || window.location.href;
+        navigator.clipboard.writeText(copyUrl).catch(()=>{ try { const ta=document.createElement('textarea'); ta.value=copyUrl; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } catch(e){} });
+        showToast('🔗 Link copied!');
+      } else {
+        window.open(o.href,'_blank','noopener');
+      }
       document.getElementById('share-overlay').classList.remove('open');
       document.body.style.overflow='';
     });
@@ -1573,7 +1586,7 @@ function renderProduct(p) {
       <div class="share-row">
         <span class="share-lbl">Share:</span>
         <div class="share-btns">
-          <button class="sh-btn sh-wa" onclick="window.open('https://wa.me/?text='+encodeURIComponent('${escJs(p.title)} – ZMW ${p.price} at PhoneYa2: ')+encodeURIComponent(window.location.href),'_blank','noopener')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+          <button class="sh-btn sh-wa" onclick="shareProductWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
           <button class="sh-btn sh-fb" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href),'_blank','noopener')"><i class="fa-brands fa-facebook-f"></i> Facebook</button>
           <button class="sh-btn sh-cp" onclick="navigator.clipboard.writeText(window.location.href).catch(()=>{});showToast('🔗 Link copied!')"><i class="fa-solid fa-link"></i> Copy Link</button>
         </div>
