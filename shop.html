@@ -1075,6 +1075,40 @@ body>.top-header + .py2-quick-tabs{margin-bottom:12px!important}
   .py2-page-logo-ambient{animation:none!important;transform:translate(-50%,-50%)!important}
 }
 </style>
+<style id="phoneya2-shop-category-tabs-sticky-v1">
+/* Keep the product-category strip in its own row, attached beneath the header + quick tabs. */
+body > .cat-nav{
+  position:sticky!important;
+  top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px))!important;
+  z-index:1180!important;
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+  box-shadow:0 5px 14px rgba(17,24,39,.08);
+}
+body > .cat-nav > .cat-nav-inner{
+  width:100%!important;
+  max-width:1280px!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  display:flex!important;
+  justify-content:flex-start!important;
+  overflow-x:auto!important;
+  box-sizing:border-box!important;
+}
+body > .cat-nav .cat-nav-item{flex:0 0 auto!important;}
+.filter-bar{
+  top:calc(var(--py2-header-height,68px) + var(--py2-tabs-height,42px) + var(--py2-category-height,44px))!important;
+}
+@media(max-width:600px){
+  body > .cat-nav > .cat-nav-inner{padding-left:8px!important;padding-right:8px!important;}
+  body > .cat-nav .cat-nav-item{padding:9px 11px!important;font-size:12px!important;}
+}
+</style>
 
 </head>
 <body>
@@ -1990,8 +2024,8 @@ s0.parentNode.insertBefore(s1,s0);
 <script id="phoneya2-sticky-header-height-v4">
 (()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
 </script>
-<script id="phoneya2-fixed-header-layout-v5">
-(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');if(header.classList.contains('top-header')&&getComputedStyle(header).position==='sticky'){document.body.style.setProperty('padding-top','0px','important');tabs.style.setProperty('position','sticky','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('margin','0 auto 12px','important');}else{document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');}});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');if(h)ro.observe(h);if(n)ro.observe(n)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
+<script id="phoneya2-fixed-header-layout-v6">
+(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');const cats=document.querySelector('body>.cat-nav');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);const ch=cats?Math.ceil(cats.getBoundingClientRect().height):0;document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.documentElement.style.setProperty('--py2-category-height',ch+'px');if(header.classList.contains('top-header')&&getComputedStyle(header).position==='sticky'){document.body.style.setProperty('padding-top','0px','important');tabs.style.setProperty('position','sticky','important');tabs.style.setProperty('top',hh+'px','important');tabs.style.setProperty('margin','0 auto 12px','important');}else{document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');}if(cats){cats.style.setProperty('top',(hh+th)+'px','important');}});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');const c=document.querySelector('body>.cat-nav');if(h)ro.observe(h);if(n)ro.observe(n);if(c)ro.observe(c)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
 </script>
   <script src="/blog-widgets.js" defer></script>
 <script src="/blog-header-button.js" defer></script>
