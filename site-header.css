@@ -99,3 +99,180 @@ body>.top-header .header-search{display:none!important}
 body.shop-page>.top-header .header-search{display:flex!important}
 body>.cat-nav{display:none!important}
 body.shop-page>.cat-nav{display:block!important}
+
+
+/* Professional menu normalization: works with the legacy Home/Shop, About/Contact,
+   and shared fallback drawers without changing their page-specific links. */
+:root { --py2-menu-z: 5000; }
+body.py2-menu-open { overflow: hidden !important; }
+body > .mob-nav,
+body > .mobile-nav,
+body > #mob-nav,
+body > #mobile-nav,
+body > .py2-header-drawer {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: var(--py2-menu-z) !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0 !important;
+  background: rgba(15, 23, 42, .56) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(3px) !important;
+}
+body > .mob-nav.open,
+body > .mobile-nav.open,
+body > #mob-nav.open,
+body > #mobile-nav.open,
+body > .py2-header-drawer.open { display: flex !important; }
+body > .mob-nav,
+body > #mob-nav { align-items: stretch !important; justify-content: flex-start !important; }
+body > .mob-nav > .mob-nav-panel,
+body > #mob-nav > .mob-nav-panel,
+body > .mobile-nav > .mobile-nav-panel,
+body > #mobile-nav > .mobile-nav-panel,
+body > .py2-header-drawer > .py2-header-drawer-panel {
+  position: relative !important;
+  inset: auto !important;
+  display: flex !important;
+  flex: 0 1 min(360px, 90vw) !important;
+  flex-direction: column !important;
+  width: min(360px, 90vw) !important;
+  min-width: 0 !important;
+  max-width: 90vw !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 0 max(18px, env(safe-area-inset-bottom)) !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-gutter: stable !important;
+  background: #fff !important;
+  box-shadow: 12px 0 40px rgba(15, 23, 42, .22) !important;
+  border: 0 !important;
+  border-radius: 0 16px 16px 0 !important;
+  animation: py2-menu-enter .2s ease-out both !important;
+}
+body > .mobile-nav,
+body > #mobile-nav { align-items: stretch !important; flex-direction: column !important; }
+body > .mobile-nav > a,
+body > #mobile-nav > a { flex: 0 0 auto !important; }
+body > .mob-nav .mob-nav-hdr,
+body > #mob-nav .mob-nav-hdr,
+body > .py2-header-drawer .py2-header-drawer-head {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+  flex: 0 0 auto !important;
+  background: #fff !important;
+  color: #17212f !important;
+  border-bottom: 1px solid #e8edf3 !important;
+  padding-top: max(16px, env(safe-area-inset-top)) !important;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, .04) !important;
+}
+body > .mob-nav .mob-nav-links,
+body > #mob-nav .mob-nav-links,
+body > .py2-header-drawer .py2-header-drawer-links {
+  display: grid !important;
+  flex: 0 0 auto !important;
+  gap: 5px !important;
+  padding: 14px !important;
+}
+body > .mob-nav .mob-nav-links a,
+body > #mob-nav .mob-nav-links a,
+body > .py2-header-drawer .py2-header-drawer-links a,
+body > .mobile-nav > a,
+body > #mobile-nav > a {
+  min-height: 46px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+  color: #243244 !important;
+  font: 700 14px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  text-decoration: none !important;
+  overflow-wrap: anywhere !important;
+}
+body > .mob-nav .mob-nav-links a:hover,
+body > .mob-nav .mob-nav-links a.active,
+body > #mob-nav .mob-nav-links a:hover,
+body > #mob-nav .mob-nav-links a.active,
+body > .py2-header-drawer .py2-header-drawer-links a:hover,
+body > .py2-header-drawer .py2-header-drawer-links a:focus-visible,
+body > .mobile-nav > a:hover,
+body > #mobile-nav > a:hover {
+  background: #effaf3 !important;
+  color: #11783a !important;
+}
+body > .mob-nav .mob-nav-cart,
+body > #mob-nav .mob-nav-cart,
+body > .mob-nav .mob-nav-wa,
+body > #mob-nav .mob-nav-wa,
+body > .py2-header-drawer .py2-header-drawer-order {
+  flex: 0 0 auto !important;
+  margin-left: 14px !important;
+  margin-right: 14px !important;
+}
+body > .mob-nav .mob-nav-close,
+body > #mob-nav .mob-nav-close,
+body > .py2-header-drawer .py2-header-drawer-close {
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+}
+body > .mobile-nav:not(.open),
+body > #mobile-nav:not(.open),
+body > .mob-nav:not(.open),
+body > #mob-nav:not(.open),
+body > .py2-header-drawer:not(.open) { display: none !important; }
+body > .mob-nav a:focus-visible,
+body > #mob-nav a:focus-visible,
+body > .mobile-nav a:focus-visible,
+body > #mobile-nav a:focus-visible,
+body > .py2-header-drawer a:focus-visible,
+body > .mob-nav button:focus-visible,
+body > #mob-nav button:focus-visible,
+body > .py2-header-drawer button:focus-visible {
+  outline: 3px solid #1677e8 !important;
+  outline-offset: 2px !important;
+}
+@keyframes py2-menu-enter {
+  from { opacity: .7; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@media (max-width: 420px) {
+  body > .mob-nav > .mob-nav-panel,
+  body > #mob-nav > .mob-nav-panel,
+  body > .mobile-nav > .mobile-nav-panel,
+  body > #mobile-nav > .mobile-nav-panel,
+  body > .py2-header-drawer > .py2-header-drawer-panel {
+    width: min(340px, 92vw) !important;
+    max-width: 92vw !important;
+    border-radius: 0 13px 13px 0 !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body > .mob-nav > .mob-nav-panel,
+  body > #mob-nav > .mob-nav-panel,
+  body > .mobile-nav > .mobile-nav-panel,
+  body > #mobile-nav > .mobile-nav-panel,
+  body > .py2-header-drawer > .py2-header-drawer-panel { animation: none !important; }
+}
