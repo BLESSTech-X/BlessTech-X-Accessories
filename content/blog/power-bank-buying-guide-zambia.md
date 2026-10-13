@@ -12,8 +12,6 @@ tags:
   - "travel"
   - "charging"
   - "buying guide"
-related_products:
-  - none
 ---
 
 A power bank can be useful during travel, long days away from a socket, or when you need a backup charge. Before buying one, look beyond the large capacity number printed on the box.
