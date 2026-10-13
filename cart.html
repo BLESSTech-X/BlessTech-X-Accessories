@@ -558,6 +558,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
         <div class="logo-brand-sub">Accessories</div>
       </div>
     </a>
+    <a href="/blog.html" class="py2-global-blog-button" aria-label="Visit the PhoneYa2 Blog"><span aria-hidden="true">🌐</span><span>Blog</span></a>
     <div class="header-search">
       <div class="search-box">
         <input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products" onkeydown="if(event.key==='Enter'){const q=this.value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)}">
@@ -731,12 +732,8 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
   loadProducts();
 })();
 </script>
-<script id="phoneya2-sticky-header-height-v4">
-(()=>{const setHeight=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');if(h){document.documentElement.style.setProperty('--py2-header-height',Math.ceil(h.getBoundingClientRect().height)+'px')}};setHeight();window.addEventListener('resize',setHeight,{passive:true});window.addEventListener('load',setHeight,{once:true});})();
-</script>
-<script id="phoneya2-fixed-header-layout-v5">
-(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const header=document.querySelector('body>.top-header,body>header,body>header.top');const tabs=document.querySelector('body>nav.py2-quick-tabs');if(!header||!tabs)return;const hh=Math.ceil(header.getBoundingClientRect().height);const th=Math.ceil(tabs.getBoundingClientRect().height);document.documentElement.style.setProperty('--py2-header-height',hh+'px');document.documentElement.style.setProperty('--py2-tabs-height',th+'px');document.body.style.setProperty('padding-top',(hh+th+10)+'px','important');tabs.style.setProperty('top',hh+'px','important');});};update();window.addEventListener('load',update,{once:true});window.addEventListener('resize',update,{passive:true});if('ResizeObserver'in window){const ro=new ResizeObserver(update);const observe=()=>{const h=document.querySelector('body>.top-header,body>header,body>header.top');const n=document.querySelector('body>nav.py2-quick-tabs');if(h)ro.observe(h);if(n)ro.observe(n)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();}})();
-</script>
+
+
 <script src="/blog-header-button.js" defer></script>
 <script src="/site-header.js?v=20261013" defer></script>
 </body>
