@@ -1,7 +1,8 @@
 {
   "version": 1,
   "include": [
-    "/product.html"
+    "/product.html",
+    "/blog-post.html"
   ],
   "exclude": []
 }
