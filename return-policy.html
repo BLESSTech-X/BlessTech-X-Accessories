@@ -23,8 +23,28 @@
     footer{background:var(--dark);color:#aaa;text-align:center;padding:30px 20px;font-size:12px}footer a{color:#25d366}
     @media(max-width:700px){.nav{display:none}}
   </style>
+<link rel="stylesheet" href="/site-header.css?v=20261013">
 </head>
 <body>
+<div class="top-header"><div class="top-header-inner">
+<a href="/" class="logo-wrap" aria-label="PhoneYa2 Accessories home"><img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 Accessories" class="logo-img" onerror="this.style.display='none'"><div class="logo-text-block"><div class="logo-brand-name"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div><div class="logo-brand-sub">Accessories</div></div></a>
+<div class="header-search"><div class="search-box"><input type="text" id="main-search" placeholder="Search cases, chargers, cables, earphones…" autocomplete="off" aria-label="Search products" onkeydown="if(event.key==='Enter'){const q=this.value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)}"><button type="button" onclick="const q=document.getElementById('main-search').value.trim();if(q)location.href='/shop.html?q='+encodeURIComponent(q)" aria-label="Search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button></div></div>
+<a href="/cart.html" class="header-cart-cta" aria-label="View your cart"><span class="cart-emoji" aria-hidden="true">🛒</span><span class="cart-word">View Your Cart</span><span class="cart-count" data-cart-count>0</span></a><button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="mob-nav" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+</div></div>
+<nav class="py2-quick-tabs" aria-label="Quick site navigation">
+<a href="/"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a><a href="/shop.html"><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a><a href="/account.html"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Account</span></a><a href="/about.html"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>About</span></a><a href="/contact.html"><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a><a href="/cart.html"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
+</nav><div class="cat-nav" aria-label="Shop categories"><div class="cat-nav-inner">
+<a href="/shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store" aria-hidden="true"></i> All Products</a>
+<a href="/shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Cases</a>
+<a href="/shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Chargers</a>
+<a href="/shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug" aria-hidden="true"></i> Cables</a>
+<a href="/shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones" aria-hidden="true"></i> Earphones</a>
+<a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full" aria-hidden="true"></i> Power Banks</a>
+<a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Protectors</a>
+<a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile" aria-hidden="true"></i> Phones</a>
+<a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
+</div></div>
+
 <header><div class="header-inner"><a href="index.html" class="logo"><div class="logo-icon">📱</div><div><div class="brand">PhoneYa2</div><div class="sub">Accessories</div></div></a><nav class="nav"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="about.html">About</a><a href="contact.html">Contact</a></nav></div></header>
 
 <section class="hero"><div class="tag">PhoneYa2</div><h1>Return & Refund Policy</h1><p>Clear and simple information about returns, refunds and exchanges for PhoneYa2 customers in Zambia.</p></section>
@@ -68,5 +88,6 @@
 </article></main>
 <footer>© 2026 PhoneYa2 Accessories · A BLESSTech-X Venture. All rights reserved.</footer>
 <script src="/blog-header-button.js" defer></script>
+<script src="/site-header.js?v=20261013" defer></script>
 </body>
 </html>
