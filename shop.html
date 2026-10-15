@@ -1275,7 +1275,29 @@ function parseFrontmatter(text, slug) {
 }
 
 async function fetchAllProducts() {
-  const res = await fetch('/content/products/index.json?t=' + Date.now());
+  // Prefer the build-time catalogue: one small request instead of one request per product.
+  try {
+    const catalogResponse = await fetch('/content/products/catalog.json');
+    if (catalogResponse.ok) {
+      const catalog = await catalogResponse.json();
+      if (Array.isArray(catalog) && catalog.length) {
+        const products = catalog.filter(p => p && p.slug).map(p => ({
+          ...p,
+          price: Number(p.price) || 0,
+          original_price: Number(p.original_price) || 0,
+          stock: Number(p.stock) || 0,
+          featured: p.featured === true || p.featured === 'true',
+          gallery: Array.isArray(p.gallery) ? p.gallery : []
+        }));
+        if (products.length) return products;
+      }
+    }
+  } catch (error) {
+    console.warn('[PhoneYa2] Compact catalogue unavailable; using legacy product loader.', error);
+  }
+
+  // Backward-compatible fallback protects the storefront if the build catalogue is unavailable.
+  const res = await fetch('/content/products/index.json');
   if (!res.ok) throw new Error('index.json ' + res.status);
   const slugs = await res.json();
   if (!Array.isArray(slugs) || !slugs.length) throw new Error('index.json empty');
