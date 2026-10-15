@@ -35,5 +35,5 @@ document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.
 const query=new URLSearchParams(location.search).get('q');
 if(query){document.querySelectorAll('body>.top-header .header-search input, #main-search').forEach(i=>{i.value=query;});}
 /* Contextual, dismissible smart help is shared across public site pages. */
-(function(){if(document.querySelector('link[data-py2-smart-guide]'))return;var css=document.createElement('link');css.rel='stylesheet';css.href='/smart-guide.css?v=20261015-smart1';css.setAttribute('data-py2-smart-guide','');document.head.appendChild(css);var js=document.createElement('script');js.src='/smart-guide.js?v=20261015-smart1';js.defer=true;document.body.appendChild(js)})();
+(function(){if(document.querySelector('link[data-py2-smart-guide]'))return;var css=document.createElement('link');css.rel='stylesheet';css.href='/smart-guide.css?v=20261015-glow3';css.setAttribute('data-py2-smart-guide','');document.head.appendChild(css);var js=document.createElement('script');js.src='/smart-guide.js?v=20261015-glow3';js.defer=true;document.body.appendChild(js)})();
 })();
