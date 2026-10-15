@@ -27,10 +27,30 @@ function mediaMarkup(p){
  if(p.image)return '<a class="py2-feed-media" href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'"><img loading="lazy" decoding="async" src="'+esc(p.image)+'" alt="'+esc(p.title)+'" onerror="this.closest(\'.py2-feed-media\').classList.add(\'py2-media-failed\')"><span class="py2-media-fallback">PhoneYa2 community post</span></a>';
  return '<a class="py2-feed-no-media" href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'"><span>PY<span>2</span></span><small>PHONEYA2 COMMUNITY</small></a>'
 }
-function card(p,index){
- var href='/blog-post.html?slug='+encodeURIComponent(p.slug),saved=getSaved().indexOf(p.slug)>=0;
- var tags=Array.isArray(p.tags)?p.tags.slice(0,3).map(function(t){return '<span>#'+esc(t).replace(/^#/,'')+'</span>'}).join(''):'';
- return '<article class="py2-social-post" data-post-slug="'+esc(p.slug)+'"><div class="py2-post-author-row"><div class="py2-post-avatar">PY<span>2</span></div><div class="py2-post-author"><strong>PhoneYa2 <span class="py2-verified" aria-label="PhoneYa2">✓</span></strong><span>'+esc(dateLabel(p.date))+' · <i class="fa-solid fa-earth-africa" aria-label="Public"></i></span></div><span class="py2-post-category">'+esc(p.category||'Community')</span></div><div class="py2-post-copy"><h3><a href="'+href+'" data-blog-open="'+esc(p.slug)+'">'+esc(p.title||'PhoneYa2 update')+'</a></h3><p>'+esc(p.excerpt||'Explore this PhoneYa2 update.')+'</p></div>'+mediaMarkup(p)+'<div class="py2-post-tags">'+tags+'</div><div class="py2-post-actions"><button type="button" class="py2-post-action '+(saved?'is-saved':'')+'" data-save-post="'+esc(p.slug)+'" aria-pressed="'+(saved?'true':'false')+'"><i class="fa-'+(saved?'solid':'regular')+' fa-bookmark" aria-hidden="true"></i><span>'+(saved?'Saved':'Save')+'</span></button><button type="button" class="py2-post-action" data-share-post="'+esc(p.slug)+'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button><a class="py2-post-action py2-post-open" href="'+href+'" data-blog-open="'+esc(p.slug)+'"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Open post</span></a></div><div class="py2-post-footer"><span><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Smart choices. Better connected.</span><a href="'+href+'" data-blog-open="'+esc(p.slug)+'">Read full post ↗</a></div></article>'
+function card(p){
+ var href='/blog-post.html?slug='+encodeURIComponent(p.slug);
+ var saved=getSaved().indexOf(p.slug)>=0;
+ var tags='';
+ if(Array.isArray(p.tags)){tags=p.tags.slice(0,3).map(function(t){return '<span>#'+esc(String(t).replace(/^#/,''))+'</span>'}).join('')}
+ var saveLabel=saved?'Saved':'Save';
+ var saveClass=saved?' is-saved':'';
+ var saveIcon=saved?'solid':'regular';
+ return [
+  '<article class="py2-social-post" data-post-slug="',esc(p.slug),'">',
+  '<div class="py2-post-author-row"><div class="py2-post-avatar">PY<span>2</span></div>',
+  '<div class="py2-post-author"><strong>PhoneYa2 <span class="py2-verified" aria-label="PhoneYa2">✓</span></strong>',
+  '<span>',esc(dateLabel(p.date)),' · <i class="fa-solid fa-earth-africa" aria-label="Public"></i></span></div>',
+  '<span class="py2-post-category">',esc(p.category||'Community'),'</span></div>',
+  '<div class="py2-post-copy"><h3><a href="',href,'" data-blog-open="',esc(p.slug),'">',esc(p.title||'PhoneYa2 update'),'</a></h3>',
+  '<p>',esc(p.excerpt||'Explore this PhoneYa2 update.'),'</p></div>',
+  mediaMarkup(p),
+  '<div class="py2-post-tags">',tags,'</div>',
+  '<div class="py2-post-actions"><button type="button" class="py2-post-action',saveClass,'" data-save-post="',esc(p.slug),'" aria-pressed="',saved?'true':'false','"><i class="fa-',saveIcon,' fa-bookmark" aria-hidden="true"></i><span>',saveLabel,'</span></button>',
+  '<button type="button" class="py2-post-action" data-share-post="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button>',
+  '<a class="py2-post-action py2-post-open" href="',href,'" data-blog-open="',esc(p.slug),'"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Open post</span></a></div>',
+  '<div class="py2-post-footer"><span><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Smart choices. Better connected.</span>',
+  '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div></article>'
+ ].join('');
 }
 function render(){
  var saved=getSaved();
