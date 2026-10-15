@@ -229,7 +229,9 @@ footer{background:var(--dark);padding:64px 24px 0;}
     .logo-text .brand, header .brand, body > header .brand { font-size: 23px !important; }
   }
 
- </style>
+ 
+.businesses-section{padding:58px 24px;background:#fff}.businesses-section .section-header{max-width:820px;margin:0 auto 28px;text-align:center}.businesses-section #about-businesses-intro{max-width:650px;margin:10px auto 0;color:var(--muted);font-size:14px;line-height:1.7}.businesses-grid{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.business-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:22px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:var(--light);box-shadow:0 5px 20px rgba(0,0,0,.04)}.business-logo{width:68px;height:68px;border-radius:14px;display:grid;place-items:center;overflow:hidden;background:white;border:1px solid rgba(0,0,0,.07);color:#4b5563;font-size:28px;font-weight:800}.business-logo img{width:100%;height:100%;object-fit:contain;padding:7px}.business-card h3{font-size:18px;margin:0}.business-tagline{color:#475569;font-weight:700;font-size:12px}.business-card p{color:var(--muted);font-size:13px;line-height:1.65}.business-visit{margin-top:auto;display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border-radius:9px;background:var(--dark);color:#fff;font-size:12px;font-weight:800}.team-avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}.team-avatar{overflow:hidden}@media(max-width:760px){.businesses-grid{grid-template-columns:1fr}.businesses-section{padding:42px 16px}.business-card{padding:18px}}
+</style>
 
 <!-- PhoneYa2 compact floating bottom-navigation fix -->
 <style id="phoneya2-bottom-nav-layout-fix">
@@ -972,14 +974,14 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   <div class="about-hero-orb2"></div>
   <div class="about-hero-content">
     <div class="section-tag">About PhoneYa2</div>
-    <h1>Built for Zambia.<br>Built with Purpose.</h1>
-    <p>PhoneYa2 Accessories is a BLESSTech-X venture — bringing genuine phone accessories and quality service to Lusaka.</p>
+    <h1 id="about-hero-title">Built for Zambia.<br>Built with Purpose.</h1>
+    <p id="about-hero-sub">PhoneYa2 Accessories is a BLESSTech-X venture — bringing genuine phone accessories and quality service to Lusaka.</p>
   </div>
 </section>
 
 <!-- STATS -->
 <section class="about-stats">
-  <div class="stats-grid">
+  <div class="stats-grid" id="about-stats-grid">
     <div class="stat-card"><div class="stat-num">Zambia</div><div class="stat-label">Local Market Focus</div></div>
     <div class="stat-card"><div class="stat-num">Online</div><div class="stat-label">Browse & Order</div></div>
     <div class="stat-card"><div class="stat-num">Same Day</div><div class="stat-label">Delivery in Lusaka</div></div>
@@ -992,28 +994,30 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   <div class="story-inner">
     <div class="story-left">
       <div class="story-emoji">🏢</div>
-      <h3>A BLESSTech-X Venture</h3>
-      <p>PhoneYa2 is a practical example of what we build for our clients — a real, working business that serves the Zambian market.</p>
-      <a href="https://blesstech-x.vercel.app" target="_blank" class="btn-btx"><i class="fa-solid fa-globe"></i> Visit BLESSTech-X</a>
-      <div style="margin-top:14px;"><span class="zambian-badge">🇿🇲 Proudly Zambian</span></div>
+      <h3 id="about-venture-title">A BLESSTech-X Venture</h3>
+      <p id="about-venture-text">PhoneYa2 is a practical example of what we build for our clients — a real, working business that serves the Zambian market.</p>
+      <a id="about-venture-link" href="https://blesstech-x.vercel.app" target="_blank" rel="noopener" class="btn-btx"><i class="fa-solid fa-globe"></i> Visit BLESSTech-X</a>
+      <div style="margin-top:14px;"><span id="about-country-badge" class="zambian-badge">🇿🇲 Proudly Zambian</span></div>
     </div>
     <div class="story-right">
-      <div class="section-tag">Our Story</div>
-      <h2>Built by BLESSTech-X, for Zambia</h2>
-      <p><strong>BLESSTech-X</strong> is a digital solutions company founded by Barack Blessings and Sylvester Mwila in Lusaka, Zambia. We build websites, e-commerce stores, and digital systems that help Zambian businesses grow.</p>
-      <p><strong>PhoneYa2 Accessories</strong> is one of the ventures born from BLESSTech-X – a practical example of what we build for our clients. We saw a gap in the market for affordable, genuine phone accessories delivered fast in Lusaka, so we built PhoneYa2 to fill it.</p>
-      <p>PhoneYa2 is an active e-commerce venture where we keep improving the product catalogue, ordering experience and customer support for shoppers in Zambia.</p>
+      <div id="about-story-label" class="section-tag">Our Story</div>
+      <h2 id="about-story-heading">Built by BLESSTech-X, for Zambia</h2>
+      <p id="about-story-p1">BLESSTech-X is a digital solutions company founded by Barack Blessings and Sylvester Mwila in Lusaka, Zambia. We build websites, e-commerce stores, and digital systems that help Zambian businesses grow.</p>
+      <p id="about-story-p2">PhoneYa2 Accessories is one of the ventures born from BLESSTech-X – a practical example of what we build for our clients. We saw a gap in the market for affordable, genuine phone accessories delivered fast in Lusaka, so we built PhoneYa2 to fill it.</p>
+      <p id="about-story-p3">PhoneYa2 is an active e-commerce venture where we keep improving the product catalogue, ordering experience and customer support for shoppers in Zambia.</p>
     </div>
   </div>
 </section>
 
+<section class="businesses-section" id="about-businesses"><div class="section-header"><div class="section-tag" id="about-businesses-label">Our Ventures</div><h2 class="section-title" id="about-businesses-heading">Businesses &amp; Projects</h2><p id="about-businesses-intro">Explore the businesses and projects we build, operate and grow.</p></div><div class="businesses-grid" id="about-businesses-grid"></div></section>
+
 <!-- VALUES -->
 <section class="values-section">
   <div class="section-header">
-    <div class="section-tag">What We Stand For</div>
-    <h2 class="section-title">Our Core Values</h2>
+    <div id="about-values-label" class="section-tag">What We Stand For</div>
+    <h2 id="about-values-heading" class="section-title">Our Core Values</h2>
   </div>
-  <div class="values-grid">
+  <div class="values-grid" id="about-values-grid">
     <div class="value-card">
       <div class="value-icon">🛡️</div>
       <h3 class="value-title">Genuine Quality</h3>
@@ -1050,10 +1054,10 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 <!-- TEAM -->
 <section class="team-section">
   <div class="section-header">
-    <div class="section-tag">The Founders</div>
-    <h2 class="section-title">Meet the BLESSTech-X Team</h2>
+    <div id="about-team-label" class="section-tag">The Founders</div>
+    <h2 id="about-team-heading" class="section-title">Meet the BLESSTech-X Team</h2>
   </div>
-  <div class="team-grid">
+  <div class="team-grid" id="about-team-grid">
     <div class="team-card">
       <div class="team-avatar" style="background:linear-gradient(135deg,#ff6b6b,#feca57);">👨🏾‍💼</div>
       <div class="team-name">Barack Blessings</div>
@@ -1083,12 +1087,12 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     <div class="cta-orb1"></div>
     <div class="cta-orb2"></div>
     <div class="cta-text">
-      <h2>From BLESSTech-X to You</h2>
-      <p>PhoneYa2 is our proof that digital solutions work. Browse the catalogue, review product details and contact our team if you need help before ordering.</p>
+      <h2 id="about-cta-heading">From BLESSTech-X to You</h2>
+      <p id="about-cta-text">PhoneYa2 is our proof that digital solutions work. Browse the catalogue, review product details and contact our team if you need help before ordering.</p>
     </div>
     <div class="cta-buttons">
-      <a href="https://blesstech-x.vercel.app" target="_blank" class="btn-shop-cta" style="background:linear-gradient(135deg,#128c7e,#25d366);background-size:200%;animation:gradShift 4s linear infinite;"><i class="fa-solid fa-globe"></i> Visit BLESSTech-X</a>
-      <a href="https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20chat%20about%20your%20products." target="_blank" class="btn-wa-cta"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
+      <a id="about-cta-business" href="https://blesstech-x.vercel.app" target="_blank" rel="noopener" class="btn-shop-cta" style="background:linear-gradient(135deg,#128c7e,#25d366);background-size:200%;animation:gradShift 4s linear infinite;"><i class="fa-solid fa-globe"></i> Visit BLESSTech-X</a>
+      <a id="about-cta-whatsapp" href="https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20chat%20about%20your%20products." target="_blank" rel="noopener" class="btn-wa-cta"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
     </div>
   </div>
 </section>
@@ -1465,5 +1469,6 @@ s0.parentNode.insertBefore(s1,s0);
 
 <script src="/site-header.js?v=20261015-center3" defer></script>
 <script src="/smart-guide.js?v=20261015-modal-polish1" defer></script><script src="/interest-popups.js?v=20261015-interest1" defer></script>
+<script src="/about-cms.js?v=20261015-editable1" defer></script>
 </body>
 </html>
