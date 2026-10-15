@@ -2,3 +2,11 @@
 .py2-smart-guide{border-color:#62a8f5;box-shadow:0 12px 38px #121f3138,0 0 28px #2688f755}.py2-smart-guide:before{border-color:#2688f777;box-shadow:0 0 20px #2688f72b}.py2-smart-guide-mark{background:#1767b7;color:#fff}.py2-smart-guide-cta{background:linear-gradient(135deg,#1767b7,#0b8cba);color:#fff!important}
 
 .py2-smart-guide{border-color:#69a9ee;background:linear-gradient(145deg,#fff,#edf5ff);box-shadow:0 14px 40px #0e2e5038,0 0 28px #2688f75c}.py2-smart-guide:before{border-color:#2688f788;box-shadow:0 0 22px #2688f73d}.py2-smart-guide p{font-size:12.5px}.py2-smart-guide-actions{gap:7px}.py2-smart-guide-cta,.py2-smart-guide-later{min-height:36px;padding:8px 11px;font-size:12px}
+
+
+/* Final centered compact floating prompt across pages. */
+.py2-smart-guide{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%);width:min(318px,calc(100vw - 30px));padding:13px 14px;animation:py2GuideIn .32s ease-out,py2GuideFloat 4.2s ease-in-out .32s infinite}
+@keyframes py2GuideIn{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+@keyframes py2GuideFloat{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-52%)}}
+@media(max-width:480px){.py2-smart-guide{left:50%;top:50%;right:auto;bottom:auto;width:min(306px,calc(100vw - 28px));padding:12px}}
+@media(prefers-reduced-motion:reduce){.py2-smart-guide,.py2-smart-guide:before{animation:none!important}.py2-smart-guide{transform:translate(-50%,-50%)}}
