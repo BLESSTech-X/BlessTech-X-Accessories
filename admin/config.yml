@@ -40,7 +40,7 @@ collections:
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
-      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, Vimeo, or direct video URL (MP4/WebM). Leave blank if not used." }
+      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. The site will embed supported links in the page." }
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
 
@@ -61,7 +61,7 @@ collections:
       - { label: "Category", name: "category", widget: "select", options: ["Offers", "Product News", "Buying Guides", "Tips & Tricks", "PhoneYa2 Updates", "Community"] }
       - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
       - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
-      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, Vimeo, or direct video URL (MP4/WebM). It will appear inside the published article." }
+      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. The site will embed supported links inside the published article." }
       - { label: "Author", name: "author", widget: "string", default: "PhoneYa2" }
       - { label: "Featured Post", name: "featured", widget: "boolean", default: false }
       - { label: "Publish This Post", name: "publish", widget: "boolean", default: false, hint: "Keep off while drafting. Only published posts appear publicly." }
