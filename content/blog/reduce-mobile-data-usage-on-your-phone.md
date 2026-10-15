@@ -1,3 +1,18 @@
+---
+title: "How to Make Your Mobile Data Last Longer"
+date: "2026-10-15T20:10:00Z"
+category: "Tips & Tricks"
+excerpt: "Find the apps using your data and adjust video, backups, downloads and hotspot settings to stretch your bundle."
+author: "PhoneYa2"
+featured: true
+publish: true
+tags:
+  - "mobile data"
+  - "data bundles"
+  - "Android tips"
+  - "saving"
+---
+
 If mobile data disappears faster than expected, a few settings can help you understand where it goes and avoid unnecessary background use.
 
 ## 1. Find the biggest data users
