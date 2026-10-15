@@ -23,7 +23,20 @@ collections:
       - { label: "Price", name: "price", widget: "number" }
       - { label: "Original Price", name: "original_price", widget: "number", required: false }
       - { label: "Stock", name: "stock", widget: "number", default: 10 }
-      - { label: "Category", name: "category", widget: "select", options: ["case", "charger", "cable", "earphone", "powerbank", "protector", "phone", "other"] }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Phone Cases", value: "case" }
+          - { label: "Chargers", value: "charger" }
+          - { label: "Cables", value: "cable" }
+          - { label: "Earphones & Headsets", value: "earphone" }
+          - { label: "Power Banks", value: "powerbank" }
+          - { label: "Screen Protectors", value: "protector" }
+          - { label: "Phones", value: "phone" }
+          - { label: "Watches & Smartwatches", value: "watch" }
+          - { label: "Other Phone Accessories", value: "accessory" }
+          - { label: "Other / Miscellaneous", value: "other" }
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
