@@ -209,3 +209,14 @@
 .py2-blog-redesigned .py2-smart-guide-cta{background:linear-gradient(135deg,#1767b7,#0b8cba);color:#fff!important}
 .py2-blog-redesigned .py2-smart-guide-later{background:#fff;color:#26354b}
 @media(max-width:700px){.py2-blog-redesigned .blog-content-section,.py2-blog-redesigned .blog-shop-section{padding:14px}.py2-blog-redesigned .blog-sponsored-slot .py2-sponsored-main{grid-template-columns:minmax(0,1fr)}}
+
+.py2-blog-redesigned #blog-products-grid .py2-product-card{display:flex;flex-direction:column;min-width:0;border:1px solid #b9d5f2;border-radius:15px;background:#fff;overflow:hidden;box-shadow:0 7px 20px #164b8510;transition:transform .18s ease,box-shadow .18s ease}
+.py2-blog-redesigned #blog-products-grid .py2-product-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px #164b851c}
+.py2-blog-redesigned #blog-products-grid .py2-product-card>a:first-child{display:block;aspect-ratio:4/3;background:#e8f2ff;overflow:hidden}
+.py2-blog-redesigned #blog-products-grid .py2-product-card>a:first-child img{width:100%;height:100%;object-fit:contain;padding:12px}
+.py2-blog-redesigned #blog-products-grid .py2-product-card-body{display:flex;flex:1;flex-direction:column;align-items:flex-start;padding:14px}
+.py2-blog-redesigned #blog-products-grid .py2-product-card h3{font-size:15px;line-height:1.4;margin:0 0 8px;color:#173b61}
+.py2-blog-redesigned #blog-products-grid .py2-product-card h3 a{color:inherit;text-decoration:none}
+.py2-blog-redesigned #blog-products-grid .py2-product-price{font-size:20px;font-weight:900;color:#0f5fae;margin:0 0 7px}
+.py2-blog-redesigned #blog-products-grid .py2-product-stock{font-size:12px;color:#66788d;margin-bottom:12px}
+.py2-blog-redesigned #blog-products-grid .py2-product-link{display:inline-flex;align-items:center;gap:7px;margin-top:auto;padding:10px 13px;border-radius:9px;background:#1767b7;color:#fff;text-decoration:none;font-size:12px;font-weight:900}
