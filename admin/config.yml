@@ -111,16 +111,30 @@ collections:
           - { label: "Hero line 1", name: "hero_line1", widget: "string" }
           - { label: "Hero line 2", name: "hero_line2", widget: "string" }
           - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Stat cards", name: "stats", widget: "list", summary: "{{fields.value}} — {{fields.label}}", fields: [{ label: "Value", name: "value", widget: "string" }, { label: "Label", name: "label", widget: "string" }] }
+          - { label: "Venture card title", name: "venture_title", widget: "string" }
+          - { label: "Venture card text", name: "venture_text", widget: "text" }
+          - { label: "Venture website button", name: "venture_button", widget: "string" }
+          - { label: "Venture website URL", name: "venture_url", widget: "string" }
+          - { label: "Country badge", name: "country_badge", widget: "string" }
+          - { label: "Story label", name: "story_label", widget: "string" }
           - { label: "Story heading", name: "story_heading", widget: "string" }
-          - { label: "Story paragraph 1", name: "story_p1", widget: "text" }
-          - { label: "Story paragraph 2", name: "story_p2", widget: "text" }
-          - { label: "Story paragraph 3", name: "story_p3", widget: "text" }
-          - { label: "Owner name", name: "owner_name", widget: "string" }
-          - { label: "Owner role", name: "owner_role", widget: "string" }
-          - { label: "Owner bio", name: "owner_bio", widget: "text" }
-          - { label: "Co-founder name", name: "cofounder_name", widget: "string" }
-          - { label: "Co-founder role", name: "cofounder_role", widget: "string" }
-          - { label: "Co-founder bio", name: "cofounder_bio", widget: "text" }
+          - { label: "Story paragraphs", name: "story_paragraphs", widget: "list", fields: [{ label: "Paragraph", name: "text", widget: "text" }] }
+          - { label: "Values label", name: "values_label", widget: "string" }
+          - { label: "Values heading", name: "values_heading", widget: "string" }
+          - { label: "Core values", name: "values", widget: "list", summary: "{{fields.title}}", fields: [{ label: "Icon / Emoji", name: "icon", widget: "string" }, { label: "Title", name: "title", widget: "string" }, { label: "Description", name: "description", widget: "text" }] }
+          - { label: "Team section label", name: "team_label", widget: "string" }
+          - { label: "Team section heading", name: "team_heading", widget: "string" }
+          - { label: "Team members / partners", name: "team", widget: "list", summary: "{{fields.name}} — {{fields.role}}", fields: [{ label: "Name", name: "name", widget: "string" }, { label: "Role / Position", name: "role", widget: "string" }, { label: "Biography", name: "bio", widget: "text" }, { label: "Portrait / Photo", name: "image", widget: "image", required: false }, { label: "Fallback Emoji", name: "emoji", widget: "string", required: false }, { label: "WhatsApp URL", name: "whatsapp", widget: "string", required: false }, { label: "Website / Profile URL", name: "website", widget: "string", required: false }, { label: "Facebook URL", name: "facebook", widget: "string", required: false }, { label: "LinkedIn URL", name: "linkedin", widget: "string", required: false }, { label: "Display this person", name: "active", widget: "boolean", default: true }] }
+          - { label: "Businesses section label", name: "businesses_label", widget: "string" }
+          - { label: "Businesses section heading", name: "businesses_heading", widget: "string" }
+          - { label: "Businesses section intro", name: "businesses_intro", widget: "text" }
+          - { label: "Businesses / Ventures", name: "businesses", widget: "list", summary: "{{fields.name}}", fields: [{ label: "Business / Venture Name", name: "name", widget: "string" }, { label: "Short Tagline", name: "tagline", widget: "string", required: false }, { label: "Description", name: "description", widget: "text" }, { label: "Logo", name: "logo", widget: "image", required: false }, { label: "Website URL", name: "website", widget: "string", required: false }, { label: "Display this business", name: "active", widget: "boolean", default: true }] }
+          - { label: "CTA heading", name: "cta_heading", widget: "string" }
+          - { label: "CTA text", name: "cta_text", widget: "text" }
+          - { label: "CTA business button label", name: "cta_business_label", widget: "string" }
+          - { label: "CTA WhatsApp button label", name: "cta_whatsapp_label", widget: "string" }
+          - { label: "CTA WhatsApp URL", name: "cta_whatsapp_url", widget: "string" }
 
       - label: "Contact Details"
         name: "contact"
