@@ -334,7 +334,7 @@ body>.mob-nav .mob-nav-cart .cart-count{margin-left:0!important}
 
 
 /* Site-wide restrained navy accents and polished action buttons. */
-body{background-image:radial-gradient(ellipse at 50% 0%,rgba(23,103,183,.055),transparent 54%)!important}
+body{background-color:#f1f4f9!important}
 :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card){border-color:rgba(29,67,112,.13)}
 :where(.product-card,.pcard,.py2-ads-card,.info-card,.contact-card,.about-card,.side-card){box-shadow:0 8px 24px rgba(15,35,65,.065)}
 :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"]){transition:background .18s ease,box-shadow .18s ease,transform .18s ease}
