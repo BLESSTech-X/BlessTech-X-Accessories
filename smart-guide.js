@@ -1,141 +1,33 @@
-(function () {
-  'use strict';
-  if (window.__py2SmartGuideLoadedV4) return;
-  window.__py2SmartGuideLoadedV4 = true;
-
-  var path = location.pathname.toLowerCase();
-  var isPost = path.indexOf('blog-post.html') >= 0;
-  var isBlog = path.indexOf('blog.html') >= 0;
-  var isProduct = path.indexOf('product.html') >= 0;
-  var isShop = path.indexOf('shop.html') >= 0;
-  var isCart = path.indexOf('cart.html') >= 0;
-  var isCheckout = path.indexOf('checkout.html') >= 0;
-  var isAdvertiser = path.indexOf('advertiser') >= 0 || path.indexOf('advertise') >= 0;
-  var dismissKey = 'py2_smart_guide_dismissed_v4_' + path;
-  var visible = false, timer = 0, box, backdrop, titleEl, bodyEl, ctaEl;
-  var lastActionTip = 0;
-
-  function cartRows() {
-    try {
-      var rows = JSON.parse(localStorage.getItem('phoneya2-checkout-cart-v1') || '[]');
-      return Array.isArray(rows) ? rows.filter(function (r) { return Array.isArray(r) && r[0] && Number(r[1]) > 0; }) : [];
-    } catch (_) { return []; }
-  }
-  function pageTip() {
-    if (isCheckout) return {title:'Let’s complete your order', body:'Add or check your products first, then enter your full name, email, WhatsApp number and delivery details. “Place order” submits a pending order; PhoneYa2 will contact you to confirm delivery and payment arrangements.', cta:'Start with your name', href:'#name', kind:'checkout'};
-    if (isCart) {
-      var hasItems = cartRows().length > 0;
-      return hasItems
-        ? {title:'Need help with your cart?', body:'Use + or − to change quantities, remove anything you no longer want, and check your total. When everything looks right, continue to checkout.', cta:'Continue to checkout', href:'/checkout.html', kind:'cart'}
-        : {title:'Let’s find something for your cart', body:'Open the shop, choose a product, and press “Add to cart”. You can come back here to adjust quantities before checkout.', cta:'Browse products', href:'/shop.html', kind:'empty-cart'};
-    }
-    if (isProduct) return {title:'How to order this product', body:'Check the price, stock and compatibility. Choose your quantity, then tap “Add to cart” to keep shopping or “Buy now” to go straight to checkout.', cta:'View your cart', href:'/cart.html', kind:'product'};
-    if (isShop) return {title:'Find it, then add it to your cart', body:'Search by product name or choose a category. Open a product to inspect its details, then use “Add to cart” or “Buy now”.', cta:'Browse products', href:'#products-grid', kind:'shop'};
-    if (isBlog) return {title:'Turn a useful tip into your next choice', body:'Read a guide, browse the product picks, or open the shop to compare accessories. The menu button opens more PhoneYa2 pages.', cta:'See product picks', href:'#product-picks', kind:'blog'};
-    if (isPost) return {title:'Want to take the next step?', body:'Use the related product links in this guide to check details and prices, or return to the blog for another practical tip.', cta:'Explore more stories', href:'/blog.html', kind:'article'};
-    if (isAdvertiser) return {title:'Get your business ready to advertise', body:'Use a clear offer, an accurate description and a working contact method so people understand what you provide.', cta:'Open advertiser page', href:'/advertiser', kind:'advertiser'};
-    return {title:'Need a hand with PhoneYa2?', body:'Browse the shop, check a product, add it to your cart, or visit Contact if you need help placing an order.', cta:'Explore the shop', href:'/shop.html', kind:'general'};
-  }
-  function build() {
-    if (document.getElementById('py2-smart-guide-v4')) return;
-    box = document.createElement('aside');
-    box.id = 'py2-smart-guide-v4';
-    box.className = 'py2-smart-guide';
-    box.setAttribute('role', 'dialog');
-    box.setAttribute('aria-label', 'PhoneYa2 shopping assistant');
-    box.setAttribute('aria-modal', 'true');
-    box.hidden = true;
-    backdrop = document.createElement('div');
-    backdrop.className = 'py2-smart-guide-backdrop';
-    backdrop.hidden = true;
-    backdrop.setAttribute('aria-hidden','true');
-    document.body.appendChild(backdrop);
-    var head = document.createElement('div'); head.className = 'py2-smart-guide-head';
-    var mark = document.createElement('span'); mark.className = 'py2-smart-guide-mark'; mark.setAttribute('aria-hidden','true'); mark.textContent = '✦';
-    titleEl = document.createElement('strong'); titleEl.className = 'py2-smart-guide-title';
-    var close = document.createElement('button'); close.type='button'; close.className='py2-smart-guide-close'; close.setAttribute('aria-label','Dismiss tip'); close.textContent='×';
-    head.appendChild(mark); head.appendChild(titleEl); head.appendChild(close);
-    bodyEl = document.createElement('p');
-    var actions = document.createElement('div'); actions.className='py2-smart-guide-actions';
-    ctaEl = document.createElement('a'); ctaEl.className='py2-smart-guide-cta';
-    var later = document.createElement('button'); later.type='button'; later.className='py2-smart-guide-later'; later.textContent='Not now';
-    actions.appendChild(ctaEl); actions.appendChild(later);
-    box.appendChild(head); box.appendChild(bodyEl); box.appendChild(actions);
-    document.body.appendChild(box);
-    function dismiss() {
-      box.hidden = true; backdrop.hidden = true; visible = false;
-      document.documentElement.classList.remove('py2-guide-open');
-      try { localStorage.setItem(dismissKey, String(Date.now() + 20 * 60 * 1000)); } catch (_) {}
-    }
-    close.addEventListener('click', dismiss);
-    later.addEventListener('click', dismiss);
-    ctaEl.addEventListener('click', function (event) {
-      var href = ctaEl.getAttribute('href') || '';
-      if (href.charAt(0) === '#') {
-        var target = document.querySelector(href);
-        if (target) { event.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'center'}); }
-      }
-      if (href === '#name') {
-        event.preventDefault();
-        var name = document.getElementById('name');
-        if (name) { name.focus({preventScroll:false}); name.scrollIntoView({behavior:'smooth', block:'center'}); }
-      }
-      try { if (typeof gtag === 'function') gtag('event','smart_guide_action',{guide_type:ctaEl.dataset.kind || 'help',page_path:path}); } catch (_) {}
-      box.hidden = true; backdrop.hidden = true; visible = false; document.documentElement.classList.remove('py2-guide-open');
-    });
-  }
-  function show(tip, force) {
-    if (!box || document.visibilityState === 'hidden') return;
-    if (!force) {
-      try { if (Number(localStorage.getItem(dismissKey) || 0) > Date.now()) return; } catch (_) {}
-    }
-    titleEl.textContent = tip.title;
-    bodyEl.textContent = tip.body;
-    ctaEl.textContent = tip.cta + ' ↗';
-    ctaEl.href = tip.href;
-    ctaEl.dataset.kind = tip.kind || 'help';
-    box.hidden = false; backdrop.hidden = false; visible = true;
-    document.documentElement.classList.add('py2-guide-open');
-  }
-  function showInitial() {
-    var tip = pageTip();
-    show(tip, false);
-  }
-  function scheduleInitial() {
-    window.clearTimeout(timer);
-    timer = window.setTimeout(showInitial, 6500 + Math.floor(Math.random() * 4500));
-  }
-  function showActionHelp(tip) {
-    var now = Date.now();
-    if (now - lastActionTip < 25000) return;
-    lastActionTip = now;
-    window.clearTimeout(timer);
-    window.setTimeout(function () { show(tip, true); }, 700);
-  }
-
-  function boot() {
-    build();
-    document.addEventListener('keydown', function(event){ if(event.key === 'Escape' && visible){ box.hidden=true; backdrop.hidden=true; visible=false; document.documentElement.classList.remove('py2-guide-open'); try{localStorage.setItem(dismissKey,String(Date.now()+20*60*1000));}catch(_){} } });
-    scheduleInitial();
-    window.addEventListener('phoneya2:cart-updated', function () {
-      var rows = cartRows();
-      var tip = rows.length
-        ? {title:'Your cart is updated', body:'Your items are saved on this device. Open the cart to adjust quantities or remove items, then continue to checkout when you’re ready.', cta:'Review your cart', href:'/cart.html', kind:'cart-updated'}
-        : {title:'Your cart is empty now', body:'No problem—browse the shop and add any product you want to keep for later.', cta:'Browse products', href:'/shop.html', kind:'cart-empty'};
-      showActionHelp(tip);
-    });
-    document.addEventListener('click', function (event) {
-      var button = event.target && event.target.closest ? event.target.closest('.py2-add-cart, #add') : null;
-      if (!button) return;
-      showActionHelp({title:'Added something? Here’s what next', body:'Your cart keeps the items you add. You can continue browsing, or open the cart to check quantities and the total before checkout.', cta:'Review your cart', href:'/cart.html', kind:'add-to-cart'});
-    }, true);
-    if (isCheckout) {
-      var form = document.getElementById('order-form');
-      if (form) form.addEventListener('invalid', function () {
-        showActionHelp({title:'One or more details need attention', body:'Complete the required fields marked by your browser. Use a valid email, a reachable phone or WhatsApp number, and a delivery address or collection details.', cta:'Check customer details', href:'#name', kind:'checkout-validation'});
-      }, true);
-    }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
-  else boot();
+(function(){
+'use strict';
+if(window.__py2SmartGuideNoticeV2)return;window.__py2SmartGuideNoticeV2=true;
+var path=location.pathname.toLowerCase(),isShop=/shop\.html$/.test(path),isProduct=/product\.html$/.test(path),isCart=/cart\.html$/.test(path),isCheckout=/checkout\.html$/.test(path),isBlog=/blog\.html$/.test(path),isPost=/blog-post\.html$/.test(path),isAbout=/about\.html$/.test(path),isContact=/contact\.html$/.test(path);
+var modal,backdrop,shown=false;
+function seen(id){try{return sessionStorage.getItem('py2_notice_seen_v2_'+id)==='1'}catch(_){return false}}
+function mark(id){try{sessionStorage.setItem('py2_notice_seen_v2_'+id,'1')}catch(_){}}
+function style(){if(document.getElementById('py2-notice-style'))return;var s=document.createElement('style');s.id='py2-notice-style';s.textContent='@keyframes py2NoticePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07);filter:drop-shadow(0 0 9px #6ba9ff88)}}@keyframes py2NoticeEnter{from{opacity:0;transform:translate(-50%,-46%) scale(.98)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}.py2-notice-backdrop{position:fixed;inset:0;z-index:10018;background:rgba(12,22,42,.28);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}.py2-notice-backdrop[hidden],.py2-notice-card[hidden]{display:none!important}.py2-notice-card{position:fixed;z-index:10019;left:50%;top:50%;transform:translate(-50%,-50%);width:min(322px,calc(100vw - 28px));padding:14px;border:1px solid transparent;border-radius:19px;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#ff7a18,#ffcf4a,#43c6ff,#8b5cf6,#ff70b7) border-box;box-shadow:0 20px 60px #07152f44;color:#172337;font:500 13px/1.5 system-ui,sans-serif;animation:py2NoticeEnter .23s ease-out both}.py2-notice-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.py2-notice-logo{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#ff6b35,#ffbf36,#4aa8ff,#8a5cf6);color:#fff;font-size:13px;font-weight:950;letter-spacing:-1px;animation:py2NoticePulse 2.4s ease-in-out infinite}.py2-notice-brand{min-width:0;flex:1}.py2-notice-brand strong{display:block;font-size:12px;font-weight:950}.py2-notice-slogan{display:block;color:#a0aabd;font-size:9px;font-weight:650;letter-spacing:.2px;margin-top:4px;white-space:nowrap}.py2-notice-close{width:29px;height:29px;border:1px solid #dfe6f0;border-radius:10px;background:#f7f9fc;color:#43516a;font-size:21px;line-height:1;cursor:pointer}.py2-notice-title{font-size:14px;font-weight:950;line-height:1.3;margin:0 0 6px}.py2-notice-copy{font-size:12px;line-height:1.62;color:#536176;margin:0}.py2-notice-foot{font-size:9px;color:#a0aabd;margin-top:10px;letter-spacing:.2px}@media(prefers-reduced-motion:reduce){.py2-notice-logo,.py2-notice-card{animation:none!important}}';document.head.appendChild(s)}
+function message(){
+ if(isCheckout)return ['checkout','A quick step before placing your order','Check your name, contact number and delivery details before submitting. Your order is sent for confirmation; payment is arranged after PhoneYa2 contacts you.'];
+ if(isCart)return ['cart','Your cart is yours to review','You can change quantities or remove items before checkout. Take a moment to confirm the products and total are right for you.'];
+ if(isProduct)return ['product','Check the details that matter to you','Review compatibility, what is included and the listed price. If anything is unclear, use the contact options before ordering.'];
+ if(isShop)return ['shop','Compare before you choose','Open a product to see its full details. You can keep browsing or add it to your cart when you are ready.'];
+ if(isBlog||isPost)return ['blog','Useful information, then your own choice','If an article mentions an accessory you need, compare its product details and price in the shop. No need to rush your decision.'];
+ if(isAbout)return ['about','Want to know who is behind PhoneYa2?','The About page introduces the people and ventures behind the business. Visit Contact if you need help with an order.'];
+ if(isContact)return ['contact','Choose the contact route that works for you','For product compatibility, stock or delivery questions, include the product name so the team can help you more quickly.'];
+ return ['welcome','Welcome to PhoneYa2','Browse at your own pace. Open a product to review its photo, price and details before deciding whether it fits your needs.'];
+}
+function close(){if(!shown)return;shown=false;if(modal)modal.hidden=true;if(backdrop)backdrop.hidden=true;document.documentElement.classList.remove('py2-notice-open');window.__py2SellerNoticeOpen=false;try{sessionStorage.setItem('py2_notice_last_close_v2',String(Date.now()))}catch(_){}window.dispatchEvent(new CustomEvent('py2:notice-dismissed'))}
+function show(){
+ if(shown||window.__py2SellerModalOpen)return;
+ var m=message();if(seen(m[0]))return;
+ try{if(Date.now()-Number(sessionStorage.getItem('py2_notice_last_close_v2')||0)<22000)return}catch(_){}
+ style();backdrop=document.createElement('div');backdrop.className='py2-notice-backdrop';backdrop.hidden=true;backdrop.addEventListener('click',close);
+ modal=document.createElement('section');modal.className='py2-notice-card';modal.hidden=true;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','PhoneYa2 notice');
+ var head=document.createElement('div');head.className='py2-notice-head';var logo=document.createElement('div');logo.className='py2-notice-logo';logo.textContent='PY2';var brand=document.createElement('div');brand.className='py2-notice-brand';var name=document.createElement('strong');name.textContent='PhoneYa2';var slogan=document.createElement('span');slogan.className='py2-notice-slogan';slogan.textContent='Smart CHOICES. Better CONNECTED';brand.append(name,slogan);var x=document.createElement('button');x.type='button';x.className='py2-notice-close';x.textContent='×';x.setAttribute('aria-label','Dismiss notice');x.addEventListener('click',close);head.append(logo,brand,x);
+ var title=document.createElement('h2');title.className='py2-notice-title';title.textContent=m[1];var copy=document.createElement('p');copy.className='py2-notice-copy';copy.textContent=m[2];var foot=document.createElement('div');foot.className='py2-notice-foot';foot.textContent='A helpful note from PhoneYa2';
+ modal.append(head,title,copy,foot);document.body.append(backdrop,modal);backdrop.hidden=false;modal.hidden=false;shown=true;window.__py2SellerNoticeOpen=true;document.documentElement.classList.add('py2-notice-open');mark(m[0]);
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&shown)close()});
+function boot(){window.setTimeout(show,13000+Math.floor(Math.random()*5000))}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
