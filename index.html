@@ -2680,12 +2680,13 @@ async function init() {
 
   allProducts = products;
 
-  function fillTrack(id, items, cardFn) {
+  function fillTrack(id, items, cardFn, emptyMessage) {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerHTML = '';
     if (!items.length) {
-      el.innerHTML = '<p style="padding:20px;color:#aaa;font-size:13px">No products yet — check back soon!</p>';
+      el.innerHTML = '<p style="padding:20px;color:#888;font-size:13px">' +
+        escHtml(emptyMessage || 'No products available right now.') + '</p>';
       return;
     }
     items.forEach(p => {
@@ -2703,32 +2704,33 @@ async function init() {
     return a;
   }
 
-  const onSale   = products
-    .filter(p => parseFloat(p.original_price) > p.price)
-    .sort((a,b) => {
-      const savA = ((a.original_price - a.price) / a.original_price) * 100;
-      const savB = ((b.original_price - b.price) / b.original_price) * 100;
-      return savB - savA;
+  // Sale sections must never silently substitute regular-price products.
+  const onSale = products
+    .filter(p => Number(p.stock) > 0 && Number(p.original_price) > Number(p.price) && Number(p.original_price) > 0)
+    .sort((a, b) => {
+      const discountA = ((Number(a.original_price) - Number(a.price)) / Number(a.original_price)) * 100;
+      const discountB = ((Number(b.original_price) - Number(b.price)) / Number(b.original_price)) * 100;
+      return discountB - discountA;
     });
-  const lowStockPad = products
-    .filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price));
-  const flashList = onSale.length >= 4
-    ? onSale
-    : [...onSale, ...lowStockPad].slice(0, 8);
-  fillTrack('flash-track', (flashList.length ? flashList : products).slice(0, 8), buildCard);
+  const flashList = onSale.slice(0, 8);
+  fillTrack('flash-track', flashList, buildCard, 'No active flash sales right now.');
 
   const flashSide = document.getElementById('flash-side');
   if (flashSide) {
     flashSide.innerHTML = '';
-    (flashList.length ? flashList : products).slice(0, 3)
-      .forEach(p => flashSide.appendChild(buildSideRow(p)));
+    flashList.slice(0, 3).forEach(p => flashSide.appendChild(buildSideRow(p)));
+    if (!flashList.length) {
+      flashSide.innerHTML = '<p style="padding:12px;color:var(--muted);font-size:13px">No active flash sales.</p>';
+    }
   }
   const featSide = document.getElementById('featured-side');
   if (featSide) {
     featSide.innerHTML = '';
-    const featured = products.filter(p => p.featured);
-    (featured.length ? featured : products).slice(0, 3)
-      .forEach(p => featSide.appendChild(buildSideRow(p)));
+    const featured = products.filter(p => p.featured && Number(p.stock) > 0).slice(0, 3);
+    featured.forEach(p => featSide.appendChild(buildSideRow(p)));
+    if (!featured.length) {
+      featSide.innerHTML = '<p style="padding:12px;color:var(--muted);font-size:13px">No featured products selected yet.</p>';
+    }
   }
 
   // New Arrivals is chronological, not a featured-products or alphabetical list.
@@ -2747,17 +2749,14 @@ async function init() {
     .slice(0, 8);
   fillTrack('new-track', newArrivals, buildFeaturedCard);
 
-  const dealsList = [
-    ...onSale.sort((a,b) => (b.original_price - b.price) - (a.original_price - a.price)),
-    ...products.filter(p => p.stock > 0 && p.stock <= 5 && !(parseFloat(p.original_price) > p.price))
-  ];
-  if (dealsList.length < 4) {
-    const inStock = shuffle(products.filter(p => p.stock > 5 && !dealsList.find(d => d.slug === p.slug)));
-    dealsList.push(...inStock.slice(0, 8 - dealsList.length));
-  }
-  fillTrack('deals-track', dealsList.slice(0, 8), buildFeaturedCard);
+  const dealsList = [...onSale]
+    .sort((a, b) => (Number(b.original_price) - Number(b.price)) - (Number(a.original_price) - Number(a.price)))
+    .slice(0, 8);
+  fillTrack('deals-track', dealsList, buildFeaturedCard, 'No active deals right now.');
 
-  fillTrack('jfy-track', shuffle(products), buildCard);
+  // "For You" is currently discovery, not personalisation: show available items only.
+  const forYou = shuffle(products.filter(p => Number(p.stock) > 0));
+  fillTrack('jfy-track', forYou, buildCard, 'No in-stock products to recommend right now.');
 
   renderCsGrid('case');
 
