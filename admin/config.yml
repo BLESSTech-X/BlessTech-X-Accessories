@@ -45,7 +45,7 @@ collections:
         name: "video_upload"
         widget: "file"
         required: false
-        media_folder: "/assets/videos/uploads"
+        media_folder: "assets/videos/uploads"
         public_folder: "/assets/videos/uploads"
         hint: "Uploads are stored in this GitHub repository. Keep videos short and compressed; large files increase repository size and site load time."
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
