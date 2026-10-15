@@ -235,3 +235,19 @@
 @keyframes py2HeartPop{0%{transform:scale(.65)}70%{transform:scale(1.16)}100%{transform:scale(1)}}
 @media(max-width:520px){.py2-blog-redesigned .py2-brand-splash{min-height:205px;margin-bottom:18px;padding:23px 12px;border-radius:15px}.py2-blog-redesigned .py2-brand-splash-inner{gap:12px}.py2-blog-redesigned .py2-brand-splash-logo{width:112px;height:112px}.py2-blog-redesigned .py2-brand-splash-slogan{max-width:340px;row-gap:2px;font-size:18px}}
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan,.py2-blog-redesigned .py2-slogan-heart{animation:none!important;opacity:1;transform:none;will-change:auto}}
+
+
+/* Brand splash refinement: sharp logo, quick motion, exact slogan. */
+.py2-blog-redesigned .py2-brand-splash-logo{filter:none!important;-webkit-filter:none!important;image-rendering:auto;animation:py2LogoSnapIn .38s cubic-bezier(.2,.75,.25,1) both!important;will-change:transform}
+.py2-blog-redesigned .py2-brand-splash-slogan{animation:py2SloganReveal .3s ease-out .28s both!important}
+@keyframes py2LogoSnapIn{0%{transform:scale(.88) rotate(-2deg)}75%{transform:scale(1.025) rotate(.4deg)}100%{transform:scale(1) rotate(0)}}
+.py2-blog-redesigned .py2-brand-splash-slogan{color:#fff;font-weight:650}
+.py2-blog-redesigned .py2-brand-splash-slogan strong{color:#fff}
+.py2-blog-redesigned .py2-slogan-heart{color:#69b9ff;text-shadow:0 0 12px #168bff88;filter:none!important}
+/* Smart guide: small centered floating prompt, not a bottom-corner toast. */
+.py2-smart-guide{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%);width:min(318px,calc(100vw - 30px))!important;padding:13px 14px!important;border-color:#65a9f4!important;background:linear-gradient(145deg,#fff,#edf5ff)!important;box-shadow:0 16px 42px #071c3b45,0 0 26px #2688f75c!important;animation:py2GuideIn .32s ease-out,py2GuideFloat 4.2s ease-in-out .32s infinite!important}
+.py2-smart-guide:before{border-color:#2688f788!important;box-shadow:0 0 22px #2688f73d!important}
+@keyframes py2GuideIn{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+@keyframes py2GuideFloat{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-52%)}}
+@media(max-width:480px){.py2-smart-guide{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;width:min(306px,calc(100vw - 28px))!important}}
+@media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan,.py2-smart-guide,.py2-smart-guide:before{animation:none!important}.py2-smart-guide{transform:translate(-50%,-50%)}}
