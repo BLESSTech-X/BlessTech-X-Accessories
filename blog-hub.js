@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var posts=[],category='All',search='',showSaved=false;
+var posts=[],category='All',search='',showSaved=false,visibleCount=6,PAGE_SIZE=6,scrollObserver=null;
 var SAVED_KEY='phoneya2_blog_saved_v1';
 function track(name,params){try{if(typeof gtag==='function')gtag('event',name,Object.assign({content_group:'PhoneYa2 Community Feed'},params||{}))}catch(e){}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -64,14 +64,18 @@ function render(){
  var saved=getSaved();
  var list=posts.filter(function(p){var matchesCategory=category==='All'||p.category===category;var hay=(p.title+' '+p.excerpt+' '+(p.tags||[]).join(' ')+' '+(p.category||'')).toLowerCase();return matchesCategory&&hay.includes(search.toLowerCase())&&(!showSaved||saved.indexOf(p.slug)>=0)});
  var count=document.getElementById('post-count');if(count)count.textContent=list.length+' post'+(list.length===1?'':'s');
- var feed=document.getElementById('blog-feed');if(feed)feed.innerHTML=list.length?list.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose For you to see all posts.')+'</p></div>';
+ var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?visible.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}}
  document.querySelectorAll('[data-rail-category]').forEach(function(b){b.classList.toggle('is-active',b.getAttribute('data-rail-category')===category)});
- updateSavedCount();track('blog_feed_render',{category:category,result_count:list.length,search_used:!!search,saved_view:showSaved})
+ updateSavedCount();track('blog_feed_render',{category:category,result_count:list.length,visible_count:Math.min(list.length,visibleCount),search_used:!!search,saved_view:showSaved})
 }
+function loadMore(){visibleCount+=PAGE_SIZE;render()}
+
 var searchInput=document.getElementById('blog-search'),filters=document.getElementById('blog-filters'),feed=document.getElementById('blog-feed');
-if(searchInput)searchInput.addEventListener('input',function(){search=this.value;showSaved=false;render()});
-if(filters)filters.addEventListener('click',function(e){var b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;showSaved=false;filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x===b)});render()});
-document.querySelectorAll('[data-rail-category]').forEach(function(b){b.addEventListener('click',function(){category=this.getAttribute('data-rail-category');showSaved=false;if(filters){filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')===category)})}render()})});
+if('IntersectionObserver' in window){scrollObserver=new IntersectionObserver(function(entries){if(entries.some(function(entry){return entry.isIntersecting})){scrollObserver.disconnect();if(feed&&feed.querySelector('[data-load-more]'))loadMore()}},{rootMargin:'280px'})}
+if(feed)feed.addEventListener('click',function(e){if(e.target.closest('[data-load-more]')){if(scrollObserver)scrollObserver.disconnect();loadMore()}});
+if(searchInput)searchInput.addEventListener('input',function(){search=this.value;showSaved=false;visibleCount=PAGE_SIZE;render()});
+if(filters)filters.addEventListener('click',function(e){var b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;showSaved=false;visibleCount=PAGE_SIZE;filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x===b)});render()});
+document.querySelectorAll('[data-rail-category]').forEach(function(b){b.addEventListener('click',function(){category=this.getAttribute('data-rail-category');showSaved=false;visibleCount=PAGE_SIZE;if(filters){filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')===category)})}render()})});
 if(feed){
  feed.addEventListener('click',function(e){
   var save=e.target.closest('[data-save-post]');if(save){var slug=save.getAttribute('data-save-post'),saved=getSaved(),i=saved.indexOf(slug);if(i>=0)saved.splice(i,1);else saved.unshift(slug);setSaved(saved);render();track('blog_post_save',{post_slug:slug,saved:i<0});return}
@@ -80,12 +84,12 @@ if(feed){
  });
 }
 var savedButton=document.getElementById('show-saved-posts');
-if(savedButton)savedButton.addEventListener('click',function(){showSaved=!showSaved;category='All';if(filters)filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')==='All')});if(searchInput)searchInput.value='';search='';this.innerHTML=showSaved?'<i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>All posts</span>':'<i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Saved</span>';this.setAttribute('aria-pressed',showSaved?'true':'false');render();if(feed)feed.scrollIntoView({behavior:'smooth',block:'start'})});
+if(savedButton)savedButton.addEventListener('click',function(){showSaved=!showSaved;visibleCount=PAGE_SIZE;category='All';if(filters)filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')==='All')});if(searchInput)searchInput.value='';search='';this.innerHTML=showSaved?'<i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>All posts</span>':'<i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Saved</span>';this.setAttribute('aria-pressed',showSaved?'true':'false');render();if(feed)feed.scrollIntoView({behavior:'smooth',block:'start'})});
 var blogTabs=document.querySelector('.py2-blog-tabs');
 function setBlogTab(name){if(!blogTabs)return;blogTabs.querySelectorAll('[data-blog-tab]').forEach(function(link){var active=link.getAttribute('data-blog-tab')===name;link.classList.toggle('is-active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}
 if(blogTabs)blogTabs.addEventListener('click',function(e){var link=e.target.closest('[data-blog-tab]');if(!link)return;var name=link.getAttribute('data-blog-tab');if(name==='saved'){e.preventDefault();if(!showSaved&&savedButton)savedButton.click();else if(feed)feed.scrollIntoView({behavior:'smooth',block:'start'});setBlogTab('saved');return}if(name==='feed'&&showSaved&&savedButton)savedButton.click();setBlogTab(name)});
 if(filters)filters.addEventListener('click',function(e){if(e.target.closest('[data-category]'))setBlogTab('topics')});
 if(savedButton)savedButton.addEventListener('click',function(){setBlogTab(showSaved?'saved':'feed')});
 
-fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Blog index unavailable');return r.json()}).then(function(data){posts=Array.isArray(data)?data.filter(function(p){return p&&p.publish!==false}):[];posts.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});populateCategoryFilters();track('blog_hub_view',{published_post_count:posts.length});render()}).catch(function(){var el=document.getElementById('blog-feed');if(el)el.innerHTML='<div class="py2-empty"><strong>The community feed could not load.</strong><p>Check your connection and refresh the page. You can still <a href="/contact.html">contact PhoneYa2</a>.</p></div>';var count=document.getElementById('post-count');if(count)count.textContent='Feed unavailable'});
+fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Blog index unavailable');return r.json()}).then(function(data){posts=Array.isArray(data)?data.filter(function(p){return p&&p.publish!==false}):[];posts.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});visibleCount=PAGE_SIZE;populateCategoryFilters();track('blog_hub_view',{published_post_count:posts.length});render()}).catch(function(){var el=document.getElementById('blog-feed');if(el)el.innerHTML='<div class="py2-empty"><strong>The community feed could not load.</strong><p>Check your connection and refresh the page. You can still <a href="/contact.html">contact PhoneYa2</a>.</p></div>';var count=document.getElementById('post-count');if(count)count.textContent='Feed unavailable'});
 })();
