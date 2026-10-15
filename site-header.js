@@ -34,6 +34,8 @@ document.addEventListener('click',e=>{const button=e.target.closest('.header-sea
 document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target;if(input.matches('.header-search input, #main-search, #mob-search, #py2-menu-search-input')){e.preventDefault();e.stopImmediatePropagation();runSearch(input.value);}});
 const query=new URLSearchParams(location.search).get('q');
 if(query){document.querySelectorAll('body>.top-header .header-search input, #main-search').forEach(i=>{i.value=query;});}
+/* Shared sitewide background and professional button polish. */
+(function(){if(!document.querySelector('link[data-py2-sitewide-polish]')){var polish=document.createElement('link');polish.rel='stylesheet';polish.href='/sitewide-polish.css?v=20261015-center2';polish.setAttribute('data-py2-sitewide-polish','');document.head.appendChild(polish)}})();
 /* Contextual, dismissible smart help is shared across public site pages. */
 (function(){if(document.querySelector('link[data-py2-smart-guide]'))return;var css=document.createElement('link');css.rel='stylesheet';css.href='/smart-guide.css?v=20261015-glow3';css.setAttribute('data-py2-smart-guide','');document.head.appendChild(css);var js=document.createElement('script');js.src='/smart-guide.js?v=20261015-glow3';js.defer=true;document.body.appendChild(js)})();
 })();
