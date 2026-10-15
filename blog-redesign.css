@@ -439,3 +439,10 @@
  .py2-blog-page .top-header-inner>.hamburger{flex-basis:34px!important;width:34px!important;height:34px!important;min-width:34px!important}
  .py2-blog-page .py2-blog-return-links a,.py2-blog-page .py2-blog-return-links .py2-blog-return-home,.py2-blog-page .py2-blog-return-links .py2-blog-return-shop{padding:8px 6px!important;font-size:10px!important;gap:4px!important}
 }
+
+/* Keep the blog's contextual helper small, centered, and above page content. */
+.py2-blog-page .py2-smart-guide{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:min(318px,calc(100vw - 30px))!important;z-index:10030!important;padding:13px 14px!important;border:1px solid #69a9ee!important;border-radius:16px!important;background:linear-gradient(145deg,#fff,#edf5ff)!important;box-shadow:0 14px 40px #0e2e5038,0 0 28px #2688f75c!important;animation:py2GuideIn .32s ease-out,py2GuideFloat 4.2s ease-in-out .3s infinite!important}
+.py2-blog-page .py2-smart-guide:before{border-color:#2688f788!important;box-shadow:0 0 22px #2688f73d!important}
+.py2-blog-page .py2-smart-guide-cta{background:linear-gradient(110deg,#1767b7,#6657d9)!important;color:#fff!important}
+.py2-blog-page .py2-smart-guide[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.py2-blog-page .py2-smart-guide,.py2-blog-page .py2-smart-guide:before{animation:none!important}}
