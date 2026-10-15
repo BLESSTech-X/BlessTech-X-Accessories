@@ -10,3 +10,26 @@
 @keyframes py2GuideFloat{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-52%)}}
 @media(max-width:480px){.py2-smart-guide{left:50%;top:50%;right:auto;bottom:auto;width:min(306px,calc(100vw - 28px));padding:12px}}
 @media(prefers-reduced-motion:reduce){.py2-smart-guide,.py2-smart-guide:before{animation:none!important}.py2-smart-guide{transform:translate(-50%,-50%)}}
+
+/* Polished compact guide modal: colourful, still, and backed by a subtle blur. */
+html.py2-guide-open,html.py2-guide-open body{overflow:hidden!important}
+.py2-smart-guide-backdrop{position:fixed!important;inset:0!important;z-index:9997!important;background:rgba(15,25,45,.28)!important;-webkit-backdrop-filter:blur(4px)!important;backdrop-filter:blur(4px)!important;opacity:1;transition:opacity .18s ease}
+.py2-smart-guide-backdrop[hidden]{display:none!important}
+.py2-smart-guide{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;z-index:9998!important;width:min(326px,calc(100vw - 30px))!important;max-height:min(82vh,440px)!important;overflow:auto!important;padding:15px!important;border:1px solid transparent!important;border-radius:20px!important;background:linear-gradient(white,white) padding-box,linear-gradient(135deg,#ff7a18,#ffcf4a,#43c6ff,#8b5cf6,#ff70b7) border-box!important;color:#172337!important;box-shadow:0 20px 60px rgba(10,25,55,.28),0 0 30px rgba(81,137,255,.2)!important;animation:py2GuideModalIn .24s cubic-bezier(.2,.8,.2,1) both!important}
+.py2-smart-guide:before{content:""!important;position:absolute!important;inset:0!important;z-index:-1!important;border:0!important;border-radius:inherit!important;background:linear-gradient(135deg,rgba(255,122,24,.10),rgba(67,198,255,.10),rgba(139,92,246,.10))!important;box-shadow:none!important;pointer-events:none!important;animation:none!important}
+.py2-smart-guide-head{gap:9px!important;margin-bottom:9px!important}
+.py2-smart-guide-mark{width:34px!important;height:34px!important;flex:0 0 34px!important;border-radius:12px!important;background:linear-gradient(135deg,#ff6b35,#ffbf36,#4aa8ff,#8a5cf6)!important;color:#fff!important;font-size:18px!important;box-shadow:0 5px 14px rgba(79,113,219,.23)!important}
+.py2-smart-guide-title{font-size:14px!important;line-height:1.3!important;font-weight:900!important;letter-spacing:-.2px!important;color:#182a45!important}
+.py2-smart-guide-close{width:32px!important;height:32px!important;flex:0 0 32px!important;border:1px solid #dce5f1!important;border-radius:10px!important;background:#f7faff!important;color:#34445e!important;font-size:22px!important;font-weight:600!important;transition:transform .16s ease,background .16s ease!important}
+.py2-smart-guide-close:hover{transform:rotate(90deg)!important;background:#ffe9e6!important;color:#b42318!important}
+.py2-smart-guide p{margin:0 0 13px!important;color:#4a5c73!important;font-size:12.5px!important;line-height:1.62!important}
+.py2-smart-guide-actions{display:grid!important;grid-template-columns:minmax(0,1.4fr) minmax(0,.8fr)!important;gap:8px!important}
+.py2-smart-guide-cta,.py2-smart-guide-later{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-width:0!important;min-height:41px!important;padding:9px 10px!important;border:1px solid transparent!important;border-radius:12px!important;font-size:11.5px!important;font-weight:900!important;line-height:1.2!important;text-align:center!important;text-decoration:none!important;cursor:pointer!important;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease!important}
+.py2-smart-guide-cta{background:linear-gradient(110deg,#ff6a2a 0%,#ff9c3d 35%,#7358ef 100%)!important;color:#fff!important;box-shadow:0 7px 17px rgba(106,92,220,.25)!important}
+.py2-smart-guide-cta:hover{transform:translateY(-2px)!important;filter:saturate(1.15) brightness(1.04)!important;box-shadow:0 10px 22px rgba(106,92,220,.32)!important}
+.py2-smart-guide-later{background:linear-gradient(135deg,#f5f8ff,#fff)!important;border-color:#dce5f1!important;color:#3b4c65!important;box-shadow:0 3px 8px rgba(22,42,75,.05)!important}
+.py2-smart-guide-later:hover{transform:translateY(-1px)!important;background:#eef5ff!important;border-color:#b8d3f7!important}
+.py2-smart-guide button:focus-visible,.py2-smart-guide a:focus-visible{outline:3px solid #2962ff!important;outline-offset:3px!important}
+@keyframes py2GuideModalIn{from{opacity:0;transform:translate(-50%,-47%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media(max-width:480px){.py2-smart-guide{width:min(316px,calc(100vw - 26px))!important;padding:13px!important;border-radius:18px!important}.py2-smart-guide-actions{grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr)!important}.py2-smart-guide-cta,.py2-smart-guide-later{min-height:40px!important;padding:8px 7px!important;font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){.py2-smart-guide,.py2-smart-guide-close,.py2-smart-guide-cta,.py2-smart-guide-later{animation:none!important;transition:none!important}}
