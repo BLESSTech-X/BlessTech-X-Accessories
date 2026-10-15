@@ -256,3 +256,44 @@
 
 /* Blog polish: larger hero mark and clearly elevated story cards. */
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .blog-editorial-grid .py2-social-post{transition:none}.py2-blog-redesigned .blog-editorial-grid .py2-social-post:hover{transform:none}}
+
+
+/* Blog article reading experience: clear hierarchy, comfortable reading width, and elevated content panels. */
+.py2-blog-page:not(.py2-blog-redesigned){background:linear-gradient(145deg,#edf5ff 0%,#f7faff 48%,#eaf2fb 100%);color:#172337}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article{width:min(100% - 32px,900px);max-width:900px;margin:30px auto 56px;padding:0}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article>.py2-read{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;padding:10px 15px;border:1px solid #c9dcef;border-radius:999px;background:#fff;color:#155a9d;font-weight:850;text-decoration:none;box-shadow:0 4px 12px #164b850d;transition:transform .18s ease,box-shadow .18s ease}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article>.py2-read:hover{transform:translateY(-2px);box-shadow:0 8px 18px #164b8518}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content.py2-related{margin:0;padding:clamp(20px,4vw,42px);border:1px solid #d2e2f3;border-top:5px solid #1767b7;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#fff 70%,#f8fbff 100%);box-shadow:0 18px 44px #163d6817,0 4px 12px #163d6809}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-meta{gap:9px 12px;margin-bottom:16px;color:#607188;font-size:12px}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-pill{padding:6px 11px;background:#e8f3ff;border:1px solid #c7e0fb;color:#155da6;font-size:11px}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-title{max-width:760px;margin:0 0 14px;color:#142f4e;font-size:clamp(30px,5vw,48px);line-height:1.12;letter-spacing:-1.2px;overflow-wrap:anywhere}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-excerpt{max-width:760px;margin:0 0 22px;color:#536780;font-size:clamp(16px,2vw,19px);line-height:1.7}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-cover{display:block;width:100%;max-height:480px;object-fit:contain;margin:22px 0 26px;border:1px solid #dce8f5;border-radius:16px;background:#f1f6fc;box-shadow:0 10px 26px #173f6d14}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-blog-video{margin:24px 0;padding:clamp(14px,2.5vw,22px);border:1px solid #c9dff5;border-radius:16px;background:linear-gradient(145deg,#edf6ff,#fff);box-shadow:0 8px 22px #164b8510}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-blog-video h2{color:#173e66;font-size:18px}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body{max-width:760px;margin:24px auto 0;color:#35465c;font-size:clamp(16px,1.8vw,18px);line-height:1.9}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body h1,.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body h2,.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body h3{color:#17395d;letter-spacing:-.45px;line-height:1.28}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body h2{margin:32px 0 12px;font-size:clamp(23px,3vw,29px)}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body h3{margin:25px 0 10px;font-size:21px}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body p{margin:0 0 20px}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body a{color:#145fa8;font-weight:700;text-decoration-thickness:1px;text-underline-offset:3px;overflow-wrap:anywhere}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body ul,.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body ol{padding-left:26px;margin:0 0 22px}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body li{padding-left:4px;margin:0 0 8px}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article-body blockquote{margin:24px 0;padding:16px 20px;border-left:4px solid #1767b7;border-radius:0 12px 12px 0;background:#edf6ff;color:#294967}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content>div[style*="border-top"]{margin-top:30px!important;padding-top:20px!important;border-color:#dce7f3!important}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-filter,.py2-blog-page:not(.py2-blog-redesigned) .py2-nav-cta{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 15px;border:1px solid #145a9c;border-radius:10px;background:#1767b7;color:#fff;font-weight:850;text-decoration:none;cursor:pointer;box-shadow:0 5px 14px #1767b724}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-filter:hover,.py2-blog-page:not(.py2-blog-redesigned) .py2-nav-cta:hover{background:#104b88}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related:not(#article-content){margin:24px 0;padding:clamp(18px,3vw,26px);border:1px solid #d3e3f4;border-radius:18px;background:linear-gradient(145deg,#fff,#f4f9ff);box-shadow:0 12px 30px #163d6810}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related h2{color:#17395d}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-post-advertise{margin:26px 0;border-radius:18px;box-shadow:0 14px 32px #163d6820}
+.py2-blog-page:not(.py2-blog-redesigned) .blog-sponsored-slot{margin:24px 0;padding:12px;border:1px dashed #8db6df;border-radius:16px;background:#edf6ff}
+@media(max-width:600px){
+ .py2-blog-page:not(.py2-blog-redesigned) .py2-article{width:calc(100% - 22px);margin:20px auto 36px}
+ .py2-blog-page:not(.py2-blog-redesigned) #article-content.py2-related{padding:20px 16px;border-radius:16px}
+ .py2-blog-page:not(.py2-blog-redesigned) .py2-article-title{letter-spacing:-.7px}
+ .py2-blog-page:not(.py2-blog-redesigned) .py2-article-body{font-size:16px;line-height:1.82}
+ .py2-blog-page:not(.py2-blog-redesigned) .py2-article-cover{max-height:340px}
+ .py2-blog-page:not(.py2-blog-redesigned) #article-content>div[style*="border-top"]{display:flex;flex-direction:column}
+ .py2-blog-page:not(.py2-blog-redesigned) #article-content>div[style*="border-top"]>*{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.py2-blog-page:not(.py2-blog-redesigned) .py2-article>.py2-read{transition:none}}
