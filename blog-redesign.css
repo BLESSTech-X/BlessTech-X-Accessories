@@ -297,3 +297,78 @@
  .py2-blog-page:not(.py2-blog-redesigned) #article-content>div[style*="border-top"]>*{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.py2-blog-page:not(.py2-blog-redesigned) .py2-article>.py2-read{transition:none}}
+
+
+/* Accessibility fix: high-contrast text throughout the opened blog article page. */
+.py2-blog-page:not(.py2-blog-redesigned) #article-content,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content p,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content li,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-article-body,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-video-note{
+  color:#172b43!important;
+  opacity:1!important;
+  -webkit-text-fill-color:currentColor;
+}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-meta,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-meta span{
+  color:#40536b!important;
+  opacity:1!important;
+}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-pill{
+  color:#084f91!important;
+  background:#e4f1ff!important;
+  border-color:#a9cff5!important;
+  opacity:1!important;
+}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-article-title,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-article-body h1,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-article-body h2,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-article-body h3{
+  color:#102b49!important;
+  opacity:1!important;
+  -webkit-text-fill-color:#102b49;
+}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-excerpt{
+  color:#344861!important;
+  opacity:1!important;
+  -webkit-text-fill-color:#344861;
+}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-article-body a,
+.py2-blog-page:not(.py2-blog-redesigned) #article-content a{
+  color:#075ba8!important;
+  opacity:1!important;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+}
+.py2-blog-page:not(.py2-blog-redesigned) #article-content .py2-filter{
+  color:#fff!important;
+  background:#075ba8!important;
+  border-color:#064a88!important;
+  opacity:1!important;
+  -webkit-text-fill-color:#fff;
+}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-article>.py2-read,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related p,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related h2,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related .py2-eyebrow{
+  color:#172b43!important;
+  opacity:1!important;
+  -webkit-text-fill-color:currentColor;
+}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related a,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-related .py2-nav-cta{
+  color:#fff!important;
+  background:#075ba8!important;
+  border-color:#064a88!important;
+  opacity:1!important;
+  -webkit-text-fill-color:#fff;
+}
+.py2-blog-page:not(.py2-blog-redesigned) .py2-footer,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-footer p,
+.py2-blog-page:not(.py2-blog-redesigned) .py2-footer a{
+  color:#e8eef7!important;
+  opacity:1!important;
+  -webkit-text-fill-color:currentColor;
+}
