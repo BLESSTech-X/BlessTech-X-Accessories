@@ -1,15 +1,121 @@
 {
   "hero_line1": "Built for Zambia.",
   "hero_line2": "Built with Purpose.",
-  "hero_sub": "We started BLESSTech-ZM to make quality phone accessories accessible to every Zambian — with honest prices, genuine products, and personal service you can count on.",
-  "story_heading": "From Lusaka, for Lusaka",
-  "story_p1": "BLESSTech-ZM Accessories was born out of frustration — the frustration of walking into a store and being sold fake chargers, cheap cases that crack in a week, and cables that stop working after a month. Barack and Sylvester knew there had to be a better way.",
-  "story_p2": "We built BLESSTech-ZM on a simple promise: every product we sell is genuine, every price is fair, and every customer gets the kind of personal attention you'd get from a trusted friend who happens to know everything about phone accessories.",
-  "story_p3": "Today we serve hundreds of customers across Lusaka through WhatsApp, delivering the same day and standing behind every product we sell. We're not just a shop — we're your go-to tech friends in Lusaka.",
-  "owner_name": "Barack Blessings",
-  "owner_role": "Co-Founder & CEO",
-  "owner_bio": "Barack leads the vision and operations at BLESSTech-ZM, personally ensuring every product meets the quality standard he'd expect for himself. Passionate about tech, community, and building something Zambia can be proud of.",
-  "cofounder_name": "Sylvester Mwila",
-  "cofounder_role": "Co-Founder & Operations",
-  "cofounder_bio": "Sylvester keeps the wheels turning — from logistics and supplier relations to customer fulfilment. His eye for detail and commitment to customer satisfaction is what makes same-day delivery a reality for our customers."
+  "hero_sub": "PhoneYa2 Accessories is a BLESSTech-X venture — bringing genuine phone accessories and quality service to Lusaka.",
+  "stats": [
+    {
+      "value": "Zambia",
+      "label": "Local Market Focus"
+    },
+    {
+      "value": "Online",
+      "label": "Browse & Order"
+    },
+    {
+      "value": "Same Day",
+      "label": "Delivery in Lusaka"
+    },
+    {
+      "value": "Direct",
+      "label": "Customer Support"
+    }
+  ],
+  "venture_title": "A BLESSTech-X Venture",
+  "venture_text": "PhoneYa2 is a practical example of what we build for our clients — a real, working business that serves the Zambian market.",
+  "venture_button": "Visit BLESSTech-X",
+  "venture_url": "https://blesstech-x.vercel.app",
+  "country_badge": "🇿🇲 Proudly Zambian",
+  "story_label": "Our Story",
+  "story_heading": "Built by BLESSTech-X, for Zambia",
+  "story_paragraphs": [
+    {
+      "text": "BLESSTech-X is a digital solutions company founded by Barack Blessings and Sylvester Mwila in Lusaka, Zambia. We build websites, e-commerce stores, and digital systems that help Zambian businesses grow."
+    },
+    {
+      "text": "PhoneYa2 Accessories is one of the ventures born from BLESSTech-X — a practical example of what we build for our clients. We saw a gap in the market for affordable, genuine phone accessories delivered fast in Lusaka, so we built PhoneYa2 to fill it."
+    },
+    {
+      "text": "PhoneYa2 is an active e-commerce venture where we keep improving the product catalogue, ordering experience and customer support for shoppers in Zambia."
+    }
+  ],
+  "values_label": "What We Stand For",
+  "values_heading": "Our Core Values",
+  "values": [
+    {
+      "icon": "🛡️",
+      "title": "Genuine Quality",
+      "description": "We only stock authentic products from trusted suppliers. Every item is tested and verified before it reaches you."
+    },
+    {
+      "icon": "💰",
+      "title": "Honest Pricing",
+      "description": "What you see is what you pay. No hidden charges, no inflated prices, no tricks. Just fair value for genuine products."
+    },
+    {
+      "icon": "⚡",
+      "title": "Speed & Reliability",
+      "description": "Order before 3pm and receive your accessories the same day. We respect your time as much as you do."
+    },
+    {
+      "icon": "🇿🇲",
+      "title": "Community First",
+      "description": "We're proudly Zambian and reinvest in our community. When you shop with us, you support local business."
+    },
+    {
+      "icon": "💬",
+      "title": "Personal Service",
+      "description": "Real people, real conversations. Chat with us on WhatsApp six days a week and get advice you can actually trust."
+    },
+    {
+      "icon": "🔄",
+      "title": "Peace of Mind",
+      "description": "Our 7-day return policy means every purchase is risk-free. Not satisfied? We'll make it right."
+    }
+  ],
+  "team_label": "The Founders",
+  "team_heading": "Meet the BLESSTech-X Team",
+  "team": [
+    {
+      "name": "Barack Blessings",
+      "role": "Lead Digital Strategist",
+      "bio": "Barack leads the vision and operations at BLESSTech-X, personally ensuring every digital solution meets the quality standard he'd expect for himself. Passionate about tech, community, and building something Zambia can be proud of.",
+      "emoji": "👨🏾‍💼",
+      "whatsapp": "https://wa.me/260979603741",
+      "active": true
+    },
+    {
+      "name": "Sylvester Mwila",
+      "role": "Financial Manager & Business Analyst",
+      "bio": "Sylvester is a ZICA-certified accountant with expertise in financial planning, tax compliance, and sustainable growth strategies for Zambian SMEs. He ensures every BLESSTech-X venture is financially sound.",
+      "emoji": "👨🏾‍💻",
+      "whatsapp": "https://wa.me/260979603741",
+      "active": true
+    }
+  ],
+  "businesses_label": "Our Ventures",
+  "businesses_heading": "Businesses & Projects",
+  "businesses_intro": "Explore the businesses and projects we build, operate and grow. You can add a new venture, its logo, story and website from the CMS.",
+  "businesses": [
+    {
+      "name": "BLESSTech-X",
+      "tagline": "Digital solutions for growing businesses",
+      "description": "A digital solutions company building websites, e-commerce stores and practical digital systems for Zambian businesses.",
+      "logo": "",
+      "website": "https://blesstech-x.vercel.app",
+      "active": true
+    },
+    {
+      "name": "PhoneYa2",
+      "tagline": "Phone accessories and everyday tech essentials",
+      "description": "An online phone accessories shop focused on convenient browsing, clear product information and direct customer support.",
+      "logo": "",
+      "website": "https://phoneya2.pages.dev",
+      "active": true
+    }
+  ],
+  "cta_heading": "From BLESSTech-X to You",
+  "cta_text": "PhoneYa2 is our proof that digital solutions work. Browse the catalogue, review product details and contact our team if you need help before ordering.",
+  "cta_business_label": "Visit BLESSTech-X",
+  "cta_whatsapp_label": "WhatsApp Us",
+  "cta_whatsapp_url": "https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20chat%20about%20your%20products."
 }
