@@ -455,3 +455,7 @@
 .py2-blog-redesigned{background:#e7ebf1!important}
 .py2-blog-redesigned .py2-blog-main{background:transparent}
 .py2-blog-redesigned .blog-content-section{background:transparent}
+
+/* Slightly deeper neutral canvas for the blog hub and article pages. */
+.py2-blog-page{background:#e7ebf1!important}
+.py2-blog-redesigned{background:#e7ebf1!important}
