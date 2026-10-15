@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var posts=[],category='All',search='',showSaved=false,visibleCount=6,PAGE_SIZE=6,scrollObserver=null;
+var posts=[],category='All',search='',showSaved=false,visibleCount=2,PAGE_SIZE=2,scrollObserver=null;
 var SAVED_KEY='phoneya2_blog_saved_v1';
 function track(name,params){try{if(typeof gtag==='function')gtag('event',name,Object.assign({content_group:'PhoneYa2 Community Feed'},params||{}))}catch(e){}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -64,7 +64,7 @@ function render(){
  var saved=getSaved();
  var list=posts.filter(function(p){var matchesCategory=category==='All'||p.category===category;var hay=(p.title+' '+p.excerpt+' '+(p.tags||[]).join(' ')+' '+(p.category||'')).toLowerCase();return matchesCategory&&hay.includes(search.toLowerCase())&&(!showSaved||saved.indexOf(p.slug)>=0)});
  var count=document.getElementById('post-count');if(count)count.textContent=list.length+' post'+(list.length===1?'':'s');
- var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?visible.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}}
+ var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?visible.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<span>Keep scrolling for more stories</span><button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}}
  document.querySelectorAll('[data-rail-category]').forEach(function(b){b.classList.toggle('is-active',b.getAttribute('data-rail-category')===category)});
  updateSavedCount();track('blog_feed_render',{category:category,result_count:list.length,visible_count:Math.min(list.length,visibleCount),search_used:!!search,saved_view:showSaved})
 }
