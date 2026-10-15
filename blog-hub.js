@@ -52,6 +52,14 @@ function card(p){
   '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div></article>'
  ].join('');
 }
+function populateCategoryFilters(){
+ var filters=document.getElementById('blog-filters');if(!filters)return;
+ var names=Array.from(new Set(posts.map(function(p){return String(p.category||'Community').trim()}).filter(Boolean)));
+ var preferred=['Buying Guides','Tips & Tricks','Offers','Product News','PhoneYa2 Updates'];
+ names.sort(function(a,b){var ai=preferred.indexOf(a),bi=preferred.indexOf(b);if(ai<0)ai=preferred.length;if(bi<0)bi=preferred.length;return ai-bi||a.localeCompare(b)});
+ var labelMap={'Buying Guides':'Buying guides','Tips & Tricks':'Tips & tricks','Product News':'Product news','PhoneYa2 Updates':'PhoneYa2 updates'};
+ filters.innerHTML='<button class="blog-category-tab'+(category==='All'?' active':'')+'" data-category="All">All stories</button>'+names.map(function(name){return '<button class="blog-category-tab'+(category===name?' active':'')+'" data-category="'+esc(name)+'">'+esc(labelMap[name]||name)+'</button>'}).join('');
+}
 function render(){
  var saved=getSaved();
  var list=posts.filter(function(p){var matchesCategory=category==='All'||p.category===category;var hay=(p.title+' '+p.excerpt+' '+(p.tags||[]).join(' ')+' '+(p.category||'')).toLowerCase();return matchesCategory&&hay.includes(search.toLowerCase())&&(!showSaved||saved.indexOf(p.slug)>=0)});
@@ -72,5 +80,5 @@ if(feed){
  });
 }
 var savedButton=document.getElementById('show-saved-posts');if(savedButton)savedButton.addEventListener('click',function(){showSaved=!showSaved;category='All';if(filters)filters.querySelectorAll('.py2-filter').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')==='All')});if(searchInput)searchInput.value='';search='';this.textContent=showSaved?'Back to all posts':'Show saved posts';render();if(feed)feed.scrollIntoView({behavior:'smooth',block:'start'})});
-fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Blog index unavailable');return r.json()}).then(function(data){posts=Array.isArray(data)?data.filter(function(p){return p&&p.publish!==false}):[];posts.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});track('blog_hub_view',{published_post_count:posts.length});render()}).catch(function(){var el=document.getElementById('blog-feed');if(el)el.innerHTML='<div class="py2-empty"><strong>The community feed could not load.</strong><p>Check your connection and refresh the page. You can still <a href="/contact.html">contact PhoneYa2</a>.</p></div>';var count=document.getElementById('post-count');if(count)count.textContent='Feed unavailable'});
+fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Blog index unavailable');return r.json()}).then(function(data){posts=Array.isArray(data)?data.filter(function(p){return p&&p.publish!==false}):[];posts.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});populateCategoryFilters();track('blog_hub_view',{published_post_count:posts.length});render()}).catch(function(){var el=document.getElementById('blog-feed');if(el)el.innerHTML='<div class="py2-empty"><strong>The community feed could not load.</strong><p>Check your connection and refresh the page. You can still <a href="/contact.html">contact PhoneYa2</a>.</p></div>';var count=document.getElementById('post-count');if(count)count.textContent='Feed unavailable'});
 })();
