@@ -20,6 +20,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date Added", name: "date_added", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}", required: false, hint: "Used to order New Arrivals newest first. Keep the default for new products." }
       - { label: "Price", name: "price", widget: "number" }
       - { label: "Original Price", name: "original_price", widget: "number", required: false }
       - { label: "Stock", name: "stock", widget: "number", default: 10 }
