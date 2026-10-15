@@ -14,6 +14,8 @@ const staticPages = [
   { loc: '/contact.html', priority: 0.7, changefreq: 'monthly' },
   { loc: '/privacy-policy.html', priority: 0.4, changefreq: 'yearly' },
   { loc: '/return-policy.html', priority: 0.4, changefreq: 'yearly' },
+  { loc: '/privacy-policy.html', priority: 0.4, changefreq: 'yearly' },
+  { loc: '/return-policy.html', priority: 0.4, changefreq: 'yearly' },
   { loc: '/blog.html', priority: 0.9, changefreq: 'daily' },
 ];
 
