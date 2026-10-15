@@ -72,9 +72,9 @@
     var style = document.createElement('style');
     style.id = 'py2-interest-popup-styles';
     style.textContent = `
-      @keyframes py2InterestIn{from{opacity:0;transform:translate3d(0,14px,0) scale(.97)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+      @keyframes py2InterestIn{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
       @keyframes py2InterestGlow{0%,100%{box-shadow:0 10px 30px rgba(17,24,39,.18),0 0 0 1px rgba(85,151,255,.22),0 0 18px rgba(85,151,255,.14)}50%{box-shadow:0 12px 34px rgba(17,24,39,.22),0 0 0 1px rgba(255,111,145,.42),0 0 25px rgba(97,110,255,.3)}}
-      .py2-interest-backdrop{position:fixed;inset:0;z-index:10018;background:rgba(12,22,42,.30);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}.py2-interest-backdrop[hidden]{display:none!important}.py2-interest-popup{position:fixed;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);z-index:10020;width:min(360px,calc(100vw - 24px));display:grid;grid-template-columns:66px minmax(0,1fr) 26px;gap:11px;align-items:center;padding:12px;border:1px solid rgba(113,157,255,.55);border-radius:17px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(243,247,255,.98));color:#172033;font:500 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;animation:py2InterestIn .32s ease-out,py2InterestGlow 3.8s ease-in-out .4s infinite;backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(12,22,42,.28)}
+      html.py2-interest-open,html.py2-interest-open body{overflow:hidden!important}.py2-interest-backdrop{position:fixed;inset:0;z-index:10018;background:rgba(12,22,42,.30);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}.py2-interest-backdrop[hidden]{display:none!important}.py2-interest-popup{position:fixed;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);z-index:10020;width:min(360px,calc(100vw - 24px));display:grid;grid-template-columns:66px minmax(0,1fr) 26px;gap:11px;align-items:center;padding:12px;border:1px solid rgba(113,157,255,.55);border-radius:17px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(243,247,255,.98));color:#172033;font:500 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;animation:py2InterestIn .32s ease-out,py2InterestGlow 3.8s ease-in-out .4s infinite;backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(12,22,42,.28)}
       .py2-interest-popup[hidden]{display:none!important}.py2-interest-img{width:66px;height:66px;border-radius:12px;object-fit:contain;background:#fff;border:1px solid #e8edf7}
       .py2-interest-copy{min-width:0}.py2-interest-eyebrow{display:flex;align-items:center;gap:5px;color:#4d65cb;font-size:10px;font-weight:800;letter-spacing:.65px;text-transform:uppercase;margin-bottom:3px}.py2-interest-eyebrow:before{content:"";width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#ff7e5f,#7765ff);box-shadow:0 0 8px #8b82ff}
       .py2-interest-title{font-weight:800;font-size:13px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px}.py2-interest-price{font-size:12px;font-weight:800;color:#111827;margin-bottom:7px}.py2-interest-cta{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:9px;padding:7px 10px;background:linear-gradient(110deg,#5b63e8,#7b49ce 55%,#ec6096);color:#fff!important;text-decoration:none!important;font-weight:800;font-size:11px;box-shadow:0 4px 12px rgba(100,86,218,.25)}
@@ -93,8 +93,9 @@
     document.body.appendChild(backdrop);
     popup = document.createElement('aside');
     popup.className = 'py2-interest-popup';
-    popup.setAttribute('role', 'complementary');
-    popup.setAttribute('aria-label', 'A product you may want to revisit');
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'PhoneYa2 product recommendation');
     popup.hidden = true;
     var img = document.createElement('img');
     img.className = 'py2-interest-img';
@@ -128,6 +129,7 @@
     copy.appendChild(eyebrow); copy.appendChild(title); copy.appendChild(price); copy.appendChild(cta);
     popup.appendChild(img); popup.appendChild(copy); popup.appendChild(close);
     document.body.appendChild(popup);
+    document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && visible) dismissPopup(); });
     var add = document.createElement('button');
     add.type = 'button'; add.className = 'py2-interest-cta py2-interest-add'; add.textContent = 'Add to cart +';
     add.style.cssText = 'margin-left:5px;border:0;cursor:pointer;font:inherit;font-weight:800;';
