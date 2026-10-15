@@ -1947,7 +1947,7 @@ function orderUrl(p, qty) {
   qty = Math.max(1, Number(qty) || 1);
   return '/checkout.html?product=' + encodeURIComponent(p.slug) + '&qty=' + encodeURIComponent(qty);
 }
-const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
+const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',watch:'Watch',accessory:'Other Accessories',other:'Other'};
 
 function shareProduct(p) {
   if (!p) return;
