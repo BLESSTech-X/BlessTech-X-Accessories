@@ -11,9 +11,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/blog-shared.css?v=20261015-social1">
 <link rel="stylesheet" href="/site-header.css?v=20261014">
+<link rel="stylesheet" href="/blog-redesign.css?v=20261015">
   <!-- Google AdSense site verification and ads code -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1401905092932639" crossorigin="anonymous"></script>
-</head><body class="py2-blog-page">
+</head><body class="py2-blog-page py2-blog-redesigned">
+
 
 <div class="top-header">
   <div class="top-header-inner">
@@ -35,56 +37,36 @@
     <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="mob-nav" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
   </div>
 </div>
-<nav class="py2-quick-tabs" aria-label="Quick site navigation">
-  <a href="/"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
-  <a href="/shop.html"><i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span></a>
-  <a href="/account.html"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Account</span></a>
-  <a href="/about.html"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>About</span></a>
-  <a href="/contact.html"><i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contact</span></a>
-  <a href="/cart.html"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
-</nav>
-<div class="cat-nav" aria-label="Shop categories">
-  <div class="cat-nav-inner">
-    <a href="/shop.html?cat=all" class="cat-nav-item"><i class="fa-solid fa-store" aria-hidden="true"></i> All Products</a>
-    <a href="/shop.html?cat=case" class="cat-nav-item"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Cases</a>
-    <a href="/shop.html?cat=charger" class="cat-nav-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Chargers</a>
-    <a href="/shop.html?cat=cable" class="cat-nav-item"><i class="fa-solid fa-plug" aria-hidden="true"></i> Cables</a>
-    <a href="/shop.html?cat=earphone" class="cat-nav-item"><i class="fa-solid fa-headphones" aria-hidden="true"></i> Earphones</a>
-    <a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full" aria-hidden="true"></i> Power Banks</a>
-    <a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Protectors</a>
-    <a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile" aria-hidden="true"></i> Phones</a>
-    <a href="/shop.html?cat=watch" class="cat-nav-item"><i class="fa-regular fa-clock" aria-hidden="true"></i> Watches</a>
-    <a href="/shop.html?cat=accessory" class="cat-nav-item"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i> Other Accessories</a>
-    <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
-  </div>
-</div>
-<main class="py2-wrap py2-blog-main">
-  <section class="py2-social-intro">
-    <div class="py2-social-intro-copy"><span class="py2-social-kicker"><span class="py2-live-dot"></span> PHONEYA2 COMMUNITY</span><h1>Your tech feed. Your people. Your next smart choice.</h1><p>Watch clips, discover useful tips, explore products and share ideas. New posts appear here as PhoneYa2 publishes them.</p></div>
-    <a href="/advertiser" class="py2-social-create"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Promote your business <span>↗</span></a>
+<main class="py2-wrap py2-blog-main py2-editorial">
+  <header class="blog-page-intro">
+    <div class="blog-intro-copy">
+      <div class="blog-breadcrumb"><a href="/">Home</a><span>/</span><span>Journal</span></div>
+      <p class="blog-eyebrow">PHONEYA2 JOURNAL</p>
+      <h1>Useful reads.<br><span>Smarter buys.</span></h1>
+      <p class="blog-intro-text">Straightforward tech tips, buying guides, product updates and ideas for everyday life in Zambia.</p>
+    </div>
+    <a class="blog-business-link" href="/advertiser"><span class="blog-business-icon">↗</span><span><strong>Own a business?</strong><small>Promote it free on PhoneYa2</small></span><span class="blog-business-arrow">→</span></a>
+  </header>
+  <section class="blog-content-section" id="latest-stories">
+    <div class="blog-section-heading"><div><p class="blog-eyebrow">BROWSE BY INTEREST</p><h2>Explore the journal</h2></div><span id="post-count" class="blog-post-count">Loading posts…</span></div>
+    <div class="blog-controls">
+      <label class="blog-search-control"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="blog-search" type="search" placeholder="Search tips, products and guides…" aria-label="Search journal posts"></label>
+      <button type="button" id="show-saved-posts" class="blog-saved-control"><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Saved</span></button>
+    </div>
+    <nav id="blog-filters" class="blog-category-tabs" aria-label="Filter journal by category">
+      <button class="blog-category-tab active" data-category="All">All stories</button><button class="blog-category-tab" data-category="Buying Guides">Buying guides</button><button class="blog-category-tab" data-category="Tips & Tricks">Tips & tricks</button><button class="blog-category-tab" data-category="Offers">Offers</button><button class="blog-category-tab" data-category="Product News">Product news</button><button class="blog-category-tab" data-category="PhoneYa2 Updates">PhoneYa2 updates</button>
+    </nav>
+    <p id="saved-post-count" class="blog-saved-note">Saved posts stay on this device.</p>
+    <div id="blog-feed" class="py2-social-posts blog-editorial-grid" aria-live="polite"><div class="py2-empty">Loading stories…</div></div>
   </section>
-  <section class="py2-discovery-strip"><a href="#latest-stories" class="py2-discovery-item"><span>01</span><div><strong>Read something useful</strong><small>Advice you can actually use</small></div><b>↘</b></a><a href="#product-picks" class="py2-discovery-item"><span>02</span><div><strong>Find your next gadget</strong><small>Explore accessories from the shop</small></div><b>↘</b></a><a href="/advertiser" class="py2-discovery-item"><span>03</span><div><strong>Promote your business</strong><small>Start advertising for free</small></div><b>↗</b></a></section>
-  <div class="py2-social-layout">
-    <aside class="py2-social-rail py2-social-left">
-      <section class="py2-social-panel py2-community-card"><div class="py2-community-avatar">PY<span>2</span></div><h2>PhoneYa2 Community</h2><p>Smart choices. Better connected.</p><a href="/shop.html">Explore the shop <span>↗</span></a><a href="/advertiser">Advertise for free <span>↗</span></a></section>
-      <section class="py2-social-panel py2-topic-panel"><h3>Explore topics</h3><button data-rail-category="All">🌐 All posts</button><button data-rail-category="Offers">🔥 Offers</button><button data-rail-category="Product News">📦 Product picks</button><button data-rail-category="Buying Guides">🧭 Buying guides</button><button data-rail-category="Tips & Tricks">💡 Tips & tricks</button><button data-rail-category="PhoneYa2 Updates">📣 Updates</button></section>
-    </aside>
-    <section id="latest-stories" class="py2-stories-section py2-social-feed-column">
-      <div class="py2-feed-heading"><div><span class="py2-social-kicker">THE COMMUNITY FEED</span><h2>What's happening</h2><p>Videos, tips, offers and ideas from PhoneYa2.</p></div><span id="post-count" class="py2-count">Loading posts…</span></div>
-      <div class="py2-toolbar"><label class="py2-search-wrap"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="blog-search" class="py2-search" type="search" placeholder="Search the feed…" aria-label="Search posts"></label><div id="blog-filters" class="py2-filters"><button class="py2-filter active" data-category="All">For you</button><button class="py2-filter" data-category="Offers">Offers</button><button class="py2-filter" data-category="Product News">Product picks</button><button class="py2-filter" data-category="Buying Guides">Guides</button><button class="py2-filter" data-category="Tips & Tricks">Tips</button><button class="py2-filter" data-category="PhoneYa2 Updates">Updates</button></div></div>
-      <div id="blog-feed" class="py2-social-posts" aria-live="polite"><div class="py2-empty"><span class="py2-loading-dot"></span> Loading the community feed…</div></div>
-    </section>
-    <aside class="py2-social-rail py2-social-right">
-      <section class="py2-social-panel py2-social-note"><span class="py2-side-label">QUICK LINKS</span><h3>Make the feed useful.</h3><p>Find advice before you buy, watch product clips and share posts with someone who needs them.</p><a href="/shop.html">Shop accessories ↗</a><a href="/contact.html">Send us a suggestion ↗</a></section>
-      <section class="py2-social-panel py2-social-note"><span class="py2-side-label">FOR BUSINESS OWNERS</span><h3>Get discovered here.</h3><p>PhoneYa2 offers free advertising for Zambian businesses.</p><a class="py2-side-cta" href="/advertiser">Create a free ad ↗</a></section>
-      <section class="py2-social-panel py2-saved-panel"><h3><i class="fa-regular fa-bookmark" aria-hidden="true"></i> Saved posts</h3><p id="saved-post-count">Your saved posts stay on this device.</p><button type="button" id="show-saved-posts">Show saved posts</button></section>
-    </aside>
-  </div>
-  <section class="py2-sponsored-area" id="blog-ad-slot-top" aria-label="Sponsored business promotions" hidden></section>
-  <section class="py2-sponsored-area py2-sponsored-inline" id="blog-ad-slot-mid" aria-label="More sponsored businesses" hidden></section>
-  <section class="py2-product-section" id="product-picks"><div class="py2-section-head py2-section-head-strong"><div><div class="py2-eyebrow">IN THE SHOP</div><h2>Gear up for everyday life.</h2><p>Explore available products directly from the PhoneYa2 catalogue.</p></div><a class="py2-section-link" href="/shop.html">View the full shop ↗</a></div><div id="blog-products-grid" class="py2-product-grid"><div class="py2-product-loading">Finding products for you…</div></div></section>
-  <section class="py2-mid-ad" aria-label="Advertise your business"><div><span>GROW YOUR REACH</span><h2>Put your brand in front of new people.</h2><p>PhoneYa2 offers a simple place for Zambian businesses to showcase what they do.</p></div><a href="/advertiser">Start advertising free <span>↗</span></a></section>
-  <section class="py2-share-callout"><div class="py2-share-mark">↗</div><div><h2>Know someone who'd find this useful?</h2><p>Send them the blog, share a tip, or invite a business owner to advertise for free.</p></div><button type="button" id="share-blog-button">Share PhoneYa2 Blog ↗</button></section>
+  <section class="py2-sponsored-area blog-sponsored-slot" id="blog-ad-slot-top" aria-label="Sponsored business promotions" hidden></section>
+  <section class="py2-sponsored-area blog-sponsored-slot" id="blog-ad-slot-mid" aria-label="More sponsored businesses" hidden></section>
+  <section class="blog-shop-section" id="product-picks">
+    <div class="blog-section-heading"><div><p class="blog-eyebrow">PHONEYA2 SHOP</p><h2>Useful gear, picked for you</h2><p>Browse accessories for work, travel and everyday use.</p></div><a class="blog-text-link" href="/shop.html">View all products <span>↗</span></a></div>
+    <div id="blog-products-grid" class="py2-product-grid"><div class="py2-product-loading">Loading products…</div></div>
+  </section>
+  <section class="blog-business-banner"><div><p class="blog-eyebrow">FOR ZAMBIAN BUSINESSES</p><h2>Get your business discovered.</h2><p>Create a free PhoneYa2 ad and help more people find what you offer.</p></div><a href="/advertiser">Advertise for free <span>↗</span></a></section>
+  <div class="blog-share-row"><p>Found something useful? Share the journal with a friend.</p><button type="button" id="share-blog-button">Share journal ↗</button></div>
 </main>
 <footer class="py2-footer"><div class="py2-footer-brand">PhoneYa<span>2</span> <small>ACCESSORIES · SMART CHOICES. BETTER CONNECTED.</small></div><div class="py2-footer-links"><a href="/">Home</a><a href="/shop.html">Shop</a><a href="/blog.html">Blog</a><a href="/advertiser">Advertise for FREE</a><a href="/contact.html">Contact</a><a href="/privacy-policy.html">Privacy Policy</a></div><p>Useful tech tips and product discoveries from PhoneYa2.</p></footer>
 <script src="/ads-config.js"></script><script src="/blog-sponsored.js?v=20261014c" defer></script><script src="/blog-hub.js?v=20261015-social1" defer></script><script src="/blog-products.js" defer></script><script src="/blog-page-actions.js" defer></script>
