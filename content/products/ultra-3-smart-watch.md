@@ -3,7 +3,7 @@ title: Ultra 3 Smart Watch Extra
 price: 270
 original_price: 300
 stock: 1000
-category: other
+category: watch
 description: "High Quality Professional Smart Watch "
 image: /assets/images/uploads/1000221563.jpg
 gallery:
