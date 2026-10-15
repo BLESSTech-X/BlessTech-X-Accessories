@@ -166,7 +166,8 @@
 .py2-blog-redesigned .blog-eyebrow{color:#1767b7}
 .py2-blog-redesigned .blog-business-icon{background:#1767b7;color:#fff}
 .py2-blog-redesigned .blog-business-link{border-color:#c7dcf5;box-shadow:0 5px 16px #164b850a}
-.py2-blog-redesigned .blog-editorial-grid .py2-social-post{background:#fff;border:1px solid #d5e0ed;border-radius:16px;box-shadow:0 8px 22px #12365a0b}
+.py2-blog-redesigned .blog-editorial-grid .py2-social-post{position:relative;background:#fff;border:1px solid #d5e0ed;border-radius:16px;box-shadow:0 12px 28px #12365a18,0 3px 8px #12365a0d;transition:transform .2s ease,box-shadow .2s ease;}
+.py2-blog-redesigned .blog-editorial-grid .py2-social-post:hover{transform:translateY(-5px);box-shadow:0 20px 38px #12365a24,0 7px 14px #12365a12;z-index:1;}
 .py2-blog-redesigned .blog-editorial-grid .py2-social-post:nth-child(3n+1){border-top:4px solid #236bb5}
 .py2-blog-redesigned .blog-editorial-grid .py2-social-post:nth-child(3n+2){border-top:4px solid #0f8a83;border-bottom-color:#dbe5f1}
 .py2-blog-redesigned .blog-editorial-grid .py2-social-post:nth-child(3n){border-top:4px solid #e47720}
@@ -225,7 +226,7 @@
 .py2-blog-redesigned .py2-brand-splash{position:relative;isolation:isolate;display:grid;place-items:center;min-height:clamp(210px,27vw,300px);margin:0 0 25px;padding:27px 18px 30px;overflow:hidden;border:1px solid #173d67;border-radius:20px;background:radial-gradient(ellipse at 50% 12%,#214d79 0%,#122b49 46%,#0b192b 100%);box-shadow:0 16px 38px #102c4e20}
 .py2-blog-redesigned .py2-brand-splash:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 35%,#4a9fff24,transparent 42%),linear-gradient(115deg,transparent 0%,#ffffff05 45%,transparent 70%)}
 .py2-blog-redesigned .py2-brand-splash-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;text-align:center}
-.py2-blog-redesigned .py2-brand-splash-logo{display:block;width:clamp(105px,15vw,158px);height:clamp(105px,15vw,158px);object-fit:contain;filter:none;opacity:1;transform-origin:center;backface-visibility:visible;animation:py2LogoSnapIn .82s cubic-bezier(.18,.8,.25,1) both;will-change:transform,opacity}
+.py2-blog-redesigned .py2-brand-splash-logo{display:block;width:clamp(122px,17vw,188px);height:clamp(122px,17vw,188px);object-fit:contain;filter:none;opacity:1;transform-origin:center;backface-visibility:visible;animation:py2LogoSnapIn .82s cubic-bezier(.18,.8,.25,1) both;will-change:transform,opacity}
 .py2-blog-redesigned .py2-brand-splash-slogan{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0 6px;margin:0;color:#f4f8ff;font-family:'DM Sans',system-ui,sans-serif;font-size:clamp(17px,2.5vw,26px);font-weight:600;letter-spacing:.01em;line-height:1.35;animation:py2SloganReveal .42s ease-out .58s both}
 .py2-blog-redesigned .py2-brand-splash-slogan strong{color:#fff;font-weight:900;letter-spacing:.045em}
 .py2-blog-redesigned .py2-slogan-period{margin-left:-5px;margin-right:1px}
@@ -233,7 +234,7 @@
 @keyframes py2LogoSnapIn{0%{opacity:0;transform:scale(.72) rotate(-5deg)}72%{opacity:1;transform:scale(1.035) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes py2SloganReveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @keyframes py2HeartPop{0%{transform:scale(.65)}70%{transform:scale(1.16)}100%{transform:scale(1)}}
-@media(max-width:520px){.py2-blog-redesigned .py2-brand-splash{min-height:205px;margin-bottom:18px;padding:23px 12px;border-radius:15px}.py2-blog-redesigned .py2-brand-splash-inner{gap:12px}.py2-blog-redesigned .py2-brand-splash-logo{width:112px;height:112px}.py2-blog-redesigned .py2-brand-splash-slogan{max-width:340px;row-gap:2px;font-size:18px}}
+@media(max-width:520px){.py2-blog-redesigned .py2-brand-splash{min-height:205px;margin-bottom:18px;padding:23px 12px;border-radius:15px}.py2-blog-redesigned .py2-brand-splash-inner{gap:12px}.py2-blog-redesigned .py2-brand-splash-logo{width:128px;height:128px}.py2-blog-redesigned .py2-brand-splash-slogan{max-width:340px;row-gap:2px;font-size:18px}}
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan,.py2-blog-redesigned .py2-slogan-heart{animation:none!important;opacity:1;transform:none;will-change:auto}}
 
 
@@ -251,3 +252,7 @@
 @keyframes py2GuideFloat{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-52%)}}
 @media(max-width:480px){.py2-smart-guide{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;width:min(306px,calc(100vw - 28px))!important}}
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan,.py2-smart-guide,.py2-smart-guide:before{animation:none!important}.py2-smart-guide{transform:translate(-50%,-50%)}}
+
+
+/* Blog polish: larger hero mark and clearly elevated story cards. */
+@media(prefers-reduced-motion:reduce){.py2-blog-redesigned .blog-editorial-grid .py2-social-post{transition:none}.py2-blog-redesigned .blog-editorial-grid .py2-social-post:hover{transform:none}}
