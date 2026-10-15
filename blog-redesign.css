@@ -109,3 +109,44 @@
  .py2-blog-redesigned .blog-business-banner>a{display:inline-block;margin-top:12px}
  .py2-blog-redesigned .blog-share-row{align-items:flex-start}
 }
+
+/* Blog-only visual refinement: branded masthead, post boundaries, and explicit navigation states. */
+.py2-blog-redesigned .blog-page-intro{position:relative;isolation:isolate;overflow:hidden;min-height:245px;align-items:center;padding:clamp(25px,4vw,42px);margin:12px 0 6px;border:1px solid #26364d;border-radius:18px;background:radial-gradient(circle at 12% 0%,rgba(38,111,170,.30),transparent 38%),radial-gradient(circle at 90% 80%,rgba(242,101,34,.19),transparent 36%),linear-gradient(120deg,#0c1422 0%,#18283e 65%,#111b2c 100%);box-shadow:0 12px 30px rgba(13,25,43,.12)}
+.py2-blog-redesigned .blog-hero-watermark{position:absolute;z-index:-1;right:-18px;top:50%;width:min(52%,520px);height:125%;transform:translateY(-50%);display:grid;place-items:center;pointer-events:none;opacity:.16}
+.py2-blog-redesigned .blog-hero-watermark img{display:block;width:100%;height:100%;object-fit:contain;filter:grayscale(1) contrast(1.15);mix-blend-mode:screen}
+.py2-blog-redesigned .blog-intro-copy{position:relative;z-index:1;max-width:690px}
+.py2-blog-redesigned .blog-breadcrumb,.py2-blog-redesigned .blog-breadcrumb a{color:#b7c4d5}
+.py2-blog-redesigned .blog-page-intro .blog-eyebrow{color:#ffb27e}
+.py2-blog-redesigned .blog-page-intro h1{color:#fff;font-size:clamp(34px,4.8vw,54px)}
+.py2-blog-redesigned .blog-page-intro h1 span{color:#ff995f}
+.py2-blog-redesigned .blog-intro-text{color:#d1dbea;font-size:14px}
+.py2-blog-redesigned .blog-business-link{position:relative;z-index:1;align-self:flex-end;background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.5);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+.py2-blog-redesigned .py2-blog-tabs{position:sticky;top:0;z-index:40;width:100%;max-width:none;margin:0;padding:8px max(12px,calc((100% - 1120px)/2));border:0;border-bottom:1px solid #dce2eb;border-radius:0;background:rgba(255,255,255,.97);box-shadow:0 5px 16px rgba(17,24,39,.08);justify-content:flex-start;overflow-x:auto;scrollbar-width:none}
+.py2-blog-redesigned .py2-blog-tabs a{padding:10px 14px;border:1px solid transparent;border-radius:9px;font-size:12px}
+.py2-blog-redesigned .py2-blog-tabs a.is-active{background:#172337;border-color:#172337;color:#fff!important}
+.py2-blog-redesigned .py2-blog-tabs a.is-active i{color:#ff995f}
+.py2-blog-redesigned .py2-blog-tabs a:focus-visible,.py2-blog-redesigned .blog-category-tab:focus-visible,.py2-blog-redesigned .blog-saved-control:focus-visible{outline:3px solid #ff995f;outline-offset:2px}
+.py2-blog-redesigned .py2-social-post{border:1px solid #d9e1ec;border-bottom:3px solid #dbe5f1;border-radius:14px;background:linear-gradient(180deg,#fff 0%,#fff 78%,#f8fafc 100%);box-shadow:0 5px 16px rgba(21,39,63,.07);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.py2-blog-redesigned .py2-social-post:nth-child(3n+2){border-bottom-color:#f2a36f}
+.py2-blog-redesigned .py2-social-post:hover{transform:translateY(-2px);border-color:#aebed2;box-shadow:0 11px 25px rgba(21,39,63,.11)}
+.py2-blog-redesigned .py2-post-author-row{padding:12px 13px 0}
+.py2-blog-redesigned .py2-post-avatar.py2-post-logo{width:34px;height:34px;min-width:34px;border:1px solid #e0e6ee;border-radius:10px;background:#fff;overflow:hidden;padding:3px}
+.py2-blog-redesigned .py2-post-avatar.py2-post-logo img{width:100%;height:100%;max-height:none;aspect-ratio:1;object-fit:contain;border-radius:6px}
+.py2-blog-redesigned .py2-post-copy h3 a{color:#172337;text-decoration:none}
+.py2-blog-redesigned .py2-post-copy h3 a:hover{color:#d95300}
+.py2-blog-redesigned .py2-post-actions{background:#f8fafc;border-top:1px solid #e9edf3}
+.py2-blog-redesigned .py2-post-action{min-height:32px;border-radius:7px;transition:background .16s,color .16s}
+.py2-blog-redesigned .py2-post-action.is-saved{background:#fff0e7;color:#c94c00}
+.py2-blog-redesigned .blog-category-tab{min-height:35px}
+.py2-blog-redesigned .blog-category-tab.active{box-shadow:0 2px 0 #ff995f}
+.py2-blog-redesigned #latest-stories,.py2-blog-redesigned #blog-filters,.py2-blog-redesigned #product-picks,.py2-blog-redesigned #blog-business{scroll-margin-top:66px}
+@media(max-width:700px){
+ .py2-blog-redesigned .blog-page-intro{display:block;min-height:0;padding:24px 18px;border-radius:14px}
+ .py2-blog-redesigned .blog-hero-watermark{right:-45px;width:78%;height:110%;opacity:.13}
+ .py2-blog-redesigned .blog-page-intro h1{font-size:clamp(32px,8vw,43px)}
+ .py2-blog-redesigned .blog-intro-text{max-width:94%}
+ .py2-blog-redesigned .blog-business-link{margin-top:18px;max-width:100%}
+ .py2-blog-redesigned .py2-blog-tabs{gap:4px;padding:7px 8px}
+ .py2-blog-redesigned .py2-blog-tabs a{flex:0 0 auto;padding:9px 11px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-social-post,.py2-blog-redesigned .py2-blog-tabs a{transition:none}}
