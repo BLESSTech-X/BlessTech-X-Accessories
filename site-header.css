@@ -391,3 +391,20 @@ body :where(.pcard,.product-card,.py2-ads-card,.info-card,.contact-card,.about-c
 /* Final canvas adjustment: medium slate-blue, clearly lighter than the previous navy. */
 html{background:#dce5ef!important}
 body{background-color:#dce5ef!important;color:#172033!important}
+
+
+/* Unified green under-header glow: shared across every page, including Account. */
+body>.top-header{
+  border-bottom:1px solid rgba(21,148,71,.32)!important;
+  box-shadow:0 5px 12px rgba(21,148,71,.10),0 10px 24px rgba(21,148,71,.16),0 2px 0 rgba(45,190,91,.32)!important;
+}
+body>nav.py2-quick-tabs{
+  border-bottom:1px solid rgba(21,148,71,.25)!important;
+  box-shadow:0 5px 13px rgba(21,148,71,.12),0 10px 20px rgba(21,148,71,.10)!important;
+}
+body>.top-header::after{
+  content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;pointer-events:none;
+  background:linear-gradient(90deg,rgba(21,148,71,0),rgba(34,197,94,.72) 18%,rgba(74,222,128,.9) 50%,rgba(34,197,94,.72) 82%,rgba(21,148,71,0));
+  filter:blur(2px);opacity:.72;
+}
+@media(prefers-reduced-motion:reduce){body>.top-header::after{filter:none}}
