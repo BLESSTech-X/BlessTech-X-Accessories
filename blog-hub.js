@@ -22,7 +22,7 @@ function videoMarkup(value,title){
  if(/\.(mp4|webm|ogg)(?:$|[?#])/i.test(url))return '<div class="py2-feed-media py2-feed-video"><video controls playsinline preload="none" aria-label="'+esc(title||'PhoneYa2 video')+'"><source src="'+esc(url)+'">Your browser does not support video playback.</video></div>';
  return '<a class="py2-feed-external-video" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer"><span class="py2-play-icon">▶</span><span>Watch on the original platform</span><small>Some platforms restrict embedded playback</small></a>'
 }
-function bodyVideoUrl(markdown){var m=String(markdown||'').match(/https?:\\/\\/(?:www\\.)?(?:youtu\\.be\\/[A-Za-z0-9_-]{6,}|youtube\\.com\\/(?:watch\\?[^\\s)]*v=[A-Za-z0-9_-]{6,}[^\\s)]*|shorts\\/[A-Za-z0-9_-]{6,}|embed\\/[A-Za-z0-9_-]{6,}|live\\/[A-Za-z0-9_-]{6,})[^\\s)<>]*)/i);return m?m[0].replace(/[.,!?]+$/,''):''}
+function bodyVideoUrl(markdown){var matches=String(markdown||'').match(/https?:\/\/[^\s)<>]+/gi)||[];for(var i=0;i<matches.length;i++){var value=matches[i].replace(/[.,!?]+$/,'');try{var u=new URL(value);var host=u.hostname.toLowerCase().replace(/^www\./,'');if(host==='youtu.be'||host==='youtube.com'||host.endsWith('.youtube.com'))return value}catch(e){}}return ''}
 function enrichVideoLinks(items){return Promise.all(items.map(function(p){if(p.video_url)return p;return fetch('/content/blog/'+encodeURIComponent(p.slug)+'.md',{cache:'no-cache'}).then(function(r){return r.ok?r.text():''}).then(function(md){p.video_url=bodyVideoUrl(md);return p}).catch(function(){return p})}))}
 function mediaMarkup(p){
  if(p.video_url){var video=videoMarkup(p.video_url,p.title);if(video)return video}
