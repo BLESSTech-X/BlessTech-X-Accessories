@@ -56,7 +56,6 @@ try {
         excerpt: String(meta.excerpt || ''),
         image: String(meta.featured_image || ''),
         video_url: String(meta.video_url || ''),
-        video_upload: String(meta.video_upload || ''),
         author: String(meta.author || 'PhoneYa2'),
         featured: meta.featured === true,
         publish: true,
