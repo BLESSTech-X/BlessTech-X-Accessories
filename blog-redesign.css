@@ -220,3 +220,18 @@
 .py2-blog-redesigned #blog-products-grid .py2-product-price{font-size:20px;font-weight:900;color:#0f5fae;margin:0 0 7px}
 .py2-blog-redesigned #blog-products-grid .py2-product-stock{font-size:12px;color:#66788d;margin-bottom:12px}
 .py2-blog-redesigned #blog-products-grid .py2-product-link{display:inline-flex;align-items:center;gap:7px;margin-top:auto;padding:10px 13px;border-radius:9px;background:#1767b7;color:#fff;text-decoration:none;font-size:12px;font-weight:900}
+
+/* Brand-first blog banner: crisp logo reveal, then the exact PhoneYa2 slogan. */
+.py2-blog-redesigned .py2-brand-splash{position:relative;isolation:isolate;display:grid;place-items:center;min-height:clamp(210px,27vw,300px);margin:0 0 25px;padding:27px 18px 30px;overflow:hidden;border:1px solid #173d67;border-radius:20px;background:radial-gradient(ellipse at 50% 12%,#214d79 0%,#122b49 46%,#0b192b 100%);box-shadow:0 16px 38px #102c4e20}
+.py2-blog-redesigned .py2-brand-splash:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 35%,#4a9fff24,transparent 42%),linear-gradient(115deg,transparent 0%,#ffffff05 45%,transparent 70%)}
+.py2-blog-redesigned .py2-brand-splash-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;text-align:center}
+.py2-blog-redesigned .py2-brand-splash-logo{display:block;width:clamp(105px,15vw,158px);height:clamp(105px,15vw,158px);object-fit:contain;filter:none;opacity:1;transform-origin:center;backface-visibility:visible;animation:py2LogoSnapIn .82s cubic-bezier(.18,.8,.25,1) both;will-change:transform,opacity}
+.py2-blog-redesigned .py2-brand-splash-slogan{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0 6px;margin:0;color:#f4f8ff;font-family:'DM Sans',system-ui,sans-serif;font-size:clamp(17px,2.5vw,26px);font-weight:600;letter-spacing:.01em;line-height:1.35;animation:py2SloganReveal .42s ease-out .58s both}
+.py2-blog-redesigned .py2-brand-splash-slogan strong{color:#fff;font-weight:900;letter-spacing:.045em}
+.py2-blog-redesigned .py2-slogan-period{margin-left:-5px;margin-right:1px}
+.py2-blog-redesigned .py2-slogan-heart{display:inline-block;margin-left:3px;font-size:1.05em;filter:none;animation:py2HeartPop .4s ease-out .95s both}
+@keyframes py2LogoSnapIn{0%{opacity:0;transform:scale(.72) rotate(-5deg)}72%{opacity:1;transform:scale(1.035) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes py2SloganReveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes py2HeartPop{0%{transform:scale(.65)}70%{transform:scale(1.16)}100%{transform:scale(1)}}
+@media(max-width:520px){.py2-blog-redesigned .py2-brand-splash{min-height:205px;margin-bottom:18px;padding:23px 12px;border-radius:15px}.py2-blog-redesigned .py2-brand-splash-inner{gap:12px}.py2-blog-redesigned .py2-brand-splash-logo{width:112px;height:112px}.py2-blog-redesigned .py2-brand-splash-slogan{max-width:340px;row-gap:2px;font-size:18px}}
+@media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan,.py2-blog-redesigned .py2-slogan-heart{animation:none!important;opacity:1;transform:none;will-change:auto}}
