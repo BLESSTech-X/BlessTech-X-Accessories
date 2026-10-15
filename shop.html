@@ -1021,6 +1021,8 @@ footer{background:#111827!important;padding-top:48px!important}
     <a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full" aria-hidden="true"></i> Power Banks</a>
     <a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Protectors</a>
     <a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile" aria-hidden="true"></i> Phones</a>
+    <a href="/shop.html?cat=watch" class="cat-nav-item"><i class="fa-regular fa-clock" aria-hidden="true"></i> Watches</a>
+    <a href="/shop.html?cat=accessory" class="cat-nav-item"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i> Other Accessories</a>
     <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
   </div>
 </div>
@@ -1131,6 +1133,8 @@ footer{background:#111827!important;padding-top:48px!important}
       <button class="fpill" data-cat="powerbank">Power Banks <span class="cnt" id="cnt-powerbank"></span></button>
       <button class="fpill" data-cat="protector">Protectors <span class="cnt" id="cnt-protector"></span></button>
       <button class="fpill" data-cat="phone">Phones <span class="cnt" id="cnt-phone"></span></button>
+      <button class="fpill" data-cat="watch">Watches <span class="cnt" id="cnt-watch"></span></button>
+      <button class="fpill" data-cat="accessory">Other Accessories <span class="cnt" id="cnt-accessory"></span></button>
       <button class="fpill" data-cat="other">Other <span class="cnt" id="cnt-other"></span></button>
     </div>
   </div>
@@ -1238,8 +1242,8 @@ function orderUrl(p, qty) {
   qty = Math.max(1, Number(qty) || 1);
   return '/checkout.html?product=' + encodeURIComponent(p.slug) + '&qty=' + encodeURIComponent(qty);
 }
-const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',other:'Other'};
-const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
+const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',watch:'Watch',accessory:'Other Accessories',other:'Other'};
+const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',watch:'linear-gradient(135deg,#5f27cd,#ff9ff3)',accessory:'linear-gradient(135deg,#54a0ff,#25d366)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
 
 function parseFrontmatter(text, slug) {
   const match = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);
@@ -1414,7 +1418,7 @@ function renderGrid() {
 }
 
 function updateCounts() {
-  const cats = ['all','case','charger','cable','earphone','powerbank','protector','phone','other'];
+  const cats = ['all','case','charger','cable','earphone','powerbank','protector','phone','watch','accessory','other'];
   cats.forEach(cat => {
     const el = document.getElementById('cnt-' + cat);
     if (!el) return;
