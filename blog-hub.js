@@ -70,7 +70,7 @@ function render(){
  document.querySelectorAll('[data-rail-category]').forEach(function(b){b.classList.toggle('is-active',b.getAttribute('data-rail-category')===category)});
  updateSavedCount();track('blog_feed_render',{category:category,result_count:list.length,visible_count:Math.min(list.length,visibleCount),search_used:!!search,saved_view:showSaved})
 }
-function loadMore(){visibleCount+=PAGE_SIZE;render()}
+function loadMore(){visibleCount+=PAGE_SIZE;enrichVideoLinks(posts.slice(0,visibleCount)).then(render)}
 
 var searchInput=document.getElementById('blog-search'),filters=document.getElementById('blog-filters'),feed=document.getElementById('blog-feed');
 if('IntersectionObserver' in window){scrollObserver=new IntersectionObserver(function(entries){if(entries.some(function(entry){return entry.isIntersecting})){scrollObserver.disconnect();if(feed&&feed.querySelector('[data-load-more]'))loadMore()}},{rootMargin:'280px'})}
@@ -93,5 +93,5 @@ if(blogTabs)blogTabs.addEventListener('click',function(e){var link=e.target.clos
 if(filters)filters.addEventListener('click',function(e){if(e.target.closest('[data-category]'))setBlogTab('topics')});
 if(savedButton)savedButton.addEventListener('click',function(){setBlogTab(showSaved?'saved':'feed')});
 
-fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Blog index unavailable');return r.json()}).then(function(data){var items=Array.isArray(data)?data.filter(function(p){return p&&p.publish!==false}):[];items.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});return enrichVideoLinks(items)}).then(function(items){posts=items;visibleCount=PAGE_SIZE;populateCategoryFilters();track('blog_hub_view',{published_post_count:posts.length});render()}).catch(function(){var el=document.getElementById('blog-feed');if(el)el.innerHTML='<div class="py2-empty"><strong>The community feed could not load.</strong><p>Check your connection and refresh the page. You can still <a href="/contact.html">contact PhoneYa2</a>.</p></div>';var count=document.getElementById('post-count');if(count)count.textContent='Feed unavailable'});
+fetch('/content/blog/index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Blog index unavailable');return r.json()}).then(function(data){var items=Array.isArray(data)?data.filter(function(p){return p&&p.publish!==false}):[];items.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});return enrichVideoLinks(items.slice(0,PAGE_SIZE)).then(function(){return items})}).then(function(items){posts=items;visibleCount=PAGE_SIZE;populateCategoryFilters();track('blog_hub_view',{published_post_count:posts.length});render()}).catch(function(){var el=document.getElementById('blog-feed');if(el)el.innerHTML='<div class="py2-empty"><strong>The community feed could not load.</strong><p>Check your connection and refresh the page. You can still <a href="/contact.html">contact PhoneYa2</a>.</p></div>';var count=document.getElementById('post-count');if(count)count.textContent='Feed unavailable'});
 })();
