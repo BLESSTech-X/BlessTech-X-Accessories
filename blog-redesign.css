@@ -384,3 +384,24 @@
 @media(max-width:900px){.py2-blog-page .py2-blog-return-links{gap:5px}.py2-blog-page .py2-blog-return-links a{padding:8px 9px;font-size:11px}}
 @media(max-width:700px){.py2-blog-page .py2-blog-return-links a{width:36px;min-width:36px;padding:0}.py2-blog-page .py2-blog-return-links a span{display:none}.py2-blog-page .py2-blog-return-links a i{font-size:14px}}
 @media(max-width:390px){.py2-blog-page .top-header-inner{gap:7px!important}.py2-blog-page .logo-img{width:34px!important;height:34px!important;flex-basis:34px!important}.py2-blog-page .logo-brand-name{font-size:20px!important}.py2-blog-page .logo-brand-sub{font-size:10px!important}.py2-blog-page .py2-global-blog-button{padding:7px!important}}
+
+
+/* Header layout correction: put full-text navigation on its own second row. */
+.py2-blog-page .top-header-inner{flex-wrap:wrap!important;row-gap:0!important}
+.py2-blog-page .py2-blog-return-links{order:100;flex:0 0 calc(100% + 32px)!important;width:calc(100% + 32px)!important;margin:0 -16px!important;padding:10px 16px!important;min-height:56px;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;border-top:1px solid #e8edf3;background:#f8fafc}
+.py2-blog-page .py2-blog-return-links a,
+.py2-blog-page .py2-blog-return-links .py2-blog-return-home,
+.py2-blog-page .py2-blog-return-links .py2-blog-return-shop{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;width:auto!important;min-width:0!important;min-height:40px!important;padding:10px 15px!important;border-radius:10px!important;font-size:13px!important;font-weight:850!important;white-space:nowrap!important}
+.py2-blog-page .py2-blog-return-links a span{display:inline!important}
+.py2-blog-page .py2-blog-return-links .py2-blog-return-home{margin-right:auto!important}
+.py2-blog-page .py2-blog-return-links .py2-blog-return-shop{margin-left:auto!important}
+.py2-blog-page .py2-blog-return-links a i{font-size:14px!important}
+@media(max-width:700px){
+ .py2-blog-page .py2-blog-return-links{flex-basis:calc(100% + 28px)!important;width:calc(100% + 28px)!important;margin-left:-14px!important;margin-right:-14px!important;padding:9px 14px!important;min-height:54px}
+ .py2-blog-page .py2-blog-return-links a,.py2-blog-page .py2-blog-return-links .py2-blog-return-home,.py2-blog-page .py2-blog-return-links .py2-blog-return-shop{width:auto!important;min-width:0!important;min-height:38px!important;padding:9px 11px!important;font-size:12px!important;gap:7px!important}
+ .py2-blog-page .py2-blog-return-links a span{display:inline!important}
+}
+@media(max-width:360px){
+ .py2-blog-page .py2-blog-return-links{gap:6px!important;padding-left:9px!important;padding-right:9px!important}
+ .py2-blog-page .py2-blog-return-links a,.py2-blog-page .py2-blog-return-links .py2-blog-return-home,.py2-blog-page .py2-blog-return-links .py2-blog-return-shop{padding:8px 7px!important;font-size:11px!important;gap:5px!important}
+}
