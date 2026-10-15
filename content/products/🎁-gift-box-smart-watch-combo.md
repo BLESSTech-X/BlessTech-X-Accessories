@@ -2,7 +2,7 @@
 title: 🎁 Gift Box Smart Watch Combo
 price: 350
 stock: 1000
-category: other
+category: watch
 description: "Original. High Quality. Durable "
 image: /assets/images/uploads/1000222712.jpg
 gallery:
