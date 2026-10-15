@@ -37,7 +37,7 @@ function card(p){
  var saveIcon=saved?'solid':'regular';
  return [
   '<article class="py2-social-post" data-post-slug="',esc(p.slug),'">',
-  '<div class="py2-post-author-row"><div class="py2-post-avatar">PY<span>2</span></div>',
+  '<div class="py2-post-author-row"><div class="py2-post-avatar py2-post-logo"><img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 logo" loading="lazy" decoding="async" onerror="this.style.display=\'none\'"></div>',
   '<div class="py2-post-author"><strong>PhoneYa2 <span class="py2-verified" aria-label="PhoneYa2">✓</span></strong>',
   '<span>',esc(dateLabel(p.date)),' · <i class="fa-solid fa-earth-africa" aria-label="Public"></i></span></div>',
   '<span class="py2-post-category">',esc(p.category||'Community'),'</span></div>',
