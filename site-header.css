@@ -368,3 +368,21 @@ body :where(.btn-danger,.danger-btn,.delete-btn){background:linear-gradient(135d
 body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]):hover{filter:brightness(1.07);box-shadow:0 9px 22px rgba(3,30,70,.28)!important;transform:translateY(-1px)}
 body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]):focus-visible{outline:3px solid #8ac7ff!important;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]){transition:none}}
+
+
+/* Refinement: soften the navy canvas and give content surfaces a floating, layered lift. */
+html{background:#1b293c!important}
+body{background-color:#202f43!important;color:#f4f7fc!important}
+body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card){
+  box-shadow:0 10px 26px rgba(3,12,28,.20),0 2px 7px rgba(3,12,28,.10),inset 0 1px 0 rgba(255,255,255,.78)!important;
+  border:1px solid rgba(255,255,255,.78);
+  border-radius:14px;
+  transition:box-shadow .22s ease,transform .22s ease;
+}
+body :where(.pcard,.product-card,.py2-ads-card,.info-card,.contact-card,.about-card,.side-card,.blog-card,.post-card,.blog-post-card):hover{
+  box-shadow:0 16px 34px rgba(3,12,28,.24),0 5px 12px rgba(3,12,28,.12)!important;
+  transform:translateY(-3px);
+}
+@media(prefers-reduced-motion:reduce){
+  body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card){transition:none!important}
+}
