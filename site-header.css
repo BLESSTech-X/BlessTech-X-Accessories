@@ -343,3 +343,28 @@ body{background-color:#f1f4f9!important}
 :where(.btn-secondary,.secondary-btn,.outline-btn){border:1px solid rgba(23,103,183,.32)!important;color:#174b7e!important;background:linear-gradient(135deg,#fff,#f1f6fc)!important}
 :where(button,a,[role="button"],input,select,textarea):focus-visible{outline:3px solid rgba(38,136,247,.42);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){:where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"]){transition:none}}
+
+
+/* High-contrast visual pass: darker page canvas, clear type, and premium action colors. */
+html{background:#101827!important}
+body{background:#111b2b!important;color:#f3f6fc!important}
+body :where(h1,h2,h3,h4,h5,h6){color:#f8fafc}
+body :where(p,li,label,small,.muted,.subtitle,.description,.meta,.text-muted){color:#d5deeb}
+body :where(a:not(.btn):not(.button):not([role="button"])){color:#78baff}
+body :where(a:not(.btn):not(.button):not([role="button"]):hover){color:#b5dcff}
+body :where(input,select,textarea){background:#f8fafc;color:#172033;border:1px solid #9aaac0}
+body :where(input::placeholder,textarea::placeholder){color:#58677b;opacity:1}
+/* Keep product/content surfaces visibly separated from the darker canvas. */
+body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card){background-color:#f8fafc;color:#172033;border-color:#34445b}
+body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card) :where(h1,h2,h3,h4,h5,h6,strong,b){color:#101b2d}
+body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card) :where(p,li,label,small,span:not(.badge):not(.tag)){color:#26364b}
+body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card) a:not(.btn):not(.button){color:#075ca8}
+/* Strong, coordinated button hierarchy: blue primary, green success, amber secondary, slate neutral. */
+body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]){font-weight:750;letter-spacing:.01em;text-shadow:none;transition:background .18s ease,box-shadow .18s ease,transform .18s ease}
+body :where(.btn-primary,.primary-btn,.cta-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],button[type="submit"]){background:linear-gradient(135deg,#1675d1 0%,#0759a6 100%)!important;color:#fff!important;border:1px solid #3a91e8!important;box-shadow:0 6px 16px rgba(3,89,166,.32)!important}
+body :where(.btn-success,.success-btn,.whatsapp-btn,.btn-whatsapp){background:linear-gradient(135deg,#19a66a,#087a4a)!important;color:#fff!important;border:1px solid #31bf82!important;box-shadow:0 6px 16px rgba(8,122,74,.24)!important}
+body :where(.btn-secondary,.secondary-btn,.outline-btn,.btn-outline){background:linear-gradient(135deg,#f8fafc,#dfe8f3)!important;color:#17324f!important;border:1px solid #9db2ca!important;box-shadow:0 4px 12px rgba(15,35,65,.12)!important}
+body :where(.btn-danger,.danger-btn,.delete-btn){background:linear-gradient(135deg,#ef5350,#bd252d)!important;color:#fff!important;border:1px solid #f37b7b!important}
+body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]):hover{filter:brightness(1.07);box-shadow:0 9px 22px rgba(3,30,70,.28)!important;transform:translateY(-1px)}
+body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]):focus-visible{outline:3px solid #8ac7ff!important;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){body :where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"],[role="button"]){transition:none}}
