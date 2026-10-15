@@ -331,3 +331,15 @@ body>.mob-nav .mob-nav-cart{margin:2px 14px 8px!important;background:#f1f5f9!imp
 body>.mob-nav .mob-nav-wa{margin:0 14px 18px!important;background:#159447!important;color:#fff!important}
 body>.mob-nav .mob-nav-cart .cart-count{margin-left:0!important}
 @media(prefers-reduced-motion:reduce){body>.mob-nav>.mob-nav-panel{animation:none!important}}
+
+
+/* Site-wide restrained navy accents and polished action buttons. */
+body{background-image:radial-gradient(ellipse at 50% 0%,rgba(23,103,183,.055),transparent 54%)!important}
+:where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card){border-color:rgba(29,67,112,.13)}
+:where(.product-card,.pcard,.py2-ads-card,.info-card,.contact-card,.about-card,.side-card){box-shadow:0 8px 24px rgba(15,35,65,.065)}
+:where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"]){transition:background .18s ease,box-shadow .18s ease,transform .18s ease}
+:where(.btn-primary,.primary-btn,.cta-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"]){background:linear-gradient(135deg,#1767b7,#0b8cba)!important;color:#fff!important;border:1px solid #1767b7!important;box-shadow:0 5px 14px rgba(23,103,183,.18)}
+:where(.btn-primary,.primary-btn,.cta-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"]):hover{box-shadow:0 8px 20px rgba(23,103,183,.26);transform:translateY(-1px)}
+:where(.btn-secondary,.secondary-btn,.outline-btn){border:1px solid rgba(23,103,183,.32)!important;color:#174b7e!important;background:linear-gradient(135deg,#fff,#f1f6fc)!important}
+:where(button,a,[role="button"],input,select,textarea):focus-visible{outline:3px solid rgba(38,136,247,.42);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){:where(button,.btn,.button,.cta-btn,.primary-btn,.submit-btn,.order-btn,.checkout-btn,.add-to-cart-btn,[type="submit"]){transition:none}}
