@@ -2715,11 +2715,18 @@ async function init() {
       .forEach(p => featSide.appendChild(buildSideRow(p)));
   }
 
+  // New Arrivals is chronological, not a featured-products or alphabetical list.
+  // date_added is populated by Decap CMS for new products. Undated legacy products
+  // stay behind dated products; use a stable slug fallback only among legacy items.
   const newArrivals = [...products]
     .sort((a, b) => {
-      if (b.featured && !a.featured) return 1;
-      if (a.featured && !b.featured) return -1;
-      return b.slug.localeCompare(a.slug);
+      const dateA = Date.parse(a.date_added || a.created_at || '') || 0;
+      const dateB = Date.parse(b.date_added || b.created_at || '') || 0;
+      if (dateA !== dateB) return dateB - dateA;
+      return String(b.slug || '').localeCompare(String(a.slug || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base'
+      });
     })
     .slice(0, 8);
   fillTrack('new-track', newArrivals, buildFeaturedCard);
