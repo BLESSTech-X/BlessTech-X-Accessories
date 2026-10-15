@@ -1,35 +1,19 @@
 [
   {
-    "slug": "how-to-clean-phone-case-screen-and-charging-port",
-    "title": "How to Clean Your Phone, Case and Charging Cable Safely",
-    "date": "2026-10-15T12:00:00Z",
+    "slug": "phone-battery-draining-fast-practical-fixes",
+    "title": "Phone Battery Draining Fast? 6 Practical Things to Check First",
+    "date": "2026-10-15T18:00:00Z",
     "category": "Tips & Tricks",
-    "excerpt": "Keep your phone and accessories clean without spraying liquid into openings, damaging connectors or using risky cleaning shortcuts.",
-    "image": "/assets/images/uploads/1000066515.jpg",
+    "excerpt": "Before buying a new battery or charger, use this step-by-step checklist to find common causes of fast battery drain and decide what to do next.",
+    "image": "/assets/images/uploads/1000152689.jpg",
     "author": "PhoneYa2",
     "featured": true,
     "publish": true,
     "tags": [
-      "cleaning",
+      "battery life",
       "phone care",
-      "charging cable",
-      "accessories"
-    ]
-  },
-  {
-    "slug": "used-phone-checklist-before-you-pay-zambia",
-    "title": "Buying a Used Phone in Zambia? Use This Checklist Before You Pay",
-    "date": "2026-10-15T14:00:00Z",
-    "category": "Buying Guides",
-    "excerpt": "A practical in-person checklist for checking a used phone’s screen, cameras, battery, network, IMEI and activation lock before handing over your money.",
-    "author": "PhoneYa2",
-    "featured": true,
-    "publish": true,
-    "tags": [
-      "used phones",
-      "buying guide",
-      "Zambia",
-      "phone safety"
+      "power bank",
+      "troubleshooting"
     ]
   },
   {
@@ -50,20 +34,36 @@
     ]
   },
   {
-    "slug": "phone-battery-draining-fast-practical-fixes",
-    "title": "Phone Battery Draining Fast? 6 Practical Things to Check First",
-    "date": "2026-10-15T18:00:00Z",
-    "category": "Tips & Tricks",
-    "excerpt": "Before buying a new battery or charger, use this step-by-step checklist to find common causes of fast battery drain and decide what to do next.",
-    "image": "/assets/images/uploads/1000152689.jpg",
+    "slug": "used-phone-checklist-before-you-pay-zambia",
+    "title": "Buying a Used Phone in Zambia? Use This Checklist Before You Pay",
+    "date": "2026-10-15T14:00:00Z",
+    "category": "Buying Guides",
+    "excerpt": "A practical in-person checklist for checking a used phone’s screen, cameras, battery, network, IMEI and activation lock before handing over your money.",
     "author": "PhoneYa2",
     "featured": true,
     "publish": true,
     "tags": [
-      "battery life",
+      "used phones",
+      "buying guide",
+      "Zambia",
+      "phone safety"
+    ]
+  },
+  {
+    "slug": "how-to-clean-phone-case-screen-and-charging-port",
+    "title": "How to Clean Your Phone, Case and Charging Cable Safely",
+    "date": "2026-10-15T12:00:00Z",
+    "category": "Tips & Tricks",
+    "excerpt": "Keep your phone and accessories clean without spraying liquid into openings, damaging connectors or using risky cleaning shortcuts.",
+    "image": "/assets/images/uploads/1000066515.jpg",
+    "author": "PhoneYa2",
+    "featured": true,
+    "publish": true,
+    "tags": [
+      "cleaning",
       "phone care",
-      "power bank",
-      "troubleshooting"
+      "charging cable",
+      "accessories"
     ]
   },
   {
