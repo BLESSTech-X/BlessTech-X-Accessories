@@ -3,7 +3,7 @@ title: 7-in-1 Smart Watch Combo (FN-ST02)
 price: 350
 original_price: 0
 stock: 1000
-category: other
+category: watch
 image: /assets/images/uploads/whatsapp-image-2026-08-26-at-22.14.00-1-.jpeg
 gallery:
   - image: /assets/images/uploads/whatsapp-image-2026-08-26-at-22.14.01.jpeg
