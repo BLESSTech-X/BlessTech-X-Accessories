@@ -2,7 +2,7 @@
 title: "Smart Watch "
 price: 300
 stock: 10
-category: other
+category: watch
 description: "Original. High Quality. Durable "
 image: /assets/images/uploads/1000222728.jpg
 gallery:
