@@ -3,5 +3,68 @@
   "phone": "+260 979 603 741",
   "email": "singbless89@gmail.com",
   "location": "Lusaka, Zambia",
-  "hours": "Mon–Sat: 8am – 7pm"
+  "hours": "Mon–Sat: 8am – 7pm",
+  "hero_title": "Let's Talk.",
+  "hero_subtitle": "Have a question about a product, your order, or delivery? We're real people and we're happy to help.",
+  "info_heading": "Get in Touch",
+  "info_subtitle": "Choose the easiest way to reach us. We aim to respond as quickly as possible.",
+  "form_heading": "Send Us a Message",
+  "form_subtitle": "We'll get back to you as quickly as possible.",
+  "hours_heading": "Business Hours",
+  "hours_days": [
+    {
+      "day": "Monday",
+      "hours": "8:00am – 7:00pm",
+      "open": true
+    },
+    {
+      "day": "Tuesday",
+      "hours": "8:00am – 7:00pm",
+      "open": true
+    },
+    {
+      "day": "Wednesday",
+      "hours": "8:00am – 7:00pm",
+      "open": true
+    },
+    {
+      "day": "Thursday",
+      "hours": "8:00am – 7:00pm",
+      "open": true
+    },
+    {
+      "day": "Friday",
+      "hours": "8:00am – 7:00pm",
+      "open": true
+    },
+    {
+      "day": "Saturday",
+      "hours": "8:00am – 7:00pm",
+      "open": true
+    },
+    {
+      "day": "Sunday",
+      "hours": "Closed",
+      "open": false
+    }
+  ],
+  "faq_heading": "Frequently Asked Questions",
+  "faqs": [
+    {
+      "question": "How do I place an order?",
+      "answer": "Browse the shop and open the product you want. Add it to your cart or choose Buy Now, then review your items and enter your contact and delivery details at checkout. Submitting creates a pending order; it does not charge you. We will contact you to confirm availability, payment and delivery. You can also message us on WhatsApp if you need help."
+    },
+    {
+      "question": "Do you deliver outside Lusaka?",
+      "answer": "Right now, we focus on same-day delivery within Lusaka. For customers outside Lusaka, we can arrange courier delivery through Zampost or private courier services. Chat with us on WhatsApp to discuss options and pricing."
+    },
+    {
+      "question": "What payment methods do you accept?",
+      "answer": "Payment arrangements are confirmed with you when we contact you about your order. Please wait for our confirmation before sending payment."
+    },
+    {
+      "question": "How can I check product availability?",
+      "answer": "Check the product page for current stock information. If you are unsure about compatibility or availability, contact us on WhatsApp before ordering."
+    }
+  ]
 }
