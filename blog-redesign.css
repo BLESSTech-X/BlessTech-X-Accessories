@@ -446,3 +446,7 @@
 .py2-blog-page .py2-smart-guide-cta{background:linear-gradient(110deg,#1767b7,#6657d9)!important;color:#fff!important}
 .py2-blog-page .py2-smart-guide[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){.py2-blog-page .py2-smart-guide,.py2-blog-page .py2-smart-guide:before{animation:none!important}}
+
+/* The blog shares the same still modal and blurred backdrop; preserve its existing header. */
+.py2-blog-page .py2-smart-guide{animation:py2GuideModalIn .24s cubic-bezier(.2,.8,.2,1) both!important;transform:translate(-50%,-50%)!important}
+.py2-blog-page .py2-smart-guide:before{animation:none!important}
