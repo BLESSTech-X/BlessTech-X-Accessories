@@ -1346,14 +1346,36 @@ function parseFrontmatter(text, slug) {
 }
 
 async function fetchAllProducts() {
-  const res = await fetch('/content/products/index.json?t='+Date.now());
-  if (!res.ok) throw new Error('index.json '+res.status);
+  // Related-product cards only need catalogue fields, not every product's full Markdown file.
+  try {
+    const catalogResponse = await fetch('/content/products/catalog.json');
+    if (catalogResponse.ok) {
+      const catalog = await catalogResponse.json();
+      if (Array.isArray(catalog) && catalog.length) {
+        const products = catalog.filter(p => p && p.slug).map(p => ({
+          ...p,
+          price: Number(p.price) || 0,
+          original_price: Number(p.original_price) || 0,
+          stock: Number(p.stock) || 0,
+          featured: p.featured === true || p.featured === 'true',
+          gallery: Array.isArray(p.gallery) ? p.gallery : []
+        }));
+        if (products.length) return products;
+      }
+    }
+  } catch (error) {
+    console.warn('[PhoneYa2] Compact catalogue unavailable; using legacy product loader.', error);
+  }
+
+  // Backward-compatible fallback keeps related products working before the first successful rebuild.
+  const res = await fetch('/content/products/index.json');
+  if (!res.ok) throw new Error('index.json ' + res.status);
   const slugs = await res.json();
-  if (!Array.isArray(slugs)||!slugs.length) throw new Error('index.json empty');
+  if (!Array.isArray(slugs) || !slugs.length) throw new Error('index.json empty');
   const results = await Promise.allSettled(
-    slugs.map(s => fetch('/content/products/'+s+'.md').then(r=>r.ok?r.text():null).then(t=>t?parseFrontmatter(t,s):null))
+    slugs.map(s => fetch('/content/products/' + s + '.md').then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null))
   );
-  const products = results.filter(r=>r.status==='fulfilled'&&r.value).map(r=>r.value);
+  const products = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
   if (!products.length) throw new Error('No products parsed');
   return products;
 }
