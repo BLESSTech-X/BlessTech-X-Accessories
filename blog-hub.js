@@ -62,8 +62,8 @@ function render(){
 }
 var searchInput=document.getElementById('blog-search'),filters=document.getElementById('blog-filters'),feed=document.getElementById('blog-feed');
 if(searchInput)searchInput.addEventListener('input',function(){search=this.value;showSaved=false;render()});
-if(filters)filters.addEventListener('click',function(e){var b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;showSaved=false;filters.querySelectorAll('.py2-filter').forEach(function(x){x.classList.toggle('active',x===b)});render()});
-document.querySelectorAll('[data-rail-category]').forEach(function(b){b.addEventListener('click',function(){category=this.getAttribute('data-rail-category');showSaved=false;if(filters){filters.querySelectorAll('.py2-filter').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')===category)})}render()})});
+if(filters)filters.addEventListener('click',function(e){var b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;showSaved=false;filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x===b)});render()});
+document.querySelectorAll('[data-rail-category]').forEach(function(b){b.addEventListener('click',function(){category=this.getAttribute('data-rail-category');showSaved=false;if(filters){filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')===category)})}render()})});
 if(feed){
  feed.addEventListener('click',function(e){
   var save=e.target.closest('[data-save-post]');if(save){var slug=save.getAttribute('data-save-post'),saved=getSaved(),i=saved.indexOf(slug);if(i>=0)saved.splice(i,1);else saved.unshift(slug);setSaved(saved);render();track('blog_post_save',{post_slug:slug,saved:i<0});return}
