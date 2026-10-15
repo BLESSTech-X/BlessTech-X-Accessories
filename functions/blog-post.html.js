@@ -17,12 +17,21 @@ export async function onRequest(context){
   const title=String(post.title||'PhoneYa2 Blog')+' | PhoneYa2';
   const description=String(post.excerpt||'Offers, buying guides and tech tips from PhoneYa2 in Zambia.').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,300);
   const canonical=new URL('/blog-post.html?slug='+encodeURIComponent(slug),url.origin).href;
-  const image=post.image?new URL(String(post.image),url.origin).href:'https://phoneya2.pages.dev/icon-512x512.jpg';
+  const videoUrl=String(post.video_url||'').trim();
+  let youtubeId='';
+  try{const vu=new URL(videoUrl);const host=vu.hostname.toLowerCase().replace(/^www\./,'');if(host==='youtu.be')youtubeId=vu.pathname.split('/').filter(Boolean)[0]||'';else if(host==='youtube.com'||host.endsWith('.youtube.com')||host==='youtube-nocookie.com'){if(vu.pathname==='/watch')youtubeId=vu.searchParams.get('v')||'';else{const parts=vu.pathname.split('/').filter(Boolean);if(['embed','shorts','live','v'].includes(parts[0]))youtubeId=parts[1]||''}}}catch(e){}
+  if(!/^[A-Za-z0-9_-]{6,}$/.test(youtubeId))youtubeId='';
+  const image=youtubeId?'https://i.ytimg.com/vi/'+encodeURIComponent(youtubeId)+'/hqdefault.jpg':(post.image?new URL(String(post.image),url.origin).href:'https://phoneya2.pages.dev/icon-512x512.jpg');
   html=html.replace(/<title>[^<]*<\/title>/i,'<title>'+esc(title)+'</title>');
   html=meta(html,/<meta\s+name="description"\s+content=(["'])[^"']*\1\s*\/?>/i,description);
   html=meta(html,/<meta\s+property="og:title"\s+content=(["'])[^"']*\1\s*\/?>/i,post.title||title);
   html=meta(html,/<meta\s+property="og:description"\s+content=(["'])[^"']*\1\s*\/?>/i,description);
-  const tags='<meta property="og:url" content="'+esc(canonical)+'"><meta property="og:image" content="'+esc(image)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+esc(title)+'"><meta name="twitter:description" content="'+esc(description)+'"><meta name="twitter:image" content="'+esc(image)+'">';
+  let videoTags='';
+  if(youtubeId){
+   const player='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(youtubeId);
+   videoTags='<meta property="og:video" content="'+esc(player)+'"><meta property="og:video:secure_url" content="'+esc(player)+'"><meta property="og:video:type" content="text/html"><meta property="og:video:width" content="1280"><meta property="og:video:height" content="720"><meta name="twitter:card" content="player"><meta name="twitter:player" content="'+esc(player)+'"><meta name="twitter:player:width" content="1280"><meta name="twitter:player:height" content="720">';
+  }else{videoTags='<meta name="twitter:card" content="summary_large_image">'}
+  const tags='<meta property="og:url" content="'+esc(canonical)+'"><meta property="og:image" content="'+esc(image)+'"><meta property="og:image:secure_url" content="'+esc(image)+'"><meta name="twitter:title" content="'+esc(title)+'"><meta name="twitter:description" content="'+esc(description)+'"><meta name="twitter:image" content="'+esc(image)+'">'+videoTags;
   html=html.replace(/<meta\s+property="og:type"[^>]*>/i,'<meta property="og:type" content="article">\n'+tags);
   const headers=new Headers(page.headers);headers.set('Content-Type','text/html; charset=utf-8');headers.set('Cache-Control','no-store, max-age=0');headers.set('X-Content-Type-Options','nosniff');
   return new Response(html,{status:page.status,statusText:page.statusText,headers});
