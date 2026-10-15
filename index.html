@@ -2029,13 +2029,32 @@ function parseFrontmatter(text, slug) {
 }
 
 async function fetchAllProducts() {
-  // Match the proven loader used by shop.html. Keeping this path identical
-  // removes homepage-only URL encoding, abort, and worker-pool differences.
-  const res = await fetch('/content/products/index.json?t=' + Date.now());
+  // Prefer the build-time catalogue: one small request instead of one request per product.
+  try {
+    const catalogResponse = await fetch('/content/products/catalog.json');
+    if (catalogResponse.ok) {
+      const catalog = await catalogResponse.json();
+      if (Array.isArray(catalog) && catalog.length) {
+        const products = catalog.filter(p => p && p.slug).map(p => ({
+          ...p,
+          price: Number(p.price) || 0,
+          original_price: Number(p.original_price) || 0,
+          stock: Number(p.stock) || 0,
+          featured: p.featured === true || p.featured === 'true',
+          gallery: Array.isArray(p.gallery) ? p.gallery : []
+        }));
+        if (products.length) return products;
+      }
+    }
+  } catch (error) {
+    console.warn('[PhoneYa2] Compact catalogue unavailable; using legacy product loader.', error);
+  }
+
+  // Backward-compatible fallback protects the storefront if the build catalogue is unavailable.
+  const res = await fetch('/content/products/index.json');
   if (!res.ok) throw new Error('Product index request failed (' + res.status + ')');
   const slugs = await res.json();
   if (!Array.isArray(slugs) || !slugs.length) throw new Error('Product index is empty or invalid');
-
   const results = await Promise.allSettled(
     slugs.map(slug =>
       fetch('/content/products/' + slug + '.md')
@@ -2043,13 +2062,10 @@ async function fetchAllProducts() {
         .then(text => text ? parseFrontmatter(text, slug) : null)
     )
   );
-
   const products = results
     .filter(result => result.status === 'fulfilled' && result.value)
     .map(result => result.value);
-
   if (!products.length) throw new Error('No product files could be loaded from /content/products/');
-  console.info('[PhoneYa2] Homepage products loaded:', products.length);
   return products;
 }
 
