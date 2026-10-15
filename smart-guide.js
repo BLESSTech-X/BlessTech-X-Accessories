@@ -12,7 +12,7 @@
   var isCheckout = path.indexOf('checkout.html') >= 0;
   var isAdvertiser = path.indexOf('advertiser') >= 0 || path.indexOf('advertise') >= 0;
   var dismissKey = 'py2_smart_guide_dismissed_v4_' + path;
-  var visible = false, timer = 0, box, titleEl, bodyEl, ctaEl;
+  var visible = false, timer = 0, box, backdrop, titleEl, bodyEl, ctaEl;
   var lastActionTip = 0;
 
   function cartRows() {
@@ -43,7 +43,13 @@
     box.className = 'py2-smart-guide';
     box.setAttribute('role', 'dialog');
     box.setAttribute('aria-label', 'PhoneYa2 shopping assistant');
+    box.setAttribute('aria-modal', 'true');
     box.hidden = true;
+    backdrop = document.createElement('div');
+    backdrop.className = 'py2-smart-guide-backdrop';
+    backdrop.hidden = true;
+    backdrop.setAttribute('aria-hidden','true');
+    document.body.appendChild(backdrop);
     var head = document.createElement('div'); head.className = 'py2-smart-guide-head';
     var mark = document.createElement('span'); mark.className = 'py2-smart-guide-mark'; mark.setAttribute('aria-hidden','true'); mark.textContent = '✦';
     titleEl = document.createElement('strong'); titleEl.className = 'py2-smart-guide-title';
@@ -57,7 +63,8 @@
     box.appendChild(head); box.appendChild(bodyEl); box.appendChild(actions);
     document.body.appendChild(box);
     function dismiss() {
-      box.hidden = true; visible = false;
+      box.hidden = true; backdrop.hidden = true; visible = false;
+      document.documentElement.classList.remove('py2-guide-open');
       try { localStorage.setItem(dismissKey, String(Date.now() + 20 * 60 * 1000)); } catch (_) {}
     }
     close.addEventListener('click', dismiss);
@@ -74,7 +81,7 @@
         if (name) { name.focus({preventScroll:false}); name.scrollIntoView({behavior:'smooth', block:'center'}); }
       }
       try { if (typeof gtag === 'function') gtag('event','smart_guide_action',{guide_type:ctaEl.dataset.kind || 'help',page_path:path}); } catch (_) {}
-      if (!event.defaultPrevented && href.charAt(0) !== '#') { box.hidden = true; visible = false; }
+      box.hidden = true; backdrop.hidden = true; visible = false; document.documentElement.classList.remove('py2-guide-open');
     });
   }
   function show(tip, force) {
@@ -87,7 +94,8 @@
     ctaEl.textContent = tip.cta + ' ↗';
     ctaEl.href = tip.href;
     ctaEl.dataset.kind = tip.kind || 'help';
-    box.hidden = false; visible = true;
+    box.hidden = false; backdrop.hidden = false; visible = true;
+    document.documentElement.classList.add('py2-guide-open');
   }
   function showInitial() {
     var tip = pageTip();
@@ -107,6 +115,7 @@
 
   function boot() {
     build();
+    document.addEventListener('keydown', function(event){ if(event.key === 'Escape' && visible){ box.hidden=true; backdrop.hidden=true; visible=false; document.documentElement.classList.remove('py2-guide-open'); try{localStorage.setItem(dismissKey,String(Date.now()+20*60*1000));}catch(_){} } });
     scheduleInitial();
     window.addEventListener('phoneya2:cart-updated', function () {
       var rows = cartRows();
