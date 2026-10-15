@@ -1,3 +1,18 @@
+---
+title: "Mobile Money and WhatsApp Scams: Warning Signs to Know"
+date: "2026-10-15T20:20:00Z"
+category: "Safety & Security"
+excerpt: "Learn how to spot urgent scam messages, protect verification codes, secure WhatsApp and confirm payments before handing over goods."
+author: "PhoneYa2"
+featured: true
+publish: true
+tags:
+  - "mobile money"
+  - "WhatsApp"
+  - "scam prevention"
+  - "security"
+---
+
 Your phone connects you to friends, work and mobile money—but scammers may use urgency, fake support messages or stolen accounts to trick you. These checks can help you pause before acting.
 
 ## Warning signs to take seriously
