@@ -1774,6 +1774,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
         <div class="cs-cat-item" data-cat="powerbank" onclick="setCsCat('powerbank',this)"><span class="cs-cat-icon">🔋</span><span class="cs-cat-name">Power Banks</span></div>
         <div class="cs-cat-item" data-cat="protector" onclick="setCsCat('protector',this)"><span class="cs-cat-icon">🛡️</span><span class="cs-cat-name">Protectors</span></div>
         <div class="cs-cat-item" data-cat="phone" onclick="setCsCat('phone',this)"><span class="cs-cat-icon">📲</span><span class="cs-cat-name">Phones</span></div>
+        <div class="cs-cat-item" data-cat="other" onclick="setCsCat('other',this)"><span class="cs-cat-icon">📦</span><span class="cs-cat-name">Other</span></div>
       </div>
     </div>
     <div class="cat-showcase-mobile-cats" id="cs-mobile-cats" role="group" aria-label="Browse product categories">
@@ -1784,6 +1785,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       <button type="button" class="cs-cat-item" data-cat="powerbank" aria-pressed="false" onclick="setCsCat('powerbank',this)"><span class="cs-cat-icon" aria-hidden="true">🔋</span><span class="cs-cat-name">Power Banks</span></button>
       <button type="button" class="cs-cat-item" data-cat="protector" aria-pressed="false" onclick="setCsCat('protector',this)"><span class="cs-cat-icon" aria-hidden="true">🛡️</span><span class="cs-cat-name">Protectors</span></button>
       <button type="button" class="cs-cat-item" data-cat="phone" aria-pressed="false" onclick="setCsCat('phone',this)"><span class="cs-cat-icon" aria-hidden="true">📲</span><span class="cs-cat-name">Phones</span></button>
+      <button type="button" class="cs-cat-item" data-cat="other" aria-pressed="false" onclick="setCsCat('other',this)"><span class="cs-cat-icon" aria-hidden="true">📦</span><span class="cs-cat-name">Other</span></button>
     </div>
     <div class="cat-showcase-main">
       <div class="section-hdr">
@@ -2331,7 +2333,7 @@ window.setCsCat = function(cat, el) {
   });
   // Keep the selected mobile pill visible after a category change.
   if(el && el.closest('.cat-showcase-mobile-cats')) el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
-  const labels={case:'📱 Cases',charger:'⚡ Chargers',cable:'🔌 Cables',earphone:'🎧 Earphones',powerbank:'🔋 Power Banks',protector:'🛡️ Protectors',phone:'📲 Phones'};
+  const labels={case:'📱 Cases',charger:'⚡ Chargers',cable:'🔌 Cables',earphone:'🎧 Earphones',powerbank:'🔋 Power Banks',protector:'🛡️ Protectors',phone:'📲 Phones',other:'📦 Other'};
   const t=document.getElementById('cs-title'); if(t) t.textContent=labels[cat]||cat;
   const va=document.getElementById('cs-view-all'); if(va) va.href='shop.html?cat='+cat;
   renderCsGrid(cat);
