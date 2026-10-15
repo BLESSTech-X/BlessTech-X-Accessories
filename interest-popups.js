@@ -166,11 +166,24 @@
   }
   function trackProductClicks() {
     document.addEventListener('click', function (event) {
-      var link = event.target && event.target.closest ? event.target.closest('a[href*="product.html?id="], [data-product-slug]') : null;
-      if (!link) return;
-      var slug = link.getAttribute('data-product-slug') || '';
-      if (!slug) {
+      var target = event.target && event.target.closest ? event.target : null;
+      if (!target) return;
+      var link = target.closest('a[href*="product.html?id="], [data-product-slug]');
+      var slug = link ? (link.getAttribute('data-product-slug') || '') : '';
+      if (link && !slug) {
         try { slug = new URL(link.href, location.href).searchParams.get('id') || ''; } catch (_) {}
+      }
+      if (!slug) {
+        var card = target.closest('.pcard, .showcase-card, [data-slug]');
+        if (card) {
+          slug = card.getAttribute('data-slug') || card.getAttribute('data-product-slug') || '';
+          if (!slug) {
+            var titleNode = card.querySelector('.pcard-name, .showcase-title, [data-product-title]');
+            var title = titleNode ? titleNode.textContent.trim().toLowerCase() : '';
+            var match = title && catalog.find(function (p) { return String(p.title || '').trim().toLowerCase() === title; });
+            if (match) slug = match.slug;
+          }
+        }
       }
       if (slug) rememberProduct(slug, 0, 'click');
     }, true);
