@@ -10,7 +10,7 @@ function boot(d){
  setText(document.querySelector('.contact-info .subtitle'),d.info_subtitle);
  setText(document.querySelector('.contact-form-card h3'),d.form_heading);
  setText(document.querySelector('.contact-form-card .form-sub'),d.form_subtitle);
- setText(document.querySelector('.faq-section h3'),d.faq_heading);
+ setText(document.querySelector('.faq-section h3'),d.faq_heading);setText(document.querySelector('.hours-section h3'),d.hours_heading);
  var phone=document.getElementById('contact-phone'),wa=document.getElementById('contact-whatsapp');
  var email=document.getElementById('contact-email'),loc=document.getElementById('contact-location'),hours=document.getElementById('contact-hours');
  setText(phone,d.phone);setText(wa,d.phone);setText(email,d.email);setText(loc,d.location);setText(hours,d.hours);
@@ -45,5 +45,5 @@ function boot(d){
  if(footer[2])setText(footer[2].querySelector('span'),d.location);
  if(footer[3])setText(footer[3].querySelector('span'),d.hours)
 }
-fetch('/content/settings/contact.json?v=editable1').then(function(r){if(!r.ok)throw Error('CMS contact data unavailable');return r.json()}).then(boot).catch(function(e){console.warn('Contact page CMS content was not loaded; showing built-in fallback.',e)})
+fetch('/content/settings/contact.json?v='+Date.now()).then(function(r){if(!r.ok)throw Error('CMS contact data unavailable');return r.json()}).then(boot).catch(function(e){console.warn('Contact page CMS content was not loaded; showing built-in fallback.',e)})
 })();
