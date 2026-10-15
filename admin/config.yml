@@ -70,6 +70,23 @@ collections:
       - { label: "Related Product Slugs", name: "related_products", widget: "list", required: false, hint: "Optional product slugs, for example 10000mah-powerbank." }
       - { label: "Article Body", name: "body", widget: "markdown" }
 
+  - name: "blog_comments"
+    label: "Blog Comments"
+    label_singular: "Comment"
+    folder: "content/blog-comments"
+    branch: "community-comments"
+    create: false
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    summary: "{{fields.status}} — {{fields.commenter}} on {{fields.post_slug}}"
+    fields:
+      - { label: "Commenter", name: "commenter", widget: "string" }
+      - { label: "Post Slug", name: "post_slug", widget: "string" }
+      - { label: "Comment", name: "message", widget: "text" }
+      - { label: "Moderation Status", name: "status", widget: "select", options: ["pending", "approved", "rejected"], default: "pending" }
+      - { label: "Submitted At", name: "submitted_at", widget: "datetime" }
+
   - name: "site_content"
     label: "Website Content"
     description: "Edit existing website wording and contact details. These forms edit existing JSON files; they do not change the page layout or product system."
