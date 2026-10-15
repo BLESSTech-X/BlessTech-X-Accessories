@@ -41,13 +41,6 @@ collections:
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, Vimeo, or direct video URL (MP4/WebM). Leave blank if not used." }
-      - label: "Upload Video (optional)"
-        name: "video_upload"
-        widget: "file"
-        required: false
-        media_folder: "assets/videos/uploads"
-        public_folder: "/assets/videos/uploads"
-        hint: "Uploads are stored in this GitHub repository. Keep videos short and compressed; large files increase repository size and site load time."
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
 
@@ -69,13 +62,6 @@ collections:
       - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
       - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, Vimeo, or direct video URL (MP4/WebM). It will appear inside the published article." }
-      - label: "Upload Video (optional)"
-        name: "video_upload"
-        widget: "file"
-        required: false
-        media_folder: "assets/videos/blog"
-        public_folder: "/assets/videos/blog"
-        hint: "Upload a short, compressed video. It is stored in this GitHub repository, so avoid large files."
       - { label: "Author", name: "author", widget: "string", default: "PhoneYa2" }
       - { label: "Featured Post", name: "featured", widget: "boolean", default: false }
       - { label: "Publish This Post", name: "publish", widget: "boolean", default: false, hint: "Keep off while drafting. Only published posts appear publicly." }
