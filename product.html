@@ -1273,35 +1273,43 @@ function renderVideoItem(value, label, title) {
   try { parsed = new URL(url, window.location.origin); } catch (_) { return ''; }
   const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
   let embed = '';
-  if (host === 'youtu.be' || host.endsWith('youtube.com') || host === 'youtube-nocookie.com') {
+  if (host === 'youtu.be' || host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtube-nocookie.com') {
     let id = '';
     if (host === 'youtu.be') id = parsed.pathname.split('/').filter(Boolean)[0] || '';
     else if (parsed.pathname === '/watch') id = parsed.searchParams.get('v') || '';
     else {
       const parts = parsed.pathname.split('/').filter(Boolean);
-      if (['embed','shorts','live'].includes(parts[0])) id = parts[1] || '';
+      if (['embed', 'shorts', 'live'].includes(parts[0])) id = parts[1] || '';
     }
     if (/^[\w-]{6,}$/.test(id)) embed = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id);
   } else if (host === 'vimeo.com' || host.endsWith('.vimeo.com')) {
     const id = parsed.pathname.split('/').filter(Boolean).find(part => /^\d+$/.test(part));
     if (id) embed = 'https://player.vimeo.com/video/' + id;
+  } else if (host === 'tiktok.com' || host.endsWith('.tiktok.com')) {
+    const match = parsed.pathname.match(/\/@[^/]+\/video\/(\d+)/);
+    let id = match && match[1];
+    if (!id && /\/embed\/v2\/\d+/.test(parsed.pathname)) id = parsed.pathname.match(/\/embed\/v2\/(\d+)/)[1];
+    if (id) embed = 'https://www.tiktok.com/embed/v2/' + id;
+  } else if (host === 'instagram.com' || host.endsWith('.instagram.com')) {
+    const match = parsed.pathname.match(/^\/(p|reel|reels|tv)\/([A-Za-z0-9_-]+)/);
+    if (match) embed = 'https://www.instagram.com/' + (match[1] === 'reels' ? 'reel' : match[1]) + '/' + match[2] + '/embed';
+  } else if (host === 'facebook.com' || host.endsWith('.facebook.com') || host === 'fb.watch') {
+    embed = 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&show_text=false&width=800';
   }
   const safeTitle = escHtml(title || 'Product video');
   const safeLabel = escHtml(label || 'Video');
   if (embed) {
     return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><iframe class="product-video-frame" src="' + escHtml(embed) + '" title="' + safeTitle + '" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>';
   }
-  if (/\.(mp4|webm|ogg)(?:$|[?#])/i.test(url) || /^\/assets\/videos\//i.test(url)) {
+  if (/\.(mp4|webm|ogg)(?:$|[?#])/i.test(url)) {
     return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><video class="product-video-player" controls playsinline preload="none" aria-label="' + safeTitle + '"><source src="' + escHtml(url) + '">Your browser does not support video playback.</video></div>';
   }
-  return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><a class="product-video-link" href="' + escHtml(url) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-play"></i> Watch video in a new tab</a></div>';
+  return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><a class="product-video-link" href="' + escHtml(url) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-play"></i> Open video on its platform</a><p class="product-video-label">If the platform blocks embedding, use this link to watch the original video.</p></div>';
 }
 function renderProductVideos(p) {
-  const items = [];
-  if (p.video_upload) items.push(renderVideoItem(p.video_upload, 'Uploaded video', p.title + ' video'));
-  if (p.video_url) items.push(renderVideoItem(p.video_url, 'Video link', p.title + ' video'));
-  const valid = items.filter(Boolean);
-  return valid.length ? '<section class="product-videos" aria-label="Product videos"><h3><i class="fa-solid fa-circle-play"></i> Product video</h3><div class="product-video-list">' + valid.join('') + '</div></section>' : '';
+  if (!p.video_url) return '';
+  const item = renderVideoItem(p.video_url, 'Watch video', p.title + ' video');
+  return item ? '<section class="product-videos" aria-label="Product video"><h3><i class="fa-solid fa-circle-play"></i> Product video</h3><div class="product-video-list">' + item + '</div></section>' : '';
 }
 
 function showToast(msg) {
