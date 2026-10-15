@@ -135,6 +135,15 @@ img{max-width:100%;display:block;}
 .thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--light);}
 .thumb.active{border-color:var(--c5);box-shadow:0 0 0 2px rgba(84,160,255,.25);}
 .thumb:hover:not(.active){border-color:rgba(84,160,255,.4);}
+
+.product-videos{margin-top:18px;padding:16px;background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:16px;box-shadow:0 3px 16px rgba(0,0,0,.04);}
+.product-videos h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin:0 0 12px;color:var(--text);}
+.product-video-list{display:grid;gap:14px;}
+.product-video-item{min-width:0;}
+.product-video-label{font-size:12px;font-weight:700;color:var(--muted);margin:0 0 7px;}
+.product-video-frame,.product-video-player{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#0a0a14;overflow:hidden;}
+.product-video-player{height:auto;max-height:420px;}
+.product-video-link{display:inline-flex;align-items:center;gap:7px;margin-top:8px;color:#e55400;font-size:12px;font-weight:700;}
 .img-action-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
 .img-act-btn{flex:1;min-width:0;padding:9px 6px;border-radius:10px;border:1.5px solid rgba(0,0,0,.09);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:600;color:var(--text);transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .img-act-btn:hover{background:var(--light);}
@@ -1246,6 +1255,55 @@ const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-g
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escJs(s)   { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
+function safeVideoUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^\/assets\/videos\//i.test(raw)) return raw;
+  try {
+    const parsed = new URL(raw, window.location.origin);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+    if (parsed.origin === window.location.origin && !/^\/assets\/videos\//i.test(parsed.pathname)) return '';
+    return parsed.href;
+  } catch (_) { return ''; }
+}
+function renderVideoItem(value, label, title) {
+  const url = safeVideoUrl(value);
+  if (!url) return '';
+  let parsed;
+  try { parsed = new URL(url, window.location.origin); } catch (_) { return ''; }
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+  let embed = '';
+  if (host === 'youtu.be' || host.endsWith('youtube.com') || host === 'youtube-nocookie.com') {
+    let id = '';
+    if (host === 'youtu.be') id = parsed.pathname.split('/').filter(Boolean)[0] || '';
+    else if (parsed.pathname === '/watch') id = parsed.searchParams.get('v') || '';
+    else {
+      const parts = parsed.pathname.split('/').filter(Boolean);
+      if (['embed','shorts','live'].includes(parts[0])) id = parts[1] || '';
+    }
+    if (/^[\w-]{6,}$/.test(id)) embed = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id);
+  } else if (host === 'vimeo.com' || host.endsWith('.vimeo.com')) {
+    const id = parsed.pathname.split('/').filter(Boolean).find(part => /^\d+$/.test(part));
+    if (id) embed = 'https://player.vimeo.com/video/' + id;
+  }
+  const safeTitle = escHtml(title || 'Product video');
+  const safeLabel = escHtml(label || 'Video');
+  if (embed) {
+    return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><iframe class="product-video-frame" src="' + escHtml(embed) + '" title="' + safeTitle + '" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>';
+  }
+  if (/\.(mp4|webm|ogg)(?:$|[?#])/i.test(url) || /^\/assets\/videos\//i.test(url)) {
+    return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><video class="product-video-player" controls playsinline preload="none" aria-label="' + safeTitle + '"><source src="' + escHtml(url) + '">Your browser does not support video playback.</video></div>';
+  }
+  return '<div class="product-video-item"><div class="product-video-label">' + safeLabel + '</div><a class="product-video-link" href="' + escHtml(url) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-play"></i> Watch video in a new tab</a></div>';
+}
+function renderProductVideos(p) {
+  const items = [];
+  if (p.video_upload) items.push(renderVideoItem(p.video_upload, 'Uploaded video', p.title + ' video'));
+  if (p.video_url) items.push(renderVideoItem(p.video_url, 'Video link', p.title + ' video'));
+  const valid = items.filter(Boolean);
+  return valid.length ? '<section class="product-videos" aria-label="Product videos"><h3><i class="fa-solid fa-circle-play"></i> Product video</h3><div class="product-video-list">' + valid.join('') + '</div></section>' : '';
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toast-msg').textContent = msg;
@@ -1555,6 +1613,7 @@ function renderProduct(p) {
         <button class="img-act-btn wish-btn ${isWished?'wished':''}" onclick="toggleWish('${p.slug}')" aria-label="Save to wishlist">${isWished?'<i class="fa-solid fa-heart"></i> Saved':'<i class="fa-regular fa-heart"></i> Save'}</button>
         <button class="img-act-btn" onclick="openShareSheet()" aria-label="Share product"><i class="fa-solid fa-share-nodes"></i> Share</button>
       </div>
+      ${renderProductVideos(p)}
     </div>
     <div class="prod-info">
       <div class="prod-cat-lbl">${escHtml(cat)}</div>
