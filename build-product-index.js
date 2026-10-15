@@ -53,7 +53,7 @@ try {
       category: String(meta.category || 'other'),
       description: String(meta.description || ''),
       image: String(meta.image || ''),
-      video_url: String(meta.video_url || ''),
+      video_url: videoUrl,
       order_note: String(meta.order_note || ''),
       featured: meta.featured === true || meta.featured === 'true',
       date_added: String(meta.date_added || meta.created_at || ''),
@@ -73,6 +73,9 @@ try {
       const source = fs.readFileSync(path.join(blogDir, file), 'utf8');
       const meta = parseFrontmatter(source);
       if (meta.publish !== true) return null;
+      const body = source.replace(/^---\s*\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '');
+      const bodyVideo = body.match(/https?:\/\/(?:www\.)?(?:youtu\.be\/[A-Za-z0-9_-]{6,}|youtube\.com\/(?:watch\?v=[A-Za-z0-9_-]{6,}|shorts\/[A-Za-z0-9_-]{6,}|embed\/[A-Za-z0-9_-]{6,}|live\/[A-Za-z0-9_-]{6,})[^\s)<>]*)/i);
+      const videoUrl = String(meta.video_url || (bodyVideo ? bodyVideo[0].replace(/[.,!?]+$/, '') : ''));
       return {
         slug,
         title: String(meta.title || 'PhoneYa2 Update'),
