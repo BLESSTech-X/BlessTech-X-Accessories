@@ -386,3 +386,8 @@ body :where(.pcard,.product-card,.py2-ads-card,.info-card,.contact-card,.about-c
 @media(prefers-reduced-motion:reduce){
   body :where(.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.py2-ads-card,.pcard,.product-card,.pcard-body,.side-card,.info-card,.contact-card,.about-card,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.panel,.modal-content,.form-card){transition:none!important}
 }
+
+
+/* Final canvas adjustment: medium slate-blue, clearly lighter than the previous navy. */
+html{background:#dce5ef!important}
+body{background-color:#dce5ef!important;color:#172033!important}
