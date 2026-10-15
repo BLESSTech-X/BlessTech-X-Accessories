@@ -1,3 +1,18 @@
+---
+title: "Phone Got Wet? What to Do—and What Not to Do"
+date: "2026-10-15T20:00:00Z"
+category: "Phone Care"
+excerpt: "Practical steps for a wet phone, common drying mistakes to avoid, and when it is safest to seek a repairer."
+author: "PhoneYa2"
+featured: true
+publish: true
+tags:
+  - "water damage"
+  - "rain"
+  - "phone care"
+  - "charging safety"
+---
+
 Rain, spills and damp pockets can damage a phone—even if it still seems to work immediately afterward. Water resistance varies by model, and seals can weaken as a device ages or gets repaired.
 
 ## If your phone gets wet
