@@ -1,3 +1,18 @@
+---
+title: "Phone Storage Full? Free Up Space Without Losing Important Files"
+date: "2026-10-15T20:30:00Z"
+category: "Tips & Tricks"
+excerpt: "Find what is using your phone storage, back up important photos safely, and clear space without accidentally deleting app data."
+author: "PhoneYa2"
+featured: true
+publish: true
+tags:
+  - "phone storage"
+  - "Android tips"
+  - "backups"
+  - "phone care"
+---
+
 A “storage almost full” warning can slow down updates, stop photos from saving and make apps behave unpredictably. Before deleting anything, make a little space safely.
 
 ## 1. Find what is using the space
