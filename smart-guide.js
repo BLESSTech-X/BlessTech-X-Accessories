@@ -108,7 +108,7 @@
   function boot() {
     build();
     scheduleInitial();
-    document.addEventListener('phoneya2:cart-updated', function () {
+    window.addEventListener('phoneya2:cart-updated', function () {
       var rows = cartRows();
       var tip = rows.length
         ? {title:'Your cart is updated', body:'Your items are saved on this device. Open the cart to adjust quantities or remove items, then continue to checkout when you’re ready.', cta:'Review your cart', href:'/cart.html', kind:'cart-updated'}
