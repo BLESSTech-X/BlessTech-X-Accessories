@@ -6,6 +6,7 @@
   var STORAGE_KEY = 'py2_product_interest_v1';
   var SESSION_COUNT_KEY = 'py2_interest_popup_count_v1';
   var DISMISSED_KEY = 'py2_interest_popup_snooze_v1';
+  var SEEN_PRODUCTS_KEY = 'py2_interest_seen_products_v2';
   var MAX_POPUPS_PER_SESSION = 4;
   var catalog = [];
   var currentSlug = new URLSearchParams(location.search).get('id') || '';
@@ -49,9 +50,11 @@
   function getEligibleProducts() {
     var interests = getInterests();
     var now = Date.now();
+    var cart = safeRead('phoneya2-checkout-cart-v1', []);
+    var inCart = Array.isArray(cart) ? cart.filter(function (r) { return Array.isArray(r) && r[0] && Number(r[1]) > 0; }).map(function (r) { return r[0]; }) : [];
     return interests.map(function (interest) {
       var product = catalog.find(function (p) { return p.slug === interest.slug; });
-      if (!product || Number(product.stock) <= 0 || !(Number(product.price) > 0)) return null;
+      if (!product || Number(product.stock) <= 0 || !(Number(product.price) > 0) || inCart.indexOf(product.slug) >= 0) return null;
       if (now - Number(interest.lastSeen || 0) > 30 * 86400000) return null;
       return { product: product, interest: interest };
     }).filter(Boolean);
@@ -59,12 +62,18 @@
   function chooseProduct() {
     var options = getEligibleProducts();
     if (!options.length) return null;
+    var seenProducts = [];
+    try { seenProducts = JSON.parse(sessionStorage.getItem(SEEN_PRODUCTS_KEY) || '[]'); } catch (_) {}
+    if (!Array.isArray(seenProducts)) seenProducts = [];
+    var unseen = options.filter(function (x) { return seenProducts.indexOf(x.product.slug) < 0; });
+    if (unseen.length) options = unseen;
     var different = options.filter(function (x) { return x.product.slug !== currentSlug; });
     var pool = different.length ? different : options;
     var weights = pool.map(function (x) { return Math.max(1, Number(x.interest.score || 1)); });
     var total = weights.reduce(function (a, b) { return a + b; }, 0);
     var roll = Math.random() * total;
-    for (var i = 0; i < pool.length; i++) { roll -= weights[i]; if (roll <= 0) return pool[i].product; }
+    for (var i = 0; i < pool.length; i++) { roll -= weights[i]; if (roll <= 0) { pool[i].product.__py2InterestAction = pool[i].interest.action || 'view'; return pool[i].product; } }
+    pool[0].product.__py2InterestAction = pool[0].interest.action || 'view';
     return pool[0].product;
   }
   function addStyles() {
@@ -105,7 +114,13 @@
     copy.className = 'py2-interest-copy';
     var eyebrow = document.createElement('div');
     eyebrow.className = 'py2-interest-eyebrow';
-    eyebrow.textContent = 'Your PhoneYa2 pick';
+    var reason = 'Your PhoneYa2 pick';
+    var action = product.__py2InterestAction || 'view';
+    if (action === 'click') reason = 'You looked at this';
+    else if (action === 'hover') reason = 'You paused on this';
+    else if (action === 'search') reason = 'Matches what you searched';
+    else if (action === 'view') reason = 'Based on what you viewed';
+    eyebrow.textContent = reason;
     var title = document.createElement('div');
     title.className = 'py2-interest-title';
     var price = document.createElement('div');
@@ -170,6 +185,7 @@
     if (window.__py2SellerNoticeOpen) { scheduleNext(12000 + Math.floor(Math.random() * 8000)); return; }
     popup.hidden = false;
     backdrop.hidden = false;
+    try { var seenProducts = JSON.parse(sessionStorage.getItem(SEEN_PRODUCTS_KEY) || '[]'); if (!Array.isArray(seenProducts)) seenProducts = []; seenProducts.push(product.slug); sessionStorage.setItem(SEEN_PRODUCTS_KEY, JSON.stringify(seenProducts.slice(-20))); } catch (_) {}
     document.documentElement.classList.add('py2-interest-open');
     window.__py2SellerModalOpen = true;
     visible = true;
