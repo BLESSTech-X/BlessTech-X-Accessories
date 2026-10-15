@@ -204,6 +204,8 @@ button{font-family:'DM Sans',sans-serif;}
 .cs-cat-icon{font-size:16px;}
 .cs-cat-name{color:rgba(255,255,255,.8);font-size:13px;font-weight:500;}
 .cs-cat-count{margin-left:auto;color:rgba(255,255,255,.3);font-size:11px;}
+/* Mobile category switcher: same categories as desktop, optimized for touch. */
+.cat-showcase-mobile-cats{display:none;}
 .cat-showcase-main{padding:16px;}
 .cat-showcase-main .section-hdr{padding:0 0 12px;border-bottom:1px solid #f5f5f5;margin-bottom:12px;}
 .cat-products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
@@ -296,6 +298,46 @@ footer{background:var(--dark);padding:48px 16px 0;margin-top:8px;}
   .promo-banners{grid-template-columns:1fr;}
   .cat-showcase{grid-template-columns:1fr;}
   .cat-showcase-side{display:none;}
+  .cat-showcase-mobile-cats{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    padding:12px 12px 10px;
+    border-bottom:1px solid var(--border,#e8e8e8);
+    background:#fff;
+    scroll-snap-type:x proximity;
+  }
+  .cat-showcase-mobile-cats .cs-cat-item{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    gap:6px;
+    white-space:nowrap;
+    border:1px solid #e7e7eb;
+    border-radius:999px;
+    padding:9px 13px;
+    background:#f7f7f9;
+    color:#282833;
+    font:600 12px/1.2 inherit;
+    cursor:pointer;
+    scroll-snap-align:start;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .cat-showcase-mobile-cats .cs-cat-name{color:inherit;font-size:12px;font-weight:600;}
+  .cat-showcase-mobile-cats .cs-cat-icon{font-size:15px;line-height:1;}
+  .cat-showcase-mobile-cats .cs-cat-item.active{
+    background:var(--orange,#ff6000);
+    border-color:var(--orange,#ff6000);
+    color:#fff;
+    box-shadow:0 2px 8px rgba(255,96,0,.2);
+  }
+  .cat-showcase-mobile-cats .cs-cat-item.active .cs-cat-name{color:#fff;}
+  .cat-showcase-main{padding:12px;}
   .stats-banner{grid-template-columns:repeat(2,1fr);}
   .header-search{display:none;}
   .desk-nav{display:none;}
@@ -1691,6 +1733,15 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
         <div class="cs-cat-item" data-cat="phone" onclick="setCsCat('phone',this)"><span class="cs-cat-icon">📲</span><span class="cs-cat-name">Phones</span></div>
       </div>
     </div>
+    <div class="cat-showcase-mobile-cats" id="cs-mobile-cats" role="group" aria-label="Browse product categories">
+      <button type="button" class="cs-cat-item active" data-cat="case" aria-pressed="true" onclick="setCsCat('case',this)"><span class="cs-cat-icon" aria-hidden="true">📱</span><span class="cs-cat-name">Cases</span></button>
+      <button type="button" class="cs-cat-item" data-cat="charger" aria-pressed="false" onclick="setCsCat('charger',this)"><span class="cs-cat-icon" aria-hidden="true">⚡</span><span class="cs-cat-name">Chargers</span></button>
+      <button type="button" class="cs-cat-item" data-cat="cable" aria-pressed="false" onclick="setCsCat('cable',this)"><span class="cs-cat-icon" aria-hidden="true">🔌</span><span class="cs-cat-name">Cables</span></button>
+      <button type="button" class="cs-cat-item" data-cat="earphone" aria-pressed="false" onclick="setCsCat('earphone',this)"><span class="cs-cat-icon" aria-hidden="true">🎧</span><span class="cs-cat-name">Earphones</span></button>
+      <button type="button" class="cs-cat-item" data-cat="powerbank" aria-pressed="false" onclick="setCsCat('powerbank',this)"><span class="cs-cat-icon" aria-hidden="true">🔋</span><span class="cs-cat-name">Power Banks</span></button>
+      <button type="button" class="cs-cat-item" data-cat="protector" aria-pressed="false" onclick="setCsCat('protector',this)"><span class="cs-cat-icon" aria-hidden="true">🛡️</span><span class="cs-cat-name">Protectors</span></button>
+      <button type="button" class="cs-cat-item" data-cat="phone" aria-pressed="false" onclick="setCsCat('phone',this)"><span class="cs-cat-icon" aria-hidden="true">📲</span><span class="cs-cat-name">Phones</span></button>
+    </div>
     <div class="cat-showcase-main">
       <div class="section-hdr">
         <div class="sec-hdr-left"><h2 id="cs-title">📱 Cases</h2></div>
@@ -2230,8 +2281,13 @@ let currentCsCat = 'case';
 
 window.setCsCat = function(cat, el) {
   currentCsCat = cat;
-  document.querySelectorAll('.cs-cat-item').forEach(i=>i.classList.remove('active'));
-  el.classList.add('active');
+  document.querySelectorAll('.cs-cat-item').forEach(i=>{
+    const active=i.dataset.cat===cat;
+    i.classList.toggle('active',active);
+    if(i.hasAttribute('aria-pressed')) i.setAttribute('aria-pressed',String(active));
+  });
+  // Keep the selected mobile pill visible after a category change.
+  if(el && el.closest('.cat-showcase-mobile-cats')) el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
   const labels={case:'📱 Cases',charger:'⚡ Chargers',cable:'🔌 Cables',earphone:'🎧 Earphones',powerbank:'🔋 Power Banks',protector:'🛡️ Protectors',phone:'📲 Phones'};
   const t=document.getElementById('cs-title'); if(t) t.textContent=labels[cat]||cat;
   const va=document.getElementById('cs-view-all'); if(va) va.href='shop.html?cat='+cat;
