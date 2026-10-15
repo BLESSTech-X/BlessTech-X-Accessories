@@ -136,15 +136,38 @@ collections:
           - { label: "CTA WhatsApp button label", name: "cta_whatsapp_label", widget: "string" }
           - { label: "CTA WhatsApp URL", name: "cta_whatsapp_url", widget: "string" }
 
-      - label: "Contact Details"
+      - label: "Contact Details & Page Content"
         name: "contact"
         file: "content/settings/contact.json"
         fields:
-          - { label: "WhatsApp number", name: "whatsapp", widget: "string", hint: "Use the international format, including country code." }
+          - { label: "WhatsApp number", name: "whatsapp", widget: "string" }
           - { label: "Display phone number", name: "phone", widget: "string" }
           - { label: "Email address", name: "email", widget: "string" }
           - { label: "Location", name: "location", widget: "string" }
-          - { label: "Business hours", name: "hours", widget: "string" }
+          - { label: "Business hours summary", name: "hours", widget: "string" }
+          - { label: "Hero heading", name: "hero_title", widget: "string" }
+          - { label: "Hero description", name: "hero_subtitle", widget: "text" }
+          - { label: "Contact information heading", name: "info_heading", widget: "string" }
+          - { label: "Contact information description", name: "info_subtitle", widget: "text" }
+          - { label: "Message form heading", name: "form_heading", widget: "string" }
+          - { label: "Message form description", name: "form_subtitle", widget: "text" }
+          - { label: "Business hours heading", name: "hours_heading", widget: "string" }
+          - label: "Weekly opening hours"
+            name: "hours_days"
+            widget: "list"
+            summary: "{{fields.day}} — {{fields.hours}}"
+            fields:
+              - { label: "Day", name: "day", widget: "string" }
+              - { label: "Hours", name: "hours", widget: "string" }
+              - { label: "Open", name: "open", widget: "boolean", default: true }
+          - { label: "FAQ heading", name: "faq_heading", widget: "string" }
+          - label: "Frequently asked questions"
+            name: "faqs"
+            widget: "list"
+            summary: "{{fields.question}}"
+            fields:
+              - { label: "Question", name: "question", widget: "string" }
+              - { label: "Answer", name: "answer", widget: "text" }
 
       - label: "Site-wide Wording"
         name: "sitewide"
