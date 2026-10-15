@@ -15,6 +15,7 @@
   var timer = null;
   var visible = false;
   var startAt = Date.now();
+  var backdrop = null;
 
   function safeRead(key, fallback) {
     try { var value = JSON.parse(localStorage.getItem(key) || 'null'); return value == null ? fallback : value; }
@@ -73,18 +74,23 @@
     style.textContent = `
       @keyframes py2InterestIn{from{opacity:0;transform:translate3d(0,14px,0) scale(.97)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
       @keyframes py2InterestGlow{0%,100%{box-shadow:0 10px 30px rgba(17,24,39,.18),0 0 0 1px rgba(85,151,255,.22),0 0 18px rgba(85,151,255,.14)}50%{box-shadow:0 12px 34px rgba(17,24,39,.22),0 0 0 1px rgba(255,111,145,.42),0 0 25px rgba(97,110,255,.3)}}
-      .py2-interest-popup{position:fixed;right:18px;bottom:18px;z-index:10020;width:min(340px,calc(100vw - 24px));display:grid;grid-template-columns:66px minmax(0,1fr) 26px;gap:11px;align-items:center;padding:12px;border:1px solid rgba(113,157,255,.55);border-radius:17px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(243,247,255,.98));color:#172033;font:500 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;animation:py2InterestIn .32s ease-out,py2InterestGlow 3.8s ease-in-out .4s infinite;backdrop-filter:blur(12px)}
+      .py2-interest-backdrop{position:fixed;inset:0;z-index:10018;background:rgba(12,22,42,.30);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}.py2-interest-backdrop[hidden]{display:none!important}.py2-interest-popup{position:fixed;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);z-index:10020;width:min(360px,calc(100vw - 24px));display:grid;grid-template-columns:66px minmax(0,1fr) 26px;gap:11px;align-items:center;padding:12px;border:1px solid rgba(113,157,255,.55);border-radius:17px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(243,247,255,.98));color:#172033;font:500 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;animation:py2InterestIn .32s ease-out,py2InterestGlow 3.8s ease-in-out .4s infinite;backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(12,22,42,.28)}
       .py2-interest-popup[hidden]{display:none!important}.py2-interest-img{width:66px;height:66px;border-radius:12px;object-fit:contain;background:#fff;border:1px solid #e8edf7}
       .py2-interest-copy{min-width:0}.py2-interest-eyebrow{display:flex;align-items:center;gap:5px;color:#4d65cb;font-size:10px;font-weight:800;letter-spacing:.65px;text-transform:uppercase;margin-bottom:3px}.py2-interest-eyebrow:before{content:"";width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#ff7e5f,#7765ff);box-shadow:0 0 8px #8b82ff}
       .py2-interest-title{font-weight:800;font-size:13px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px}.py2-interest-price{font-size:12px;font-weight:800;color:#111827;margin-bottom:7px}.py2-interest-cta{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:9px;padding:7px 10px;background:linear-gradient(110deg,#5b63e8,#7b49ce 55%,#ec6096);color:#fff!important;text-decoration:none!important;font-weight:800;font-size:11px;box-shadow:0 4px 12px rgba(100,86,218,.25)}
       .py2-interest-close{align-self:start;border:0;background:#e9edf5;color:#667085;border-radius:50%;width:25px;height:25px;font-size:17px;line-height:1;cursor:pointer}.py2-interest-close:focus-visible,.py2-interest-cta:focus-visible{outline:2px solid #4f46e5;outline-offset:3px}
-      @media(max-width:480px){.py2-interest-popup{right:10px;bottom:12px;width:min(324px,calc(100vw - 20px));grid-template-columns:58px minmax(0,1fr) 23px;gap:9px;padding:10px;border-radius:15px}.py2-interest-img{width:58px;height:58px}.py2-interest-close{width:23px;height:23px}}
+      @media(max-width:480px){.py2-interest-popup{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:min(324px,calc(100vw - 20px));grid-template-columns:58px minmax(0,1fr) 23px;gap:9px;padding:10px;border-radius:15px}.py2-interest-img{width:58px;height:58px}.py2-interest-close{width:23px;height:23px}}
       @media(prefers-reduced-motion:reduce){.py2-interest-popup{animation:none!important}}
     `;
     document.head.appendChild(style);
   }
   function buildPopup() {
     addStyles();
+    backdrop = document.createElement('div');
+    backdrop.className = 'py2-interest-backdrop';
+    backdrop.hidden = true;
+    backdrop.addEventListener('click', dismissPopup);
+    document.body.appendChild(backdrop);
     popup = document.createElement('aside');
     popup.className = 'py2-interest-popup';
     popup.setAttribute('role', 'complementary');
@@ -112,9 +118,9 @@
     close.setAttribute('aria-label', 'Dismiss product reminder');
     close.textContent = '×';
     close.addEventListener('click', function () {
-      popup.hidden = true; visible = false;
-      try { sessionStorage.setItem(DISMISSED_KEY, String(Date.now() + 45000)); } catch (_) {}
-      scheduleNext(45000 + Math.floor(Math.random() * 20000));
+      dismissPopup();
+      try { sessionStorage.setItem(DISMISSED_KEY, String(Date.now() + 60000)); } catch (_) {}
+      scheduleNext(60000 + Math.floor(Math.random() * 30000));
     });
     cta.addEventListener('click', function () {
       try { if (typeof gtag === 'function') gtag('event', 'interest_product_click', { product_slug: cta.dataset.slug || '', page_path: pagePath }); } catch (_) {}
@@ -122,10 +128,30 @@
     copy.appendChild(eyebrow); copy.appendChild(title); copy.appendChild(price); copy.appendChild(cta);
     popup.appendChild(img); popup.appendChild(copy); popup.appendChild(close);
     document.body.appendChild(popup);
-    popup._img = img; popup._title = title; popup._price = price; popup._cta = cta;
+    var add = document.createElement('button');
+    add.type = 'button'; add.className = 'py2-interest-cta py2-interest-add'; add.textContent = 'Add to cart +';
+    add.style.cssText = 'margin-left:5px;border:0;cursor:pointer;font:inherit;font-weight:800;';
+    add.addEventListener('click', function () {
+      var slug = popup._cta.dataset.slug || '';
+      var item = catalog.find(function (p) { return p.slug === slug; });
+      if (!item || Number(item.stock) <= 0) { add.textContent = 'Unavailable'; add.disabled = true; return; }
+      var rows = []; try { rows = JSON.parse(localStorage.getItem('phoneya2-checkout-cart-v1') || '[]'); } catch (_) {}
+      if (!Array.isArray(rows)) rows = [];
+      var map = new Map(rows.filter(function (r) { return Array.isArray(r) && r[0]; }));
+      var qty = Number(map.get(slug) || 0) + 1;
+      if (qty > Number(item.stock)) { add.textContent = 'Stock limit reached'; return; }
+      map.set(slug, qty);
+      try { localStorage.setItem('phoneya2-checkout-cart-v1', JSON.stringify(Array.from(map.entries()))); } catch (_) { add.textContent = 'Could not save'; return; }
+      window.dispatchEvent(new CustomEvent('phoneya2:cart-updated', { detail: { slug: slug, quantity: qty } }));
+      try { if (typeof gtag === 'function') gtag('event', 'interest_product_add_to_cart', { product_slug: slug }); } catch (_) {}
+      add.textContent = 'Added ✓'; add.disabled = true; dismissPopup();
+    });
+    copy.appendChild(add);
+    popup._img = img; popup._title = title; popup._price = price; popup._cta = cta; popup._add = add;
   }
   function showPopup() {
     if (!popup || visible || document.visibilityState === 'hidden') return;
+    if (window.__py2SellerNoticeOpen) { scheduleNext(12000 + Math.floor(Math.random() * 8000)); return; }
     var count = 0;
     try { count = Number(sessionStorage.getItem(SESSION_COUNT_KEY) || 0); } catch (_) {}
     if (count >= MAX_POPUPS_PER_SESSION) return;
@@ -139,12 +165,21 @@
     popup._price.textContent = 'ZMW ' + Number(product.price).toLocaleString();
     popup._cta.href = '/product.html?id=' + encodeURIComponent(product.slug);
     popup._cta.dataset.slug = product.slug;
+    if (window.__py2SellerNoticeOpen) { scheduleNext(12000 + Math.floor(Math.random() * 8000)); return; }
     popup.hidden = false;
+    backdrop.hidden = false;
+    document.documentElement.classList.add('py2-interest-open');
+    window.__py2SellerModalOpen = true;
     visible = true;
     try { sessionStorage.setItem(SESSION_COUNT_KEY, String(count + 1)); } catch (_) {}
-    window.setTimeout(function () {
-      if (popup && visible) { popup.hidden = true; visible = false; scheduleNext(35000 + Math.floor(Math.random() * 30000)); }
-    }, 9000);
+
+  }
+  function dismissPopup() {
+    if (popup) popup.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+    visible = false;
+    window.__py2SellerModalOpen = false;
+    document.documentElement.classList.remove('py2-interest-open');
   }
   function scheduleNext(delay) {
     window.clearTimeout(timer);
