@@ -182,6 +182,7 @@
     visible = false;
     window.__py2SellerModalOpen = false;
     document.documentElement.classList.remove('py2-interest-open');
+    try { sessionStorage.setItem(DISMISSED_KEY, String(Date.now() + 60000)); } catch (_) {}
   }
   function scheduleNext(delay) {
     window.clearTimeout(timer);
@@ -202,16 +203,13 @@
     });
   }
   function trackProductClicks() {
-    document.addEventListener('click', function (event) {
-      var target = event.target && event.target.closest ? event.target : null;
-      if (!target) return;
-      var link = target.closest('a[href*="product.html?id="], [data-product-slug]');
-      var slug = link ? (link.getAttribute('data-product-slug') || '') : '';
-      if (link && !slug) {
-        try { slug = new URL(link.href, location.href).searchParams.get('id') || ''; } catch (_) {}
-      }
+    function slugFrom(target) {
+      if (!target || !target.closest) return '';
+      var link = target.closest('a[href*="product.html?id="], [data-product-slug], [data-slug]');
+      var slug = link ? (link.getAttribute('data-product-slug') || link.getAttribute('data-slug') || '') : '';
+      if (link && !slug && link.href) { try { slug = new URL(link.href, location.href).searchParams.get('id') || ''; } catch (_) {} }
       if (!slug) {
-        var card = target.closest('.pcard, .showcase-card, [data-slug]');
+        var card = target.closest('.pcard, .showcase-card, [data-slug], [data-product-slug]');
         if (card) {
           slug = card.getAttribute('data-slug') || card.getAttribute('data-product-slug') || '';
           if (!slug) {
@@ -222,8 +220,34 @@
           }
         }
       }
+      return slug;
+    }
+    document.addEventListener('click', function (event) {
+      var target = event.target && event.target.closest ? event.target : null;
+      if (!target) return;
+      var slug = slugFrom(target);
       if (slug) rememberProduct(slug, 0, 'click');
+      var addButton = target.closest('.py2-add-cart, #add, [data-action="add-to-cart"], .pcard-actions button');
+      if (addButton && slug) rememberProduct(slug, 0, 'add');
     }, true);
+    document.addEventListener('pointerover', function (event) {
+      var card = event.target && event.target.closest ? event.target.closest('.pcard, .showcase-card, [data-slug], [data-product-slug]') : null;
+      if (!card || card.contains(event.relatedTarget)) return;
+      var slug = slugFrom(card);
+      if (slug) rememberProduct(slug, 0, 'hover');
+    }, { passive: true });
+    document.addEventListener('input', function (event) {
+      var input = event.target;
+      if (!input || !input.matches('#main-search, input[type="search"], .shop-search input, [data-product-search]')) return;
+      var query = String(input.value || '').trim().toLowerCase();
+      if (query.length < 2) return;
+      catalog.filter(function (p) { return String(p.title || '').toLowerCase().indexOf(query) >= 0; }).slice(0, 6)
+        .forEach(function (p) { rememberProduct(p.slug, 0, 'search'); });
+    });
+    window.addEventListener('phoneya2:cart-updated', function (event) {
+      var slug = event.detail && event.detail.slug;
+      if (slug) rememberProduct(slug, 0, 'add');
+    });
   }
   function boot() {
     fetch('/content/products/catalog.json?v=interest1', { cache: 'no-cache' }).then(function (r) {
