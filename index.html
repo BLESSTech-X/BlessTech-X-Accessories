@@ -1413,6 +1413,8 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
     <a href="/shop.html?cat=powerbank" class="cat-nav-item"><i class="fa-solid fa-battery-full" aria-hidden="true"></i> Power Banks</a>
     <a href="/shop.html?cat=protector" class="cat-nav-item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Protectors</a>
     <a href="/shop.html?cat=phone" class="cat-nav-item"><i class="fa-solid fa-mobile" aria-hidden="true"></i> Phones</a>
+    <a href="/shop.html?cat=watch" class="cat-nav-item"><i class="fa-regular fa-clock" aria-hidden="true"></i> Watches</a>
+    <a href="/shop.html?cat=accessory" class="cat-nav-item"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i> Other Accessories</a>
     <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
   </div>
 </div>
@@ -1774,6 +1776,8 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
         <div class="cs-cat-item" data-cat="powerbank" onclick="setCsCat('powerbank',this)"><span class="cs-cat-icon">🔋</span><span class="cs-cat-name">Power Banks</span></div>
         <div class="cs-cat-item" data-cat="protector" onclick="setCsCat('protector',this)"><span class="cs-cat-icon">🛡️</span><span class="cs-cat-name">Protectors</span></div>
         <div class="cs-cat-item" data-cat="phone" onclick="setCsCat('phone',this)"><span class="cs-cat-icon">📲</span><span class="cs-cat-name">Phones</span></div>
+        <div class="cs-cat-item" data-cat="watch" onclick="setCsCat('watch',this)"><span class="cs-cat-icon">⌚</span><span class="cs-cat-name">Watches</span></div>
+        <div class="cs-cat-item" data-cat="accessory" onclick="setCsCat('accessory',this)"><span class="cs-cat-icon">🧩</span><span class="cs-cat-name">Other Accessories</span></div>
         <div class="cs-cat-item" data-cat="other" onclick="setCsCat('other',this)"><span class="cs-cat-icon">📦</span><span class="cs-cat-name">Other</span></div>
       </div>
     </div>
@@ -1785,6 +1789,8 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
       <button type="button" class="cs-cat-item" data-cat="powerbank" aria-pressed="false" onclick="setCsCat('powerbank',this)"><span class="cs-cat-icon" aria-hidden="true">🔋</span><span class="cs-cat-name">Power Banks</span></button>
       <button type="button" class="cs-cat-item" data-cat="protector" aria-pressed="false" onclick="setCsCat('protector',this)"><span class="cs-cat-icon" aria-hidden="true">🛡️</span><span class="cs-cat-name">Protectors</span></button>
       <button type="button" class="cs-cat-item" data-cat="phone" aria-pressed="false" onclick="setCsCat('phone',this)"><span class="cs-cat-icon" aria-hidden="true">📲</span><span class="cs-cat-name">Phones</span></button>
+      <button type="button" class="cs-cat-item" data-cat="watch" aria-pressed="false" onclick="setCsCat('watch',this)"><span class="cs-cat-icon" aria-hidden="true">⌚</span><span class="cs-cat-name">Watches</span></button>
+      <button type="button" class="cs-cat-item" data-cat="accessory" aria-pressed="false" onclick="setCsCat('accessory',this)"><span class="cs-cat-icon" aria-hidden="true">🧩</span><span class="cs-cat-name">Other Accessories</span></button>
       <button type="button" class="cs-cat-item" data-cat="other" aria-pressed="false" onclick="setCsCat('other',this)"><span class="cs-cat-icon" aria-hidden="true">📦</span><span class="cs-cat-name">Other</span></button>
     </div>
     <div class="cat-showcase-main">
@@ -1902,7 +1908,7 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
         <a href="shop.html?cat=case">Cases</a><a href="shop.html?cat=charger">Chargers</a>
         <a href="shop.html?cat=cable">Cables</a><a href="shop.html?cat=earphone">Earphones</a>
         <a href="shop.html?cat=powerbank">Power Banks</a><a href="shop.html?cat=protector">Protectors</a>
-        <a href="shop.html?cat=phone">Phones</a>
+        <a href="shop.html?cat=phone">Phones</a><a href="shop.html?cat=watch">Watches</a><a href="shop.html?cat=accessory">Other Accessories</a><a href="shop.html?cat=other">Other</a>
       </div>
     </div>
     <div>
@@ -2333,7 +2339,7 @@ window.setCsCat = function(cat, el) {
   });
   // Keep the selected mobile pill visible after a category change.
   if(el && el.closest('.cat-showcase-mobile-cats')) el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
-  const labels={case:'📱 Cases',charger:'⚡ Chargers',cable:'🔌 Cables',earphone:'🎧 Earphones',powerbank:'🔋 Power Banks',protector:'🛡️ Protectors',phone:'📲 Phones',other:'📦 Other'};
+  const labels={case:'📱 Cases',charger:'⚡ Chargers',cable:'🔌 Cables',earphone:'🎧 Earphones',powerbank:'🔋 Power Banks',protector:'🛡️ Protectors',phone:'📲 Phones',watch:'⌚ Watches',accessory:'🧩 Other Accessories',other:'📦 Other'};
   const t=document.getElementById('cs-title'); if(t) t.textContent=labels[cat]||cat;
   const va=document.getElementById('cs-view-all'); if(va) va.href='shop.html?cat='+cat;
   renderCsGrid(cat);
