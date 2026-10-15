@@ -40,6 +40,14 @@ collections:
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
+      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, Vimeo, or direct video URL (MP4/WebM). Leave blank if not used." }
+      - label: "Upload Video (optional)"
+        name: "video_upload"
+        widget: "file"
+        required: false
+        media_folder: "/assets/videos/uploads"
+        public_folder: "/assets/videos/uploads"
+        hint: "Uploads are stored in this GitHub repository. Keep videos short and compressed; large files increase repository size and site load time."
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
 
