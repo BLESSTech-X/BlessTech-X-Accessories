@@ -40,4 +40,4 @@ Keep the wording specific. Explain what you offer, who it is for and what the cu
 
 Submitting an ad does not mean it is automatically approved or guaranteed to produce sales. Use the current page for the latest requirements and status.
 
-**Have a business to promote?** [Advertise Your Business Here](/advertiser) and explore enhanced visibility options from K20+.
+**Have a business to promote?** [Advertise Your Business Here](/advertise/) and explore enhanced visibility options from K20+.
