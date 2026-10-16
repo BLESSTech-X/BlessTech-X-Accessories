@@ -10,6 +10,11 @@ featured_image: "/assets/images/uploads/1000066524.jpg"
 related_products:
   - "braided-usb-c-cable"
 tags:
+featured_products:
+  - product: "air-pods-pro"
+    caption: "A wireless option to compare for everyday listening. Check the current listing and your phone's Bluetooth support before ordering."
+  - product: "amigo-ag-02-earphones"
+    caption: "A wired earphone option. Confirm the connector matches your phone or adapter."
   - "earphones"
   - "phone accessories"
   - "PhoneYa2 catalogue"
