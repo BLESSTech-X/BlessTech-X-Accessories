@@ -6,6 +6,41 @@ const root = __dirname;
 const productsDir = path.join(root, 'content', 'products');
 const blogDir = path.join(root, 'content', 'blog');
 
+function parseBlogGallery(markdown, fallback) {
+  const match = String(markdown || '').match(/^gallery:\s*\\r?\\n((?:(?:[ \\t]+.*)?\\r?\\n|[ \\t]+.*$)*)/m);
+  if (match) {
+    const items = [];
+    let current = null;
+    function clean(value) {
+      return String(value || '').trim().replace(/^['"]|['"]$/g, '');
+    }
+    match[1].split(/\\r?\\n/).forEach(line => {
+      const image = line.match(/^\\s*-\\s+image:\\s*(.*)$/);
+      const caption = line.match(/^\\s+caption:\\s*(.*)$/);
+      const simple = line.match(/^\\s*-\\s+([^:#].*?)\\s*$/);
+      if (image) {
+        if (current) items.push(current);
+        current = { image: clean(image[1]), caption: '' };
+      } else if (caption && current) {
+        current.caption = clean(caption[1]);
+      } else if (simple && !current) {
+        const value = clean(simple[1]);
+        if (value && !value.startsWith('image:')) items.push({ image: value, caption: '' });
+      }
+    });
+    if (current) items.push(current);
+    const valid = items.filter(item => item.image);
+    if (valid.length) return valid;
+  }
+  return Array.isArray(fallback) ? fallback.map(item => {
+    if (typeof item === 'string') {
+      const value = item.replace(/^image:\\s*/, '').trim();
+      return { image: value, caption: '' };
+    }
+    return item && typeof item === 'object' ? { image: String(item.image || ''), caption: String(item.caption || '') } : null;
+  }).filter(item => item && item.image) : [];
+}
+
 function parseFrontmatter(markdown) {
   const match = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/);
   if (!match) return {};
@@ -83,7 +118,7 @@ try {
         category: String(meta.category || 'PhoneYa2 Updates'),
         excerpt: String(meta.excerpt || ''),
         image: String(meta.featured_image || ''),
-        gallery: Array.isArray(meta.gallery) ? meta.gallery.filter(Boolean).map(String) : [],
+        gallery: parseBlogGallery(source, meta.gallery),
         video_url: videoUrl,
         author: String(meta.author || 'PhoneYa2'),
         featured: meta.featured === true,
