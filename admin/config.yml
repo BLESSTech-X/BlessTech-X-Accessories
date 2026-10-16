@@ -62,7 +62,15 @@ collections:
       - { label: "Category", name: "category", widget: "select", options: ["Offers", "Product News", "Buying Guides", "Tips & Tricks", "PhoneYa2 Updates", "Community"] }
       - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
       - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
-      - { label: "Additional Images", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, required: false, hint: "Add extra story photos. The cover remains the large preview; these appear as small thumbnails on the feed and full-size in the article." }
+      - label: "Additional Images"
+        name: "gallery"
+        widget: "list"
+        required: false
+        summary: "{{fields.caption}}"
+        hint: "Add extra story photos. The cover remains the large preview; these appear as small thumbnails on the feed and full-size in the article. Captions are optional."
+        fields:
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Caption (optional)", name: "caption", widget: "string", required: false }
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. YouTube videos also appear in blog preview cards across the site. If this field is blank, a YouTube URL in the article body is detected automatically." }
       - { label: "Author", name: "author", widget: "string", default: "PhoneYa2" }
       - { label: "Featured Post", name: "featured", widget: "boolean", default: false }
