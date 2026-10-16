@@ -7,17 +7,17 @@ const productsDir = path.join(root, 'content', 'products');
 const blogDir = path.join(root, 'content', 'blog');
 
 function parseBlogGallery(markdown, fallback) {
-  const match = String(markdown || '').match(/^gallery:\s*\\r?\\n((?:(?:[ \\t]+.*)?\\r?\\n|[ \\t]+.*$)*)/m);
+  const match = String(markdown || '').match(/^gallery:\s*\r?\n((?:(?:[ \t]+.*)?\r?\n|[ \t]+.*$)*)/m);
   if (match) {
     const items = [];
     let current = null;
     function clean(value) {
       return String(value || '').trim().replace(/^['"]|['"]$/g, '');
     }
-    match[1].split(/\\r?\\n/).forEach(line => {
-      const image = line.match(/^\\s*-\\s+image:\\s*(.*)$/);
-      const caption = line.match(/^\\s+caption:\\s*(.*)$/);
-      const simple = line.match(/^\\s*-\\s+([^:#].*?)\\s*$/);
+    match[1].split(/\r?\n/).forEach(line => {
+      const image = line.match(/^\s*-\s+image:\s*(.*)$/);
+      const caption = line.match(/^\s+caption:\s*(.*)$/);
+      const simple = line.match(/^\s*-\s+([^:#].*?)\s*$/);
       if (image) {
         if (current) items.push(current);
         current = { image: clean(image[1]), caption: '' };
@@ -34,7 +34,7 @@ function parseBlogGallery(markdown, fallback) {
   }
   return Array.isArray(fallback) ? fallback.map(item => {
     if (typeof item === 'string') {
-      const value = item.replace(/^image:\\s*/, '').trim();
+      const value = item.replace(/^image:\s*/, '').trim();
       return { image: value, caption: '' };
     }
     return item && typeof item === 'object' ? { image: String(item.image || ''), caption: String(item.caption || '') } : null;
