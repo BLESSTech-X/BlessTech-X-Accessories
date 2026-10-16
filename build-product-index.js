@@ -7,7 +7,7 @@ const productsDir = path.join(root, 'content', 'products');
 const blogDir = path.join(root, 'content', 'blog');
 
 function parseBlogGallery(markdown, fallback) {
-  const match = String(markdown || '').match(/^gallery:\s*\r?\n((?:(?:[ \t]+.*)?\r?\n|[ \t]+.*$)*)/m);
+  const match = String(markdown || '').match(/^gallery:\s*\r?\n((?:[ \t]+[^\r\n]*(?:\r?\n|$))*)/m);
   if (match) {
     const items = [];
     let current = null;
