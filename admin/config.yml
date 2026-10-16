@@ -66,17 +66,34 @@ collections:
         name: "gallery"
         widget: "list"
         required: false
-        summary: "{{fields.caption}}"
-        hint: "Add extra story photos. The cover remains the large preview; these appear as small thumbnails on the feed and full-size in the article. Captions are optional."
+        summary: "{{fields.title}}"
+        hint: "Add extra story photos. Each image can have its own optional title and explanatory paragraph. Leave both blank for a clean image-only photo."
         fields:
           - { label: "Image", name: "image", widget: "image" }
-          - { label: "Caption (optional)", name: "caption", widget: "string", required: false }
+          - { label: "Image Title (optional)", name: "title", widget: "string", required: false }
+          - { label: "Image Description (optional)", name: "description", widget: "text", required: false }
+          - { label: "Legacy Caption (optional)", name: "caption", widget: "string", required: false, hint: "Kept for older posts; used as the title if no new title is supplied." }
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. YouTube videos also appear in blog preview cards across the site. If this field is blank, a YouTube URL in the article body is detected automatically." }
       - { label: "Author", name: "author", widget: "string", default: "PhoneYa2" }
       - { label: "Featured Post", name: "featured", widget: "boolean", default: false }
       - { label: "Publish This Post", name: "publish", widget: "boolean", default: false, hint: "Keep off while drafting. Only published posts appear publicly." }
       - { label: "Tags", name: "tags", widget: "list", required: false }
-      - { label: "Related Product Slugs", name: "related_products", widget: "list", required: false, hint: "Optional product slugs, for example 10000mah-powerbank." }
+      - label: "Featured Products"
+        name: "featured_products"
+        widget: "list"
+        required: false
+        summary: "{{fields.product}}"
+        hint: "Choose products from the existing PhoneYa2 catalogue. Selected products appear as small images on the blog feed and as product cards with a Buy Now button in the full article. Add an optional caption for each product."
+        fields:
+          - label: "Product"
+            name: "product"
+            widget: "relation"
+            collection: "products"
+            search_fields: ["title", "category"]
+            value_field: "{{slug}}"
+            display_fields: ["title", "price", "category"]
+          - { label: "Product Caption (optional)", name: "caption", widget: "text", required: false, hint: "Explain why this product is relevant to the story. Leave blank if no caption is needed." }
+      - { label: "Related Product Slugs (legacy)", name: "related_products", widget: "list", required: false, hint: "Legacy links for older posts. Use Featured Products for full product cards." }
       - { label: "Article Body", name: "body", widget: "markdown" }
 
   - name: "blog_comments"
