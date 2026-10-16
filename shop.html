@@ -1664,7 +1664,7 @@ loadShop();
     var qs =
       'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
       '&status=eq.approved' +
-      '&placement=eq.carousel' +
+
       '&start_date=lte.' + encodeURIComponent(now) +
       '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
       '&order=weight.desc,created_at.desc' +
@@ -1907,14 +1907,20 @@ loadShop();
 
   function boot(rows) {
     if (!Array.isArray(rows) || !rows.length) return;
-    var ordered = weightedShuffle(rows);
-    var slot1 = ordered;
-    var slot2 = ordered.length > 1
-      ? ordered.slice(Math.floor(ordered.length / 2)).concat(ordered.slice(0, Math.floor(ordered.length / 2)))
-      : ordered;
-    setupInterstitial(document.getElementById('py2-ads-interstitial-1'), slot1);
-    setupInterstitial(document.getElementById('py2-ads-interstitial-2'), slot2);
-    maybeShowPopup(ordered);
+    // Keep the main interstitials in the carousel placement, but let the
+    // timed popup rotate through every approved, date-valid advertiser.
+    var popupRows = rows.slice();
+    var carouselRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel'; });
+    var ordered = weightedShuffle(carouselRows);
+    if (ordered.length) {
+      var slot1 = ordered;
+      var slot2 = ordered.length > 1
+        ? ordered.slice(Math.floor(ordered.length / 2)).concat(ordered.slice(0, Math.floor(ordered.length / 2)))
+        : ordered;
+      setupInterstitial(document.getElementById('py2-ads-interstitial-1'), slot1);
+      setupInterstitial(document.getElementById('py2-ads-interstitial-2'), slot2);
+    }
+    maybeShowPopup(weightedShuffle(popupRows));
   }
 
   fetchAds().then(boot).catch(function () { /* silent */ });
