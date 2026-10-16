@@ -83,6 +83,7 @@ try {
         category: String(meta.category || 'PhoneYa2 Updates'),
         excerpt: String(meta.excerpt || ''),
         image: String(meta.featured_image || ''),
+        gallery: Array.isArray(meta.gallery) ? meta.gallery.filter(Boolean).map(String) : [],
         video_url: videoUrl,
         author: String(meta.author || 'PhoneYa2'),
         featured: meta.featured === true,
