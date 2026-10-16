@@ -14,6 +14,9 @@ tags:
   - "tips"
 related_products:
   - "braided-usb-c-cable"
+featured_products:
+  - product: "braided-usb-c-cable"
+    caption: "A braided replacement option listed on PhoneYa2. Check the connector type on both ends and confirm it suits your phone and charger."
 ---
 
 A charging cable can look fine on the outside and still become unreliable. Watch for these signs before a small problem turns into a daily frustration.
