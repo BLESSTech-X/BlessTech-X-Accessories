@@ -11,21 +11,22 @@ function parseBlogGallery(markdown, fallback) {
   if (match) {
     const items = [];
     let current = null;
-    function clean(value) {
-      return String(value || '').trim().replace(/^['"]|['"]$/g, '');
-    }
+    function clean(value) { return String(value || '').trim().replace(/^['"]|['"]$/g, ''); }
     match[1].split(/\r?\n/).forEach(line => {
       const image = line.match(/^\s*-\s+image:\s*(.*)$/);
+      const title = line.match(/^\s+title:\s*(.*)$/);
+      const description = line.match(/^\s+description:\s*(.*)$/);
       const caption = line.match(/^\s+caption:\s*(.*)$/);
       const simple = line.match(/^\s*-\s+([^:#].*?)\s*$/);
       if (image) {
         if (current) items.push(current);
-        current = { image: clean(image[1]), caption: '' };
-      } else if (caption && current) {
-        current.caption = clean(caption[1]);
-      } else if (simple && !current) {
+        current = { image: clean(image[1]), title: '', description: '', caption: '' };
+      } else if (title && current) current.title = clean(title[1]);
+      else if (description && current) current.description = clean(description[1]);
+      else if (caption && current) current.caption = clean(caption[1]);
+      else if (simple && !current) {
         const value = clean(simple[1]);
-        if (value && !value.startsWith('image:')) items.push({ image: value, caption: '' });
+        if (value && !value.startsWith('image:')) items.push({ image: value, title: '', description: '', caption: '' });
       }
     });
     if (current) items.push(current);
@@ -33,12 +34,30 @@ function parseBlogGallery(markdown, fallback) {
     if (valid.length) return valid;
   }
   return Array.isArray(fallback) ? fallback.map(item => {
-    if (typeof item === 'string') {
-      const value = item.replace(/^image:\s*/, '').trim();
-      return { image: value, caption: '' };
-    }
-    return item && typeof item === 'object' ? { image: String(item.image || ''), caption: String(item.caption || '') } : null;
+    if (typeof item === 'string') return { image: item.replace(/^image:\s*/, '').trim(), title: '', description: '', caption: '' };
+    return item && typeof item === 'object' ? { image: String(item.image || ''), title: String(item.title || ''), description: String(item.description || ''), caption: String(item.caption || '') } : null;
   }).filter(item => item && item.image) : [];
+}
+
+function parseFeaturedProducts(markdown, fallback) {
+  const match = String(markdown || '').match(/^featured_products:\s*\r?\n((?:[ \t]+[^\r\n]*(?:\r?\n|$))*)/m);
+  if (match) {
+    const items = [];
+    let current = null;
+    function clean(value) { return String(value || '').trim().replace(/^['"]|['"]$/g, ''); }
+    match[1].split(/\r?\n/).forEach(line => {
+      const product = line.match(/^\s*-\s+product:\s*(.*)$/);
+      const caption = line.match(/^\s+caption:\s*(.*)$/);
+      if (product) {
+        if (current && current.product) items.push(current);
+        current = { product: clean(product[1]), caption: '' };
+      } else if (caption && current) current.caption = clean(caption[1]);
+    });
+    if (current && current.product) items.push(current);
+    if (items.length) return items;
+  }
+  if (!Array.isArray(fallback)) return [];
+  return fallback.map(item => typeof item === 'string' ? { product: item, caption: '' } : item && typeof item === 'object' && item.product ? { product: String(item.product), caption: String(item.caption || '') } : null).filter(Boolean);
 }
 
 function parseFrontmatter(markdown) {
@@ -124,7 +143,8 @@ try {
         featured: meta.featured === true,
         publish: true,
         tags: Array.isArray(meta.tags) ? meta.tags : [],
-        related_products: Array.isArray(meta.related_products) ? meta.related_products : []
+        related_products: Array.isArray(meta.related_products) ? meta.related_products : [],
+        featured_products: parseFeaturedProducts(source, meta.featured_products)
       };
     })
     .filter(Boolean)
