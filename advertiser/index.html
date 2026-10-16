@@ -355,7 +355,12 @@
   }
   .opportunity-card .opp-title { color: #4c1d95; }
   .opportunity-card .opp-text { color: #5b21b6; }
-  </style>
+  
+  .growth-coach{margin:18px 0 20px;border:1px solid #cfe7d8!important;background:radial-gradient(circle at 100% 0%,#e5fff0 0,transparent 42%),linear-gradient(135deg,#fff 0%,#f6fff9 100%)!important;overflow:hidden;position:relative}
+  .growth-coach:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#16a34a,#84cc16)}
+  .growth-coach-inner{padding:19px 21px 20px 24px}.growth-coach-kicker{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#15803d;font-size:10px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase}.growth-coach-live{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#166534;letter-spacing:.3px}.growth-coach-live:before{content:"";width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px #16a34a20}.growth-coach h2{font-size:clamp(19px,2.4vw,25px);margin:10px 0 7px;color:#10251a}.growth-coach p{margin:0;color:#52645a;max-width:760px;font-size:13.5px;line-height:1.65}.growth-coach-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.growth-coach-metrics span{background:#fff;border:1px solid #d9eadf;border-radius:9px;padding:7px 10px;color:#365343;font-size:11px;font-weight:800}.growth-coach-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:15px}.growth-coach-actions .btn{min-height:38px}.growth-coach-note{font-size:11px!important;margin-top:11px!important;color:#64776a!important}.growth-nudge{position:fixed;right:16px;bottom:18px;z-index:1200;width:min(360px,calc(100vw - 28px));padding:16px;background:#0d1720;color:#fff;border:1px solid #27533a;border-radius:16px;box-shadow:0 18px 55px #0004;animation:py2GrowthNudgeIn .28s ease}.growth-nudge-top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#86efac;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.growth-nudge-close{border:0;background:#ffffff1a;color:#fff;width:29px;height:29px;border-radius:50%;font-size:18px}.growth-nudge h3{font-size:16px;margin:8px 0 5px}.growth-nudge p{font-size:12px;line-height:1.5;color:#d1d5db;margin:0 0 12px}.growth-nudge .btn{width:100%;white-space:normal}@keyframes py2GrowthNudgeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:540px){.growth-coach-inner{padding:16px 14px 17px 18px}.growth-coach-actions .btn{flex:1 1 130px;white-space:normal}.growth-nudge{right:10px;bottom:10px;width:calc(100vw - 20px)}}
+</style>
 </head>
 <body>
 
@@ -495,6 +500,17 @@
       <div class="stat"><div class="stat-lbl">CTR</div><div class="stat-val" id="stat-ctr">—</div></div>
       <div class="stat"><div class="stat-lbl">Profile Views</div><div class="stat-val" id="stat-views">0</div></div>
     </div>
+
+    <section class="growth-coach card" id="growth-coach" aria-live="polite">
+      <div class="growth-coach-inner">
+        <div class="growth-coach-kicker"><span>PhoneYa2 Growth Coach</span><span class="growth-coach-live">Your next move</span></div>
+        <h2 id="growth-coach-title">Let's get your business discovered.</h2>
+        <p id="growth-coach-copy">Your dashboard will recommend the next practical action based on your ads and results.</p>
+        <div class="growth-coach-metrics" id="growth-coach-metrics"></div>
+        <div class="growth-coach-actions" id="growth-coach-actions"></div>
+        <p class="growth-coach-note" id="growth-coach-note">Tip: impressions mean your ad was shown; clicks mean someone chose to learn more. Neither guarantees a sale.</p>
+      </div>
+    </section>
 
     <div class="tabs" role="tablist">
       <button class="tab on" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
@@ -1437,6 +1453,98 @@
     }
   }
 
+  var growthNudgeScheduled = false;
+  function renderGrowthCoach(totalImpressions,totalClicks) {
+    var box=$('growth-coach');if(!box)return;
+    var approved=ads.filter(function(a){return a.status==='approved';});
+    var pending=ads.filter(function(a){return a.status==='pending';});
+    var rejected=ads.filter(function(a){return a.status==='rejected';});
+    var best=null,bestStats={impressions:0,clicks:0};
+    approved.forEach(function(a){var s=statsByAd[a.id]||{impressions:0,clicks:0};if(!best||s.clicks>bestStats.clicks||(s.clicks===bestStats.clicks&&s.impressions>bestStats.impressions)){best=a;bestStats=s;}});
+    var title='',copy='',note='',primaryLabel='',primaryAction='create',shareUrl='';
+    if(!ads.length){
+      title='Your first growth move: publish one strong ad.';
+      copy='Choose one product or service people already want. Use a clear image, a specific offer and one simple action customers can take. Then PhoneYa2 can review it for publication.';
+      primaryLabel='Create your first ad';primaryAction='create';
+      note='Start focused: one clear offer is easier to test than several vague ads.';
+    }else if(!approved.length&&pending.length){
+      title='Your ad is waiting for approval. Prepare its distribution now.';
+      copy='While PhoneYa2 reviews it, prepare a short WhatsApp Status and Facebook post. Once approved, share the direct ad link so people can open the offer immediately.';
+      primaryLabel='Review my ads';primaryAction='ads';
+      note='Pending ads are not yet live. Share the public ad link after approval.';
+    }else if(!approved.length&&rejected.length){
+      title='There is a fix to make before your ad can grow.';
+      copy='One or more ads were rejected. Open the rejection reason, correct the issue and resubmit. A clear offer and a working destination link help customers know what to do next.';
+      primaryLabel='Fix my ad';primaryAction='ads';
+      note='Check the rejection reason before editing so you fix the actual issue.';
+    }else if(best){
+      shareUrl=best.slug?window.location.origin+'/ad/'+encodeURIComponent(best.slug):(profile&&profile.slug?window.location.origin+'/b/'+encodeURIComponent(profile.slug):window.location.origin+'/advertiser/');
+      if(bestStats.impressions>0&&bestStats.clicks===0){
+        title='Your ad is being seen. Now improve the reason to click.';
+        copy='This ad has '+num(bestStats.impressions)+' recorded impressions but no recorded clicks yet. Make the offer more specific, show the product or result clearly, and use a direct call to action. Then share the updated link with people likely to need it.';
+        note='Do not assume more impressions alone means growth. Watch whether clicks improve after each change.';
+      }else if(bestStats.clicks>0){
+        title='You have a signal. Turn it into more opportunities.';
+        copy='Your strongest live ad has '+num(bestStats.clicks)+' clicks from '+num(bestStats.impressions)+' impressions. Share it with a relevant audience, ask interested people what they need, and compare results by channel before spending more.';
+        note='A click is interest, not a confirmed sale. Follow up with real customer enquiries and orders.';
+      }else{
+        title='Your ad is live. Now bring the right people to it.';
+        copy='A live ad needs distribution as well as placement. Share its direct link on WhatsApp Status, relevant Facebook groups and your business contacts. Use a short benefit-led message and track which channel brings clicks.';
+        note='No recorded impressions yet? Share the direct link and check back after it has had time to circulate.';
+      }
+      primaryLabel='Share my live ad';primaryAction='share';
+    }else{
+      title='Your next move is to get one ad live.';
+      copy='Create a clear offer, submit it for review and prepare a message you can share across your business channels.';
+      primaryLabel='Create an ad';primaryAction='create';
+    }
+    $('growth-coach-title').textContent=title;
+    $('growth-coach-copy').textContent=copy;
+    $('growth-coach-note').textContent=note;
+    $('growth-coach-metrics').innerHTML='<span>'+num(approved.length)+' live ad'+(approved.length===1?'':'s')+'</span><span>'+num(totalImpressions)+' impressions</span><span>'+num(totalClicks)+' clicks</span><span>'+num(profile&&profile.view_count||0)+' profile views</span>';
+    var actionHtml='';
+    if(primaryAction==='share'&&shareUrl){
+      actionHtml='<button type="button" class="btn btn-primary" data-growth-share="'+esc(shareUrl)+'"><i class="fa-solid fa-share-nodes"></i> '+esc(primaryLabel)+'</button><button type="button" class="btn btn-secondary" data-growth-copy="'+esc(shareUrl)+'"><i class="fa-solid fa-link"></i> Copy ad link</button>';
+    }else if(primaryAction==='ads'){
+      actionHtml='<button type="button" class="btn btn-primary" onclick="AdsUI.switchTab(\'ads\')"><i class="fa-solid fa-rectangle-ad"></i> '+esc(primaryLabel)+'</button>';
+    }else{
+      actionHtml='<button type="button" class="btn btn-primary" onclick="AdsUI.switchTab(\'create\')"><i class="fa-solid fa-plus"></i> '+esc(primaryLabel)+'</button>';
+    }
+    actionHtml+='<a class="btn btn-secondary" href="/advertise/" target="_blank" rel="noopener"><i class="fa-solid fa-chart-line"></i> View ad options</a>';
+    $('growth-coach-actions').innerHTML=actionHtml;
+    if(!box.getAttribute('data-growth-bound')){
+      box.setAttribute('data-growth-bound','1');
+      box.addEventListener('click',function(e){
+        var share=e.target.closest('[data-growth-share]');
+        var copy=e.target.closest('[data-growth-copy]');
+        var url=(share||copy)&&((share||copy).getAttribute(share?'data-growth-share':'data-growth-copy'));
+        if(!url)return;
+        if(share&&navigator.share){navigator.share({title:'My business on PhoneYa2',text:'Take a look at this offer from my business on PhoneYa2.',url:url}).catch(function(){});return;}
+        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){toast('Ad link copied. Share it with your audience.','success')}).catch(function(){window.prompt('Copy your ad link',url)});}
+        else window.prompt('Copy your ad link',url);
+      });
+    }
+    if(!growthNudgeScheduled){
+      growthNudgeScheduled=true;
+      var alreadyShown=false;try{alreadyShown=sessionStorage.getItem('py2_growth_coach_nudge_v1')==='1'}catch(e){}
+      if(!alreadyShown){
+        try{sessionStorage.setItem('py2_growth_coach_nudge_v1','1')}catch(e){}
+        setTimeout(function(){
+          if(!document.getElementById('growth-coach')||document.getElementById('growth-nudge'))return;
+          var n=document.createElement('aside');n.id='growth-nudge';n.className='growth-nudge';n.setAttribute('role','status');
+          n.innerHTML='<div class="growth-nudge-top"><span>One practical growth move</span><button class="growth-nudge-close" type="button" aria-label="Dismiss growth tip">×</button></div><h3>'+esc(title)+'</h3><p>'+esc(copy)+'</p>'+((primaryAction==='share'&&shareUrl)?'<button class="btn btn-primary" type="button" data-nudge-share="'+esc(shareUrl)+'"><i class="fa-solid fa-share-nodes"></i> Share your live ad now</button>':(primaryAction==='ads'?'<button class="btn btn-primary" type="button" data-nudge-ads>Review ad status</button>':'<button class="btn btn-primary" type="button" data-nudge-create>Create your first ad</button>'));
+          n.addEventListener('click',function(ev){
+            if(ev.target.closest('.growth-nudge-close')){n.remove();return;}
+            var sb=ev.target.closest('[data-nudge-share]');if(sb){var u=sb.getAttribute('data-nudge-share');if(navigator.share)navigator.share({title:'My business on PhoneYa2',text:'Take a look at this offer from my business on PhoneYa2.',url:u}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast('Ad link copied.','success')}).catch(function(){window.prompt('Copy your ad link',u)});else window.prompt('Copy your ad link',u);return;}
+            if(ev.target.closest('[data-nudge-create]')){n.remove();AdsUI.switchTab('create');return;}
+            if(ev.target.closest('[data-nudge-ads]')){n.remove();AdsUI.switchTab('ads');}
+          });
+          document.body.appendChild(n);
+        },9000);
+      }
+    }
+  }
+
   function renderStats() {
     var active = ads.filter(function (a) { return a.status === 'approved'; }).length;
     var tImp = 0, tClk = 0;
@@ -1462,6 +1570,7 @@
     setText('src-wa', num(sources.whatsapp));
     setText('src-fb', num(sources.facebook));
     setText('src-ig', num(sources.instagram));
+    renderGrowthCoach(tImp,tClk);
   }
 
   function renderStatsTable() {
