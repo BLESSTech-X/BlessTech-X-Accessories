@@ -13,6 +13,11 @@ tags:
   - "phone cases"
   - "PhoneYa2 shop"
   - "phone protection"
+featured_products:
+  - product: "clear-slim-case"
+    caption: "A slim case option to compare for everyday handling. Check your exact phone model before ordering."
+  - product: "shockproof-armor-case"
+    caption: "For shoppers comparing more protective case styles. Confirm the model fit on the product page."
 ---
 
 A phone case should fit your exact model—not just look similar in a photo. PhoneYa2's shop helps you browse available accessories and open a product listing before deciding what suits your phone.
