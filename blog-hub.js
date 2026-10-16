@@ -29,6 +29,12 @@ function mediaMarkup(p){
  if(p.image)return '<a class="py2-feed-media" href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'"><img loading="lazy" decoding="async" src="'+esc(p.image)+'" alt="'+esc(p.title)+'" onerror="this.closest(\'.py2-feed-media\').classList.add(\'py2-media-failed\')"><span class="py2-media-fallback">PhoneYa2 community post</span></a>';
  return '<a class="py2-feed-no-media" href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'"><span>PY<span>2</span></span><small>PHONEYA2 COMMUNITY</small></a>'
 }
+function galleryPreview(p){
+ var images=Array.isArray(p.gallery)?p.gallery.filter(function(src){return typeof src==='string'&&src.trim()&&src!==p.image}):[];
+ if(!images.length)return '';
+ var shown=images.slice(0,3);
+ return '<div class="py2-blog-gallery-preview" style="display:flex;align-items:center;gap:7px;padding:0 14px 12px;flex-wrap:wrap">'+shown.map(function(src,i){return '<a href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'" aria-label="See photo '+(i+1)+' in '+esc(p.title)+'" style="display:block;width:46px;height:46px;border-radius:9px;overflow:hidden;border:1px solid #dbe3ee;background:#f1f5f9;flex:0 0 auto"><img src="'+esc(src)+'" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover"></a>'}).join('')+'<a href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'" style="display:inline-flex;align-items:center;gap:5px;padding:8px 10px;border-radius:9px;background:#edf5ff;color:#174ea6;font-size:11px;font-weight:800;text-decoration:none">See '+(images.length>3?'all '+images.length:'more')+' photos <span aria-hidden="true">↗</span></a></div>';
+}
 function card(p){
  var href='/blog-post.html?slug='+encodeURIComponent(p.slug);
  var saved=getSaved().indexOf(p.slug)>=0;
@@ -46,6 +52,7 @@ function card(p){
   '<div class="py2-post-copy"><h3><a href="',href,'" data-blog-open="',esc(p.slug),'">',esc(p.title||'PhoneYa2 update'),'</a></h3>',
   '<p>',esc(p.excerpt||'Explore this PhoneYa2 update.'),'</p></div>',
   mediaMarkup(p),
+  galleryPreview(p),
   '<div class="py2-post-tags">',tags,'</div>',
   '<div class="py2-post-actions"><button type="button" class="py2-post-action',saveClass,'" data-save-post="',esc(p.slug),'" aria-pressed="',saved?'true':'false','"><i class="fa-',saveIcon,' fa-bookmark" aria-hidden="true"></i><span>',saveLabel,'</span></button>',
   '<button type="button" class="py2-post-action" data-share-post="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button>',
