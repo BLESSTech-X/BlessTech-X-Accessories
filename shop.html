@@ -1737,7 +1737,7 @@ loadShop();
         '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
         '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
         (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
-    '<a class="py2-ads-cta" href="/ad/' + encodeURIComponent(ad.slug || '') + '" onclick="event.stopPropagation();py2AdsClick(\\'' + esc(ad.id) + '\\')">' +
+    '<a class="py2-ads-cta" href="/ad/' + encodeURIComponent(ad.slug || '') + '" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
       '<span><i class="fa-solid fa-arrow-up-right-from-square"></i> View Ad Details</span>' +
           '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
         '</a>' +
@@ -1861,7 +1861,7 @@ loadShop();
         '<div class="py2-ads-popup-biz">' + esc(biz) + '</div>' +
         '<h2 class="py2-ads-popup-title">' + esc(ad.title) + '</h2>' +
         (ad.description ? '<p class="py2-ads-popup-desc">' + esc(ad.description) + '</p>' : '') +
-        '<a class="py2-ads-popup-cta" href="/ad/' + encodeURIComponent(ad.slug || '') + '" onclick="py2AdsClick(\\'' + esc(ad.id) + '\\')">' +
+        '<a class="py2-ads-popup-cta" href="/ad/' + encodeURIComponent(ad.slug || '') + '" onclick="py2AdsClick(\'' + esc(ad.id) + '\')">' +
           '<span><i class="fa-solid fa-arrow-up-right-from-square"></i> View Ad Details</span>' +
           '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
         '</a>' +
