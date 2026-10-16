@@ -1471,7 +1471,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     <button class="pwa-share-btn" onclick="shareApp()" aria-label="Share PhoneYa2">
       <i class="fa-solid fa-share-nodes"></i> Share PhoneYa2
     </button>
-    <a href="https://phoneya2.pages.dev/advertiser" class="pwa-advertise-btn" aria-label="Advertise for free" target="_blank" rel="noopener">
+    <a href="https://phoneya2.pages.dev/advertiser" class="pwa-advertise-btn" aria-label="Advertise Your Business Here" target="_blank" rel="noopener">
       <span class="adv-glow"></span>
       <i class="fa-solid fa-bullhorn"></i>
       <span>Advertise For <strong>FREE</strong></span>
@@ -2822,7 +2822,7 @@ init();
 
   var ROTATE_MS = 6000;
   var POPUP_DELAY_MS = 6000;
-  var POPUP_KEY = 'py2ads_popup_shown';
+  var POPUP_KEY = 'py2ads_popup_last_at';
 
   var TIER_RANK  = { free: 0, starter: 1, standard: 2, business: 3, premium: 4 };
   var TIER_LABEL = { starter: 'Starter', standard: 'Standard', business: 'Business', premium: 'Premium' };
@@ -3219,20 +3219,38 @@ card.innerHTML =
   }
 
   function maybeShowPopup(adList) {
-    if (popupFired) return;
-    try { if (sessionStorage.getItem(POPUP_KEY)) return; } catch (e) {}
+    if (popupFired || !Array.isArray(adList) || !adList.length) return;
+    try {
+      var lastAt = Number(localStorage.getItem(POPUP_KEY) || 0);
+      if (lastAt && Date.now() - lastAt < 15 * 60 * 1000) return;
+    } catch (e) {}
     popupFired = true;
-    if (!adList.length) return;
-
     setTimeout(function () {
-      var top = adList.slice().sort(function (a, b) {
-        return (parseInt(b.weight, 10) || 1) - (parseInt(a.weight, 10) || 1);
-      })[0];
-      if (!top) return;
-      if (popupContent) popupContent.innerHTML = buildPopupHTML(top);
+      var history = [];
+      try { history = JSON.parse(localStorage.getItem('py2ads_popup_history_v2') || '[]'); } catch (e) { history = []; }
+      if (!Array.isArray(history)) history = [];
+      var candidates = adList.filter(function (ad) { return ad && ad.id && history.indexOf(String(ad.id)) < 0; });
+      if (!candidates.length) {
+        var lastId = history.length ? history[history.length - 1] : '';
+        candidates = adList.filter(function (ad) { return ad && ad.id && String(ad.id) !== String(lastId); });
+        if (!candidates.length) candidates = adList.slice();
+        history = [];
+      }
+      var totalWeight = candidates.reduce(function (sum, ad) { return sum + Math.max(1, parseInt(ad.weight, 10) || 1); }, 0);
+      var pickAt = Math.random() * totalWeight, chosen = candidates[candidates.length - 1];
+      for (var i = 0, acc = 0; i < candidates.length; i++) {
+        acc += Math.max(1, parseInt(candidates[i].weight, 10) || 1);
+        if (pickAt <= acc) { chosen = candidates[i]; break; }
+      }
+      if (!chosen) return;
+      if (popupContent) popupContent.innerHTML = buildPopupHTML(chosen);
       if (popupBackdrop) popupBackdrop.classList.add('open');
-      recordImpression(top.id, 'popup');
-      try { sessionStorage.setItem(POPUP_KEY, '1'); } catch (e) {}
+      recordImpression(chosen.id, 'popup');
+      history.push(String(chosen.id));
+      try {
+        localStorage.setItem('py2ads_popup_history_v2', JSON.stringify(history.slice(-40)));
+        localStorage.setItem(POPUP_KEY, String(Date.now()));
+      } catch (e) {}
     }, POPUP_DELAY_MS);
   }
 
