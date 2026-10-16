@@ -223,9 +223,23 @@
   .preview-panel { background: white; border: 1px solid var(--py2-border); border-radius: var(--py2-radius-lg); overflow: hidden; }
   .preview-panel-head { padding: 10px 14px; background: #f8f9ff; border-bottom: 1px solid var(--py2-border); display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--py2-muted); }
   .preview-panel-head a { color: var(--py2-orange); font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 700; }
-  .preview-iframe-wrap { aspect-ratio: 16 / 10; max-height: 480px; background: #0a0a14; position: relative; }
-  @media (max-width: 899px) { .preview-iframe-wrap { max-height: 360px; } }
+  .preview-iframe-wrap { aspect-ratio: 16 / 10; min-height: 280px; max-height: 480px; background: #0a0a14; position: relative; }
+  @media (max-width: 899px) { .preview-iframe-wrap { min-height: 240px; max-height: 420px; } }
   .preview-iframe-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .profile-quick-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:14px 0 18px;padding:16px 18px;border:1px solid #cfe9d8;border-radius:15px;background:linear-gradient(120deg,#f1fff5,#f7fbff);box-shadow:0 5px 18px rgba(20,120,64,.07)}
+  .profile-quick-copy{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1}
+  .profile-quick-copy strong{font-size:14px;color:#123c27}
+  .profile-quick-copy span{font-size:12px;line-height:1.5;color:#516579}
+  .profile-quick-buttons{display:flex;gap:8px;flex-wrap:wrap}
+  .profile-quick-buttons .btn{min-height:40px}
+  .preview-actions .btn{min-height:38px}
+  .py2-preview-enlarge{position:fixed;inset:0;z-index:100000;background:rgba(3,7,18,.88);display:flex;align-items:center;justify-content:center;padding:clamp(8px,2vw,24px)}
+  .py2-preview-enlarge-card{width:min(1500px,100%);height:min(94vh,1000px);background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 80px #0008}
+  .py2-preview-enlarge-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #e5e7eb;color:#172033;font-weight:800}
+  .py2-preview-enlarge-head small{display:block;color:#64748b;font-weight:500;font-size:11px;margin-top:2px}
+  .py2-preview-enlarge-close{width:42px;height:42px;flex:0 0 42px;border:0;border-radius:11px;background:#111827;color:#fff;font-size:24px;cursor:pointer}
+  .py2-preview-enlarge-frame{border:0;display:block;width:100%;height:100%;flex:1;min-height:0;background:#f8fafc}
+  @media(max-width:600px){.profile-quick-actions{align-items:stretch;padding:14px}.profile-quick-buttons{display:grid;grid-template-columns:1fr}.profile-quick-buttons .btn{width:100%;justify-content:center}.py2-preview-enlarge{padding:0}.py2-preview-enlarge-card{height:100dvh;border-radius:0}.py2-preview-enlarge-head{padding:10px 12px}}
   .preview-actions { padding: 12px 14px; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--py2-border); background: white; }
   .share-block { padding: 16px 0; border-bottom: 1px solid var(--py2-border); }
   .share-block:last-child { border-bottom: none; }
@@ -521,6 +535,14 @@
       <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
     </div>
 
+    <div class="profile-quick-actions" aria-label="Business profile shortcuts">
+      <div class="profile-quick-copy"><strong>Make your business profile work harder</strong><span>Edit what customers see, then preview the public profile before sharing it.</span></div>
+      <div class="profile-quick-buttons">
+        <button type="button" class="btn btn-primary" id="btn-quick-edit-profile"><i class="fa-solid fa-pen-to-square"></i> Edit My Profile</button>
+        <button type="button" class="btn btn-secondary" id="btn-quick-preview-profile"><i class="fa-solid fa-eye"></i> Preview Public Profile</button>
+      </div>
+    </div>
+
     <section class="panel on" data-panel="ads">
       <div id="opportunity-inline"></div>
       <div class="card" style="margin-bottom:16px;">
@@ -687,7 +709,7 @@
         <div>
           <div class="card">
             <div class="card-head">
-              <h2>🏪 Business Profile</h2>
+              <h2>✏️ Edit Your Business Profile</h2>
               <span style="font-size:11.5px;color:var(--py2-muted);">Your mini-site on PhoneYa2</span>
             </div>
             <div class="card-body">
@@ -810,13 +832,14 @@
         <div>
           <div class="preview-panel">
             <div class="preview-panel-head">
-              <span>Live Preview</span>
+              <span>Your Public Profile — Live Preview</span>
               <a href="#" id="preview-open-link" target="_blank">Open <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
             </div>
             <div class="preview-iframe-wrap">
               <iframe id="preview-iframe" src="about:blank" title="Preview"></iframe>
             </div>
             <div class="preview-actions">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-preview-enlarge"><i class="fa-solid fa-expand"></i> Enlarge Preview</button>
               <button type="button" class="btn btn-secondary btn-sm" id="btn-preview-refresh"><i class="fa-solid fa-rotate"></i> Refresh</button>
               <button type="button" class="btn btn-secondary btn-sm" id="btn-preview-qr"><i class="fa-solid fa-qrcode"></i> QR Code</button>
             </div>
@@ -1718,6 +1741,18 @@
   });
   window.AdsUI = { switchTab: switchTab, openUpgrade: openUpgradeModal };
 
+  var quickEditProfile = $('btn-quick-edit-profile');
+  if (quickEditProfile) quickEditProfile.addEventListener('click', function () {
+    switchTab('profile');
+    var field = $('pf-tagline');
+    if (field) field.focus({ preventScroll: true });
+  });
+  var quickPreviewProfile = $('btn-quick-preview-profile');
+  if (quickPreviewProfile) quickPreviewProfile.addEventListener('click', function () {
+    if (!profile || !profile.slug) { toast('Your profile is still loading. Please try again.', 'error'); return; }
+    window.open(window.location.origin + '/b/' + encodeURIComponent(profile.slug), '_blank', 'noopener');
+  });
+
   var btnNewAdTop = $('btn-new-ad-top');
   if (btnNewAdTop) btnNewAdTop.addEventListener('click', function () { resetAdForm(); switchTab('create'); });
 
@@ -2239,6 +2274,30 @@
     var frame = $('preview-iframe');
     if (frame) frame.src = '/b/' + profile.slug + '?preview=' + Date.now();
   }
+
+  function openEnlargedProfilePreview() {
+    if (!profile || !profile.slug) { toast('Your profile is still loading. Please try again.', 'error'); return; }
+    var existing = document.getElementById('py2-preview-enlarge');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'py2-preview-enlarge';
+    overlay.className = 'py2-preview-enlarge';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Enlarged public business profile preview');
+    overlay.innerHTML = '<div class="py2-preview-enlarge-card"><div class="py2-preview-enlarge-head"><div>Public Business Profile<small>What customers see when they open your PhoneYa2 profile</small></div><button type="button" class="py2-preview-enlarge-close" aria-label="Close enlarged preview">×</button></div><iframe class="py2-preview-enlarge-frame" title="Enlarged public business profile preview"></iframe></div>';
+    var frame = overlay.querySelector('iframe');
+    frame.src = '/b/' + encodeURIComponent(profile.slug) + '?preview=' + Date.now();
+    function close() { overlay.remove(); document.removeEventListener('keydown', onKey); }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    overlay.querySelector('.py2-preview-enlarge-close').addEventListener('click', close);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(overlay);
+    overlay.querySelector('.py2-preview-enlarge-close').focus();
+  }
+  var btnPreviewEnlarge = $('btn-preview-enlarge');
+  if (btnPreviewEnlarge) btnPreviewEnlarge.addEventListener('click', openEnlargedProfilePreview);
 
   var btnPreviewRefresh = $('btn-preview-refresh');
   if (btnPreviewRefresh) btnPreviewRefresh.addEventListener('click', function () { refreshPreview(); toast('Preview refreshed', 'success'); });
