@@ -1667,8 +1667,8 @@ loadShop();
 
       '&start_date=lte.' + encodeURIComponent(now) +
       '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
-      '&order=weight.desc,created_at.desc' +
-      '&limit=40';
+      '&order=created_at.desc' +
+      '&limit=100';
     return sbGet(qs);
   }
 
