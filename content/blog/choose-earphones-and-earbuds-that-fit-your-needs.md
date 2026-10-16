@@ -10,14 +10,14 @@ featured_image: "/assets/images/uploads/1000066524.jpg"
 related_products:
   - "braided-usb-c-cable"
 tags:
+  - "earphones"
+  - "phone accessories"
+  - "PhoneYa2 catalogue"
 featured_products:
   - product: "air-pods-pro"
     caption: "A wireless option to compare for everyday listening. Check the current listing and your phone's Bluetooth support before ordering."
   - product: "amigo-ag-02-earphones"
     caption: "A wired earphone option. Confirm the connector matches your phone or adapter."
-  - "earphones"
-  - "phone accessories"
-  - "PhoneYa2 catalogue"
 ---
 
 The right earphones depend on how you use them and what your phone supports. A little checking before ordering can help you avoid choosing the wrong connector or style.
