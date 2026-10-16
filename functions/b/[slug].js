@@ -1048,7 +1048,7 @@ export async function onRequestGet(context) {
       <div class="advertise-strip">
         <div>
           <h3>Want a profile like this for your business?</h3>
-          <p>Advertise on PhoneYa2 and get a free business profile. Upgrade anytime for custom branding and more visibility.</p>
+          <p>Promote your business on PhoneYa2 and build a stronger business profile. Enhanced visibility options are available as your goals grow.</p>
         </div>
         <a href="/advertise/">Get started <i class="fa-solid fa-arrow-right"></i></a>
       </div>
