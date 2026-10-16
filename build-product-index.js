@@ -144,7 +144,10 @@ try {
         publish: true,
         tags: Array.isArray(meta.tags) ? meta.tags : [],
         related_products: Array.isArray(meta.related_products) ? meta.related_products : [],
-        featured_products: parseFeaturedProducts(source, meta.featured_products)
+        featured_products: parseFeaturedProducts(source, meta.featured_products).map(item => {
+          const product = productCatalog.find(candidate => candidate.slug === item.product);
+          return product ? { product: item.product, slug: product.slug, title: product.title, image: product.image, price: product.price, caption: item.caption } : item;
+        })
       };
     })
     .filter(Boolean)
