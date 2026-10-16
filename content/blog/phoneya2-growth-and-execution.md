@@ -1,10 +1,16 @@
 ---
 title: "PhoneYa2: Building Beyond an Online Shop"
-date: "2026-10-16T16:45:00+02:00"
-category: "PhoneYa2 Updates"
-excerpt: "PhoneYa2 is building a platform that connects customers, businesses, products and opportunities—with a focus on practical partnerships, customer value and measurable progress."
-featured_image: "https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-author: "PhoneYa2"
+date: 2026-10-16T16:45:00+02:00
+category: PhoneYa2 Updates
+excerpt: PhoneYa2 is building a platform that connects customers, businesses,
+  products and opportunities—with a focus on practical partnerships, customer
+  value and measurable progress.
+featured_image: https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg
+gallery:
+  - image: /assets/images/uploads/1000066485.jpg
+  - image: /assets/images/uploads/1000066528.jpg
+  - image: /assets/images/uploads/1000070894.jpg
+author: PhoneYa2
 featured: true
 publish: true
 tags:
