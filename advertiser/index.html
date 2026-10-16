@@ -1504,7 +1504,7 @@
     $('growth-coach-metrics').innerHTML='<span>'+num(approved.length)+' live ad'+(approved.length===1?'':'s')+'</span><span>'+num(totalImpressions)+' impressions</span><span>'+num(totalClicks)+' clicks</span><span>'+num(profile&&profile.view_count||0)+' profile views</span>';
     var actionHtml='';
     if(primaryAction==='share'&&shareUrl){
-      actionHtml='<button type="button" class="btn btn-primary" data-growth-share="'+esc(shareUrl)+'"><i class="fa-solid fa-share-nodes"></i> '+esc(primaryLabel)+'</button><button type="button" class="btn btn-secondary" data-growth-copy="'+esc(shareUrl)+'"><i class="fa-solid fa-link"></i> Copy ad link</button>';
+      actionHtml='<button type="button" class="btn btn-primary" data-growth-share="'+esc(shareUrl)+'"><i class="fa-solid fa-share-nodes"></i> '+esc(primaryLabel)+'</button><button type="button" class="btn btn-secondary" data-growth-copy="'+esc(shareUrl)+'"><i class="fa-solid fa-link"></i> Copy ad link</button><a class="btn btn-secondary" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('See my business offer on PhoneYa2: '+shareUrl)+'"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a><a class="btn btn-secondary" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl)+'"><i class="fa-brands fa-facebook"></i> Facebook</a>';
     }else if(primaryAction==='ads'){
       actionHtml='<button type="button" class="btn btn-primary" onclick="AdsUI.switchTab(\'ads\')"><i class="fa-solid fa-rectangle-ad"></i> '+esc(primaryLabel)+'</button>';
     }else{
