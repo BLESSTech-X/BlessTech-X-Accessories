@@ -1404,6 +1404,15 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
   }
 }
 </style>
+<style id="py2-tiny-product-share-buttons">
+.pc-share-row{display:flex!important;align-items:center;justify-content:flex-start;gap:4px!important;margin-top:6px!important}
+.pc-share-row .pc-share-btn{flex:0 0 25px!important;width:25px!important;height:23px!important;min-height:23px!important;padding:0!important;border:1px solid transparent!important;border-radius:6px!important;background:#f1f5f9!important;color:#475569!important;font-size:10px!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:0!important}
+.pc-share-row .pc-share-btn i{font-size:11px!important}
+.pc-share-row .pc-share-facebook{background:#eaf2ff!important;border-color:#cfe0ff!important;color:#1877f2!important}
+.pc-share-row .pc-share-whatsapp{background:#e9f9ef!important;border-color:#c7efd5!important;color:#16a34a!important}
+.pc-share-row .pc-copy-btn{background:#eef6ff!important;border-color:#d5e7ff!important;color:#2563eb!important}
+.pc-share-row .pc-share-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+</style>
 </head>
 <body>
 
@@ -1996,6 +2005,11 @@ function shareProduct(p) {
   );
   window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
 }
+function shareFacebookProduct(p) {
+  if (!p) return;
+  const url = window.location.origin + '/product.html?id=' + encodeURIComponent(p.slug);
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener,noreferrer,width=650,height=500');
+}
 function copyProductLink(slug, event) {
   if (event) event.stopPropagation();
   const url = window.location.origin + '/product.html?id=' + slug;
@@ -2186,7 +2200,8 @@ function buildFeaturedCard(p) {
   const shareRow = document.createElement('div');
   shareRow.className = 'pc-share-row';
   shareRow.innerHTML =
-    '<button class="pc-share-btn" onclick="event.stopPropagation();(function(s){var p=allProducts.find(function(x){return x.slug===s;});if(p)shareProduct(p);})(\'' + p.slug + '\')" aria-label="Share"><i class="fa-brands fa-whatsapp"></i> Share</button>' +
+    '<button class="pc-share-btn pc-share-facebook" onclick="event.stopPropagation();(function(s){var p=allProducts.find(function(x){return x.slug===s;});if(p)shareFacebookProduct(p);})(\'' + p.slug + '\')" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>' +
+    '<button class="pc-share-btn pc-share-whatsapp" onclick="event.stopPropagation();(function(s){var p=allProducts.find(function(x){return x.slug===s;});if(p)shareProduct(p);})(\'' + p.slug + '\')" aria-label="Share on WhatsApp" title="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>' +
     '<button class="pc-share-btn pc-copy-btn" onclick="event.stopPropagation();copyProductLink(\'' + p.slug + '\',event)" aria-label="Copy link" title="Copy link"><i class="fa-solid fa-link"></i></button>';
   body.appendChild(shareRow);
 
@@ -2224,7 +2239,8 @@ function buildCard(p) {
       '</div>'+
       btn+
       '<div class="pc-share-row">'+
-        '<button class="pc-share-btn" onclick="event.stopPropagation();shareProduct(allProducts.find(x=>x.slug===\''+p.slug+'\'))" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i> Share</button>'+
+        '<button class="pc-share-btn pc-share-facebook" onclick="event.stopPropagation();shareFacebookProduct(allProducts.find(x=>x.slug===\''+p.slug+'\'))" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>'+
+        '<button class="pc-share-btn pc-share-whatsapp" onclick="event.stopPropagation();shareProduct(allProducts.find(x=>x.slug===\''+p.slug+'\'))" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>'+
         '<button class="pc-share-btn pc-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link"><i class="fa-solid fa-link"></i></button>'+
       '</div>'+
     '</div>';
