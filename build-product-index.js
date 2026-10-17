@@ -61,27 +61,27 @@ function parseFeaturedProducts(markdown, fallback) {
 }
 
 function parseFrontmatter(markdown) {
-  const match = markdown.match(/^---\\s*\\r?\\n([\\s\\S]*?)\\r?\\n---\\s*(?:\\r?\\n|$)/);
+  const match = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/);
   if (!match) return {};
   const result = {};
-  const lines = match[1].split(/\\r?\\n/);
+  const lines = match[1].split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
-    const m = lines[i].match(/^([A-Za-z0-9_-]+):\\s*(.*)$/);
+    const m = lines[i].match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
     if (!m) continue;
     const key = m[1];
     let value = m[2].trim();
-    if (/^[|>][+-]?\\d*$/.test(value)) {
+    if (/^[|>][+-]?\d*$/.test(value)) {
       const style = value[0];
       const block = [];
       while (i + 1 < lines.length) {
         const next = lines[i + 1];
         if (!next.trim()) { block.push(''); i++; continue; }
-        if (!/^\\s/.test(next)) break;
+        if (!/^\s/.test(next)) break;
         block.push(next.trim());
         i++;
       }
-      value = block.join('\\n');
-      if (style === '>') value = value.replace(/([^\\n])\\n(?!\\n)/g, '$1 ').replace(/\\n{2,}/g, '\\n\\n');
+      value = block.join('\n');
+      if (style === '>') value = value.replace(/([^\n])\n(?!\n)/g, '$1 ').replace(/\n{2,}/g, '\n\n');
       value = value.trim();
     } else {
       value = value.replace(/^['"]|['"]$/g, '');
