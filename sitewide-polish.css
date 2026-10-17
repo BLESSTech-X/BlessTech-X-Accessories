@@ -13,3 +13,22 @@ main,.main-content,.page-content,.content-wrapper,.shop-container,.product-page,
 :where(main,.main-content,.page-content,.content-wrapper,.shop-container,.product-page,.cart-container,.checkout-container) :where(.secondary-button,.btn-secondary,.outline-button){background:#fff;border:1px solid #c6d2e1;color:#183a5d}
 :where(main,.main-content,.page-content,.content-wrapper,.shop-container,.product-page,.cart-container,.checkout-container) :where(button,.btn,.button,a.button,.cta-button):not(:disabled):hover{box-shadow:0 5px 15px rgba(19,52,89,.14)}
 @media(prefers-reduced-motion:reduce){:where(button,.btn,.button,a.button,.cta-button){transition:none!important}}
+
+
+/* Stronger contrast, bold dimensional display text, and deeper content elevation.
+   Blog/article writing is intentionally excluded from the dimensional text treatment. */
+body:not(.py2-blog-page):not(.py2-blog-redesigned):not(.blog-page):not(.blog-post-page) :where(.hero h1,.hero h2,.section-title,.section-heading,h1:not(.py2-article h1),h2,h3,.eyebrow,.section-kicker,.section-label,.hero-subtitle,.hero-tagline,.feature-title,.page-title,.page-heading,.stat-number,.empty-state-title){
+  font-weight:900!important;
+  color:#14243a;
+  text-shadow:0 1px 0 rgba(255,255,255,.92),0 2px 0 rgba(18,38,63,.12),0 4px 0 rgba(18,38,63,.055),0 7px 13px rgba(16,36,62,.18);
+  -webkit-text-stroke:.18px currentColor;
+}
+body:not(.py2-blog-page):not(.py2-blog-redesigned):not(.blog-page):not(.blog-post-page) :where(.hero p,.hero-subtitle,.section-intro,.section-description,.page-intro,.empty-state p){
+  color:#34445a!important;font-weight:650!important;text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(20,36,58,.12);
+}
+body:not(.py2-blog-page):not(.py2-blog-redesigned):not(.blog-page):not(.blog-post-page) :where(.card,.panel,.content-card,.feature-card,.stat-card,.product-card,.product-item,.pcard,.cart-item,.checkout-section,.form-card,.dashboard-card,.info-box,.contact-card,.category-card){
+  box-shadow:0 5px 13px rgba(19,38,63,.09),0 13px 28px rgba(19,38,63,.075),0 2px 4px rgba(19,38,63,.055);
+}
+body:not(.py2-blog-page):not(.py2-blog-redesigned):not(.blog-page):not(.blog-post-page) :where(.card,.panel,.content-card,.feature-card,.stat-card,.product-card,.product-item,.pcard,.cart-item,.checkout-section,.form-card,.dashboard-card,.info-box,.contact-card,.category-card):hover{
+  box-shadow:0 9px 18px rgba(19,38,63,.12),0 18px 38px rgba(19,38,63,.11),0 3px 6px rgba(19,38,63,.06);
+}
