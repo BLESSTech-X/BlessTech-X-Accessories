@@ -1,4 +1,4 @@
-/* PhoneYa2 Living Water Experience v3 — shared across storefront pages. */
+/* PhoneYa2 Living Water Experience v4 — opaque floating content with water kept behind it. */
 html.py2-water-enabled {
   min-height: 100%;
   background: #087c9a !important;
@@ -25,7 +25,7 @@ body.py2-water-page {
 #py2-water-interaction-surface {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 180 !important;
+  z-index: -1 !important;
   display: block !important;
   width: 100vw !important;
   height: 100vh !important;
@@ -45,7 +45,7 @@ body.py2-water-page .shop-main,
 body.py2-water-page .cart-layout {
   position: relative;
 }
-/* Allow the water to show softly through large page surfaces, without reducing text contrast. */
+/* Solid floating objects: water is visible around edges, never through content. */
 body.py2-water-page .section-card,
 body.py2-water-page .trust-item,
 body.py2-water-page .side-card,
@@ -62,10 +62,10 @@ body.py2-water-page .order-summary,
 body.py2-water-page .howto-mini-inner,
 body.py2-water-page .filter-pills .fpill,
 body.py2-water-page .search-inner {
-  background-color: rgba(255,255,255,.91) !important;
-  box-shadow: 0 12px 28px rgba(2,48,70,.14), 0 1px 0 rgba(255,255,255,.78) inset;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background-color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(2,48,70,.16), 0 1px 0 rgba(255,255,255,.95) inset;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 body.py2-water-page .products-section,
 body.py2-water-page .search-bar,
@@ -76,7 +76,7 @@ body.py2-water-page .main-wrap {
 }
 body.py2-water-page .pcard-img,
 body.py2-water-page .pc-img {
-  background-color: rgba(232,248,251,.82) !important;
+  background-color: #f0f8fa !important;
 }
 body.py2-water-page .top-header,
 body.py2-water-page .cat-nav,
@@ -99,3 +99,11 @@ body.py2-water-page footer {
   #py2-water-interaction-surface { display: none !important; }
   body.py2-water-page::before { animation: none !important; }
 }
+
+
+/* Edge water: moving highlights surround solid surfaces without crossing their content. */
+body.py2-water-page .pcard,body.py2-water-page .product-card,body.py2-water-page .section-card,body.py2-water-page .panel,body.py2-water-page .benefit,body.py2-water-page .contact-card,body.py2-water-page .about-card,body.py2-water-page .policy-card,body.py2-water-page .checkout-card,body.py2-water-page .order-summary,body.py2-water-page .howto-mini-inner{position:relative;isolation:isolate;border-color:rgba(196,235,243,.95)!important}
+body.py2-water-page .pcard::after,body.py2-water-page .product-card::after,body.py2-water-page .section-card::after,body.py2-water-page .panel::after,body.py2-water-page .benefit::after,body.py2-water-page .contact-card::after,body.py2-water-page .about-card::after,body.py2-water-page .policy-card::after,body.py2-water-page .checkout-card::after,body.py2-water-page .order-summary::after,body.py2-water-page .howto-mini-inner::after{content:"";position:absolute;inset:-2px;z-index:-1;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(153,238,247,0),rgba(119,223,239,.48),rgba(255,255,255,0),rgba(91,196,225,.3),rgba(153,238,247,0));background-size:240% 100%;animation:py2-water-edge-flow 8s linear infinite;opacity:.58}
+@keyframes py2-water-edge-flow{from{background-position:100% 0}to{background-position:-140% 0}}
+body.py2-water-page .top-header,body.py2-water-page .cat-nav,body.py2-water-page .py2-quick-tabs,body.py2-water-page .mob-nav-panel,body.py2-water-page .footer,body.py2-water-page footer{background-color:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@media(prefers-reduced-motion:reduce){body.py2-water-page .pcard::after,body.py2-water-page .product-card::after,body.py2-water-page .section-card::after,body.py2-water-page .panel::after,body.py2-water-page .benefit::after,body.py2-water-page .contact-card::after,body.py2-water-page .about-card::after,body.py2-water-page .policy-card::after,body.py2-water-page .checkout-card::after,body.py2-water-page .order-summary::after,body.py2-water-page .howto-mini-inner::after{animation:none}}
