@@ -454,6 +454,13 @@ body>.top-header,body>nav.py2-quick-tabs{
     animation-duration:13s!important;
   }
 }
+/* Avoid costly blur/blend repaints on animated brand watermark layers across pages. */
+body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
+.heading::before,.hero::before,#product-detail::before{
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  will-change:transform,opacity!important;
+}
 @media(prefers-reduced-motion:reduce){
   body::before{
     animation:none!important;
