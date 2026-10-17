@@ -694,12 +694,15 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   function updateSaved(rows){saveCart(rows);render();}
   function render(catalogFailed){
     const rows=readCart(),host=$("items");host.replaceChildren();
-    let count=0,subtotal=0;
-    rows.forEach(([slug,qty])=>{const p=products.get(slug);if(p){count+=qty;subtotal+=p.price*qty;}});
+    // The displayed cart quantity must come from saved cart rows, not the product catalogue.
+    // Otherwise a temporarily missing product record incorrectly makes the cart show zero.
+    const count=rows.reduce((sum,[,qty])=>sum+qty,0);
+    let subtotal=0;
+    rows.forEach(([slug,qty])=>{const p=products.get(slug);if(p)subtotal+=p.price*qty;});
     $("count-label").textContent=count+" "+(count===1?"item":"items");
     $("summary-count").textContent=String(count);
     $("subtotal").textContent=money(subtotal);$("total").textContent=money(subtotal);
-    $("proceed").disabled=count===0||!!catalogFailed;
+    $("proceed").disabled=count===0||!!catalogFailed||rows.some(([slug])=>!products.has(slug));
     $("clear-cart").hidden=rows.length===0;
     if(!rows.length){
       const empty=document.createElement("div");empty.className="empty";
