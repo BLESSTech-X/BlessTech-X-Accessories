@@ -36,7 +36,6 @@
   var ripples = [], lastScrollY = window.scrollY || 0, lastScrollAt = 0, lastPointerAt = 0;
   var running = !reducedMotion && !document.hidden;
   var logo = new Image();
-  logo.crossOrigin = 'anonymous';
   logo.src = 'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg';
   var logoReady = false;
   logo.onload = function () { logoReady = true; };
@@ -66,7 +65,7 @@
     var left = (w - dw) / 2, top = h * .53 - dh / 2;
     bg.save();
     bg.globalAlpha = .17;
-    bg.globalCompositeOperation = 'screen';
+    bg.globalCompositeOperation = 'multiply';
     /* Draw narrow horizontal slices with tiny phase-shifted offsets: the mark appears beneath moving water. */
     var slices = lowPower ? 28 : 54;
     var sh = logo.naturalHeight / slices, destH = dh / slices;
