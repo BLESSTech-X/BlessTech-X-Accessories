@@ -1,133 +1,223 @@
-/* PhoneYa2 Living Water Experience — lightweight, decorative, and safe to ignore */
+/* PhoneYa2 Living Water Experience v3 — layered water surface, submerged logo, touch/scroll ripples. */
 (function () {
   'use strict';
-  if (window.__py2WaterExperienceLoaded) return;
-  window.__py2WaterExperienceLoaded = true;
+  if (window.__py2WaterExperienceV3) return;
+  window.__py2WaterExperienceV3 = true;
 
-  var root = document.documentElement;
-  var body = document.body;
-  if (!body || body.classList.contains('py2-water-page')) return;
+  var root = document.documentElement, body = document.body;
+  if (!body) return;
   root.classList.add('py2-water-enabled');
   body.classList.add('py2-water-page');
 
-  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var saveData = !!(navigator.connection && navigator.connection.saveData);
-  var canvas = document.createElement('canvas');
-  canvas.id = 'py2-water-surface';
-  canvas.setAttribute('aria-hidden', 'true');
-  body.insertBefore(canvas, body.firstChild);
-  var ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
-  if (!ctx) return;
+  if (!document.querySelector('link[data-py2-water-styles]')) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/water-experience.css?v=20261017-living-water3';
+    link.setAttribute('data-py2-water-styles', 'true');
+    document.head.appendChild(link);
+  }
 
-  var w = 0, h = 0, dpr = 1, frame = 0, lastFrame = 0, t = 0;
-  var ripples = [];
-  var running = !reducedMotion && !saveData && !document.hidden;
-  var pointerCooldown = 0;
-  var lastScrollAt = 0;
-  var lastScrollY = window.scrollY || 0;
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var saveData = !!(navigator.connection && navigator.connection.saveData);
+  var lowPower = saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+  var background = document.createElement('canvas');
+  background.id = 'py2-water-surface';
+  background.setAttribute('aria-hidden', 'true');
+  var foreground = document.createElement('canvas');
+  foreground.id = 'py2-water-interaction-surface';
+  foreground.setAttribute('aria-hidden', 'true');
+  body.insertBefore(background, body.firstChild);
+  body.appendChild(foreground);
+  var bg = background.getContext('2d', { alpha: false, desynchronized: true });
+  var fg = foreground.getContext('2d', { alpha: true, desynchronized: true });
+  if (!bg || !fg) return;
+
+  var w = 1, h = 1, dpr = 1, frame = 0, lastFrame = 0, elapsed = 0;
+  var ripples = [], lastScrollY = window.scrollY || 0, lastScrollAt = 0, lastPointerAt = 0;
+  var running = !reducedMotion && !document.hidden;
+  var logo = new Image();
+  logo.crossOrigin = 'anonymous';
+  logo.src = 'https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg';
+  var logoReady = false;
+  logo.onload = function () { logoReady = true; };
+  logo.onerror = function () { logoReady = false; };
 
   function resize() {
     w = Math.max(1, window.innerWidth);
     h = Math.max(1, window.innerHeight);
-    dpr = Math.min(window.devicePixelRatio || 1, 1.35);
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    draw(0);
+    dpr = Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.5);
+    [background, foreground].forEach(function (canvas) {
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+    });
+    bg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    fg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawWater();
+    drawRipples();
+  }
+
+  function drawSubmergedLogo() {
+    if (!logoReady || !logo.naturalWidth || w < 10) return;
+    var maxW = Math.min(w * .43, 430);
+    var ratio = Math.min(maxW / logo.naturalWidth, Math.min(h * .36, 310) / logo.naturalHeight);
+    var dw = logo.naturalWidth * ratio, dh = logo.naturalHeight * ratio;
+    var left = (w - dw) / 2, top = h * .53 - dh / 2;
+    bg.save();
+    bg.globalAlpha = .17;
+    bg.globalCompositeOperation = 'screen';
+    /* Draw narrow horizontal slices with tiny phase-shifted offsets: the mark appears beneath moving water. */
+    var slices = lowPower ? 28 : 54;
+    var sh = logo.naturalHeight / slices, destH = dh / slices;
+    for (var i = 0; i < slices; i++) {
+      var phase = elapsed * 1.15 + i * .27;
+      var offset = Math.sin(phase) * (lowPower ? 2.2 : 4.5) + Math.sin(phase * .57) * 1.7;
+      bg.drawImage(logo, 0, i * sh, logo.naturalWidth, sh + 1, left + offset, top + i * destH, dw, destH + 1);
+    }
+    bg.restore();
+  }
+
+  function drawWater() {
+    if (!bg || !w || !h) return;
+    var t = elapsed;
+    bg.clearRect(0, 0, w, h);
+    var base = bg.createLinearGradient(0, 0, w * .8, h);
+    base.addColorStop(0, '#087c9b');
+    base.addColorStop(.28, '#119bb5');
+    base.addColorStop(.57, '#087f9f');
+    base.addColorStop(1, '#043d61');
+    bg.fillStyle = base;
+    bg.fillRect(0, 0, w, h);
+
+    var glow = bg.createRadialGradient(w * (.22 + Math.sin(t * .34) * .06), h * .12, 0, w * .32, h * .16, Math.max(w, h) * .8);
+    glow.addColorStop(0, 'rgba(190,250,255,.30)');
+    glow.addColorStop(.28, 'rgba(87,221,235,.15)');
+    glow.addColorStop(.7, 'rgba(20,139,180,.045)');
+    glow.addColorStop(1, 'rgba(0,34,66,.22)');
+    bg.fillStyle = glow;
+    bg.fillRect(0, 0, w, h);
+
+    /* Sun caustics: moving, broken ribbons instead of flat parallel lines. */
+    bg.save();
+    bg.globalCompositeOperation = 'screen';
+    var bands = lowPower ? 9 : 16;
+    var step = lowPower ? 27 : 17;
+    for (var band = 0; band < bands; band++) {
+      var yBase = h * (.055 + band * (.89 / bands));
+      bg.beginPath();
+      for (var x = -step; x <= w + step; x += step) {
+        var wave = Math.sin(x * .009 + t * 1.65 + band * .72) * (4 + band % 4) +
+          Math.sin(x * .021 - t * 1.13 + band * 1.7) * 2.7 +
+          Math.sin(x * .004 + t * .72) * 4;
+        var y = yBase + wave;
+        if (x === -step) bg.moveTo(x, y); else bg.lineTo(x, y);
+      }
+      bg.strokeStyle = 'rgba(215,252,255,' + (.035 + (band % 5) * .009) + ')';
+      bg.lineWidth = band % 3 === 0 ? 1.5 : .75;
+      bg.stroke();
+    }
+    /* Scattered caustic glints add depth and give the water a real light path. */
+    var glints = lowPower ? 18 : 38;
+    for (var g = 0; g < glints; g++) {
+      var gx = (g * 137.5 + Math.sin(t + g) * 34) % (w + 30) - 15;
+      var gy = (g * 83.7 + Math.cos(t * .8 + g * 1.4) * 25) % (h + 20) - 10;
+      bg.beginPath();
+      bg.ellipse(gx, gy, 5 + (g % 5) * 2.4, 1 + (g % 3) * .6, Math.sin(t + g) * .35, 0, Math.PI * 2);
+      bg.fillStyle = 'rgba(224,253,255,' + (.025 + (g % 4) * .012) + ')';
+      bg.fill();
+    }
+    bg.restore();
+    drawSubmergedLogo();
+    /* Soft vignette creates underwater depth at the edges. */
+    var shade = bg.createRadialGradient(w * .5, h * .44, Math.min(w, h) * .12, w * .5, h * .5, Math.max(w, h) * .78);
+    shade.addColorStop(0, 'rgba(0,0,0,0)');
+    shade.addColorStop(1, 'rgba(0,24,48,.24)');
+    bg.fillStyle = shade;
+    bg.fillRect(0, 0, w, h);
   }
 
   function addRipple(x, y, strength, splash) {
-    if (reducedMotion || saveData || ripples.length > 5) return;
+    if (reducedMotion || document.hidden || ripples.length > 10) return;
     var droplets = [];
     if (splash) {
-      for (var d = 0; d < 5; d++) droplets.push({ angle: (Math.PI * 2 * d / 5) + Math.random() * .45, distance: 9 + Math.random() * 12, size: 1 + Math.random() * 1.6 });
-    }
-    ripples.push({ x: x, y: y, radius: 4, max: 55 + (strength || 0) * 15, alpha: .38, speed: 1.2, born: performance.now(), droplets: droplets });
-    if (!running && !document.hidden) start();
-  }
-
-  function draw(delta) {
-    if (!ctx || !w || !h) return;
-    t += delta * .00012;
-    ctx.clearRect(0, 0, w, h);
-
-    /* Layered teal/blue light gives the page a continuous water-like depth. */
-    var base = ctx.createLinearGradient(0, 0, w * .9, h);
-    base.addColorStop(0, 'rgba(7, 100, 133, .94)');
-    base.addColorStop(.38, 'rgba(14, 151, 177, .91)');
-    base.addColorStop(.72, 'rgba(7, 104, 143, .93)');
-    base.addColorStop(1, 'rgba(4, 63, 96, .96)');
-    ctx.fillStyle = base;
-    ctx.fillRect(0, 0, w, h);
-
-    var glow = ctx.createRadialGradient(w * (.22 + Math.sin(t) * .035), h * .18, 0, w * .3, h * .2, Math.max(w, h) * .72);
-    glow.addColorStop(0, 'rgba(143, 239, 247, .21)');
-    glow.addColorStop(.48, 'rgba(64, 201, 220, .075)');
-    glow.addColorStop(1, 'rgba(0, 44, 79, .13)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
-
-    /* Fine moving caustic ribbons mimic sunlight refracting through shallow water. */
-    ctx.save();
-    ctx.globalCompositeOperation = 'screen';
-    for (var band = 0; band < 12; band++) {
-      var yBase = h * (.09 + band * .078);
-      ctx.beginPath();
-      for (var x = -24; x <= w + 24; x += 18) {
-        var y = yBase + Math.sin(x * .010 + t * 3.3 + band * .7) * (5 + band % 3) +
-          Math.sin(x * .021 - t * 2.1 + band) * 2.6;
-        if (x === -24) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = 'rgba(188, 247, 255,' + (.018 + (band % 4) * .006) + ')';
-      ctx.lineWidth = 1 + (band % 3) * .25;
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    var now = performance.now();
-    for (var i = ripples.length - 1; i >= 0; i--) {
-      var r = ripples[i];
-      var age = now - r.born;
-      var progress = age / 1050;
-      if (progress >= 1) { ripples.splice(i, 1); continue; }
-      var radius = 4 + progress * r.max;
-      var alpha = (1 - progress) * .34;
-      ctx.save();
-      ctx.globalCompositeOperation = 'screen';
-      for (var ring = 0; ring < 3; ring++) {
-        ctx.beginPath();
-        ctx.ellipse(r.x, r.y, radius * (1 + ring * .26), radius * (.42 + ring * .09), Math.sin(t + ring) * .08, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(218, 252, 255,' + (alpha * (1 - ring * .23)) + ')';
-        ctx.lineWidth = ring === 0 ? 1.4 : .8;
-        ctx.stroke();
-      }
-      if (r.droplets && r.droplets.length) {
-        r.droplets.forEach(function (drop) {
-          var distance = drop.distance + progress * 18;
-          var dx = r.x + Math.cos(drop.angle) * distance;
-          var dy = r.y + Math.sin(drop.angle) * distance;
-          ctx.beginPath();
-          ctx.ellipse(dx, dy, drop.size * (1 - progress * .45), drop.size * 1.45 * (1 - progress * .45), drop.angle, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(225, 253, 255,' + (Math.max(0, 1 - progress * 2.2) * .48) + ')';
-          ctx.fill();
+      var count = lowPower ? 5 : 9;
+      for (var d = 0; d < count; d++) {
+        droplets.push({
+          angle: Math.PI * 2 * d / count + Math.random() * .32,
+          distance: 10 + Math.random() * 19,
+          size: 1.1 + Math.random() * 2.2,
+          lift: 12 + Math.random() * 22
         });
       }
-      ctx.restore();
+    }
+    ripples.push({
+      x: Math.max(0, Math.min(w, x)), y: Math.max(0, Math.min(h, y)),
+      max: Math.min(180, 54 + (strength || 0) * 38),
+      born: performance.now(), duration: splash ? 1250 : 1450,
+      strength: Math.min(1.7, strength || 1), droplets: droplets
+    });
+    if (!running) start();
+  }
+
+  function drawRipples() {
+    if (!fg) return;
+    fg.clearRect(0, 0, w, h);
+    var now = performance.now();
+    for (var i = ripples.length - 1; i >= 0; i--) {
+      var r = ripples[i], progress = (now - r.born) / r.duration;
+      if (progress >= 1) { ripples.splice(i, 1); continue; }
+      var ease = 1 - Math.pow(1 - progress, 2);
+      var radius = 4 + ease * r.max;
+      var alpha = Math.pow(1 - progress, 1.18) * (.46 + r.strength * .12);
+      fg.save();
+      fg.globalCompositeOperation = 'screen';
+      /* Several uneven rings mimic surface tension and refracted highlights. */
+      for (var ring = 0; ring < 4; ring++) {
+        var wobble = 1 + Math.sin(elapsed * 3 + ring * 1.8) * .025;
+        fg.beginPath();
+        fg.ellipse(r.x, r.y, radius * (1 + ring * .19) * wobble, radius * (.52 + ring * .105), Math.sin(elapsed + ring) * .045, 0, Math.PI * 2);
+        fg.strokeStyle = 'rgba(223,253,255,' + (alpha * (1 - ring * .19)) + ')';
+        fg.lineWidth = ring === 0 ? 1.7 : 1;
+        fg.stroke();
+      }
+      /* A soft specular flash at the point of impact. */
+      var flash = fg.createRadialGradient(r.x, r.y, 0, r.x, r.y, 24 + progress * 20);
+      flash.addColorStop(0, 'rgba(237,255,255,' + (alpha * .28) + ')');
+      flash.addColorStop(1, 'rgba(237,255,255,0)');
+      fg.fillStyle = flash;
+      fg.beginPath(); fg.arc(r.x, r.y, 44, 0, Math.PI * 2); fg.fill();
+      r.droplets.forEach(function (drop) {
+        var travel = ease * (drop.distance + 25);
+        var dx = r.x + Math.cos(drop.angle) * travel;
+        var dy = r.y + Math.sin(drop.angle) * travel - Math.sin(progress * Math.PI) * drop.lift;
+        var opacity = Math.max(0, 1 - progress * 1.8) * .65;
+        fg.beginPath();
+        fg.ellipse(dx, dy, drop.size * (1 - progress * .48), drop.size * 1.65 * (1 - progress * .48), drop.angle, 0, Math.PI * 2);
+        fg.fillStyle = 'rgba(239,255,255,' + opacity + ')';
+        fg.fill();
+        fg.beginPath();
+        fg.arc(dx - drop.size * .25, dy - drop.size * .35, Math.max(.4, drop.size * .25), 0, Math.PI * 2);
+        fg.fillStyle = 'rgba(255,255,255,' + (opacity * .8) + ')';
+        fg.fill();
+      });
+      fg.restore();
     }
   }
 
   function tick(now) {
     if (!running) { frame = 0; return; }
-    if (now - lastFrame > 30) {
-      draw(Math.min(50, now - (lastFrame || now)));
+    var delta = Math.min(50, now - (lastFrame || now));
+    if (now - lastFrame > (lowPower ? 42 : 26)) {
+      elapsed += delta * .001;
+      drawWater();
+      drawRipples();
       lastFrame = now;
     }
     frame = window.requestAnimationFrame(tick);
   }
   function start() {
-    if (running || reducedMotion || saveData || document.hidden) return;
+    if (running || reducedMotion || document.hidden) return;
     running = true;
     lastFrame = 0;
     frame = window.requestAnimationFrame(tick);
@@ -136,19 +226,20 @@
     running = false;
     if (frame) window.cancelAnimationFrame(frame);
     frame = 0;
-    draw(0);
   }
 
   window.addEventListener('resize', resize, { passive: true });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) stop(); else start();
+    if (document.hidden) stop();
+    else { drawWater(); drawRipples(); start(); }
   });
   window.addEventListener('scroll', function () {
-    var now = performance.now();
-    var y = window.scrollY || 0;
+    var now = performance.now(), y = window.scrollY || 0;
     var movement = Math.abs(y - lastScrollY);
-    if (movement > 16 && now - lastScrollAt > 150) {
-      addRipple(w * (.18 + Math.random() * .64), Math.max(90, Math.min(h - 60, h * (.28 + Math.random() * .46))), Math.min(2, movement / 120));
+    if (movement > 9 && now - lastScrollAt > 95) {
+      var impactX = w * (.14 + Math.random() * .72);
+      var impactY = Math.max(95, Math.min(h - 35, h * (.25 + Math.random() * .52)));
+      addRipple(impactX, impactY, Math.min(1.7, .5 + movement / 95), movement > 45);
       lastScrollAt = now;
     }
     lastScrollY = y;
@@ -157,16 +248,16 @@
   document.addEventListener('pointerdown', function (event) {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     var now = performance.now();
-    if (now - pointerCooldown < 220) return;
-    pointerCooldown = now;
+    if (now - lastPointerAt < 110) return;
+    lastPointerAt = now;
     var target = event.target;
-    if (target && target.closest && target.closest('button, a, [role="button"], input[type="submit"]')) {
-      addRipple(event.clientX, event.clientY, 1, true);
+    if (target && target.closest && target.closest('button, a, [role="button"], input, select, .pcard, .pc, .pcard-img, .product-card')) {
+      addRipple(event.clientX, event.clientY, 1.2, true);
     }
   }, { passive: true });
 
   resize();
   if (running) frame = window.requestAnimationFrame(tick);
-  else draw(0);
+  else { drawWater(); drawRipples(); }
   window.addEventListener('pageshow', start);
 })();
