@@ -30,3 +30,21 @@
 .py2-endless-grid .card-share-btn{border:1px solid #e8edf2!important;border-radius:8px!important;background:#fff!important;padding:7px 5px!important;color:#64748b!important}
 .py2-endless-grid .card-share-btn:hover{background:#f0fdf4!important;border-color:#b7e5c4!important;color:#15803d!important}
 @media(max-width:700px){.py2-endless-grid .pcard-img{height:clamp(150px,17vw,205px)!important}.py2-endless-grid .pcard-body{padding:13px!important}.py2-endless-grid .pcard-actions{grid-template-columns:1fr 1fr!important}}
+
+
+/* High-contrast dimensional heading and branded social-share colours. */
+.py2-endless-heading{padding:17px 18px 16px!important;margin-bottom:20px!important;border:1px solid rgba(23,35,55,.12)!important;border-radius:15px!important;background:linear-gradient(145deg,#fff 0%,#f5f8fc 100%)!important;box-shadow:0 7px 17px rgba(15,23,42,.10),0 15px 30px rgba(15,23,42,.08)!important}
+.py2-endless-eyebrow{color:#08763e!important;font-size:11px!important;font-weight:950!important;letter-spacing:1.9px!important;text-shadow:0 1px 0 #fff,0 2px 5px rgba(8,118,62,.18)!important}
+.py2-endless-heading h2{color:#10243c!important;font-weight:950!important;letter-spacing:-.55px;text-shadow:0 1px 0 #fff,0 2px 0 rgba(16,36,60,.12),0 4px 0 rgba(16,36,60,.055),0 7px 12px rgba(16,36,60,.18)!important;-webkit-text-stroke:.25px currentColor}
+.py2-endless-heading p{color:#3d4d62!important;font-weight:700!important;text-shadow:0 1px 0 #fff,0 2px 5px rgba(16,36,60,.11)!important}
+.py2-endless-grid .pcard{box-shadow:0 5px 12px rgba(15,23,42,.10),0 12px 25px rgba(15,23,42,.08),0 2px 4px rgba(15,23,42,.06)!important}
+.py2-endless-grid .pcard:hover{box-shadow:0 10px 20px rgba(15,23,42,.14),0 20px 38px rgba(15,23,42,.12)!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(1){color:#1877f2!important;background:#eef5ff!important;border-color:#c7dcff!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(1) i{color:#1877f2!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(1):hover{color:#fff!important;background:#1877f2!important;border-color:#1877f2!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(1):hover i{color:#fff!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(2){color:#128c4a!important;background:#eafff1!important;border-color:#b8edca!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(2) i{color:#25d366!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(2):hover{color:#fff!important;background:#25d366!important;border-color:#25d366!important}
+.py2-endless-grid .card-share-row .card-share-btn:nth-child(2):hover i{color:#fff!important}
+@media(max-width:700px){.py2-endless-heading{padding:14px!important}.py2-endless-heading h2{font-size:clamp(22px,6vw,29px)!important}.py2-endless-heading p{font-size:13px!important}}
