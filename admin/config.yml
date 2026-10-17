@@ -38,7 +38,7 @@ collections:
           - { label: "Watches & Smartwatches", value: "watch" }
           - { label: "Other Phone Accessories", value: "accessory" }
           - { label: "Other / Miscellaneous", value: "other" }
-      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Description", name: "description", widget: "text", hint: "Write 1–2 short, clear sentences about the product and its main benefit. Avoid long paragraphs; include only details you can confirm." }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. The site will embed supported links in the page." }
