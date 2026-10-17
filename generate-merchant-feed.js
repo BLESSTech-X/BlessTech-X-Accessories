@@ -17,32 +17,32 @@ function xmlEscape(value) {
 }
 
 function parseFrontMatter(content) {
-  const match = content.match(/^---\\s*\\n([\\s\\S]*?)\\n---/);
+  const match = content.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return {};
 
   const data = {};
-  const lines = match[1].split(/\\r?\\n/);
+  const lines = match[1].split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
-    const keyMatch = lines[i].match(/^([A-Za-z0-9_-]+):\\s*(.*)$/);
+    const keyMatch = lines[i].match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
     if (!keyMatch) continue;
 
     const key = keyMatch[1];
     let value = keyMatch[2].trim();
-    if (/^[|>][+-]?\\d*$/.test(value)) {
+    if (/^[|>][+-]?\d*$/.test(value)) {
       const style = value[0];
       const block = [];
       while (i + 1 < lines.length) {
         const next = lines[i + 1];
         if (!next.trim()) { block.push(''); i++; continue; }
-        if (!/^\\s/.test(next)) break;
+        if (!/^\s/.test(next)) break;
         const continuation = next.trim();
         if (!continuation.startsWith('- ')) block.push(continuation);
         i++;
       }
-      value = block.join('\\n');
-      if (style === '>') value = value.replace(/([^\\n])\\n(?!\\n)/g, '$1 ').replace(/\\n{2,}/g, '\\n\\n');
+      value = block.join('\n');
+      if (style === '>') value = value.replace(/([^\n])\n(?!\n)/g, '$1 ').replace(/\n{2,}/g, '\n\n');
     } else {
-      while (i + 1 < lines.length && /^\\s+/.test(lines[i + 1]) && !/^\\s+-\\s+/.test(lines[i + 1])) {
+      while (i + 1 < lines.length && /^\s+/.test(lines[i + 1]) && !/^\s+-\s+/.test(lines[i + 1])) {
         value += ' ' + lines[++i].trim();
       }
     }
@@ -52,9 +52,7 @@ function parseFrontMatter(content) {
         (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
     }
-    if (value === 'true') data[key] = true;
-    else if (value === 'false') data[key] = false;
-    else data[key] = value.replace(/\\\\n/g, ' ').replace(/\\\\r/g, ' ').replace(/\\s+/g, ' ').trim();
+    data[key] = value.replace(/\\n/g, ' ').replace(/\\r/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   return data;
