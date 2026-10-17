@@ -1921,7 +1921,7 @@ document.addEventListener('DOMContentLoaded', function() {
     || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
   var ROTATE_MS = 6000;
-  var POPUP_DELAY_MS = 6000;
+  var POPUP_DELAY_MS = 26000;
   var POPUP_KEY = 'py2ads_popup_last_at';
 
   function esc(s) {
@@ -2195,6 +2195,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function closePopup() {
     if (popupBackdrop) popupBackdrop.classList.remove('open');
+    window.__py2AdPopupOpen = false;
+    window.__py2LastPopupClosedAt = Date.now();
     if (popupContent) popupContent.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (e) {} });
   }
   if (popupClose) popupClose.addEventListener('click', closePopup);
@@ -2224,10 +2226,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (popupFired || !Array.isArray(adList) || !adList.length) return;
     try {
       var lastAt = Number(localStorage.getItem(POPUP_KEY) || 0);
-      if (lastAt && Date.now() - lastAt < 15 * 60 * 1000) return;
+      if (lastAt && Date.now() - lastAt < 6 * 60 * 60 * 1000) return;
     } catch (e) {}
     popupFired = true;
     setTimeout(function () {
+      if (window.__py2SellerModalOpen || window.__py2SellerNoticeOpen || window.__py2ProductPopupOpen || window.__py2ContextTipOpen || (Date.now() - Number(window.__py2LastPopupClosedAt || 0) < 90000)) {
+        popupFired = false;
+        setTimeout(function () { maybeShowPopup(adList); }, 12000);
+        return;
+      }
       var history = [];
       try { history = JSON.parse(localStorage.getItem('py2ads_popup_history_v2') || '[]'); } catch (e) { history = []; }
       if (!Array.isArray(history)) history = [];
@@ -2247,6 +2254,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!chosen) return;
       if (popupContent) popupContent.innerHTML = buildPopupHTML(chosen);
       if (popupBackdrop) popupBackdrop.classList.add('open');
+      window.__py2AdPopupOpen = true;
+      window.__py2LastPopupShownAt = Date.now();
       recordImpression(chosen.id, 'popup');
       history.push(String(chosen.id));
       try {
