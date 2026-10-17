@@ -118,7 +118,8 @@ button{font-family:'DM Sans',sans-serif;}
 .hero-slide-sub{color:rgba(255,255,255,.65);font-size:14px;margin-bottom:22px;max-width:360px;line-height:1.5;}
 .hero-slide-price{display:flex;align-items:baseline;gap:10px;margin-bottom:20px;}
 .hsp-from{color:rgba(255,255,255,.5);font-size:12px;}
-.hsp-original{font-size:12px;color:rgba(255,255,255,.62);text-decoration:line-through;white-space:nowrap;}\n.hsp-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--c2);}
+.hsp-original{font-size:12px;color:rgba(255,255,255,.62);text-decoration:line-through;white-space:nowrap;}
+.hsp-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--c2);}
 .hero-cta-row{display:flex;gap:10px;flex-wrap:wrap;max-width:100%;}
 .btn-hero-shop{background:var(--orange);color:white;font-weight:700;font-size:14px;padding:12px 20px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s;text-decoration:none;white-space:nowrap;}
 .btn-hero-shop:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,96,0,.5);}
@@ -2664,15 +2665,20 @@ function renderHomepageHeroPromotions(products, settings) {
   // Discounted, in-stock products are automatically promoted as Special Offers.
   const showSales = !settings || settings.show_discounted_products !== false;
   if (showSales) {
-    const maxSales = Math.max(0, Math.min(12, Number(settings.max_discounted_promotions) || 6));
+    const configuredMax = Number(settings && settings.max_discounted_promotions);
+    const maxSales = Number.isFinite(configuredMax) ? Math.max(0, Math.min(12, configuredMax)) : 6;
     const discounted = available
       .filter(p => Number(p.original_price) > Number(p.price) && Number(p.original_price) > 0)
       .sort((a, b) => ((Number(b.original_price) - Number(b.price)) / Number(b.original_price)) -
                       ((Number(a.original_price) - Number(a.price)) / Number(a.original_price)));
+    let salesAdded = 0;
     discounted.forEach(product => {
-      if (host.querySelectorAll('.hero-slide').length >= 4 + configured.length + maxSales) return;
+      if (salesAdded >= maxSales) return;
       const slide = makeSlide(product, { badge: 'Special Offer', price_label: 'Now', button_label: 'Shop Offer' });
-      if (slide) host.appendChild(slide);
+      if (slide) {
+        host.appendChild(slide);
+        salesAdded++;
+      }
     });
   }
 }
