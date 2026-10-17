@@ -1606,6 +1606,7 @@ window.dismissNotif = function() {
 async function loadShop() {
   try {
     allProducts = await fetchAllProducts();
+    window.phoneya2Products = allProducts;
     window.dispatchEvent(new CustomEvent("phoneya2:catalog-ready", { detail: allProducts }));
     window.allProductsMap = {};
     allProducts.forEach(p => { window.allProductsMap[p.slug] = p; });
