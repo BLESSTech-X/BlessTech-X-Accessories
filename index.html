@@ -1994,14 +1994,13 @@ const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earpho
 
 function shareProduct(p) {
   if (!p) return;
-  const productUrl = window.location.origin + '/product.html?id=' + p.slug;
+  const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(p.slug);
   const waText = encodeURIComponent(
-    '👋 Check this out at PhoneYa2:\n\n' +
+    'Check this out at PhoneYa2:\n\n' +
     '*' + p.title + '*\n' +
     'Price: *ZMW ' + p.price + '*\n' +
-    (p.description ? p.description.slice(0, 80) + '...\n' : '') +
-    '\n🔗 ' + productUrl + '\n\n' +
-    'Same-day delivery in Lusaka! 🚀'
+    'Smart CHOICES. Better CONNECTED 💙\n\n' +
+    productUrl
   );
   window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
 }
