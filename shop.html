@@ -1488,7 +1488,7 @@ function renderGrid() {
         '<div class="card-share-row">'+
           '<button class="card-share-btn card-share-facebook" onclick="event.stopPropagation();shareFacebookProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>'+
           '<button class="card-share-btn card-share-whatsapp" onclick="event.stopPropagation();shareProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>'+
-          '<button class="card-share-btn card-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link" title="Copy link"><i class="fa-solid fa-link" aria-hidden="true"></i></button>'+
+          '<button class="card-share-btn card-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link" title="Copy link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>'+
         '</div>'+
       '</div>';
     card.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
