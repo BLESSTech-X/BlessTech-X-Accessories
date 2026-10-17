@@ -1718,6 +1718,20 @@ body a.confidence-support-btn::before{z-index:0!important;pointer-events:none!im
   body a.confidence-support-btn{min-height:44px!important;padding:10px 17px!important;}
   body a.confidence-support-btn .confidence-support-btn-label{font-size:13px!important;}
 }
+
+/* Icon-only Personal Support button. */
+body a.confidence-support-btn{
+  width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;
+  padding:0!important;gap:0!important;border-radius:50%!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+}
+body a.confidence-support-btn>i{
+  font-size:27px!important;line-height:1!important;margin:0!important;
+}
+@media(max-width:480px){
+  body a.confidence-support-btn{width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;}
+  body a.confidence-support-btn>i{font-size:25px!important;}
+}
 </style>
 </head>
 <body>
@@ -2135,7 +2149,7 @@ body a.confidence-support-btn::before{z-index:0!important;pointer-events:none!im
       <article class="testi-card"><div class="testi-stars" aria-hidden="true"><i class="fa-solid fa-clipboard-check"></i></div><h3 class="testi-name">Review Before Submitting</h3><p class="testi-text">Check your items, quantities and contact details before submitting an order for confirmation.</p></article>
       <article class="testi-card"><div class="testi-stars" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></div><h3 class="testi-name">Personal Support</h3><p class="testi-text">Need help choosing an accessory or checking delivery? Contact our team before you order.</p>
         <a class="confidence-support-btn" href="https://wa.me/260979603741?text=Hi%20PhoneYa2%2C%20I%20need%20help%20choosing%20an%20accessory%20or%20checking%20delivery." target="_blank" rel="noopener noreferrer" aria-label="Contact PhoneYa2 support on WhatsApp">
-          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span class="confidence-support-btn-label">Chat with us</span>
+          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
         </a></article>
     </div>
   </section>
