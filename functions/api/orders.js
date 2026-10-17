@@ -239,7 +239,7 @@ async function sendOrderEmail(env, order, customer, items) {
   }
 }
 async function sendOrderFormspree(env, order, customer = {}, items = []) {
-  const endpoint = "https://formspree.io/f/mbgdwnab";
+  const endpoint = "https://formspree.io/f/mdeabqwq";
   const itemSummary = items.slice(0, 30).map(item =>
     String(item.product_name || item.title || "Product") + " x" + Number(item.quantity || 1) +
     " — ZMW " + Number(item.line_total || 0).toFixed(2)
