@@ -118,7 +118,7 @@ button{font-family:'DM Sans',sans-serif;}
 .hero-slide-sub{color:rgba(255,255,255,.65);font-size:14px;margin-bottom:22px;max-width:360px;line-height:1.5;}
 .hero-slide-price{display:flex;align-items:baseline;gap:10px;margin-bottom:20px;}
 .hsp-from{color:rgba(255,255,255,.5);font-size:12px;}
-.hsp-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--c2);}
+.hsp-original{font-size:12px;color:rgba(255,255,255,.62);text-decoration:line-through;white-space:nowrap;}\n.hsp-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--c2);}
 .hero-cta-row{display:flex;gap:10px;flex-wrap:wrap;max-width:100%;}
 .btn-hero-shop{background:var(--orange);color:white;font-weight:700;font-size:14px;padding:12px 20px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s;text-decoration:none;white-space:nowrap;}
 .btn-hero-shop:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,96,0,.5);}
@@ -2519,38 +2519,163 @@ function renderCsGrid(cat) {
   update(); setInterval(update,1000);
 })();
 
-(function initHero() {
-  const slides=document.querySelectorAll('.hero-slide');
-  const dotsEl=document.getElementById('hero-dots');
-  let idx=0, paused=false, timer;
-  slides.forEach((_,i)=>{
-    const b=document.createElement('button');
-    b.className='hdot'+(i===0?' active':'');
-    b.setAttribute('aria-label','Slide '+(i+1));
-    b.addEventListener('click',()=>go(i));
+function initHero() {
+  const slidesEl = document.getElementById('hero-slides');
+  const slides = slidesEl ? Array.from(slidesEl.querySelectorAll('.hero-slide')) : [];
+  const dotsEl = document.getElementById('hero-dots');
+  if (!slides.length || !dotsEl) return;
+  dotsEl.innerHTML = '';
+  let idx = Math.max(0, slides.findIndex(slide => slide.classList.contains('active')));
+  let paused = false, timer;
+  slides.forEach((slide, i) => {
+    const b = document.createElement('button');
+    b.className = 'hdot' + (i === idx ? ' active' : '');
+    b.setAttribute('aria-label', 'Slide ' + (i + 1));
+    b.addEventListener('click', () => go(i));
     dotsEl.appendChild(b);
   });
   function go(n) {
-    slides[idx].classList.remove('active');
-    dotsEl.children[idx].classList.remove('active');
-    idx=(n+slides.length)%slides.length;
-    slides[idx].classList.add('active');
-    dotsEl.children[idx].classList.add('active');
+    slides[idx]?.classList.remove('active');
+    dotsEl.children[idx]?.classList.remove('active');
+    idx = (n + slides.length) % slides.length;
+    slides[idx]?.classList.add('active');
+    dotsEl.children[idx]?.classList.add('active');
     reset();
   }
-  function reset() { clearInterval(timer); timer=setInterval(()=>{ if(!paused) go(idx+1); },5000); }
-  document.getElementById('hero-prev')?.addEventListener('click',()=>go(idx-1));
-  document.getElementById('hero-next')?.addEventListener('click',()=>go(idx+1));
-  const banner=document.querySelector('.hero-banner');
-  if(banner){
-    banner.addEventListener('mouseenter',()=>paused=true);
-    banner.addEventListener('mouseleave',()=>paused=false);
-    let tx=0;
-    banner.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
-    banner.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(idx+(d<0?1:-1));},{passive:true});
+  function reset() {
+    clearInterval(timer);
+    timer = setInterval(() => { if (!paused) go(idx + 1); }, 5000);
+  }
+  document.getElementById('hero-prev')?.addEventListener('click', () => go(idx - 1));
+  document.getElementById('hero-next')?.addEventListener('click', () => go(idx + 1));
+  const banner = document.querySelector('.hero-banner');
+  if (banner) {
+    banner.addEventListener('mouseenter', () => paused = true);
+    banner.addEventListener('mouseleave', () => paused = false);
+    let tx = 0;
+    banner.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+    banner.addEventListener('touchend', e => {
+      const d = e.changedTouches[0].clientX - tx;
+      if (Math.abs(d) > 50) go(idx + (d < 0 ? 1 : -1));
+    }, { passive: true });
   }
   reset();
-})();
+}
+
+function renderHomepageHeroPromotions(products, settings) {
+  const host = document.getElementById('hero-slides');
+  if (!host) return;
+  const available = (products || []).filter(p => Number(p.stock) > 0 && Number(p.price) > 0);
+  const bySlug = new Map(available.map(p => [String(p.slug || ''), p]));
+  const existingSlugs = new Set();
+  const safeText = value => String(value == null ? '' : value);
+  const imageUrl = value => {
+    const raw = safeText(value).trim();
+    if (!raw) return '';
+    try { return new URL(raw, window.location.origin).href; } catch (_) { return ''; }
+  };
+  const makeSlide = (product, options) => {
+    if (!product) return null;
+    const opts = options || {};
+    const slug = safeText(product.slug);
+    if (slug && existingSlugs.has(slug)) return null;
+    if (slug) existingSlugs.add(slug);
+    const title = safeText(opts.title || product.title || 'PhoneYa2 Pick');
+    const description = safeText(opts.description || product.description || 'Explore this product at PhoneYa2.');
+    const badge = safeText(opts.badge || 'Featured Pick');
+    const currentPrice = Number(product.price) || 0;
+    const originalPrice = Number(product.original_price) || 0;
+    const isDiscounted = originalPrice > currentPrice && originalPrice > 0;
+    const slide = document.createElement('div');
+    slide.className = 'hero-slide';
+    const bg = imageUrl(opts.image || product.image);
+    if (bg) slide.style.backgroundImage = 'url("' + bg.replace(/"/g, '%22') + '")';
+    const overlay = document.createElement('div');
+    overlay.className = 'hero-slide-overlay';
+    const content = document.createElement('div');
+    content.className = 'hero-slide-content';
+    const tag = document.createElement('div');
+    tag.className = 'hero-slide-tag';
+    const tagIcon = document.createElement('i');
+    tagIcon.className = 'fa-solid ' + (isDiscounted ? 'fa-tag' : 'fa-star');
+    tag.appendChild(tagIcon);
+    tag.appendChild(document.createTextNode(' ' + badge));
+    const heading = document.createElement('h2');
+    heading.className = 'hero-slide-title';
+    heading.textContent = title;
+    const sub = document.createElement('p');
+    sub.className = 'hero-slide-sub';
+    sub.textContent = description;
+    const priceRow = document.createElement('div');
+    priceRow.className = 'hero-slide-price';
+    const priceLabel = document.createElement('span');
+    priceLabel.className = 'hsp-from';
+    priceLabel.textContent = safeText(opts.price_label || (isDiscounted ? 'Special offer' : 'Only'));
+    const price = document.createElement('span');
+    price.className = 'hsp-val';
+    price.textContent = 'ZMW ' + currentPrice.toLocaleString();
+    priceRow.append(priceLabel, price);
+    if (isDiscounted) {
+      const oldPrice = document.createElement('span');
+      oldPrice.className = 'hsp-original';
+      oldPrice.textContent = 'ZMW ' + originalPrice.toLocaleString();
+      oldPrice.setAttribute('aria-label', 'Original price');
+      priceRow.appendChild(oldPrice);
+    }
+    const ctas = document.createElement('div');
+    ctas.className = 'hero-cta-row';
+    const shop = document.createElement('a');
+    shop.className = 'btn-hero-shop';
+    shop.href = 'product.html?id=' + encodeURIComponent(slug);
+    const shopIcon = document.createElement('i');
+    shopIcon.className = 'fa-solid fa-bag-shopping';
+    shop.append(shopIcon, document.createTextNode(' ' + safeText(opts.button_label || 'View Product')));
+    const order = document.createElement('a');
+    order.className = 'btn-hero-wa';
+    order.href = 'https://wa.me/260979603741?text=' + encodeURIComponent('Hi PhoneYa2, I want to order ' + safeText(product.title) + '.');
+    order.target = '_blank';
+    order.rel = 'noopener noreferrer';
+    const waIcon = document.createElement('i');
+    waIcon.className = 'fa-brands fa-whatsapp';
+    order.append(waIcon, document.createTextNode(' Order Now'));
+    ctas.append(shop, order);
+    content.append(tag, heading, sub, priceRow, ctas);
+    slide.append(overlay, content);
+    return slide;
+  };
+
+  // Extra slides can be selected and customized in Decap CMS.
+  const configured = Array.isArray(settings && settings.hero_promotions) ? settings.hero_promotions : [];
+  configured.filter(item => item && item.active !== false).forEach(item => {
+    const slug = safeText(item.product).trim();
+    const product = bySlug.get(slug);
+    if (!product) return;
+    const slide = makeSlide(product, {
+      badge: item.badge || 'Featured Pick',
+      title: item.title || product.title,
+      description: item.description || product.description,
+      image: item.image || product.image,
+      price_label: item.price_label || (Number(product.original_price) > Number(product.price) ? 'Special offer' : 'Only'),
+      button_label: item.button_label || 'View Product'
+    });
+    if (slide) host.appendChild(slide);
+  });
+
+  // Discounted, in-stock products are automatically promoted as Special Offers.
+  const showSales = !settings || settings.show_discounted_products !== false;
+  if (showSales) {
+    const maxSales = Math.max(0, Math.min(12, Number(settings.max_discounted_promotions) || 6));
+    const discounted = available
+      .filter(p => Number(p.original_price) > Number(p.price) && Number(p.original_price) > 0)
+      .sort((a, b) => ((Number(b.original_price) - Number(b.price)) / Number(b.original_price)) -
+                      ((Number(a.original_price) - Number(a.price)) / Number(a.original_price)));
+    discounted.forEach(product => {
+      if (host.querySelectorAll('.hero-slide').length >= 4 + configured.length + maxSales) return;
+      const slide = makeSlide(product, { badge: 'Special Offer', price_label: 'Now', button_label: 'Shop Offer' });
+      if (slide) host.appendChild(slide);
+    });
+  }
+}
 
 window.shareApp = function() {
   const shareData = {
@@ -2770,16 +2895,14 @@ window.dismissNotif=function(){
 
 async function loadSettings() {
   try {
-    const r=await fetch('/content/settings/homepage.json?t='+Date.now());
-    if(r.ok){
-      const d=await r.json();
-      const set=(id,v)=>{const el=document.getElementById(id);if(el&&v)el.textContent=v;};
-    }
-  } catch(e){}
+    const r = await fetch('/content/settings/homepage.json?t=' + Date.now());
+    if (r.ok) return await r.json();
+  } catch (e) { console.warn('[PhoneYa2] Homepage settings could not be loaded:', e); }
+  return { show_discounted_products: true, max_discounted_promotions: 6, hero_promotions: [] };
 }
 
 async function init() {
-  loadSettings();
+  const homepageSettings = await loadSettings();
 
   let products = [];
   try {
@@ -2807,6 +2930,9 @@ async function init() {
     setText('py2-stat-from', Number.isFinite(lowestPrice) ? 'ZMW ' + lowestPrice.toLocaleString() : '—');
   }
   renderLiveCatalogueStats(products);
+
+  renderHomepageHeroPromotions(products, homepageSettings);
+  initHero();
 
   function fillTrack(id, items, cardFn, emptyMessage) {
     const el = document.getElementById(id);
