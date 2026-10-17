@@ -470,10 +470,10 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
   }
 }
 
-/* Slightly dark water-blue PhoneYa2 background; keep the animated logo visible. */
-html{background-color:#a9d4e2!important}
+/* Darker water-blue page canvas. Keep the logo image untinted and unaffected. */
+html{background-color:#91c9db!important}
 body{background-color:transparent!important}
 body::before{
-  background-color:rgba(20,91,117,.10)!important;
-  background-blend-mode:multiply!important;
+  background-color:transparent!important;
+  background-blend-mode:normal!important;
 }
