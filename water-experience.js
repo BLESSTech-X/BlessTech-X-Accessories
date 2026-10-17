@@ -6,6 +6,8 @@
 
   var root = document.documentElement, body = document.body;
   if (!body) return;
+  /* Checkout keeps the living-water effect, but uses a brighter aqua palette for readability. */
+  var isCheckoutPage = /(?:^|\\/)checkout\\.html$/.test(window.location.pathname);
   root.classList.add('py2-water-enabled');
   body.classList.add('py2-water-page');
 
@@ -82,10 +84,17 @@
     var t = elapsed;
     bg.clearRect(0, 0, w, h);
     var base = bg.createLinearGradient(0, 0, w * .8, h);
-    base.addColorStop(0, '#087c9b');
-    base.addColorStop(.28, '#119bb5');
-    base.addColorStop(.57, '#087f9f');
-    base.addColorStop(1, '#043d61');
+    if (isCheckoutPage) {
+      base.addColorStop(0, '#b9edf4');
+      base.addColorStop(.28, '#8edbe8');
+      base.addColorStop(.57, '#66c7dc');
+      base.addColorStop(1, '#379bbd');
+    } else {
+      base.addColorStop(0, '#087c9b');
+      base.addColorStop(.28, '#119bb5');
+      base.addColorStop(.57, '#087f9f');
+      base.addColorStop(1, '#043d61');
+    }
     bg.fillStyle = base;
     bg.fillRect(0, 0, w, h);
 
@@ -93,7 +102,7 @@
     glow.addColorStop(0, 'rgba(190,250,255,.30)');
     glow.addColorStop(.28, 'rgba(87,221,235,.15)');
     glow.addColorStop(.7, 'rgba(20,139,180,.045)');
-    glow.addColorStop(1, 'rgba(0,34,66,.22)');
+    glow.addColorStop(1, isCheckoutPage ? 'rgba(10,90,125,.06)' : 'rgba(0,34,66,.22)');
     bg.fillStyle = glow;
     bg.fillRect(0, 0, w, h);
 
@@ -131,7 +140,7 @@
     /* Soft vignette creates underwater depth at the edges. */
     var shade = bg.createRadialGradient(w * .5, h * .44, Math.min(w, h) * .12, w * .5, h * .5, Math.max(w, h) * .78);
     shade.addColorStop(0, 'rgba(0,0,0,0)');
-    shade.addColorStop(1, 'rgba(0,24,48,.24)');
+    shade.addColorStop(1, isCheckoutPage ? 'rgba(0,52,80,.07)' : 'rgba(0,24,48,.24)');
     bg.fillStyle = shade;
     bg.fillRect(0, 0, w, h);
   }
