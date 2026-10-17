@@ -9,4 +9,5 @@ gallery:
   - image: /assets/images/uploads/1000070620.png
   - image: /assets/images/uploads/1000070603.png
 description: Infinix Note 50 Pro with an AMOLED display, 50MP camera and fast charging. Contact us to confirm current availability.
+featured: true
 ---
