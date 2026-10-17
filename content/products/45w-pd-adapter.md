@@ -6,4 +6,5 @@ stock: 1000
 category: charger
 image: /assets/images/uploads/whatsapp-image-2026-08-16-at-10.36.08-1-.jpeg
 description: 45W Power Delivery adapter designed for fast charging with compatible devices.
+featured: false
 ---
