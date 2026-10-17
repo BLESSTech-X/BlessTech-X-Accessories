@@ -1746,8 +1746,10 @@ body a.confidence-support-btn>i{
 
 
 <link rel="stylesheet" href="/water-experience.css?v=20261017-living-water4">
+  <link rel="stylesheet" href="/phoneya2-footer.css?v=20261017-compact1">
+  <link rel="stylesheet" href="/home-endless-products.css?v=20261017-loop1">
 </head>
-<body>
+<body class="py2-show-floating-top">
 
 <!-- SHARED PHONEYA2 HEADER -->
 <div class="top-header">
@@ -2202,6 +2204,8 @@ body a.confidence-support-btn>i{
 
 
 
+
+<section class="py2-endless-products" id="py2-endless-products" aria-labelledby="py2-endless-title"><div class="py2-endless-heading"><div><span class="py2-endless-eyebrow">KEEP DISCOVERING</span><h2 id="py2-endless-title">More Products, More Possibilities</h2><p>Explore the PhoneYa2 catalogue. New products keep appearing as you scroll.</p></div><a href="/shop.html" class="py2-endless-shop-link">Browse full shop <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div><div class="py2-endless-grid" id="py2-endless-grid" aria-live="polite"><div class="py2-endless-loading">Loading more products for you…</div></div><div class="py2-endless-sentinel" id="py2-endless-sentinel" aria-hidden="true"></div><p class="py2-endless-loop-note"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> The catalogue repeats automatically so you can keep exploring.</p></section>
 </div><!-- /main-wrap -->
 
 <!-- ═══ SPONSORED AD POPUP ═══ -->
@@ -2214,52 +2218,7 @@ body a.confidence-support-btn>i{
 
 <!-- WhatsApp access is integrated into the mobile bottom navigation. -->
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div>
-      <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
-           alt="PhoneYa2" class="footer-logo"
-           onerror="this.style.display='none'">
-      <p class="footer-desc">Phone accessories and everyday tech essentials for customers in Lusaka and across Zambia. Browse products online or contact us for help.</p>
-      <div class="footer-socs">
-        <a href="https://wa.me/260979603741" target="_blank" class="soc-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-        
-        
-        
-      </div>
-    </div>
-    <div>
-      <div class="fcol-title">Quick Links</div>
-      <div class="footer-links">
-        <a href="index.html">Home</a><a href="shop.html">Shop</a>
-        <a href="about.html">About</a><a href="contact.html">Contact</a>
-      </div>
-    </div>
-    <div>
-      <div class="fcol-title">Categories</div>
-      <div class="footer-links">
-        <a href="shop.html?cat=case">Cases</a><a href="shop.html?cat=charger">Chargers</a>
-        <a href="shop.html?cat=cable">Cables</a><a href="shop.html?cat=earphone">Earphones</a>
-        <a href="shop.html?cat=powerbank">Power Banks</a><a href="shop.html?cat=protector">Protectors</a>
-        <a href="shop.html?cat=phone">Phones</a><a href="shop.html?cat=watch">Watches</a><a href="shop.html?cat=accessory">Other Accessories</a><a href="shop.html?cat=other">Other</a>
-      </div>
-    </div>
-    <div>
-      <div class="fcol-title">Contact Us</div>
-      <div class="fci"><i class="fa-brands fa-whatsapp"></i><a href="https://wa.me/260979603741" target="_blank">+260 979 603 741</a></div>
-      <div class="fci"><i class="fa-solid fa-envelope"></i><a href="mailto:singbless89@gmail.com">singbless89@gmail.com</a></div>
-      <div class="fci"><i class="fa-solid fa-location-dot"></i><span>Lusaka, Zambia</span></div>
-      <div class="fci"><i class="fa-solid fa-clock"></i><span>Mon–Sat, 8am – 7pm</span></div>
-    </div>
-  </div>
-  <div class="footer-btm">
-    <span>© 2026 PhoneYa2 Accessories · Barack Blessings. All rights reserved.</span>
-    <span>Jesus loves you. ❤️</span>
-  </div>
-  <div style="display:flex;justify-content:center;padding:0 16px 16px"><a href="/newsletter.html" style="display:inline-flex;align-items:center;gap:7px;background:#fff0e6;color:#a94400;border:1px solid #ffd0b0;border-radius:8px;padding:9px 14px;font:700 13px system-ui,sans-serif;text-decoration:none">Get PhoneYa2 Updates · Subscribe to emails</a></div><div style="height:70px"></div>
-  <div style="text-align:center;padding:8px 16px 16px;font-size:12px"><a href="/privacy-policy.html" style="color:inherit;text-decoration:underline">Privacy Policy</a></div>
-</footer>
+<!-- PhoneYa2 footer removed as requested. -->
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" aria-label="Mobile navigation">
@@ -3251,6 +3210,7 @@ async function init() {
   }
 
   allProducts = products;
+  window.dispatchEvent(new CustomEvent('phoneya2:catalog-ready', { detail: products }));
 
   // Derive homepage statistics from the same live catalogue powering the shop.
   function renderLiveCatalogueStats(items) {
@@ -3911,5 +3871,6 @@ s0.parentNode.insertBefore(s1,s0);
 <script src="/smart-guide.js?v=20261017-context-help7" defer></script><script src="/interest-popups.js?v=20261017-popup-calm5" defer></script>
 
 <script src="/water-experience.js?v=20261017-living-water4"></script>
+  <script src="/home-endless-products.js?v=20261017-loop1"></script><script src="/scroll-to-top.js?v=20261017-compact1"></script>
 </body>
 </html>
