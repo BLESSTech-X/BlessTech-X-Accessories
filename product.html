@@ -2230,7 +2230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {}
     popupFired = true;
     setTimeout(function () {
-      if (window.__py2SellerModalOpen || window.__py2SellerNoticeOpen || window.__py2ProductPopupOpen || window.__py2ContextTipOpen || (Date.now() - Number(window.__py2LastPopupClosedAt || 0) < 90000)) {
+      if (window.__py2SellerModalOpen || window.__py2SellerNoticeOpen || window.__py2ProductPopupOpen || window.__py2BlogSpotlightOpen || window.__py2ContextTipOpen || (Date.now() - Number(window.__py2LastPopupClosedAt || 0) < 90000)) {
         popupFired = false;
         setTimeout(function () { maybeShowPopup(adList); }, 12000);
         return;
