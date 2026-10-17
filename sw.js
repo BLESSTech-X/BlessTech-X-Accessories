@@ -1,6 +1,6 @@
 // ─── PhoneYa2 Service Worker ─────────────────────────────────────────────────
 // Version: bump this number any time you want to force a cache refresh
-const VERSION   = 'phoneya2-v12';
+const VERSION   = 'phoneya2-v13';;
 const CACHE     = VERSION;
 // Navigation documents are reused for five minutes, then refreshed from the network.
 const PAGE_TTL_MS = 5 * 60 * 1000;
