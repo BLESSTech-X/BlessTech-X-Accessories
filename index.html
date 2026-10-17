@@ -777,42 +777,96 @@ iframe[src*="tawk.to"]{bottom:20px !important;}
 .confidence-support-btn i{font-size:15px;color:#fff;}
 .confidence-support-btn:hover,.confidence-support-btn:focus-visible{background:#0b7040;color:#fff!important;transform:translateY(-1px);outline:2px solid #a7f3d0;outline-offset:2px;}
 @media(max-width:480px){.confidence-support-btn{margin-top:8px;min-height:32px;padding:7px 10px;font-size:12px;}}
-/* Special Offers: compact label plus a responsive daily spotlight countdown. */
-.hero-offer-alert{right:auto;justify-content:flex-start;top:12px;left:14px;gap:0;z-index:8;}
-.hero-offer-alert-label{display:inline-flex;flex-wrap:nowrap;align-items:center;gap:8px;padding:8px 12px;font-size:12px;letter-spacing:.06em;line-height:1.2;white-space:nowrap;}
+/* Polished Special Offers header: aligned pill and compact countdown, with clear spacing. */
+.hero-offer-alert{
+  position:absolute;top:14px;left:16px;right:16px;z-index:8;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:auto;max-width:calc(100% - 32px);padding:0;margin:0;
+}
+.hero-offer-alert-label{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  flex:0 0 auto;padding:10px 14px;border-radius:999px;
+  background:linear-gradient(135deg,#d71935,#a90f28);
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 5px 18px rgba(180,12,40,.35);
+  color:#fff;font-size:11px;font-weight:900;letter-spacing:.09em;
+  line-height:1;white-space:nowrap;
+}
+.hero-offer-alert-label .hero-offer-live-dot{
+  width:8px;height:8px;flex:0 0 8px;border-radius:50%;
+  background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.16);
+}
 .hero-offer-subline{display:none!important;}
-.hero-offer-countdown-wrap{display:flex;align-items:center;gap:9px;padding:6px 10px;border:1px solid rgba(255,255,255,.24);border-radius:8px;background:rgba(12,16,24,.82);line-height:1;white-space:nowrap;}
-.hero-offer-countdown-caption{font-size:9px;font-weight:800;letter-spacing:.05em;color:#fff;}
-.hero-offer-countdown{display:inline-flex;align-items:center;gap:3px;font-variant-numeric:tabular-nums;font-weight:900;font-size:14px;color:#ffe08a;}
-.hero-offer-countdown b{color:#fff;font-size:12px;}
-.hero-sale-badge{margin-bottom:12px;background:rgba(190,20,35,.95);border-color:#ff7882;color:#fff;font-size:12px;letter-spacing:.04em;white-space:nowrap;}
-.hero-sale-summary{margin-bottom:12px;max-width:420px;color:#fff;font-weight:700;font-size:14px;line-height:1.35;-webkit-line-clamp:1;line-clamp:1;}
+.hero-offer-countdown-wrap{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  flex:0 1 auto;min-width:0;padding:8px 12px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(9,14,25,.84);box-shadow:0 5px 18px rgba(0,0,0,.22);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  line-height:1;white-space:nowrap;
+}
+.hero-offer-countdown-caption{
+  max-width:100px;color:rgba(255,255,255,.82);font-size:9px;
+  font-weight:800;letter-spacing:.075em;line-height:1.3;
+}
+.hero-offer-countdown{
+  display:inline-flex;align-items:center;gap:3px;
+  color:#ffe08a;font-size:14px;font-weight:900;
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
+.hero-offer-countdown span{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;padding:6px 3px;border-radius:5px;
+  background:rgba(255,255,255,.09);
+}
+.hero-offer-countdown b{color:rgba(255,255,255,.7);font-size:12px;}
+.hero-sale-badge{
+  margin-bottom:12px;background:rgba(190,20,35,.95);
+  border-color:#ff7882;color:#fff;font-size:12px;
+  letter-spacing:.04em;white-space:nowrap;
+}
+.hero-sale-summary{
+  margin-bottom:12px;max-width:420px;color:#fff;font-weight:700;
+  font-size:14px;line-height:1.35;-webkit-line-clamp:1;line-clamp:1;
+}
 .hero-sale-prices{align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .hero-sale-prices .hsp-from{color:#fff;font-weight:900;}
 .hero-sale-prices .hsp-val{color:#ffe08a;}
 .hero-sale-prices .hsp-original{font-size:14px;color:#fff;opacity:.85;}
 @media(max-width:768px){
-  .hero-offer-alert{top:9px;left:10px;right:10px;gap:7px;flex-wrap:wrap;}
-  .hero-offer-alert-label{padding:7px 9px;font-size:10px;}
-  .hero-offer-countdown-wrap{padding:6px 8px;gap:6px;}
-  .hero-offer-countdown-caption{font-size:8px;}
-  .hero-offer-countdown{font-size:12px;}
-  .hero-slide-content{padding:58px 28px 34px;}
+  .hero-offer-alert{top:10px;left:10px;right:10px;max-width:calc(100% - 20px);gap:8px;}
+  .hero-offer-alert-label{gap:7px;padding:8px 10px;font-size:10px;letter-spacing:.06em;}
+  .hero-offer-countdown-wrap{gap:7px;padding:7px 9px;border-radius:10px;}
+  .hero-offer-countdown-caption{max-width:78px;font-size:8px;letter-spacing:.04em;}
+  .hero-offer-countdown{gap:2px;font-size:12px;}
+  .hero-offer-countdown span{min-width:19px;padding:5px 2px;}
+  .hero-slide-content{padding:66px 28px 34px;}
   .hero-sale-badge{font-size:10px;padding:5px 9px;margin-bottom:9px;}
   .hero-sale-summary{font-size:12px;margin-bottom:10px;}
   .hero-sale-prices{margin-bottom:11px;gap:7px;}
 }
 @media(max-width:480px){
-  .hero-offer-alert{top:8px;left:8px;right:8px;gap:5px;flex-wrap:wrap;}
-  .hero-offer-alert-label{padding:6px 8px;font-size:9px;letter-spacing:.04em;}
-  .hero-offer-countdown-wrap{padding:5px 6px;gap:4px;}
-  .hero-offer-countdown-caption{font-size:7px;letter-spacing:0;}
-  .hero-offer-countdown{font-size:11px;gap:2px;}
-  .hero-slide-content{padding:54px 23px 34px;}
+  .hero-offer-alert{top:9px;left:9px;right:9px;max-width:calc(100% - 18px);gap:7px;align-items:flex-start;}
+  .hero-offer-alert-label{gap:6px;padding:8px 9px;font-size:9px;letter-spacing:.045em;}
+  .hero-offer-alert-label .hero-offer-live-dot{width:6px;height:6px;flex-basis:6px;box-shadow:0 0 0 3px rgba(255,255,255,.14);}
+  .hero-offer-countdown-wrap{gap:5px;padding:6px 7px;border-radius:9px;}
+  .hero-offer-countdown-caption{max-width:58px;font-size:7px;letter-spacing:0;line-height:1.25;white-space:normal;}
+  .hero-offer-countdown{gap:2px;font-size:11px;}
+  .hero-offer-countdown span{min-width:16px;padding:5px 1px;border-radius:4px;}
+  .hero-offer-countdown b{font-size:10px;}
+  .hero-slide-content{padding:68px 23px 34px;}
   .hero-sale-badge{font-size:9px;padding:5px 7px;letter-spacing:0;}
   .hero-sale-summary{font-size:11px;line-height:1.3;}
   .hero-sale-prices .hsp-val{font-size:1.4rem;}
   .hero-sale-prices .hsp-original{font-size:11px;}
+}
+@media(max-width:360px){
+  .hero-offer-alert{gap:5px;}
+  .hero-offer-alert-label{padding:7px;font-size:8px;gap:5px;}
+  .hero-offer-countdown-wrap{padding:6px 5px;gap:4px;}
+  .hero-offer-countdown-caption{max-width:47px;font-size:6px;}
+  .hero-offer-countdown{font-size:10px;}
+  .hero-offer-countdown span{min-width:14px;padding:4px 1px;}
 }
 </style>
   <link rel="manifest" href="https://progressier.app/Qn40PARc0DxCTLIapBvJ/progressier.json">
