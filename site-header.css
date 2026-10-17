@@ -408,3 +408,36 @@ body>.top-header::after{
   filter:blur(2px);opacity:.72;
 }
 @media(prefers-reduced-motion:reduce){body>.top-header::after{filter:none}}
+
+
+/* PhoneYa2 animated brand canvas — decorative only; never changes document layout. */
+:root{
+  --py2-animated-logo:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
+}
+html{
+  background-color:#f8fbf9!important;
+}
+body{
+  background-image:
+    radial-gradient(ellipse at center,rgba(255,255,255,.76) 0%,rgba(255,255,255,.86) 48%,rgba(255,255,255,.94) 100%),
+    var(--py2-animated-logo)!important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-position:center center,50% 48%!important;
+  background-size:100% 100%,clamp(190px,34vw,470px) auto!important;
+  background-attachment:fixed,fixed!important;
+  animation:py2BrandCanvasDrift 15s ease-in-out infinite alternate!important;
+}
+@keyframes py2BrandCanvasDrift{
+  0%{background-position:center center,48% 46%}
+  50%{background-position:center center,52% 51%}
+  100%{background-position:center center,49% 54%}
+}
+@media(max-width:760px){
+  body{
+    background-size:100% 100%,min(66vw,300px) auto!important;
+    animation-duration:19s!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body{animation:none!important;background-position:center center,50% 50%!important}
+}
