@@ -477,3 +477,35 @@ body::before{
   background-color:transparent!important;
   background-blend-mode:normal!important;
 }
+
+
+/* Contrast repair: darken text only inside light/white content surfaces.
+   The earlier site-wide light-text rules were leaking into several white cards and strips. */
+body :where(
+  .section-card,.trust-item,.howto-section,.cat-showcase,.trust-strip,.hms,
+  .filter-bar,.fpill,.sort-sel,.pc,.pc-body,.pcard-body,.pcard-info,
+  .desc-block,.howto-block,.trust-card,.benefit,.benefits,.policy,
+  .contact-form-card,.info-card,.hours-table,.faq-item,.cart-items,
+  .cart-summary,.cart-empty,.order-summary,.order,.panel,.card,.form-card,
+  .section,.section-body,.main-content,.content-section,.product-section,
+  .shop-section,.contact-section,.about-section,.product-details,.product-info,
+  .blog-card,.post-card,.blog-post-card,.content-card,.side-card,.content-panel
+) :where(p,li,label,small,span,strong,b,em,td,th,dt,dd,h1,h2,h3,h4,h5,h6,.muted,.subtitle,.description,.meta,.text-muted,.section-title,.card-title,.card-text){
+  color:#26364b;
+}
+body :where(
+  .section-card,.trust-item,.howto-section,.cat-showcase,.trust-strip,.hms,
+  .filter-bar,.fpill,.sort-sel,.pc,.pc-body,.pcard-body,.pcard-info,
+  .desc-block,.howto-block,.trust-card,.benefit,.benefits,.policy,
+  .contact-form-card,.info-card,.hours-table,.faq-item,.cart-items,
+  .cart-summary,.cart-empty,.order-summary,.order,.panel,.card,.form-card,
+  .section,.section-body,.main-content,.content-section,.product-section,
+  .shop-section,.contact-section,.about-section,.product-details,.product-info,
+  .blog-card,.post-card,.blog-post-card,.content-card,.side-card,.content-panel
+) :where(a:not(.btn):not(.button):not([role="button"])){
+  color:#075ca8;
+}
+body :where(.section-card,.trust-item,.howto-section,.cat-showcase,.trust-strip,.hms,.filter-bar,.pc,.pc-body,.pcard-body,.pcard-info,.desc-block,.howto-block,.trust-card,.benefit,.policy,.contact-form-card,.info-card,.hours-table,.faq-item,.cart-items,.cart-summary,.cart-empty,.order-summary,.order,.panel,.card,.form-card,.section,.section-body,.main-content,.content-section,.product-section,.shop-section,.contact-section,.about-section,.product-details,.product-info,.blog-card,.post-card,.blog-post-card,.content-card,.side-card,.content-panel) :where(input,select,textarea){
+  color:#172033;
+  background:#fff;
+}
