@@ -1,0 +1,19 @@
+/* PhoneYa2 compact footer and back-to-top controls */
+.py2-compact-footer{position:relative;display:block!important;width:100%;margin:28px 0 0;padding:16px clamp(14px,3vw,28px) 12px!important;background:#101827!important;color:#eef4fb!important;border-top:3px solid #159447;box-shadow:0 -8px 24px rgba(16,24,39,.08);font-family:'DM Sans',Arial,sans-serif}
+body.py2-water-page footer.py2-compact-footer{background:#101827!important;color:#eef4fb!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.py2-footer-main{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:18px}
+.py2-footer-brand{display:flex;align-items:center;gap:10px;min-width:210px;color:#fff!important;text-decoration:none!important}
+.py2-footer-brand img{width:43px;height:43px;object-fit:contain;border-radius:9px;background:#fff}
+.py2-footer-brand-copy{display:flex;flex-direction:column;gap:4px}
+.py2-footer-brand-copy strong{font-family:'Syne','DM Sans',sans-serif;font-size:20px;line-height:1;font-weight:900;letter-spacing:-.4px;color:#fff}
+.py2-footer-brand-copy small{font-size:9px;line-height:1.35;letter-spacing:.5px;color:#b8c7d8;font-weight:800}
+.py2-footer-contact{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;flex-wrap:wrap}
+.py2-footer-contact a{display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:7px 10px;border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#e2eaf4!important;font-size:11px;font-weight:700;text-decoration:none!important;background:rgba(255,255,255,.045);overflow-wrap:anywhere}
+.py2-footer-contact a i{color:#55d68a;font-size:13px}.py2-footer-contact a:hover{background:rgba(255,255,255,.1);border-color:rgba(85,214,138,.5)}
+.py2-footer-top{display:inline-grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:#159447;color:#fff;font-size:16px;cursor:pointer;transition:transform .18s,background .18s}.py2-footer-top:hover{background:#10773a;transform:translateY(-2px)}
+.py2-footer-nav{max-width:1180px;margin:12px auto 0;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+.py2-footer-nav a{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:7px;color:#d2dbe7!important;font-size:11px;font-weight:750;text-decoration:none!important}.py2-footer-nav a:hover{background:rgba(255,255,255,.1);color:#fff!important}
+.py2-footer-copyright{max-width:1180px;margin:8px auto 0;text-align:center;color:#94a3b8;font-size:10px;line-height:1.4}
+.py2-back-top{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:9000;display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(255,255,255,.8);border-radius:50%;background:linear-gradient(135deg,#159447,#0f766e);color:#fff;box-shadow:0 6px 22px rgba(12,74,55,.28);font-size:17px;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,visibility .2s,transform .2s}
+.py2-back-top.is-visible{opacity:1;visibility:visible;transform:translateY(0)}.py2-back-top:hover{transform:translateY(-3px)}
+@media(max-width:760px){.py2-footer-main{align-items:flex-start;gap:10px;flex-wrap:wrap}.py2-footer-brand{min-width:0;flex:1 1 calc(100% - 52px)}.py2-footer-top{margin-left:auto}.py2-footer-contact{justify-content:flex-start;flex:1 1 100%;gap:6px}.py2-footer-contact a{font-size:10px;padding:7px 8px}.py2-footer-nav{justify-content:flex-start;gap:2px}.py2-footer-nav a{padding:7px 8px;font-size:10px}.py2-footer-copyright{text-align:left}.py2-back-top{right:12px;bottom:calc(82px + env(safe-area-inset-bottom,0px))}}
