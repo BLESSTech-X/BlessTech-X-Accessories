@@ -38,9 +38,13 @@
     draw(0);
   }
 
-  function addRipple(x, y, strength) {
+  function addRipple(x, y, strength, splash) {
     if (reducedMotion || saveData || ripples.length > 5) return;
-    ripples.push({ x: x, y: y, radius: 4, max: 55 + (strength || 0) * 15, alpha: .38, speed: 1.2, born: performance.now() });
+    var droplets = [];
+    if (splash) {
+      for (var d = 0; d < 5; d++) droplets.push({ angle: (Math.PI * 2 * d / 5) + Math.random() * .45, distance: 9 + Math.random() * 12, size: 1 + Math.random() * 1.6 });
+    }
+    ripples.push({ x: x, y: y, radius: 4, max: 55 + (strength || 0) * 15, alpha: .38, speed: 1.2, born: performance.now(), droplets: droplets });
     if (!running && !document.hidden) start();
   }
 
@@ -99,6 +103,17 @@
         ctx.lineWidth = ring === 0 ? 1.4 : .8;
         ctx.stroke();
       }
+      if (r.droplets && r.droplets.length) {
+        r.droplets.forEach(function (drop) {
+          var distance = drop.distance + progress * 18;
+          var dx = r.x + Math.cos(drop.angle) * distance;
+          var dy = r.y + Math.sin(drop.angle) * distance;
+          ctx.beginPath();
+          ctx.ellipse(dx, dy, drop.size * (1 - progress * .45), drop.size * 1.45 * (1 - progress * .45), drop.angle, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(225, 253, 255,' + (Math.max(0, 1 - progress * 2.2) * .48) + ')';
+          ctx.fill();
+        });
+      }
       ctx.restore();
     }
   }
@@ -146,7 +161,7 @@
     pointerCooldown = now;
     var target = event.target;
     if (target && target.closest && target.closest('button, a, [role="button"], input[type="submit"]')) {
-      addRipple(event.clientX, event.clientY, 1);
+      addRipple(event.clientX, event.clientY, 1, true);
     }
   }, { passive: true });
 
