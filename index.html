@@ -113,6 +113,16 @@ button{font-family:'DM Sans',sans-serif;}
   border:1px solid rgba(255,255,255,.1);
   box-shadow:0 12px 34px rgba(15,23,42,.16);
 }
+.hero-offer-alert{position:absolute;z-index:8;top:15px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:10px;pointer-events:none;}
+.hero-offer-alert-label{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border:1px solid rgba(255,91,91,.9);border-radius:7px;background:rgba(115,8,18,.9);color:#fff;font-size:clamp(11px,1.1vw,14px);font-weight:900;letter-spacing:.1em;line-height:1;box-shadow:0 0 8px rgba(255,32,52,.7),0 0 20px rgba(255,32,52,.42),inset 0 0 12px rgba(255,32,52,.18);animation:py2SpecialPulse 1.25s ease-in-out infinite alternate;text-shadow:0 0 8px rgba(255,255,255,.55);}
+.hero-offer-live-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff4545;box-shadow:0 0 7px #ff3030,0 0 14px #ff3030;animation:py2DotPulse .8s ease-in-out infinite alternate;}
+.hero-offer-countdown-wrap{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:7px;background:rgba(7,12,24,.82);border:1px solid rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(6px);}
+.hero-offer-countdown-caption{font-size:9px;font-weight:800;letter-spacing:.08em;color:#ffe1e1;line-height:1.2;}
+.hero-offer-countdown{display:flex;align-items:center;gap:3px;font-variant-numeric:tabular-nums;font-weight:900;font-size:clamp(15px,1.6vw,21px);line-height:1;color:#fff;}
+.hero-offer-countdown span{min-width:22px;text-align:center;padding:5px 4px;border-radius:4px;background:linear-gradient(180deg,#e93643,#a90f24);box-shadow:0 0 9px rgba(255,36,55,.25);}
+.hero-offer-countdown b{font-size:13px;color:#ff7a87;}
+@keyframes py2SpecialPulse{from{box-shadow:0 0 5px rgba(255,32,52,.55),0 0 12px rgba(255,32,52,.28),inset 0 0 8px rgba(255,32,52,.12)}to{box-shadow:0 0 12px rgba(255,32,52,.95),0 0 27px rgba(255,32,52,.62),inset 0 0 14px rgba(255,32,52,.28)}}
+@keyframes py2DotPulse{from{opacity:.65;transform:scale(.85)}to{opacity:1;transform:scale(1.15)}}
 .hero-banner::before{
   content:"";
   position:absolute;
@@ -1623,6 +1633,10 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
   <!-- HERO ZONE -->
   <div class="hero-zone">
     <div class="hero-banner">
+      <div class="hero-offer-alert" aria-label="Special offers countdown">
+        <div class="hero-offer-alert-label"><span class="hero-offer-live-dot"></span><span>SPECIAL OFFERS</span></div>
+        <div class="hero-offer-countdown-wrap"><span class="hero-offer-countdown-caption">TODAY'S OFFERS REFRESH IN</span><div class="hero-offer-countdown" aria-live="off"><span id="offer-cd-h">00</span><b>:</b><span id="offer-cd-m">00</span><b>:</b><span id="offer-cd-s">00</span></div></div>
+      </div>
       <div class="hero-slides" id="hero-slides">
         <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=1200&q=80&auto=format&fit=crop')">
           <div class="hero-slide-overlay"></div>
@@ -2583,6 +2597,23 @@ function renderCsGrid(cat) {
     });
   }
   update(); setInterval(update,1000);
+})();
+
+(function startHeroOfferCountdown() {
+  const pad = n => String(n).padStart(2, '0');
+  function updateOfferClock() {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(23, 59, 59, 999);
+    const secondsLeft = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
+    const values = [Math.floor(secondsLeft / 3600), Math.floor((secondsLeft % 3600) / 60), secondsLeft % 60];
+    ['offer-cd-h', 'offer-cd-m', 'offer-cd-s'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = pad(values[i]);
+    });
+  }
+  updateOfferClock();
+  setInterval(updateOfferClock, 1000);
 })();
 
 function initHero() {
