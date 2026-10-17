@@ -58,3 +58,16 @@ body.py2-water-page .cart-layout {
 @media (prefers-reduced-motion: reduce) {
   .py2-water-ripple { display: none !important; animation: none !important; }
 }
+
+/* Floating, glass-lit finish for key cards without changing their dimensions. */
+body.py2-water-page .pcard,
+body.py2-water-page .product-card,
+body.py2-water-page .panel,
+body.py2-water-page .benefit,
+body.py2-water-page .contact-card,
+body.py2-water-page .about-card,
+body.py2-water-page .policy-card,
+body.py2-water-page .checkout-card,
+body.py2-water-page .order-summary {
+  box-shadow: 0 10px 26px rgba(2, 48, 70, .13), 0 1px 0 rgba(255,255,255,.58) inset;
+}
