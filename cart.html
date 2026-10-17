@@ -750,7 +750,8 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   $("proceed").addEventListener("click",()=>{if(readCart().length)location.href="/checkout.html";});
   window.addEventListener("storage",()=>render());
   window.addEventListener("phoneya2:cart-updated",()=>render());
-  $("year").textContent=String(new Date().getFullYear());
+  const yearNode=$("year");
+  if(yearNode)yearNode.textContent=String(new Date().getFullYear());
   loadProducts();
 })();
 </script>
