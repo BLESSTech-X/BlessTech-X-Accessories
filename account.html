@@ -562,6 +562,26 @@ main:has(#account-panel){max-width:1120px;padding-top:34px}
 @media(max-width:850px){.purchased-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:620px){main:has(#account-panel){padding:20px 12px 46px}.hero{padding:24px 20px;border-radius:17px}.panel{padding:18px;border-radius:15px}#account-panel>.panel:first-child{padding:18px}.account-actions{width:100%}.account-actions .btn{flex:1}.account-filters{gap:7px}.filter-chip{padding:8px 10px;font-size:12px}.account-sort{justify-content:flex-start}.account-sort>span{flex:1 0 100%}.purchased-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.purchased-info{padding:11px}.item-thumb{width:52px;height:52px;flex-basis:52px}.order-bottom{align-items:flex-start}.order-bottom .btn{flex:1 1 auto}}
 @media(prefers-reduced-motion:reduce){.btn,.filter-chip,.purchased-card{transition:none}.btn:hover,.purchased-card:hover{transform:none}}
+ 
+/* Purchased items are compact list rows; expand only on demand. */
+.purchased-grid{display:flex;flex-direction:column;gap:8px}
+.purchased-card{display:block;overflow:hidden;border:1px solid #e5eaf1;border-radius:13px;background:#fff;box-shadow:0 3px 12px rgba(21,32,54,.035);transition:border-color .16s,box-shadow .16s}
+.purchased-card:hover{transform:none;border-color:#cbd9d0;box-shadow:0 5px 16px rgba(21,32,54,.06)}
+.purchased-summary{display:flex;align-items:center;gap:13px;width:100%;min-width:0;padding:10px 13px;cursor:pointer;list-style:none}
+.purchased-summary::-webkit-details-marker{display:none}
+.purchased-summary:after{content:"+";display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:#f0f5f2;color:#17713d;font-size:21px;font-weight:500;line-height:1;transition:transform .16s,background .16s}
+.purchased-card[open]>.purchased-summary:after{content:"−";background:#e5f5ea}
+.purchased-image-wrap{display:grid;place-items:center;flex:0 0 56px;width:56px;height:56px;aspect-ratio:auto;padding:5px;border:1px solid #edf0f4;border-radius:10px;background:#f8fafc}
+.purchased-image{width:100%;height:100%;object-fit:contain}
+.purchased-image-placeholder{color:#a2adbb;font-size:25px}
+.purchased-summary-name{min-width:0;flex:1;font-size:14px;font-weight:850;line-height:1.35;overflow-wrap:anywhere;color:#1b2535}
+.purchased-info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;padding:15px 18px 17px 82px;border-top:1px solid #edf0f4;background:#fbfcfd}
+.purchased-detail{min-width:0}
+.purchased-detail-label{display:block;margin-bottom:3px;color:#7b8495;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.45px}
+.purchased-detail-value{font-size:14px;font-weight:800;overflow-wrap:anywhere;color:#172033}
+.purchased-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;color:#147a3d;font-size:12px;font-weight:850}
+@media(max-width:620px){.purchased-summary{padding:9px 10px;gap:10px}.purchased-image-wrap{flex-basis:48px;width:48px;height:48px}.purchased-summary-name{font-size:13px}.purchased-info{padding:13px 12px;gap:10px}.purchased-detail-value{font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -609,6 +629,35 @@ main:has(#account-panel){max-width:1120px;padding-top:34px}
     <a href="/about.html" class="cat-nav-item"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> About Us</a>
   </div>
 </div>
+<!-- MOBILE NAV DRAWER -->
+<div class="mob-nav" id="mob-nav" role="dialog" aria-modal="true">
+  <div class="mob-nav-panel">
+    <div class="mob-nav-hdr">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg"
+             alt="PhoneYa2" style="height:36px;border-radius:6px;" onerror="this.style.display='none'">
+        <div class="mob-nav-hdr-text">
+          <div class="mob-nav-hdr-brand"><span class="brand-phone-word">Phone</span><span class="brand-phone-ya">Ya</span><span class="brand-phone-two">2</span></div>
+          <div class="mob-nav-hdr-sub">Accessories</div>
+        </div>
+      </div>
+      <button class="mob-nav-close" id="mob-nav-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="padding:12px 16px;border-bottom:1px solid #f0f0f0;">
+      <div class="search-box"><input type="text" id="mob-search" placeholder="Search products…" autocomplete="off"><button onclick="doHeaderSearch(true)" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+    </div>
+    <div class="mob-nav-links">
+      <a href="index.html" class=" active"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="shop.html" class=""><i class="fa-solid fa-bag-shopping"></i> Shop</a>
+        <a href="about.html" class=""><i class="fa-solid fa-circle-info"></i> About</a>
+        <a href="contact.html" class=""><i class="fa-solid fa-envelope"></i> Contact</a>
+    </div>
+    <a href="/cart.html" class="mob-nav-cart"><span aria-hidden="true">🛒</span> View Your Cart <span class="cart-count" data-cart-count>0</span><span style="margin-left:auto;font-size:12px">Open →</span></a>
+    <a href="https://wa.me/260979603741?text=Hi!%20I%20want%20to%20order%20from%20PhoneYa2." target="_blank" class="mob-nav-wa"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
+  </div>
+</div>
+
+
 <main>
 <section class="hero"><h1>My PhoneYa2</h1><p>Your orders, your history, your next favourite accessory.</p></section>
 <div id="notice" class="notice" role="status" aria-live="polite"></div>
@@ -696,25 +745,31 @@ function renderPurchasedProducts(orders){
  [...orders].sort((a,b)=>new Date(b.created_at).getTime()-new Date(a.created_at).getTime()).forEach(order=>{
   (order.order_items||[]).forEach(item=>{
    const name=String(item.product_name||"Product"),slug=String(item.product_slug||"").trim(),key=slug||name.toLowerCase();
-   if(!catalog.has(key))catalog.set(key,{name,slug,image:String(item.product_image||""),price:Number(item.unit_price||0),quantity:0});
-   const product=catalog.get(key);product.quantity+=Math.max(0,Number(item.quantity)||0);
+   if(!catalog.has(key))catalog.set(key,{name,slug,image:String(item.product_image||""),price:Number(item.unit_price||0),quantity:0,orders:0,lastDate:order.created_at,orderNumbers:[]});
+   const product=catalog.get(key);product.quantity+=Math.max(0,Number(item.quantity)||0);product.orders++;
    if(!product.image&&item.product_image)product.image=String(item.product_image);
    if(Number(item.unit_price)>0)product.price=Number(item.unit_price);
+   if(order.order_number&&!product.orderNumbers.includes(String(order.order_number)))product.orderNumbers.push(String(order.order_number));
+   if(new Date(order.created_at)>new Date(product.lastDate))product.lastDate=order.created_at;
   });
  });
  if(!catalog.size){const empty=document.createElement("div");empty.className="purchased-empty";empty.textContent="No purchased products to display yet. Once an order is linked to this account, your products will be collected here.";host.append(empty);return;}
  catalog.forEach(product=>{
-  const card=document.createElement("article");card.className="purchased-card";
-  const imageWrap=document.createElement("div");imageWrap.className="purchased-image-wrap";
-  if(product.image){const image=document.createElement("img");image.className="purchased-image";image.src=product.image;image.alt=product.name;image.loading="lazy";image.onerror=()=>{image.remove();const fallback=document.createElement("span");fallback.className="purchased-image-placeholder";fallback.textContent="▧";fallback.setAttribute("aria-hidden","true");imageWrap.append(fallback);};imageWrap.append(image);}
+  const card=document.createElement("details");card.className="purchased-card";
+  const summary=document.createElement("summary");summary.className="purchased-summary";
+  const imageWrap=document.createElement("span");imageWrap.className="purchased-image-wrap";
+  if(product.image){const image=document.createElement("img");image.className="purchased-image";image.src=product.image;image.alt="";image.loading="lazy";image.onerror=()=>{image.remove();const fallback=document.createElement("span");fallback.className="purchased-image-placeholder";fallback.textContent="▧";fallback.setAttribute("aria-hidden","true");imageWrap.append(fallback);};imageWrap.append(image);}
   else{const fallback=document.createElement("span");fallback.className="purchased-image-placeholder";fallback.textContent="▧";fallback.setAttribute("aria-hidden","true");imageWrap.append(fallback);}
+  const title=document.createElement("span");title.className="purchased-summary-name";title.textContent=product.name;summary.append(imageWrap,title);
   const info=document.createElement("div");info.className="purchased-info";
-  const title=document.createElement("div");title.className="purchased-name";title.textContent=product.name;
-  const meta=document.createElement("div");meta.className="purchased-meta";meta.textContent="Total purchased: "+product.quantity;
-  const price=document.createElement("div");price.className="purchased-price";price.textContent=money(product.price);
-  info.append(title,meta,price);
-  if(product.slug){const link=document.createElement("a");link.className="purchased-link";link.href="/product.html?id="+encodeURIComponent(product.slug);link.textContent="View product ↗";info.append(link);}
-  card.append(imageWrap,info);host.append(card);
+  const addDetail=(label,value)=>{const wrap=document.createElement("div");wrap.className="purchased-detail";const l=document.createElement("span");l.className="purchased-detail-label";l.textContent=label;const v=document.createElement("div");v.className="purchased-detail-value";v.textContent=value;wrap.append(l,v);info.append(wrap);};
+  addDetail("Price per item",money(product.price));
+  addDetail("Total quantity bought",String(product.quantity));
+  addDetail("Order records",String(product.orders));
+  addDetail("Most recent purchase",product.lastDate?new Date(product.lastDate).toLocaleDateString():"—");
+  if(product.orderNumbers.length)addDetail("Order number(s)",product.orderNumbers.join(", "));
+  if(product.slug){const link=document.createElement("a");link.className="purchased-link";link.href="/product.html?id="+encodeURIComponent(product.slug);link.textContent="View this product ↗";info.append(link);}
+  card.append(summary,info);host.append(card);
  });
 }
 function applyCustomerOrderFilters(){renderOrderFilters(cachedOrders);renderCustomerOrders(cachedOrders);}
@@ -788,8 +843,8 @@ if(needsPassword&&!location.hash.includes("access_token"))message("Open the secu
 
 <script src="/blog-header-button.js" defer></script>
 <script src="/site-header.js?v=20261015-center3" defer></script>
-<script src="/smart-guide.js?v=20261017-context-help5" defer></script>
-<script src="/interest-popups.js?v=20261017-popup-calm3" defer></script>
+<script src="/smart-guide.js?v=20261017-context-help7" defer></script>
+<script src="/interest-popups.js?v=20261017-popup-calm5" defer></script>
 
-<script src="/water-experience.js?v=20261017-living-water3"></script>
+<script src="/water-experience.js?v=20261017-living-water4"></script>
 </body></html>
