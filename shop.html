@@ -1001,6 +1001,16 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 .card-share-row .card-share-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
 @media(max-width:360px){.card-share-row{display:flex!important}}
 </style>
+
+<style id="py2-shop-share-row-overlap-fix">
+/* Keep product share controls on one clean, non-overlapping icon row. */
+.card-share-row{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex-wrap:wrap!important;gap:6px!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow:visible!important}
+.card-share-row .card-share-btn{box-sizing:border-box!important;flex:0 0 30px!important;width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;min-height:30px!important;margin:0!important;padding:0!important;white-space:nowrap!important;line-height:1!important;overflow:hidden!important}
+.card-share-row .card-copy-btn{font-size:0!important;letter-spacing:0!important}
+.card-share-row .card-share-btn i{display:inline-block!important;flex:0 0 auto!important;font-size:13px!important;line-height:1!important}
+@media(max-width:380px){.card-share-row{gap:5px!important}.card-share-row .card-share-btn{flex-basis:29px!important;width:29px!important;min-width:29px!important;max-width:29px!important;height:29px!important;min-height:29px!important}}
+</style>
+
 </head>
 <body class="shop-page">
 
