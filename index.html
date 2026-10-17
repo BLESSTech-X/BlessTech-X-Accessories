@@ -3210,6 +3210,7 @@ async function init() {
   }
 
   allProducts = products;
+  window.phoneya2Products = products;
   window.dispatchEvent(new CustomEvent('phoneya2:catalog-ready', { detail: products }));
 
   // Derive homepage statistics from the same live catalogue powering the shop.
