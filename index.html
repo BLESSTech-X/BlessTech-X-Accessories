@@ -1692,6 +1692,32 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
 .pc-share-row .pc-share-whatsapp{background:#e9f9ef!important;border-color:#c7efd5!important;color:#16a34a!important}
 .pc-share-row .pc-copy-btn{background:#eef6ff!important;border-color:#d5e7ff!important;color:#2563eb!important}
 .pc-share-row .pc-share-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+
+/* Final contrast fix: keep the support CTA label above decorative layers and force readable text fill. */
+body a.confidence-support-btn,
+body a.confidence-support-btn:link,
+body a.confidence-support-btn:visited,
+body a.confidence-support-btn:hover,
+body a.confidence-support-btn:focus-visible,
+body a.confidence-support-btn:active{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:10px!important;background:linear-gradient(135deg,#20c875 0%,#079653 58%,#087b45 100%)!important;
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  opacity:1!important;text-indent:0!important;font-size:14px!important;
+}
+body a.confidence-support-btn .confidence-support-btn-label{
+  position:relative!important;z-index:2!important;display:inline-block!important;
+  visibility:visible!important;opacity:1!important;color:#fff!important;
+  -webkit-text-fill-color:#fff!important;font-family:inherit!important;
+  font-size:14px!important;font-weight:850!important;line-height:1.25!important;
+  letter-spacing:.01em!important;text-decoration:none!important;white-space:nowrap!important;
+}
+body a.confidence-support-btn>i{position:relative!important;z-index:2!important;display:inline-block!important;visibility:visible!important;opacity:1!important;color:#fff!important;-webkit-text-fill-color:#fff!important;flex:0 0 auto!important;}
+body a.confidence-support-btn::before{z-index:0!important;pointer-events:none!important;}
+@media(max-width:480px){
+  body a.confidence-support-btn{min-height:44px!important;padding:10px 17px!important;}
+  body a.confidence-support-btn .confidence-support-btn-label{font-size:13px!important;}
+}
 </style>
 </head>
 <body>
@@ -2109,7 +2135,7 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
       <article class="testi-card"><div class="testi-stars" aria-hidden="true"><i class="fa-solid fa-clipboard-check"></i></div><h3 class="testi-name">Review Before Submitting</h3><p class="testi-text">Check your items, quantities and contact details before submitting an order for confirmation.</p></article>
       <article class="testi-card"><div class="testi-stars" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></div><h3 class="testi-name">Personal Support</h3><p class="testi-text">Need help choosing an accessory or checking delivery? Contact our team before you order.</p>
         <a class="confidence-support-btn" href="https://wa.me/260979603741?text=Hi%20PhoneYa2%2C%20I%20need%20help%20choosing%20an%20accessory%20or%20checking%20delivery." target="_blank" rel="noopener noreferrer" aria-label="Contact PhoneYa2 support on WhatsApp">
-          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat with us
+          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span class="confidence-support-btn-label">Chat with us</span>
         </a></article>
     </div>
   </section>
