@@ -506,6 +506,63 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 
 <link rel="stylesheet" href="/water-experience.css?v=20261017-living-water3">
 <link rel="stylesheet" href="/phoneya2-visual-contrast.css?v=20261017-depth2">
+<style id="phoneya2-account-dashboard-pro">
+body:has(#account-panel){background:radial-gradient(ellipse at 8% 0%,rgba(21,148,71,.07),transparent 34%),#f5f7fb}
+main:has(#account-panel){max-width:1120px;padding-top:34px}
+.hero{position:relative;overflow:hidden;padding:28px 30px;margin:0 0 22px;border-radius:22px;color:#fff;background:linear-gradient(120deg,#101827,#173b31 58%,#159447);box-shadow:0 18px 40px rgba(15,35,28,.16)}
+.hero:after{content:"";position:absolute;width:230px;height:230px;right:-54px;top:-115px;border:1px solid rgba(255,255,255,.18);border-radius:50%;box-shadow:0 0 0 25px rgba(255,255,255,.035),0 0 0 55px rgba(255,255,255,.025);pointer-events:none}
+.hero h1{position:relative;z-index:1;font-size:clamp(30px,4vw,42px);letter-spacing:-.9px;line-height:1.08}
+.hero p{position:relative;z-index:1;color:rgba(255,255,255,.8);margin:9px 0 0;max-width:620px}
+.panel{border:1px solid #e7ebf2;border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 8px 28px rgba(21,32,54,.055)}
+.panel h2{font-size:21px;letter-spacing:-.35px}
+#auth-panel{max-width:780px;margin:0 auto 24px;padding:clamp(22px,4vw,34px)}
+#auth-panel h2:before{content:"🔐";margin-right:9px}
+.field input,#order-sort{min-height:46px;border:1px solid #d8dfeb;border-radius:11px;background:#fff;transition:border-color .18s,box-shadow .18s}
+.field input:focus,#order-sort:focus{outline:none;border-color:#159447;box-shadow:0 0 0 3px rgba(21,148,71,.12)}
+.btn{min-height:42px;border-radius:11px;transition:transform .16s,box-shadow .16s,background .16s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(17,24,39,.11)}
+.primary{background:linear-gradient(135deg,#ff741c,#f45b00);box-shadow:0 5px 13px rgba(255,96,0,.16)}
+.secondary{background:#eef8f1;color:#126d38;border:1px solid #d2ecd9}
+.dark{background:#172033}
+#account-panel>.panel:first-child{padding:24px}
+#customer-email{overflow-wrap:anywhere;font-size:13px}
+.account-actions{display:flex;flex-wrap:wrap;gap:8px}
+.order-summary{display:inline-flex;align-items:center;min-height:34px;margin-top:16px;padding:7px 12px;border-radius:10px;background:#f0f7f2;color:#176c3b;font-size:13px;font-weight:800}
+.account-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.filter-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #e0e5ee;border-radius:999px;padding:9px 13px;background:#fff;color:#455166;font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:all .16s}
+.filter-chip span{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:99px;background:#f0f2f6;color:#5b6474;font-size:11px}
+.filter-chip:hover{border-color:#159447;color:#126d38}
+.filter-chip.active{border-color:#159447;background:#eaf7ee;color:#126d38;box-shadow:inset 0 0 0 1px rgba(21,148,71,.08)}
+.filter-chip.active span{background:#159447;color:#fff}
+.account-sort{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:16px;padding-top:15px;border-top:1px solid #edf0f5}
+.account-sort>span{margin-right:auto;font-size:12px;color:#778196}
+.account-sort label{font-size:12px;font-weight:800;color:#556074}
+#order-sort{min-height:36px;padding:5px 30px 5px 10px;font:inherit;font-size:12px}
+#orders{display:grid;gap:14px}
+.order.panel{margin:0;padding:clamp(17px,2.6vw,24px);border-radius:17px;box-shadow:0 6px 22px rgba(21,32,54,.045)}
+.order-top{align-items:center}.number{font-size:18px;letter-spacing:-.25px}.pill{padding:6px 11px;font-size:11px;letter-spacing:.25px}
+.status-delivered{background:#e7f7ed;color:#13733c}.status-cancelled{background:#fff0f0;color:#a72a2a}.status-processing,.status-confirmed,.status-shipped{background:#eaf2ff;color:#2457a6}.status-pending{background:#fff3df;color:#955000}
+.order .items{gap:0;margin:16px 0;border-top:1px solid #eff1f5}.order .item{padding:12px 0;border-bottom:1px solid #eff1f5}
+.item-thumb{width:62px;height:62px;flex-basis:62px;border-radius:12px;background:#f8fafc;border-color:#e9edf4;padding:4px}
+.item-name{font-size:14px;overflow-wrap:anywhere}.item-meta{margin-top:3px;font-size:12px}
+.order-bottom{border-top:1px solid #eff1f5;padding-top:16px}.total{font-size:23px;letter-spacing:-.45px}
+.orders-filter-empty{padding:32px 20px;text-align:center;border:1px dashed #d8e0e9;border-radius:16px;background:rgba(255,255,255,.72);color:#697588}
+#purchased-products-section{margin-top:28px}
+.purchased-heading{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.purchased-heading h2{margin:0 0 4px}.purchased-heading p{margin:0;color:#758095;font-size:13px}
+.purchased-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.purchased-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid #e6ebf2;border-radius:16px;background:#fff;box-shadow:0 7px 20px rgba(21,32,54,.05);transition:transform .18s,box-shadow .18s}
+.purchased-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(21,32,54,.1)}
+.purchased-image-wrap{display:grid;place-items:center;aspect-ratio:1.2/1;padding:14px;background:linear-gradient(145deg,#f8fafc,#eef4f0)}
+.purchased-image{width:100%;height:100%;object-fit:contain}.purchased-image-placeholder{color:#a2adbb;font-size:38px}
+.purchased-info{display:flex;flex:1;flex-direction:column;gap:7px;padding:13px}
+.purchased-name{font-size:13px;font-weight:850;line-height:1.35;overflow-wrap:anywhere}.purchased-meta{color:#7b8495;font-size:11px}
+.purchased-price{margin-top:auto;color:#172033;font-size:15px;font-weight:900}.purchased-link{margin-top:4px;color:#147a3d;font-size:12px;font-weight:850}
+.purchased-empty{padding:24px;border:1px dashed #d7e0e9;border-radius:14px;color:#778196;text-align:center;background:#fafbfd}
+@media(max-width:850px){.purchased-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){main:has(#account-panel){padding:20px 12px 46px}.hero{padding:24px 20px;border-radius:17px}.panel{padding:18px;border-radius:15px}#account-panel>.panel:first-child{padding:18px}.account-actions{width:100%}.account-actions .btn{flex:1}.account-filters{gap:7px}.filter-chip{padding:8px 10px;font-size:12px}.account-sort{justify-content:flex-start}.account-sort>span{flex:1 0 100%}.purchased-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.purchased-info{padding:11px}.item-thumb{width:52px;height:52px;flex-basis:52px}.order-bottom{align-items:flex-start}.order-bottom .btn{flex:1 1 auto}}
+@media(prefers-reduced-motion:reduce){.btn,.filter-chip,.purchased-card{transition:none}.btn:hover,.purchased-card:hover{transform:none}}
+</style>
 </head>
 <body>
 <!-- SHARED PHONEYA2 HEADER -->
@@ -569,6 +626,10 @@ body>.top-header .logo-wrap{margin-right:auto!important;}
 <section id="account-panel" class="hidden">
 <div class="panel"><div class="toolbar"><div><h2 style="margin-bottom:3px">My orders</h2><div id="customer-email" class="muted"></div></div><div class="account-actions"><button class="btn secondary" id="refresh-orders" type="button">↻ Refresh orders</button><button class="btn dark" id="signout" type="button">Sign out</button></div></div><p class="small" style="margin-top:8px">Your order status updates when PhoneYa2 processes your order. Refresh to check the latest update. Reordering checks current prices and stock.</p><div id="order-summary" class="order-summary" aria-live="polite"></div><div class="account-filters" role="group" aria-label="Filter your order history"><button class="filter-chip active" type="button" data-order-filter="all">All orders <span id="count-all">0</span></button><button class="filter-chip" type="button" data-order-filter="recent">Recent <span id="count-recent">0</span></button><button class="filter-chip" type="button" data-order-filter="older">Older <span id="count-older">0</span></button><button class="filter-chip" type="button" data-order-filter="pending">Pending <span id="count-pending">0</span></button><button class="filter-chip" type="button" data-order-filter="progress">In progress <span id="count-progress">0</span></button><button class="filter-chip" type="button" data-order-filter="delivered">Delivered <span id="count-delivered">0</span></button><button class="filter-chip" type="button" data-order-filter="cancelled">Cancelled <span id="count-cancelled">0</span></button></div><div class="account-sort"><span id="order-refresh-message" aria-live="polite">Order status updates automatically when you return to this page.</span><label for="order-sort">Sort orders</label><select id="order-sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></div></div>
 <div id="orders"><div class="empty">Loading your orders…</div></div>
+<section id="purchased-products-section" class="panel" aria-labelledby="purchased-products-title">
+  <div class="purchased-heading"><div><h2 id="purchased-products-title">Products you’ve ordered</h2><p>A quick visual record of the accessories you’ve purchased from PhoneYa2.</p></div></div>
+  <div id="purchased-products" class="purchased-grid"><div class="purchased-empty">Your ordered products will appear here after your order history loads.</div></div>
+</section>
 </section>
 </main>
 <script>
@@ -629,6 +690,33 @@ function renderCustomerOrders(orders){
   card.append(bottom);host.append(card);
  });
 }
+function renderPurchasedProducts(orders){
+ const host=$("purchased-products");if(!host)return;host.replaceChildren();
+ const catalog=new Map();
+ [...orders].sort((a,b)=>new Date(b.created_at).getTime()-new Date(a.created_at).getTime()).forEach(order=>{
+  (order.order_items||[]).forEach(item=>{
+   const name=String(item.product_name||"Product"),slug=String(item.product_slug||"").trim(),key=slug||name.toLowerCase();
+   if(!catalog.has(key))catalog.set(key,{name,slug,image:String(item.product_image||""),price:Number(item.unit_price||0),quantity:0});
+   const product=catalog.get(key);product.quantity+=Math.max(0,Number(item.quantity)||0);
+   if(!product.image&&item.product_image)product.image=String(item.product_image);
+   if(Number(item.unit_price)>0)product.price=Number(item.unit_price);
+  });
+ });
+ if(!catalog.size){const empty=document.createElement("div");empty.className="purchased-empty";empty.textContent="No purchased products to display yet. Once an order is linked to this account, your products will be collected here.";host.append(empty);return;}
+ catalog.forEach(product=>{
+  const card=document.createElement("article");card.className="purchased-card";
+  const imageWrap=document.createElement("div");imageWrap.className="purchased-image-wrap";
+  if(product.image){const image=document.createElement("img");image.className="purchased-image";image.src=product.image;image.alt=product.name;image.loading="lazy";image.onerror=()=>{image.remove();const fallback=document.createElement("span");fallback.className="purchased-image-placeholder";fallback.textContent="▧";fallback.setAttribute("aria-hidden","true");imageWrap.append(fallback);};imageWrap.append(image);}
+  else{const fallback=document.createElement("span");fallback.className="purchased-image-placeholder";fallback.textContent="▧";fallback.setAttribute("aria-hidden","true");imageWrap.append(fallback);}
+  const info=document.createElement("div");info.className="purchased-info";
+  const title=document.createElement("div");title.className="purchased-name";title.textContent=product.name;
+  const meta=document.createElement("div");meta.className="purchased-meta";meta.textContent="Total purchased: "+product.quantity;
+  const price=document.createElement("div");price.className="purchased-price";price.textContent=money(product.price);
+  info.append(title,meta,price);
+  if(product.slug){const link=document.createElement("a");link.className="purchased-link";link.href="/product.html?id="+encodeURIComponent(product.slug);link.textContent="View product ↗";info.append(link);}
+  card.append(imageWrap,info);host.append(card);
+ });
+}
 function applyCustomerOrderFilters(){renderOrderFilters(cachedOrders);renderCustomerOrders(cachedOrders);}
 async function loadOrders(session){
  const button=$("refresh-orders");if(button)button.disabled=true;
@@ -641,6 +729,7 @@ async function loadOrders(session){
   cachedOrders=Array.isArray(data.orders)?data.orders:[];
   lastOrderRefresh=Date.now();
   applyCustomerOrderFilters();
+  renderPurchasedProducts(cachedOrders);
   const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Updated just now";
  }catch(e){if(!cachedOrders.length){host.replaceChildren();const empty=document.createElement("div");empty.className="panel empty";empty.textContent=e.message||"Could not load your orders.";host.append(empty);}throw e;}
  finally{if(button)button.disabled=false;}
