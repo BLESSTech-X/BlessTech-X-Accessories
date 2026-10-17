@@ -64,3 +64,8 @@
 .py2-endless-grid .card-share-btn[aria-label="Share product on Facebook"]:hover{background:#eaf3ff!important;border-color:#b7d5ff!important}
 .py2-endless-grid .card-share-btn[aria-label="Share product on WhatsApp"]:hover{background:#eafff1!important;border-color:#a7ebc0!important}
 @media(prefers-reduced-motion:reduce){.py2-endless-grid .pcard{animation:none!important;transition:none!important}}
+
+
+/* Final depth pass: clear lift on every repeating homepage product card. */
+.py2-endless-grid .pcard{box-shadow:0 8px 18px rgba(21,47,78,.13),0 15px 30px rgba(21,47,78,.08),0 2px 5px rgba(21,47,78,.06)!important;border-color:#e0eaf4!important}
+.py2-endless-grid .pcard:hover{box-shadow:0 13px 24px rgba(21,47,78,.17),0 22px 40px rgba(21,47,78,.12)!important}
