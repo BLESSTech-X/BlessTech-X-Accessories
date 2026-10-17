@@ -1,0 +1,60 @@
+/* PhoneYa2 Living Water Experience — shared background layer */
+html.py2-water-enabled {
+  min-height: 100%;
+  background: #087c9a;
+  background-image: linear-gradient(145deg, #0a7896 0%, #0c91ad 43%, #07516f 100%);
+  background-attachment: fixed;
+}
+body.py2-water-page {
+  background: transparent !important;
+  position: relative;
+  isolation: isolate;
+}
+#py2-water-surface {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: .96;
+  contain: strict;
+}
+.py2-water-ripple {
+  position: fixed;
+  z-index: 0;
+  width: var(--py2-ripple-size, 150px);
+  height: var(--py2-ripple-size, 150px);
+  margin: 0;
+  border: 1px solid rgba(225, 251, 255, .58);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(.12);
+  opacity: 0;
+  box-shadow: 0 0 12px rgba(168, 239, 255, .12), inset 0 0 12px rgba(220, 250, 255, .08);
+  animation: py2WaterRipple .95s cubic-bezier(.16,.55,.36,1) forwards;
+}
+.py2-water-ripple::before,
+.py2-water-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 13%;
+  border: 1px solid rgba(220, 249, 255, .34);
+  border-radius: 50%;
+}
+.py2-water-ripple::after { inset: 28%; border-color: rgba(220, 249, 255, .22); }
+@keyframes py2WaterRipple {
+  0% { transform: translate(-50%, -50%) scale(.12); opacity: .7; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+/* Subtle depth on the main surfaces; avoid changing layout or hit targets. */
+body.py2-water-page main,
+body.py2-water-page .page-content,
+body.py2-water-page .shop-main,
+body.py2-water-page .cart-layout {
+  position: relative;
+}
+@media (prefers-reduced-motion: reduce) {
+  .py2-water-ripple { display: none !important; animation: none !important; }
+}
