@@ -1,0 +1,5 @@
+/* Cart and blog use light, high-contrast page canvases; no dark water canvas on these two pages. */
+html:has(body.py2-cart-page),html:has(body.py2-blog-page){min-height:100%;background:#edf2f8!important}
+body.py2-cart-page{min-height:100vh;background:linear-gradient(155deg,#f3f6fb 0%,#e9eff7 55%,#f7f9fc 100%)!important;color:#171725!important}
+body.py2-blog-page,body.py2-blog-redesigned{min-height:100vh;background:linear-gradient(155deg,#edf5ff 0%,#f7f9fc 48%,#eaf0f7 100%)!important;color:#172033!important}
+body.py2-blog-page .py2-blog-main{background:transparent!important}body.py2-blog-page .blog-content-section{background:rgba(255,255,255,.92)!important}body.py2-blog-page .py2-post-card,body.py2-blog-page .py2-post,body.py2-blog-page .py2-product-card{background:#fff!important}
