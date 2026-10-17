@@ -2516,7 +2516,6 @@ function buildFeaturedCard(p) {
   name.className = 'pc-name';
   name.textContent = p.title;
   body.appendChild(name);
-  appendProductGalleryThumbs(div, p);
 
   const priceRow = document.createElement('div');
   priceRow.className = 'pc-price-row';
@@ -2558,6 +2557,7 @@ function buildFeaturedCard(p) {
   body.appendChild(shareRow);
 
   div.appendChild(body);
+  appendProductGalleryThumbs(div, p);
   div.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
   return div;
 }
