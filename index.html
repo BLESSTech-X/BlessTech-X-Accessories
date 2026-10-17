@@ -2059,16 +2059,34 @@ function parseFrontmatter(text, slug) {
       if(imgM) out.gallery.push({image:imgM[1].trim(),caption:capM?capM[1].trim():''});
     });
   }
-  raw.replace(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m,'').split('\n').forEach(line=>{
-    const m=line.match(/^([\w_]+):\s*"?([^"\n]*?)"?\s*$/);
-    if(!m) return;
-    const[,key,val]=m; const v=val.trim();
-    if(!v&&key!=='original_price') return;
-    if(key==='price'||key==='original_price') out[key]=parseFloat(v)||0;
-    else if(key==='stock') out[key]=parseInt(v)||0;
-    else if(key==='featured') out[key]=v==='true';
-    else out[key]=v;
-  });
+  const fieldLines = raw.replace(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m, '').split(/\r?\n/);
+  for (let i = 0; i < fieldLines.length; i++) {
+    const m = fieldLines[i].match(/^([\w_]+):\s*(.*?)\s*$/);
+    if (!m) continue;
+    const key = m[1];
+    let v = m[2].trim();
+    if (/^[|>][+-]?\d*$/.test(v)) {
+      const style = v[0];
+      const block = [];
+      while (i + 1 < fieldLines.length) {
+        const next = fieldLines[i + 1];
+        if (!next.trim()) { block.push(''); i++; continue; }
+        if (!/^\s/.test(next)) break;
+        block.push(next.trim());
+        i++;
+      }
+      v = block.join('\n');
+      if (style === '>') v = v.replace(/([^\n])\n(?!\n)/g, '$1 ').replace(/\n{2,}/g, '\n\n');
+      v = v.trim();
+    } else {
+      if (!v && key !== 'original_price') continue;
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+    }
+    if (key === 'price' || key === 'original_price') out[key] = parseFloat(v) || 0;
+    else if (key === 'stock') out[key] = parseInt(v) || 0;
+    else if (key === 'featured') out[key] = v === 'true';
+    else out[key] = v;
+  }
   return out;
 }
 
