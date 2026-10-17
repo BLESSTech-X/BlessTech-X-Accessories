@@ -114,7 +114,8 @@ button{font-family:'DM Sans',sans-serif;}
   box-shadow:0 12px 34px rgba(15,23,42,.16);
 }
 .hero-offer-alert{position:absolute;z-index:8;top:15px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:10px;pointer-events:none;}
-.hero-offer-alert-label{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border:1px solid rgba(255,91,91,.9);border-radius:7px;background:rgba(115,8,18,.9);color:#fff;font-size:clamp(11px,1.1vw,14px);font-weight:900;letter-spacing:.1em;line-height:1;box-shadow:0 0 8px rgba(255,32,52,.7),0 0 20px rgba(255,32,52,.42),inset 0 0 12px rgba(255,32,52,.18);animation:py2SpecialPulse 1.25s ease-in-out infinite alternate;text-shadow:0 0 8px rgba(255,255,255,.55);}
+.hero-offer-alert-label{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 13px;border:1px solid rgba(255,91,91,.9);border-radius:7px;background:rgba(115,8,18,.9);color:#fff;font-size:clamp(11px,1.1vw,14px);font-weight:900;letter-spacing:.1em;line-height:1;box-shadow:0 0 8px rgba(255,32,52,.7),0 0 20px rgba(255,32,52,.42),inset 0 0 12px rgba(255,32,52,.18);animation:py2SpecialPulse 1.25s ease-in-out infinite alternate;text-shadow:0 0 8px rgba(255,255,255,.55);}
+.hero-offer-subline{flex-basis:100%;padding-left:16px;font-size:8px;font-weight:800;letter-spacing:.07em;line-height:1.15;color:#ffd9dd;}
 .hero-offer-live-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff4545;box-shadow:0 0 7px #ff3030,0 0 14px #ff3030;animation:py2DotPulse .8s ease-in-out infinite alternate;}
 .hero-offer-countdown-wrap{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:7px;background:rgba(7,12,24,.82);border:1px solid rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(6px);}
 .hero-offer-countdown-caption{font-size:9px;font-weight:800;letter-spacing:.08em;color:#ffe1e1;line-height:1.2;}
@@ -154,7 +155,8 @@ button{font-family:'DM Sans',sans-serif;}
 @keyframes py2OfferEnter{from{opacity:.25;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:768px){
   .hero-offer-alert{top:10px;left:10px;right:10px;align-items:flex-start;gap:6px;}
-  .hero-offer-alert-label{padding:7px 9px;letter-spacing:.06em;font-size:10px;}
+  .hero-offer-alert-label{padding:7px 9px;letter-spacing:.06em;font-size:10px;gap:5px;}
+  .hero-offer-subline{font-size:6px;padding-left:13px;letter-spacing:.04em;}
   .hero-offer-countdown-wrap{gap:5px;padding:5px 6px;}
   .hero-offer-countdown-caption{max-width:78px;font-size:7px;letter-spacing:.03em;}
   .hero-offer-countdown{font-size:14px;gap:2px;}
@@ -171,7 +173,8 @@ button{font-family:'DM Sans',sans-serif;}
 }
 @media(max-width:480px){
   .hero-offer-alert{top:8px;left:8px;right:8px;gap:5px;}
-  .hero-offer-alert-label{padding:6px 7px;font-size:9px;gap:5px;}
+  .hero-offer-alert-label{padding:6px 7px;font-size:9px;gap:4px;}
+  .hero-offer-subline{font-size:5.5px;padding-left:12px;}
   .hero-offer-countdown-wrap{padding:4px 5px;gap:4px;}
   .hero-offer-countdown-caption{max-width:64px;font-size:6px;}
   .hero-offer-countdown{font-size:12px;}
@@ -1646,8 +1649,8 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
   <div class="hero-zone">
     <div class="hero-banner">
       <div class="hero-offer-alert" aria-label="Special offers countdown">
-        <div class="hero-offer-alert-label"><span class="hero-offer-live-dot"></span><span>SPECIAL OFFERS</span></div>
-        <div class="hero-offer-countdown-wrap"><span class="hero-offer-countdown-caption">TODAY'S OFFERS REFRESH IN</span><div class="hero-offer-countdown" aria-live="off"><span id="offer-cd-h">00</span><b>:</b><span id="offer-cd-m">00</span><b>:</b><span id="offer-cd-s">00</span></div></div>
+        <div class="hero-offer-alert-label"><span class="hero-offer-live-dot"></span><span>SPECIAL OFFERS</span><small class="hero-offer-subline">SAVE ON SELECTED ACCESSORIES</small></div>
+        <div class="hero-offer-countdown-wrap"><span class="hero-offer-countdown-caption">DAILY SPOTLIGHT CHANGES IN</span><div class="hero-offer-countdown" aria-live="off"><span id="offer-cd-h">00</span><b>:</b><span id="offer-cd-m">00</span><b>:</b><span id="offer-cd-s">00</span></div></div>
       </div>
       <div class="hero-slides" id="hero-slides">
         <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=1200&q=80&auto=format&fit=crop')">
@@ -2760,7 +2763,7 @@ function renderHomepageHeroPromotions(products, settings) {
     const product = bySlug.get(slug);
     if (!product) return;
     const slide = makeSlide(product, {
-      badge: item.badge || 'Featured Pick',
+      badge: item.badge || (Number(product.original_price) > Number(product.price) ? 'SPECIAL OFFER • SAVE ' + Math.round((1 - Number(product.price) / Number(product.original_price)) * 100) + '%' : 'FEATURED PICK'),
       title: item.title || product.title,
       description: item.description || product.description,
       image: item.image || product.image,
@@ -2782,7 +2785,16 @@ function renderHomepageHeroPromotions(products, settings) {
     let salesAdded = 0;
     discounted.forEach(product => {
       if (salesAdded >= maxSales) return;
-      const slide = makeSlide(product, { badge: 'Special Offer', price_label: 'Now', button_label: 'Shop Offer' });
+      const savingPercent = Math.round((1 - Number(product.price) / Number(product.original_price)) * 100);
+      const savingAmount = Number(product.original_price) - Number(product.price);
+      const rawDescription = safeText(product.description || '').replace(/\s+/g, ' ').trim();
+      const shortDescription = rawDescription.length > 105 ? rawDescription.slice(0, 102).replace(/\s+\S*$/, '') + '…' : rawDescription;
+      const slide = makeSlide(product, {
+        badge: 'SPECIAL OFFER • SAVE ' + savingPercent + '%',
+        description: shortDescription || 'Save ZMW ' + savingAmount.toLocaleString() + ' on this selected accessory.',
+        price_label: 'NOW',
+        button_label: 'Shop This Deal'
+      });
       if (slide) {
         host.appendChild(slide);
         salesAdded++;
