@@ -1,7 +1,7 @@
-/* PhoneYa2 Living Water Experience v3 — layered water surface, submerged logo, touch/scroll ripples. */
+/* PhoneYa2 Living Water Experience v4 — ripples stay behind solid floating content. */
 (function () {
   'use strict';
-  if (window.__py2WaterExperienceV3) return;
+  if (window.__py2WaterExperienceV4) return;
   window.__py2WaterExperienceV3 = true;
 
   var root = document.documentElement, body = document.body;
@@ -12,7 +12,7 @@
   if (!document.querySelector('link[data-py2-water-styles]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/water-experience.css?v=20261017-living-water3';
+    link.href = '/water-experience.css?v=20261017-living-water4';
     link.setAttribute('data-py2-water-styles', 'true');
     document.head.appendChild(link);
   }
@@ -137,23 +137,23 @@
   }
 
   function addRipple(x, y, strength, splash) {
-    if (reducedMotion || document.hidden || ripples.length > 10) return;
+    if (reducedMotion || document.hidden || ripples.length > 4) return;
     var droplets = [];
     if (splash) {
-      var count = lowPower ? 5 : 9;
+      var count = lowPower ? 3 : 4;
       for (var d = 0; d < count; d++) {
         droplets.push({
           angle: Math.PI * 2 * d / count + Math.random() * .32,
-          distance: 10 + Math.random() * 19,
-          size: 1.1 + Math.random() * 2.2,
-          lift: 12 + Math.random() * 22
+          distance: 6 + Math.random() * 9,
+          size: .8 + Math.random() * 1.1,
+          lift: 5 + Math.random() * 9
         });
       }
     }
     ripples.push({
       x: Math.max(0, Math.min(w, x)), y: Math.max(0, Math.min(h, y)),
-      max: Math.min(180, 54 + (strength || 0) * 38),
-      born: performance.now(), duration: splash ? 1250 : 1450,
+      max: Math.min(94, 38 + (strength || 0) * 24),
+      born: performance.now(), duration: splash ? 950 : 1100,
       strength: Math.min(1.7, strength || 1), droplets: droplets
     });
     if (!running) start();
@@ -168,11 +168,11 @@
       if (progress >= 1) { ripples.splice(i, 1); continue; }
       var ease = 1 - Math.pow(1 - progress, 2);
       var radius = 4 + ease * r.max;
-      var alpha = Math.pow(1 - progress, 1.18) * (.46 + r.strength * .12);
+      var alpha = Math.pow(1 - progress, 1.35) * (.22 + r.strength * .06);
       fg.save();
       fg.globalCompositeOperation = 'screen';
       /* Several uneven rings mimic surface tension and refracted highlights. */
-      for (var ring = 0; ring < 4; ring++) {
+      for (var ring = 0; ring < 2; ring++) {
         var wobble = 1 + Math.sin(elapsed * 3 + ring * 1.8) * .025;
         fg.beginPath();
         fg.ellipse(r.x, r.y, radius * (1 + ring * .19) * wobble, radius * (.52 + ring * .105), Math.sin(elapsed + ring) * .045, 0, Math.PI * 2);
@@ -235,10 +235,10 @@
   window.addEventListener('scroll', function () {
     var now = performance.now(), y = window.scrollY || 0;
     var movement = Math.abs(y - lastScrollY);
-    if (movement > 9 && now - lastScrollAt > 95) {
+    if (movement > 24 && now - lastScrollAt > 260) {
       var impactX = w * (.14 + Math.random() * .72);
       var impactY = Math.max(95, Math.min(h - 35, h * (.25 + Math.random() * .52)));
-      addRipple(impactX, impactY, Math.min(1.7, .5 + movement / 95), movement > 45);
+      addRipple(impactX, impactY, Math.min(.8, .3 + movement / 180), false);
       lastScrollAt = now;
     }
     lastScrollY = y;
@@ -247,11 +247,26 @@
   document.addEventListener('pointerdown', function (event) {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     var now = performance.now();
-    if (now - lastPointerAt < 110) return;
+    if (now - lastPointerAt < 260) return;
     lastPointerAt = now;
     var target = event.target;
     if (target && target.closest && target.closest('button, a, [role="button"], input, select, .pcard, .pc, .pcard-img, .product-card')) {
-      addRipple(event.clientX, event.clientY, 1.2, true);
+      /* Put the impact just outside a solid surface so the ring appears in surrounding water. */
+      var surface = target.closest('.pcard, .product-card, .section-card, .panel, .benefit, .contact-card, .about-card, .policy-card, .checkout-card, .order-summary, .howto-mini-inner, button, a, [role="button"]');
+      var x = event.clientX, y = event.clientY;
+      if (surface && surface.getBoundingClientRect) {
+        var rect = surface.getBoundingClientRect();
+        var edgePoints = [
+          { d: Math.abs(event.clientX - rect.left), x: rect.left - 8, y: Math.max(rect.top + 8, Math.min(rect.bottom - 8, event.clientY)) },
+          { d: Math.abs(rect.right - event.clientX), x: rect.right + 8, y: Math.max(rect.top + 8, Math.min(rect.bottom - 8, event.clientY)) },
+          { d: Math.abs(event.clientY - rect.top), x: Math.max(rect.left + 8, Math.min(rect.right - 8, event.clientX)), y: rect.top - 8 },
+          { d: Math.abs(rect.bottom - event.clientY), x: Math.max(rect.left + 8, Math.min(rect.right - 8, event.clientX)), y: rect.bottom + 8 }
+        ];
+        edgePoints.sort(function(a,b){return a.d-b.d;});
+        x=edgePoints[0].x; y=edgePoints[0].y;
+        if (x < 8 || x > w-8 || y < 8 || y > h-8) { x=event.clientX; y=event.clientY; }
+      }
+      addRipple(x, y, .75, false);
     }
   }, { passive: true });
 
