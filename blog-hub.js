@@ -23,7 +23,7 @@ function videoMarkup(value,title){
  return '<a class="py2-feed-external-video" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer"><span class="py2-play-icon">▶</span><span>Watch on the original platform</span><small>Some platforms restrict embedded playback</small></a>'
 }
 function bodyVideoUrl(markdown){var matches=String(markdown||'').match(/https?:\/\/[^\s)<>]+/gi)||[];for(var i=0;i<matches.length;i++){var value=matches[i].replace(/[.,!?]+$/,'');try{var u=new URL(value);var host=u.hostname.toLowerCase().replace(/^www\./,'');if(host==='youtu.be'||host==='youtube.com'||host.endsWith('.youtube.com'))return value}catch(e){}}return ''}
-function enrichVideoLinks(items){return Promise.all(items.map(function(p){if(p.video_url)return p;return fetch('/content/blog/'+encodeURIComponent(p.slug)+'.md',{cache:'no-cache'}).then(function(r){return r.ok?r.text():''}).then(function(md){p.video_url=bodyVideoUrl(md);return p}).catch(function(){return p})}))}
+function enrichVideoLinks(items){return Promise.all(items.map(function(p){if(p.video_url||p._videoChecked)return p;p._videoChecked=true;return fetch('/content/blog/'+encodeURIComponent(p.slug)+'.md',{cache:'force-cache'}).then(function(r){return r.ok?r.text():''}).then(function(md){p.video_url=bodyVideoUrl(md);return p}).catch(function(){return p})}))}
 function mediaMarkup(p){
  if(p.video_url){var video=videoMarkup(p.video_url,p.title);if(video)return video}
  if(p.image)return '<a class="py2-feed-media" href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'"><img loading="lazy" decoding="async" src="'+esc(p.image)+'" alt="'+esc(p.title)+'" onerror="this.closest(\'.py2-feed-media\').classList.add(\'py2-media-failed\')"><span class="py2-media-fallback">PhoneYa2 community post</span></a>';
