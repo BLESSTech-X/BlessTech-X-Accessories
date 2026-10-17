@@ -835,3 +835,26 @@ q/* ═════════════════════════�
   }
   .py2-ads-interstitial-slide { transition-duration: .01ms !important; }
 }
+
+
+/* PhoneYa2 popup comfort pass: compact footprint and a reliably visible close control. */
+#py2-ads-popup-backdrop{padding:12px!important;z-index:10030!important}
+.py2-ads-popup{width:min(370px,calc(100vw - 24px))!important;max-width:370px!important;max-height:min(84dvh,680px)!important;border-radius:18px!important;overflow-y:auto!important;overscroll-behavior:contain}
+.py2-ads-popup::before{pointer-events:none!important}
+.py2-ads-popup-close{top:8px!important;right:8px!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;z-index:20!important;background:#101828f2!important;color:#fff!important;border:2px solid #fff!important;box-shadow:0 2px 10px #0005!important;font-size:19px!important;line-height:1!important}
+.py2-ads-popup .py2-ads-popup-media{aspect-ratio:16/9!important}
+.py2-ads-popup > img,.py2-ads-popup > video,.py2-ads-popup > iframe{max-height:210px!important;object-fit:contain!important}
+.py2-ads-popup-body{padding:16px 17px 18px!important}
+.py2-ads-popup-title{font-size:1.12rem!important;line-height:1.25!important;margin-bottom:7px!important;padding-right:22px!important}
+.py2-ads-popup-desc{font-size:12px!important;line-height:1.5!important;margin-bottom:12px!important}
+.py2-ads-popup-cta{padding:11px 14px!important;font-size:12px!important}
+.py2-ads-popup-report{margin-top:10px!important;font-size:11px!important}
+@media(max-width:480px){
+ #py2-ads-popup-backdrop{padding:9px!important}
+ .py2-ads-popup{width:calc(100vw - 18px)!important;max-height:min(82dvh,620px)!important;border-radius:16px!important}
+ .py2-ads-popup-close{top:6px!important;right:6px!important;width:38px!important;height:38px!important}
+ .py2-ads-popup .py2-ads-popup-media{aspect-ratio:16/9!important}
+ .py2-ads-popup .py2-ads-popup-media img,.py2-ads-popup .py2-ads-popup-media video,.py2-ads-popup .py2-ads-popup-media iframe{object-fit:contain!important}
+ .py2-ads-popup-body{padding:13px 13px 15px!important}
+ .py2-ads-popup-title{font-size:1.02rem!important}
+}
