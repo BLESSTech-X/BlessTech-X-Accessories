@@ -1441,7 +1441,7 @@ function renderGrid(appendOnly) {
     const cat = CAT_LABELS[p.category] || p.category || 'Other';
     const bg = CAT_BG[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
     const img = p.image
-      ? '<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'📱\'">'
+      ? '<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'📱\'">'
       : '📱';
     const priceRow = hasDrop
       ? '<div class="pcard-price-row"><div class="pcard-price">ZMW '+p.price.toLocaleString()+'</div><div class="pcard-orig">ZMW '+op.toLocaleString()+'</div><div class="pcard-save">Save ZMW '+Math.round(op-p.price)+'</div></div>'
