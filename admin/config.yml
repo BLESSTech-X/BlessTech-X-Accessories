@@ -125,6 +125,29 @@ collections:
           - { label: "Hero line 1", name: "hero_line1", widget: "string", hint: "Keep this short; it appears in the main homepage heading." }
           - { label: "Hero line 2", name: "hero_line2", widget: "string", hint: "Second line of the main homepage heading." }
           - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Automatically show discounted products as Special Offers", name: "show_discounted_products", widget: "boolean", default: true, required: false, hint: "When enabled, in-stock products with an Original Price higher than Price are added to the homepage hero carousel as Special Offers." }
+          - { label: "Maximum automatic Special Offer slides", name: "max_discounted_promotions", widget: "number", min: 0, max: 12, default: 6, required: false, hint: "Choose how many discounted products can be added automatically. Set to 0 to turn off automatic sale slides." }
+          - label: "Additional Homepage Hero Promotions"
+            name: "hero_promotions"
+            widget: "list"
+            required: false
+            summary: "{{fields.product}} — {{fields.badge}}"
+            hint: "Add extra product slides to the main homepage banner. Select a product from the catalogue; optionally customize its badge, heading, description, image and button label. Turn Active off to hide a slide."
+            fields:
+              - label: "Product"
+                name: "product"
+                widget: "relation"
+                collection: "products"
+                search_fields: ["title", "category"]
+                value_field: "{{slug}}"
+                display_fields: ["title", "price", "category"]
+              - { label: "Badge", name: "badge", widget: "string", default: "Featured Pick", required: false }
+              - { label: "Heading Override", name: "title", widget: "string", required: false }
+              - { label: "Description Override", name: "description", widget: "text", required: false }
+              - { label: "Image Override", name: "image", widget: "image", required: false }
+              - { label: "Price Label", name: "price_label", widget: "string", required: false, hint: "For example: Only, From, or Special offer." }
+              - { label: "Button Label", name: "button_label", widget: "string", default: "View Product", required: false }
+              - { label: "Active", name: "active", widget: "boolean", default: true }
           - { label: "Stat 1", name: "stat1", widget: "string" }
           - { label: "Stat 2", name: "stat2", widget: "string" }
           - { label: "Stat 3", name: "stat3", widget: "string" }
