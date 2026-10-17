@@ -642,7 +642,46 @@ iframe[src*="tawk.to"]{bottom:20px !important;}
     .logo-text .brand, header .brand, body > header .brand { font-size: 23px !important; }
   }
 
- .pwa-advertise-btn .pwa-advertise-label{font-size:clamp(9px,2.2vw,12px);line-height:1.15;white-space:normal;text-align:center;max-width:132px;overflow-wrap:anywhere}.pwa-advertise-btn{min-width:0;max-width:100%;gap:5px}</style>
+ .pwa-advertise-btn .pwa-advertise-label{font-size:clamp(9px,2.2vw,12px);line-height:1.15;white-space:normal;text-align:center;max-width:132px;overflow-wrap:anywhere}.pwa-advertise-btn{min-width:0;max-width:100%;gap:5px} 
+/* Compact, high-contrast shopping confidence cards */
+.testimonials-section{margin:10px 0 14px;border-radius:12px;box-shadow:0 3px 12px rgba(17,24,39,.06);}
+.testimonials-section .section-hdr{padding:10px 14px!important;border-bottom:1px solid #e5e7eb;}
+.testimonials-section #shopping-confidence-title{font-size:17px;line-height:1.3;color:#111827;}
+.testi-grid{gap:9px;padding:10px 12px 12px;grid-template-columns:repeat(3,minmax(0,1fr));}
+.testi-card{padding:11px 12px;background:#fff;border:1px solid #dfe5ec;border-radius:10px;min-width:0;}
+.testi-card::before{content:none;}
+.testi-stars{margin-bottom:6px;}
+.testi-stars i{font-size:15px;color:#087f5b;}
+.testi-name{font-size:12.5px;line-height:1.35;color:#111827;margin:0 0 5px;font-weight:800;}
+.testi-text{font-size:12px;line-height:1.45;color:#374151;margin:0;font-style:normal;overflow-wrap:anywhere;}
+/* Live catalogue statistics: compact, responsive and data-driven */
+.py2-live-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 16px;}
+.py2-live-stat{min-width:0;display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;background:linear-gradient(135deg,#fff 0%,#f7fbff 100%);border:1px solid #dce5ef;box-shadow:0 3px 12px rgba(17,24,39,.055);}
+.py2-live-stat-icon{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border-radius:10px;background:#e0f2fe;color:#075985;font-size:15px;}
+.py2-live-stat-value{display:block;color:#111827;font-size:20px;line-height:1.2;font-weight:850;letter-spacing:-.3px;overflow-wrap:anywhere;}
+.py2-live-stat-label{display:block;color:#4b5563;font-size:11px;line-height:1.35;font-weight:700;margin-top:3px;}
+.py2-live-stats-note{font-size:10px;color:#6b7280;text-align:right;margin:-8px 2px 14px;}
+@media(max-width:768px){
+ .testi-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:9px;}
+ .testi-card{padding:10px;}
+ .testi-name{font-size:12px;}
+ .testi-text{font-size:11.5px;line-height:1.4;}
+ .py2-live-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 14px;}
+ .py2-live-stat{padding:11px;gap:8px;}
+ .py2-live-stat-value{font-size:18px;}
+}
+@media(max-width:480px){
+ .testimonials-section #shopping-confidence-title{font-size:15px;}
+ .testi-grid{grid-template-columns:1fr;gap:7px;}
+ .testi-card{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;align-items:start;padding:9px 10px;}
+ .testi-stars{grid-row:1 / span 2;margin:1px 0 0;}
+ .testi-name{font-size:12px;margin:0 0 3px;}
+ .testi-text{font-size:11.5px;line-height:1.4;}
+ .py2-live-stat-icon{width:31px;height:31px;flex-basis:31px;font-size:13px;}
+ .py2-live-stat-value{font-size:17px;}
+ .py2-live-stat-label{font-size:10.5px;}
+}
+</style>
   <link rel="manifest" href="https://progressier.app/Qn40PARc0DxCTLIapBvJ/progressier.json">
 <script defer src="https://progressier.app/Qn40PARc0DxCTLIapBvJ/script.js"></script>
 
@@ -1840,6 +1879,15 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
 
   
   <!-- CURRENT CHECKOUT GUIDE -->
+  <!-- LIVE CATALOGUE STATS: values are filled from the current product catalogue -->
+  <section class="py2-live-stats" id="py2-live-stats" aria-label="PhoneYa2 catalogue statistics" aria-live="polite">
+    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-products">—</strong><span class="py2-live-stat-label">Listed products</span></span></article>
+    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-categories">—</strong><span class="py2-live-stat-label">Categories</span></span></article>
+    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-check-circle" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-stock">—</strong><span class="py2-live-stat-label">Products in stock</span></span></article>
+    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-tag" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-from">—</strong><span class="py2-live-stat-label">Starting price</span></span></article>
+  </section>
+  <p class="py2-live-stats-note">Catalogue figures update from the products currently listed on PhoneYa2.</p>
+
   <section class="howto-section" aria-labelledby="howto-title">
     <div class="section-hdr" style="padding:14px 18px;border-bottom:1px solid #f0f0f0;"><div class="sec-hdr-left"><h2 id="howto-title">How to Place an Order</h2></div></div>
     <div class="howto-steps-grid">
@@ -2735,6 +2783,22 @@ async function init() {
   }
 
   allProducts = products;
+
+  // Derive homepage statistics from the same live catalogue powering the shop.
+  function renderLiveCatalogueStats(items) {
+    const available = items.filter(p => Number(p.stock) > 0 && Number(p.price) > 0);
+    const categories = new Set(items.map(p => String(p.category || '').trim()).filter(Boolean));
+    const lowestPrice = available.reduce((min, p) => Math.min(min, Number(p.price)), Infinity);
+    const setText = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    };
+    setText('py2-stat-products', items.length.toLocaleString());
+    setText('py2-stat-categories', categories.size.toLocaleString());
+    setText('py2-stat-stock', available.length.toLocaleString());
+    setText('py2-stat-from', Number.isFinite(lowestPrice) ? 'ZMW ' + lowestPrice.toLocaleString() : '—');
+  }
+  renderLiveCatalogueStats(products);
 
   function fillTrack(id, items, cardFn, emptyMessage) {
     const el = document.getElementById(id);
