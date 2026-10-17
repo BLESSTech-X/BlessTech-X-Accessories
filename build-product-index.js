@@ -61,24 +61,31 @@ function parseFeaturedProducts(markdown, fallback) {
 }
 
 function parseFrontmatter(markdown) {
-  const match = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/);
+  const match = markdown.match(/^---\\s*\\r?\\n([\\s\\S]*?)\\r?\\n---\\s*(?:\\r?\\n|$)/);
   if (!match) return {};
   const result = {};
-  const lines = match[1].split(/\r?\n/);
+  const lines = match[1].split(/\\r?\\n/);
   for (let i = 0; i < lines.length; i++) {
-    const m = lines[i].match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    const m = lines[i].match(/^([A-Za-z0-9_-]+):\\s*(.*)$/);
     if (!m) continue;
     const key = m[1];
     let value = m[2].trim();
-    if (value === '' && i + 1 < lines.length && /^\s+-\s+/.test(lines[i + 1])) {
-      const items = [];
-      while (i + 1 < lines.length && /^\s+-\s+/.test(lines[i + 1])) {
-        items.push(lines[++i].replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, ''));
+    if (/^[|>][+-]?\\d*$/.test(value)) {
+      const style = value[0];
+      const block = [];
+      while (i + 1 < lines.length) {
+        const next = lines[i + 1];
+        if (!next.trim()) { block.push(''); i++; continue; }
+        if (!/^\\s/.test(next)) break;
+        block.push(next.trim());
+        i++;
       }
-      result[key] = items;
-      continue;
+      value = block.join('\\n');
+      if (style === '>') value = value.replace(/([^\\n])\\n(?!\\n)/g, '$1 ').replace(/\\n{2,}/g, '\\n\\n');
+      value = value.trim();
+    } else {
+      value = value.replace(/^['"]|['"]$/g, '');
     }
-    value = value.replace(/^['"]|['"]$/g, '');
     if (value === 'true') value = true;
     else if (value === 'false') value = false;
     result[key] = value;
