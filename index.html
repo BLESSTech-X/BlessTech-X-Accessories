@@ -2429,30 +2429,37 @@ async function fetchAllProducts() {
 }
 
 
-/* Small, optional product gallery previews for homepage cards. */
+/* Three tiny, optional gallery previews for products that have extra photos. */
 function appendProductGalleryThumbs(card, product) {
-  if (!card || !product || !Array.isArray(product.gallery)) return;
-  const urls = product.gallery
-    .map(item => typeof item === 'string' ? item : item && (item.image || item.url || item.src))
-    .filter(url => typeof url === 'string' && url.trim())
-    .map(url => { try { return new URL(url.trim(), window.location.origin).href; } catch (e) { return ''; } })
+  if (!card || !product) return;
+  const gallery = Array.isArray(product.gallery) ? product.gallery :
+    (Array.isArray(product.images) ? product.images :
+    (Array.isArray(product.gallery_images) ? product.gallery_images : []));
+  if (!gallery.length) return;
+  const urls = gallery.map(item => {
+      const value = typeof item === 'string' ? item : item && (item.image || item.url || item.src || item.path);
+      if (typeof value !== 'string' || !value.trim()) return '';
+      try { return new URL(value.trim(), window.location.origin).href; } catch (e) { return ''; }
+    })
     .filter(url => /^https?:\/\//i.test(url))
+    .filter((url, index, list) => list.indexOf(url) === index)
     .slice(0, 3);
   if (!urls.length) return;
   const body = card.querySelector('.pc-body');
   const name = body && body.querySelector('.pc-name');
-  if (!body || !name) return;
+  if (!body || !name || body.querySelector('.pc-gallery-preview')) return;
   const strip = document.createElement('div');
   strip.className = 'pc-gallery-preview';
   strip.setAttribute('role', 'group');
-  strip.setAttribute('aria-label', 'Additional product photos');
+  strip.setAttribute('aria-label', 'First product gallery photos');
   urls.forEach((url, index) => {
     const thumb = document.createElement('img');
     thumb.src = url;
     thumb.alt = (product.title || 'Product') + ' gallery photo ' + (index + 1);
+    thumb.title = 'Product photo ' + (index + 1);
     thumb.loading = 'lazy';
     thumb.decoding = 'async';
-    thumb.onerror = function () { this.remove(); if (!strip.children.length) strip.remove(); };
+    thumb.onerror = function () { this.remove(); if (!strip.querySelector('img')) strip.remove(); };
     strip.appendChild(thumb);
   });
   name.insertAdjacentElement('afterend', strip);
