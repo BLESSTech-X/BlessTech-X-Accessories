@@ -1570,8 +1570,8 @@ loadShop();
     || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
   var ROTATE_MS = 6000;
-  var POPUP_DELAY_MS = 26000;
-  var POPUP_KEY = 'py2ads_popup_last_at';
+  var POPUP_DELAY_MS = 22000;
+  var POPUP_KEY = 'py2_popup_last_any_at_v2';
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -1875,10 +1875,11 @@ loadShop();
     if (popupFired || !Array.isArray(adList) || !adList.length) return;
     try {
       var lastAt = Number(localStorage.getItem(POPUP_KEY) || 0);
-      if (lastAt && Date.now() - lastAt < 6 * 60 * 60 * 1000) return;
+      if (lastAt && Date.now() - lastAt < 45 * 60 * 1000) return;
     } catch (e) {}
     popupFired = true;
     setTimeout(function () {
+      try { var sharedLastAt = Number(localStorage.getItem(POPUP_KEY) || 0); if (sharedLastAt && Date.now() - sharedLastAt < 45 * 60 * 1000) return; } catch (e) {}
       if (window.__py2SellerModalOpen || window.__py2SellerNoticeOpen || window.__py2ProductPopupOpen || window.__py2BlogSpotlightOpen || window.__py2ContextTipOpen || (Date.now() - Number(window.__py2LastPopupClosedAt || 0) < 90000)) {
         popupFired = false;
         setTimeout(function () { maybeShowPopup(adList); }, 12000);
