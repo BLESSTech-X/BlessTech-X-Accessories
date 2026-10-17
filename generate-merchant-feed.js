@@ -17,41 +17,44 @@ function xmlEscape(value) {
 }
 
 function parseFrontMatter(content) {
-  const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
+  const match = content.match(/^---\\s*\\n([\\s\\S]*?)\\n---/);
   if (!match) return {};
 
   const data = {};
-  let currentKey = null;
+  const lines = match[1].split(/\\r?\\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const keyMatch = lines[i].match(/^([A-Za-z0-9_-]+):\\s*(.*)$/);
+    if (!keyMatch) continue;
 
-  for (const rawLine of match[1].split(/\r?\n/)) {
-    if (!rawLine.trim()) continue;
-
-    const keyMatch = rawLine.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (keyMatch) {
-      currentKey = keyMatch[1];
-      data[currentKey] = keyMatch[2].trim();
-      continue;
-    }
-
-    // Support simple folded multiline scalar values such as descriptions.
-    if (/^\s+/.test(rawLine) && currentKey && typeof data[currentKey] === 'string') {
-      const continuation = rawLine.trim();
-      if (continuation && !continuation.startsWith('- ')) {
-        data[currentKey] += ' ' + continuation;
+    const key = keyMatch[1];
+    let value = keyMatch[2].trim();
+    if (/^[|>][+-]?\\d*$/.test(value)) {
+      const style = value[0];
+      const block = [];
+      while (i + 1 < lines.length) {
+        const next = lines[i + 1];
+        if (!next.trim()) { block.push(''); i++; continue; }
+        if (!/^\\s/.test(next)) break;
+        const continuation = next.trim();
+        if (!continuation.startsWith('- ')) block.push(continuation);
+        i++;
+      }
+      value = block.join('\\n');
+      if (style === '>') value = value.replace(/([^\\n])\\n(?!\\n)/g, '$1 ').replace(/\\n{2,}/g, '\\n\\n');
+    } else {
+      while (i + 1 < lines.length && /^\\s+/.test(lines[i + 1]) && !/^\\s+-\\s+/.test(lines[i + 1])) {
+        value += ' ' + lines[++i].trim();
       }
     }
-  }
 
-  for (const key of Object.keys(data)) {
-    let value = data[key].trim();
-
-    // Remove simple matching YAML quotes.
+    value = value.trim();
     if ((value.startsWith('"') && value.endsWith('"')) ||
         (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
     }
-
-    data[key] = value.replace(/\\n/g, ' ').replace(/\\r/g, ' ').replace(/\s+/g, ' ').trim();
+    if (value === 'true') data[key] = true;
+    else if (value === 'false') data[key] = false;
+    else data[key] = value.replace(/\\\\n/g, ' ').replace(/\\\\r/g, ' ').replace(/\\s+/g, ' ').trim();
   }
 
   return data;
