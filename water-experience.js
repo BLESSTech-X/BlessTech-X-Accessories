@@ -7,7 +7,7 @@
   var root = document.documentElement, body = document.body;
   if (!body) return;
   /* Checkout keeps the living-water effect, but uses a brighter aqua palette for readability. */
-  var isCheckoutPage = /(?:^|\\/)checkout\\.html$/.test(window.location.pathname);
+  var isCheckoutPage = /(?:^|\/)checkout\.html$/.test(window.location.pathname);
   root.classList.add('py2-water-enabled');
   body.classList.add('py2-water-page');
 
