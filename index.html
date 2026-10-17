@@ -2432,7 +2432,12 @@ async function fetchAllProducts() {
 /* Small, optional product gallery previews for homepage cards. */
 function appendProductGalleryThumbs(card, product) {
   if (!card || !product || !Array.isArray(product.gallery)) return;
-  const urls = product.gallery.map(item => typeof item === 'string' ? item : item && (item.image || item.url || item.src)).filter(url => typeof url === 'string' && /^https?:\/\//i.test(url)).slice(0, 3);
+  const urls = product.gallery
+    .map(item => typeof item === 'string' ? item : item && (item.image || item.url || item.src))
+    .filter(url => typeof url === 'string' && url.trim())
+    .map(url => { try { return new URL(url.trim(), window.location.origin).href; } catch (e) { return ''; } })
+    .filter(url => /^https?:\/\//i.test(url))
+    .slice(0, 3);
   if (!urls.length) return;
   const body = card.querySelector('.pc-body');
   const name = body && body.querySelector('.pc-name');
