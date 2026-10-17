@@ -1014,6 +1014,17 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 
 <link rel="stylesheet" href="/water-experience.css?v=20261017-living-water4">
   <link rel="stylesheet" href="/phoneya2-footer.css?v=20261017-compact1">
+<style id="phoneya2-endless-scroll-polish">
+.products-grid .py2-shop-scroll-sentinel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;min-height:54px;padding:14px 12px;margin:4px 0 12px;border:1px solid #dce5ef;border-radius:12px;background:linear-gradient(135deg,#fff,#f2f8ff);color:#24364b;font-size:12px;font-weight:900;letter-spacing:.2px;text-align:center;box-shadow:0 8px 22px rgba(15,23,42,.09)}
+.products-grid .py2-shop-scroll-sentinel i{color:#16803d}
+.products-grid .py2-shop-load-more{border:0;border-radius:8px;background:#ff6500;color:#fff;padding:9px 13px;font:800 12px system-ui,sans-serif;cursor:pointer}
+.products-grid .pcard{content-visibility:auto;contain-intrinsic-size:320px 420px}
+.card-share-facebook{color:#1877f2!important}.card-share-facebook i{color:#1877f2!important}
+.card-share-whatsapp{color:#128c7e!important}.card-share-whatsapp i{color:#25d366!important}
+.card-share-facebook:hover{background:#eaf3ff!important;border-color:#b7d5ff!important}
+.card-share-whatsapp:hover{background:#eafff1!important;border-color:#a7ebc0!important}
+@media(prefers-reduced-motion:reduce){.products-grid .pcard{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body class="shop-page py2-show-floating-top">
 
@@ -1336,6 +1347,7 @@ function notifyMe(title) {
 }
 
 let allProducts = [], activeCat = 'all', searchQuery = '', loadFailed = false;
+let shopScrollObserver = null;
 const initialProductQuery = new URLSearchParams(window.location.search).get('q') || '';
 searchQuery = initialProductQuery;
 
@@ -1382,10 +1394,13 @@ function showShareToast(msg) {
   t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
 }
 
-function renderGrid() {
+function renderGrid(appendOnly) {
+  appendOnly = appendOnly === true;
   const grid = document.getElementById('products-grid');
   const countEl = document.getElementById('prod-count');
   if (!grid) return;
+  if (!appendOnly && shopScrollObserver) shopScrollObserver.disconnect();
+  if (appendOnly) { const oldSentinel = grid.querySelector('.py2-shop-scroll-sentinel'); if (oldSentinel) oldSentinel.remove(); }
 
   let list = allProducts.filter(p => {
     const catOk = activeCat === 'all' || p.category === activeCat;
@@ -1405,7 +1420,7 @@ function renderGrid() {
   if (sort === 'stock-first') list.sort((a,b) => (parseInt(b.stock)||0) - (parseInt(a.stock)||0));
 
   if (countEl) countEl.textContent = list.length;
-  grid.innerHTML = '';
+  if (!appendOnly) grid.innerHTML = '';
 
   if (!list.length) {
     const q = searchQuery.trim();
@@ -1416,7 +1431,9 @@ function renderGrid() {
     return;
   }
 
-  list.forEach((p, i) => {
+  const startIndex = appendOnly ? grid.querySelectorAll('.pcard').length : 0;
+  const nextBatch = list.slice(startIndex, startIndex + 12);
+  nextBatch.forEach((p, i) => {
     const st = stockStatus(p.stock);
     const op = parseFloat(p.original_price)||0;
     const hasDrop = op > p.price;
@@ -1434,7 +1451,7 @@ function renderGrid() {
       : '<button class="btn-notify" onclick="event.stopPropagation();notifyMe(\''+escJs(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify When Available</button>';
     const card = document.createElement('div');
     card.className = 'pcard';
-    card.style.animationDelay = Math.min(i * 0.04, 0.4) + 's';
+    card.style.animationDelay = Math.min(i * 0.018, 0.12) + 's';
     card.setAttribute('role','article');
     card.setAttribute('aria-label', p.title);
     card.innerHTML =
@@ -1455,6 +1472,29 @@ function renderGrid() {
     card.addEventListener('click', () => { window.location.href = 'product.html?id=' + p.slug; });
     grid.appendChild(card);
   });
+  const renderedCount = grid.querySelectorAll('.pcard').length;
+  if (renderedCount < list.length) {
+    const sentinel = document.createElement('div');
+    sentinel.className = 'py2-shop-scroll-sentinel';
+    sentinel.setAttribute('aria-live', 'polite');
+    sentinel.innerHTML = '<span><i class="fa-solid fa-angles-down" aria-hidden="true"></i> Keep scrolling to discover more products</span>';
+    grid.appendChild(sentinel);
+    if ('IntersectionObserver' in window) {
+      if (!shopScrollObserver) {
+        shopScrollObserver = new IntersectionObserver(entries => {
+          if (entries.some(entry => entry.isIntersecting)) {
+            const target = entries.find(entry => entry.isIntersecting).target;
+            shopScrollObserver.unobserve(target);
+            renderGrid(true);
+          }
+        }, { rootMargin: '550px 0px' });
+      }
+      shopScrollObserver.observe(sentinel);
+    } else {
+      sentinel.innerHTML += '<button type="button" class="py2-shop-load-more">Load more products ↓</button>';
+      sentinel.querySelector('button').addEventListener('click', () => renderGrid(true));
+    }
+  }
 }
 
 function updateCounts() {
