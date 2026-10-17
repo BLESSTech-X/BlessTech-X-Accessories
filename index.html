@@ -869,6 +869,38 @@ iframe[src*="tawk.to"]{bottom:20px !important;}
   .hero-offer-countdown{font-size:13px;}
   .hero-offer-countdown span{min-width:18px;padding:4px 1px;}
 }
+
+/* Compact catalogue + real GA4 traffic insights directly below Share/Advertise. */
+.phoneya2-home-intro{row-gap:10px;}
+.py2-mini-insights{flex:1 0 100%;width:100%;max-width:1120px;box-sizing:border-box;margin:2px auto 0;padding:10px 12px 8px;border:1px solid #e5eaf1;border-radius:14px;background:linear-gradient(135deg,#fff 0%,#f7faff 100%);box-shadow:0 4px 16px rgba(15,23,42,.055);}
+.py2-mini-insights-heading{display:flex;align-items:center;gap:7px;margin:0 0 8px;color:#263548;font-size:9px;font-weight:900;letter-spacing:.11em;text-align:left;}
+.py2-mini-insights-heading>i{color:#ff6000;font-size:12px;}
+.py2-mini-live{display:inline-flex;align-items:center;gap:5px;margin-left:auto;color:#13804a;font-size:8px;letter-spacing:.06em;white-space:nowrap;}
+.py2-mini-live i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#19b56b;box-shadow:0 0 0 3px rgba(25,181,107,.12);}
+.py2-mini-insights-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;}
+.py2-mini-metric{min-width:0;display:grid;grid-template-columns:15px minmax(0,1fr);column-gap:5px;align-items:center;padding:7px 8px;border:1px solid #edf0f5;border-radius:9px;background:#fff;text-align:left;}
+.py2-mini-metric>i{grid-row:1 / span 2;color:#53657b;font-size:11px;text-align:center;}
+.py2-mini-metric strong{min-width:0;overflow-wrap:anywhere;color:#111827;font-size:14px;font-weight:900;line-height:1.1;letter-spacing:-.25px;font-variant-numeric:tabular-nums;}
+.py2-mini-metric span{grid-column:2;color:#647184;font-size:8px;font-weight:750;line-height:1.2;margin-top:3px;white-space:normal;}
+.py2-mini-traffic{background:#fffaf8;border-color:#f6e8e1;}
+.py2-mini-traffic>i{color:#d64b26;}
+.py2-mini-traffic strong{color:#bd3c20;}
+.py2-mini-insights-note{margin:7px 1px 0;color:#778294;font-size:8px;line-height:1.35;text-align:right;}
+@media(max-width:900px){.py2-mini-insights-grid{grid-template-columns:repeat(4,minmax(0,1fr));}.py2-mini-metric strong{font-size:14px;}}
+@media(max-width:480px){
+ .phoneya2-home-intro{gap:9px;padding:10px 10px;}
+ .py2-mini-insights{padding:9px 8px 7px;border-radius:12px;}
+ .py2-mini-insights-heading{font-size:8px;margin-bottom:7px;}
+ .py2-mini-live{font-size:7px;}
+ .py2-mini-insights-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;}
+ .py2-mini-metric{grid-template-columns:12px minmax(0,1fr);column-gap:3px;padding:6px 4px;border-radius:7px;}
+ .py2-mini-metric>i{font-size:9px;}
+ .py2-mini-metric strong{font-size:12px;letter-spacing:-.3px;}
+ .py2-mini-metric span{font-size:7px;line-height:1.15;}
+ .py2-mini-insights-note{font-size:7px;text-align:left;}
+}
+@media(max-width:350px){.py2-mini-insights-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.py2-mini-metric{grid-template-columns:16px minmax(0,1fr);padding:7px;}.py2-mini-metric strong{font-size:13px;}.py2-mini-metric span{font-size:8px;}}
+
 </style>
   <link rel="manifest" href="https://progressier.app/Qn40PARc0DxCTLIapBvJ/progressier.json">
 <script defer src="https://progressier.app/Qn40PARc0DxCTLIapBvJ/script.js"></script>
@@ -1732,6 +1764,20 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
       <i class="fa-solid fa-mobile-screen-button"></i> Add to Home Screen
     </button>
   </div>
+  <div class="py2-mini-insights" id="py2-mini-insights" aria-label="PhoneYa2 catalogue and site analytics" aria-live="polite">
+    <div class="py2-mini-insights-heading"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i><span>PHONEYA2 AT A GLANCE</span><span class="py2-mini-live"><i aria-hidden="true"></i> LIVE CATALOGUE</span></div>
+    <div class="py2-mini-insights-grid">
+      <div class="py2-mini-metric"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><strong id="py2-stat-products">—</strong><span>Products</span></div>
+      <div class="py2-mini-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong id="py2-stat-categories">—</strong><span>Categories</span></div>
+      <div class="py2-mini-metric"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><strong id="py2-stat-stock">—</strong><span>In stock</span></div>
+      <div class="py2-mini-metric"><i class="fa-solid fa-tag" aria-hidden="true"></i><strong id="py2-stat-from">—</strong><span>From</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-person-walking" aria-hidden="true"></i><strong id="py2-traffic-visits">—</strong><span>Visits · 30d</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-users" aria-hidden="true"></i><strong id="py2-traffic-users">—</strong><span>Visitors · 30d</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-eye" aria-hidden="true"></i><strong id="py2-traffic-views">—</strong><span>Page views · 30d</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong id="py2-traffic-events">—</strong><span>Events · 30d</span></div>
+    </div>
+    <p class="py2-mini-insights-note" id="py2-mini-insights-note">Catalogue updates automatically. Traffic figures load from Google Analytics.</p>
+  </div>
 </section>
 
 <!-- ═══ MAIN CONTENT ═══ -->
@@ -2015,15 +2061,6 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
 
   
   <!-- CURRENT CHECKOUT GUIDE -->
-  <!-- LIVE CATALOGUE STATS: values are filled from the current product catalogue -->
-  <section class="py2-live-stats" id="py2-live-stats" aria-label="PhoneYa2 catalogue statistics" aria-live="polite">
-    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-products">—</strong><span class="py2-live-stat-label">Listed products</span></span></article>
-    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-categories">—</strong><span class="py2-live-stat-label">Categories</span></span></article>
-    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-check-circle" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-stock">—</strong><span class="py2-live-stat-label">Products in stock</span></span></article>
-    <article class="py2-live-stat"><span class="py2-live-stat-icon"><i class="fa-solid fa-tag" aria-hidden="true"></i></span><span><strong class="py2-live-stat-value" id="py2-stat-from">—</strong><span class="py2-live-stat-label">Starting price</span></span></article>
-  </section>
-  <p class="py2-live-stats-note">Catalogue figures update from the products currently listed on PhoneYa2.</p>
-
   <section class="howto-section" aria-labelledby="howto-title">
     <div class="section-hdr" style="padding:14px 18px;border-bottom:1px solid #f0f0f0;"><div class="sec-hdr-left"><h2 id="howto-title">How to Place an Order</h2></div></div>
     <div class="howto-steps-grid">
@@ -3111,6 +3148,27 @@ async function init() {
     setText('py2-stat-from', Number.isFinite(lowestPrice) ? 'ZMW ' + lowestPrice.toLocaleString() : '—');
   }
   renderLiveCatalogueStats(products);
+  loadPublicPhoneYa2Analytics();
+
+  async function loadPublicPhoneYa2Analytics() {
+    const ids = { visits: 'py2-traffic-visits', users: 'py2-traffic-users', views: 'py2-traffic-views', events: 'py2-traffic-events' };
+    const note = document.getElementById('py2-mini-insights-note');
+    const format = value => Number(value || 0).toLocaleString();
+    try {
+      const response = await fetch('/api/public-analytics', { headers: { accept: 'application/json' }, cache: 'no-store' });
+      if (!response.ok) throw new Error('Analytics unavailable');
+      const data = await response.json();
+      const summary = data.summary || {};
+      const values = { visits: summary.sessions, users: summary.active_users, views: summary.page_views, events: summary.events };
+      Object.entries(ids).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (el && Number.isFinite(Number(values[key]))) el.textContent = format(values[key]);
+      });
+      if (note) note.textContent = 'Catalogue is current · Site traffic from Google Analytics over the last 30 days · Updated ' + new Date(data.generated_at || Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    } catch (error) {
+      if (note) note.textContent = 'Catalogue figures update automatically · Site traffic is temporarily unavailable; visit the PhoneYa2 Analytics dashboard for reports.';
+    }
+  }
 
   renderHomepageHeroPromotions(products, homepageSettings);
   initHero();
