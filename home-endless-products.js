@@ -1,0 +1,30 @@
+/* Endless repeating PhoneYa2 homepage catalogue, using live CMS product data. */
+(function(){
+'use strict';
+var host=document.getElementById('py2-endless-grid'),sentinel=document.getElementById('py2-endless-sentinel');
+if(!host||!sentinel)return;
+var products=[],cursor=0,observer=null,rendered=0;
+var labels={case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',watch:'Watch',accessory:'Other Accessories',other:'Other'};
+var colors={case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',watch:'linear-gradient(135deg,#54a0ff,#128c7e)',accessory:'linear-gradient(135deg,#25d366,#48dbfb)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function jsq(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/[\r\n]/g,' ')}
+function money(v){return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})}
+function cardFor(p,index){
+var stock=Math.max(0,parseInt(p.stock,10)||0),status=stock===0?{label:'Out of Stock',cls:'sb-out',can:false}:stock<=5?{label:'Only '+stock+' left!',cls:'sb-low',can:true}:{label:'In Stock',cls:'sb-in',can:true};
+var price=Number(p.price)||0,orig=Number(p.original_price)||0,drop=orig>price,cat=labels[p.category]||p.category||'Other',slug=jsq(p.slug),title=esc(p.title||'Product');
+var img=p.image?'<img src="'+esc(p.image)+'" alt="'+title+'" loading="lazy" decoding="async" onerror="this.parentElement.textContent=\'📱\'">':'📱';
+var priceRow=drop?'<div class="pcard-price-row"><div class="pcard-price">ZMW '+money(price)+'</div><div class="pcard-orig">ZMW '+money(orig)+'</div><div class="pcard-save">Save ZMW '+money(orig-price)+'</div></div>':'<div class="pcard-price-row"><div class="pcard-price">ZMW '+money(price)+'</div></div>';
+var actions=status.can?'<div class="pcard-actions"><button type="button" class="py2-add-cart" onclick="event.stopPropagation();PhoneYa2Cart.add(\''+slug+'\',1,'+stock+')"><i class="fa-solid fa-cart-plus"></i> Add to cart</button><a href="/checkout.html?product='+encodeURIComponent(p.slug)+'&qty=1" class="btn-order" onclick="event.stopPropagation()"><i class="fa-solid fa-bolt"></i> Buy now</a></div>':'<button type="button" class="btn-notify" onclick="event.stopPropagation();notifyMe(\''+jsq(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify When Available</button>';
+var el=document.createElement('article');el.className='pcard';el.setAttribute('aria-label',p.title||'Product');el.style.animationDelay=Math.min((index%10)*.025,.25)+'s';
+el.innerHTML='<div class="cat-badge" style="background:'+(colors[p.category]||'linear-gradient(135deg,#54a0ff,#128c7e)')+'">'+esc(cat)+'</div><div class="stock-badge '+status.cls+'">'+status.label+'</div><div class="pcard-img">'+img+'</div><div class="pcard-body"><div class="pcard-cat">'+esc(cat)+'</div><div class="pcard-name">'+title+'</div><div class="pcard-desc">'+esc(p.description||'')+'</div>'+(drop?'<div class="price-drop-banner"><i class="fa-solid fa-fire"></i> Price dropped — save ZMW '+money(orig-price)+'!</div>':'')+priceRow+actions+'<div class="card-share-row"><button class="card-share-btn" type="button" aria-label="Share product on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button><button class="card-share-btn" type="button" aria-label="Share product on WhatsApp" title="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></button><button class="card-share-btn" type="button" aria-label="Copy product link" title="Copy link"><i class="fa-regular fa-copy"></i></button></div></div>';
+el.addEventListener('click',function(){location.href='/product.html?id='+encodeURIComponent(p.slug)});
+var buttons=el.querySelectorAll('.card-share-btn');
+buttons[0].addEventListener('click',function(e){e.stopPropagation();if(typeof shareFacebookProduct==='function')shareFacebookProduct(p)});
+buttons[1].addEventListener('click',function(e){e.stopPropagation();if(typeof shareProduct==='function')shareProduct(p)});
+buttons[2].addEventListener('click',function(e){e.stopPropagation();if(typeof copyProductLink==='function')copyProductLink(p.slug,e);else if(navigator.clipboard)navigator.clipboard.writeText(location.origin+'/product.html?id='+encodeURIComponent(p.slug))});
+return el;
+}
+function appendBatch(){if(!products.length)return;var frag=document.createDocumentFragment();for(var i=0;i<products.length;i++){frag.appendChild(cardFor(products[cursor],rendered++));cursor=(cursor+1)%products.length}host.appendChild(frag)}
+function start(list){if(!Array.isArray(list)||!list.length)return;products=list.filter(function(p){return p&&p.slug&&Number.isFinite(Number(p.price))});if(!products.length){host.innerHTML='<div class="py2-endless-loading">Products are temporarily unavailable. Please visit the shop to browse the catalogue.</div>';return}host.innerHTML='';appendBatch();if(observer)observer.disconnect();if('IntersectionObserver'in window){observer=new IntersectionObserver(function(entries){if(entries.some(function(e){return e.isIntersecting}))appendBatch()},{rootMargin:'900px 0px'});observer.observe(sentinel)}else{window.addEventListener('scroll',function(){if(sentinel.getBoundingClientRect().top<window.innerHeight+900)appendBatch()},{passive:true})}}
+window.addEventListener('phoneya2:catalog-ready',function(e){start(e.detail)});
+})();
