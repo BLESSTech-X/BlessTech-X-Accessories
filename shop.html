@@ -1025,6 +1025,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 .card-share-whatsapp:hover{background:#eafff1!important;border-color:#a7ebc0!important}
 @media(prefers-reduced-motion:reduce){.products-grid .pcard{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="/home-endless-products.css?v=20261017-loop3">
 <link rel="stylesheet" href="/phoneya2-visual-contrast.css?v=20261017-depth2">
 </head>
 <body class="shop-page py2-show-floating-top">
@@ -1204,6 +1205,17 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skel-line s"></div><div class="skel-line"></div><div class="skel-line xs"></div><div class="skel-btn"></div></div></div>
   </div>
 </div>
+
+<!-- Featured blog stories are inserted immediately before this endless catalogue. -->
+<section class="py2-endless-products" id="py2-endless-products" aria-labelledby="py2-endless-title">
+  <div class="py2-endless-heading">
+    <div><span class="py2-endless-eyebrow">KEEP DISCOVERING</span><h2 id="py2-endless-title">More Products, More Possibilities</h2><p>Explore the PhoneYa2 catalogue. New products keep appearing as you scroll.</p></div>
+    <a href="/shop.html?cat=all" class="py2-endless-shop-link">Browse full shop <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+  </div>
+  <div class="py2-endless-grid" id="py2-endless-grid" aria-live="polite"><div class="py2-endless-loading">Loading more products for you…</div></div>
+  <div class="py2-endless-sentinel" id="py2-endless-sentinel" aria-hidden="true"></div>
+  <p class="py2-endless-loop-note"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> The catalogue repeats automatically so you can keep exploring.</p>
+</section>
 
 <!-- ═══ INTERSTITIAL 2 — after product grid ═══ -->
 <section class="py2-ads-interstitial" id="py2-ads-interstitial-2" aria-label="Sponsored businesses" style="display:none;">
@@ -1594,6 +1606,7 @@ window.dismissNotif = function() {
 async function loadShop() {
   try {
     allProducts = await fetchAllProducts();
+    window.dispatchEvent(new CustomEvent("phoneya2:catalog-ready", { detail: allProducts }));
     window.allProductsMap = {};
     allProducts.forEach(p => { window.allProductsMap[p.slug] = p; });
     updateCounts();
