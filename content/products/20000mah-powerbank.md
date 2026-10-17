@@ -6,4 +6,5 @@ stock: 100
 category: earphone
 image: /assets/images/uploads/1000066524.jpg
 description: Headsets for everyday music, videos and calls, with clear sound.
+featured: true
 ---
