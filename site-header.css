@@ -469,3 +469,11 @@ body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
     will-change:auto!important;
   }
 }
+
+/* Slightly darker PhoneYa2 background while keeping the animated logo visible. */
+html{background-color:#d3ddd7!important}
+body{background-color:transparent!important}
+body::before{
+  background-color:rgba(32,48,39,.10)!important;
+  background-blend-mode:multiply!important;
+}
