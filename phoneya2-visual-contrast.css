@@ -1,0 +1,51 @@
+/* PhoneYa2 readability and dimensional depth. Blog/editorial post typography is intentionally excluded. */
+body:not(.py2-blog-page) .shop-hero h1,
+body:not(.py2-blog-page) main>h1,
+body:not(.py2-blog-page) main>section>h1,
+body:not(.py2-blog-page) main>section>h2,
+body:not(.py2-blog-page) main>section>header h1,
+body:not(.py2-blog-page) .page-title,
+body:not(.py2-blog-page) .section-title,
+body:not(.py2-blog-page) .section-heading h2,
+body:not(.py2-blog-page) .py2-endless-heading h2,
+body:not(.py2-blog-page) .cart-title,
+body:not(.py2-blog-page) .checkout-title {
+  color:#142238;
+  font-weight:950!important;
+  letter-spacing:-.025em;
+  text-shadow:0 1px 0 #fff,0 2px 0 #dfe6ee,0 3px 0 #cbd5e1,0 5px 8px rgba(15,23,42,.22);
+}
+body:not(.py2-blog-page) main>section>p,
+body:not(.py2-blog-page) main>p,
+body:not(.py2-blog-page) .shop-hero p,
+body:not(.py2-blog-page) .py2-endless-heading p,
+body:not(.py2-blog-page) .page-intro,
+body:not(.py2-blog-page) .standalone-copy {
+  color:#334155;
+  font-weight:650;
+  text-shadow:0 1px 0 rgba(255,255,255,.98),0 2px 4px rgba(15,23,42,.12);
+}
+body:not(.py2-blog-page) main>section,
+body:not(.py2-blog-page) .content-panel,
+body:not(.py2-blog-page) .checkout-panel,
+body:not(.py2-blog-page) .cart-panel {
+  text-shadow:none;
+}
+body:not(.py2-blog-page) .content-panel,
+body:not(.py2-blog-page) .checkout-panel,
+body:not(.py2-blog-page) .cart-panel,
+body:not(.py2-blog-page) .pcard,
+body:not(.py2-blog-page) .py2-product-card,
+body:not(.py2-blog-page) .contact-card,
+body:not(.py2-blog-page) .info-card {
+  box-shadow:0 6px 18px rgba(15,23,42,.10),0 2px 5px rgba(15,23,42,.05);
+}
+body:not(.py2-blog-page) .pcard:hover,
+body:not(.py2-blog-page) .py2-product-card:hover,
+body:not(.py2-blog-page) .contact-card:hover,
+body:not(.py2-blog-page) .info-card:hover {
+  box-shadow:0 14px 30px rgba(15,23,42,.16),0 4px 9px rgba(15,23,42,.07);
+}
+@media(prefers-reduced-motion:reduce){
+  body:not(.py2-blog-page) *{scroll-behavior:auto!important}
+}
