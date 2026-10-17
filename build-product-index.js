@@ -85,6 +85,11 @@ function parseFrontmatter(markdown) {
       value = value.trim();
     } else {
       value = value.replace(/^['"]|['"]$/g, '');
+      if (value) {
+        while (i + 1 < lines.length && /^\s+/.test(lines[i + 1]) && !/^\s+-\s+/.test(lines[i + 1])) {
+          value += ' ' + lines[++i].trim();
+        }
+      }
     }
     if (value === 'true') value = true;
     else if (value === 'false') value = false;
