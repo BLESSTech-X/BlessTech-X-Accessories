@@ -991,6 +991,16 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 @media(max-width:760px){body:not(.py2-blog-page) .top-header-inner{column-gap:7px!important}body:not(.py2-blog-page) .py2-global-blog-button{min-height:33px!important;padding:7px 8px!important;font-size:10px!important;gap:4px!important}body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:13px!important}}
 @media(max-width:380px){body:not(.py2-blog-page) .py2-global-blog-button{padding:6px 6px!important;font-size:9px!important}}
 </style>
+<style id="py2-tiny-product-share-buttons">
+.card-share-row{display:flex!important;align-items:center;justify-content:flex-start;gap:4px!important;margin-top:6px!important}
+.card-share-row .card-share-btn{flex:0 0 25px!important;width:25px!important;height:23px!important;min-height:23px!important;padding:0!important;border:1px solid transparent!important;border-radius:6px!important;background:#f1f5f9!important;color:#475569!important;font-size:10px!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:0!important}
+.card-share-row .card-share-btn i{font-size:11px!important}
+.card-share-row .card-share-facebook{background:#eaf2ff!important;border-color:#cfe0ff!important;color:#1877f2!important}
+.card-share-row .card-share-whatsapp{background:#e9f9ef!important;border-color:#c7efd5!important;color:#16a34a!important}
+.card-share-row .card-copy-btn{background:#eef6ff!important;border-color:#d5e7ff!important;color:#2563eb!important}
+.card-share-row .card-share-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+@media(max-width:360px){.card-share-row{display:flex!important}}
+</style>
 </head>
 <body class="shop-page">
 
@@ -1345,6 +1355,11 @@ function shareProduct(p) {
   );
   window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
 }
+function shareFacebookProduct(p) {
+  if (!p) return;
+  const url = window.location.origin + '/product.html?id=' + encodeURIComponent(p.slug);
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener,noreferrer,width=650,height=500');
+}
 function copyProductLink(slug, event) {
   if (event) event.stopPropagation();
   const url = window.location.origin + '/product.html?id=' + slug;
@@ -1437,7 +1452,8 @@ function renderGrid() {
         '<div class="pcard-desc">'+escHtml(p.description||'')+'</div>'+
         dropBanner + priceRow + btn +
         '<div class="card-share-row">'+
-          '<button class="card-share-btn" onclick="event.stopPropagation();shareProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i> Share</button>'+
+          '<button class="card-share-btn card-share-facebook" onclick="event.stopPropagation();shareFacebookProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>'+
+          '<button class="card-share-btn card-share-whatsapp" onclick="event.stopPropagation();shareProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>'+
           '<button class="card-share-btn card-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link"><i class="fa-solid fa-link"></i> Copy Link</button>'+
         '</div>'+
       '</div>';
