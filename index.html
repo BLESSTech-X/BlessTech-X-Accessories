@@ -1400,7 +1400,7 @@ body::before{
   .phoneya2-home-intro::before{
     content:""; position:absolute; z-index:0; pointer-events:none;
     width:clamp(210px,30vw,310px); height:clamp(210px,30vw,310px);
-    left:50%; top:44%; transform:translate(-50%,-50%);
+    left:50%; top:39%; transform:translate(-50%,-50%);
     border-radius:50%;
     background-image:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
     background-position:center; background-size:contain; background-repeat:no-repeat;
@@ -1439,7 +1439,7 @@ body::before{
   }
   @media(max-width:600px){
     .phoneya2-home-intro{min-height:210px;padding:23px 12px 20px !important;gap:13px !important}
-    .phoneya2-home-intro::before{width:190px;height:190px;left:50%;top:41%;opacity:.25}
+    .phoneya2-home-intro::before{width:190px;height:190px;left:50%;top:35%;opacity:.25}
     .phoneya2-intro-eyebrow{font-size:9px;letter-spacing:1.6px}
     .phoneya2-intro-copy h2{font-size:25px;letter-spacing:-.55px}
     .phoneya2-intro-copy p{max-width:330px;margin-left:auto;margin-right:auto;font-size:12px}
@@ -1484,7 +1484,7 @@ body::before{
   .heading::before,.hero::before{opacity:.10}
   @keyframes py2AmbientFloat{0%{transform:translate(-52%,-50%) scale(.97)}100%{transform:translate(-48%,-50%) scale(1.035)}}
   /* Home keeps its dedicated intro, but the logo blur is intentionally light. */
-  .phoneya2-home-intro::before{filter:blur(1.2px) grayscale(.15) saturate(.9)!important;opacity:.14!important;animation:py2HomeLogoDrift 9s ease-in-out infinite alternate!important;background-size:contain!important;}
+  .phoneya2-home-intro::before{filter:blur(.7px) grayscale(.08) saturate(1.02)!important;opacity:.21!important;animation:py2HomeLogoDrift 9s ease-in-out infinite alternate!important;background-size:contain!important;}
   @keyframes py2HomeLogoDrift{0%{transform:translate(-52%,-50%) scale(.97)}100%{transform:translate(-48%,-50%) scale(1.035)}}
   @media(max-width:600px){
     .py2-quick-tabs{width:calc(100% - 16px);max-width:420px;gap:1px;padding:5px 4px;margin-bottom:9px;}
