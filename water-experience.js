@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   if (window.__py2WaterExperienceV4) return;
-  window.__py2WaterExperienceV3 = true;
+  window.__py2WaterExperienceV4 = true;
 
   var root = document.documentElement, body = document.body;
   if (!body) return;
@@ -152,8 +152,8 @@
     }
     ripples.push({
       x: Math.max(0, Math.min(w, x)), y: Math.max(0, Math.min(h, y)),
-      max: Math.min(94, 38 + (strength || 0) * 24),
-      born: performance.now(), duration: splash ? 950 : 1100,
+      max: Math.min(132, 50 + (strength || 0) * 34),
+      born: performance.now(), duration: splash ? 1120 : 1280,
       strength: Math.min(1.7, strength || 1), droplets: droplets
     });
     if (!running) start();
@@ -168,24 +168,24 @@
       if (progress >= 1) { ripples.splice(i, 1); continue; }
       var ease = 1 - Math.pow(1 - progress, 2);
       var radius = 4 + ease * r.max;
-      var alpha = Math.pow(1 - progress, 1.35) * (.22 + r.strength * .06);
+      var alpha = Math.pow(1 - progress, 1.22) * (.31 + r.strength * .10);
       fg.save();
       fg.globalCompositeOperation = 'screen';
       /* Several uneven rings mimic surface tension and refracted highlights. */
       for (var ring = 0; ring < 2; ring++) {
-        var wobble = 1 + Math.sin(elapsed * 3 + ring * 1.8) * .025;
+        var wobble = 1 + Math.sin(elapsed * 3 + ring * 1.8) * .04;
         fg.beginPath();
-        fg.ellipse(r.x, r.y, radius * (1 + ring * .19) * wobble, radius * (.52 + ring * .105), Math.sin(elapsed + ring) * .045, 0, Math.PI * 2);
+        fg.ellipse(r.x, r.y, radius * (1 + ring * .24) * wobble, radius * (.54 + ring * .12), Math.sin(elapsed + ring) * .045, 0, Math.PI * 2);
         fg.strokeStyle = 'rgba(223,253,255,' + (alpha * (1 - ring * .19)) + ')';
-        fg.lineWidth = ring === 0 ? 1.7 : 1;
+        fg.lineWidth = ring === 0 ? 2.25 : 1.25;
         fg.stroke();
       }
       /* A soft specular flash at the point of impact. */
-      var flash = fg.createRadialGradient(r.x, r.y, 0, r.x, r.y, 24 + progress * 20);
-      flash.addColorStop(0, 'rgba(237,255,255,' + (alpha * .28) + ')');
+      var flash = fg.createRadialGradient(r.x, r.y, 0, r.x, r.y, 30 + progress * 25);
+      flash.addColorStop(0, 'rgba(237,255,255,' + (alpha * .42) + ')');
       flash.addColorStop(1, 'rgba(237,255,255,0)');
       fg.fillStyle = flash;
-      fg.beginPath(); fg.arc(r.x, r.y, 44, 0, Math.PI * 2); fg.fill();
+      fg.beginPath(); fg.arc(r.x, r.y, 55, 0, Math.PI * 2); fg.fill();
       r.droplets.forEach(function (drop) {
         var travel = ease * (drop.distance + 25);
         var dx = r.x + Math.cos(drop.angle) * travel;
@@ -238,7 +238,7 @@
     if (movement > 24 && now - lastScrollAt > 260) {
       var impactX = w * (.14 + Math.random() * .72);
       var impactY = Math.max(95, Math.min(h - 35, h * (.25 + Math.random() * .52)));
-      addRipple(impactX, impactY, Math.min(.8, .3 + movement / 180), false);
+      addRipple(impactX, impactY, Math.min(1.25, .48 + movement / 145), false);
       lastScrollAt = now;
     }
     lastScrollY = y;
@@ -266,7 +266,7 @@
         x=edgePoints[0].x; y=edgePoints[0].y;
         if (x < 8 || x > w-8 || y < 8 || y > h-8) { x=event.clientX; y=event.clientY; }
       }
-      addRipple(x, y, .75, false);
+      addRipple(x, y, 1.05, false);
     }
   }, { passive: true });
 
