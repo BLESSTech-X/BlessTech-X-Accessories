@@ -1733,6 +1733,17 @@ body a.confidence-support-btn>i{
   body a.confidence-support-btn>i{font-size:25px!important;}
 }
 </style>
+
+<style id="py2-home-product-gallery-previews">
+/* Three discreet gallery thumbnails: independent of the main product image. */
+.pc-gallery-preview{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%;margin:8px 0 10px;overflow:hidden}
+.pc-gallery-preview img{display:block;flex:0 0 34px;width:34px;height:34px;max-width:34px;object-fit:cover!important;border:1px solid #e3e8ef;border-radius:7px;background:#f6f8fb;box-sizing:border-box;transition:border-color .18s ease}
+.pc-gallery-preview img:hover{border-color:#ff6500}
+.pc-gallery-preview:empty{display:none}
+@media(max-width:768px){.pc-gallery-preview{gap:5px;margin:7px 0 9px}.pc-gallery-preview img{flex-basis:31px;width:31px;height:31px;max-width:31px;border-radius:6px}}
+@media(prefers-reduced-motion:reduce){.pc-gallery-preview img{transition:none}}
+</style>
+
 </head>
 <body>
 
@@ -2415,6 +2426,31 @@ async function fetchAllProducts() {
   return products;
 }
 
+
+/* Small, optional product gallery previews for homepage cards. */
+function appendProductGalleryThumbs(card, product) {
+  if (!card || !product || !Array.isArray(product.gallery)) return;
+  const urls = product.gallery.map(item => typeof item === 'string' ? item : item && (item.image || item.url || item.src)).filter(url => typeof url === 'string' && /^https?:\/\//i.test(url)).slice(0, 3);
+  if (!urls.length) return;
+  const body = card.querySelector('.pc-body');
+  const name = body && body.querySelector('.pc-name');
+  if (!body || !name) return;
+  const strip = document.createElement('div');
+  strip.className = 'pc-gallery-preview';
+  strip.setAttribute('role', 'group');
+  strip.setAttribute('aria-label', 'Additional product photos');
+  urls.forEach((url, index) => {
+    const thumb = document.createElement('img');
+    thumb.src = url;
+    thumb.alt = (product.title || 'Product') + ' gallery photo ' + (index + 1);
+    thumb.loading = 'lazy';
+    thumb.decoding = 'async';
+    thumb.onerror = function () { this.remove(); if (!strip.children.length) strip.remove(); };
+    strip.appendChild(thumb);
+  });
+  name.insertAdjacentElement('afterend', strip);
+}
+
 function buildFeaturedCard(p) {
   const st  = stockStatus(p.stock);
   const op  = parseFloat(p.original_price) || 0;
@@ -2466,6 +2502,7 @@ function buildFeaturedCard(p) {
   name.className = 'pc-name';
   name.textContent = p.title;
   body.appendChild(name);
+  appendProductGalleryThumbs(div, p);
 
   const priceRow = document.createElement('div');
   priceRow.className = 'pc-price-row';
@@ -2545,6 +2582,7 @@ function buildCard(p) {
         '<button class="pc-share-btn pc-copy-btn" onclick="copyProductLink(\''+p.slug+'\',event)" aria-label="Copy link"><i class="fa-solid fa-link"></i></button>'+
       '</div>'+
     '</div>';
+  appendProductGalleryThumbs(div, p);
   div.addEventListener('click',()=>{ window.location.href='product.html?id='+p.slug; });
   return div;
 }
