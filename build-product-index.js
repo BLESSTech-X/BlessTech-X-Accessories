@@ -123,7 +123,7 @@ try {
       order_note: String(meta.order_note || ''),
       featured: meta.featured === true || meta.featured === 'true',
       date_added: String(meta.date_added || meta.created_at || ''),
-      gallery: []
+      gallery: parseBlogGallery(source, meta.gallery)
     };
   });
   fs.writeFileSync(path.join(productsDir, 'catalog.json'), JSON.stringify(productCatalog));
