@@ -93,7 +93,7 @@ async function logEmailActivity(env, record) {
         recipient_name: String(record.recipientName || "").slice(0, 120),
         subject: String(record.subject || "").slice(0, 300),
         status: record.status || "failed",
-        provider: "resend",
+        provider: record.provider || "resend",
         provider_message_id: record.providerMessageId || "",
         error_message: String(record.error || "").slice(0, 1000),
         related_order_number: record.orderNumber || "",
@@ -238,6 +238,41 @@ async function sendOrderEmail(env, order, customer, items) {
     return { ok: false, error: String(error).slice(0, 240) };
   }
 }
+async function sendOrderFormspree(env, order, customer = {}, items = []) {
+  const endpoint = "https://formspree.io/f/mbgdwnab";
+  const itemSummary = items.slice(0, 30).map(item =>
+    String(item.product_name || item.title || "Product") + " x" + Number(item.quantity || 1) +
+    " — ZMW " + Number(item.line_total || 0).toFixed(2)
+  ).join("\n");
+  const payload = {
+    _subject: "New PhoneYa2 order " + String(order.order_number || ""),
+    order_number: String(order.order_number || ""),
+    customer_name: String(customer.name || ""),
+    customer_email: String(customer.email || ""),
+    customer_phone: String(customer.phone || ""),
+    delivery_address: String(customer.address || ""),
+    customer_note: String(customer.note || "").slice(0, 1000),
+    items: itemSummary,
+    order_total: "ZMW " + Number(order.total_amount || 0).toFixed(2),
+    order_status: "Pending",
+    source: "PhoneYa2 checkout"
+  };
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json", "accept": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      return { ok: false, error: "Formspree returned HTTP " + response.status + ": " + String(result.error || result.errors?.map?.(item => item.message).join("; ") || "").slice(0, 240) };
+    }
+    return { ok: true, providerMessageId: "" };
+  } catch (error) {
+    return { ok: false, error: "Formspree request failed: " + String(error).slice(0, 200) };
+  }
+}
+
 async function sendCustomerOrderConfirmation(env, order, customer, items) {
   const apiKey = env.RESEND_API_KEY;
   const from = env.RESEND_FROM;
@@ -404,12 +439,24 @@ export async function onRequest(context) {
         ownerEmailResult = { ok: false, error: String(error).slice(0, 240) };
         console.error("PhoneYa2 order email failed:", String(error));
       }
+      let formspreeResult = { ok: false, error: "Formspree alert was not attempted." };
+      try {
+        formspreeResult = await sendOrderFormspree(env, order, orderCustomer, items);
+        if (!formspreeResult.ok) console.error("PhoneYa2 Formspree order alert failed for", order.order_number, formspreeResult.error);
+      } catch (error) {
+        formspreeResult = { ok: false, error: String(error).slice(0, 240) };
+        console.error("PhoneYa2 Formspree order alert failed:", String(error));
+      }
       await logEmailActivity(env, {
         eventType: "new_order_alert", source: "automatic", triggerSource: "order_created",
         recipientEmail: env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com", recipientName: "PhoneYa2 store owner",
-        subject: "New PhoneYa2 order " + order.order_number, status: emailSent ? "sent" : "failed",
-        providerMessageId: ownerEmailResult.providerMessageId || "", error: ownerEmailResult.error || "",
-        orderNumber: order.order_number, metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length }
+        subject: "New PhoneYa2 order " + order.order_number,
+        status: emailSent || formspreeResult.ok ? "sent" : "failed",
+        provider: emailSent && formspreeResult.ok ? "resend+formspree" : formspreeResult.ok ? "formspree" : "resend",
+        providerMessageId: ownerEmailResult.providerMessageId || "",
+        error: [ownerEmailResult.error, formspreeResult.error].filter(Boolean).join(" | "),
+        orderNumber: order.order_number,
+        metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length, resendSent: emailSent, formspreeSent: formspreeResult.ok }
       });
 
       let customerEmailResult = { ok: false, error: "Customer confirmation was not attempted." };
@@ -428,8 +475,8 @@ export async function onRequest(context) {
         orderNumber: order.order_number, metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length }
       });
 
-      const notificationSent = telegramSent || emailSent;
-      if (!telegramSent && !emailSent) {
+      const notificationSent = telegramSent || emailSent || formspreeResult.ok;
+      if (!telegramSent && !emailSent && !formspreeResult.ok) {
         console.error("Order saved but both Telegram and email notifications failed for", order.order_number);
       }
       return json({
