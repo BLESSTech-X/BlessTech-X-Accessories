@@ -3,7 +3,7 @@ if('serviceWorker'in navigator&&location.protocol==='https:'){navigator.serviceW
 const prefetched=new Set();
 function prefetch(link){if(!link||link.target&&link.target!=='_self'||link.hasAttribute('download'))return;let u;try{u=new URL(link.href,location.href)}catch(_){return}if(u.origin!==location.origin||u.pathname.startsWith('/admin')||!(u.pathname==='/'||u.pathname.endsWith('.html'))||u.href===location.href||prefetched.has(u.href))return;prefetched.add(u.href);fetch(u.href,{credentials:'same-origin',headers:{'X-PhoneYa2-Prefetch':'1'}}).catch(()=>{});}
 document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const a=e.target.closest&&e.target.closest('a[href]');if(a)setTimeout(()=>{if(a.matches(':hover'))prefetch(a)},140)},{passive:true});
-document.addEventListener('touchstart',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(a)prefetch(a)},{passive:true});
+// Do not prefetch on touchstart: scroll gestures often begin over links on mobile.
 
 const root=document.documentElement,body=document.body;
 const header=document.querySelector('body>.top-header');
