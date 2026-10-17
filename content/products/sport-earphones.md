@@ -10,4 +10,5 @@ gallery:
   - image: /assets/images/uploads/1000070601.png
   - image: /assets/images/uploads/1000070567.png
 description: Explore iPhone models from the 5s to the 14. Contact us to confirm the model and storage available.
+featured: true
 ---
