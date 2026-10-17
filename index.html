@@ -735,23 +735,21 @@ body::before{
   pointer-events:none;
   background-image:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
   background-repeat:no-repeat;
-  background-position:center 56%;
-  background-size:min(62vw, 620px) auto;
-  opacity:.055;
-  filter:grayscale(1) saturate(0);
-  mix-blend-mode:multiply;
+  background-position:center 50%;
+  background-size:clamp(260px,46vw,620px) auto;
+  opacity:.18;
   transform:translate3d(0,0,0) scale(1);
   animation:phoneya2WatermarkDrift 22s ease-in-out infinite;
 }
 @keyframes phoneya2WatermarkDrift{
-  0%,100%{opacity:.045;transform:translate3d(0,0,0) scale(1);}
-  50%{opacity:.075;transform:translate3d(0,-8px,0) scale(1.035);}
+  0%,100%{opacity:.14;transform:translate3d(-2.2vw,-1.2vh,0) scale(.94);}
+  50%{opacity:.24;transform:translate3d(2.2vw,1.2vh,0) scale(1.07);}
 }
 @media(max-width:600px){
   body::before{
-    background-size:min(88vw, 420px) auto;
-    background-position:center 48%;
-    opacity:.045;
+    background-size:min(82vw,390px) auto;
+    background-position:center 50%;
+    opacity:.18;
   }
 }
 @media(prefers-reduced-motion:reduce){
@@ -1382,6 +1380,29 @@ body:not(.py2-blog-page) .py2-global-blog-button:hover{transform:translateY(-1px
 body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px!important}
 @media(max-width:760px){body:not(.py2-blog-page) .top-header-inner{column-gap:7px!important}body:not(.py2-blog-page) .py2-global-blog-button{min-height:33px!important;padding:7px 8px!important;font-size:10px!important;gap:4px!important}body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:13px!important}}
 @media(max-width:380px){body:not(.py2-blog-page) .py2-global-blog-button{padding:6px 6px!important;font-size:9px!important}}
+</style>
+<style id="phoneya2-scroll-performance-v1">
+/* Keep fixed navigation inexpensive to composite while the page scrolls. */
+body>.top-header,body>header,body>header.top,body>nav.py2-quick-tabs,body>.py2-quick-tabs{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+/* Brand watermarks should animate by transform/opacity, not blurred blended pixels. */
+body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
+.heading::before,.hero::before,#product-detail::before{
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+.py2-page-logo-ambient,.phoneya2-home-intro::before,
+.heading::before,.hero::before,#product-detail::before{
+  will-change:transform,opacity;
+}
+@media(prefers-reduced-motion:reduce){
+  body::before,.py2-page-logo-ambient,.phoneya2-home-intro::before,
+  .heading::before,.hero::before,#product-detail::before{
+    animation:none!important;will-change:auto!important;
+  }
+}
 </style>
 </head>
 <body>
