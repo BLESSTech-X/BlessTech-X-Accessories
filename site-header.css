@@ -410,34 +410,55 @@ body>.top-header::after{
 @media(prefers-reduced-motion:reduce){body>.top-header::after{filter:none}}
 
 
-/* PhoneYa2 animated brand canvas — stronger logo presence, without affecting layout. */
+/* PhoneYa2 animated brand canvas — transform-only motion to avoid scroll repaint stutter. */
 :root{
   --py2-animated-logo:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg");
 }
-html{
-  background-color:#e9efeb!important;
-}
+html{background-color:#e3e9e5!important}
 body{
-  background-image:
-    radial-gradient(ellipse at center,rgba(235,243,237,.60) 0%,rgba(229,238,232,.70) 52%,rgba(220,231,224,.80) 100%),
-    var(--py2-animated-logo)!important;
-  background-repeat:no-repeat,no-repeat!important;
-  background-position:center center,50% 48%!important;
-  background-size:100% 100%,clamp(230px,40vw,540px) auto!important;
-  background-attachment:fixed,fixed!important;
-  animation:py2BrandCanvasDrift 15s ease-in-out infinite alternate!important;
+  position:relative!important;
+  isolation:isolate!important;
+  background-color:transparent!important;
 }
-@keyframes py2BrandCanvasDrift{
-  0%{background-position:center center,46% 44%}
-  50%{background-position:center center,54% 53%}
-  100%{background-position:center center,48% 56%}
+body::before{
+  content:""!important;
+  position:fixed!important;
+  inset:-2vh -2vw!important;
+  z-index:-1!important;
+  display:block!important;
+  pointer-events:none!important;
+  background-image:var(--py2-animated-logo)!important;
+  background-repeat:no-repeat!important;
+  background-position:center 50%!important;
+  background-size:clamp(260px,46vw,620px) auto!important;
+  opacity:.18!important;
+  transform:translate3d(0,0,0) scale(.94)!important;
+  transform-origin:center center!important;
+  animation:py2BrandCanvasFloat 11s ease-in-out infinite alternate!important;
+  will-change:transform,opacity!important;
+}
+@keyframes py2BrandCanvasFloat{
+  0%{opacity:.14;transform:translate3d(-2.2vw,-1.2vh,0) scale(.94)}
+  50%{opacity:.24;transform:translate3d(1.2vw,1.2vh,0) scale(1.02)}
+  100%{opacity:.19;transform:translate3d(2.2vw,-.7vh,0) scale(1.07)}
+}
+/* These nearly-opaque bars do not need backdrop blur; removing it helps mobile scrolling. */
+body>.top-header,body>nav.py2-quick-tabs{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
 }
 @media(max-width:760px){
-  body{
-    background-size:100% 100%,min(74vw,340px) auto!important;
-    animation-duration:19s!important;
+  body::before{
+    inset:-1vh -2vw!important;
+    background-size:min(82vw,390px) auto!important;
+    animation-duration:13s!important;
   }
 }
 @media(prefers-reduced-motion:reduce){
-  body{animation:none!important;background-position:center center,50% 50%!important}
+  body::before{
+    animation:none!important;
+    opacity:.18!important;
+    transform:none!important;
+    will-change:auto!important;
+  }
 }
