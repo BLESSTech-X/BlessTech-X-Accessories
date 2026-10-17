@@ -49,3 +49,57 @@ body:not(.py2-blog-page) .info-card:hover {
 @media(prefers-reduced-motion:reduce){
   body:not(.py2-blog-page) *{scroll-behavior:auto!important}
 }
+
+
+/* Contrast correction: brighter blue 3D type, with softer highlights rather than near-black lettering. */
+body:not(.py2-blog-page) .shop-hero h1,
+body:not(.py2-blog-page) main>h1,
+body:not(.py2-blog-page) main>section>h1,
+body:not(.py2-blog-page) main>section>h2,
+body:not(.py2-blog-page) main>section>header h1,
+body:not(.py2-blog-page) .page-title,
+body:not(.py2-blog-page) .section-title,
+body:not(.py2-blog-page) .section-heading h2,
+body:not(.py2-blog-page) .py2-endless-heading h2,
+body:not(.py2-blog-page) .cart-title,
+body:not(.py2-blog-page) .checkout-title {
+  color:#3678b5!important;
+  text-shadow:0 1px 0 #fff,0 2px 0 #e6f2ff,0 3px 0 #c9e0f7,0 5px 0 #a9cbed,0 7px 13px rgba(36,91,145,.20)!important;
+  -webkit-text-stroke:0!important;
+}
+body:not(.py2-blog-page) main>section>p,
+body:not(.py2-blog-page) main>p,
+body:not(.py2-blog-page) .shop-hero p,
+body:not(.py2-blog-page) .py2-endless-heading p,
+body:not(.py2-blog-page) .page-intro,
+body:not(.py2-blog-page) .standalone-copy {
+  color:#526b85!important;
+  text-shadow:0 1px 0 #fff,0 2px 4px rgba(49,100,151,.10)!important;
+}
+/* Stronger depth across the actual UI surfaces and cards, not every nested div. */
+body:not(.py2-blog-page) :is(
+  .pcard,.py2-product-card,.product-card,.product-item,
+  .content-panel,.checkout-panel,.cart-panel,.checkout-card,.order-summary,
+  .contact-card,.info-card,.about-card,.policy-card,.section-card,
+  .panel,.benefit,.feature-card,.service-card,.category-card,.category-tile,
+  .stat-card,.dashboard-card,.account-card,.form-card,.cart-item,
+  .order-card,.history-card,.newsletter-card,.advertiser-card,.howto-mini-inner,
+  .py2-endless-heading,.py2-endless-loading
+) {
+  box-shadow:0 8px 22px rgba(21,47,78,.13),0 3px 8px rgba(21,47,78,.08),0 1px 2px rgba(21,47,78,.06)!important;
+}
+body:not(.py2-blog-page) :is(
+  .pcard,.py2-product-card,.product-card,.product-item,
+  .content-panel,.checkout-panel,.cart-panel,.checkout-card,.order-summary,
+  .contact-card,.info-card,.about-card,.policy-card,.section-card,
+  .panel,.benefit,.feature-card,.service-card,.category-card,.category-tile,
+  .stat-card,.dashboard-card,.account-card,.form-card,.cart-item,
+  .order-card,.history-card,.newsletter-card,.advertiser-card,.howto-mini-inner
+):hover {
+  box-shadow:0 14px 32px rgba(21,47,78,.18),0 6px 13px rgba(21,47,78,.10)!important;
+}
+@media(max-width:700px){
+  body:not(.py2-blog-page) :is(.pcard,.py2-product-card,.product-card,.content-panel,.checkout-panel,.cart-panel,.contact-card,.info-card,.feature-card,.category-card,.category-tile){
+    box-shadow:0 6px 16px rgba(21,47,78,.13),0 2px 5px rgba(21,47,78,.07)!important;
+  }
+}
