@@ -39,12 +39,12 @@
 <section id="login-screen" class="login">
 <div style="font-size:34px;margin-bottom:8px">🧭</div><h1>PY2-360</h1>
 <p>Your PhoneYa2 sales desk.</p>
-<form id="login-form">
+<form id="login-form" onsubmit="return false;">
 <div class="field"><label for="agent-code">Agent code</label><input id="agent-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="Enter your code"></div>
 <div id="login-error" class="err" role="alert"></div>
 <button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-arrow-right-to-bracket"></i> Continue</button>
 </form>
-<p class="footer-note">Use the code assigned to you. Access is available only to active agents.</p>
+<p class="footer-note">Enter the shared PY2-360 access code to continue.</p>
 </section>
 <section id="dashboard" class="hidden">
 <div class="welcome">
@@ -55,8 +55,8 @@
 <div class="kpi"><div class="kpi-top">Recorded sales <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>All records in the PhoneYa2 agent sales ledger</small></div>
 <div class="kpi"><div class="kpi-top">Awaiting confirmation <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Sales ledger awaiting confirmation</small></div>
 <div class="kpi"><div class="kpi-top">Confirmed value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Confirmed value in the sales ledger</small></div>
-<div class="kpi"><div class="kpi-top">My active leads <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Tracked leads across the agent ledger</small></div>
-<div class="kpi"><div class="kpi-top">Store visitors <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Store-wide · last 30 days</small></div>
+<div class="kpi"><div class="kpi-top">Active leads <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Tracked leads across the agent ledger</small></div>
+<div class="kpi"><div class="kpi-top">Active users <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Google Analytics · last 30 days</small></div>
 </div>
 <div class="grid">
 <section class="panel"><div class="panel-head"><div><h2>PhoneYa2 sales momentum</h2><p class="sub">Recorded sales by week from the agent sales ledger.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
