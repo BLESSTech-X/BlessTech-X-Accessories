@@ -1382,11 +1382,24 @@ function shareFacebookProduct(p) {
 }
 function copyProductLink(slug, event) {
   if (event) event.stopPropagation();
-  const url = window.location.origin + '/product.html?id=' + slug;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).catch(() => legacyCopy(url));
-  } else { legacyCopy(url); }
-  showShareToast('🔗 Link copied!');
+  const p = allProducts.find(item => String(item.slug) === String(slug));
+  const url = window.location.origin + '/product.html?id=' + encodeURIComponent(slug);
+  const caption = p
+    ? 'Check this out at PhoneYa2:\n\n' +
+      '*' + p.title + '*\n' +
+      'Price: *ZMW ' + p.price + '*\n' +
+      'Smart CHOICES. Better CONNECTED 💙\n\n' +
+      url
+    : 'Check this out at PhoneYa2:\n\nSmart CHOICES. Better CONNECTED 💙\n\n' + url;
+  const copyText = caption;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(copyText)
+      .then(() => showShareToast('✅ Product caption and link copied!'))
+      .catch(() => { legacyCopy(copyText); showShareToast('✅ Product caption and link copied!'); });
+  } else {
+    legacyCopy(copyText);
+    showShareToast('✅ Product caption and link copied!');
+  }
 }
 function legacyCopy(text) {
   const ta = document.createElement('textarea');
