@@ -39,7 +39,7 @@
 <section id="login-screen" class="login">
 <div style="font-size:34px;margin-bottom:8px">🧭</div><h1>PY2-360</h1>
 <p>Your PhoneYa2 sales desk.</p>
-<form id="login-form" onsubmit="return false;">
+<form id="login-form">
 <div class="field"><label for="agent-code">Agent code</label><input id="agent-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="Enter your code"></div>
 <div id="login-error" class="err" role="alert"></div>
 <button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-arrow-right-to-bracket"></i> Continue</button>
@@ -91,7 +91,7 @@ async function establishAgent(code){
  showDashboard();
  await loadAll();
 }
-async async function login(e){
+async function login(e){
  e.preventDefault();
  const code=$('agent-code').value.trim().toUpperCase();
  $('login-btn').disabled=true;
@@ -180,7 +180,7 @@ function renderAnalytics(){
  $('ga-sessions').textContent=num(analytics.summary.sessions);$('ga-views').textContent=num(analytics.summary.page_views);$('ga-events').textContent=num(analytics.summary.events);
  $('ga-note').textContent='Aggregate store-wide report. Updated '+new Date(analytics.generated_at||Date.now()).toLocaleString()+'. This does not identify visitors referred by you.';
 }
-$('login-form').addEventListener('submit',login);
+$('login-form').addEventListener('submit',function(e){e.preventDefault();login(e);});
 $('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}catch(e){$('assistant-summary').textContent='Some information could not be refreshed. Check your connection and try again.';}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh data';}});
 $('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_agent_code');location.reload();});
 window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))renderCharts();});
