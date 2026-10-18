@@ -3,7 +3,7 @@
 // Caches static assets for offline use; network-first for API
 // ═══════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = 'phoneya2-py2-360-v2';
+const CACHE_VERSION = 'phoneya2-py2-360-v3';
 const STATIC_ASSETS = [
   './py2-360.html',
   './shared.css',
