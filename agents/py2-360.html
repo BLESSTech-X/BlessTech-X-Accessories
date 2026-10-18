@@ -31,7 +31,7 @@
 <header class="top">
 <a class="brand" href="../"><b>Phone</b>Ya2 <span style="color:#a7b1c4;font-weight:600">/ PY2-360</span></a>
 <span class="badge">AGENT SALES DESK</span><span class="spacer"></span>
-<span id="agent-label" class="badge">Secure agent area</span>
+<span id="agent-label" class="badge">Agent sign-in required</span>
 <a class="btn btn-dark" href="agent.html"><i class="fa-solid fa-arrow-left"></i> Agent Hub</a>
 <button class="btn btn-dark hidden" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
 </header>
@@ -43,7 +43,7 @@
 <div class="field"><label for="email">Agent email</label><input id="email" type="email" autocomplete="username" required placeholder="you@example.com"></div>
 <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Your password"></div>
 <div id="login-error" class="err" role="alert"></div>
-<button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-lock"></i> Sign in securely</button>
+<button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-lock"></i> Sign in</button>
 </form>
 <p class="footer-note">Access is limited to active agent accounts. Never share your password or another agent's account.</p>
 </section>
@@ -64,7 +64,7 @@
 <section class="panel"><div class="panel-head"><div><h2>Lead pipeline</h2><p class="sub">Where your potential customers currently stand.</p></div></div><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
 </div>
 <section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-bolt" style="color:#ff6000"></i> Recommended to share</h2><p class="sub">In-stock products selected from availability, freshness and featured status. Share the product page directly.</p></div><span class="pill green">ACTION LIST</span></div><div id="recommended-products" class="product-row"><div class="empty">Loading products…</div></div></section>
-<section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-sparkles" style="color:#ff6000"></i> New stock row</h2><p class="sub">Recently added products with stock available. Check stock before promising a customer.</p></div><a href="../shop.html" class="btn btn-light">Open shop <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><div id="new-products" class="product-row"><div class="empty">Loading newest products…</div></div></section>
+<section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-sparkles" style="color:#ff6000"></i> New stock row</h2><p class="sub">Uses the CMS date_added/created_at field when present. Products without dates fall back to the available catalogue order, so mark new arrivals with a date in the CMS for accurate sorting.</p></div><a href="../shop.html" class="btn btn-light">Open shop <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><div id="new-products" class="product-row"><div class="empty">Loading newest products…</div></div></section>
 <div class="grid">
 <section class="panel"><div class="panel-head"><div><h2>Store traffic snapshot</h2><p class="sub">Aggregate Google Analytics data for the whole PhoneYa2 store—not your personal referral traffic.</p></div><span class="pill gray">30 DAYS</span></div><div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0"><div><div class="sub">Sessions</div><strong id="ga-sessions">—</strong></div><div><div class="sub">Page views</div><strong id="ga-views">—</strong></div><div><div class="sub">Events</div><strong id="ga-events">—</strong></div></div><div id="ga-note" class="footer-note">Connecting to the store's aggregate analytics…</div></section>
 <section class="panel"><div class="panel-head"><div><h2>Order visibility</h2><p class="sub">What this dashboard can safely show right now.</p></div></div><div class="notice"><strong><i class="fa-solid fa-shield-halved"></i> Store checkout orders are not yet assigned to agents</strong>Pending figures above refer to your agent-submitted sales, not every customer checkout order. The store's order system currently does not reliably link a checkout to an agent code. Customer names, phone numbers and addresses are intentionally not exposed in this shared agent view.</div><p class="footer-note">Next integration: capture and validate each agent's referral code at checkout, then show only the orders attributed to that agent and hide customer contact details until the store owner authorizes the workflow.</p></section>
