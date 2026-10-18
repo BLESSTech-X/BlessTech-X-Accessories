@@ -172,7 +172,7 @@ function renderProducts(){
  document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.copy);if(!p)return;try{await navigator.clipboard.writeText(caption(p));const old=b.innerHTML;b.innerHTML='<i class="fa-solid fa-check"></i> Copied';setTimeout(()=>b.innerHTML=old,1500);}catch{window.prompt('Copy this product message',caption(p));}}));
 }
 function renderAnalytics(){
- if(!analytics?.summary){$('ga-sessions').textContent='—';$('ga-views').textContent='—';$('ga-events').textContent='—';$('ga-note').textContent='Live Google Analytics unavailable: '+(analytics?.error||'endpoint/configuration failed')+'. Check Cloudflare Production variables GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT_JSON, and ensure the service account has Viewer access to the GA4 property.';$('ga-note').className='notice';return;
+ if(!analytics?.summary){$('ga-sessions').textContent='—';$('ga-views').textContent='—';$('ga-events').textContent='—';$('ga-note').textContent='Live Google Analytics unavailable: '+(analytics?.error||'endpoint/configuration failed')+'. Check Cloudflare Production variables GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT_JSON, and ensure the service account has Viewer access to the GA4 property.';$('ga-note').className='notice';return;}
  $('ga-sessions').textContent=num(analytics.summary.sessions);$('ga-views').textContent=num(analytics.summary.page_views);$('ga-events').textContent=num(analytics.summary.events);
  $('ga-note').textContent='Aggregate store-wide report. Updated '+new Date(analytics.generated_at||Date.now()).toLocaleString()+'. This does not identify visitors referred by you.';
 }
