@@ -52,14 +52,14 @@
 <div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Your daily growth assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh data</button></div>
 </div>
 <div class="kpis">
-<div class="kpi"><div class="kpi-top">My recorded sales <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>Agent-submitted sale records</small></div>
-<div class="kpi"><div class="kpi-top">Awaiting confirmation <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Pending in your agent sales records</small></div>
-<div class="kpi"><div class="kpi-top">Confirmed value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Confirmed agent-submitted sales</small></div>
-<div class="kpi"><div class="kpi-top">My active leads <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Leads not marked paid/delivered/lost</small></div>
+<div class="kpi"><div class="kpi-top">Recorded sales <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>All records in the PhoneYa2 agent sales ledger</small></div>
+<div class="kpi"><div class="kpi-top">Awaiting confirmation <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Sales ledger awaiting confirmation</small></div>
+<div class="kpi"><div class="kpi-top">Confirmed value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Confirmed value in the sales ledger</small></div>
+<div class="kpi"><div class="kpi-top">My active leads <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Tracked leads across the agent ledger</small></div>
 <div class="kpi"><div class="kpi-top">Store visitors <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Store-wide · last 30 days</small></div>
 </div>
 <div class="grid">
-<section class="panel"><div class="panel-head"><div><h2>My sales momentum</h2><p class="sub">Recorded sales by week, based on your agent sales records.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
+<section class="panel"><div class="panel-head"><div><h2>PhoneYa2 sales momentum</h2><p class="sub">Recorded sales by week from the agent sales ledger.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
 <section class="panel"><div class="panel-head"><div><h2>Lead pipeline</h2><p class="sub">Where your potential customers currently stand.</p></div></div><canvas id="lead-chart" class="chart" aria-label="Lead pipeline chart"></canvas><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
 </div>
 <div class="grid"><section class="panel"><div class="panel-head"><div><h2>Stock availability at a glance</h2><p class="sub">Available units across your recommended products. Check live stock before promising delivery.</p></div></div><canvas id="stock-chart" class="chart" aria-label="Recommended product stock chart"></canvas><p class="footer-note">This is the published catalogue stock field, not a reservation of physical stock.</p></section><section class="panel"><div class="panel-head"><div><h2>Quick execution plan</h2><p class="sub">A repeatable daily sales routine.</p></div></div><div class="mini-list"><div class="mini-row"><span>1. Pick one in-stock product</span><span class="pill green">Choose</span></div><div class="mini-row"><span>2. Share with a use-case</span><span class="pill">Reach</span></div><div class="mini-row"><span>3. Start real conversations</span><span class="pill">Engage</span></div><div class="mini-row"><span>4. Log warm prospects as leads</span><span class="pill">Track</span></div><div class="mini-row"><span>5. Follow up and record outcomes</span><span class="pill green">Convert</span></div></div></section></div><section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-bolt" style="color:#ff6000"></i> Recommended to share</h2><p class="sub">In-stock products selected from availability, freshness and featured status. Share the product page directly.</p></div><span class="pill green">ACTION LIST</span></div><div id="recommended-products" class="product-row"><div class="empty">Loading products…</div></div></section>
@@ -75,7 +75,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-let agent=null, sales=[], leads=[], products=[], analytics=null;
+let agent=null, sales=[], leads=[], products=[], analytics=null, agentDataAvailable=false, productsAvailable=false;
 const money=n=>'K'+Number(n||0).toLocaleString('en-ZM',{maximumFractionDigits:2});
 const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -106,15 +106,19 @@ async function loadAll(initialAgentData){
  $('assistant-summary').textContent='Checking sales, leads, stock and store traffic…';
  const results=await Promise.allSettled([
   initialAgentData?Promise.resolve(initialAgentData):fetch('/api/agent-dashboard',{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify({code:sessionStorage.getItem('py2_agent_code')||''})}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Agent data unavailable');return d;}),
-  fetch('../content/products/catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Catalogue unavailable');return r.json()}),
+  fetch('../content/products/catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Catalogue unavailable (HTTP '+r.status+')');return r.json()}),
   fetch('/api/public-analytics',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Aggregate analytics unavailable');return r.json()})
  ]);
  const agentData=results[0].status==='fulfilled'?results[0].value:null;
+ agentDataAvailable=!!agentData;
  sales=Array.isArray(agentData?.sales)?agentData.sales:[];
  leads=Array.isArray(agentData?.leads)?agentData.leads:[];
- products=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:[];
+ productsAvailable=results[1].status==='fulfilled'&&Array.isArray(results[1].value);
+ products=productsAvailable?results[1].value:[];
  analytics=results[2].status==='fulfilled'?results[2].value:null;
  renderStats();renderCharts();renderLeadPipeline();renderProducts();renderAnalytics();
+ const failures=[];if(!agentDataAvailable)failures.push('sales/leads ledger: '+(results[0].reason?.message||'unavailable'));if(!productsAvailable)failures.push('product catalogue: '+(results[1].reason?.message||'unavailable'));if(!analytics?.summary)failures.push('Google Analytics: '+(results[2].reason?.message||analytics?.error||'not configured/unavailable'));
+ if(failures.length)$('assistant-summary').textContent='Live data warning — '+failures.join(' | ')+'. Values for failed sources are not treated as zero.';
  $('last-updated').textContent='Last refreshed '+new Date().toLocaleString();
 }
 function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
@@ -123,9 +127,9 @@ function renderStats(){
  const pending=sales.filter(s=>isPending(s.status));
  const confirmed=sales.filter(s=>isConfirmed(s.status));
  const active=leads.filter(l=>!['paid','delivered','lost','purchased'].includes(String(l.status||'').toLowerCase()));
- $('kpi-sales').textContent=num(sales.length);$('kpi-pending').textContent=num(pending.length);
- $('kpi-revenue').textContent=money(confirmed.reduce((a,s)=>a+Number(s.amount||0),0));
- $('kpi-leads').textContent=num(active.length);
+ $('kpi-sales').textContent=agentDataAvailable?num(sales.length):'—';$('kpi-pending').textContent=agentDataAvailable?num(pending.length):'—';
+ $('kpi-revenue').textContent=agentDataAvailable?money(confirmed.reduce((a,s)=>a+Number(s.amount||0),0)):'—';
+ $('kpi-leads').textContent=agentDataAvailable?num(active.length):'—';
  $('kpi-visitors').textContent=analytics?.summary?num(analytics.summary.active_users):'—';
  const strongest=confirmed.length?'You have '+confirmed.length+' confirmed sale record'+(confirmed.length===1?'':'s')+'. Follow up on '+pending.length+' pending sale record'+(pending.length===1?'':'s')+' and keep proof of each completed transaction.':pending.length?'You have '+pending.length+' sale record(s) awaiting confirmation. Follow up with the store admin and keep prospecting while they are reviewed.':'No recorded sales yet. Pick one recommended in-stock product, share it with a clear use-case, and follow up with interested people today.';
  const leadAction=active.length?' You also have '+active.length+' active lead(s)—contact the warmest lead first.':' Add new interested customers to your Leads tab in the Agent Hub so follow-ups do not get lost.';
@@ -143,13 +147,15 @@ function drawChart(canvas,values,labels){
 function renderCharts(){
  const now=new Date(),buckets=Array.from({length:6},(_,i)=>{const start=new Date(now);start.setDate(now.getDate()-(5-i)*7-6);start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+7);return {start,end,label:'W'+(i+1),count:0};});
  sales.forEach(s=>{const d=new Date(s.created_at||s.confirmed_at||0);if(!Number.isFinite(d.getTime()))return;const b=buckets.find(x=>d>=x.start&&d<x.end);if(b)b.count++;});
- drawChart('sales-chart',buckets.map(b=>b.count),buckets.map(b=>b.label));
- $('sales-chart-note').textContent=sales.length?'Counts are based on sale-record creation dates, not guaranteed payment dates.':'No sale records yet. Your chart will fill as sales are recorded.';
+ drawChart('sales-chart',agentDataAvailable?buckets.map(b=>b.count):[],agentDataAvailable?buckets.map(b=>b.label):[]);
+ $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':sales.length?'Counts are based on sale-record creation dates, not guaranteed payment dates.':'No sale records yet. Your chart will fill as sales are recorded.';
 }
 function renderLeadPipeline(){
  const stages=[['new','New'],['contacted','Contacted'],['interested','Interested'],['negotiating','Negotiating'],['ordered','Ordered'],['paid','Paid'],['delivered','Delivered'],['lost','Lost']];
- const stageCounts=stages.map(([key])=>leads.filter(l=>String(l.status||'new').toLowerCase()===key).length);drawChart('lead-chart',stageCounts,stages.map(([key])=>({new:'New',contacted:'Talk',interested:'Warm',negotiating:'Deal',ordered:'Order',paid:'Paid',delivered:'Done',lost:'Lost'}[key])));const html=stages.map(([key,label])=>{const count=leads.filter(l=>String(l.status||'new').toLowerCase()===key).length;return '<div class="mini-row"><span>'+label+'</span><strong>'+count+'</strong></div>';}).join('');
- $('lead-pipeline').innerHTML=html||'<div class="empty">No lead records yet.</div>';
+ const aliases={new:['new'],contacted:['contacted','followup','follow_up','follow-up'],interested:['interested','warm'],negotiating:['negotiating','in_negotiation'],ordered:['ordered','purchased','purchase'],paid:['paid','confirmed'],delivered:['delivered','complete','completed'],lost:['lost','closed_lost']};
+ const stageCounts=stages.map(([key])=>leads.filter(l=>(aliases[key]||[key]).includes(String(l.status||'new').toLowerCase())).length);drawChart('lead-chart',stageCounts,stages.map(([key])=>({new:'New',contacted:'Talk',interested:'Warm',negotiating:'Deal',ordered:'Order',paid:'Paid',delivered:'Done',lost:'Lost'}[key])));const html=stages.map(([key,label])=>{const count=leads.filter(l=>(aliases[key]||[key]).includes(String(l.status||'new').toLowerCase())).length;return '<div class="mini-row"><span>'+label+'</span><strong>'+count+'</strong></div>';}).join('');
+ $('lead-pipeline').innerHTML=agentDataAvailable?(html||'<div class="empty">No lead records yet.</div>'):'<div class="empty">Lead data unavailable — check the live data warning above.</div>';
+ if(!agentDataAvailable){$('lead-insight').innerHTML='<strong>Data unavailable</strong><p>The dashboard could not load the lead ledger. It will not present a failed request as a genuine zero.</p>';return;}
  const warm=leads.filter(l=>['interested','negotiating','ordered','contacted'].includes(String(l.status||'').toLowerCase()));
  $('lead-insight').innerHTML='<strong>Assistant insight</strong><p>'+(warm.length?'You have '+warm.length+' lead(s) beyond the new stage. Prioritize people already interested or negotiating; ask one clear question and agree on the next follow-up time.':'Start with conversations, not mass messages. Add each genuinely interested person to your Leads tab and record a follow-up date.')+'</p>';
 }
@@ -160,13 +166,13 @@ function renderProducts(){
  const available=products.filter(p=>Number(p.stock)>0&&Number(p.price)>0);
  const recommended=[...available].sort((a,b)=>(Number(!!b.featured)-Number(!!a.featured))||(Number(b.stock>0)-Number(a.stock>0))||(Number(b.date_added?new Date(b.date_added).getTime():0)-Number(a.date_added?new Date(a.date_added).getTime():0))||Number(a.price)-Number(b.price)).slice(0,4);
  const dated=[...available].sort((a,b)=>new Date(b.date_added||0)-new Date(a.date_added||0)).slice(0,8);
- $('recommended-products').innerHTML=recommended.length?recommended.map((p,i)=>productCard(p,i===0?'START HERE':'RECOMMENDED')).join(''):'<div class="empty">No in-stock products were found in the catalogue.</div>';
- $('new-products').innerHTML=dated.length?dated.map(p=>productCard(p,'IN STOCK')).join(''):'<div class="empty">No available stock found. Check the product catalogue.</div>';const stockPicks=[...available].sort((a,b)=>Number(b.stock||0)-Number(a.stock||0)).slice(0,6);drawChart('stock-chart',stockPicks.map(p=>Number(p.stock||0)),stockPicks.map(p=>String(p.title||'Product').split(' ').slice(0,2).join(' ').slice(0,12)));
+ $('recommended-products').innerHTML=!productsAvailable?'<div class="empty">Product catalogue unavailable — check the live data warning above.</div>':recommended.length?recommended.map((p,i)=>productCard(p,i===0?'START HERE':'RECOMMENDED')).join(''):'<div class="empty">No in-stock products were found in the catalogue.</div>';
+ $('new-products').innerHTML=!productsAvailable?'<div class="empty">Product catalogue unavailable — check the live data warning above.</div>':dated.length?dated.map(p=>productCard(p,'IN STOCK')).join(''):'<div class="empty">No available stock found. Check the product catalogue.</div>';const stockPicks=[...available].sort((a,b)=>Number(b.stock||0)-Number(a.stock||0)).slice(0,6);drawChart('stock-chart',productsAvailable?stockPicks.map(p=>Number(p.stock||0)):[],productsAvailable?stockPicks.map(p=>String(p.title||'Product').split(' ').slice(0,2).join(' ').slice(0,12)):[]);
  document.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.share);if(!p)return;const url='https://wa.me/?text='+encodeURIComponent(caption(p));window.open(url,'_blank','noopener');}));
  document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.copy);if(!p)return;try{await navigator.clipboard.writeText(caption(p));const old=b.innerHTML;b.innerHTML='<i class="fa-solid fa-check"></i> Copied';setTimeout(()=>b.innerHTML=old,1500);}catch{window.prompt('Copy this product message',caption(p));}}));
 }
 function renderAnalytics(){
- if(!analytics?.summary){$('ga-note').textContent='Store analytics is unavailable right now. Product sharing and your agent records are still available.';$('ga-note').className='footer-note';return;}
+ if(!analytics?.summary){$('ga-sessions').textContent='—';$('ga-views').textContent='—';$('ga-events').textContent='—';$('ga-note').textContent='Live Google Analytics unavailable: '+(analytics?.error||'endpoint/configuration failed')+'. Check Cloudflare Production variables GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT_JSON, and ensure the service account has Viewer access to the GA4 property.';$('ga-note').className='notice';return;
  $('ga-sessions').textContent=num(analytics.summary.sessions);$('ga-views').textContent=num(analytics.summary.page_views);$('ga-events').textContent=num(analytics.summary.events);
  $('ga-note').textContent='Aggregate store-wide report. Updated '+new Date(analytics.generated_at||Date.now()).toLocaleString()+'. This does not identify visitors referred by you.';
 }
