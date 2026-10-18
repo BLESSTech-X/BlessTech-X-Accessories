@@ -32,20 +32,19 @@
 <a class="brand" href="../"><b>Phone</b>Ya2 <span style="color:#a7b1c4;font-weight:600">/ PY2-360</span></a>
 <span class="badge">AGENT SALES DESK</span><span class="spacer"></span>
 <span id="agent-label" class="badge">Agent sign-in required</span>
-<a class="btn btn-dark" href="agent.html"><i class="fa-solid fa-arrow-left"></i> Agent Hub</a>
+<a class="btn btn-dark" href="../shop.html"><i class="fa-solid fa-store"></i> Open shop</a>
 <button class="btn btn-dark hidden" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
 </header>
 <main class="wrap">
 <section id="login-screen" class="login">
-<div style="font-size:34px;margin-bottom:8px">🧭</div><h1>Enter PY2-360</h1>
-<p>Sign in with the individual PhoneYa2 agent account issued to you. Your agent code identifies your own activity; it is not a shared master password.</p>
+<div style="font-size:34px;margin-bottom:8px">🧭</div><h1>PY2-360</h1>
+<p>Your PhoneYa2 sales desk.</p>
 <form id="login-form">
-<div class="field"><label for="email">Agent email</label><input id="email" type="email" autocomplete="username" required placeholder="you@example.com"></div>
-<div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Your password"></div>
+<div class="field"><label for="agent-code">Agent code</label><input id="agent-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="Enter your code"></div>
 <div id="login-error" class="err" role="alert"></div>
-<button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-lock"></i> Sign in</button>
+<button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-arrow-right-to-bracket"></i> Continue</button>
 </form>
-<p class="footer-note">Access is limited to active agent accounts. Never share your password or another agent's account.</p>
+<p class="footer-note">Use the code assigned to you. Access is available only to active agents.</p>
 </section>
 <section id="dashboard" class="hidden">
 <div class="welcome">
@@ -82,16 +81,28 @@ const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setError(s){$('login-error').textContent=s||'';}
 function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout-btn').classList.remove('hidden');$('agent-label').textContent=agent.agent_code||'Active agent';}
-async function establishAgent(){
- const profile=await getProfile();
- if(!profile) throw new Error('Your agent profile could not be found. Sign in through the Agent Hub or contact the PhoneYa2 administrator.');
- if(profile.role==='admin'){location.href='admin.html';return;}
- if(!profile.agent_code) throw new Error('This account is not linked to an agent code.');
- const row=await db.getOne('agents','agent_code=eq.'+encodeURIComponent(profile.agent_code)+'&active=eq.true');
- if(!row) throw new Error('This agent account is inactive or could not be found.');
- agent=row;showDashboard();await loadAll();
+async function establishAgent(code){
+ const normalized=String(code||'').trim().toUpperCase();
+ if(!normalized) throw new Error('Enter your agent code.');
+ let row;
+ try { row=await db.getOne('agents','agent_code=eq.'+encodeURIComponent(normalized)+'&active=eq.true'); }
+ catch(err) { throw new Error('Could not verify the code. Please try again or contact PhoneYa2 support.'); }
+ if(!row) throw new Error('That code is not recognised or the agent account is inactive.');
+ agent=row;
+ sessionStorage.setItem('py2_agent_code',normalized);
+ showDashboard();
+ await loadAll();
 }
-async function login(e){e.preventDefault();$('login-btn').disabled=true;$('login-btn').textContent='Checking account…';setError('');try{await auth.signIn($('email').value.trim(),$('password').value);await establishAgent();}catch(err){await auth.signOut();setError(err.message||'Sign in failed.');}finally{$('login-btn').disabled=false;$('login-btn').innerHTML='<i class="fa-solid fa-lock"></i> Sign in securely';}}
+async function login(e){
+ e.preventDefault();
+ const code=$('agent-code').value.trim().toUpperCase();
+ $('login-btn').disabled=true;
+ $('login-btn').textContent='Checking code…';
+ setError('');
+ try { await establishAgent(code); }
+ catch(err) { sessionStorage.removeItem('py2_agent_code'); $('login-screen').classList.remove('hidden'); $('dashboard').classList.add('hidden'); setError(err.message||'Could not sign in.'); }
+ finally { $('login-btn').disabled=false; $('login-btn').innerHTML='<i class="fa-solid fa-arrow-right-to-bracket"></i> Continue'; }
+}
 async function loadAll(){
  $('hello-title').textContent='Welcome back, '+(agent.full_name||'PhoneYa2 agent').split(' ')[0]+'.';
  $('assistant-summary').textContent='Checking sales, leads, stock and store traffic…';
@@ -163,9 +174,13 @@ function renderAnalytics(){
 }
 $('login-form').addEventListener('submit',login);
 $('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}catch(e){$('assistant-summary').textContent='Some information could not be refreshed. Check your connection and try again.';}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh data';}});
-$('logout-btn').addEventListener('click',async()=>{await auth.signOut();location.reload();});
+$('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_agent_code');location.reload();});
 window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))renderCharts();});
-document.addEventListener('DOMContentLoaded',async()=>{if(!window.auth||!window.db){setError('The agent service did not load. Open the Agent Hub and try again.');return;}if(auth.isLoggedIn()){try{await establishAgent();}catch(e){await auth.signOut();setError(e.message||'Please sign in again.');}}});
+document.addEventListener('DOMContentLoaded',async()=>{
+ if(!window.db){setError('The agent service did not load. Refresh and try again.');return;}
+ const savedCode=sessionStorage.getItem('py2_agent_code');
+ if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode);}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your agent code again.');}}
+});
 })();
 </script>
 </body>
