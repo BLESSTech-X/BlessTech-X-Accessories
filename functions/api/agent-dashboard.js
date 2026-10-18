@@ -52,7 +52,7 @@ export async function onRequestPost({ request, env }) {
       }),
       query("leads", {
         agent_code: `eq.${code}`,
-        select: "agent_code,status,created_at,followup_date",
+        select: "agent_code,status,created_at",
         order: "created_at.desc",
         limit: "500"
       })
