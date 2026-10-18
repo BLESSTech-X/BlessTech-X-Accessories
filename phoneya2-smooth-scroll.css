@@ -1,0 +1,115 @@
+/* PhoneYa2 site-wide smooth scrolling polish.
+   Keep native touch momentum; do not hijack wheel/touch scrolling. */
+html {
+  scroll-behavior: smooth !important;
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  overscroll-behavior-y: auto;
+}
+:where(
+  .cat-nav-inner,
+  .cat-showcase-mobile-cats,
+  .cat-products-grid,
+  .filter-bar-inner,
+  .filter-pills,
+  .product-scroll,
+  .product-row,
+  .product-rail,
+  .product-carousel,
+  .products-carousel,
+  .related-products,
+  .related-products-grid,
+  .h-scroll,
+  .horizontal-scroll,
+  .carousel-scroll,
+  [data-horizontal-scroll="true"]
+) {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-padding-inline: 12px;
+  scrollbar-gutter: stable;
+}
+:where(
+  .cat-nav-inner,
+  .cat-showcase-mobile-cats,
+  .cat-products-grid,
+  .filter-bar-inner,
+  .filter-pills,
+  .product-scroll,
+  .product-row,
+  .product-rail,
+  .product-carousel,
+  .products-carousel,
+  .related-products,
+  .related-products-grid,
+  .h-scroll,
+  .horizontal-scroll,
+  .carousel-scroll,
+  [data-horizontal-scroll="true"]
+)[style*="overflow-x"],
+:where(
+  .cat-nav-inner,
+  .cat-showcase-mobile-cats,
+  .cat-products-grid,
+  .filter-bar-inner,
+  .filter-pills,
+  .product-scroll,
+  .product-row,
+  .product-rail,
+  .product-carousel,
+  .products-carousel,
+  .related-products,
+  .related-products-grid,
+  .h-scroll,
+  .horizontal-scroll,
+  .carousel-scroll,
+  [data-horizontal-scroll="true"]
+) {
+  touch-action: pan-x pan-y pinch-zoom;
+}
+.cat-products-grid,
+.product-scroll,
+.product-row,
+.product-rail,
+.product-carousel,
+.products-carousel,
+.related-products,
+.related-products-grid,
+.h-scroll,
+.horizontal-scroll,
+.carousel-scroll {
+  scroll-snap-type: x proximity;
+}
+.cat-products-grid > *,
+.product-scroll > *,
+.product-row > *,
+.product-rail > *,
+.product-carousel > *,
+.products-carousel > *,
+.related-products > *,
+.related-products-grid > * {
+  scroll-snap-align: start;
+}
+/* Transform-driven homepage product rail: smooth settle after arrow presses. */
+.h-track {
+  transition: transform 460ms cubic-bezier(.22,.72,.22,1) !important;
+  backface-visibility: hidden;
+}
+/* Keep dragging direct and responsive rather than easing behind the finger. */
+.h-track.is-dragging {
+  transition: none !important;
+  cursor: grabbing !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  :where(
+    .cat-nav-inner,.cat-showcase-mobile-cats,.cat-products-grid,.filter-bar-inner,
+    .filter-pills,.product-scroll,.product-row,.product-rail,.product-carousel,
+    .products-carousel,.related-products,.related-products-grid,.h-scroll,
+    .horizontal-scroll,.carousel-scroll,[data-horizontal-scroll="true"]
+  ) { scroll-behavior: auto !important; }
+  .h-track { transition-duration: .01ms !important; }
+}
