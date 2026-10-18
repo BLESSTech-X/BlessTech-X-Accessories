@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#111827">
+<title>PY2-360 Sales Desk — PhoneYa2</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="config.js"></script>
+<style>
+:root{--ink:#172033;--muted:#6c7588;--line:#e5e9f1;--orange:#ff6000;--green:#16834a;--navy:#111827}
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:var(--ink);font-family:'DM Sans',system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer}
+.top{background:#111827;color:white;padding:14px max(16px,calc((100vw - 1240px)/2));display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 5px 0 #169447}
+.brand{font-weight:900;font-size:19px;color:white;text-decoration:none}.brand b{color:#ff6000}.badge{font-size:11px;border:1px solid #344054;border-radius:99px;padding:5px 9px;color:#cbd5e1}.spacer{flex:1}
+.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}.btn-dark{background:#253044;color:white}.btn-light{background:white;border:1px solid var(--line);color:var(--ink)}.btn-orange{background:var(--orange);color:white}.btn-green{background:#e7f8ee;color:#116a3b}
+.wrap{max-width:1240px;margin:24px auto;padding:0 16px 60px}.hidden{display:none!important}
+.login{max-width:430px;margin:8vh auto;background:white;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 14px 42px #1720330d}.login h1{margin:0 0 8px}.login p{color:var(--muted);line-height:1.6}.field{display:grid;gap:6px;margin:14px 0}.field label{font-weight:800;font-size:13px}.field input{padding:12px;border:1px solid #d6dce7;border-radius:10px;width:100%}.err{color:#b42318;font-size:13px;min-height:18px}
+.welcome{background:linear-gradient(120deg,#121c30,#203d38);border-radius:20px;color:white;padding:24px;display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:center;margin-bottom:16px}.eyebrow{text-transform:uppercase;letter-spacing:1.5px;font-size:11px;font-weight:900;color:#9be4b5}.welcome h1{font-size:clamp(25px,4vw,36px);line-height:1.12;margin:9px 0}.welcome p{color:#d0d8e4;line-height:1.6;margin:0;max-width:650px}.today-box{background:#ffffff12;border:1px solid #ffffff20;border-radius:15px;padding:16px}.today-box strong{font-size:14px}.today-box p{font-size:13px;margin-top:7px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:16px 0}.kpi,.panel{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 18px #17203306}.kpi{padding:15px;min-width:0}.kpi-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px;font-weight:800;gap:8px}.kpi-icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#fff0e6;color:#d95000}.kpi strong{display:block;font-size:clamp(20px,2.2vw,28px);margin-top:10px;overflow-wrap:anywhere}.kpi small{display:block;color:var(--muted);margin-top:5px;font-size:11px;line-height:1.4}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin:14px 0}.panel{padding:18px;min-width:0}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:13px}.panel h2{font-size:17px;margin:0 0 5px}.sub{font-size:12px;color:var(--muted);margin:0;line-height:1.5}.chart{width:100%;height:210px;display:block}.insight{border-radius:12px;background:#f3f7f5;border:1px solid #d8eee0;padding:13px 14px;margin:10px 0}.insight strong{display:block;margin-bottom:5px}.insight p{margin:0;color:#4f5d6d;font-size:13px;line-height:1.55}.insight.warn{background:#fff7ed;border-color:#ffdfc5}.mini-list{display:grid;gap:9px}.mini-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #eef0f5;font-size:13px}.mini-row:last-child{border-bottom:0}.pill{display:inline-flex;border-radius:99px;padding:4px 8px;font-size:10px;font-weight:900;background:#fff0e6;color:#b94700}.pill.green{background:#e5f8ed;color:#126d3c}.pill.gray{background:#eef1f6;color:#596579}
+.product-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.product{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:white;display:flex;flex-direction:column;min-width:0}.product img{width:100%;height:138px;object-fit:contain;background:#fafbfe;padding:10px}.product-body{padding:12px;display:flex;flex-direction:column;gap:7px;flex:1}.product h3{font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}.price{font-size:17px;font-weight:900}.stock{font-size:11px;color:var(--muted)}.product-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:auto;padding-top:5px}.product-actions .btn{font-size:11px;padding:9px 6px}.tag{font-size:10px;font-weight:900;background:#e8f7ed;color:#167544;padding:4px 7px;border-radius:6px;width:max-content}
+.notice{padding:13px 14px;border-radius:12px;border:1px solid #fed7aa;background:#fff7ed;color:#8b4514;font-size:13px;line-height:1.6}.notice strong{display:block;margin-bottom:3px}.footer-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:15px}.empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:950px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.product-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:680px){.welcome{grid-template-columns:1fr;padding:19px}.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.kpi{padding:12px}.product-row{grid-template-columns:repeat(2,minmax(0,1fr))}.product img{height:120px}.panel{padding:14px}.wrap{margin-top:16px}.top{padding:13px 14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+<a class="brand" href="../"><b>Phone</b>Ya2 <span style="color:#a7b1c4;font-weight:600">/ PY2-360</span></a>
+<span class="badge">AGENT SALES DESK</span><span class="spacer"></span>
+<span id="agent-label" class="badge">Secure agent area</span>
+<a class="btn btn-dark" href="agent.html"><i class="fa-solid fa-arrow-left"></i> Agent Hub</a>
+<button class="btn btn-dark hidden" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+</header>
+<main class="wrap">
+<section id="login-screen" class="login">
+<div style="font-size:34px;margin-bottom:8px">🧭</div><h1>Enter PY2-360</h1>
+<p>Sign in with the individual PhoneYa2 agent account issued to you. Your agent code identifies your own activity; it is not a shared master password.</p>
+<form id="login-form">
+<div class="field"><label for="email">Agent email</label><input id="email" type="email" autocomplete="username" required placeholder="you@example.com"></div>
+<div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Your password"></div>
+<div id="login-error" class="err" role="alert"></div>
+<button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-lock"></i> Sign in securely</button>
+</form>
+<p class="footer-note">Access is limited to active agent accounts. Never share your password or another agent's account.</p>
+</section>
+<section id="dashboard" class="hidden">
+<div class="welcome">
+<div><div class="eyebrow">PhoneYa2 · Agent growth cockpit</div><h1 id="hello-title">Welcome to PY2-360.</h1><p id="hello-copy">Your job is to turn useful product recommendations into conversations, leads and confirmed sales. This desk shows what to do next—not just numbers to look at.</p></div>
+<div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Your daily growth assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh data</button></div>
+</div>
+<div class="kpis">
+<div class="kpi"><div class="kpi-top">My recorded sales <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>Agent-submitted sale records</small></div>
+<div class="kpi"><div class="kpi-top">Awaiting confirmation <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Pending in your agent sales records</small></div>
+<div class="kpi"><div class="kpi-top">Confirmed value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Confirmed agent-submitted sales</small></div>
+<div class="kpi"><div class="kpi-top">My active leads <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Leads not marked paid/delivered/lost</small></div>
+<div class="kpi"><div class="kpi-top">Store visitors <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Store-wide · last 30 days</small></div>
+</div>
+<div class="grid">
+<section class="panel"><div class="panel-head"><div><h2>My sales momentum</h2><p class="sub">Recorded sales by week, based on your agent sales records.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
+<section class="panel"><div class="panel-head"><div><h2>Lead pipeline</h2><p class="sub">Where your potential customers currently stand.</p></div></div><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
+</div>
+<section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-bolt" style="color:#ff6000"></i> Recommended to share</h2><p class="sub">In-stock products selected from availability, freshness and featured status. Share the product page directly.</p></div><span class="pill green">ACTION LIST</span></div><div id="recommended-products" class="product-row"><div class="empty">Loading products…</div></div></section>
+<section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-sparkles" style="color:#ff6000"></i> New stock row</h2><p class="sub">Recently added products with stock available. Check stock before promising a customer.</p></div><a href="../shop.html" class="btn btn-light">Open shop <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><div id="new-products" class="product-row"><div class="empty">Loading newest products…</div></div></section>
+<div class="grid">
+<section class="panel"><div class="panel-head"><div><h2>Store traffic snapshot</h2><p class="sub">Aggregate Google Analytics data for the whole PhoneYa2 store—not your personal referral traffic.</p></div><span class="pill gray">30 DAYS</span></div><div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0"><div><div class="sub">Sessions</div><strong id="ga-sessions">—</strong></div><div><div class="sub">Page views</div><strong id="ga-views">—</strong></div><div><div class="sub">Events</div><strong id="ga-events">—</strong></div></div><div id="ga-note" class="footer-note">Connecting to the store's aggregate analytics…</div></section>
+<section class="panel"><div class="panel-head"><div><h2>Order visibility</h2><p class="sub">What this dashboard can safely show right now.</p></div></div><div class="notice"><strong><i class="fa-solid fa-shield-halved"></i> Store checkout orders are not yet assigned to agents</strong>Pending figures above refer to your agent-submitted sales, not every customer checkout order. The store's order system currently does not reliably link a checkout to an agent code. Customer names, phone numbers and addresses are intentionally not exposed in this shared agent view.</div><p class="footer-note">Next integration: capture and validate each agent's referral code at checkout, then show only the orders attributed to that agent and hide customer contact details until the store owner authorizes the workflow.</p></section>
+</div>
+<p class="footer-note">Numbers update from connected systems when available. Store traffic is aggregate and delayed by analytics processing. Product recommendations are rule-based—not a guarantee of sales. <span id="last-updated"></span></p>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let agent=null, sales=[], leads=[], products=[], analytics=null;
+const money=n=>'K'+Number(n||0).toLocaleString('en-ZM',{maximumFractionDigits:2});
+const num=n=>Number(n||0).toLocaleString('en-ZM');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function setError(s){$('login-error').textContent=s||'';}
+function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout-btn').classList.remove('hidden');$('agent-label').textContent=agent.agent_code||'Active agent';}
+async function establishAgent(){
+ const profile=await getProfile();
+ if(!profile) throw new Error('Your agent profile could not be found. Sign in through the Agent Hub or contact the PhoneYa2 administrator.');
+ if(profile.role==='admin'){location.href='admin.html';return;}
+ if(!profile.agent_code) throw new Error('This account is not linked to an agent code.');
+ const row=await db.getOne('agents','agent_code=eq.'+encodeURIComponent(profile.agent_code)+'&active=eq.true');
+ if(!row) throw new Error('This agent account is inactive or could not be found.');
+ agent=row;showDashboard();await loadAll();
+}
+async function login(e){e.preventDefault();$('login-btn').disabled=true;$('login-btn').textContent='Checking account…';setError('');try{await auth.signIn($('email').value.trim(),$('password').value);await establishAgent();}catch(err){await auth.signOut();setError(err.message||'Sign in failed.');}finally{$('login-btn').disabled=false;$('login-btn').innerHTML='<i class="fa-solid fa-lock"></i> Sign in securely';}}
+async function loadAll(){
+ $('hello-title').textContent='Welcome back, '+(agent.full_name||'PhoneYa2 agent').split(' ')[0]+'.';
+ $('assistant-summary').textContent='Checking sales, leads, stock and store traffic…';
+ const results=await Promise.allSettled([
+  db.getAll('sales',{filter:'agent_code=eq.'+encodeURIComponent(agent.agent_code),order:'created_at.desc',limit:500}),
+  db.getAll('leads',{filter:'agent_code=eq.'+encodeURIComponent(agent.agent_code),order:'created_at.desc',limit:500}),
+  fetch('../content/products/catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Catalogue unavailable');return r.json()}),
+  fetch('/api/public-analytics',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Aggregate analytics unavailable');return r.json()})
+ ]);
+ sales=results[0].status==='fulfilled'&&Array.isArray(results[0].value)?results[0].value:[];
+ leads=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:[];
+ products=results[2].status==='fulfilled'&&Array.isArray(results[2].value)?results[2].value:[];
+ analytics=results[3].status==='fulfilled'?results[3].value:null;
+ renderStats();renderCharts();renderLeadPipeline();renderProducts();renderAnalytics();
+ $('last-updated').textContent='Last refreshed '+new Date().toLocaleString();
+}
+function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
+function isConfirmed(s){return ['confirmed','paid','delivered','complete','completed'].includes(String(s||'').toLowerCase());}
+function renderStats(){
+ const pending=sales.filter(s=>isPending(s.status));
+ const confirmed=sales.filter(s=>isConfirmed(s.status));
+ const active=leads.filter(l=>!['paid','delivered','lost','purchased'].includes(String(l.status||'').toLowerCase()));
+ $('kpi-sales').textContent=num(sales.length);$('kpi-pending').textContent=num(pending.length);
+ $('kpi-revenue').textContent=money(confirmed.reduce((a,s)=>a+Number(s.amount||0),0));
+ $('kpi-leads').textContent=num(active.length);
+ $('kpi-visitors').textContent=analytics?.summary?num(analytics.summary.active_users):'—';
+ const strongest=confirmed.length?'You have '+confirmed.length+' confirmed sale record'+(confirmed.length===1?'':'s')+'. Follow up on '+pending.length+' pending sale record'+(pending.length===1?'':'s')+' and keep proof of each completed transaction.':pending.length?'You have '+pending.length+' sale record(s) awaiting confirmation. Follow up with the store admin and keep prospecting while they are reviewed.':'No recorded sales yet. Pick one recommended in-stock product, share it with a clear use-case, and follow up with interested people today.';
+ const leadAction=active.length?' You also have '+active.length+' active lead(s)—contact the warmest lead first.':' Add new interested customers to your Leads tab in the Agent Hub so follow-ups do not get lost.';
+ $('assistant-summary').textContent=strongest+leadAction;
+}
+function drawChart(canvas,values,labels){
+ const c=$(canvas),ctx=c.getContext('2d'),dpr=window.devicePixelRatio||1,w=c.clientWidth||600,h=210;
+ c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+ const pad={l:34,r:8,t:14,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b,max=Math.max(1,...values);
+ ctx.font='11px system-ui';ctx.strokeStyle='#e9edf4';ctx.fillStyle='#778196';ctx.lineWidth=1;
+ for(let i=0;i<4;i++){const y=pad.t+ch*i/3;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(Math.round(max*(1-i/3)).toString(),2,y+4);}
+ const gap=10,bw=Math.max(8,(cw-gap*(values.length-1))/values.length);
+ values.forEach((v,i)=>{const x=pad.l+i*(bw+gap),bh=ch*v/max,y=pad.t+ch-bh;ctx.fillStyle='#ff6000';ctx.beginPath();const radius=Math.min(5,bw/2);ctx.roundRect(x,y,bw,Math.max(2,bh),[radius,radius,0,0]);ctx.fill();ctx.fillStyle='#667085';ctx.textAlign='center';ctx.fillText(labels[i],x+bw/2,h-9);});
+}
+function renderCharts(){
+ const now=new Date(),buckets=Array.from({length:6},(_,i)=>{const start=new Date(now);start.setDate(now.getDate()-(5-i)*7-6);start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+7);return {start,end,label:'W'+(i+1),count:0};});
+ sales.forEach(s=>{const d=new Date(s.created_at||s.confirmed_at||0);if(!Number.isFinite(d.getTime()))return;const b=buckets.find(x=>d>=x.start&&d<x.end);if(b)b.count++;});
+ drawChart('sales-chart',buckets.map(b=>b.count),buckets.map(b=>b.label));
+ $('sales-chart-note').textContent=sales.length?'Counts are based on sale-record creation dates, not guaranteed payment dates.':'No sale records yet. Your chart will fill as sales are recorded.';
+}
+function renderLeadPipeline(){
+ const stages=[['new','New'],['contacted','Contacted'],['interested','Interested'],['negotiating','Negotiating'],['ordered','Ordered'],['paid','Paid'],['delivered','Delivered'],['lost','Lost']];
+ const html=stages.map(([key,label])=>{const count=leads.filter(l=>String(l.status||'new').toLowerCase()===key).length;return '<div class="mini-row"><span>'+label+'</span><strong>'+count+'</strong></div>';}).join('');
+ $('lead-pipeline').innerHTML=html||'<div class="empty">No lead records yet.</div>';
+ const warm=leads.filter(l=>['interested','negotiating','ordered','contacted'].includes(String(l.status||'').toLowerCase()));
+ $('lead-insight').innerHTML='<strong>Assistant insight</strong><p>'+(warm.length?'You have '+warm.length+' lead(s) beyond the new stage. Prioritize people already interested or negotiating; ask one clear question and agree on the next follow-up time.':'Start with conversations, not mass messages. Add each genuinely interested person to your Leads tab and record a follow-up date.')+'</p>';
+}
+function productUrl(p){return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(p.slug||p.id||'');}
+function caption(p){return 'Check this out on PhoneYa2:\n\n'+p.title+'\n\nOn PhoneYa2. Your Number #1 Online Shopping Store 🛒 🛍️ in Zambia\nSmart CHOICES. Better CONNECTED 💙\n\n'+productUrl(p);}
+function productCard(p,label){const stock=Number(p.stock||0),img=p.image||'';return '<article class="product"><img src="'+esc(img)+'" alt="'+esc(p.title)+'" loading="lazy" onerror="this.style.visibility=\'hidden\'"><div class="product-body">'+(label?'<span class="tag">'+esc(label)+'</span>':'')+'<h3>'+esc(p.title)+'</h3><div class="price">'+money(p.price)+'</div><div class="stock">'+(stock>0?stock+' in stock':'Out of stock')+'</div><div class="product-actions"><button class="btn btn-green" data-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share</button><button class="btn btn-light" data-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy</button></div></div></article>';}
+function renderProducts(){
+ const available=products.filter(p=>Number(p.stock)>0&&Number(p.price)>0);
+ const recommended=[...available].sort((a,b)=>(Number(!!b.featured)-Number(!!a.featured))||(Number(b.stock>0)-Number(a.stock>0))||(Number(b.date_added?new Date(b.date_added).getTime():0)-Number(a.date_added?new Date(a.date_added).getTime():0))||Number(a.price)-Number(b.price)).slice(0,4);
+ const dated=[...available].sort((a,b)=>new Date(b.date_added||0)-new Date(a.date_added||0)).slice(0,8);
+ $('recommended-products').innerHTML=recommended.length?recommended.map((p,i)=>productCard(p,i===0?'START HERE':'RECOMMENDED')).join(''):'<div class="empty">No in-stock products were found in the catalogue.</div>';
+ $('new-products').innerHTML=dated.length?dated.map(p=>productCard(p,'IN STOCK')).join(''):'<div class="empty">No available stock found. Check the product catalogue.</div>';
+ document.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.share);if(!p)return;const url='https://wa.me/?text='+encodeURIComponent(caption(p));window.open(url,'_blank','noopener');}));
+ document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.copy);if(!p)return;try{await navigator.clipboard.writeText(caption(p));const old=b.innerHTML;b.innerHTML='<i class="fa-solid fa-check"></i> Copied';setTimeout(()=>b.innerHTML=old,1500);}catch{window.prompt('Copy this product message',caption(p));}}));
+}
+function renderAnalytics(){
+ if(!analytics?.summary){$('ga-note').textContent='Store analytics is unavailable right now. Product sharing and your agent records are still available.';$('ga-note').className='footer-note';return;}
+ $('ga-sessions').textContent=num(analytics.summary.sessions);$('ga-views').textContent=num(analytics.summary.page_views);$('ga-events').textContent=num(analytics.summary.events);
+ $('ga-note').textContent='Aggregate store-wide report. Updated '+new Date(analytics.generated_at||Date.now()).toLocaleString()+'. This does not identify visitors referred by you.';
+}
+$('login-form').addEventListener('submit',login);
+$('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}catch(e){$('assistant-summary').textContent='Some information could not be refreshed. Check your connection and try again.';}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh data';}});
+$('logout-btn').addEventListener('click',async()=>{await auth.signOut();location.reload();});
+window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))renderCharts();});
+document.addEventListener('DOMContentLoaded',async()=>{if(!window.auth||!window.db){setError('The agent service did not load. Open the Agent Hub and try again.');return;}if(auth.isLoggedIn()){try{await establishAgent();}catch(e){await auth.signOut();setError(e.message||'Please sign in again.');}}});
+})();
+</script>
+</body>
+</html>
