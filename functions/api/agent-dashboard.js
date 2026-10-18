@@ -1,76 +1,35 @@
-// Cloudflare Pages Function: validates an active agent code and returns only that agent's dashboard-safe aggregates.
+// Cloudflare Pages Function: validates the shared PY2-360 code and returns aggregate-only sales and lead metrics.
+// No customer names, phone numbers, emails, addresses, notes, or individual lead details are returned.
 const SUPABASE_URL = "https://kavwhkznlhtcwabatmru.supabase.co";
 
 export async function onRequestPost({ request, env }) {
-  const headers = {
-    "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store",
-    "x-content-type-options": "nosniff"
-  };
+  const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" };
   const reply = (status, body) => new Response(JSON.stringify(body), { status, headers });
-
-  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
-    return reply(503, { error: "Agent sign-in is not configured yet. Please contact the PhoneYa2 administrator." });
-  }
-
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) return reply(503, { error: "Sales/lead data is not configured: SUPABASE_SERVICE_ROLE_KEY is missing in Cloudflare Production." });
   let body;
-  try { body = await request.json(); }
-  catch { return reply(400, { error: "Enter your agent code." }); }
-
-  const code = String(body?.code || "").trim().toUpperCase();
-  if (!/^[A-Z0-9_-]{3,40}$/.test(code)) {
-    return reply(400, { error: "Enter a valid agent code." });
-  }
-
+  try { body = await request.json(); } catch { return reply(400, { error: "Enter the PY2-360 access code." }); }
+  if (String(body?.code || "").trim().toUpperCase() !== "PY2-360") return reply(401, { error: "Incorrect PY2-360 access code." });
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
   const query = async (table, params) => {
-    const url = new URL(`${SUPABASE_URL}/rest/v1/${table}`);
+    const url = new URL(SUPABASE_URL + "/rest/v1/" + table);
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-    const res = await fetch(url, {
-      headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" }
-    });
-    if (!res.ok) throw new Error(`Supabase query failed (${res.status})`);
+    const res = await fetch(url, { headers: { apikey: key, Authorization: "Bearer " + key, Accept: "application/json" } });
+    if (!res.ok) { const detail = await res.text().catch(() => ""); throw new Error(table + " query failed (" + res.status + "): " + detail.slice(0, 180)); }
     return res.json();
   };
-
   try {
-    const agents = await query("agents", {
-      agent_code: `eq.${code}`,
-      active: "eq.true",
-      select: "agent_code,full_name,agent_id,active",
-      limit: "1"
-    });
-    const agent = agents?.[0];
-    if (!agent) return reply(401, { error: "That code is not recognised or the agent account is inactive." });
-
     const [sales, leads] = await Promise.all([
-      query("sales", {
-        agent_code: `eq.${code}`,
-        select: "agent_code,created_at,confirmed_at,amount,status",
-        order: "created_at.desc",
-        limit: "500"
-      }),
-      query("leads", {
-        agent_code: `eq.${code}`,
-        select: "agent_code,status,created_at",
-        order: "created_at.desc",
-        limit: "500"
-      })
+      query("sales", { select: "created_at,confirmed_at,amount,status", order: "created_at.desc", limit: "5000" }),
+      query("leads", { select: "status,created_at", order: "created_at.desc", limit: "5000" })
     ]);
-
-    return reply(200, { agent, sales, leads });
+    return reply(200, { agent: { agent_code: "PY2-360", agent_id: "PY2-360", full_name: "PhoneYa2 Shared Desk" }, scope: "storewide_aggregate_only", sales: sales.map(s => ({ created_at: s.created_at, confirmed_at: s.confirmed_at, amount: Number(s.amount || 0), status: s.status || "pending" })), leads: leads.map(l => ({ status: l.status || "new", created_at: l.created_at })) });
   } catch (error) {
-    console.error("PY2-360 agent dashboard query failed:", error?.message || error);
-    return reply(503, { error: "Could not verify the code right now. Please try again shortly." });
+    console.error("PY2-360 aggregate dashboard query failed:", error?.message || error);
+    return reply(503, { error: "Could not load real sales/lead data. Check the agent Supabase project and service-role secret in Cloudflare Production." });
   }
 }
 
 export async function onRequest({ request }) {
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: { "allow": "POST, OPTIONS" } });
-  }
-  return new Response(JSON.stringify({ error: "Method not allowed" }), {
-    status: 405,
-    headers: { "content-type": "application/json", "allow": "POST, OPTIONS", "cache-control": "no-store" }
-  });
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "allow": "POST, OPTIONS" } });
+  return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "content-type": "application/json", "allow": "POST, OPTIONS", "cache-control": "no-store" } });
 }
