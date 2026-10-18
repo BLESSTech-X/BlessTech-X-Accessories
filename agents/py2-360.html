@@ -84,14 +84,19 @@ function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard
 async function establishAgent(code){
  const normalized=String(code||'').trim().toUpperCase();
  if(!normalized) throw new Error('Enter your agent code.');
- let row;
- try { row=await db.getOne('agents','agent_code=eq.'+encodeURIComponent(normalized)+'&active=eq.true'); }
- catch(err) { throw new Error('Could not verify the code. Please try again or contact PhoneYa2 support.'); }
- if(!row) throw new Error('That code is not recognised or the agent account is inactive.');
- agent=row;
+ let payload;
+ try {
+  const res=await fetch('/api/agent-dashboard',{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify({code:normalized})});
+  payload=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(payload.error||'Could not verify the code.');
+ } catch(err) {
+  throw new Error(err.message||'Could not verify the code. Please try again shortly.');
+ }
+ if(!payload.agent) throw new Error('That code is not recognised or the agent account is inactive.');
+ agent=payload.agent;
  sessionStorage.setItem('py2_agent_code',normalized);
  showDashboard();
- await loadAll();
+ await loadAll(payload);
 }
 async function login(e){
  e.preventDefault();
@@ -103,19 +108,19 @@ async function login(e){
  catch(err) { sessionStorage.removeItem('py2_agent_code'); $('login-screen').classList.remove('hidden'); $('dashboard').classList.add('hidden'); setError(err.message||'Could not sign in.'); }
  finally { $('login-btn').disabled=false; $('login-btn').innerHTML='<i class="fa-solid fa-arrow-right-to-bracket"></i> Continue'; }
 }
-async function loadAll(){
+async function loadAll(initialAgentData){
  $('hello-title').textContent='Welcome back, '+(agent.full_name||'PhoneYa2 agent').split(' ')[0]+'.';
  $('assistant-summary').textContent='Checking sales, leads, stock and store traffic…';
  const results=await Promise.allSettled([
-  db.getAll('sales',{filter:'agent_code=eq.'+encodeURIComponent(agent.agent_code),order:'created_at.desc',limit:500}),
-  db.getAll('leads',{filter:'agent_code=eq.'+encodeURIComponent(agent.agent_code),order:'created_at.desc',limit:500}),
+  initialAgentData?Promise.resolve(initialAgentData):fetch('/api/agent-dashboard',{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify({code:sessionStorage.getItem('py2_agent_code')||''})}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Agent data unavailable');return d;}),
   fetch('../content/products/catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Catalogue unavailable');return r.json()}),
   fetch('/api/public-analytics',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Aggregate analytics unavailable');return r.json()})
  ]);
- sales=results[0].status==='fulfilled'&&Array.isArray(results[0].value)?results[0].value:[];
- leads=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:[];
- products=results[2].status==='fulfilled'&&Array.isArray(results[2].value)?results[2].value:[];
- analytics=results[3].status==='fulfilled'?results[3].value:null;
+ const agentData=results[0].status==='fulfilled'?results[0].value:null;
+ sales=Array.isArray(agentData?.sales)?agentData.sales:[];
+ leads=Array.isArray(agentData?.leads)?agentData.leads:[];
+ products=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:[];
+ analytics=results[2].status==='fulfilled'?results[2].value:null;
  renderStats();renderCharts();renderLeadPipeline();renderProducts();renderAnalytics();
  $('last-updated').textContent='Last refreshed '+new Date().toLocaleString();
 }
