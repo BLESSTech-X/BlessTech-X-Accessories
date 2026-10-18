@@ -1364,15 +1364,18 @@ let shopScrollObserver = null;
 const initialProductQuery = new URLSearchParams(window.location.search).get('q') || '';
 searchQuery = initialProductQuery;
 
-function shareProduct(p) {
-  const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(p.slug);
-  const waText = encodeURIComponent(
-    'Check this out at PhoneYa2:\n\n' +
-    '*' + p.title + '*\n' +
-    'Price: *ZMW ' + p.price + '*\n' +
+function buildProductShareCaption(p, productUrl) {
+  const productName = p && p.title ? p.title : 'this product';
+  return 'Check this out on PhoneYa2:\n\n' +
+    productName + '\n\n' +
+    'On PhoneYa2. Your Number #1 Online Shopping Store 🛒 🛍️ in Zambia\n' +
     'Smart CHOICES. Better CONNECTED 💙\n\n' +
-    productUrl
-  );
+    productUrl;
+}
+function shareProduct(p) {
+  if (!p) return;
+  const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(p.slug);
+  const waText = encodeURIComponent(buildProductShareCaption(p, productUrl));
   window.open('https://wa.me/?text=' + waText, '_blank', 'noopener');
 }
 function shareFacebookProduct(p) {
@@ -1384,13 +1387,7 @@ function copyProductLink(slug, event) {
   if (event) event.stopPropagation();
   const p = allProducts.find(item => String(item.slug) === String(slug));
   const url = window.location.origin + '/product.html?id=' + encodeURIComponent(slug);
-  const productName = p && p.title ? p.title : 'this product';
-  const caption =
-    'Check this out on PhoneYa2:\n\n' +
-    productName + '\n\n' +
-    'On PhoneYa2. Your Number #1 Online Shopping Store 🛒 🛍️ in Zambia\n' +
-    'Smart CHOICES. Better CONNECTED 💙\n\n' +
-    url;
+  const caption = buildProductShareCaption(p, url);
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(caption)
       .then(() => showShareToast('✅ Product caption and link copied!'))
