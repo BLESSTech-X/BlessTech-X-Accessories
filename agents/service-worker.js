@@ -3,16 +3,9 @@
 // Caches static assets for offline use; network-first for API
 // ═══════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = 'phoneya2-v1';
+const CACHE_VERSION = 'phoneya2-py2-360-v2';
 const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './apply.html',
-  './status.html',
-  './check.html',
-  './verify.html',
-  './agent.html',
-  './admin.html',
+  './py2-360.html',
   './shared.css',
   './config.js',
   './manifest.json',
