@@ -5,7 +5,8 @@ const SUPABASE_URL = "https://kavwhkznlhtcwabatmru.supabase.co";
 export async function onRequestPost({ request, env }) {
   const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" };
   const reply = (status, body) => new Response(JSON.stringify(body), { status, headers });
-  // The agent tables already permit the public anon role. Use the existing publishable key as a fallback so the dashboard does not depend on an unconfigured service-role secret. Return aggregate fields only.\n  const publicKey = env.SUPABASE_ANON_KEY || "sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei";
+  // The agent tables already permit the public anon role. Use the existing publishable key as a fallback so the dashboard does not depend on an unconfigured service-role secret. Return aggregate fields only.
+  const publicKey = env.SUPABASE_ANON_KEY || "sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei";
   let body;
   try { body = await request.json(); } catch { return reply(400, { error: "Enter the PY2-360 access code." }); }
   if (String(body?.code || "").trim().toUpperCase() !== "PY2-360") return reply(401, { error: "Incorrect PY2-360 access code." });
