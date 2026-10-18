@@ -15,9 +15,13 @@ locale: "en"
 collections:
   - name: "products"
     label: "Products"
+    label_singular: "Product"
+    description: "Manage PhoneYa2 product listings, prices, stock, images and featured items."
     folder: "content/products"
     create: true
     slug: "{{slug}}"
+    summary: "{{title}} — K{{price}} · stock {{stock}}"
+    sortable_fields: ["title", "price", "stock", "date_added"]
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Date Added", name: "date_added", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}", required: false, hint: "Used to order New Arrivals newest first. Keep the default for new products." }
