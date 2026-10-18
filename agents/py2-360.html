@@ -52,21 +52,21 @@
 <div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Your daily growth assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh data</button></div>
 </div>
 <div class="kpis">
-<div class="kpi"><div class="kpi-top">Recorded sales <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>All records in the PhoneYa2 agent sales ledger</small></div>
-<div class="kpi"><div class="kpi-top">Awaiting confirmation <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Sales ledger awaiting confirmation</small></div>
-<div class="kpi"><div class="kpi-top">Confirmed value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Confirmed value in the sales ledger</small></div>
-<div class="kpi"><div class="kpi-top">Active leads <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Tracked leads across the agent ledger</small></div>
-<div class="kpi"><div class="kpi-top">Active users <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Google Analytics · last 30 days</small></div>
+<div class="kpi"><div class="kpi-top">Total store orders <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>Actual PhoneYa2 checkout orders</small></div>
+<div class="kpi"><div class="kpi-top">Pending orders <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Orders awaiting admin confirmation</small></div>
+<div class="kpi"><div class="kpi-top">Confirmed order value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Order value for confirmed, processing, shipped and delivered orders</small></div>
+<div class="kpi"><div class="kpi-top">Delivered orders <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Orders marked delivered</small></div>
+<div class="kpi"><div class="kpi-top">Store visitors <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Google Analytics · last 30 days</small></div>
 </div>
 <div class="grid">
-<section class="panel"><div class="panel-head"><div><h2>PhoneYa2 sales momentum</h2><p class="sub">Recorded sales by week from the agent sales ledger.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
-<section class="panel"><div class="panel-head"><div><h2>Lead pipeline</h2><p class="sub">Where your potential customers currently stand.</p></div></div><canvas id="lead-chart" class="chart" aria-label="Lead pipeline chart"></canvas><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
+<section class="panel"><div class="panel-head"><div><h2>PhoneYa2 order momentum</h2><p class="sub">Actual checkout orders created each week.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
+<section class="panel"><div class="panel-head"><div><h2>Order pipeline</h2><p class="sub">Real checkout orders grouped by their current order status.</p></div></div><canvas id="lead-chart" class="chart" aria-label="Lead pipeline chart"></canvas><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
 </div>
 <div class="grid"><section class="panel"><div class="panel-head"><div><h2>Stock availability at a glance</h2><p class="sub">Available units across your recommended products. Check live stock before promising delivery.</p></div></div><canvas id="stock-chart" class="chart" aria-label="Recommended product stock chart"></canvas><p class="footer-note">This is the published catalogue stock field, not a reservation of physical stock.</p></section><section class="panel"><div class="panel-head"><div><h2>Quick execution plan</h2><p class="sub">A repeatable daily sales routine.</p></div></div><div class="mini-list"><div class="mini-row"><span>1. Pick one in-stock product</span><span class="pill green">Choose</span></div><div class="mini-row"><span>2. Share with a use-case</span><span class="pill">Reach</span></div><div class="mini-row"><span>3. Start real conversations</span><span class="pill">Engage</span></div><div class="mini-row"><span>4. Log warm prospects as leads</span><span class="pill">Track</span></div><div class="mini-row"><span>5. Follow up and record outcomes</span><span class="pill green">Convert</span></div></div></section></div><section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-bolt" style="color:#ff6000"></i> Recommended to share</h2><p class="sub">In-stock products selected from availability, freshness and featured status. Share the product page directly.</p></div><span class="pill green">ACTION LIST</span></div><div id="recommended-products" class="product-row"><div class="empty">Loading products…</div></div></section>
 <section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-sparkles" style="color:#ff6000"></i> New stock row</h2><p class="sub">Uses the CMS date_added/created_at field when present. Products without dates fall back to the available catalogue order, so mark new arrivals with a date in the CMS for accurate sorting.</p></div><a href="../shop.html" class="btn btn-light">Open shop <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><div id="new-products" class="product-row"><div class="empty">Loading newest products…</div></div></section>
 <div class="grid">
 <section class="panel"><div class="panel-head"><div><h2>Store traffic snapshot</h2><p class="sub">Aggregate Google Analytics data for the whole PhoneYa2 store—not your personal referral traffic.</p></div><span class="pill gray">30 DAYS</span></div><div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0"><div><div class="sub">Sessions</div><strong id="ga-sessions">—</strong></div><div><div class="sub">Page views</div><strong id="ga-views">—</strong></div><div><div class="sub">Events</div><strong id="ga-events">—</strong></div></div><div id="ga-note" class="footer-note">Connecting to the store's aggregate analytics…</div></section>
-<section class="panel"><div class="panel-head"><div><h2>Order visibility</h2><p class="sub">What this dashboard can safely show right now.</p></div></div><div class="notice"><strong><i class="fa-solid fa-shield-halved"></i> Store checkout orders are not yet assigned to agents</strong>Pending figures above refer to your agent-submitted sales, not every customer checkout order. The store's order system currently does not reliably link a checkout to an agent code. Customer names, phone numbers and addresses are intentionally not exposed in this shared agent view.</div><p class="footer-note">Next integration: capture and validate each agent's referral code at checkout, then show only the orders attributed to that agent and hide customer contact details until the store owner authorizes the workflow.</p></section>
+<section class="panel"><div class="panel-head"><div><h2>Order visibility</h2><p class="sub">Actual store-wide checkout metrics from the Command Centre's order system.</p></div></div><div class="notice"><strong><i class="fa-solid fa-shield-halved"></i> Checkout orders are not yet attributed to individual agents</strong>These are real store-wide checkout orders, not personal agent commissions. The checkout system does not yet reliably attach an agent referral code. Customer names, phone numbers and addresses are intentionally not exposed in this shared view.</div><p class="footer-note">Next growth upgrade: add referral tracking to product links and checkout so future orders can be attributed to the agent who generated them.</p></section>
 </div>
 <p class="footer-note">Numbers update from connected systems when available. Store traffic is aggregate and delayed by analytics processing. Product recommendations are rule-based—not a guarantee of sales. <span id="last-updated"></span></p>
 </section>
@@ -91,7 +91,7 @@ async function establishAgent(code){
  showDashboard();
  await loadAll();
 }
-async function login(e){
+async async function login(e){
  e.preventDefault();
  const code=$('agent-code').value.trim().toUpperCase();
  $('login-btn').disabled=true;
@@ -124,16 +124,20 @@ async function loadAll(initialAgentData){
 function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
 function isConfirmed(s){return ['confirmed','paid','delivered','complete','completed'].includes(String(s||'').toLowerCase());}
 function renderStats(){
- const pending=sales.filter(s=>isPending(s.status));
- const confirmed=sales.filter(s=>isConfirmed(s.status));
- const active=leads.filter(l=>!['paid','delivered','lost','purchased'].includes(String(l.status||'').toLowerCase()));
- $('kpi-sales').textContent=agentDataAvailable?num(sales.length):'—';$('kpi-pending').textContent=agentDataAvailable?num(pending.length):'—';
+ const pending=sales.filter(s=>String(s.status||'').toLowerCase()==='pending');
+ const confirmed=sales.filter(s=>['confirmed','processing','shipped','delivered'].includes(String(s.status||'').toLowerCase()));
+ const delivered=sales.filter(s=>String(s.status||'').toLowerCase()==='delivered');
+ $('kpi-sales').textContent=agentDataAvailable?num(sales.length):'—';
+ $('kpi-pending').textContent=agentDataAvailable?num(pending.length):'—';
  $('kpi-revenue').textContent=agentDataAvailable?money(confirmed.reduce((a,s)=>a+Number(s.amount||0),0)):'—';
- $('kpi-leads').textContent=agentDataAvailable?num(active.length):'—';
+ $('kpi-leads').textContent=agentDataAvailable?num(delivered.length):'—';
  $('kpi-visitors').textContent=analytics?.summary?num(analytics.summary.active_users):'—';
- const strongest=confirmed.length?'You have '+confirmed.length+' confirmed sale record'+(confirmed.length===1?'':'s')+'. Follow up on '+pending.length+' pending sale record'+(pending.length===1?'':'s')+' and keep proof of each completed transaction.':pending.length?'You have '+pending.length+' sale record(s) awaiting confirmation. Follow up with the store admin and keep prospecting while they are reviewed.':'No recorded sales yet. Pick one recommended in-stock product, share it with a clear use-case, and follow up with interested people today.';
- const leadAction=active.length?' You also have '+active.length+' active lead(s)—contact the warmest lead first.':' Add new interested customers to your Leads tab in the Agent Hub so follow-ups do not get lost.';
- $('assistant-summary').textContent=strongest+leadAction;
+ const cancelled=sales.filter(s=>String(s.status||'').toLowerCase()==='cancelled').length;
+ let summary='';
+ if(!agentDataAvailable) summary='Order data is unavailable. Check the live data warning below; unavailable data is not reported as zero.';
+ else if(!sales.length) summary='The live order system returned zero checkout orders. That is a real zero for the connected order table, not an agent-sales placeholder. Choose one product to promote and track the enquiries it generates.';
+ else summary='PhoneYa2 has '+sales.length+' checkout order(s) in the connected order system. '+pending.length+' are pending, '+confirmed.length+' are confirmed/in fulfilment, and '+delivered.length+' are delivered. '+(cancelled?'Review '+cancelled+' cancelled order(s) for recurring reasons.':'No cancelled orders are recorded in the loaded order data.')+' These are store-wide figures, not your personal attributed sales.';
+ $('assistant-summary').textContent=summary;
 }
 function drawChart(canvas,values,labels){
  const c=$(canvas),ctx=c.getContext('2d'),dpr=window.devicePixelRatio||1,w=c.clientWidth||600,h=210;
@@ -151,15 +155,15 @@ function renderCharts(){
  $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':sales.length?'Counts are based on sale-record creation dates, not guaranteed payment dates.':'No sale records yet. Your chart will fill as sales are recorded.';
 }
 function renderLeadPipeline(){
- const stages=[['new','New'],['contacted','Contacted'],['interested','Interested'],['negotiating','Negotiating'],['ordered','Ordered'],['paid','Paid'],['delivered','Delivered'],['lost','Lost']];
- const aliases={new:['new'],contacted:['contacted','followup','follow_up','follow-up'],interested:['interested','warm'],negotiating:['negotiating','in_negotiation'],ordered:['ordered','purchased','purchase'],paid:['paid','confirmed'],delivered:['delivered','complete','completed'],lost:['lost','closed_lost']};
- const stageCounts=stages.map(([key])=>leads.filter(l=>(aliases[key]||[key]).includes(String(l.status||'new').toLowerCase())).length);drawChart('lead-chart',stageCounts,stages.map(([key])=>({new:'New',contacted:'Talk',interested:'Warm',negotiating:'Deal',ordered:'Order',paid:'Paid',delivered:'Done',lost:'Lost'}[key])));const html=stages.map(([key,label])=>{const count=leads.filter(l=>(aliases[key]||[key]).includes(String(l.status||'new').toLowerCase())).length;return '<div class="mini-row"><span>'+label+'</span><strong>'+count+'</strong></div>';}).join('');
- $('lead-pipeline').innerHTML=agentDataAvailable?(html||'<div class="empty">No lead records yet.</div>'):'<div class="empty">Lead data unavailable — check the live data warning above.</div>';
- if(!agentDataAvailable){$('lead-insight').innerHTML='<strong>Data unavailable</strong><p>The dashboard could not load the lead ledger. It will not present a failed request as a genuine zero.</p>';return;}
- const warm=leads.filter(l=>['interested','negotiating','ordered','contacted'].includes(String(l.status||'').toLowerCase()));
- $('lead-insight').innerHTML='<strong>Assistant insight</strong><p>'+(warm.length?'You have '+warm.length+' lead(s) beyond the new stage. Prioritize people already interested or negotiating; ask one clear question and agree on the next follow-up time.':'Start with conversations, not mass messages. Add each genuinely interested person to your Leads tab and record a follow-up date.')+'</p>';
+ const stages=[['pending','Pending'],['confirmed','Confirmed'],['processing','Processing'],['shipped','Shipped'],['delivered','Delivered'],['cancelled','Cancelled']];
+ const counts=stages.map(([status])=>sales.filter(o=>String(o.status||'').toLowerCase()===status).length);
+ drawChart('lead-chart',agentDataAvailable?counts:[],stages.map(s=>s[1]));
+ $('lead-pipeline').innerHTML=!agentDataAvailable?'<div class="empty">Order data unavailable — check the live data warning above.</div>':stages.map(([status,label],i)=>'<div class="mini-row"><span>'+label+'</span><strong>'+counts[i]+'</strong></div>').join('');
+ if(!agentDataAvailable){$('lead-insight').innerHTML='<strong>Order data unavailable</strong><p>The dashboard could not retrieve the live checkout orders. It will not treat a failed request as zero.</p>';return;}
+ const pending=counts[0],cancelled=counts[5],delivered=counts[4];
+ $('lead-insight').innerHTML='<strong>Operational insight</strong><p>'+(pending?'There '+(pending===1?'is ':'are ')+pending+' pending order(s). The store admin should confirm availability and delivery expectations. ':'No pending orders are currently recorded. ')+(cancelled?' Review '+cancelled+' cancelled order(s) for repeated issues. ':'')+(delivered?' '+delivered+' order(s) are marked delivered.':'')+'</p>';
 }
-function productUrl(p){return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(p.slug||p.id||'');}
+function productUrl(p){const slug=String(p.slug||p.id||'product');return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(slug)+'&utm_source=py2_360&utm_medium=agent_share&utm_campaign='+encodeURIComponent(slug);}
 function caption(p){return 'Check this out on PhoneYa2:\n\n'+p.title+'\n\nOn PhoneYa2. Your Number #1 Online Shopping Store 🛒 🛍️ in Zambia\nSmart CHOICES. Better CONNECTED 💙\n\n'+productUrl(p);}
 function productCard(p,label){const stock=Number(p.stock||0),img=p.image||'';return '<article class="product"><img src="'+esc(img)+'" alt="'+esc(p.title)+'" loading="lazy" onerror="this.style.visibility=\'hidden\'"><div class="product-body">'+(label?'<span class="tag">'+esc(label)+'</span>':'')+'<h3>'+esc(p.title)+'</h3><div class="price">'+money(p.price)+'</div><div class="stock">'+(stock>0?stock+' in stock':'Out of stock')+'</div><div class="product-actions"><button class="btn btn-green" data-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share</button><button class="btn btn-light" data-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy</button></div></div></article>';}
 function renderProducts(){
