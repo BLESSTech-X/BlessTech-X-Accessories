@@ -6,7 +6,7 @@
 const SB_URL  = 'https://kavwhkznlhtcwabatmru.supabase.co';
 const SB_KEY  = 'sb_publishable_pJzzNclsEPNq1bev2zVN5g_z7eOa5ei';
 
-window.ADMIN_PASSWORD = 'blesstech2026admin'; // legacy — will be phased out
+// Legacy hardcoded admin password removed; PY2-360 uses server-side agent-code validation.
 
 const CONFIG = {
   brandName:    'PhoneYa2-ZM',
