@@ -1472,17 +1472,36 @@ window.openShareSheet = function() {
 document.getElementById('ss-close').addEventListener('click', () => { document.getElementById('share-overlay').classList.remove('open'); document.body.style.overflow=''; });
 document.getElementById('share-overlay').addEventListener('click', e => { if (e.target===e.currentTarget) { e.currentTarget.classList.remove('open'); document.body.style.overflow=''; } });
 document.getElementById('btn-copy-link').addEventListener('click', () => {
-  navigator.clipboard.writeText(window.location.href).catch(()=>{});
-  showToast('🔗 Link copied!');
+  copyProductShareText();
   document.getElementById('share-overlay').classList.remove('open');
   document.body.style.overflow='';
 });
 function buildProductShareCaption(product, productUrl) {
-  const title = product && product.title ? product.title : 'Product';
-  return '*' + title + '*\n\n' +
-    '🛍️ Discover your next favourite affordable gadget with PhoneYa2.\n\n' +
-    '📲 View product & order here:\n' + productUrl + '\n\n' +
-    '*Smart CHOICES. Better CONNECTED* 💙';
+  const title = product && product.title ? product.title : 'this product';
+  return 'Check this out on PhoneYa2:\n\n' +
+    title + '\n\n' +
+    'On PhoneYa2. Your Number #1 Online Shopping Store 🛒 🛍️ in Zambia\n' +
+    'Smart CHOICES. Better CONNECTED 💙\n\n' +
+    productUrl;
+}
+function copyProductShareText() {
+  if (!currentProd) return;
+  const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(currentProd.slug);
+  const caption = buildProductShareCaption(currentProd, productUrl);
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = caption; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    } catch (e) {}
+    showToast('✅ Product caption and link copied!');
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(caption).then(
+      () => showToast('✅ Product caption and link copied!'),
+      fallback
+    );
+  } else fallback();
 }
 
 window.shareProductWhatsApp = function() {
@@ -1497,12 +1516,12 @@ function buildShareOpts() {
   const productUrl = window.location.origin + '/product.html?id=' + encodeURIComponent(currentProd.slug);
   const encodedUrl = encodeURIComponent(productUrl);
   const waText = encodeURIComponent(buildProductShareCaption(currentProd, productUrl));
-  const txt = encodeURIComponent(currentProd.title + ' | PhoneYa2 — Smart CHOICES. Better CONNECTED 💙');
+  const txt = encodeURIComponent(buildProductShareCaption(currentProd, '').replace(/\n\n$/, ''));
   const opts = [
     {lbl:'WhatsApp',  icon:'fa-brands fa-whatsapp',   bg:'#25d366', href:'https://wa.me/?text='+waText},
     {lbl:'Facebook',  icon:'fa-brands fa-facebook-f',  bg:'#1877f2', href:'https://www.facebook.com/sharer/sharer.php?u='+encodedUrl},
     {lbl:'X / Twitter',icon:'fa-brands fa-x-twitter', bg:'#000',    href:'https://twitter.com/intent/tweet?text='+txt+'&url='+encodedUrl},
-    {lbl:'Copy Link', icon:'fa-solid fa-link',         bg:'var(--c5)',action:'copy', copyUrl: productUrl}
+    {lbl:'Copy Caption & Link', icon:'fa-solid fa-link', bg:'var(--c5)',action:'copy', copyUrl: productUrl}
   ];
   const container = document.getElementById('share-opts');
   container.innerHTML = '';
@@ -1511,9 +1530,7 @@ function buildShareOpts() {
     d.innerHTML='<div class="so-icon" style="background:'+o.bg+'"><i class="'+o.icon+'"></i></div><span class="so-lbl">'+o.lbl+'</span>';
     d.addEventListener('click', () => {
       if (o.action==='copy') {
-        const copyUrl = o.copyUrl || window.location.href;
-        navigator.clipboard.writeText(copyUrl).catch(()=>{ try { const ta=document.createElement('textarea'); ta.value=copyUrl; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } catch(e){} });
-        showToast('🔗 Link copied!');
+        copyProductShareText();
       } else {
         window.open(o.href,'_blank','noopener');
       }
@@ -1686,7 +1703,7 @@ function renderProduct(p) {
         <div class="share-btns">
           <button class="sh-btn sh-wa" onclick="shareProductWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
           <button class="sh-btn sh-fb" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href),'_blank','noopener')"><i class="fa-brands fa-facebook-f"></i> Facebook</button>
-          <button class="sh-btn sh-cp" onclick="navigator.clipboard.writeText(window.location.href).catch(()=>{});showToast('🔗 Link copied!')"><i class="fa-solid fa-link"></i> Copy Link</button>
+          <button class="sh-btn sh-cp" onclick="copyProductShareText()"><i class="fa-solid fa-link"></i> Copy Caption</button>
         </div>
       </div>
       <div class="desc-block">
