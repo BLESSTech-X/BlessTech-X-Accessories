@@ -81,22 +81,15 @@ const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setError(s){$('login-error').textContent=s||'';}
 function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout-btn').classList.remove('hidden');$('agent-label').textContent=agent.agent_code||'Active agent';}
+// PY2-360 access code is checked locally; login does not call a database or authentication API.
+const PY2_360_ACCESS_CODE = 'PY2-360';
 async function establishAgent(code){
  const normalized=String(code||'').trim().toUpperCase();
- if(!normalized) throw new Error('Enter your agent code.');
- let payload;
- try {
-  const res=await fetch('/api/agent-dashboard',{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify({code:normalized})});
-  payload=await res.json().catch(()=>({}));
-  if(!res.ok) throw new Error(payload.error||'Could not verify the code.');
- } catch(err) {
-  throw new Error(err.message||'Could not verify the code. Please try again shortly.');
- }
- if(!payload.agent) throw new Error('That code is not recognised or the agent account is inactive.');
- agent=payload.agent;
+ if(normalized!==PY2_360_ACCESS_CODE) throw new Error('Incorrect access code. Try again.');
+ agent={agent_code:'PY2-360',agent_id:'PY2-360',full_name:'PhoneYa2 Agent'};
  sessionStorage.setItem('py2_agent_code',normalized);
  showDashboard();
- await loadAll(payload);
+ await loadAll();
 }
 async function login(e){
  e.preventDefault();
@@ -182,7 +175,7 @@ $('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.d
 $('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_agent_code');location.reload();});
 window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))renderCharts();});
 document.addEventListener('DOMContentLoaded',async()=>{
- if(!window.db){setError('The agent service did not load. Refresh and try again.');return;}
+ 
  const savedCode=sessionStorage.getItem('py2_agent_code');
  if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode);}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your agent code again.');}}
 });
