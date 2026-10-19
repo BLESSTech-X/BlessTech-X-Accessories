@@ -39,8 +39,7 @@ export async function onRequestPost({request,env}) {
   let confirmedOrderValue=0,totalOrders=0;
   for(const row of rows){
    const status=String(row.status||"pending").toLowerCase();
-   if(Object.prototype.hasOwnProperty.call(statusCounts,status)) statusCounts[status]++;
-   else statusCounts[status]=1;
+   statusCounts[status]=(Number(statusCounts[status])||0)+1;
    totalOrders++;
    if(["confirmed","processing","shipped","delivered"].includes(status)) confirmedOrderValue+=Number(row.total_amount||0);
    const created=Date.parse(row.created_at||"");
