@@ -1646,11 +1646,12 @@
 
   function openLiveAdPreview(ad) {
     var modal = $('py2-live-ad-modal'); if (!modal || !ad) return;
-    var publicProfileSlug = profile && profile.slug ? profile.slug : '';
-    var url = publicProfileSlug ? (window.location.origin + '/b/' + encodeURIComponent(publicProfileSlug) + '?preview=' + Date.now()) : '';
+    // Ad preview must show this specific public ad, not the business profile or site homepage.
+    var adSlug = ad.slug ? String(ad.slug).trim() : '';
+    var url = adSlug ? (window.location.origin + '/ad/' + encodeURIComponent(adSlug) + '?preview=' + Date.now()) : '';
     $('py2-live-ad-title').textContent = ad.title || 'Live advertisement preview';
-    $('py2-live-ad-subtitle').textContent = url ? 'Your business mini-site · includes your public profile and all approved ads' : 'Your public business profile is still being created. Save your profile first.';
-    $('py2-ad-preview-open').href = url ? (window.location.origin + '/b/' + encodeURIComponent(publicProfileSlug)) : '/advertiser/'; $('py2-ad-preview-open').style.display = url ? '' : 'none';
+    $('py2-live-ad-subtitle').textContent = url ? 'Previewing this specific public advertisement' : 'This ad does not have a public URL yet. Showing its creative preview below.';
+    $('py2-ad-preview-open').href = url || '#'; $('py2-ad-preview-open').style.display = url ? '' : 'none';
     var frame = $('py2-live-ad-frame');
     if (url) frame.src = url;
     else {
