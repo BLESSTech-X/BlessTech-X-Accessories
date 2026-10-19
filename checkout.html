@@ -258,6 +258,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   let orderReviewed = false;
   let orderSubmitting = false;
   let checkoutStartedTracked = false;
+  let memoryIdempotency = null;
   function trackEvent(name, params){
     if(typeof window.gtag === "function") window.gtag("event", name, params || {});
   }
@@ -282,7 +283,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     if(!response.ok)throw new Error("Could not load the product catalog.");
     const slugs=await response.json();if(!Array.isArray(slugs))throw new Error("Product catalog format is invalid.");
     const results=await Promise.allSettled(slugs.map(async slug=>{
-      if(typeof slug!=="string"||!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug))return null;
+      if(typeof slug!=="string"||!slug||slug.length>101||slug==="."||slug===".."||/[\/\\\u0000-\u001f\u007f?#]/.test(slug))return null;
       const r=await fetch("/content/products/"+slug+".md");if(!r.ok)return null;
       return parseMarkdown(await r.text(),slug);
     }));
@@ -398,10 +399,33 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
     const body={
       name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
-      items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity}))
+      items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity})).sort((a,b)=>a.slug.localeCompare(b.slug))
     };
+    const idempotencyStorageKey="phoneya2-order-idempotency-v1";
+    let idempotencyKey="";
     try{
-      const response=await fetch("/api/orders",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+      const fingerprint=JSON.stringify(body);
+      let saved=null;
+      try{saved=JSON.parse(sessionStorage.getItem(idempotencyStorageKey)||"null");}catch{}
+      if(saved&&saved.fingerprint===fingerprint&&typeof saved.key==="string") idempotencyKey=saved.key;
+      if(!idempotencyKey&&memoryIdempotency&&memoryIdempotency.fingerprint===fingerprint) idempotencyKey=memoryIdempotency.key;
+      if(!idempotencyKey){
+        const bytes=new Uint8Array(16);
+        if(window.crypto&&typeof window.crypto.getRandomValues==="function") window.crypto.getRandomValues(bytes);
+        else throw new Error("Secure checkout is unavailable in this browser. Please use an updated browser.");
+        bytes[6]=(bytes[6]&0x0f)|0x40;bytes[8]=(bytes[8]&0x3f)|0x80;
+        const hex=[...bytes].map(value=>value.toString(16).padStart(2,"0")).join("");
+        idempotencyKey=hex.slice(0,8)+"-"+hex.slice(8,12)+"-"+hex.slice(12,16)+"-"+hex.slice(16,20)+"-"+hex.slice(20);
+      }
+      memoryIdempotency={fingerprint,key:idempotencyKey};
+      try{sessionStorage.setItem(idempotencyStorageKey,JSON.stringify(memoryIdempotency));}catch{}
+    }catch(error){
+      orderSubmitting=false;button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';
+      notice(error.message||"Secure checkout could not prepare this request. Please try again.","error");return;
+    }
+    const requestBody={...body,idempotency_key:idempotencyKey};
+    try{
+      const response=await fetch("/api/orders",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(requestBody)});
       const result=await response.json().catch(()=>({}));
       if(!response.ok||!result.success)throw new Error(result.error||"Your order could not be submitted.");
       trackEvent("purchase",{
@@ -410,7 +434,8 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
         currency:"ZMW",
         items:analyticsItems()
       });
-      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p><p class="small">Delivery is usually within 24 hours. In some circumstances, please allow up to 3 days.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">Your order is saved. If you do not receive an account invitation, contact PhoneYa2 to get help activating access to your order history. <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
+      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p>'+(result.replayed?'<p class="small">This submission matched an existing order. No duplicate order or repeat notification was created. Keep this order number if you need help.</p>':'<p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p><p class="small">Delivery is usually within 24 hours. In some circumstances, please allow up to 3 days.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">Your order is saved. If you do not receive an account invitation, contact PhoneYa2 to get help activating access to your order history. <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>"))+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
+      memoryIdempotency=null;try{sessionStorage.removeItem(idempotencyStorageKey);}catch{}
       cart.clear();renderCart();
     }catch(error){orderReviewed=false;orderSubmitting=false;notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
   });
