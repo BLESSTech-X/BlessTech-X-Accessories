@@ -14,8 +14,6 @@ const staticPages = [
   { loc: '/contact.html', priority: 0.7, changefreq: 'monthly' },
   { loc: '/privacy-policy.html', priority: 0.4, changefreq: 'yearly' },
   { loc: '/return-policy.html', priority: 0.4, changefreq: 'yearly' },
-  { loc: '/privacy-policy.html', priority: 0.4, changefreq: 'yearly' },
-  { loc: '/return-policy.html', priority: 0.4, changefreq: 'yearly' },
   { loc: '/blog.html', priority: 0.9, changefreq: 'daily' },
 ];
 
@@ -50,7 +48,9 @@ try {
     }
   }
 
-  const allEntries = [...staticPages, ...productEntries, ...blogEntries];
+  // Keep every canonical location unique even if a future source accidentally repeats one.
+  const combinedEntries = [...staticPages, ...productEntries, ...blogEntries];
+  const allEntries = [...new Map(combinedEntries.map(entry => [entry.loc, entry])).values()];
 
   const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
   const xmlNamespace = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
