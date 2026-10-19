@@ -29,6 +29,22 @@ assert.ok(Array.isArray(blogIndex), 'Published blog index must be an array.');
 const blogSlugs = blogIndex.filter(post => post && post.slug).map(post => post.slug);
 assert.equal(new Set(blogSlugs).size, blogSlugs.length, 'Published blog index must not contain duplicate slugs.');
 
+const checkoutHtml = fs.readFileSync(path.join(root, 'checkout.html'), 'utf8');
+const cartHtml = fs.readFileSync(path.join(root, 'cart.html'), 'utf8');
+const orderApi = fs.readFileSync(path.join(root, 'functions', 'api', 'orders.js'), 'utf8');
+const idempotencySql = fs.readFileSync(path.join(root, 'supabase', 'order-idempotency-migration.sql'), 'utf8');
+
+assert.ok(checkoutHtml.includes('phoneya2-order-idempotency-v1'), 'Checkout must persist its idempotency key for retries.');
+assert.ok(checkoutHtml.includes('result.replayed'), 'Checkout must explain when a retry recovered an existing order.');
+assert.ok(!checkoutHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Checkout must not reject valid Unicode product slugs.');
+assert.ok(!cartHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Cart must not reject valid Unicode product slugs.');
+assert.ok(orderApi.includes('request_fingerprint&limit=1'), 'Order API must look up an existing request before current catalogue validation.');
+assert.ok(orderApi.includes('p_request_fingerprint: requestFingerprint'), 'Order API must pass its request fingerprint to the database transaction.');
+assert.ok(idempotencySql.includes('pg_advisory_xact_lock'), 'Database order creation must serialize simultaneous retries.');
+assert.ok(idempotencySql.includes('CREATE UNIQUE INDEX IF NOT EXISTS orders_idempotency_key_unique'), 'Database must enforce unique idempotency keys.');
+assert.ok(idempotencySql.includes('ADD COLUMN IF NOT EXISTS request_fingerprint TEXT'), 'Database migration must store the request fingerprint.');
+assert.ok(!idempotencySql.includes('DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT);'), 'Migration must preserve the legacy RPC signature for a controlled rollback.');
+
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const locations = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1]);
 assert.ok(locations.length > 0, 'Sitemap must contain at least one URL.');
@@ -67,6 +83,8 @@ function parseInlineScripts(relativePath) {
 const inlineScriptCount = [
   'agents/py2-360.html',
   'admin/command-center.html',
+  'checkout.html',
+  'cart.html',
   'advertiser/index.html',
   'ads-admin/index.html'
 ].reduce((total, file) => total + parseInlineScripts(file), 0);
@@ -76,3 +94,4 @@ console.log('Products verified: ' + productIndex.length);
 console.log('Published blog posts verified: ' + blogSlugs.length);
 console.log('Unique sitemap URLs verified: ' + locations.length);
 console.log('Core inline JavaScript blocks parsed: ' + inlineScriptCount);
+console.log('Checkout idempotency and Unicode slug safeguards verified.');
