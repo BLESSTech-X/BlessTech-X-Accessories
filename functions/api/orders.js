@@ -56,7 +56,7 @@ async function fetchStaticAsset(context, path) {
   return fetch(url);
 }
 async function loadProduct(context, slug) {
-  if (!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug)) return null;
+  if (!/^[\p{L}\p{N}\p{M}\p{S}][\p{L}\p{N}\p{M}\p{S}-]{0,100}$/u.test(slug)) return null;
   const indexResponse = await fetchStaticAsset(context, "/content/products/index.json");
   if (!indexResponse.ok) throw new Error("Product catalog is temporarily unavailable.");
   const slugs = await indexResponse.json();
