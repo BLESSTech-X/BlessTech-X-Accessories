@@ -40,6 +40,7 @@ assert.ok(checkoutHtml.includes('Your order may already be saved. Keep these det
 assert.ok(!checkoutHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Checkout must not reject valid Unicode product slugs.');
 assert.ok(!cartHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Cart must not reject valid Unicode product slugs.');
 assert.ok(orderApi.includes('request_fingerprint&limit=1'), 'Order API must look up an existing request before current catalogue validation.');
+assert.ok(orderApi.includes('could not confirm whether your order was saved'), 'Order API must not falsely claim a failed response means no order exists.');
 assert.ok(orderApi.includes('p_request_fingerprint: requestFingerprint'), 'Order API must pass its request fingerprint to the database transaction.');
 assert.ok(orderApi.includes('different order details') && orderApi.includes('}, 409);'), 'Order API must return a conflict when a key is reused with different details.');
 assert.ok(idempotencySql.includes('pg_advisory_xact_lock'), 'Database order creation must serialize simultaneous retries.');
