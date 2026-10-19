@@ -2795,7 +2795,7 @@
         var tb = $('topbar-biz');
         if (tb) tb.textContent = advertiser.business_name;
         showScreen('screen-dashboard');
-        switchTab(new URLSearchParams(window.location.search).get('view') || 'ads', false);
+        switchTab(new URLSearchParams(window.location.search).get('view') || 'dashboard', false);
       })
       .catch(function (err) {
         var et = $('screen-error-text');
