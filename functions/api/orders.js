@@ -20,6 +20,10 @@ function getSecret(env, ...keys) {
   for (const key of keys) if (env[key]) return env[key];
   return "";
 }
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
 async function supabaseFetch(env, path, init = {}) {
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
   const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
@@ -376,6 +380,37 @@ export async function onRequest(context) {
       }
       if (quantities.size > MAX_LINES) return json({ error: "Too many product lines." }, 400);
 
+      const idempotencyKey = cleanText(body.idempotency_key, 80);
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
+        return json({ error: "Your checkout session needs refreshing. Please reload checkout and try again." }, 400);
+      }
+      const requestFingerprint = await sha256Hex(JSON.stringify({
+        name, email, phone, address, note,
+        items: [...quantities.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([slug, quantity]) => ({ slug, quantity }))
+      }));
+      // Check for an already-created order before looking up today's catalogue.
+      // This lets a retry recover the original order even if a product was later edited or unpublished.
+      const existingResponse = await supabaseFetch(env,
+        "/rest/v1/orders?idempotency_key=eq." + encodeURIComponent(idempotencyKey) +
+        "&select=id,order_number,total_amount,request_fingerprint&limit=1"
+      );
+      if (!existingResponse.ok) {
+        console.error("PhoneYa2 idempotency lookup failed:", existingResponse.status);
+        return json({ error: "Order verification is temporarily unavailable. Please try again shortly; do not place a second order." }, 503);
+      }
+      const existingRows = await existingResponse.json();
+      if (!Array.isArray(existingRows)) return json({ error: "Order verification returned an unexpected response. Please try again shortly." }, 503);
+      if (existingRows.length) {
+        const existing = existingRows[0];
+        if (existing.request_fingerprint !== requestFingerprint) {
+          return json({ error: "This checkout request key belongs to different order details. Please refresh checkout and review your order." }, 409);
+        }
+        return json({
+          success: true, order_number: existing.order_number, total_amount: existing.total_amount,
+          currency: "ZMW", notification_sent: false, account_invited: false, replayed: true
+        }, 200);
+      }
+
       const items = [];
       for (const [slug, quantity] of quantities) {
         const product = await loadProduct(context, slug);
@@ -391,10 +426,6 @@ export async function onRequest(context) {
         });
       }
 
-      const idempotencyKey = cleanText(body.idempotency_key, 80);
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
-        return json({ error: "Your checkout session needs refreshing. Please reload checkout and try again." }, 400);
-      }
       const rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
         method: "POST",
         body: JSON.stringify({
@@ -404,6 +435,7 @@ export async function onRequest(context) {
           p_delivery_address: address,
           p_items: items,
           p_idempotency_key: idempotencyKey,
+          p_request_fingerprint: requestFingerprint,
           p_customer_note: note
         })
       });
