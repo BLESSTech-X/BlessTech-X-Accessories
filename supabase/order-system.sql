@@ -89,8 +89,10 @@ BEGIN
   IF char_length(v_customer_note) > 1000 THEN
     RAISE EXCEPTION 'Order note must be 1000 characters or fewer';
   END IF;
-  IF p_items IS NULL OR jsonb_typeof(p_items) IS DISTINCT FROM 'array'
-     OR jsonb_array_length(p_items) < 1 OR jsonb_array_length(p_items) > 30 THEN
+  IF p_items IS NULL OR jsonb_typeof(p_items) IS DISTINCT FROM 'array' THEN
+    RAISE EXCEPTION 'Order items must be an array';
+  END IF;
+  IF jsonb_array_length(p_items) < 1 OR jsonb_array_length(p_items) > 30 THEN
     RAISE EXCEPTION 'Order must contain between 1 and 30 product lines';
   END IF;
 
