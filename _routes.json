@@ -3,7 +3,9 @@
   "include": [
     "/api/*",
     "/product.html",
-    "/blog-post.html"
+    "/blog-post.html",
+    "/b/*",
+    "/ad/*"
   ],
   "exclude": []
 }
