@@ -878,6 +878,73 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
     .empty h1, .empty p { color: #172033; }
     .advertise-strip a { color: #fff; }
     .social-pill { background: #f8fafc; color: #172033; border-color: rgba(15,23,42,.12); }
+    /* Premium-ready white business mini-site refinement */
+    body {
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(52,120,246,.07), transparent 34rem),
+        linear-gradient(180deg, #f8fbff 0%, #f5f7fb 48%, #ffffff 100%);
+      color: #172033;
+    }
+    .wrap { max-width: 1080px; padding-left: clamp(14px, 3vw, 28px); padding-right: clamp(14px, 3vw, 28px); }
+    .brand-link { min-height: 58px; gap: 10px; }
+    .brand-link .brand-text { font-weight: 850; letter-spacing: -.35px; }
+    .brand-link .brand-text small { font-weight: 600; letter-spacing: 0; }
+    .cover { border-radius: 22px; overflow: hidden; box-shadow: 0 16px 38px rgba(23,32,51,.09); }
+    .profile-card {
+      position: relative;
+      border-radius: 22px;
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 18px 46px rgba(23,32,51,.075);
+      padding: clamp(18px, 3vw, 30px);
+      overflow: hidden;
+    }
+    .profile-card:before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2), #dbeafe);
+    }
+    .logo-box { border-radius: 20px; box-shadow: 0 9px 22px rgba(23,32,51,.13); }
+    .profile-name, .profile-info h1 { letter-spacing: -.65px; line-height: 1.12; }
+    .contact-row { gap: 10px; }
+    .contact-btn {
+      border-radius: 11px;
+      min-height: 44px;
+      font-weight: 800;
+      box-shadow: 0 3px 8px rgba(15,23,42,.035);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15,23,42,.10); }
+    .social-pill { border-radius: 12px; transition: transform .18s ease, background .18s ease; }
+    .social-pill:hover { transform: translateY(-2px); }
+    .about-block { border-radius: 15px; padding: 18px; }
+    .ads-section { margin-top: 34px; }
+    .ads-section h2, .others-section h2, .more-section h2 { letter-spacing: -.45px; }
+    .ad-card {
+      border-radius: 17px;
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 9px 28px rgba(23,32,51,.055);
+    }
+    .ad-card:hover { transform: translateY(-4px); box-shadow: 0 18px 34px rgba(23,32,51,.12); }
+    .ad-media { background: #edf2f8; }
+    .ad-card .contact-btn, .ad-hero .contact-btn { box-shadow: none; }
+    .advertise-strip {
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.09);
+      background: linear-gradient(115deg,#fff,#f0f6ff);
+    }
+    .business-strip, .more-card, .other-card { border-radius: 15px; }
+    .profile-card, .ad-card, .ad-hero, .about-block, .advertise-strip { scroll-margin-top: 20px; }
+    @media (max-width: 600px) {
+      .wrap { padding-left: 14px; padding-right: 14px; }
+      .cover { border-radius: 16px; }
+      .profile-card { border-radius: 17px; }
+      .profile-head { align-items: center; }
+      .logo-box { width: 76px; height: 76px; border-radius: 17px; }
+      .contact-row { display: grid; grid-template-columns: 1fr; }
+      .contact-btn { width: 100%; justify-content: center; }
+      .ads-section { margin-top: 26px; }
+    }
     @media (max-width: 600px) {
       .profile-card, .ad-hero { border-radius: 16px; }
       .profile-card { padding: 18px; }
