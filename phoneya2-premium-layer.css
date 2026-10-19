@@ -1,0 +1,187 @@
+/* PhoneYa2 Major Build — premium interaction and readability layer.
+   Intentional enhancement layer: existing business logic and checkout flow remain untouched. */
+:root {
+  --py2-premium-ink: #122033;
+  --py2-premium-muted: #617287;
+  --py2-premium-blue: #1677e8;
+  --py2-premium-blue-deep: #1159b4;
+  --py2-premium-green: #159447;
+  --py2-premium-orange: #ff6500;
+  --py2-premium-line: #dce6f0;
+  --py2-premium-shadow: 0 14px 38px rgba(19, 43, 74, .09);
+  --py2-premium-shadow-hover: 0 20px 48px rgba(19, 43, 74, .15);
+  --py2-premium-focus: 0 0 0 4px rgba(22, 119, 232, .17);
+}
+html { scroll-behavior: smooth; }
+body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; }
+button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid rgba(22, 119, 232, .72);
+  outline-offset: 3px;
+}
+:where(input, select, textarea) { accent-color: var(--py2-premium-blue); }
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), select, textarea) {
+  max-width: 100%;
+}
+:where(button, .btn, .btn-primary, .btn-secondary, .checkout, .py2-add-cart, .py2-subscribe-button) {
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, border-color .18s ease;
+}
+@media (hover:hover) {
+  :where(button, .btn, .btn-primary, .btn-secondary, .checkout, .py2-add-cart, .py2-subscribe-button):not(:disabled):hover {
+    filter: brightness(1.035);
+  }
+}
+:where(button, .btn, .btn-primary, .btn-secondary, .checkout, .py2-add-cart, .py2-subscribe-button):active:not(:disabled) {
+  transform: translateY(1px) scale(.995);
+}
+:where(button, input, select, textarea):disabled { cursor: not-allowed; opacity: .68; }
+img { max-width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Product discovery: clear product surfaces, stronger image and action hierarchy. */
+.shop-page .pcard,
+.shop-page .product-card,
+.shop-page .product-item,
+.shop-page .skel-card {
+  min-width: 0;
+  border-color: var(--py2-premium-line);
+  border-radius: 18px;
+}
+.shop-page .pcard {
+  box-shadow: 0 7px 22px rgba(20, 45, 75, .055);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+@media (hover:hover) {
+  .shop-page .pcard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--py2-premium-shadow);
+    border-color: #b6d2f2;
+  }
+}
+.shop-page .pcard-name { line-height: 1.4; overflow-wrap: anywhere; }
+.shop-page .pcard-desc { line-height: 1.55; }
+.shop-page .pcard-actions { gap: 8px; }
+.shop-page .pcard-actions > * { min-height: 40px; }
+.shop-page .card-share-btn, .shop-page .card-copy-btn { min-width: 38px; min-height: 38px; }
+
+/* Cart and checkout: solid surfaces, comfortable touch targets and mobile-safe layouts. */
+.py2-cart-page .panel,
+body:has(.review-card) .panel,
+body:has(.review-card) .review-card {
+  border-radius: 18px;
+  border-color: var(--py2-premium-line);
+  box-shadow: 0 8px 26px rgba(19, 43, 74, .06);
+}
+.py2-cart-page .panel-title { line-height: 1.35; }
+.py2-cart-page .btn, .py2-cart-page .checkout,
+body:has(.review-card) .btn, body:has(.review-card) .add-button {
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 750;
+}
+.py2-cart-page input, body:has(.review-card) input,
+body:has(.review-card) select, body:has(.review-card) textarea {
+  border-radius: 11px;
+}
+@media (max-width: 640px) {
+  .py2-cart-page .panel, body:has(.review-card) .panel { padding: clamp(14px, 4vw, 20px); }
+  .py2-cart-page .btn, .py2-cart-page .checkout,
+  body:has(.review-card) .btn, body:has(.review-card) .add-button { min-height: 46px; }
+}
+
+/* Account: premium dashboard rhythm without changing data, authentication or chart logic. */
+.account-brand-hero, .account-analytics, .chart-panel, .insight-panel,
+.stat-card, .account-actions {
+  min-width: 0;
+  border-radius: 18px;
+}
+.stat-card, .chart-panel, .insight-panel {
+  box-shadow: 0 8px 26px rgba(19, 43, 74, .065);
+}
+.account-filters, .account-sort { max-width: 100%; }
+.account-filters button, .account-sort button { min-height: 40px; }
+@media (max-width: 640px) {
+  .account-brand-hero { padding: clamp(18px, 5vw, 28px) !important; }
+  .account-analytics { gap: 12px; }
+  .stat-card, .chart-panel, .insight-panel { border-radius: 15px; }
+}
+
+/* Blog: a calm blue-accent editorial feed with opaque, readable post cards. */
+.py2-blog-redesigned {
+  --blog-ink: #14243a;
+  --blog-muted: #596f87;
+  --blog-line: #d8e6f5;
+  --blog-orange: #1677e8;
+  background: #edf5ff !important;
+  color: var(--blog-ink);
+}
+.py2-blog-redesigned .py2-blog-main { max-width: 1180px; }
+.py2-blog-redesigned .py2-social-post {
+  position: relative;
+  overflow: hidden;
+  background: #fff !important;
+  color: #172b43 !important;
+  border: 1px solid #d8e6f5 !important;
+  border-top: 3px solid #1677e8 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 30px rgba(23, 75, 135, .075) !important;
+}
+.py2-blog-redesigned .py2-social-post :where(p, span, h3, strong, a) { overflow-wrap: anywhere; }
+.py2-blog-redesigned .py2-post-copy p,
+.py2-blog-redesigned .py2-post-copy h3 { line-height: 1.6; }
+.py2-blog-redesigned .py2-post-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.py2-blog-redesigned .py2-post-action {
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid #d8e6f5;
+  background: #f7fbff;
+  color: #17436f;
+  text-decoration: none;
+  padding: 9px 12px;
+}
+.py2-blog-redesigned .py2-post-action:hover { background: #eaf4ff; border-color: #9fc8f4; }
+.py2-blog-redesigned .blog-controls input,
+.py2-blog-redesigned .blog-search-control input { min-height: 44px; }
+.py2-blog-redesigned .blog-category-tab { min-height: 40px; }
+.py2-blog-redesigned .blog-scroll-sentinel { padding: 20px 10px; }
+.py2-blog-redesigned .py2-brand-splash { border-radius: 22px; }
+@media (max-width: 640px) {
+  .py2-blog-redesigned .py2-social-post { border-radius: 15px !important; }
+  .py2-blog-redesigned .py2-post-actions { gap: 7px; }
+  .py2-blog-redesigned .py2-post-action { flex: 1 1 100px; justify-content: center; }
+}
+
+/* Comments: visible, moderated community participation with no third-party embeds. */
+.py2-comments-panel {
+  margin: 14px 0 2px;
+  padding: 16px;
+  border: 1px solid #d6e7f8;
+  border-radius: 15px;
+  background: #f7fbff;
+  color: #1a2d45;
+}
+.py2-comments-panel[hidden] { display: none !important; }
+.py2-comments-panel h4 { margin: 0 0 10px; font-size: 16px; font-weight: 850; }
+.py2-comments-list { display: grid; gap: 10px; margin: 0 0 16px; }
+.py2-comment { padding: 11px 12px; border: 1px solid #e1ebf6; border-radius: 11px; background: #fff; }
+.py2-comment-head { display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px; margin-bottom:5px; }
+.py2-comment-head strong { color: #17436f; }
+.py2-comment-date { color:#687b91; font-size:12px; }
+.py2-comment-message { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.6; }
+.py2-comment-form { display:grid; gap:10px; }
+.py2-comment-form label { display:grid; gap:6px; color:#243e5b; font-size:13px; font-weight:750; }
+.py2-comment-form input, .py2-comment-form textarea {
+  box-sizing:border-box; width:100%; min-width:0; border:1px solid #cbdced; border-radius:10px;
+  padding:11px 12px; background:#fff; color:#172b43; font-size:14px;
+}
+.py2-comment-form textarea { min-height:92px; resize:vertical; }
+.py2-comment-form button {
+  justify-self:start; min-height:43px; border:0; border-radius:10px; padding:10px 15px;
+  background:#1677e8; color:#fff; font-weight:850; cursor:pointer;
+}
+.py2-comment-status { margin:0; color:#35516e; font-size:13px; line-height:1.5; }
+.py2-comment-honeypot { position:absolute !important; width:1px !important; height:1px !important; overflow:hidden !important; clip-path:inset(50%) !important; white-space:nowrap !important; }
