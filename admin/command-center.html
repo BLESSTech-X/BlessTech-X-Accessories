@@ -25,7 +25,7 @@
 @media(max-width:360px){.health-grid,.modules{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
 
 /* Focused workspace tabs, growth assistant and subtle live-engine motion */
-.workspace-nav{position:sticky;top:69px;z-index:9;display:flex;gap:7px;overflow-x:auto;padding:10px;margin:0 0 16px;background:rgba(245,247,251,.94);backdrop-filter:blur(14px);border:1px solid #e5e9f2;border-radius:13px;scrollbar-width:thin}
+.workspace-nav{position:sticky;top:65px;z-index:20;display:flex;gap:7px;overflow-x:auto;padding:10px;margin:0 0 16px;background:rgba(245,247,251,.97);backdrop-filter:blur(14px);border:1px solid #e5e9f2;border-radius:13px;scrollbar-width:none;box-shadow:0 8px 18px rgba(15,23,42,.08);-webkit-overflow-scrolling:touch}.workspace-nav::-webkit-scrollbar{display:none}
 .workspace-tab{flex:0 0 auto;border:1px solid transparent;border-radius:9px;background:transparent;color:#5d6578;padding:10px 13px;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s,transform .2s,border-color .2s}
 .workspace-tab:hover{background:#fff;transform:translateY(-1px)}.workspace-tab[aria-selected="true"]{background:#101322;color:#fff;border-color:#101322;box-shadow:0 5px 14px #10132220}
 .workspace-view{animation:workspaceIn .28s ease both;min-width:0}.workspace-view[hidden]{display:none!important}.workspace-view>.panel,.workspace-view>.growth-grid,.workspace-view>.grid2{margin-bottom:16px}
@@ -41,7 +41,7 @@
 .assistant-form{display:flex;gap:8px;position:relative}.assistant-form input{flex:1;min-width:0;border:1px solid #3c4966;background:#0e1425;color:#fff;border-radius:10px;padding:12px 13px;outline:none}.assistant-form input:focus{border-color:#78a6ff;box-shadow:0 0 0 3px #3478f625}.assistant-form button{border:0;border-radius:10px;background:#ff6500;color:#fff;font-weight:850;padding:0 16px;cursor:pointer}
 .assistant-answer{margin-top:13px;padding:13px 14px;background:#ffffff0a;border:1px solid #ffffff18;border-radius:10px;color:#e1e8f7;font-size:12px;line-height:1.7;white-space:pre-line;position:relative}
 .headsup{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;margin:0 0 16px;border:1px solid #ffddb8;border-radius:12px;background:#fff8ef;box-shadow:0 7px 22px #6e3d0a0a;animation:workspaceIn .35s ease both}.headsup[hidden]{display:none!important}.headsup-icon{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;border-radius:10px;background:#ffecd9;color:#a94b00;font-size:16px}.headsup-copy{flex:1;min-width:0}.headsup-copy strong{display:block;font-size:12px;margin-bottom:3px}.headsup-copy p{font-size:12px;color:#6b5a4b;margin:0}.headsup-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.headsup-actions button{border:1px solid #f1c79d;background:#fff;color:#8c3e00;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer}.headsup-close{border:0;background:transparent;color:#8c7968;font-size:18px;cursor:pointer;padding:0 3px}
-@media(max-width:700px){.workspace-nav{top:62px;padding:7px;gap:4px}.workspace-tab{padding:9px 10px}.growth-assistant{padding:15px}.assistant-form{flex-direction:column}.assistant-form button{padding:11px}.headsup{padding:12px}.workspace-view .stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.workspace-nav{top:60px;padding:7px;gap:4px;border-radius:0 0 12px 12px;margin-left:-14px;margin-right:-14px}.workspace-tab{padding:9px 10px}.growth-assistant{padding:15px}.assistant-form{flex-direction:column}.assistant-form button{padding:11px}.headsup{padding:12px}.workspace-view .stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.workspace-view,.chart-wrap canvas,.headsup{animation:none!important}.status-fill,.growth-fill,.workspace-tab,.stat,.module,.health-item,.growth-card,.section{transition:none!important}.status-fill:after,.growth-fill:after,.engine-status i{animation:none!important}}
 
 
@@ -113,10 +113,11 @@
   <p class="note">Secure sign-in uses PhoneYa2’s Supabase authentication. Your password is not stored in this page.</p>
 </section>
 <section id="dashboard" class="hidden">
+  <div id="workspace-nav" class="workspace-nav" role="tablist" aria-label="Command Centre sections"></div><div id="workspace-views"></div>
   <div class="intro"><div><div class="eyebrow">Business overview · live data</div><h1>Command Centre</h1><p>Your central view of PhoneYa2 orders, catalogue, systems and operations.</p></div><div class="intro-actions"><button class="btn voice-toggle" id="voice-toggle" type="button" aria-pressed="false">🔊 Voice briefing: Off</button><button class="btn" id="refresh">↻ Refresh data</button><button class="btn dark" id="logout">Sign out</button></div></div>
   <div id="global-message" role="status" aria-live="polite"></div>
   <div id="heads-up" class="headsup" role="status" aria-live="polite" hidden><div class="headsup-icon">✦</div><div class="headsup-copy"><strong id="heads-up-title">PhoneYa2 heads-up</strong><p id="heads-up-text"></p><div class="headsup-actions" id="heads-up-actions"></div></div><button class="headsup-close" id="heads-up-close" aria-label="Dismiss heads-up">×</button></div>
-  <div id="workspace-nav" class="workspace-nav" role="tablist" aria-label="Command Centre sections"></div><div id="workspace-views"></div>
+
   <div class="stats">
     <article class="panel stat"><div class="stat-top"><span>Total orders</span><span class="icon">▤</span></div><strong id="stat-orders">—</strong><small id="orders-sub">Orders recorded</small></article>
     <article class="panel stat"><div class="stat-top"><span>Order value</span><span class="icon">ZK</span></div><strong id="stat-sales">—</strong><small>Excludes cancelled orders; not cash collected</small></article>
