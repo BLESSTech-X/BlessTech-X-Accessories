@@ -36,6 +36,7 @@ const idempotencySql = fs.readFileSync(path.join(root, 'supabase', 'order-idempo
 
 assert.ok(checkoutHtml.includes('phoneya2-order-idempotency-v1'), 'Checkout must persist its idempotency key for retries.');
 assert.ok(checkoutHtml.includes('result.replayed'), 'Checkout must explain when a retry recovered an existing order.');
+assert.ok(checkoutHtml.includes('Your order may already be saved. Keep these details unchanged'), 'Checkout must guide customers through an uncertain-response retry without changing the request.');
 assert.ok(!checkoutHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Checkout must not reject valid Unicode product slugs.');
 assert.ok(!cartHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Cart must not reject valid Unicode product slugs.');
 assert.ok(orderApi.includes('request_fingerprint&limit=1'), 'Order API must look up an existing request before current catalogue validation.');
