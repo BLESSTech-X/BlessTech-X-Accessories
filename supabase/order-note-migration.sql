@@ -12,7 +12,6 @@ ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS request_fingerprint TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS orders_idempotency_key_unique
   ON public.orders (idempotency_key) WHERE idempotency_key IS NOT NULL;
 DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB);
-DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT);
 DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT, TEXT);
 
