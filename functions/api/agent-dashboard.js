@@ -7,7 +7,10 @@ function json(data, status=200) {
 export async function onRequestPost({request,env}) {
  let body;
  try { body=await request.json(); } catch { return json({error:"Enter the PY2-360 access code."},400); }
- if(String(body?.code||"").trim().toUpperCase()!=="PY2-360") return json({error:"Incorrect PY2-360 access code."},401);
+ const expected=String(env.PY2_360_ACCESS_CODE||"").trim();
+ if(!expected) return json({error:"PY2-360 sign-in is not configured yet. The administrator must add the PY2_360_ACCESS_CODE secret in Cloudflare Pages Production variables."},503);
+ const supplied=String(body?.code||"").trim();
+ if(!supplied || supplied.length>256 || supplied!==expected) return json({error:"Incorrect PY2-360 access code."},401);
  const base=String(env.SUPABASE_URL||"https://kavwhkznlhtcwabatmru.supabase.co").replace(/\/$/,"");
  const key=env.SUPABASE_SERVICE_ROLE_KEY||env.SUPABASE_SECRET_KEY;
  if(!key) return json({error:"Live order data is not configured: add SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_SECRET_KEY) to Cloudflare Pages Production variables."},503);
