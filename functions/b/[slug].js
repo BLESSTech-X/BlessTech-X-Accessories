@@ -275,7 +275,7 @@ function notFoundPage(slug) {
 }
 
 // ── Full HTML shell ───────────────────────────────────────────────────────
-function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, primaryColor, accentColor, isProfile }) {
+function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, primaryColor, accentColor, isProfile, previewMode = false }) {
   const p = safeColor(primaryColor, '#ff6000');
   const a = safeColor(accentColor,  '#ff9f43');
   const pDark = darken(p, 0.15);
@@ -952,9 +952,24 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       .contact-row { gap: 8px; }
       .contact-btn { min-height: 42px; }
     }
+    /* Focused dashboard preview: show the advertiser's mini-site content, not PhoneYa2 navigation and cross-promotion. */
+    body.preview-mode { padding-bottom: 0; }
+    body.preview-mode .wrap { max-width: 920px; padding: 10px 12px 16px; }
+    body.preview-mode .topbar-mini,
+    body.preview-mode .advertise-strip,
+    body.preview-mode .others-section { display: none !important; }
+    body.preview-mode .profile-card { margin-top: 0; }
+    body.preview-mode .cover { margin-top: 0; }
+    body.preview-mode .ads-section { margin-bottom: 0; }
+    @media (max-width: 520px) {
+      body.preview-mode .wrap { padding: 6px 8px 12px; }
+      body.preview-mode .profile-card { padding: 16px; }
+      body.preview-mode .contact-row { gap: 7px; }
+      body.preview-mode .contact-btn { flex: 1 1 110px; justify-content: center; }
+    }
   </style>
 </head>
-<body>
+<body${previewMode ? ' class="preview-mode"' : ''}>
 ${bodyHtml}
 <script src="/ads-config.js"></script>
 <script>
@@ -990,6 +1005,7 @@ ${bodyHtml}
 export async function onRequestGet(context) {
   const { params, request } = context;
   const slug = params && params.slug;
+  const previewMode = new URL(request.url).searchParams.has('preview');
 
   if (!slug || typeof slug !== 'string') {
     return notFoundPage('');
@@ -1204,7 +1220,8 @@ export async function onRequestGet(context) {
     bodyHtml,
     primaryColor,
     accentColor,
-    isProfile: true
+    isProfile: true,
+    previewMode
   });
 
   const source = detectSource(request.headers.get('referer') || '');
@@ -1214,7 +1231,7 @@ export async function onRequestGet(context) {
     status: 200,
     headers: {
       'content-type': 'text/html; charset=utf-8',
-      'cache-control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
+      'cache-control': previewMode ? 'no-store' : 'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
     }
   });
 }
