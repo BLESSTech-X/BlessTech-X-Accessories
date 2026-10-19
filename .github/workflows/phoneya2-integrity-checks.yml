@@ -31,3 +31,6 @@ jobs:
 
       - name: Run integrity checks
         run: node scripts/phoneya2-integrity-check.js
+
+      - name: Test checkout idempotency behavior
+        run: node scripts/phoneya2-order-idempotency-smoke-test.js
