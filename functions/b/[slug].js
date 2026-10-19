@@ -822,6 +822,62 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       .advertise-strip { padding: 18px 16px; }
       .advertise-strip a { width: 100%; justify-content: center; }
     }
+    /* PhoneYa2 business mini-sites: clean white, storefront-style presentation */
+    :root {
+      --ink: #172033;
+      --ink-soft: #4b5563;
+      --ink-mute: #6b7280;
+      --surface: #ffffff;
+      --surface-2: #ffffff;
+      --surface-3: #f8fafc;
+      --card-border: rgba(15,23,42,.12);
+      --card-border-strong: rgba(15,23,42,.18);
+    }
+    body { background: #f7f8fa; color: #172033; }
+    .brand-link { color: #172033; }
+    .brand-link .brand-text small { color: #6b7280; }
+    .profile-card, .ad-card, .ad-hero, .other-card, .empty, .advertise-strip,
+    .business-strip, .more-card, .others-grid .other-card {
+      background: #fff;
+      color: #172033;
+      border-color: rgba(15,23,42,.12);
+      box-shadow: 0 8px 26px rgba(15,23,42,.055);
+    }
+    .profile-name, .profile-info h1, .profile-card h1, .ads-section h2,
+    .others-section h2, .other-card .other-name, .empty h1,
+    .advertise-strip h3, .ad-title-big, .ad-sponsor-name, .bs-name,
+    .more-section h2, .more-card-biz, .ad-hero h1 {
+      color: #172033;
+    }
+    .profile-tagline, .profile-about, .profile-card p, .ad-desc-big,
+    .others-section .sub, .other-card .other-tag, .empty p,
+    .advertise-strip p, .more-card-tag, .bs-tagline, .ad-report-row,
+    .ad-sponsor-cta-hint {
+      color: #4b5563;
+    }
+    .ad-hero-body { background: #fff; }
+    .ad-hero-img-fallback { background: #f3f4f6; color: #6b7280; }
+    .ad-sponsor-logo, .bs-logo, .more-card-logo, .other-card .other-logo {
+      box-shadow: none;
+      border: 1px solid rgba(15,23,42,.08);
+    }
+    .ad-sponsor-tag { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+    .business-strip:hover, .other-card:hover, .more-card:hover {
+      background: #fff;
+      border-color: var(--brand-2);
+      box-shadow: 0 10px 26px rgba(15,23,42,.09);
+    }
+    .empty { background: #fff; }
+    .empty h1, .empty p { color: #172033; }
+    .advertise-strip a { color: #fff; }
+    .social-pill { background: #f8fafc; color: #172033; border-color: rgba(15,23,42,.12); }
+    @media (max-width: 600px) {
+      .profile-card, .ad-hero { border-radius: 16px; }
+      .profile-card { padding: 18px; }
+      .ad-hero-body { padding: 18px; }
+      .contact-row { gap: 8px; }
+      .contact-btn { min-height: 42px; }
+    }
   </style>
 </head>
 <body>
