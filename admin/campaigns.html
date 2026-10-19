@@ -20,4 +20,5 @@ $("login-form").addEventListener("submit",async e=>{e.preventDefault();$("login-
 $("create-form").addEventListener("submit",async e=>{e.preventDefault();$("create-button").disabled=true;try{const d=await api({action:"create",name:$("name").value,subject:$("subject").value,body_text:$("body-text").value});$("create-form").reset();msg("Campaign saved as draft.","success");await load()}catch(e){msg(e.message,"error")}finally{$("create-button").disabled=false;}});
 $("refresh").addEventListener("click",load);$("logout").addEventListener("click",async()=>{await client.auth.signOut();session=null;$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");});init();
 })();
-</script></body></html>
+</script>  <script src="/password-visibility.js" defer></script>
+</body></html>

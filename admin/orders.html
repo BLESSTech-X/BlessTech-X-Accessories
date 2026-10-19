@@ -150,5 +150,6 @@ $("logout").addEventListener("click",async()=>{if(client)await client.auth.signO
 init().catch(e=>showMessage("login-message",e.message||"Could not initialize admin sign-in.","error"));
 })();
 </script>
+  <script src="/password-visibility.js" defer></script>
 </body>
 </html>
