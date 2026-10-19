@@ -843,18 +843,25 @@ function renderShell({ title, description, ogImage, canonicalUrl, bodyHtml, prim
       border-color: rgba(15,23,42,.12);
       box-shadow: 0 8px 26px rgba(15,23,42,.055);
     }
-    .profile-name, .profile-info h1, .profile-card h1, .ads-section h2,
+    .profile-name, .profile-info h1, .profile-card h1, .profile-card h2,
+    .profile-card h3, .profile-card strong, .ads-section h2, .about-block h2,
     .others-section h2, .other-card .other-name, .empty h1,
-    .advertise-strip h3, .ad-title-big, .ad-sponsor-name, .bs-name,
+    .advertise-strip h3, .ad-title-big, .ad-title, .ad-sponsor-name, .bs-name,
     .more-section h2, .more-card-biz, .ad-hero h1 {
       color: #172033;
     }
-    .profile-tagline, .profile-about, .profile-card p, .ad-desc-big,
-    .others-section .sub, .other-card .other-tag, .empty p,
-    .advertise-strip p, .more-card-tag, .bs-tagline, .ad-report-row,
-    .ad-sponsor-cta-hint {
+    .profile-tagline, .profile-about, .profile-card p, .ad-desc-big, .ad-desc,
+    .about-block p, .ads-section .sub, .others-section .sub,
+    .other-card .other-tag, .empty p, .advertise-strip p,
+    .more-card-tag, .bs-tagline, .ad-report-row, .ad-sponsor-cta-hint {
       color: #4b5563;
     }
+    .about-block { background: #f8fafc; border-color: rgba(15,23,42,.1); }
+    .contact-btn:not(.primary) { background: #f3f4f6; color: #172033; border-color: rgba(15,23,42,.12); }
+    .contact-btn:not(.primary):hover { background: #e5e7eb; }
+    .social-pill { background: #f3f4f6; color: #374151; border-color: rgba(15,23,42,.12); }
+    .social-pill:hover { background: var(--brand); color: #fff; }
+    .ad-card:hover { box-shadow: 0 12px 28px rgba(15,23,42,.12); }
     .ad-hero-body { background: #fff; }
     .ad-hero-img-fallback { background: #f3f4f6; color: #6b7280; }
     .ad-sponsor-logo, .bs-logo, .more-card-logo, .other-card .other-logo {
