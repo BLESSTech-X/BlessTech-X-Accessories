@@ -9,9 +9,9 @@ ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS request_fingerprint TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS orders_idempotency_key_unique
   ON public.orders (idempotency_key) WHERE idempotency_key IS NOT NULL;
-DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB);
-DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT);
-DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT, TEXT);
+-- Preserve the existing six-argument RPC for a controlled rollback.
+-- The new eight-argument signature has no default on p_customer_note so PostgreSQL
+-- can resolve the legacy six-argument call without default-argument ambiguity.
 
 CREATE OR REPLACE FUNCTION public.create_phoneya2_order(
   p_customer_name TEXT,
@@ -21,7 +21,7 @@ CREATE OR REPLACE FUNCTION public.create_phoneya2_order(
   p_items JSONB,
   p_idempotency_key TEXT,
   p_request_fingerprint TEXT,
-  p_customer_note TEXT DEFAULT ''
+  p_customer_note TEXT
 )
 RETURNS JSONB
 LANGUAGE plpgsql
