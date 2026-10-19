@@ -442,6 +442,9 @@ export async function onRequest(context) {
       if (!rpc.ok) {
         const detail = await rpc.text();
         console.error("PhoneYa2 order RPC failed:", rpc.status, detail.slice(0, 500));
+        if (/Idempotency key was already used for different order details/i.test(detail)) {
+          return json({ error: "This checkout request key belongs to different order details. Please refresh checkout and review your order." }, 409);
+        }
         return json({ error: note ? "Order notes are being enabled. Please try again shortly, or remove the note and submit the order." : "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
       const order = await rpc.json();
