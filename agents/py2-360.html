@@ -75,7 +75,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-let agent=null, sales=[], leads=[], products=[], analytics=null, agentDataAvailable=false, productsAvailable=false;
+let agent=null, sales=[], agentSummary=null, leads=[], products=[], analytics=null, agentDataAvailable=false, productsAvailable=false;
 const money=n=>'K'+Number(n||0).toLocaleString('en-ZM',{maximumFractionDigits:2});
 const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -112,8 +112,9 @@ async function loadAll(initialAgentData){
   fetch('/api/public-analytics',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Aggregate analytics unavailable');return r.json()})
  ]);
  const agentData=results[0].status==='fulfilled'?results[0].value:null;
- agentDataAvailable=!!agentData;
- sales=Array.isArray(agentData?.sales)?agentData.sales:[];
+ agentDataAvailable=!!agentData?.summary;
+ agentSummary=agentData?.summary||null;
+ sales=[];
  leads=Array.isArray(agentData?.leads)?agentData.leads:[];
  productsAvailable=results[1].status==='fulfilled'&&Array.isArray(results[1].value);
  products=productsAvailable?results[1].value:[];
@@ -126,19 +127,19 @@ async function loadAll(initialAgentData){
 function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
 function isConfirmed(s){return ['confirmed','paid','delivered','complete','completed'].includes(String(s||'').toLowerCase());}
 function renderStats(){
- const pending=sales.filter(s=>String(s.status||'').toLowerCase()==='pending');
- const confirmed=sales.filter(s=>['confirmed','processing','shipped','delivered'].includes(String(s.status||'').toLowerCase()));
- const delivered=sales.filter(s=>String(s.status||'').toLowerCase()==='delivered');
- $('kpi-sales').textContent=agentDataAvailable?num(sales.length):'—';
- $('kpi-pending').textContent=agentDataAvailable?num(pending.length):'—';
- $('kpi-revenue').textContent=agentDataAvailable?money(confirmed.reduce((a,s)=>a+Number(s.amount||0),0)):'—';
- $('kpi-leads').textContent=agentDataAvailable?num(delivered.length):'—';
+ const counts=agentSummary?.status_counts||{};
+ const total=Number(agentSummary?.total_orders||0),pending=Number(counts.pending||0);
+ const confirmed=Number(counts.confirmed||0)+Number(counts.processing||0)+Number(counts.shipped||0)+Number(counts.delivered||0);
+ const delivered=Number(counts.delivered||0),cancelled=Number(counts.cancelled||0);
+ $('kpi-sales').textContent=agentDataAvailable?num(total):'—';
+ $('kpi-pending').textContent=agentDataAvailable?num(pending):'—';
+ $('kpi-revenue').textContent=agentDataAvailable?money(agentSummary.confirmed_order_value||0):'—';
+ $('kpi-leads').textContent=agentDataAvailable?num(delivered):'—';
  $('kpi-visitors').textContent=analytics?.summary?num(analytics.summary.active_users):'—';
- const cancelled=sales.filter(s=>String(s.status||'').toLowerCase()==='cancelled').length;
  let summary='';
  if(!agentDataAvailable) summary='Order data is unavailable. Check the live data warning below; unavailable data is not reported as zero.';
- else if(!sales.length) summary='The live order system returned zero checkout orders. That is a real zero for the connected order table, not an agent-sales placeholder. Choose one product to promote and track the enquiries it generates.';
- else summary='PhoneYa2 has '+sales.length+' checkout order(s) in the connected order system. '+pending.length+' are pending, '+confirmed.length+' are confirmed/in fulfilment, and '+delivered.length+' are delivered. '+(cancelled?'Review '+cancelled+' cancelled order(s) for recurring reasons.':'No cancelled orders are recorded in the loaded order data.')+' These are store-wide figures, not your personal attributed sales.';
+ else if(!total) summary='The live order system returned zero checkout orders. Choose one product to promote and track the enquiries it generates.';
+ else summary='PhoneYa2 has '+total+' checkout order(s). '+pending+' are pending, '+confirmed+' are confirmed/in fulfilment, and '+delivered+' are delivered. '+(cancelled?'Review '+cancelled+' cancelled order(s) for recurring reasons.':'No cancelled orders are recorded.')+' These are store-wide aggregate figures, not your personal attributed sales.';
  $('assistant-summary').textContent=summary;
 }
 function drawChart(canvas,values,labels){
@@ -151,17 +152,17 @@ function drawChart(canvas,values,labels){
  values.forEach((v,i)=>{const x=pad.l+i*(bw+gap),bh=ch*v/max,y=pad.t+ch-bh;ctx.fillStyle='#ff6000';ctx.beginPath();const radius=Math.min(5,bw/2);ctx.roundRect(x,y,bw,Math.max(2,bh),[radius,radius,0,0]);ctx.fill();ctx.fillStyle='#667085';ctx.textAlign='center';ctx.fillText(labels[i],x+bw/2,h-9);});
 }
 function renderCharts(){
- const now=new Date(),buckets=Array.from({length:6},(_,i)=>{const start=new Date(now);start.setDate(now.getDate()-(5-i)*7-6);start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+7);return {start,end,label:'W'+(i+1),count:0};});
- sales.forEach(s=>{const d=new Date(s.created_at||s.confirmed_at||0);if(!Number.isFinite(d.getTime()))return;const b=buckets.find(x=>d>=x.start&&d<x.end);if(b)b.count++;});
- drawChart('sales-chart',agentDataAvailable?buckets.map(b=>b.count):[],agentDataAvailable?buckets.map(b=>b.label):[]);
- $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':sales.length?'Counts are based on sale-record creation dates, not guaranteed payment dates.':'No sale records yet. Your chart will fill as sales are recorded.';
+ const buckets=Array.isArray(agentSummary?.weekly_orders)?agentSummary.weekly_orders:[];
+ drawChart('sales-chart',agentDataAvailable?buckets.map(b=>Number(b.count||0)):[],agentDataAvailable?buckets.map(b=>b.label):[]);
+ $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':Number(agentSummary.total_orders||0)?'Weekly bars show aggregate order creation counts for the last six rolling weeks, not confirmed payment dates.':'No checkout orders are recorded yet.';
 }
 function renderLeadPipeline(){
  const stages=[['pending','Pending'],['confirmed','Confirmed'],['processing','Processing'],['shipped','Shipped'],['delivered','Delivered'],['cancelled','Cancelled']];
- const counts=stages.map(([status])=>sales.filter(o=>String(o.status||'').toLowerCase()===status).length);
+ const statusCounts=agentSummary?.status_counts||{};
+ const counts=stages.map(([status])=>Number(statusCounts[status]||0));
  drawChart('lead-chart',agentDataAvailable?counts:[],stages.map(s=>s[1]));
  $('lead-pipeline').innerHTML=!agentDataAvailable?'<div class="empty">Order data unavailable — check the live data warning above.</div>':stages.map(([status,label],i)=>'<div class="mini-row"><span>'+label+'</span><strong>'+counts[i]+'</strong></div>').join('');
- if(!agentDataAvailable){$('lead-insight').innerHTML='<strong>Order data unavailable</strong><p>The dashboard could not retrieve the live checkout orders. It will not treat a failed request as zero.</p>';return;}
+ if(!agentDataAvailable){$('lead-insight').innerHTML='<strong>Order data unavailable</strong><p>The dashboard could not retrieve live aggregate checkout metrics. It will not treat a failed request as zero.</p>';return;}
  const pending=counts[0],cancelled=counts[5],delivered=counts[4];
  $('lead-insight').innerHTML='<strong>Operational insight</strong><p>'+(pending?'There '+(pending===1?'is ':'are ')+pending+' pending order(s). The store admin should confirm availability and delivery expectations. ':'No pending orders are currently recorded. ')+(cancelled?' Review '+cancelled+' cancelled order(s) for repeated issues. ':'')+(delivered?' '+delivered+' order(s) are marked delivered.':'')+'</p>';
 }
