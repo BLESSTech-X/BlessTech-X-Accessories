@@ -35,12 +35,12 @@ const orderApi = fs.readFileSync(path.join(root, 'functions', 'api', 'orders.js'
 const idempotencySql = fs.readFileSync(path.join(root, 'supabase', 'order-idempotency-migration.sql'), 'utf8');
 const inventoryPreflightSql = fs.readFileSync(path.join(root, 'supabase', 'inventory-preflight.sql'), 'utf8');
 const inventoryPreflightExecutable = inventoryPreflightSql
-  .replace(/--[^\\r\\n]*/g, '')
-  .replace(/\\/\\*[\\s\\S]*?\\*\\//g, '')
+  .replace(/--[^\r\n]*/g, '')
+  .replace(/\/\*[\s\S]*?\*\//g, '')
   .trim();
 assert.ok(inventoryPreflightExecutable.length > 0, 'Inventory preflight must contain read-only SQL.');
-assert.ok(!/\\b(INSERT|UPDATE|DELETE|MERGE|CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE)\\b/i.test(inventoryPreflightExecutable), 'Inventory preflight must not mutate data or schema.');
-assert.ok(/SELECT\\b/i.test(inventoryPreflightExecutable), 'Inventory preflight must inspect live data with SELECT statements.');
+assert.ok(!/\b(INSERT|UPDATE|DELETE|MERGE|CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE)\b/i.test(inventoryPreflightExecutable), 'Inventory preflight must not mutate data or schema.');
+assert.ok(/SELECT\b/i.test(inventoryPreflightExecutable), 'Inventory preflight must inspect live data with SELECT statements.');
 
 
 assert.ok(checkoutHtml.includes('phoneya2-order-idempotency-v1'), 'Checkout must persist its idempotency key for retries.');
