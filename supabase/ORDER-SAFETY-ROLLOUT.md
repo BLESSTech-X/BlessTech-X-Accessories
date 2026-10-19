@@ -58,4 +58,20 @@ The migration preserves the existing six-argument RPC function for a controlled 
 
 Published stock currently comes from product Markdown managed through Decap CMS. A static catalogue read is not an atomic inventory reservation. The database migration above does not solve overselling when two different customers order the last unit concurrently.
 
-Before claiming inventory is protected, PhoneYa2 needs an authoritative database inventory/reservation model and a deliberate synchronization workflow with Decap CMS. That design must specify which source wins on conflicts, when stock is decremented/released, how cancelled orders restore stock, and how existing stock values are migrated. Until that work is implemented and tested, treat catalogue stock as a pre-check only, not a concurrency guarantee.
+### Next inventory gate: read-only reconciliation first
+
+Before creating or applying an inventory migration, run `supabase/inventory-preflight.sql` against the intended Supabase project. It is **SELECT-only** and does not change the database. It reports the live schema, order-status population, product quantities attached to active/unfulfilled orders, and historical quantities by status.
+
+Reconcile those results with the current Decap CMS `stock` values and the actual fulfilment process. Do not blindly subtract all historical order quantities: some orders may already have been fulfilled or manually deducted from catalogue stock. Do not seed a database inventory table from a stale product catalogue without resolving this first.
+
+### Inventory design requirements
+
+- A database transaction must atomically validate availability and reserve all items in an order, or reserve none of them.
+- Each order needs auditable reservation rows and a clear reservation state so a retry cannot reserve twice.
+- Status transitions must be atomic and idempotent. Cancellation must release only that order's outstanding reservation; a repeated cancellation must not add stock twice. Delivered/fulfilled orders must consume the reservation exactly once.
+- The product pages, cart, checkout, and admin dashboards must display database-backed availability rather than stale Markdown stock once the database becomes authoritative.
+- Decap CMS must provide a deliberate physical-count adjustment workflow. A publish hook must not blindly overwrite live availability with an old `stock` value. The adjustment needs an authenticated server-side path, audit history, conflict handling, and a defined rule for counts below already-reserved quantities.
+- Historical orders, returns, damaged stock, partial fulfilments, and status reversals must be reconciled before seeding inventory.
+- If the inventory service is unavailable, checkout must fail safely rather than assume the catalogue quantity is current.
+
+That migration should not be drafted as a deployable stock solution until the preflight output and inventory semantics are reviewed. Until the atomic reservation and database-backed reads are implemented and tested, treat catalogue stock as a pre-check only, not a concurrency guarantee.
