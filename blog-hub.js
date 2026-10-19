@@ -47,6 +47,34 @@ function ensureFeaturedProductPreviewStyles(){
  s.textContent='.py2-featured-product-strip{padding:9px 12px 12px;border-top:1px solid #f0f2f5;background:linear-gradient(120deg,#fbfdff,#f8fafc)}.py2-featured-product-label{font-size:9px;letter-spacing:1px;font-weight:900;color:#16834a;margin-bottom:7px}.py2-featured-product-items{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}.py2-featured-product-mini{width:66px;min-width:0;display:flex;flex-direction:column;gap:4px;color:#263247;text-decoration:none;font-size:9px;font-weight:800;line-height:1.25}.py2-featured-product-mini img{width:60px;height:52px;object-fit:contain;border:1px solid #e5eaf1;border-radius:8px;background:#fff}.py2-featured-product-mini span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.py2-featured-product-mini small{font-size:9px;color:#d95300;font-weight:900}.py2-featured-product-more{align-self:center;font-size:10px;font-weight:900;color:#174ea6}';
  document.head.appendChild(s);
 }
+function commentsPanel(p){
+ return '<section class="py2-comments-panel" data-comments-panel="'+esc(p.slug)+'" hidden aria-label="Comments on '+esc(p.title||'this post')+'">'+
+  '<h4>Community comments</h4><div class="py2-comments-list" data-comments-list><p class="py2-comment-status">Open comments to load the conversation.</p></div>'+
+  '<form class="py2-comment-form" data-comment-form data-post-slug="'+esc(p.slug)+'">'+
+  '<label>Your name<input name="name" type="text" minlength="2" maxlength="60" autocomplete="name" required placeholder="How should we call you?"></label>'+
+  '<label>Your comment<textarea name="message" minlength="3" maxlength="1200" required placeholder="Share a useful thought or question…"></textarea></label>'+
+  '<label class="py2-comment-honeypot" aria-hidden="true">Leave this field empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label>'+
+  '<button type="submit">Submit comment</button><p class="py2-comment-status" data-comment-status aria-live="polite">Comments are reviewed before they appear publicly.</p></form></section>';
+}
+function renderComments(listEl, comments){
+ if(!listEl)return;
+ if(!comments.length){listEl.innerHTML='<p class="py2-comment-status">No approved comments yet. Start the conversation.</p>';return}
+ listEl.innerHTML=comments.map(function(c){
+  var date='';try{date=c.date?new Date(c.date).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):''}catch(e){}
+  return '<article class="py2-comment"><div class="py2-comment-head"><strong>'+esc(c.name||'Reader')+'</strong><span class="py2-comment-date">'+esc(date)+'</span></div><p class="py2-comment-message">'+esc(c.message||'')+'</p></article>';
+ }).join('');
+}
+async function loadComments(panel,slug){
+ var list=panel.querySelector('[data-comments-list]');if(!list)return;
+ list.innerHTML='<p class="py2-comment-status">Loading approved comments…</p>';
+ try{
+  var response=await fetch('/api/blog-comments?slug='+encodeURIComponent(slug),{headers:{Accept:'application/json'},cache:'no-store'});
+  var data=await response.json();
+  if(!response.ok)throw new Error(data.error||'Comments are temporarily unavailable.');
+  renderComments(list,Array.isArray(data.comments)?data.comments:[]);
+  panel.dataset.loaded='true';
+ }catch(err){list.innerHTML='<p class="py2-comment-status">'+esc(err.message||'Comments are temporarily unavailable.')+' Please try again shortly.</p>'}
+}
 function card(p){
  var href='/blog-post.html?slug='+encodeURIComponent(p.slug);
  var saved=getSaved().indexOf(p.slug)>=0;
@@ -69,9 +97,11 @@ function card(p){
   '<div class="py2-post-tags">',tags,'</div>',
   '<div class="py2-post-actions"><button type="button" class="py2-post-action',saveClass,'" data-save-post="',esc(p.slug),'" aria-pressed="',saved?'true':'false','"><i class="fa-',saveIcon,' fa-bookmark" aria-hidden="true"></i><span>',saveLabel,'</span></button>',
   '<button type="button" class="py2-post-action" data-share-post="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button>',
-  '<a class="py2-post-action py2-post-open" href="',href,'" data-blog-open="',esc(p.slug),'"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Open post</span></a></div>',
+  '<button type="button" class="py2-post-action" data-toggle-comments="',esc(p.slug),'" aria-expanded="false"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Comments</span></button>',
+  '<a class="py2-post-action py2-post-open" href="',href,'" data-blog-open="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span>Open post</span></a></div>',
   '<div class="py2-post-footer"><span><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Smart choices. Better connected.</span>',
-  '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div></article>'
+  '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div>',
+  commentsPanel(p),'</article>'
  ].join('');
 }
 function populateCategoryFilters(){
@@ -99,7 +129,33 @@ if(searchInput)searchInput.addEventListener('input',function(){search=this.value
 if(filters)filters.addEventListener('click',function(e){var b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;showSaved=false;visibleCount=PAGE_SIZE;filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x===b)});render()});
 document.querySelectorAll('[data-rail-category]').forEach(function(b){b.addEventListener('click',function(){category=this.getAttribute('data-rail-category');showSaved=false;visibleCount=PAGE_SIZE;if(filters){filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')===category)})}render()})});
 if(feed){
+ feed.addEventListener('submit',async function(e){
+  var form=e.target.closest('[data-comment-form]');if(!form)return;
+  e.preventDefault();
+  var submit=form.querySelector('button[type="submit"]'),status=form.querySelector('[data-comment-status]');
+  var name=form.elements.name.value.trim(),message=form.elements.message.value.trim(),website=form.elements.website.value;
+  if(name.length<2||message.length<3){if(status)status.textContent='Please enter your name and a comment of at least 3 characters.';return}
+  if(submit){submit.disabled=true;submit.textContent='Submitting…'}
+  if(status)status.textContent='Sending your comment for review…';
+  try{
+   var response=await fetch('/api/blog-comments',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({post_slug:form.getAttribute('data-post-slug'),name:name,message:message,website:website})});
+   var data=await response.json();
+   if(!response.ok)throw new Error(data.error||'Your comment could not be submitted.');
+   form.reset();
+   if(status)status.textContent=data.message||'Thanks! Your comment is awaiting review.';
+  }catch(err){if(status)status.textContent=err.message||'Your comment could not be submitted. Please try again.'}
+  finally{if(submit){submit.disabled=false;submit.textContent='Submit comment'}}
+ });
  feed.addEventListener('click',function(e){
+  var commentToggle=e.target.closest('[data-toggle-comments]');
+  if(commentToggle){
+   var slug=commentToggle.getAttribute('data-toggle-comments'),article=commentToggle.closest('[data-post-slug]'),panel=article&&article.querySelector('[data-comments-panel]');
+   if(!panel)return;
+   var opening=panel.hidden;panel.hidden=!opening;commentToggle.setAttribute('aria-expanded',opening?'true':'false');
+   if(opening&&panel.dataset.loaded!=='true')loadComments(panel,slug);
+   if(opening)panel.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});
+   return;
+  }
   var save=e.target.closest('[data-save-post]');if(save){var slug=save.getAttribute('data-save-post'),saved=getSaved(),i=saved.indexOf(slug);if(i>=0)saved.splice(i,1);else saved.unshift(slug);setSaved(saved);render();track('blog_post_save',{post_slug:slug,saved:i<0});return}
   var share=e.target.closest('[data-share-post]');if(share){var p=posts.find(function(x){return x.slug===share.getAttribute('data-share-post')});if(!p)return;var url=location.origin+'/blog-post.html?slug='+encodeURIComponent(p.slug),data={title:p.title||'PhoneYa2 post',text:p.excerpt||'See this PhoneYa2 post',url:url};track('blog_post_share',{post_slug:p.slug});if(navigator.share)navigator.share(data).catch(function(){});else if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){share.classList.add('is-copied');share.querySelector('span').textContent='Link copied'}).catch(function(){window.prompt('Copy this post link',url)});else window.prompt('Copy this post link',url);return}
   var a=e.target.closest('[data-blog-open]');if(a)track('blog_post_open',{post_slug:a.getAttribute('data-blog-open'),link_location:'community_feed'})
