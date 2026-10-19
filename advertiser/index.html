@@ -152,7 +152,7 @@
   .stat-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--py2-muted); margin-bottom: 5px; }
   .stat-val { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.35rem; color: var(--py2-text); line-height: 1.1; }
   .stat-val.accent { color: var(--py2-orange); }
-  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--py2-border); margin-bottom: 20px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-left: -16px; margin-right: -16px; padding: 0 16px; position: sticky; top: 58px; z-index: 80; background: #fff; box-shadow: 0 8px 18px rgba(15,23,42,.06); }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--py2-border); margin: 0 -16px 20px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 16px; position: sticky; top: 58px; z-index: 90; background: #fff; box-shadow: 0 8px 18px rgba(15,23,42,.06); }
   .tabs::-webkit-scrollbar { display: none; }
   @media (min-width: 768px) { .tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; } }
   .tab { flex: 0 0 auto; background: none; border: none; border-bottom: 3px solid transparent; color: var(--py2-muted); font-family: var(--py2-font-body); font-size: 13px; font-weight: 600; padding: 12px 14px; min-height: 44px; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: color .15s, border-color .15s; }
@@ -449,6 +449,14 @@
   </div>
 
   <div class="wrap" style="padding-top:20px;padding-bottom:60px;">
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
+      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
+      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
+      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
+      <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
+      <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
+    </div>
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px;">
       <div style="flex:1;">
         <h1 id="greeting" style="font-family:var(--py2-font-head);font-weight:800;font-size:1.5rem;margin-bottom:4px;">Welcome back</h1>
@@ -536,14 +544,7 @@
       </div>
     </section>
 
-    <div class="tabs" role="tablist">
-      <button class="tab on" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
-      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
-      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
-      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
-      <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
-      <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
-    </div>
+
 
     <div class="profile-quick-actions" aria-label="Business profile shortcuts">
       <div class="profile-quick-copy"><strong>Make your business profile work harder</strong><span>Edit what customers see, then preview the public profile before sharing it.</span></div>
