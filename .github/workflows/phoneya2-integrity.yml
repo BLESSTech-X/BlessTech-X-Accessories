@@ -1,0 +1,27 @@
+name: PhoneYa2 integrity checks
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build product index
+        run: node build-product-index.js
+      - name: Generate sitemap
+        run: node generate-sitemap.js
+      - name: Validate required pages, product index and sitemap
+        run: node scripts/verify-phoneya2-build.js
