@@ -1372,7 +1372,8 @@
     setText('plan-icon', cfg.icon);
     setText('plan-name', cfg.name);
     setText('plan-desc', cfg.short);
-    var planUpgradeButton = $('btn-upgrade');\n    if (planUpgradeButton) planUpgradeButton.disabled = false;
+    var planUpgradeButton = $('btn-upgrade');
+    if (planUpgradeButton) planUpgradeButton.disabled = false;
 
     // Active ad count vs limit
     var active = ads.filter(function (a) { return a.status === 'approved' || a.status === 'pending'; }).length;
