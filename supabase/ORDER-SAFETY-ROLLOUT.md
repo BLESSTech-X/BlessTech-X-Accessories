@@ -12,6 +12,8 @@ The idempotency work prevents a retry of the same checkout request from creating
 2. Take a current Supabase database backup or confirm the project's available point-in-time recovery before modifying the schema.
 3. Open `supabase/order-idempotency-migration.sql` from this branch and review it against the live `public.orders` and `public.order_items` definitions.
 4. Run the migration in Supabase SQL Editor. It adds nullable idempotency metadata for new orders, creates a partial unique index, and replaces the service-role-only transaction RPC. Existing order rows are preserved.
+4a. Confirm the migration preserves the legacy six-argument function and creates the new eight-argument function. Do not deploy until both signatures are visible and the new eight-argument RPC has the intended service-role-only permissions.
+
 5. Verify the migration before deploying application code:
 
 ```sql
