@@ -391,7 +391,11 @@ export async function onRequest(context) {
         });
       }
 
-      let rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
+      const idempotencyKey = cleanText(body.idempotency_key, 80);
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
+        return json({ error: "Your checkout session needs refreshing. Please reload checkout and try again." }, 400);
+      }
+      const rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
         method: "POST",
         body: JSON.stringify({
           p_customer_name: name,
@@ -399,22 +403,28 @@ export async function onRequest(context) {
           p_customer_phone: phone,
           p_delivery_address: address,
           p_items: items,
+          p_idempotency_key: idempotencyKey,
           p_customer_note: note
         })
       });
-      if (!rpc.ok && !note) {
-        // Keep ordinary checkout working until the database note migration is applied.
-        rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
-          method: "POST",
-          body: JSON.stringify({ p_customer_name: name, p_customer_email: email, p_customer_phone: phone, p_delivery_address: address, p_items: items })
-        });
-      }
       if (!rpc.ok) {
         const detail = await rpc.text();
         console.error("PhoneYa2 order RPC failed:", rpc.status, detail.slice(0, 500));
         return json({ error: note ? "Order notes are being enabled. Please try again shortly, or remove the note and submit the order." : "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
       const order = await rpc.json();
+      // A retry returns the original order. Do not send duplicate invitations or notifications.
+      if (order.replayed === true) {
+        return json({
+          success: true,
+          order_number: order.order_number,
+          total_amount: order.total_amount,
+          currency: "ZMW",
+          notification_sent: false,
+          account_invited: false,
+          replayed: true
+        }, 200);
+      }
       // Customer orders are saved first; account invitations are best-effort and
       // must never cause a successful order to fail. Existing accounts are left alone.
       let accountInvited = false;
