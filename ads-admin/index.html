@@ -1200,6 +1200,26 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="modal" id="modal-ad-preview">
+  <div class="modal-box wide" style="width:min(980px,96vw);">
+    <div class="modal-head">
+      <div><h3 id="ad-preview-title">Live ad preview</h3><p id="ad-preview-subtitle" style="font-size:12px;color:var(--muted);margin-top:4px;">Real PhoneYa2 ad page in a responsive frame.</p></div>
+      <button type="button" class="modal-x" data-close="modal-ad-preview" aria-label="Close preview">✕</button>
+    </div>
+    <div class="modal-body" style="background:#eef1f7;">
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+        <button type="button" class="btn btn-primary btn-sm" id="preview-desktop">Desktop preview</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="preview-mobile">Mobile preview</button>
+        <a class="btn btn-primary btn-sm" id="preview-open-live" href="/" target="_blank" rel="noopener noreferrer">Open live page ↗</a>
+      </div>
+      <div id="ad-preview-frame-wrap" style="margin:auto;width:100%;max-width:100%;transition:width .25s ease;overflow:hidden;border:1px solid #cbd2df;border-radius:14px;background:#fff;box-shadow:0 12px 35px #17233a20;">
+        <iframe id="ad-preview-frame" title="PhoneYa2 advertisement live preview" src="about:blank" loading="lazy" style="display:block;width:100%;height:min(72vh,760px);min-height:420px;border:0;background:#fff;"></iframe>
+      </div>
+      <p style="font-size:12px;color:#667085;margin:10px 0 0;text-align:center;">This loads the real public PhoneYa2 ad page, so its deployed layout, media and animations are shown rather than a static mock-up. Pending or paused ads may still show their public details page but will not appear in live placements until approved/active.</p>
+    </div>
+  </div>
+</div>
+
 <script src="/ads-config.js"></script>
 <script>
 (function () {
@@ -1523,7 +1543,7 @@
               '<button class="btn btn-success btn-sm" data-act="approve" data-id="' + a.id + '"><i class="fa-solid fa-check"></i> Approve</button>' +
               '<button class="btn btn-danger btn-sm" data-act="reject" data-id="' + a.id + '"><i class="fa-solid fa-xmark"></i> Reject</button>' +
               '<button class="btn btn-ghost btn-sm" style="color:var(--red);" data-act="ban" data-id="' + a.id + '"><i class="fa-solid fa-ban"></i> Ban</button>' +
-              (a.slug ? '<a class="btn btn-ghost btn-sm" href="/ad/' + esc(a.slug) + '" target="_blank"><i class="fa-solid fa-eye"></i> Preview</a>' : '') +
+              (a.slug ? '<button type="button" class="btn btn-ghost btn-sm" data-preview-ad="' + a.id + '"><i class="fa-solid fa-eye"></i> Live preview</button>' : '') +
             '</div>' +
           '</div>' +
         '</div>';
@@ -1583,7 +1603,7 @@
             '<div><div class="lbl">Ads</div><div class="val">' + num(adCount) + '</div></div>' +
             '<div><div class="lbl">Status</div><div class="val">' + (a.status || 'active') + '</div></div>' +
           '</div>' +
-          '<button class="btn btn-primary btn-block" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Manage Plan</button>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button class="btn btn-primary" data-plan="' + a.id + '" style="width:100%;"><i class="fa-solid fa-crown"></i> Manage Plan</button><button class="btn btn-secondary" data-advstatus="' + a.id + '" data-next-status="' + (a.status === 'suspended' ? 'active' : 'suspended') + '" style="width:100%;"><i class="fa-solid fa-' + (a.status === 'suspended' ? 'play' : 'pause') + '"></i> ' + (a.status === 'suspended' ? 'Reactivate' : 'Suspend') + '</button></div>' +
         '</div>';
     });
     mobile += '</div>';
@@ -1610,7 +1630,7 @@
         '<td style="font-size:12px;">' + esc(expiryTxt(a)) + '</td>' +
         '<td>' + num(adCount) + '</td>' +
         '<td>' + stat + '</td>' +
-        '<td><button class="btn btn-secondary btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Plan</button></td>' +
+        '<td style="white-space:nowrap;"><button class="btn btn-secondary btn-sm" data-plan="' + a.id + '"><i class="fa-solid fa-crown"></i> Plan</button> <button class="btn btn-ghost btn-sm" data-advstatus="' + a.id + '" data-next-status="' + (a.status === 'suspended' ? 'active' : 'suspended') + '" title="' + (a.status === 'suspended' ? 'Reactivate advertiser' : 'Suspend advertiser') + '"><i class="fa-solid fa-' + (a.status === 'suspended' ? 'play' : 'pause') + '"></i></button></td>' +
       '</tr>';
     });
     table += '</tbody></table></div>';
@@ -1621,6 +1641,27 @@
       btn.addEventListener('click', function () {
         var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-plan'); });
         if (adv) openPlanModal(adv);
+      });
+    });
+    body.querySelectorAll('[data-advstatus]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var adv = advertisers.find(function (x) { return x.id === btn.getAttribute('data-advstatus'); });
+        var nextStatus = btn.getAttribute('data-next-status');
+        if (!adv || !nextStatus) return;
+        var verb = nextStatus === 'suspended' ? 'suspend' : 'reactivate';
+        if (!window.confirm('Are you sure you want to ' + verb + ' advertising access for ' + (adv.business_name || 'this advertiser') + '?')) return;
+        btn.disabled = true;
+        P.db.update('advertisers', 'id=eq.' + encodeURIComponent(adv.id), { status: nextStatus }, session.access_token)
+          .then(function () {
+            return logAction(null, nextStatus === 'suspended' ? 'suspend_advertiser' : 'reactivate_advertiser', null, (adv.business_name || '') + ' (' + (adv.email || '') + ')');
+          })
+          .then(function () {
+            toast(nextStatus === 'suspended' ? 'Advertiser suspended' : 'Advertiser reactivated', 'success');
+            return reloadAll();
+          })
+          .then(renderAll)
+          .catch(function (err) { toast(err.message || 'Could not update advertiser', 'error'); })
+          .finally(function () { btn.disabled = false; });
       });
     });
   }
@@ -1756,6 +1797,7 @@
       var biz = a.advertisers ? a.advertisers.business_name : '—';
       var s = statsByAd[a.id] || { impressions: 0, clicks: 0 };
       var actions = '';
+      if (a.slug) actions += '<button class="btn btn-ghost btn-sm" data-preview-ad="' + a.id + '" title="Preview public ad page"><i class="fa-solid fa-eye"></i></button>';
       if (a.status === 'approved') actions += '<button class="btn btn-ghost btn-sm" data-kill="pause" data-id="' + a.id + '" title="Deactivate"><i class="fa-solid fa-power-off"></i></button>';
       else if (a.status === 'paused') actions += '<button class="btn btn-ghost btn-sm" data-kill="resume" data-id="' + a.id + '" title="Reactivate"><i class="fa-solid fa-play"></i></button>';
       if (a.status === 'pending') actions += '<button class="btn btn-ghost btn-sm" style="color:#16a34a;" data-act="approve" data-id="' + a.id + '"><i class="fa-solid fa-check"></i></button>';
@@ -1957,6 +1999,34 @@
     }, session.access_token).catch(function (e) { console.warn('log fail', e); });
   }
 
+  function openAdPreview(ad) {
+    if (!ad || !ad.slug) { toast('This ad does not have a public slug yet.', 'error'); return; }
+    var url = '/ad/' + encodeURIComponent(ad.slug);
+    $('ad-preview-title').textContent = 'Live preview — ' + (ad.title || 'PhoneYa2 ad');
+    $('ad-preview-subtitle').textContent = (ad.advertisers && ad.advertisers.business_name ? ad.advertisers.business_name + ' · ' : '') + 'Public PhoneYa2 ad page';
+    $('ad-preview-frame').src = url;
+    $('preview-open-live').href = url;
+    $('ad-preview-frame-wrap').style.width = '100%';
+    $('preview-desktop').classList.add('btn-primary');
+    $('preview-mobile').classList.remove('btn-primary');
+    openModal('modal-ad-preview');
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-preview-ad]');
+    if (!btn) return;
+    var ad = ads.find(function (x) { return String(x.id) === String(btn.getAttribute('data-preview-ad')); });
+    if (ad) openAdPreview(ad);
+  });
+  $('preview-desktop').addEventListener('click', function () {
+    $('ad-preview-frame-wrap').style.width = '100%';
+    $('preview-desktop').classList.add('btn-primary');
+    $('preview-mobile').classList.remove('btn-primary');
+  });
+  $('preview-mobile').addEventListener('click', function () {
+    $('ad-preview-frame-wrap').style.width = 'min(390px, 100%)';
+    $('preview-mobile').classList.add('btn-primary');
+    $('preview-desktop').classList.remove('btn-primary');
+  });
   function openApprove(ad) { pending.ad = ad; $('approve-note').value = ''; openModal('modal-approve'); }
   $('approve-confirm').addEventListener('click', function () {
     if (!pending.ad) return;
