@@ -40,6 +40,7 @@ assert.ok(!checkoutHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Checkout must
 assert.ok(!cartHtml.includes('/^[a-z0-9][a-z0-9-]{0,100}$/'), 'Cart must not reject valid Unicode product slugs.');
 assert.ok(orderApi.includes('request_fingerprint&limit=1'), 'Order API must look up an existing request before current catalogue validation.');
 assert.ok(orderApi.includes('p_request_fingerprint: requestFingerprint'), 'Order API must pass its request fingerprint to the database transaction.');
+assert.ok(orderApi.includes('different order details') && orderApi.includes('}, 409);'), 'Order API must return a conflict when a key is reused with different details.');
 assert.ok(idempotencySql.includes('pg_advisory_xact_lock'), 'Database order creation must serialize simultaneous retries.');
 assert.ok(idempotencySql.includes('CREATE UNIQUE INDEX IF NOT EXISTS orders_idempotency_key_unique'), 'Database must enforce unique idempotency keys.');
 assert.ok(idempotencySql.includes('ADD COLUMN IF NOT EXISTS request_fingerprint TEXT'), 'Database migration must store the request fingerprint.');
