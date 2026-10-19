@@ -1821,12 +1821,6 @@
       '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 
-    $('ads-body').querySelectorAll('[data-preview-ad]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var ad = ads.find(function (x) { return String(x.id) === String(btn.getAttribute('data-preview-ad')); });
-        if (ad) openAdPreview(ad);
-      });
-    });
     $('ads-body').querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act = btn.getAttribute('data-act');
@@ -2029,7 +2023,7 @@
     $('preview-mobile').classList.remove('btn-primary');
   });
   $('preview-mobile').addEventListener('click', function () {
-    $('ad-preview-frame-wrap').style.width = '390px';
+    $('ad-preview-frame-wrap').style.width = 'min(390px, 100%)';
     $('preview-mobile').classList.add('btn-primary');
     $('preview-desktop').classList.remove('btn-primary');
   });
