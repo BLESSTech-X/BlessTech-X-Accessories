@@ -278,15 +278,15 @@
   .stat-val.green  { color: #16a34a; }
 
   .tabs {
-    display: flex;
-    gap: 2px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 18px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    margin-left: -14px; margin-right: -14px;
-    padding-left: 14px; padding-right: 14px;
+    display:flex; align-items:center; gap:2px;
+    max-width:1252px; margin:0 auto 18px;
+    border-bottom:1px solid var(--border);
+    overflow-x:auto; overflow-y:hidden;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    padding:8px 14px 0;
+    position:sticky; top:var(--ads-admin-header-height, 58px); z-index:99;
+    background:rgba(255,255,255,.98); backdrop-filter:blur(14px);
+    box-shadow:0 8px 20px rgba(15,23,42,.09);
   }
   .tabs::-webkit-scrollbar { display: none; }
   @media (min-width: 768px) {
@@ -316,14 +316,13 @@
 
   .panel { display: none; }
   .panel.on { display: block; }
-  .tabs{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);box-shadow:0 8px 20px rgba(15,23,42,.07);padding-top:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .admin-overview{margin-bottom:22px}
   .admin-welcome{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(190px,.8fr);gap:22px;align-items:center;padding:clamp(20px,3vw,32px);border:1px solid #dce6f3;border-radius:20px;background:linear-gradient(118deg,#fff 0%,#f4f8ff 64%,#fff4eb 100%);box-shadow:0 14px 38px rgba(22,45,79,.07);overflow:hidden}
   .admin-welcome-copy{min-width:0}.admin-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:1.1px;font-weight:900;color:#2765a8}.admin-welcome h2{font-size:clamp(24px,3vw,34px);letter-spacing:-.9px;line-height:1.12;margin:11px 0 10px;color:#14243b}.admin-welcome p{font-size:13px;line-height:1.7;color:#58677c;max-width:690px;margin:0}.admin-welcome-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}.admin-welcome-actions .btn{width:auto!important;min-height:42px}.welcome-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:99px;background:#ffffff32;padding:0 5px;font-size:11px}
   .admin-welcome-art{display:flex;justify-content:center;min-width:0;padding:6px}.admin-art-window{width:min(100%,265px);padding:12px;border:1px solid #d7e2ef;border-radius:14px;background:#fff;box-shadow:0 18px 35px rgba(26,55,93,.13);transform:rotate(1deg)}.admin-art-top{display:flex;align-items:center;gap:5px;color:#64748b;font-size:8px;font-weight:900;letter-spacing:1px}.admin-art-top i{width:6px;height:6px;border-radius:50%;background:#cbd5e1}.admin-art-top span{margin-left:auto}.admin-art-hero{display:flex;flex-direction:column;gap:1px;margin:12px 0;padding:14px;border-radius:8px;background:linear-gradient(120deg,#123c6b,#3478f6 68%,#f97316);color:white;font-size:18px;line-height:1.12;letter-spacing:-.5px}.admin-art-bars{height:54px;display:flex;align-items:flex-end;gap:7px;padding:0 7px 4px;border-bottom:1px solid #e5edf6}.admin-art-bars i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(#60a5fa,#2563eb);height:30%}.admin-art-bars i:nth-child(2){height:52%}.admin-art-bars i:nth-child(3){height:41%}.admin-art-bars i:nth-child(4){height:72%}.admin-art-bars i:nth-child(5){height:58%}.admin-art-bars i:nth-child(6){height:88%}.admin-art-bars i:nth-child(7){height:100%}.admin-art-footer{display:flex;gap:8px;margin-top:10px}.admin-art-footer span{height:6px;border-radius:9px;background:#e4ebf4;flex:1}.admin-art-footer span:last-child{flex:.55;background:#ffdfc9}
   .admin-overview-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 12px}.admin-overview-heading h2{font-size:17px;color:var(--text);margin:0 0 4px}.admin-overview-heading p{font-size:12px;color:var(--muted);margin:0}.admin-live-indicator{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;border-radius:99px;padding:7px 10px}.admin-live-indicator i{width:7px;height:7px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px #dcfce7}
   .admin-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}.admin-shortcut{display:flex;align-items:center;gap:11px;min-width:0;text-align:left;border:1px solid var(--border);border-radius:14px;background:#fff;padding:14px;transition:transform .16s,box-shadow .16s,border-color .16s}.admin-shortcut:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.07);border-color:#cbd8e8}.admin-shortcut>span:nth-child(2){display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.admin-shortcut strong{font-size:12px;color:#172033}.admin-shortcut small{font-size:11px;line-height:1.4;color:#64748b}.admin-shortcut>i{font-size:12px;color:#94a3b8}.admin-shortcut-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex:0 0 36px;border-radius:11px}.admin-shortcut-icon.orange{background:#fff0e5;color:#e85b08}.admin-shortcut-icon.blue{background:#eaf2ff;color:#2563eb}.admin-shortcut-icon.amber{background:#fff7dc;color:#a16207}.admin-shortcut-icon.red{background:#fff0f0;color:#dc2626}.admin-overview-foot{display:flex;align-items:flex-start;gap:9px;padding:13px 15px;margin-top:14px;border-radius:12px;background:#f1f6fd;color:#526176;font-size:11px;line-height:1.55}.admin-overview-foot i{color:#3478f6;margin-top:2px}
-  @media(max-width:700px){.admin-welcome{grid-template-columns:1fr;gap:10px;padding:19px}.admin-welcome-art{padding:4px}.admin-art-window{width:min(100%,220px)}.admin-welcome-actions{display:grid;grid-template-columns:1fr}.admin-welcome-actions .btn{width:100%!important}.admin-shortcuts{grid-template-columns:1fr}.admin-overview-heading{align-items:flex-start}.tabs{top:0;margin-left:-14px;margin-right:-14px;padding-left:10px;padding-right:10px}}
+  @media(max-width:700px){.admin-welcome{grid-template-columns:1fr;gap:10px;padding:19px}.admin-welcome-art{padding:4px}.admin-art-window{width:min(100%,220px)}.admin-welcome-actions{display:grid;grid-template-columns:1fr}.admin-welcome-actions .btn{width:100%!important}.admin-shortcuts{grid-template-columns:1fr}.admin-overview-heading{align-items:flex-start}.tabs{padding-left:10px;padding-right:10px}}
 
 
   .badge {
@@ -892,7 +891,19 @@
     </div>
   </div>
 
-  <div class="wrap" style="padding-bottom:60px;">
+  <div class="tabs" role="tablist" aria-label="Advertising administration sections">
+      <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+      <button class="tab" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Queue <span class="count" id="tab-count-queue">0</span></button>
+      <button class="tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Advertisers</button>
+      <button class="tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Plans</button>
+      <button class="tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Expiring <span class="count" id="tab-count-expiring">0</span></button>
+      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> All Ads</button>
+      <button class="tab" data-tab="reports" type="button"><i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span></button>
+      <button class="tab" data-tab="log" type="button"><i class="fa-solid fa-clipboard-list"></i> Log</button>
+      <button class="tab" data-tab="analytics" type="button"><i class="fa-solid fa-chart-line"></i> Analytics</button>
+    </div>
+
+<div class="wrap" style="padding-bottom:60px;">
 
     <div class="dash-head">
       <div>
@@ -935,17 +946,7 @@
     </section>
 
 
-    <div class="tabs" role="tablist" aria-label="Advertising administration sections">
-      <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
-      <button class="tab" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Queue <span class="count" id="tab-count-queue">0</span></button>
-      <button class="tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Advertisers</button>
-      <button class="tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Plans</button>
-      <button class="tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Expiring <span class="count" id="tab-count-expiring">0</span></button>
-      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> All Ads</button>
-      <button class="tab" data-tab="reports" type="button"><i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span></button>
-      <button class="tab" data-tab="log" type="button"><i class="fa-solid fa-clipboard-list"></i> Log</button>
-      <button class="tab" data-tab="analytics" type="button"><i class="fa-solid fa-chart-line"></i> Analytics</button>
-    </div>
+    
 
     <section class="panel" data-panel="queue">
       <div id="queue-list"></div>
@@ -2323,6 +2324,18 @@
   document.querySelectorAll('[data-admin-jump]').forEach(function (b) {
     b.addEventListener('click', function () { switchTab(b.getAttribute('data-admin-jump')); });
   });
+
+  // Measure the sticky admin header so the section tabs dock directly beneath it.
+  (function syncAdsAdminHeaderHeight() {
+    var header = document.querySelector("#scr-admin .topbar");
+    if (!header) return;
+    var updateHeight = function () {
+      document.documentElement.style.setProperty("--ads-admin-header-height", Math.ceil(header.getBoundingClientRect().height) + "px");
+    };
+    updateHeight();
+    if (window.ResizeObserver) new ResizeObserver(updateHeight).observe(header);
+    window.addEventListener("resize", updateHeight, { passive: true });
+  })();
 
   function switchTab(name) {
     if (!document.querySelector('.panel[data-panel="' + name + '"]')) name = 'dashboard';
