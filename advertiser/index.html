@@ -165,6 +165,11 @@
   .tab-create-cta:hover,.tab-create-cta.on { background:#e65300; color:#fff; border-bottom-color:#e65300; }
   .advertiser-overview { border:0; background:transparent; box-shadow:none; overflow:visible; margin-bottom:8px; }
   .advertiser-overview.on { display:block; }
+  .dashboard-site-promo{display:grid;grid-template-columns:minmax(180px, .72fr) minmax(0,1.6fr);gap:22px;align-items:center;margin:0 0 20px;padding:clamp(16px,3vw,26px);border:1px solid #dce7f5;background:linear-gradient(120deg,#fff 0%,#f6faff 62%,#fff7f0 100%);border-radius:18px;box-shadow:0 12px 34px rgba(24,49,83,.07)}
+  .dashboard-site-promo-copy{min-width:0}.dashboard-site-kicker{display:flex;align-items:center;gap:7px;color:#2765a8;font-size:10px;letter-spacing:1.1px;font-weight:900}.dashboard-site-promo h2{margin:8px 0;font-size:clamp(19px,2.4vw,26px);line-height:1.2;letter-spacing:-.55px;color:#14243b}.dashboard-site-promo p{margin:0;color:#526176;font-size:13px;line-height:1.65}.dashboard-site-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.dashboard-site-actions .btn{min-height:40px}.dashboard-site-note{font-size:11px!important;margin-top:10px!important;color:#6b7280!important}
+  .dashboard-site-preview-art{display:flex;align-items:center;justify-content:center;min-width:0;padding:10px}.site-browser{width:min(100%,255px);padding:12px;border:1px solid #d8e2ef;border-radius:13px;background:#fff;box-shadow:0 18px 35px rgba(26,55,93,.13);transform:rotate(-1deg)}.site-browser>span{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:#d5dfec}.site-browser-brand{font-size:10px;font-weight:900;color:#1d3555;margin:10px 0}.site-browser-hero{height:52px;border-radius:7px;background:linear-gradient(115deg,#143c6b,#3478f6 60%,#a9d8ff);position:relative;overflow:hidden}.site-browser-hero:after{content:"";position:absolute;right:14px;top:12px;width:42px;height:28px;border-radius:6px;background:#ffffff4d}.site-browser-lines{height:5px;width:65%;border-radius:9px;background:#dbe4ef;margin:10px 0 8px}.site-browser-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.site-browser-cards i{height:34px;border-radius:5px;background:linear-gradient(#edf3f9,#f8fafc);border:1px solid #e5edf6}
+  @media(max-width:650px){.dashboard-site-promo{grid-template-columns:1fr;gap:8px}.dashboard-site-preview-art{padding:4px}.site-browser{width:210px}.dashboard-site-actions .btn{flex:1 1 145px;white-space:normal}.dashboard-site-promo h2{font-size:21px}}
+
   .tabs { align-items:center; gap:4px; }
   @media(max-width:767px){ .tabs { top:58px; padding:8px 12px; margin-left:-16px; margin-right:-16px; } .tab-create-cta { margin-left:0; } }
   .panel { display: none; }
@@ -544,6 +549,11 @@
         <div class="growth-coach-actions" id="growth-coach-actions"></div>
         <p class="growth-coach-note" id="growth-coach-note">Tip: impressions mean your ad was shown; clicks mean someone chose to learn more. Neither guarantees a sale.</p>
       </div>
+    </section>
+
+    <section class="card dashboard-site-promo" id="dashboard-site-promo">
+      <div class="dashboard-site-preview-art" aria-hidden="true"><div class="site-browser"><span></span><span></span><span></span><div class="site-browser-brand">Your Business</div><div class="site-browser-hero"></div><div class="site-browser-lines"></div><div class="site-browser-cards"><i></i><i></i><i></i></div></div></div>
+      <div class="dashboard-site-promo-copy"><div class="dashboard-site-kicker"><i class="fa-solid fa-globe"></i> YOUR BUSINESS WEBSITE ON PHONEYA2</div><h2 id="dashboard-site-title">Make your profile your business’s home online.</h2><p id="dashboard-site-copy">Your public profile is more than a listing: use it as a simple business website to introduce your brand, show your live offers, and give customers one reliable link for contacting you.</p><div class="dashboard-site-actions"><button type="button" class="btn btn-secondary" id="btn-dashboard-site-preview"><i class="fa-solid fa-arrow-up-right-from-square"></i> Preview My Website</button><button type="button" class="btn btn-primary" id="btn-dashboard-site-upgrade" onclick="AdsUI.openUpgrade()"><i class="fa-solid fa-crown"></i> Unlock a Premium Look</button><button type="button" class="btn btn-ghost" id="btn-dashboard-site-edit"><i class="fa-solid fa-pen-to-square"></i> Edit Website</button></div><p class="dashboard-site-note" id="dashboard-site-note">Free profiles can get started today. Upgrade to unlock more polished branding and profile customisation as your business grows.</p></div>
     </section>
 
     <div class="profile-quick-actions" aria-label="Business profile shortcuts">
@@ -1360,6 +1370,7 @@
       renderShareTab();
       renderOpportunityInline();
       renderProfileOpportunity();
+    renderDashboardSitePromo();
       maybeShowOpportunityBanner();
     });
   }
@@ -1517,6 +1528,27 @@
       '</div>';
   }
 
+  function renderDashboardSitePromo() {
+    var eff = effectiveTier();
+    var title = $('dashboard-site-title'), copy = $('dashboard-site-copy'), note = $('dashboard-site-note'), upgrade = $('btn-dashboard-site-upgrade');
+    if (eff === 'free') {
+      if (title) title.textContent = 'Turn your free profile into the starting point for your business online.';
+      if (copy) copy.textContent = 'Use your PhoneYa2 mini-website as your public business home: introduce your brand, show approved offers, and give customers one link to find and contact you. It is shareable on WhatsApp, Facebook, and your other channels.';
+      if (note) note.textContent = 'Your free profile helps you get started. Upgrade from K20+ to unlock more professional branding, richer profile customisation, and a more premium presentation (features depend on plan).';
+      if (upgrade) upgrade.style.display = '';
+    } else if (eff === 'starter') {
+      if (title) title.textContent = 'Give your business website a more professional finish.';
+      if (copy) copy.textContent = 'Keep using your public PhoneYa2 profile as your business website. A higher plan can unlock additional branding and presentation options so your page better reflects your brand.';
+      if (note) note.textContent = 'Compare the next plan’s features before upgrading; choose the extras that are useful for your business.';
+      if (upgrade) { upgrade.style.display = ''; upgrade.innerHTML = '<i class="fa-solid fa-crown"></i> Explore a Higher Plan'; }
+    } else {
+      if (title) title.textContent = 'Your PhoneYa2 profile is your business website—keep it working for you.';
+      if (copy) copy.textContent = 'Share one professional destination for your brand, business information, contact options, and approved offers. Keep your details current so customers always know where to go next.';
+      if (note) note.textContent = 'Tip: copy your profile link into your social bios, WhatsApp Business profile, and customer messages.';
+      if (upgrade) upgrade.style.display = 'none';
+    }
+  }
+
   function renderProfileOpportunity() {
     var el = $('profile-opportunity');
     if (!el) return;
@@ -1614,7 +1646,7 @@
           if(primaryAction==='share'&&shareUrl){var shareCaption=(advertiser.business_name||'Our business')+' has an offer on PhoneYa2: '+(best.title||'discover our offer')+'. Take a look: '+shareUrl+' #PhoneYa2 #ZambiaBusiness';var shareLinks=document.createElement('div');shareLinks.className='growth-nudge-sharelinks';shareLinks.innerHTML='<a href="https://wa.me/?text='+encodeURIComponent(shareCaption)+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a><a href="https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl)+'" target="_blank" rel="noopener"><i class="fa-brands fa-facebook"></i> Facebook</a><button type="button" data-nudge-copy="'+esc(shareUrl)+'"><i class="fa-solid fa-link"></i> Copy link</button><button type="button" data-nudge-caption="'+esc(shareCaption)+'"><i class="fa-solid fa-quote-left"></i> Copy post text</button>';n.appendChild(shareLinks)}
           n.addEventListener('click',function(ev){
             if(ev.target.closest('.growth-nudge-close')){n.remove();return;}
-            var sb=ev.target.closest('[data-nudge-share]');if(sb){var u=sb.getAttribute('data-nudge-share');if(navigator.share)navigator.share({title:'My business on PhoneYa2',text:'Take a look at this offer from my business on PhoneYa2.',url:u}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast('Ad link copied.','success')}).catch(function(){window.prompt('Copy your ad link',u)});else window.prompt('Copy your ad link',u);return;}
+            var sb=ev.target.closest('[data-nudge-share]');if(sb){var u=sb.getAttribute('data-nudge-share');if(navigator.share)navigator.share({title:(best&&best.title?best.title:'Business offer')+' · '+(advertiser.business_name||'PhoneYa2'),text:(advertiser.business_name||'Our business')+' is sharing this offer: '+(best&&best.title?best.title:'our latest offer')+'. View the exact ad on PhoneYa2:',url:u}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast('Ad link copied.','success')}).catch(function(){window.prompt('Copy your ad link',u)});else window.prompt('Copy your ad link',u);return;}
             var cb=ev.target.closest('[data-nudge-copy]');if(cb){var cu=cb.getAttribute('data-nudge-copy');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(cu).then(function(){toast('Ad link copied. Share it with your audience.','success')}).catch(function(){window.prompt('Copy your ad link',cu)});else window.prompt('Copy your ad link',cu);return;}
             var cp=ev.target.closest('[data-nudge-caption]');if(cp){var caption=cp.getAttribute('data-nudge-caption');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(caption).then(function(){toast('Ready-to-post caption copied.','success')}).catch(function(){window.prompt('Copy your post text',caption)});else window.prompt('Copy your post text',caption);return;}
             if(ev.target.closest('[data-nudge-create]')){n.remove();AdsUI.switchTab('create');return;}
@@ -1858,6 +1890,14 @@
     if (!profile || !profile.slug) { toast('Your profile is still loading. Please try again.', 'error'); return; }
     window.open(window.location.origin + '/b/' + encodeURIComponent(profile.slug), '_blank', 'noopener');
   });
+
+  var btnDashboardSitePreview = $('btn-dashboard-site-preview');
+  if (btnDashboardSitePreview) btnDashboardSitePreview.addEventListener('click', function () {
+    if (!profile || !profile.slug) { toast('Your business website is still loading. Please try again.', 'error'); return; }
+    window.open(window.location.origin + '/b/' + encodeURIComponent(profile.slug), '_blank', 'noopener');
+  });
+  var btnDashboardSiteEdit = $('btn-dashboard-site-edit');
+  if (btnDashboardSiteEdit) btnDashboardSiteEdit.addEventListener('click', function () { switchTab('profile'); });
 
   var btnNewAdTop = $('btn-new-ad-top');
   if (btnNewAdTop) btnNewAdTop.addEventListener('click', function () { resetAdForm(); switchTab('create'); });
