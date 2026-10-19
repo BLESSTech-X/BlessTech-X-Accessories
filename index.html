@@ -3643,12 +3643,16 @@ card.innerHTML =
     '<div class="py2-ads-biz" title="' + esc(biz) + '">' + esc(biz) + '</div>' +
     '<div class="py2-ads-title">' + esc(ad.title || '') + '</div>' +
     (ad.description ? '<div class="py2-ads-desc">' + esc(ad.description) + '</div>' : '') +
-    '<a class="py2-ads-cta" href="/ad/' + encodeURIComponent(ad.slug || '') + '" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
-      '<span><i class="fa-solid fa-arrow-up-right-from-square"></i> View Ad Details</span>' +
+    '<a class="py2-ads-cta" href="' + (ad.profile_slug ? '/b/' + encodeURIComponent(ad.profile_slug) : '/ad/' + encodeURIComponent(ad.slug || '')) + '" onclick="event.stopPropagation();py2AdsClick(\'' + esc(ad.id) + '\')">' +
+      '<span><i class="fa-solid fa-store"></i> View Business Profile</span>' +
       '<span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>' +
     '</a>' +
   '</div>';
-    card.addEventListener('click', function () { window.location.href = '/ad/' + encodeURIComponent(ad.slug); });
+    var businessProfileUrl = ad.profile_slug ? '/b/' + encodeURIComponent(ad.profile_slug) : '/ad/' + encodeURIComponent(ad.slug || '');
+    card.setAttribute('role', 'link'); card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'View ' + biz + ' business profile and all advertisements');
+    card.addEventListener('click', function () { window.location.href = businessProfileUrl; });
+    card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = businessProfileUrl; } });
     var ctaEl = card.querySelector('.py2-ads-cta');
     if (ctaEl) ctaEl.addEventListener('click', function (e) { e.stopPropagation(); });
     return card;
@@ -3875,7 +3879,19 @@ card.innerHTML =
     maybeShowPopup(weightedShuffle(popupRows));
   }
 
-  fetchAds().then(boot).catch(function () { /* silent */ });
+  function attachAdvertiserProfiles(rows) {
+    if (!Array.isArray(rows) || !rows.length) return Promise.resolve(rows);
+    var ids = Array.from(new Set(rows.map(function (ad) { return ad.advertiser_id; }).filter(Boolean)));
+    if (!ids.length) return Promise.resolve(rows);
+    return sbGet('advertiser_profiles?select=advertiser_id,slug&advertiser_id=in.(' + ids.join(',') + ')')
+      .then(function (profiles) {
+        var slugByAdvertiser = {};
+        (Array.isArray(profiles) ? profiles : []).forEach(function (p) { if (p.advertiser_id && p.slug) slugByAdvertiser[p.advertiser_id] = p.slug; });
+        rows.forEach(function (ad) { ad.profile_slug = slugByAdvertiser[ad.advertiser_id] || ''; });
+        return rows;
+      }).catch(function () { return rows; });
+  }
+  fetchAds().then(attachAdvertiserProfiles).then(boot).catch(function () { /* silent */ });
 })();
 </script>
 
