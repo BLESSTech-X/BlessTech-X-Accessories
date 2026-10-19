@@ -18,14 +18,21 @@ export async function onRequestPost({request,env}) {
   const url=new URL(base+"/rest/v1/orders");
   url.searchParams.set("select","created_at,status,total_amount");
   url.searchParams.set("order","created_at.desc");
-  url.searchParams.set("limit","5000");
-  const response=await fetch(url,{headers:{apikey:key,authorization:"Bearer "+key,accept:"application/json"}});
-  if(!response.ok) {
-   const detail=await response.text().catch(()=>"");
-   console.error("PY2-360 order summary failed:",response.status,detail.slice(0,300));
-   return json({error:"Could not read the PhoneYa2 checkout orders used by Command Centre. Check the production database secret and orders-table permissions."},503);
+  url.searchParams.set("limit","1000");
+  const rows=[];
+  const maxRecords=5000;
+  for(let offset=0;offset<maxRecords;offset+=1000){
+   const response=await fetch(url,{headers:{apikey:key,authorization:"Bearer "+key,accept:"application/json",range:offset+"-"+(offset+999)}});
+   if(!response.ok) {
+    const detail=await response.text().catch(()=>"");
+    console.error("PY2-360 order summary failed:",response.status,detail.slice(0,300));
+    return json({error:"Could not read the PhoneYa2 checkout orders used by Command Centre. Check the production database secret and orders-table permissions."},503);
+   }
+   const batch=await response.json();
+   if(!Array.isArray(batch)) return json({error:"The order database returned an unexpected response."},503);
+   rows.push(...batch);
+   if(batch.length<1000) break;
   }
-  const rows=await response.json();
   const statusCounts={pending:0,confirmed:0,processing:0,shipped:0,delivered:0,cancelled:0};
   const weekly=Array.from({length:6},(_,i)=>({label:"W"+(i+1),count:0}));
   const now=Date.now(),windowStart=now-42*24*60*60*1000;
@@ -43,9 +50,9 @@ export async function onRequestPost({request,env}) {
    }
   }
   return json({
-   scope:"storewide_aggregate_only",
+   scope:"latest_order_records_aggregate_only",
    generated_at:new Date().toISOString(),
-   summary:{total_orders:totalOrders,status_counts:statusCounts,confirmed_order_value:Math.round(confirmedOrderValue*100)/100,weekly_orders:weekly},
+   summary:{total_orders:totalOrders,status_counts:statusCounts,confirmed_order_value:Math.round(confirmedOrderValue*100)/100,weekly_orders:weekly,record_limit:maxRecords,is_truncated:rows.length>=maxRecords},
    leads:[],lead_data_available:false
   });
  } catch(error) {
