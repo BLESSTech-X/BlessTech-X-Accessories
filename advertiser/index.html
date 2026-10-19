@@ -374,6 +374,9 @@
   .growth-coach:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#16a34a,#84cc16)}
   .growth-coach-inner{padding:19px 21px 20px 24px}.growth-coach-kicker{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#15803d;font-size:10px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase}.growth-coach-live{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#166534;letter-spacing:.3px}.growth-coach-live:before{content:"";width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px #16a34a20}.growth-coach h2{font-size:clamp(19px,2.4vw,25px);margin:10px 0 7px;color:#10251a}.growth-coach p{margin:0;color:#52645a;max-width:760px;font-size:13.5px;line-height:1.65}.growth-coach-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.growth-coach-metrics span{background:#fff;border:1px solid #d9eadf;border-radius:9px;padding:7px 10px;color:#365343;font-size:11px;font-weight:800}.growth-coach-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:15px}.growth-coach-actions .btn{min-height:38px}.growth-coach-note{font-size:11px!important;margin-top:11px!important;color:#64776a!important}.growth-nudge{position:fixed;right:16px;bottom:18px;z-index:1200;width:min(360px,calc(100vw - 28px));padding:16px;background:#0d1720;color:#fff;border:1px solid #27533a;border-radius:16px;box-shadow:0 18px 55px #0004;animation:py2GrowthNudgeIn .28s ease}.growth-nudge-top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#86efac;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.growth-nudge-close{border:0;background:#ffffff1a;color:#fff;width:29px;height:29px;border-radius:50%;font-size:18px}.growth-nudge h3{font-size:16px;margin:8px 0 5px}.growth-nudge p{font-size:12px;line-height:1.5;color:#d1d5db;margin:0 0 12px}.growth-nudge .btn{width:100%;white-space:normal}.growth-nudge-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0 12px}.growth-nudge-metrics span{padding:8px 5px;border:1px solid #ffffff20;border-radius:9px;background:#ffffff0b;text-align:center;color:#cbd5e1;font-size:10px;line-height:1.35}.growth-nudge-metrics b{display:block;color:#fff;font-size:17px;margin-bottom:2px}.growth-nudge-sharelinks{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.growth-nudge-sharelinks a,.growth-nudge-sharelinks button{flex:1 1 80px;min-width:0;border:1px solid #ffffff25;border-radius:9px;padding:8px 7px;background:#ffffff0c;color:#fff;text-align:center;font-size:10px;font-weight:800;cursor:pointer}.growth-nudge-sharelinks a:hover,.growth-nudge-sharelinks button:hover{background:#ffffff20}@keyframes py2GrowthNudgeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
   @media(max-width:540px){.growth-coach-inner{padding:16px 14px 17px 18px}.growth-coach-actions .btn{flex:1 1 130px;white-space:normal}.growth-nudge{right:10px;bottom:10px;width:calc(100vw - 20px)}}
+
+/* Responsive live ad preview */
+.py2-live-ad-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(8,15,28,.76);backdrop-filter:blur(8px)}.py2-live-ad-modal.is-open{display:flex}.py2-live-ad-card{width:min(1100px,100%);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;border-radius:20px;background:#fff;box-shadow:0 30px 100px #0006}.py2-live-ad-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid #e8edf4;background:linear-gradient(120deg,#fff,#f3f8ff)}.py2-live-ad-head strong{display:block;color:#12213b;font-size:15px}.py2-live-ad-head small{display:block;color:#64748b;font-size:12px;margin-top:3px}.py2-live-ad-close{width:38px;height:38px;border:0;border-radius:12px;background:#edf2f7;color:#1e293b;font-size:24px;cursor:pointer}.py2-live-ad-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px;background:#f7f9fc;border-bottom:1px solid #e8edf4}.py2-live-ad-frame-wrap{width:100%;margin:0 auto;overflow:auto;background:#e9eef5;transition:width .2s ease}.py2-live-ad-frame{display:block;width:100%;height:min(72vh,760px);min-height:420px;border:0;background:white}.py2-live-ad-note{padding:8px 12px;text-align:center;color:#64748b;font-size:11px;background:#f8fafc}.ad-item-thumb-live{width:112px;min-width:112px;height:94px;border-radius:13px;overflow:hidden;background:#eaf1f8;border:1px solid #dbe5f0;position:relative}.ad-item-thumb-live img,.ad-item-thumb-live video,.ad-item-thumb-live iframe{width:100%;height:100%;object-fit:cover;border:0;display:block}.ad-item-thumb-live .live-tag{position:absolute;left:5px;top:5px;padding:3px 6px;border-radius:6px;background:#0f172acc;color:#fff;font-size:9px;font-weight:900;letter-spacing:.5px;z-index:2}.ad-item-actions [data-live-preview]{border-color:#bfdbfe;color:#1d4ed8}@media(max-width:600px){.py2-live-ad-modal{padding:5px}.py2-live-ad-card{max-height:98vh;border-radius:14px}.py2-live-ad-frame{min-height:380px;height:68vh}.ad-item-thumb-live{width:82px;min-width:82px;height:82px}}
 </style>
 </head>
 <body>
@@ -1635,6 +1638,35 @@
     return '<span class="badge ' + m[0] + '">' + m[1] + '</span>';
   }
 
+
+  function openLiveAdPreview(ad) {
+    var modal = $('py2-live-ad-modal'); if (!modal || !ad) return;
+    var url = ad.slug ? (window.location.origin + '/ad/' + encodeURIComponent(ad.slug) + '?preview=' + Date.now()) : '';
+    $('py2-live-ad-title').textContent = ad.title || 'Live advertisement preview';
+    $('py2-live-ad-subtitle').textContent = url ? 'Live public ad page · ' + (ad.status || 'approved') : 'Creative preview · this ad is not yet publicly live';
+    $('py2-ad-preview-open').href = url || '/advertiser/'; $('py2-ad-preview-open').style.display = url ? '' : 'none';
+    var frame = $('py2-live-ad-frame');
+    if (url) frame.src = url;
+    else {
+      var media = String(ad.media_url || ''), type = String(ad.media_type || 'image').toLowerCase();
+      if (type === 'video' && media && !/youtube\.com|youtu\.be|vimeo\.com|tiktok\.com/i.test(media)) frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#101827;display:grid;place-items:center;height:100vh"><video src="' + media.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:contain"></video></body></html>';
+      else if (type === 'image' && media) frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#eef2f7;display:grid;place-items:center;height:100vh"><img src="' + media.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '" style="max-width:100%;max-height:100%;object-fit:contain" alt="Ad creative"></body></html>';
+      else frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#f1f5f9;display:grid;place-items:center;height:100vh;font:16px Arial;color:#334155;text-align:center;padding:24px;box-sizing:border-box"><div><h2>Creative preview</h2><p>When this ad has a public page, the full live experience will appear here.</p></div></body></html>';
+    }
+    $('py2-live-ad-frame-wrap').style.width = '100%';
+    $('py2-ad-preview-desktop').classList.add('btn-primary'); $('py2-ad-preview-desktop').classList.remove('btn-secondary');
+    $('py2-ad-preview-mobile').classList.add('btn-secondary'); $('py2-ad-preview-mobile').classList.remove('btn-primary');
+    modal.classList.add('is-open'); document.body.style.overflow = 'hidden';
+  }
+  function closeLiveAdPreview() { var modal=$('py2-live-ad-modal'); if(modal) modal.classList.remove('is-open'); var frame=$('py2-live-ad-frame'); if(frame){frame.src='about:blank';frame.srcdoc='';} document.body.style.overflow=''; }
+  document.addEventListener('DOMContentLoaded', function () {
+    $('py2-live-ad-close').addEventListener('click', closeLiveAdPreview);
+    $('py2-live-ad-modal').addEventListener('click', function(e){if(e.target===$('py2-live-ad-modal'))closeLiveAdPreview();});
+    document.addEventListener('keydown', function(e){if(e.key==='Escape')closeLiveAdPreview();});
+    $('py2-ad-preview-desktop').addEventListener('click',function(){$('py2-live-ad-frame-wrap').style.width='100%';$('py2-ad-preview-desktop').classList.add('btn-primary');$('py2-ad-preview-desktop').classList.remove('btn-secondary');$('py2-ad-preview-mobile').classList.add('btn-secondary');$('py2-ad-preview-mobile').classList.remove('btn-primary');});
+    $('py2-ad-preview-mobile').addEventListener('click',function(){$('py2-live-ad-frame-wrap').style.width='min(390px, 100%)';$('py2-ad-preview-mobile').classList.add('btn-primary');$('py2-ad-preview-mobile').classList.remove('btn-secondary');$('py2-ad-preview-desktop').classList.add('btn-secondary');$('py2-ad-preview-desktop').classList.remove('btn-primary');});
+  });
+
   function renderAdsList() {
     var list = ads.slice();
     if (adsFilter !== 'all') list = list.filter(function (a) { return a.status === adsFilter; });
@@ -1658,17 +1690,20 @@
       var meta = 'Created ' + P.formatDate(a.created_at);
       if (a.status === 'approved' && a.end_date) meta += ' · ends ' + P.formatDate(a.end_date);
       var thumb;
-      if (!a.media_url) {
-        thumb = '<div class="ad-item-thumb">🖼️</div>';
-      } else if (a.media_type === 'video') {
-        thumb = '<div class="ad-item-thumb" style="background:#0a0a14;color:white;">🎬</div>';
-      } else {
-        thumb = '<div class="ad-item-thumb"><img src="' + esc(a.media_url) + '" alt="" onerror="this.parentElement.textContent=\'🖼️\'"></div>';
-      }
+      if (!a.media_url) thumb = '<div class="ad-item-thumb-live"><span class="live-tag">AD</span><div style="height:100%;display:grid;place-items:center;font-size:25px;">📣</div></div>';
+      else if (a.media_type === 'video') {
+        var mediaUrl = String(a.media_url), provider = String(a.video_provider || '').toLowerCase();
+        var ytMatch = mediaUrl.match(/(?:youtube\.com\/(?:watch\?.*v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+        var vmMatch = mediaUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+        if (provider === 'youtube' || /youtube\.com|youtu\.be/i.test(mediaUrl)) thumb = ytMatch ? '<div class="ad-item-thumb-live"><span class="live-tag">LIVE MEDIA</span><iframe src="https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1&mute=1&loop=1&playlist=' + ytMatch[1] + '&controls=0&playsinline=1" title="Ad video preview" allow="autoplay; encrypted-media" loading="lazy"></iframe></div>' : '<div class="ad-item-thumb-live">▶</div>';
+        else if (provider === 'vimeo' || /vimeo\.com/i.test(mediaUrl)) thumb = vmMatch ? '<div class="ad-item-thumb-live"><span class="live-tag">LIVE MEDIA</span><iframe src="https://player.vimeo.com/video/' + vmMatch[1] + '?autoplay=1&muted=1&loop=1&background=1" title="Ad video preview" allow="autoplay" loading="lazy"></iframe></div>' : '<div class="ad-item-thumb-live">▶</div>';
+        else if (/tiktok\.com/i.test(mediaUrl)) thumb = '<div class="ad-item-thumb-live"><span class="live-tag">VIDEO</span><div style="height:100%;display:grid;place-items:center;background:#111;color:#fff;">♪ TikTok</div></div>';
+        else thumb = '<div class="ad-item-thumb-live"><span class="live-tag">LIVE MEDIA</span><video src="' + esc(mediaUrl) + '" autoplay muted loop playsinline preload="metadata"></video></div>';
+      } else thumb = '<div class="ad-item-thumb-live"><span class="live-tag">CREATIVE</span><img src="' + esc(a.media_url) + '" alt="' + esc(a.title || 'Advertisement creative') + '" loading="lazy"></div>';
       var rejectedNote = (a.status === 'rejected' && a.rejection_reason)
         ? '<div class="notice notice-danger" style="margin:8px 0 0;"><i class="fa-solid fa-triangle-exclamation"></i><div>' + esc(a.rejection_reason) + '</div></div>'
         : '';
-      var actions = '';
+      var actions = '<button class="btn btn-secondary btn-sm" data-live-preview="' + esc(a.id) + '"><i class="fa-solid fa-eye"></i> Live Preview</button>';
       if (a.status !== 'banned') {
         actions += '<button class="btn btn-secondary btn-sm" data-act="edit" data-id="' + a.id + '"><i class="fa-solid fa-pen"></i> Edit</button>';
       }
@@ -1700,6 +1735,12 @@
         '</div>';
     });
     container.innerHTML = html;
+    container.querySelectorAll('[data-live-preview]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var ad = ads.find(function (x) { return String(x.id) === String(btn.getAttribute('data-live-preview')); });
+        if (ad) openLiveAdPreview(ad);
+      });
+    });
     container.querySelectorAll('[data-act]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var act = btn.getAttribute('data-act');
@@ -2658,5 +2699,6 @@
 })();
 </script>
 
-<link rel="stylesheet" href="/smart-guide.css?v=20261015-center2"><script src="/smart-guide.js?v=20261017-context-help5" defer></script></body>
+<link rel="stylesheet" href="/smart-guide.css?v=20261015-center2"><script src="/smart-guide.js?v=20261017-context-help5" defer></script><div class="py2-live-ad-modal" id="py2-live-ad-modal" role="dialog" aria-modal="true" aria-labelledby="py2-live-ad-title"><div class="py2-live-ad-card"><div class="py2-live-ad-head"><div><strong id="py2-live-ad-title">Live advertisement preview</strong><small id="py2-live-ad-subtitle">The public PhoneYa2 ad page customers see.</small></div><button type="button" class="py2-live-ad-close" id="py2-live-ad-close" aria-label="Close preview">×</button></div><div class="py2-live-ad-tools"><button type="button" class="btn btn-primary btn-sm" id="py2-ad-preview-desktop">Desktop</button><button type="button" class="btn btn-secondary btn-sm" id="py2-ad-preview-mobile">Mobile</button><a class="btn btn-secondary btn-sm" id="py2-ad-preview-open" href="/" target="_blank" rel="noopener noreferrer">Open live ad ↗</a></div><div class="py2-live-ad-frame-wrap" id="py2-live-ad-frame-wrap"><iframe class="py2-live-ad-frame" id="py2-live-ad-frame" title="Live advertisement preview" src="about:blank" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture"></iframe></div><div class="py2-live-ad-note">This loads the real public ad page rather than a static screenshot. Video autoplay depends on browser and media-provider rules.</div></div></div>
+</body>
 </html>
