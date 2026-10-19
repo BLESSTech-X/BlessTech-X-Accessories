@@ -1804,7 +1804,7 @@
   function switchTab(name, writeUrl) {
     var valid = ['ads', 'create', 'stats', 'profile', 'account', 'share'];
     if (valid.indexOf(name) < 0) name = 'ads';
-    if (writeUrl && window.history && window.history.pushState) {
+    if (writeUrl !== false && window.history && window.history.pushState) {
       var nextUrl = new URL(window.location.href);
       nextUrl.searchParams.set('view', name);
       window.history.pushState({ py2AdvertiserView: name }, '', nextUrl.pathname + nextUrl.search + nextUrl.hash);
