@@ -33,10 +33,10 @@
 ## Phase 1 findings and changes
 
 ### Fixed in this branch
-1. `generate-sitemap.js` listed `/privacy-policy.html` and `/return-policy.html` twice. Removed the duplicate static entries.
-2. Added URL deduplication across static pages, product entries and blog entries so overlapping sources cannot emit duplicate sitemap URLs.
-3. Changed the summary log to report **unique URLs** rather than a raw list count.
-
+1. `content/products/index.json` includes a gift-box product slug beginning with an emoji. The order API previously accepted only lowercase ASCII slugs, so that catalog item could be rejected at checkout despite appearing in the product index. Updated the server-side slug allowlist to accept Unicode letters, numbers, combining marks and symbols while still rejecting path separators and query delimiters. Updated the CI validator to test the same slug format.
+2. `generate-sitemap.js` listed `/privacy-policy.html` and `/return-policy.html` twice. Removed the duplicate static entries.
+3. Added URL deduplication across static pages, product entries and blog entries so overlapping sources cannot emit duplicate sitemap URLs.
+4. Changed the summary log to report **unique URLs** rather than a raw list count.
 ### Why this matters
 Duplicate URLs do not directly create a customer checkout failure, but they make sitemap output noisy and counts misleading. The fix is isolated to sitemap generation and does not alter product data or customer/order logic.
 
