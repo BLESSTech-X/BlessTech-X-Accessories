@@ -161,6 +161,12 @@
   .tab:focus-visible { outline: 2px solid var(--py2-orange); outline-offset: -3px; border-radius: 8px 8px 0 0; }
   .tab .count { font-size: 11px; background: rgba(0,0,0,.06); padding: 1px 7px; border-radius: 100px; font-weight: 700; }
   .tab.on .count { background: rgba(255,96,0,.15); color: var(--py2-orange); }
+  .tab-create-cta { margin-left:auto; border:1px solid var(--py2-orange); border-radius:9px; background:var(--py2-orange); color:#fff; font-weight:800; box-shadow:0 5px 14px rgba(255,96,0,.18); }
+  .tab-create-cta:hover,.tab-create-cta.on { background:#e65300; color:#fff; border-bottom-color:#e65300; }
+  .advertiser-overview { border:0; background:transparent; box-shadow:none; overflow:visible; margin-bottom:8px; }
+  .advertiser-overview.on { display:block; }
+  .tabs { align-items:center; gap:4px; }
+  @media(max-width:767px){ .tabs { top:58px; padding:8px 12px; margin-left:-16px; margin-right:-16px; } .tab-create-cta { margin-left:0; } }
   .panel { display: none; }
   .panel.on { display: block; }
   .ad-item { background: white; border: 1px solid var(--py2-border); border-radius: 12px; padding: 14px; box-shadow: var(--py2-shadow-sm); display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
@@ -373,7 +379,9 @@
   
   .growth-coach{margin:18px 0 20px;border:1px solid #cfe7d8!important;background:radial-gradient(circle at 100% 0%,#e5fff0 0,transparent 42%),linear-gradient(135deg,#fff 0%,#f6fff9 100%)!important;overflow:hidden;position:relative}
   .growth-coach:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#16a34a,#84cc16)}
-  .growth-coach-inner{padding:19px 21px 20px 24px}.growth-coach-kicker{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#15803d;font-size:10px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase}.growth-coach-live{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#166534;letter-spacing:.3px}.growth-coach-live:before{content:"";width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px #16a34a20}.growth-coach h2{font-size:clamp(19px,2.4vw,25px);margin:10px 0 7px;color:#10251a}.growth-coach p{margin:0;color:#52645a;max-width:760px;font-size:13.5px;line-height:1.65}.growth-coach-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.growth-coach-metrics span{background:#fff;border:1px solid #d9eadf;border-radius:9px;padding:7px 10px;color:#365343;font-size:11px;font-weight:800}.growth-coach-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:15px}.growth-coach-actions .btn{min-height:38px}.growth-coach-note{font-size:11px!important;margin-top:11px!important;color:#64776a!important}.growth-nudge{position:fixed;right:16px;bottom:18px;z-index:1200;width:min(360px,calc(100vw - 28px));padding:16px;background:#0d1720;color:#fff;border:1px solid #27533a;border-radius:16px;box-shadow:0 18px 55px #0004;animation:py2GrowthNudgeIn .28s ease}.growth-nudge-top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#86efac;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.growth-nudge-close{border:0;background:#ffffff1a;color:#fff;width:29px;height:29px;border-radius:50%;font-size:18px}.growth-nudge h3{font-size:16px;margin:8px 0 5px}.growth-nudge p{font-size:12px;line-height:1.5;color:#d1d5db;margin:0 0 12px}.growth-nudge .btn{width:100%;white-space:normal}.growth-nudge-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0 12px}.growth-nudge-metrics span{padding:8px 5px;border:1px solid #ffffff20;border-radius:9px;background:#ffffff0b;text-align:center;color:#cbd5e1;font-size:10px;line-height:1.35}.growth-nudge-metrics b{display:block;color:#fff;font-size:17px;margin-bottom:2px}.growth-nudge-sharelinks{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.growth-nudge-sharelinks a,.growth-nudge-sharelinks button{flex:1 1 80px;min-width:0;border:1px solid #ffffff25;border-radius:9px;padding:8px 7px;background:#ffffff0c;color:#fff;text-align:center;font-size:10px;font-weight:800;cursor:pointer}.growth-nudge-sharelinks a:hover,.growth-nudge-sharelinks button:hover{background:#ffffff20}@keyframes py2GrowthNudgeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .growth-coach-inner{padding:19px 21px 20px 24px}.growth-coach-kicker{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#15803d;font-size:10px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase}.growth-coach-live{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#166534;letter-spacing:.3px}.growth-coach-live:before{content:"";width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px #16a34a20}.growth-coach h2{font-size:clamp(19px,2.4vw,25px);margin:10px 0 7px;color:#10251a}.growth-coach p{margin:0;color:#52645a;max-width:760px;font-size:13.5px;line-height:1.65}.growth-coach-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.growth-coach-metrics span{background:#fff;border:1px solid #d9eadf;border-radius:9px;padding:7px 10px;color:#365343;font-size:11px;font-weight:800}.growth-coach-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:15px}.growth-coach-actions .btn{min-height:38px}.growth-coach-note{font-size:11px!important;margin-top:11px!important;color:#64776a!important}.growth-nudge{position:fixed;right:16px;bottom:18px;z-index:1200;width:min(360px,calc(100vw - 28px));padding:16px;background:#0d1720;color:#fff;border:1px solid #27533a;border-radius:16px;box-shadow:0 18px 55px #0004;animation:py2GrowthNudgeIn .28s ease}.growth-nudge-top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#86efac;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.growth-nudge-close{border:0;background:#ffffff1a;color:#fff;width:29px;height:29px;border-radius:50%;font-size:18px}.growth-nudge h3{font-size:16px;margin:8px 0 5px}.growth-nudge p{font-size:12px;line-height:1.5;color:#d1d5db;margin:0 0 12px}.growth-nudge .btn{width:100%;white-space:normal}.growth-nudge-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0 12px}.growth-nudge-metrics span{padding:8px 5px;border:1px solid #ffffff20;border-radius:9px;background:#ffffff0b;text-align:center;color:#cbd5e1;font-size:10px;line-height:1.35}.growth-nudge-metrics b{display:block;color:#fff;font-size:17px;margin-bottom:2px}.growth-nudge-sharelinks{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.growth-nudge-sharelinks a,.growth-nudge-sharelinks button{flex:1 1 80px;min-width:0;border:1px solid #ffffff25;border-radius:9px;padding:8px 7px;background:#ffffff0c;color:#fff;text-align:center;font-size:10px;font-weight:800;cursor:pointer}
+.growth-nudge-ad{display:flex;gap:10px;align-items:center;margin:11px 0 12px;padding:9px;border:1px solid #ffffff24;border-radius:12px;background:#ffffff0b;color:#fff;text-decoration:none}.growth-nudge-ad-media{display:flex;align-items:center;justify-content:center;width:72px;height:66px;flex:0 0 72px;overflow:hidden;border-radius:8px;background:#ffffff12}.growth-nudge-ad-media img{width:100%;height:100%;object-fit:cover}.growth-nudge-ad-copy{display:flex;flex-direction:column;gap:3px;min-width:0}.growth-nudge-ad-copy small{font-size:8px;letter-spacing:.8px;font-weight:900;color:#86efac}.growth-nudge-ad-copy strong{font-size:12px;line-height:1.3;overflow-wrap:anywhere}.growth-nudge-ad-copy span{font-size:10px;color:#cbd5e1}
+.growth-nudge-sharelinks a:hover,.growth-nudge-sharelinks button:hover{background:#ffffff20}@keyframes py2GrowthNudgeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
   @media(max-width:540px){.growth-coach-inner{padding:16px 14px 17px 18px}.growth-coach-actions .btn{flex:1 1 130px;white-space:normal}.growth-nudge{right:10px;bottom:10px;width:calc(100vw - 20px)}}
 
 /* Responsive live ad preview */
@@ -449,15 +457,9 @@
   </div>
 
   <div class="wrap" style="padding-top:20px;padding-bottom:60px;">
-    <div class="tabs" role="tablist">
-      <button class="tab on" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
-      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
-      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
-      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
-      <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
-      <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px;">
+
+    <section class="panel on advertiser-overview" data-panel="dashboard">
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px;">
       <div style="flex:1;">
         <h1 id="greeting" style="font-family:var(--py2-font-head);font-weight:800;font-size:1.5rem;margin-bottom:4px;">Welcome back</h1>
         <p style="color:var(--py2-muted);font-size:13.5px;line-height:1.5;margin:0;">Manage your ads, track performance, and share your campaigns.</p>
@@ -544,14 +546,24 @@
       </div>
     </section>
 
-
-
     <div class="profile-quick-actions" aria-label="Business profile shortcuts">
       <div class="profile-quick-copy"><strong>Make your business profile work harder</strong><span>Edit what customers see, then preview the public profile before sharing it.</span></div>
       <div class="profile-quick-buttons">
         <button type="button" class="btn btn-primary" id="btn-quick-edit-profile"><i class="fa-solid fa-pen-to-square"></i> Edit My Profile</button>
         <button type="button" class="btn btn-secondary" id="btn-quick-preview-profile"><i class="fa-solid fa-eye"></i> Preview Public Profile</button>
       </div>
+    </div>
+</section>
+
+<div class="tabs" role="tablist" aria-label="Advertiser dashboard navigation">
+      <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
+      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
+      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
+      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
+      <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
+      <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
+      <button class="tab tab-create-cta" data-tab="create" type="button"><i class="fa-solid fa-circle-plus"></i> Create Ad</button>
     </div>
 
     <section class="panel on" data-panel="ads">
@@ -1597,7 +1609,7 @@
         setTimeout(function(){
           if(!document.getElementById('growth-coach')||document.getElementById('growth-nudge'))return;
           var n=document.createElement('aside');n.id='growth-nudge';n.className='growth-nudge';n.setAttribute('role','status');
-          n.innerHTML='<div class="growth-nudge-top"><span>PhoneYa2 Growth Coach · Your next move</span><button class="growth-nudge-close" type="button" aria-label="Dismiss growth tip">×</button></div><h3>'+esc(title)+'</h3><p>'+esc(copy)+'</p>'+((primaryAction==='share'&&shareUrl)?'<button class="btn btn-primary" type="button" data-nudge-share="'+esc(shareUrl)+'"><i class="fa-solid fa-share-nodes"></i> Share your live ad now</button>':(primaryAction==='ads'?'<button class="btn btn-primary" type="button" data-nudge-ads>Review ad status</button>':'<button class="btn btn-primary" type="button" data-nudge-create>Create your first ad</button>'));
+          var nudgeAdCard=(primaryAction==='share'&&best)?'<a class="growth-nudge-ad" href="'+esc(shareUrl)+'" target="_blank" rel="noopener"><span class="growth-nudge-ad-media">'+(best.media_url&&best.media_type!=='video'?'<img src="'+esc(best.media_url)+'" alt="">':'<span>📣</span>')+'</span><span class="growth-nudge-ad-copy"><small>THIS IS THE AD YOU ARE SHARING</small><strong>'+esc(best.title||'Your live ad')+'</strong><span>'+esc(advertiser.business_name||'Your business')+' · View live ad ↗</span></span></a>':'';n.innerHTML='<div class="growth-nudge-top"><span>PhoneYa2 Growth Coach · Your next move</span><button class="growth-nudge-close" type="button" aria-label="Dismiss growth tip">×</button></div><h3>'+esc(title)+'</h3><p>'+esc(copy)+'</p>'+nudgeAdCard+((primaryAction==='share'&&shareUrl)?'<button class="btn btn-primary" type="button" data-nudge-share="'+esc(shareUrl)+'"><i class="fa-solid fa-share-nodes"></i> Share this exact ad</button>':(primaryAction==='ads'?'<button class="btn btn-primary" type="button" data-nudge-ads>Review ad status</button>':'<button class="btn btn-primary" type="button" data-nudge-create>Create your first ad</button>'));
           var metrics=document.createElement('div');metrics.className='growth-nudge-metrics';metrics.innerHTML='<span><b>'+num(approved.length)+'</b>live ads</span><span><b>'+num(totalImpressions)+'</b>ad views</span><span><b>'+num(totalClicks)+'</b>clicks</span>';var heading=n.querySelector('h3');if(heading)heading.before(metrics);
           if(primaryAction==='share'&&shareUrl){var shareCaption=(advertiser.business_name||'Our business')+' has an offer on PhoneYa2: '+(best.title||'discover our offer')+'. Take a look: '+shareUrl+' #PhoneYa2 #ZambiaBusiness';var shareLinks=document.createElement('div');shareLinks.className='growth-nudge-sharelinks';shareLinks.innerHTML='<a href="https://wa.me/?text='+encodeURIComponent(shareCaption)+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a><a href="https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl)+'" target="_blank" rel="noopener"><i class="fa-brands fa-facebook"></i> Facebook</a><button type="button" data-nudge-copy="'+esc(shareUrl)+'"><i class="fa-solid fa-link"></i> Copy link</button><button type="button" data-nudge-caption="'+esc(shareCaption)+'"><i class="fa-solid fa-quote-left"></i> Copy post text</button>';n.appendChild(shareLinks)}
           n.addEventListener('click',function(ev){
@@ -1806,7 +1818,7 @@
   });
 
   function switchTab(name, writeUrl) {
-    var valid = ['ads', 'create', 'stats', 'profile', 'account', 'share'];
+    var valid = ['dashboard', 'ads', 'create', 'stats', 'profile', 'account', 'share'];
     if (valid.indexOf(name) < 0) name = 'ads';
     if (writeUrl !== false && window.history && window.history.pushState) {
       var nextUrl = new URL(window.location.href);
@@ -1831,7 +1843,7 @@
     t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab'), true); });
   });
   window.addEventListener('popstate', function () {
-    switchTab(new URLSearchParams(window.location.search).get('view') || 'ads', false);
+    switchTab(new URLSearchParams(window.location.search).get('view') || 'dashboard', false);
   });
   window.AdsUI = { switchTab: switchTab, openUpgrade: openUpgradeModal };
 
