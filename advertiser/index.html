@@ -152,7 +152,7 @@
   .stat-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--py2-muted); margin-bottom: 5px; }
   .stat-val { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.35rem; color: var(--py2-text); line-height: 1.1; }
   .stat-val.accent { color: var(--py2-orange); }
-  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--py2-border); margin: 0 -16px 20px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 16px; position: sticky; top: 58px; z-index: 90; background: #fff; box-shadow: 0 8px 18px rgba(15,23,42,.06); }
+  .tabs { display:flex; align-items:center; gap:4px; border-bottom:1px solid var(--py2-border); margin:0 auto 20px; max-width:1152px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:0 16px; position:sticky; top:var(--advertiser-header-height, 58px); z-index:99; background:#fff; box-shadow:0 8px 18px rgba(15,23,42,.08); }
   .tabs::-webkit-scrollbar { display: none; }
   @media (min-width: 768px) { .tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; } }
   .tab { flex: 0 0 auto; background: none; border: none; border-bottom: 3px solid transparent; color: var(--py2-muted); font-family: var(--py2-font-body); font-size: 13px; font-weight: 600; padding: 12px 14px; min-height: 44px; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: color .15s, border-color .15s; }
@@ -170,8 +170,7 @@
   .dashboard-site-preview-art{display:flex;align-items:center;justify-content:center;min-width:0;padding:10px}.site-browser{width:min(100%,255px);padding:12px;border:1px solid #d8e2ef;border-radius:13px;background:#fff;box-shadow:0 18px 35px rgba(26,55,93,.13);transform:rotate(-1deg)}.site-browser>span{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:#d5dfec}.site-browser-brand{font-size:10px;font-weight:900;color:#1d3555;margin:10px 0}.site-browser-hero{height:52px;border-radius:7px;background:linear-gradient(115deg,#143c6b,#3478f6 60%,#a9d8ff);position:relative;overflow:hidden}.site-browser-hero:after{content:"";position:absolute;right:14px;top:12px;width:42px;height:28px;border-radius:6px;background:#ffffff4d}.site-browser-lines{height:5px;width:65%;border-radius:9px;background:#dbe4ef;margin:10px 0 8px}.site-browser-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.site-browser-cards i{height:34px;border-radius:5px;background:linear-gradient(#edf3f9,#f8fafc);border:1px solid #e5edf6}
   @media(max-width:650px){.dashboard-site-promo{grid-template-columns:1fr;gap:8px}.dashboard-site-preview-art{padding:4px}.site-browser{width:210px}.dashboard-site-actions .btn{flex:1 1 145px;white-space:normal}.dashboard-site-promo h2{font-size:21px}}
 
-  .tabs { align-items:center; gap:4px; }
-  @media(max-width:767px){ .tabs { top:58px; padding:8px 12px; margin-left:-16px; margin-right:-16px; } .tab-create-cta { margin-left:0; } }
+  @media(max-width:767px){ .tabs { padding:8px 12px; } .tab-create-cta { margin-left:0; } }
   .panel { display: none; }
   .panel.on { display: block; }
   .ad-item { background: white; border: 1px solid var(--py2-border); border-radius: 12px; padding: 14px; box-shadow: var(--py2-shadow-sm); display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
@@ -461,7 +460,18 @@
     </div>
   </div>
 
-  <div class="wrap" style="padding-top:20px;padding-bottom:60px;">
+  <div class="tabs" role="tablist" aria-label="Advertiser dashboard navigation">
+      <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
+      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
+      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
+      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
+      <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
+      <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
+      <button class="tab tab-create-cta" data-tab="create" type="button"><i class="fa-solid fa-circle-plus"></i> Create Ad</button>
+    </div>
+
+<div class="wrap" style="padding-top:20px;padding-bottom:60px;">
 
     <section class="panel on advertiser-overview" data-panel="dashboard">
 <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px;">
@@ -565,16 +575,7 @@
     </div>
 </section>
 
-<div class="tabs" role="tablist" aria-label="Advertiser dashboard navigation">
-      <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
-      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
-      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
-      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
-      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
-      <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
-      <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
-      <button class="tab tab-create-cta" data-tab="create" type="button"><i class="fa-solid fa-circle-plus"></i> Create Ad</button>
-    </div>
+
 
     <section class="panel on" data-panel="ads">
       <div id="opportunity-inline"></div>
@@ -2781,6 +2782,18 @@
     m.addEventListener('click', function (e) { if (e.target === m) closeModal(m.id); });
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllModals(); });
+
+  // Keep section tabs directly beneath the sticky header across screen sizes.
+  (function syncAdvertiserHeaderHeight() {
+    var header = document.querySelector("#screen-dashboard .topbar");
+    if (!header) return;
+    var updateHeight = function () {
+      document.documentElement.style.setProperty("--advertiser-header-height", Math.ceil(header.getBoundingClientRect().height) + "px");
+    };
+    updateHeight();
+    if (window.ResizeObserver) new ResizeObserver(updateHeight).observe(header);
+    window.addEventListener("resize", updateHeight, { passive: true });
+  })();
 
   function boot() {
     session = P.auth.getSession();
