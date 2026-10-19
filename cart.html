@@ -662,7 +662,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
       if(!Array.isArray(raw))return [];
       const merged=new Map();
       raw.forEach(row=>{
-        if(!Array.isArray(row)||typeof row[0]!=="string"||!/^[a-z0-9][a-z0-9-]{0,100}$/.test(row[0]))return;
+        if(!Array.isArray(row)||typeof row[0]!=="string"||!row[0]||row[0].length>101||row[0]==="."||row[0]===".."||/[\/\\\u0000-\u001f\u007f?#]/.test(row[0]))return;
         const qty=Math.max(0,Math.min(99,Math.floor(Number(row[1])||0)));
         if(qty)merged.set(row[0],Math.min(99,(merged.get(row[0])||0)+qty));
       });
@@ -683,7 +683,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
       if(!response.ok)throw new Error();
       const slugs=await response.json();if(!Array.isArray(slugs))throw new Error();
       const results=await Promise.allSettled(slugs.map(async slug=>{
-        if(typeof slug!=="string"||!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug))return null;
+        if(typeof slug!=="string"||!slug||slug.length>101||slug==="."||slug===".."||/[\/\\\u0000-\u001f\u007f?#]/.test(slug))return null;
         const r=await fetch("/content/products/"+slug+".md",{cache:"no-store"});if(!r.ok)return null;
         return parseProduct(await r.text(),slug);
       }));
