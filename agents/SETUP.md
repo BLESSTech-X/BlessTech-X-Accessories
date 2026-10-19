@@ -86,7 +86,20 @@ Save the file.
 
 ---
 
-## STEP 3 — Deploy to Vercel (5 minutes)
+## STEP 3 — Configure the PY2-360 server-side access code
+
+The PY2-360 shared access code must be stored as a Cloudflare Pages secret/environment variable. Do not put the real code in this public repository or in browser JavaScript.
+
+1. Open Cloudflare Dashboard → Workers & Pages → your PhoneYa2 Pages project.
+2. Open Settings → Variables and Secrets.
+3. Add a **Production** secret named `PY2_360_ACCESS_CODE` with a strong, unique value and save it securely.
+4. Redeploy the site so the Pages Function receives the variable.
+5. If using Preview deployments, configure a separate Preview secret only if preview access is needed.
+6. Verify that sign-in succeeds with the configured code and that a missing secret returns a configuration error instead of granting access.
+
+The current dashboard uses one shared code, not individual agent identities. Use separate authenticated accounts before treating this as per-agent access control.
+
+## STEP 4 — Deploy to Vercel (5 minutes)
 
 You have two options:
 
