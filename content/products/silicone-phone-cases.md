@@ -10,5 +10,5 @@ gallery:
   - image: /assets/images/uploads/1000243148.jpg
   - image: /assets/images/uploads/1000243160.jpg
   - image: /assets/images/uploads/1000241752.jpg
-featured: false
+featured: true
 ---
