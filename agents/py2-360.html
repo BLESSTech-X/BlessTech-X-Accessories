@@ -40,7 +40,7 @@
 <div style="font-size:34px;margin-bottom:8px">🧭</div><h1>PY2-360</h1>
 <p>Your PhoneYa2 sales desk.</p>
 <form id="login-form">
-<div class="field"><label for="agent-code">PY2-360 access code</label><input id="agent-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="Enter your code"></div>
+<div class="field"><label for="agent-code">PY2-360 access code</label><input id="agent-code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required placeholder="Enter your code"></div>
 <div id="login-error" class="err" role="alert"></div>
 <button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-arrow-right-to-bracket"></i> Continue</button>
 </form>
@@ -52,7 +52,7 @@
 <div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Your daily growth assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh data</button></div>
 </div>
 <div class="kpis">
-<div class="kpi"><div class="kpi-top">Total store orders <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>Actual PhoneYa2 checkout orders</small></div>
+<div class="kpi"><div class="kpi-top">Orders checked <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>Latest up to 5,000 checkout records; not a lifetime total</small></div>
 <div class="kpi"><div class="kpi-top">Pending orders <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Orders awaiting admin confirmation</small></div>
 <div class="kpi"><div class="kpi-top">Confirmed order value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Order value for confirmed, processing, shipped and delivered orders</small></div>
 <div class="kpi"><div class="kpi-top">Delivered orders <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Orders marked delivered</small></div>
@@ -139,7 +139,7 @@ function renderStats(){
  let summary='';
  if(!agentDataAvailable) summary='Order data is unavailable. Check the live data warning below; unavailable data is not reported as zero.';
  else if(!total) summary='The live order system returned zero checkout orders. Choose one product to promote and track the enquiries it generates.';
- else summary='PhoneYa2 has '+total+' checkout order(s). '+pending+' are pending, '+confirmed+' are confirmed/in fulfilment, and '+delivered+' are delivered. '+(cancelled?'Review '+cancelled+' cancelled order(s) for recurring reasons.':'No cancelled orders are recorded.')+' These are store-wide aggregate figures, not your personal attributed sales.';
+ else summary='The latest loaded PhoneYa2 order records contain '+total+' order(s). '+pending+' are pending, '+confirmed+' are confirmed/in fulfilment, and '+delivered+' are delivered. '+(cancelled?'Review '+cancelled+' cancelled order(s) for recurring reasons.':'No cancelled orders are recorded in this loaded batch.')+(agentSummary.is_truncated?' The report reached its '+num(agentSummary.record_limit||5000)+'-record limit, so older orders are not included.':'')+' These are store-wide aggregate figures, not your personal attributed sales.';
  $('assistant-summary').textContent=summary;
 }
 function drawChart(canvas,values,labels){
@@ -154,7 +154,7 @@ function drawChart(canvas,values,labels){
 function renderCharts(){
  const buckets=Array.isArray(agentSummary?.weekly_orders)?agentSummary.weekly_orders:[];
  drawChart('sales-chart',agentDataAvailable?buckets.map(b=>Number(b.count||0)):[],agentDataAvailable?buckets.map(b=>b.label):[]);
- $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':Number(agentSummary.total_orders||0)?'Weekly bars show aggregate order creation counts for the last six rolling weeks, not confirmed payment dates.':'No checkout orders are recorded yet.';
+ $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':Number(agentSummary.total_orders||0)?'Weekly bars show aggregate order creation counts for the last six rolling weeks, not confirmed payment dates.'+(agentSummary.is_truncated?' Older records beyond the loaded limit are excluded.':''):'No checkout orders are recorded in the loaded records.';
 }
 function renderLeadPipeline(){
  const stages=[['pending','Pending'],['confirmed','Confirmed'],['processing','Processing'],['shipped','Shipped'],['delivered','Delivered'],['cancelled','Cancelled']];
