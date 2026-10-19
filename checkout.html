@@ -437,7 +437,13 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
       $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p>'+(result.replayed?'<p class="small">This submission matched an existing order. No duplicate order or repeat notification was created. Keep this order number if you need help.</p>':'<p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p><p class="small">Delivery is usually within 24 hours. In some circumstances, please allow up to 3 days.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">Your order is saved. If you do not receive an account invitation, contact PhoneYa2 to get help activating access to your order history. <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>"))+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
       memoryIdempotency=null;try{sessionStorage.removeItem(idempotencyStorageKey);}catch{}
       cart.clear();renderCart();
-    }catch(error){orderReviewed=false;orderSubmitting=false;notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
+    }catch(error){
+      orderReviewed=false;orderSubmitting=false;
+      const message=error instanceof TypeError
+        ? "We couldn't confirm the server response. Your order may already be saved. Keep these details unchanged and submit again; PhoneYa2 will check for an existing order before creating another."
+        : (error.message||"We couldn't confirm the order. Keep your details unchanged and try again.");
+      notice(message,"error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';
+    }
   });
   loadProducts().catch(error=>{notice(error.message||"Could not load the shop.","error");$("product").disabled=true;$("add").disabled=true;});
 })();
