@@ -398,7 +398,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     orderSubmitting=true;
     const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
     const body={
-      name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
+      name:$("name").value.trim(),email:$("email").value.trim().toLowerCase(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
       items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity})).sort((a,b)=>a.slug.localeCompare(b.slug))
     };
     const idempotencyStorageKey="phoneya2-order-idempotency-v1";
