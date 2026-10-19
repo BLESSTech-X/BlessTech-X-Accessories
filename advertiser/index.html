@@ -377,6 +377,11 @@
 
 /* Responsive live ad preview */
 .py2-live-ad-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(8,15,28,.76);backdrop-filter:blur(8px)}.py2-live-ad-modal.is-open{display:flex}.py2-live-ad-card{width:min(1100px,100%);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;border-radius:20px;background:#fff;box-shadow:0 30px 100px #0006}.py2-live-ad-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid #e8edf4;background:linear-gradient(120deg,#fff,#f3f8ff)}.py2-live-ad-head strong{display:block;color:#12213b;font-size:15px}.py2-live-ad-head small{display:block;color:#64748b;font-size:12px;margin-top:3px}.py2-live-ad-close{width:38px;height:38px;border:0;border-radius:12px;background:#edf2f7;color:#1e293b;font-size:24px;cursor:pointer}.py2-live-ad-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px;background:#f7f9fc;border-bottom:1px solid #e8edf4}.py2-live-ad-frame-wrap{width:100%;margin:0 auto;overflow:auto;background:#e9eef5;transition:width .2s ease}.py2-live-ad-frame{display:block;width:100%;height:min(72vh,760px);min-height:420px;border:0;background:white}.py2-live-ad-note{padding:8px 12px;text-align:center;color:#64748b;font-size:11px;background:#f8fafc}.ad-item-thumb-live{width:112px;min-width:112px;height:94px;border-radius:13px;overflow:hidden;background:#eaf1f8;border:1px solid #dbe5f0;position:relative}.ad-item-thumb-live img,.ad-item-thumb-live video,.ad-item-thumb-live iframe{width:100%;height:100%;object-fit:cover;border:0;display:block}.ad-item-thumb-live .live-tag{position:absolute;left:5px;top:5px;padding:3px 6px;border-radius:6px;background:#0f172acc;color:#fff;font-size:9px;font-weight:900;letter-spacing:.5px;z-index:2}.ad-item-actions [data-live-preview]{border-color:#bfdbfe;color:#1d4ed8}@media(max-width:600px){.py2-live-ad-modal{padding:5px}.py2-live-ad-card{max-height:98vh;border-radius:14px}.py2-live-ad-frame{min-height:380px;height:68vh}.ad-item-thumb-live{width:82px;min-width:82px;height:82px}}
+
+/* My Profile mini-site layout: mobile-first */
+.profile-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:18px;align-items:start}.profile-layout>div{min-width:0}.profile-layout .card,.profile-layout .preview-panel{min-width:0;width:100%}.profile-layout .input,.profile-layout .textarea,.profile-layout select{max-width:100%;min-width:0}.profile-quick-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.profile-quick-copy{min-width:0;flex:1 1 230px}.profile-quick-buttons{display:flex;gap:8px;flex-wrap:wrap}.slug-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.slug-row .s-val{min-width:0;overflow-wrap:anywhere}.preview-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.preview-iframe-wrap{width:100%;height:clamp(420px,68vh,760px);min-height:0;aspect-ratio:auto;overflow:hidden;background:#f8fafc;border-radius:0 0 14px 14px}.preview-iframe-wrap iframe{width:100%;height:100%;min-height:0}.preview-actions{display:flex;gap:7px;flex-wrap:wrap;padding:12px}.preview-actions .btn{flex:1 1 100px;white-space:normal}.profile-layout .drop{max-width:100%;min-width:0}.profile-layout .social-row{display:flex;align-items:center;gap:8px;min-width:0}.profile-layout .social-row .input{flex:1;min-width:0}.profile-layout .field.locked{position:relative;opacity:.92}.profile-layout .lock-tag{display:inline-flex;align-items:center;gap:5px;max-width:100%;margin-bottom:8px}
+@media(max-width:900px){.profile-layout{grid-template-columns:minmax(0,1fr)}.profile-layout>div{width:100%}.preview-panel{position:static}.preview-iframe-wrap{height:560px;max-height:none}.profile-quick-actions{align-items:stretch}.profile-quick-buttons{width:100%}.profile-quick-buttons .btn{flex:1 1 170px}}
+@media(max-width:600px){.profile-layout{gap:12px}.profile-layout .card-head{align-items:flex-start;flex-wrap:wrap;gap:6px;padding:14px}.profile-layout .card-body{padding:14px}.profile-layout .card-foot{padding:12px 14px}.profile-layout .card-foot .btn{width:100%;min-height:44px}.profile-layout .input,.profile-layout .textarea{width:100%;font-size:16px}.profile-layout .drop{padding:14px;min-height:100px}.profile-layout .social-row{gap:7px}.profile-layout .social-icon{flex:0 0 34px}.slug-row{padding:10px;gap:8px}.slug-row .s-val{flex:1 1 160px}.slug-row button{min-height:38px}.preview-panel-head{padding:12px;font-size:13px}.preview-iframe-wrap{height:64vh;min-height:420px;max-height:650px}.preview-actions{padding:10px}.preview-actions .btn{flex:1 1 calc(50% - 8px);min-height:40px}.profile-quick-buttons .btn{flex:1 1 100%;min-height:42px}}
 </style>
 </head>
 <body>
@@ -1641,10 +1646,11 @@
 
   function openLiveAdPreview(ad) {
     var modal = $('py2-live-ad-modal'); if (!modal || !ad) return;
-    var url = ad.slug ? (window.location.origin + '/ad/' + encodeURIComponent(ad.slug) + '?preview=' + Date.now()) : '';
+    var publicProfileSlug = profile && profile.slug ? profile.slug : '';
+    var url = publicProfileSlug ? (window.location.origin + '/b/' + encodeURIComponent(publicProfileSlug) + '?preview=' + Date.now()) : '';
     $('py2-live-ad-title').textContent = ad.title || 'Live advertisement preview';
-    $('py2-live-ad-subtitle').textContent = url ? 'Live public ad page · ' + (ad.status || 'approved') : 'Creative preview · this ad is not yet publicly live';
-    $('py2-ad-preview-open').href = url || '/advertiser/'; $('py2-ad-preview-open').style.display = url ? '' : 'none';
+    $('py2-live-ad-subtitle').textContent = url ? 'Your business mini-site · includes your public profile and all approved ads' : 'Your public business profile is still being created. Save your profile first.';
+    $('py2-ad-preview-open').href = url ? (window.location.origin + '/b/' + encodeURIComponent(publicProfileSlug)) : '/advertiser/'; $('py2-ad-preview-open').style.display = url ? '' : 'none';
     var frame = $('py2-live-ad-frame');
     if (url) frame.src = url;
     else {
@@ -2311,9 +2317,14 @@
   }
 
   function refreshPreview() {
-    if (!profile) return;
+    if (!profile || !profile.slug) return;
+    var url = window.location.origin + '/b/' + encodeURIComponent(profile.slug) + '?preview=' + Date.now();
     var frame = $('preview-iframe');
-    if (frame) frame.src = '/b/' + profile.slug + '?preview=' + Date.now();
+    if (frame) frame.src = url;
+    var open = $('preview-open-link');
+    if (open) { open.href = window.location.origin + '/b/' + encodeURIComponent(profile.slug); open.target = '_blank'; open.rel = 'noopener'; }
+    var urlLabel = $('profile-url');
+    if (urlLabel) urlLabel.textContent = window.location.host + '/b/' + profile.slug;
   }
 
   function openEnlargedProfilePreview() {
