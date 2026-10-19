@@ -1,0 +1,33 @@
+name: PhoneYa2 Integrity Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrity:
+    name: Validate content, sitemap, and critical JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rebuild generated product and blog indexes
+        run: node build-product-index.js
+
+      - name: Rebuild sitemap
+        run: node generate-sitemap.js
+
+      - name: Run integrity checks
+        run: node scripts/phoneya2-integrity-check.js
