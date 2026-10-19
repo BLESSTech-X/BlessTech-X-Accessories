@@ -66,7 +66,8 @@ BEGIN
     v_price := (v_item->>'unit_price')::NUMERIC;
     v_line_total := (v_item->>'line_total')::NUMERIC;
 
-    IF v_slug IS NULL OR v_slug !~ '^[a-z0-9][a-z0-9-]{0,100}$'
+    IF v_slug IS NULL OR length(v_slug) < 1 OR length(v_slug) > 101
+       OR position('/' in v_slug) > 0 OR position(chr(92) in v_slug) > 0 OR v_slug ~ '[[:cntrl:]]'
        OR v_title IS NULL OR length(v_title) < 1 OR length(v_title) > 200
        OR v_qty IS NULL OR v_qty < 1 OR v_qty > 99
        OR v_price IS NULL OR v_price < 0
