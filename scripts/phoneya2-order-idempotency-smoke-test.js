@@ -36,6 +36,7 @@ async function fingerprint(value) {
   const digest = await webcrypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(value)));
   return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
 }
+async function main() {
 const requestFingerprint = await fingerprint(canonicalRequest);
 
 let mode = 'fresh';
@@ -156,3 +157,9 @@ assert.equal(rpcConflict.status, 409, 'Concurrent key reuse reported by the data
 
 console.log('PhoneYa2 idempotency smoke tests passed.');
 console.log('Verified matching replay, mismatched key, missing migration fail-closed, fresh order RPC, Unicode product slug, and concurrent conflict mapping.');
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
