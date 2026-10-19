@@ -169,7 +169,7 @@ You have two options:
 
 ---
 
-## STEP 5 — Customise Your Products and Commission Rates
+## STEP 6 — Customise Your Products and Commission Rates
 
 Open `config.js` and find the `CONFIG.products` array. Edit the products and commission amounts to match what you actually sell:
 
