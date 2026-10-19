@@ -536,7 +536,7 @@ export async function onRequest(context) {
       }, 201);
     } catch (error) {
       console.error("PhoneYa2 order submission failed:", String(error));
-      return json({ error: "Ordering is temporarily unavailable. Please try again shortly." }, 503);
+      return json({ error: "We could not confirm whether your order was saved. Keep the same details and submit again; PhoneYa2 will check for an existing order before creating another." }, 503);
     }
   }
 
