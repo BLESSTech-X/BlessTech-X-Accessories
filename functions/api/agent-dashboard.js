@@ -26,8 +26,28 @@ export async function onRequestPost({request,env}) {
    return json({error:"Could not read the PhoneYa2 checkout orders used by Command Centre. Check the production database secret and orders-table permissions."},503);
   }
   const rows=await response.json();
-  const normalized=rows.map(o=>({created_at:o.created_at,status:String(o.status||"pending").toLowerCase(),amount:Number(o.total_amount||0)}));
-  return json({scope:"storewide_checkout_orders",generated_at:new Date().toISOString(),sales:normalized,orders:normalized,leads:[],lead_data_available:false});
+  const statusCounts={pending:0,confirmed:0,processing:0,shipped:0,delivered:0,cancelled:0};
+  const weekly=Array.from({length:6},(_,i)=>({label:"W"+(i+1),count:0}));
+  const now=Date.now(),windowStart=now-42*24*60*60*1000;
+  let confirmedOrderValue=0,totalOrders=0;
+  for(const row of rows){
+   const status=String(row.status||"pending").toLowerCase();
+   if(Object.prototype.hasOwnProperty.call(statusCounts,status)) statusCounts[status]++;
+   else statusCounts[status]=1;
+   totalOrders++;
+   if(["confirmed","processing","shipped","delivered"].includes(status)) confirmedOrderValue+=Number(row.total_amount||0);
+   const created=Date.parse(row.created_at||"");
+   if(Number.isFinite(created)&&created>=windowStart&&created<=now){
+    const bucket=Math.min(5,Math.floor((created-windowStart)/(7*24*60*60*1000)));
+    weekly[bucket].count++;
+   }
+  }
+  return json({
+   scope:"storewide_aggregate_only",
+   generated_at:new Date().toISOString(),
+   summary:{total_orders:totalOrders,status_counts:statusCounts,confirmed_order_value:Math.round(confirmedOrderValue*100)/100,weekly_orders:weekly},
+   leads:[],lead_data_available:false
+  });
  } catch(error) {
   console.error("PY2-360 live order endpoint error:",error instanceof Error?error.message:"unknown error");
   return json({error:"Live checkout order data could not be reached. Check Cloudflare logs for the endpoint error."},503);
