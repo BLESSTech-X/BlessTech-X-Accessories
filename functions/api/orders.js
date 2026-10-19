@@ -56,7 +56,9 @@ async function fetchStaticAsset(context, path) {
   return fetch(url);
 }
 async function loadProduct(context, slug) {
-  if (!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug)) return null;
+  // Product slugs come from the trusted generated index. Permit Unicode names (including emoji)
+  // while rejecting path separators, URL delimiters, control characters, and oversized input.
+  if (!slug || slug.length > 101 || slug === "." || slug === ".." || /[\/\\\u0000-\u001f\u007f?#]/.test(slug)) return null;
   const indexResponse = await fetchStaticAsset(context, "/content/products/index.json");
   if (!indexResponse.ok) throw new Error("Product catalog is temporarily unavailable.");
   const slugs = await indexResponse.json();
