@@ -22,7 +22,7 @@ if (process.exitCode) process.exit();
 let slugs;
 try {
   slugs = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-  if (!Array.isArray(slugs) || slugs.some(s => typeof s !== 'string' || !/^[\\p{L}\\p{N}\\p{M}\\p{S}][\\p{L}\\p{N}\\p{M}\\p{S}-]{0,100}$/u.test(s))) {
+  if (!Array.isArray(slugs) || slugs.some(s => typeof s !== 'string' || !/^[\p{L}\p{N}\p{M}\p{S}][\p{L}\p{N}\p{M}\p{S}-]{0,100}$/u.test(s))) {
     throw new Error('Product index must be an array of valid product slugs.');
   }
   if (new Set(slugs).size !== slugs.length) throw new Error('Product index contains duplicate slugs.');
