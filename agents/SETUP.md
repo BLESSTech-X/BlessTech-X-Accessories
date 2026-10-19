@@ -128,7 +128,7 @@ You have two options:
 
 ---
 
-## STEP 4 — Test Everything (15 minutes)
+## STEP 5 — Test Everything (15 minutes)
 
 ### Test 1: Application flow
 1. Go to your landing page (`index.html`)
