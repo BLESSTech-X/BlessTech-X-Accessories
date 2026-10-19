@@ -1,14 +1,18 @@
--- PhoneYa2 order idempotency migration.
--- REVIEW the existing orders/order_items schema and take a database backup before running.
--- Run in Supabase SQL Editor BEFORE deploying the matching orders API and checkout page.
--- Existing orders are preserved; historical rows keep a NULL idempotency_key.
--- This protects against duplicate retry submissions; it does not yet reserve/decrement stock.
-ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS customer_note TEXT NOT NULL DEFAULT '' CHECK (char_length(customer_note) <= 1000);
+-- PhoneYa2 checkout idempotency migration.
+-- Review the existing orders/order_items schema and take a database backup before running.
+-- Run this in Supabase SQL Editor BEFORE deploying the matching orders API and checkout page.
+-- Existing orders are preserved; historical rows keep NULL idempotency values.
+-- This prevents duplicate retries; it does NOT yet reserve/decrement catalogue stock.
+ALTER TABLE public.orders
+  ADD COLUMN IF NOT EXISTS customer_note TEXT NOT NULL DEFAULT '' CHECK (char_length(customer_note) <= 1000);
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
-CREATE UNIQUE INDEX IF NOT EXISTS orders_idempotency_key_unique ON public.orders (idempotency_key) WHERE idempotency_key IS NOT NULL;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS request_fingerprint TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS orders_idempotency_key_unique
+  ON public.orders (idempotency_key) WHERE idempotency_key IS NOT NULL;
 DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB);
 DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT);
 DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT);
+DROP FUNCTION IF EXISTS public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION public.create_phoneya2_order(
   p_customer_name TEXT,
@@ -17,6 +21,7 @@ CREATE OR REPLACE FUNCTION public.create_phoneya2_order(
   p_delivery_address TEXT,
   p_items JSONB,
   p_idempotency_key TEXT,
+  p_request_fingerprint TEXT,
   p_customer_note TEXT DEFAULT ''
 )
 RETURNS JSONB
@@ -28,6 +33,7 @@ DECLARE
   v_order_id UUID;
   v_order_number TEXT;
   v_existing_total NUMERIC(12,2);
+  v_existing_fingerprint TEXT;
   v_total NUMERIC(12,2) := 0;
   v_item JSONB;
   v_slug TEXT;
@@ -37,17 +43,34 @@ DECLARE
   v_line_total NUMERIC(12,2);
   v_item_count INTEGER := 0;
   v_customer_note TEXT := trim(coalesce(p_customer_note, ''));
-  v_existing_name TEXT;
-  v_existing_email TEXT;
-  v_existing_phone TEXT;
-  v_existing_address TEXT;
-  v_existing_note TEXT;
-  v_existing_items JSONB;
-  v_requested_items JSONB;
 BEGIN
   IF p_idempotency_key IS NULL OR p_idempotency_key !~* '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$' THEN
     RAISE EXCEPTION 'Invalid idempotency key';
   END IF;
+  IF p_request_fingerprint IS NULL OR p_request_fingerprint !~* '^[0-9a-f]{64}$' THEN
+    RAISE EXCEPTION 'Invalid order request fingerprint';
+  END IF;
+
+  -- Serialize simultaneous submissions that share the same request key.
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_idempotency_key, 0));
+
+  -- A matching retry returns the original order before checking current catalogue values.
+  SELECT o.id, o.order_number, o.total_amount, o.request_fingerprint
+    INTO v_order_id, v_order_number, v_existing_total, v_existing_fingerprint
+  FROM public.orders AS o
+  WHERE o.idempotency_key = p_idempotency_key
+  LIMIT 1;
+
+  IF FOUND THEN
+    IF v_existing_fingerprint IS DISTINCT FROM p_request_fingerprint THEN
+      RAISE EXCEPTION 'Idempotency key was already used for different order details';
+    END IF;
+    RETURN jsonb_build_object(
+      'id', v_order_id, 'order_number', v_order_number, 'total_amount', v_existing_total,
+      'currency', 'ZMW', 'replayed', true
+    );
+  END IF;
+
   IF length(trim(coalesce(p_customer_name, ''))) < 2 OR length(p_customer_name) > 120 THEN
     RAISE EXCEPTION 'Invalid customer name';
   END IF;
@@ -69,9 +92,7 @@ BEGIN
     RAISE EXCEPTION 'Order must contain between 1 and 30 product lines';
   END IF;
 
-  -- Serialize requests sharing the same key, including simultaneous retries.
-  PERFORM pg_advisory_xact_lock(hashtextextended(p_idempotency_key, 0));
-
+  -- Validate all item snapshots before inserting any data.
   FOR v_item IN SELECT value FROM jsonb_array_elements(p_items)
   LOOP
     v_slug := v_item->>'product_slug';
@@ -90,62 +111,18 @@ BEGIN
        OR v_line_total IS NULL OR v_line_total <> round(v_price * v_qty, 2) THEN
       RAISE EXCEPTION 'Invalid order item';
     END IF;
+
     v_item_count := v_item_count + 1;
     v_total := v_total + v_line_total;
   END LOOP;
 
-  SELECT jsonb_agg(jsonb_build_object(
-    'product_slug', x.value->>'product_slug',
-    'product_name', x.value->>'product_name',
-    'quantity', (x.value->>'quantity')::INTEGER,
-    'unit_price', (x.value->>'unit_price')::NUMERIC,
-    'line_total', (x.value->>'line_total')::NUMERIC
-  ) ORDER BY x.value->>'product_slug')
-  INTO v_requested_items
-  FROM jsonb_array_elements(p_items) AS x(value);
-
-  SELECT o.id, o.order_number, o.total_amount, o.customer_name, o.customer_email,
-         o.customer_phone, o.delivery_address, o.customer_note
-    INTO v_order_id, v_order_number, v_existing_total, v_existing_name, v_existing_email,
-         v_existing_phone, v_existing_address, v_existing_note
-  FROM public.orders AS o
-  WHERE o.idempotency_key = p_idempotency_key
-  LIMIT 1;
-
-  IF FOUND THEN
-    SELECT jsonb_agg(jsonb_build_object(
-      'product_slug', oi.product_slug,
-      'product_name', oi.product_name,
-      'quantity', oi.quantity,
-      'unit_price', oi.unit_price,
-      'line_total', oi.line_total
-    ) ORDER BY oi.product_slug)
-    INTO v_existing_items
-    FROM public.order_items AS oi
-    WHERE oi.order_id = v_order_id;
-
-    IF v_existing_name IS DISTINCT FROM trim(p_customer_name)
-       OR v_existing_email IS DISTINCT FROM lower(trim(p_customer_email))
-       OR v_existing_phone IS DISTINCT FROM trim(p_customer_phone)
-       OR v_existing_address IS DISTINCT FROM trim(p_delivery_address)
-       OR coalesce(v_existing_note, '') IS DISTINCT FROM v_customer_note
-       OR v_existing_total IS DISTINCT FROM v_total
-       OR v_existing_items IS DISTINCT FROM v_requested_items THEN
-      RAISE EXCEPTION 'Idempotency key was already used for different order details';
-    END IF;
-
-    RETURN jsonb_build_object(
-      'id', v_order_id, 'order_number', v_order_number, 'total_amount', v_existing_total,
-      'currency', 'ZMW', 'item_count', v_item_count, 'replayed', true
-    );
-  END IF;
-
   INSERT INTO public.orders (
     customer_name, customer_email, customer_phone, delivery_address, customer_note,
-    idempotency_key, status, total_amount, currency
+    idempotency_key, request_fingerprint, status, total_amount, currency
   ) VALUES (
     trim(p_customer_name), lower(trim(p_customer_email)), trim(p_customer_phone),
-    trim(p_delivery_address), v_customer_note, p_idempotency_key, 'pending', v_total, 'ZMW'
+    trim(p_delivery_address), v_customer_note, p_idempotency_key, p_request_fingerprint,
+    'pending', v_total, 'ZMW'
   )
   RETURNING id, order_number INTO v_order_id, v_order_number;
 
@@ -166,6 +143,6 @@ BEGIN
   );
 END;
 $$;
-REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT) FROM anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT) TO service_role;
+REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT, TEXT) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT, TEXT) FROM anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.create_phoneya2_order(TEXT, TEXT, TEXT, TEXT, JSONB, TEXT, TEXT, TEXT) TO service_role;
