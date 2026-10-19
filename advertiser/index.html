@@ -152,12 +152,12 @@
   .stat-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--py2-muted); margin-bottom: 5px; }
   .stat-val { font-family: var(--py2-font-head); font-weight: 800; font-size: 1.35rem; color: var(--py2-text); line-height: 1.1; }
   .stat-val.accent { color: var(--py2-orange); }
-  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--py2-border); margin-bottom: 20px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--py2-border); margin-bottom: 20px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-left: -16px; margin-right: -16px; padding: 0 16px; position: sticky; top: 58px; z-index: 80; background: #fff; box-shadow: 0 8px 18px rgba(15,23,42,.06); }
   .tabs::-webkit-scrollbar { display: none; }
   @media (min-width: 768px) { .tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; } }
   .tab { flex: 0 0 auto; background: none; border: none; border-bottom: 3px solid transparent; color: var(--py2-muted); font-family: var(--py2-font-body); font-size: 13px; font-weight: 600; padding: 12px 14px; min-height: 44px; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: color .15s, border-color .15s; }
   .tab i { font-size: 14px; }
-  .tab.on { color: var(--py2-orange); border-bottom-color: var(--py2-orange); }
+  .tab.on { color: var(--py2-orange); border-bottom-color: var(--py2-orange); background: #fff8f3; }\n  .tab:focus-visible { outline: 2px solid var(--py2-orange); outline-offset: -3px; border-radius: 8px 8px 0 0; }
   .tab .count { font-size: 11px; background: rgba(0,0,0,.06); padding: 1px 7px; border-radius: 100px; font-weight: 700; }
   .tab.on .count { background: rgba(255,96,0,.15); color: var(--py2-orange); }
   .panel { display: none; }
@@ -483,6 +483,7 @@
           <div class="plan-label">Your Plan</div>
           <div class="plan-name" id="plan-name">Free</div>
           <div class="plan-desc" id="plan-desc">Loading…</div>
+          <div id="upgrade-next-benefits" style="font-size:12px;line-height:1.55;margin-top:7px;color:#374151;"></div>
           <div class="plan-usage" id="plan-usage-wrap" style="display:none;">
             <div class="plan-usage-label">
               <span>Active ads</span>
@@ -1369,7 +1370,7 @@
     setClass('plan-card', 'plan-card ' + eff);
     setText('plan-icon', cfg.icon);
     setText('plan-name', cfg.name);
-    setText('plan-desc', cfg.short);
+    setText('plan-desc', cfg.short);\n    var planUpgradeButton = $('btn-upgrade');\n    if (planUpgradeButton) planUpgradeButton.disabled = false;
 
     // Active ad count vs limit
     var active = ads.filter(function (a) { return a.status === 'approved' || a.status === 'pending'; }).length;
@@ -1422,6 +1423,35 @@
         setText('btn-upgrade-label', 'Upgrade');
       }
     }
+
+    // Show the next higher plan and its concrete benefits beside the upgrade action.
+    var currentRank = RANK[eff] || 0;
+    var nextTier = TIERS.filter(function (tier) {
+      return (RANK[tier.key] || 0) > currentRank;
+    }).sort(function (a, b) {
+      return (RANK[a.key] || 0) - (RANK[b.key] || 0);
+    })[0];
+    var nextBenefits = $('upgrade-next-benefits');
+    var upgradeLabel = $('btn-upgrade-label');
+    if (isExpired()) {
+      if (upgradeLabel) upgradeLabel.textContent = 'Renew ' + cfg.name;
+      if (nextBenefits) nextBenefits.innerHTML = '<strong>Your paid features are paused.</strong> Renew your plan to restore them, or compare higher plans for more reach and tools.';
+    } else if (nextTier) {
+      if (upgradeLabel) upgradeLabel.textContent = 'Upgrade to ' + nextTier.name;
+      var benefitList = (nextTier.feats || []).filter(function (feature) { return !feature.off; }).slice(0, 3);
+      var benefitCopy = benefitList.map(function (feature) { return esc(feature.t); }).join(' · ');
+      if (nextBenefits) nextBenefits.innerHTML = '<strong>Next level: ' + esc(nextTier.name) + ' — K' + Number(nextTier.price || 0) + '/30 days.</strong><br>' + benefitCopy + (benefitList.length ? ' · <a href="#" id="view-all-upgrades" style="color:#c2410c;font-weight:700;text-decoration:underline;">Compare all benefits</a>' : '');
+    } else {
+      if (upgradeLabel) upgradeLabel.textContent = 'You have the highest plan';
+      var upBtn = $('btn-upgrade');
+      if (upBtn) upBtn.disabled = true;
+      if (nextBenefits) nextBenefits.textContent = 'You are already on PhoneYa2’s highest advertiser plan.';
+    }
+    var allBenefitsLink = $('view-all-upgrades');
+    if (allBenefitsLink) allBenefitsLink.addEventListener('click', function (event) {
+      event.preventDefault();
+      openUpgradeModal();
+    });
 
     var expiredBanner = $('expired-banner');
     var expiredText = $('expired-text');
@@ -1771,21 +1801,33 @@
     });
   });
 
-  function switchTab(name) {
+  function switchTab(name, writeUrl) {
+    var valid = ['ads', 'create', 'stats', 'profile', 'account', 'share'];
+    if (valid.indexOf(name) < 0) name = 'ads';
+    if (writeUrl && window.history && window.history.pushState) {
+      var nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set('view', name);
+      window.history.pushState({ py2AdvertiserView: name }, '', nextUrl.pathname + nextUrl.search + nextUrl.hash);
+    }
     document.querySelectorAll('.tab').forEach(function (t) {
       t.classList.toggle('on', t.getAttribute('data-tab') === name);
+      t.setAttribute('aria-current', t.getAttribute('data-tab') === name ? 'page' : 'false');
     });
-    document.querySelectorAll('.panel').forEach(function (p) {
-      p.classList.toggle('on', p.getAttribute('data-panel') === name);
+    document.querySelectorAll('.panel').forEach(function (panel) {
+      panel.classList.toggle('on', panel.getAttribute('data-panel') === name);
+      panel.setAttribute('aria-hidden', panel.getAttribute('data-panel') === name ? 'false' : 'true');
     });
     if (name === 'profile') fillProfileForm();
     if (name === 'account') fillAccountForm();
-    if (name === 'share')   renderShareTab();
-    if (name !== 'create')  resetAdForm();
+    if (name === 'share') renderShareTab();
+    if (name !== 'create') resetAdForm();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   document.querySelectorAll('.tab').forEach(function (t) {
-    t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
+    t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab'), true); });
+  });
+  window.addEventListener('popstate', function () {
+    switchTab(new URLSearchParams(window.location.search).get('view') || 'ads', false);
   });
   window.AdsUI = { switchTab: switchTab, openUpgrade: openUpgradeModal };
 
@@ -2697,6 +2739,7 @@
         var tb = $('topbar-biz');
         if (tb) tb.textContent = advertiser.business_name;
         showScreen('screen-dashboard');
+        switchTab(new URLSearchParams(window.location.search).get('view') || 'ads', false);
       })
       .catch(function (err) {
         var et = $('screen-error-text');
