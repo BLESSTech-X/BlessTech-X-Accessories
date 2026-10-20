@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#111827">
-<title>PY2-360 Sales Desk — PhoneYa2</title>
+<title>PhoneYa2 Affiliate Marketing Program</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="config.js"></script>
@@ -84,12 +84,62 @@
 
 @media(max-width:900px){.product-row{grid-template-columns:repeat(2,minmax(0,1fr))}.earn-controls{grid-template-columns:1fr 1fr}.earn-controls label:first-child{grid-column:1/-1}}
 @media(max-width:480px){.earn-results{grid-template-columns:1fr}.earn-result{display:flex;align-items:center;justify-content:space-between;gap:12px}.earn-result strong{font-size:20px;margin:0}.product-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.product img{height:105px}.product .product-body{padding:9px}.product h3{font-size:12px}}
+
+/* PhoneYa2 Affiliate Marketing Program: compact catalogue-first workspace */
+:root{--orange:#ff641b;--affiliate-green:#12834b;--affiliate-blue:#1768b5}
+.wrap{max-width:1240px;margin:16px auto;padding:0 16px 38px}
+.top{padding-top:11px;padding-bottom:11px}
+.welcome{padding:17px 20px;grid-template-columns:1fr auto;margin-bottom:12px;border-radius:16px}
+.welcome h1{font-size:clamp(22px,3vw,30px);margin:5px 0}
+.welcome p{font-size:12px;line-height:1.5}
+.today-box{padding:12px;max-width:280px}.today-box p{font-size:11px}
+.workspace-tabs{padding:7px;margin-bottom:12px;border-radius:13px;top:4px}
+.workspace-tab{padding:9px 13px;font-size:12px}
+.section-heading{margin-bottom:10px}.section-heading h2{font-size:20px}
+.catalog-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;border-radius:18px;background:linear-gradient(120deg,#111d31,#124d39 72%,#176b49);color:#fff;margin:0 0 14px;box-shadow:0 10px 25px #122b1c12}
+.catalog-hero .eyebrow{color:#a6f0c1}.catalog-hero h1{font-size:clamp(24px,3.3vw,34px);line-height:1.12;margin:8px 0}.catalog-hero p{font-size:12px;line-height:1.65;color:#d5e5dc;margin:0;max-width:680px}
+.catalog-hero-mark{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:145px;color:#a5f2c0;font-size:11px;font-weight:900}.catalog-hero-mark i{font-size:42px}
+.catalog-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(145px,.3fr) minmax(165px,.35fr);gap:9px;margin:12px 0}
+.catalog-search-wrap{position:relative}.catalog-search-wrap>i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#758196}.catalog-search-wrap .agent-product-search{margin:0;padding-left:38px;width:100%;max-width:none;height:43px}
+.catalog-toolbar select{min-width:0;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--ink);font-size:12px;font-weight:700}
+.catalog-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 2px;color:var(--muted);font-size:11px}.catalog-summary strong{font-size:13px;color:var(--ink)}
+.affiliate-product-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px}
+.affiliate-product-card{border:1px solid #e3e8f0;border-radius:13px;overflow:hidden;background:#fff;min-width:0;display:flex;flex-direction:column;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;box-shadow:0 3px 12px #17203306}
+.affiliate-product-card:hover,.affiliate-product-card:focus-visible{transform:translateY(-2px);border-color:#79c99a;box-shadow:0 9px 24px #167a4315;outline:none}
+.affiliate-card-image{height:142px;background:linear-gradient(135deg,#f7f9fc,#edf7f0);display:grid;place-items:center;position:relative;padding:9px}
+.affiliate-card-image img{width:100%;height:100%;object-fit:contain;display:block}.affiliate-card-image img.image-missing{display:none}
+.image-fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:7px;color:#8792a4;font-size:11px;text-align:center;padding:12px}
+.image-fallback i{font-size:28px;color:#aeb8c7}.image-fallback.visible{display:flex}
+.affiliate-card-badge{position:absolute;left:8px;top:8px;padding:4px 6px;border-radius:6px;background:#e5f8ed;color:#116d3b;font-size:9px;font-weight:950;max-width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.affiliate-card-body{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
+.affiliate-card-category{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:#657287;font-weight:850}
+.affiliate-card-title{font-size:12px;line-height:1.4;margin:0;color:#172033;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+.affiliate-card-price{font-size:16px;font-weight:950;color:#162235}.affiliate-card-stock{font-size:10px;color:#657287}.affiliate-card-stock.out{color:#b42318}
+.affiliate-card-earning{background:#e7f8ed;border:1px solid #d2f0dd;border-radius:8px;padding:8px;color:#116d3b;font-size:10px;font-weight:850;line-height:1.35;margin-top:auto}
+.affiliate-card-earning strong{display:block;font-size:16px;margin-top:2px}.affiliate-card-earning small{display:block;font-size:9px;font-weight:650;color:#527360}
+.affiliate-card-open{margin-top:3px;width:100%;border:0;border-radius:8px;padding:9px;background:#152238;color:#fff;font-size:11px;font-weight:850}
+.catalog-loading{grid-column:1/-1;text-align:center;padding:38px;color:#657287}.catalog-loading i{font-size:24px;color:#16834a}.catalog-warning{padding:12px;border:1px solid #fed7aa;border-radius:10px;background:#fff7ed;color:#8b4514;font-size:12px;line-height:1.5;margin:12px 0}
+.affiliate-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.affiliate-steps article{position:relative;padding:19px 16px;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 16px #17203305}
+.affiliate-steps article>span{position:absolute;right:13px;top:12px;color:#d4dbe5;font-size:12px;font-weight:950}.affiliate-steps article>i{font-size:23px;color:#16834a;margin-bottom:14px}.affiliate-steps h3{font-size:14px;margin:0 0 7px}.affiliate-steps p{font-size:11px;color:#657287;line-height:1.65;margin:0}
+.affiliate-rule{display:flex;gap:12px;align-items:flex-start;padding:15px;background:#eef6ff;border:1px solid #d7e8fc;border-radius:13px;margin:14px 0 18px;color:#24496f}.affiliate-rule>i{font-size:20px;margin-top:2px}.affiliate-rule strong{font-size:12px}.affiliate-rule p{font-size:11px;line-height:1.6;margin:5px 0 0}
+.affiliate-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}.affiliate-modal.hidden{display:none!important}.affiliate-modal-backdrop{position:absolute;inset:0;background:#08111fbd;backdrop-filter:blur(4px)}
+.affiliate-detail-sheet{position:relative;width:min(100%,1000px);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 24px 80px #0005;z-index:1;padding:24px}
+.detail-close{position:absolute;right:13px;top:13px;z-index:3;width:36px;height:36px;border:1px solid #e4e8ef;border-radius:10px;background:#fff;color:#27364b;font-size:17px}
+.detail-layout{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:25px}.detail-media{min-width:0}.detail-main-image{height:350px;border-radius:15px;background:linear-gradient(135deg,#f7f9fc,#edf7f0);position:relative;display:grid;place-items:center;padding:18px;overflow:hidden}.detail-main-image img{width:100%;height:100%;object-fit:contain}.detail-main-image img.image-missing{display:none}.detail-main-image .image-fallback{font-size:12px}.detail-gallery{display:flex;gap:8px;overflow-x:auto;padding-top:9px}.detail-thumb{width:62px;height:62px;flex:0 0 62px;padding:4px;border:1px solid #e1e7ef;border-radius:9px;background:#f8fafc;cursor:pointer}.detail-thumb.active{border:2px solid #16834a}.detail-thumb img{width:100%;height:100%;object-fit:contain}
+.detail-copy{padding-top:17px;min-width:0}.detail-badge{display:inline-flex;padding:5px 8px;border-radius:7px;background:#e7f8ed;color:#116d3b;font-size:10px;font-weight:900}.detail-copy h2{font-size:clamp(23px,3vw,31px);line-height:1.2;margin:10px 40px 8px 0;color:#172033}.detail-price{font-size:26px;font-weight:950;color:#142238}.detail-stock{font-size:11px;color:#657287;margin:5px 0 13px}.detail-stock.out{color:#b42318}
+.earning-highlight{padding:13px;border-radius:13px;background:linear-gradient(120deg,#e4f9ec,#f0fff5);border:1px solid #c5edd3;margin:12px 0}.earning-highlight span{display:block;font-size:11px;font-weight:850;color:#216540}.earning-highlight strong{display:block;font-size:29px;color:#08743b;margin:5px 0}.earning-highlight small{font-size:10px;color:#527360}
+.detail-description{font-size:13px;line-height:1.65;color:#4d596b;margin:12px 0}.detail-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}.detail-fact{padding:10px;border-radius:9px;background:#f6f8fb}.detail-fact span{display:block;font-size:9px;color:#657287;margin-bottom:4px}.detail-fact strong{font-size:12px;overflow-wrap:anywhere}.detail-long-description{font-size:12px;line-height:1.75;color:#4d596b;white-space:pre-line;overflow-wrap:anywhere}.detail-long-description:empty{display:none}.detail-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:17px}.detail-actions .btn{font-size:11px;padding:10px 11px}.detail-disclaimer{font-size:10px;line-height:1.55;color:#657287;margin-top:13px}
+@media(max-width:1000px){.affiliate-product-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.affiliate-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.affiliate-card-image{height:130px}}
+@media(max-width:700px){.wrap{padding:0 10px 30px;margin-top:12px}.welcome{grid-template-columns:1fr;padding:14px;margin-bottom:10px}.today-box{max-width:none}.catalog-hero{padding:17px;gap:10px}.catalog-hero-mark{min-width:75px}.catalog-hero-mark i{font-size:28px}.catalog-hero-mark span{font-size:9px;text-align:center}.catalog-toolbar{grid-template-columns:1fr 1fr}.catalog-search-wrap{grid-column:1/-1}.catalog-summary{align-items:flex-start;flex-direction:column;gap:4px}.affiliate-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affiliate-card-image{height:115px;padding:7px}.affiliate-card-body{padding:8px;gap:5px}.affiliate-card-title{font-size:11px}.affiliate-card-price{font-size:14px}.affiliate-card-earning{padding:7px}.affiliate-card-earning strong{font-size:14px}.affiliate-card-open{padding:8px;font-size:10px}.affiliate-detail-sheet{padding:16px;border-radius:16px;max-height:94vh}.detail-layout{grid-template-columns:1fr;gap:12px}.detail-main-image{height:240px}.detail-copy{padding-top:0}.detail-copy h2{font-size:23px}.detail-price{font-size:23px}.detail-gallery{padding-top:7px}.detail-actions{display:grid;grid-template-columns:1fr 1fr}.detail-actions .btn:last-child{grid-column:1/-1}.affiliate-steps{gap:8px}.affiliate-steps article{padding:15px 12px}.affiliate-steps article>i{font-size:20px;margin-bottom:10px}.affiliate-steps h3{font-size:13px}.affiliate-steps p{font-size:10px}}
+@media(max-width:420px){.affiliate-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.affiliate-card-image{height:130px}.catalog-toolbar{grid-template-columns:1fr}.catalog-search-wrap{grid-column:auto}.catalog-hero{align-items:flex-start}.catalog-hero-mark{display:none}.affiliate-steps{grid-template-columns:1fr 1fr}.affiliate-detail-sheet{padding:12px}.detail-main-image{height:210px}.detail-facts{grid-template-columns:1fr 1fr}.detail-actions{grid-template-columns:1fr}.detail-actions .btn:last-child{grid-column:auto}}
+
 </style>
 </head>
 <body>
 <header class="top">
-<a class="brand" href="../"><b>Phone</b>Ya2 <span style="color:#a7b1c4;font-weight:600">/ PY2-360</span></a>
-<span class="badge">AGENT SALES DESK</span><span class="spacer"></span>
+<a class="brand" href="../"><b>Phone</b>Ya2 <span style="color:#a7b1c4;font-weight:600">/ Affiliate Program</span></a>
+<span class="badge">AFFILIATE MARKETING PROGRAM</span><span class="spacer"></span>
 <span id="agent-label" class="badge">Agent sign-in required</span>
 <a class="btn btn-dark" href="../shop.html"><i class="fa-solid fa-store"></i> Open shop</a>
 <button class="btn btn-dark hidden" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
@@ -110,52 +160,36 @@
 <div><div class="eyebrow">PhoneYa2 · Agent growth cockpit</div><h1 id="hello-title">Welcome to PY2-360.</h1><p id="hello-copy">Your job is to turn useful product recommendations into conversations, leads and confirmed sales. This desk shows what to do next—not just numbers to look at.</p></div>
 <div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Your daily growth assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh data</button></div>
 </div>
-<nav class="workspace-tabs" role="tablist" aria-label="PY2-360 workspace sections">
-<button class="workspace-tab" id="tab-overview" role="tab" type="button" aria-controls="pane-overview" aria-selected="true" tabindex="0"><i class="fa-solid fa-gauge-high"></i> Overview <span class="tab-count">01</span></button>
-<button class="workspace-tab" id="tab-selling" role="tab" type="button" aria-controls="pane-selling" aria-selected="false" tabindex="-1"><i class="fa-solid fa-bullseye"></i> Selling desk <span class="tab-count">02</span></button>
-<button class="workspace-tab" id="tab-products" role="tab" type="button" aria-controls="pane-products" aria-selected="false" tabindex="-1"><i class="fa-solid fa-box-open"></i> Product lab <span class="tab-count">03</span></button>
-<button class="workspace-tab" id="tab-performance" role="tab" type="button" aria-controls="pane-performance" aria-selected="false" tabindex="-1"><i class="fa-solid fa-chart-line"></i> Performance <span class="tab-count">04</span></button>
-<span class="spacer"></span><span class="workspace-status"><i class="fa-solid fa-circle"></i> Live workspace</span>
+<nav class="workspace-tabs" role="tablist" aria-label="Affiliate program sections">
+<button class="workspace-tab" id="tab-overview" role="tab" type="button" aria-controls="pane-overview" aria-selected="true" tabindex="0"><i class="fa-solid fa-store"></i> Product catalogue</button>
+<button class="workspace-tab" id="tab-products" role="tab" type="button" aria-controls="pane-products" aria-selected="false" tabindex="-1"><i class="fa-solid fa-circle-info"></i> How it works</button>
+<span class="spacer"></span><span class="workspace-status"><i class="fa-solid fa-circle"></i> Affiliate workspace</span>
 </nav>
 <section class="tab-panel" id="pane-overview" role="tabpanel" aria-labelledby="tab-overview">
-<div class="section-heading"><div><h2>Command overview</h2><p>Your store pulse, order flow and next practical actions in one place.</p></div></div>
-<div class="kpis">
-<div class="kpi"><div class="kpi-top">Total store orders <span class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></span></div><strong id="kpi-sales">—</strong><small>Actual PhoneYa2 checkout orders</small></div>
-<div class="kpi"><div class="kpi-top">Pending orders <span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong id="kpi-pending">—</strong><small>Orders awaiting admin confirmation</small></div>
-<div class="kpi"><div class="kpi-top">Confirmed order value <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong id="kpi-revenue">—</strong><small>Order value for confirmed, processing, shipped and delivered orders</small></div>
-<div class="kpi"><div class="kpi-top">Delivered orders <span class="kpi-icon"><i class="fa-solid fa-bullseye"></i></span></div><strong id="kpi-leads">—</strong><small>Orders marked delivered</small></div>
-<div class="kpi"><div class="kpi-top">Active users <span class="kpi-icon"><i class="fa-solid fa-chart-line"></i></span></div><strong id="kpi-visitors">—</strong><small id="visitor-period">Google Analytics · last 30 days</small></div>
-</div>
-<div class="grid">
-<section class="panel"><div class="panel-head"><div><h2>PhoneYa2 order momentum</h2><p class="sub">Actual checkout orders created each week.</p></div><span class="pill" id="sales-period">LAST 6 WEEKS</span></div><canvas id="sales-chart" class="chart" aria-label="Sales by week chart"></canvas><p id="sales-chart-note" class="sub"></p></section>
-<section class="panel"><div class="panel-head"><div><h2>Order pipeline</h2><p class="sub">Real checkout orders grouped by their current order status.</p></div></div><canvas id="lead-chart" class="chart" aria-label="Lead pipeline chart"></canvas><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
-</div>
-<div class="grid"><section class="panel"><div class="panel-head"><div><h2>Stock availability at a glance</h2><p class="sub">Available units across your recommended products. Check live stock before promising delivery.</p></div></div><canvas id="stock-chart" class="chart" aria-label="Recommended product stock chart"></canvas><p class="footer-note">This is the published catalogue stock field, not a reservation of physical stock.</p></section><section class="panel"><div class="panel-head"><div><h2>Quick execution plan</h2><p class="sub">A repeatable daily sales routine.</p></div></div><div class="mini-list"><div class="mini-row"><span>1. Pick one in-stock product</span><span class="pill green">Choose</span></div><div class="mini-row"><span>2. Share with a use-case</span><span class="pill">Reach</span></div><div class="mini-row"><span>3. Start real conversations</span><span class="pill">Engage</span></div><div class="mini-row"><span>4. Log warm prospects as leads</span><span class="pill">Track</span></div><div class="mini-row"><span>5. Follow up and record outcomes</span><span class="pill green">Convert</span></div></div></section></div></section>
-<section class="tab-panel" id="pane-selling" role="tabpanel" aria-labelledby="tab-selling" hidden>
-<div class="section-heading"><div><h2>Sales execution</h2><p>Turn product knowledge into conversations, follow-ups and confirmed sales.</p></div></div>
-<section class="sales-calculator" aria-labelledby="earn-title"><h2 id="earn-title"><i class="fa-solid fa-calculator"></i> Sell this. Calculate your earnings.</h2><p>Choose a real product, set a sales target and see an estimate before you share. This is a planning tool—not a promise of sales or payout.</p><div class="earn-controls"><label>Product<select id="earn-product" aria-label="Choose a product for commission calculation"><option value="">Loading products…</option></select></label><label>Units to sell<input id="earn-units" type="number" min="1" max="1000" step="1" value="1" inputmode="numeric"></label><label>Target commission (K)<input id="earn-target" type="number" min="1" max="1000000" step="10" value="500" inputmode="numeric"></label></div><div class="agent-referral-controls"><label for="agent-referral-code">Your personal agent code (if issued)</label><input id="agent-referral-code" type="text" inputmode="text" maxlength="40" autocomplete="off" placeholder="Enter your own agent code"><small>Use your own code from PhoneYa2. Leave blank if you have not been issued one. The code is added to order notes for manual verification; it does not automatically confirm commission.</small></div><div class="earn-results" aria-live="polite"><div class="earn-result"><span>Estimated commission per sale</span><strong id="earn-per-sale">—</strong></div><div class="earn-result"><span>Estimated total for selected units</span><strong id="earn-total">—</strong></div><div class="earn-result"><span>Sales needed for your target</span><strong id="earn-needed">—</strong></div></div><p class="earn-disclaimer">Estimate uses the published fallback commission tiers by sale value (10%, 8%, 6%, 4%, or 3%). Actual eligible rates may differ if admin settings change. Commission is not earned until a sale is confirmed under PhoneYa2 rules.</p>
-<div class="target-products-panel"><div class="target-products-heading"><div><span class="offer-eyebrow">TARGET PLANNER</span><h3>Which products can get you to your target?</h3><p>Compares in-stock products against the target above, using the same fallback commission estimate. Stock limits the suggested number of sales.</p></div><span class="pill green">Live calculation</span></div><div id="target-products" class="target-products-grid" aria-live="polite"><div class="empty">Calculating product options…</div></div></div></section>
-</section>
+<div class="catalog-hero"><div><div class="eyebrow">PhoneYa2 · Earn by connecting people with products</div><h1>PhoneYa2 Affiliate Marketing Program</h1><p>Explore the complete product catalogue. Open any product to see its details, current price, availability and estimated earnings for one confirmed sale.</p></div><div class="catalog-hero-mark"><i class="fa-solid fa-handshake-angle"></i><span>Share · Connect · Earn</span></div></div>
+<div class="catalog-toolbar"><div class="catalog-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="agent-product-search" class="agent-product-search" type="search" placeholder="Search all products, categories or benefits…" autocomplete="off" aria-label="Search products"></div><select id="catalog-category" aria-label="Filter products by category"><option value="all">All categories</option></select><select id="catalog-sort" aria-label="Sort products"><option value="recommended">Recommended</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="earn-high">Highest estimated earning</option><option value="newest">Newest first</option></select></div>
+<div class="catalog-summary"><strong id="catalog-count">Loading PhoneYa2 products…</strong><span>Tap any product card for full details and earnings.</span></div>
+<div id="affiliate-products" class="affiliate-product-grid" aria-live="polite"><div class="catalog-loading"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading the full product catalogue…</p></div></div>
+<div id="catalog-warning" class="catalog-warning hidden" role="status"></div>
+<p class="footer-note">Earnings shown are estimates based on the current fallback commission tiers, not guaranteed payouts. Final commission depends on the active PhoneYa2 rules and a confirmed eligible sale. Check stock and final details before promising a customer.</p>
 </section>
 <section class="tab-panel" id="pane-products" role="tabpanel" aria-labelledby="tab-products" hidden>
-<div class="section-heading"><div><h2>Product lab</h2><p>Find the right offer, understand the value and prepare a useful sales message.</p></div></div>
-<section class="offer-playbook" aria-labelledby="offer-playbook-title">
- <div class="offer-playbook-head"><div><div class="offer-eyebrow"><i class="fa-solid fa-bullseye"></i> TODAY'S SELLING PLAYBOOK</div><h2 id="offer-playbook-title">Three ways to make the next sale</h2><p>Choose the approach that fits the buyer. Prices and stock come from the current PhoneYa2 catalogue. These are sales angles—not fake discounts or guaranteed earnings.</p></div><span class="offer-live-pill"><i class="fa-solid fa-circle-check"></i> Catalogue-based</span></div>
- <div id="offer-playbook-cards" class="offer-playbook-grid"><div class="empty">Building your sales playbook from current products…</div></div>
- <div class="offer-next-step"><strong><i class="fa-solid fa-list-check"></i> Your next 15 minutes</strong><span>1. Pick one buyer group.</span><span>2. Share one relevant product with a useful reason to buy.</span><span>3. Ask a question and record interested prospects for follow-up.</span></div>
-</section>
-<section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-bolt" style="color:#ff6000"></i> Recommended to sell next</h2><p class="sub">Promoted and campaign products are prioritized, then featured, in-stock and value-aware picks. Use the calculator to plan your target and share directly.</p></div><span class="pill green">SELLING ACTIONS</span></div><label for="agent-product-search" class="sub">Find the right product for your audience</label><input id="agent-product-search" class="agent-product-search" type="search" placeholder="Search products, benefits or offers…" autocomplete="off"><div id="recommended-products" class="product-row"><div class="empty">Loading products…</div></div></section>
-<section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-sparkles" style="color:#ff6000"></i> New stock row</h2><p class="sub">Uses the CMS date_added/created_at field when present. Products without dates fall back to the available catalogue order, so mark new arrivals with a date in the CMS for accurate sorting.</p></div><a href="../shop.html" class="btn btn-light">Open shop <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><div id="new-products" class="product-row"><div class="empty">Loading newest products…</div></div></section>
-</section>
-<section class="tab-panel" id="pane-performance" role="tabpanel" aria-labelledby="tab-performance" hidden>
-<div class="section-heading"><div><h2>Performance &amp; store intelligence</h2><p>Store-wide activity and operational context. These figures are not personal agent attribution.</p></div></div>
-<div class="grid">
-<section class="panel"><div class="panel-head"><div><h2>Store traffic snapshot</h2><p class="sub">Aggregate Google Analytics data for the whole PhoneYa2 store—not your personal referral traffic.</p></div><span class="pill gray">30 DAYS</span></div><div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0"><div><div class="sub">Sessions</div><strong id="ga-sessions">—</strong></div><div><div class="sub">Page views</div><strong id="ga-views">—</strong></div><div><div class="sub">Events</div><strong id="ga-events">—</strong></div></div><div id="ga-note" class="footer-note">Connecting to the store's aggregate analytics…</div></section>
-<section class="panel"><div class="panel-head"><div><h2>Order visibility</h2><p class="sub">Actual store-wide checkout metrics from the Command Centre's order system.</p></div></div><div class="notice"><strong><i class="fa-solid fa-shield-halved"></i> Checkout orders are not yet attributed to individual agents</strong>These are real store-wide checkout orders, not personal agent commissions. The checkout system does not yet reliably attach an agent referral code. Customer names, phone numbers and addresses are intentionally not exposed in this shared view.</div><p class="footer-note">Next growth upgrade: add referral tracking to product links and checkout so future orders can be attributed to the agent who generated them.</p></section>
+<div class="section-heading"><div><h2>How the affiliate program works</h2><p>A simple product-first system—no sales target calculator or measurement dashboard to manage.</p></div></div>
+<div class="affiliate-steps">
+<article><span>01</span><i class="fa-solid fa-box-open"></i><h3>Choose a product</h3><p>Browse the live PhoneYa2 catalogue and open a product to understand its features, price, stock and estimated earning.</p></article>
+<article><span>02</span><i class="fa-solid fa-share-nodes"></i><h3>Share your product link</h3><p>Use WhatsApp sharing or copy the product message and link. Add your issued affiliate code if PhoneYa2 has provided one.</p></article>
+<article><span>03</span><i class="fa-solid fa-comments"></i><h3>Help the customer decide</h3><p>Explain the product honestly, answer questions and confirm current availability. Never promise a sale or commission before confirmation.</p></article>
+<article><span>04</span><i class="fa-solid fa-coins"></i><h3>Earn on eligible sales</h3><p>Estimated earnings appear on every product. A sale must meet the active PhoneYa2 affiliate rules before commission is payable.</p></article>
 </div>
-<p class="footer-note">Numbers update from connected systems when available. Store traffic is aggregate and delayed by analytics processing. Product recommendations are rule-based—not a guarantee of sales. <span id="last-updated"></span></p>
+<div class="affiliate-rule"><i class="fa-solid fa-circle-info"></i><div><strong>Important about earnings and tracking</strong><p>Estimates use the fallback tiers currently built into this page because a verified active affiliate-rate feed is not connected here. Referral links include tracking parameters, but that alone does not prove a sale was attributed or guarantee a payout. PhoneYa2 should confirm eligible sales and the final commission.</p></div></div>
+<a class="btn btn-orange" href="../shop.html"><i class="fa-solid fa-store"></i> Browse the PhoneYa2 shop</a>
 </section>
-</section>
+<div id="affiliate-detail-modal" class="affiliate-modal hidden" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+<div class="affiliate-modal-backdrop" data-close-detail></div><article class="affiliate-detail-sheet">
+<button type="button" class="detail-close" data-close-detail aria-label="Close product details"><i class="fa-solid fa-xmark"></i></button>
+<div class="detail-layout"><div class="detail-media"><div class="detail-main-image"><img id="detail-image" alt="" src="" onerror="this.classList.add('image-missing');this.removeAttribute('src')"><div id="detail-image-fallback" class="image-fallback"><i class="fa-solid fa-box-open"></i><span>Product image unavailable</span></div></div><div id="detail-gallery" class="detail-gallery"></div></div>
+<div class="detail-copy"><span id="detail-badge" class="detail-badge">PhoneYa2 product</span><h2 id="detail-title">Product details</h2><div id="detail-price" class="detail-price"></div><div id="detail-stock" class="detail-stock"></div><div class="earning-highlight"><span><i class="fa-solid fa-coins"></i> Estimated earning from 1 confirmed sale</span><strong id="detail-earning">—</strong><small id="detail-rate-note">Estimate only · subject to active rules</small></div><p id="detail-description" class="detail-description"></p><div id="detail-facts" class="detail-facts"></div><div id="detail-long-description" class="detail-long-description"></div><div class="detail-actions"><button type="button" id="detail-share" class="btn btn-green"><i class="fa-brands fa-whatsapp"></i> Share product</button><button type="button" id="detail-copy" class="btn btn-light"><i class="fa-regular fa-copy"></i> Copy sales message</button><a id="detail-open-shop" class="btn btn-light" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Full shop page</a></div><p class="detail-disclaimer">Commission is estimated, not guaranteed. Product stock, price and eligibility can change. Only sales confirmed under PhoneYa2's active affiliate rules qualify.</p></div></div>
+</article></div>
 </main>
 <script>
 (function(){
@@ -166,13 +200,13 @@ const money=n=>'K'+Number(n||0).toLocaleString('en-ZM',{maximumFractionDigits:2}
 const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setError(s){$('login-error').textContent=s||'';}
-function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout-btn').classList.remove('hidden');$('agent-label').textContent=agent.agent_code||'Active agent';}
+function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout-btn').classList.remove('hidden');$('agent-label').textContent='Affiliate partner session';}
 // PY2-360 access code is checked locally; login does not call a database or authentication API.
 const PY2_360_ACCESS_CODE = 'PY2-360';
 async function establishAgent(code){
  const normalized=String(code||'').trim().toUpperCase();
  if(normalized!==PY2_360_ACCESS_CODE) throw new Error('Incorrect access code. Try again.');
- agent={agent_code:'PY2-360',agent_id:'PY2-360',full_name:'PhoneYa2 Agent'};
+ agent={agent_code:'PY2-360',agent_id:'PY2-360',full_name:'Affiliate Partner'};
  sessionStorage.setItem('py2_agent_code',normalized);
  showDashboard();
  await loadAll();
@@ -187,26 +221,48 @@ async function login(e){
  catch(err) { sessionStorage.removeItem('py2_agent_code'); $('login-screen').classList.remove('hidden'); $('dashboard').classList.add('hidden'); setError(err.message||'Could not sign in.'); }
  finally { $('login-btn').disabled=false; $('login-btn').innerHTML='<i class="fa-solid fa-arrow-right-to-bracket"></i> Continue'; }
 }
-async function loadAll(initialAgentData){
- $('hello-title').textContent='Welcome back, '+(agent.full_name||'PhoneYa2 agent').split(' ')[0]+'.';
- $('assistant-summary').textContent='Checking sales, leads, stock and store traffic…';
- const results=await Promise.allSettled([
-  initialAgentData?Promise.resolve(initialAgentData):fetch('/api/agent-dashboard',{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify({code:sessionStorage.getItem('py2_agent_code')||''})}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Agent data unavailable');return d;}),
-  fetch('../content/products/catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Catalogue unavailable (HTTP '+r.status+')');return r.json()}),
-  fetch('/api/public-analytics',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Aggregate analytics unavailable');return r.json()})
- ]);
- const agentData=results[0].status==='fulfilled'?results[0].value:null;
- agentDataAvailable=!!agentData;
- sales=Array.isArray(agentData?.sales)?agentData.sales:[];
- leads=Array.isArray(agentData?.leads)?agentData.leads:[];
- productsAvailable=results[1].status==='fulfilled'&&Array.isArray(results[1].value);
- products=productsAvailable?results[1].value:[];
- analytics=results[2].status==='fulfilled'?results[2].value:null;
- renderStats();renderCharts();renderLeadPipeline();renderProducts();renderAnalytics();
- const failures=[];if(!agentDataAvailable)failures.push('sales/leads ledger: '+(results[0].reason?.message||'unavailable'));if(!productsAvailable)failures.push('product catalogue: '+(results[1].reason?.message||'unavailable'));if(!analytics?.summary)failures.push('Google Analytics: '+(results[2].reason?.message||analytics?.error||'not configured/unavailable'));
- if(failures.length)$('assistant-summary').textContent='Live data warning — '+failures.join(' | ')+'. Values for failed sources are not treated as zero.';
- $('last-updated').textContent='Last refreshed '+new Date().toLocaleString();
+async function loadAll(){
+ $('hello-title').textContent='Welcome to the PhoneYa2 Affiliate Marketing Program.';
+ $('assistant-summary').textContent='Loading the full live PhoneYa2 catalogue…';
+ const warning=$('catalog-warning');warning.classList.add('hidden');warning.textContent='';
+ productsAvailable=false;products=[];
+ try{
+  let catalog=null;
+  try{const r=await fetch('../content/products/catalog.json',{cache:'no-store'});if(r.ok){const data=await r.json();if(Array.isArray(data)&&data.length)catalog=data;}}catch(_){}
+  if(!catalog){
+   const idx=await fetch('../content/products/index.json',{cache:'no-store'});if(!idx.ok)throw new Error('Product index could not be loaded (HTTP '+idx.status+').');
+   const slugs=await idx.json();if(!Array.isArray(slugs)||!slugs.length)throw new Error('The product index is empty.');
+   const loaded=await Promise.allSettled(slugs.map(async slug=>{const r=await fetch('../content/products/'+encodeURIComponent(slug)+'.md',{cache:'no-store'});if(!r.ok)throw new Error('Product file unavailable: '+slug);return parseProductMarkdown(await r.text(),slug)}));
+   catalog=loaded.filter(x=>x.status==='fulfilled'&&x.value).map(x=>x.value);
+   if(!catalog.length)throw new Error('No product records could be loaded from the CMS files.');
+   if(loaded.some(x=>x.status==='rejected')){warning.textContent='Some product files could not be loaded. Showing all products that were successfully retrieved.';warning.classList.remove('hidden');}
+  }
+  products=catalog.filter(p=>p&&p.slug).map(p=>({...p,price:Number(p.price)||0,original_price:Number(p.original_price)||0,stock:Number(p.stock)||0,gallery:Array.isArray(p.gallery)?p.gallery:[]}));
+  productsAvailable=products.length>0;
+  renderAffiliateCatalogue();
+  $('assistant-summary').textContent=productsAvailable?products.length+' PhoneYa2 products loaded. Open any product to view its details and estimated earning.':'No products are available in the current catalogue.';
+  $('last-updated').textContent='Catalogue refreshed '+new Date().toLocaleString();
+ }catch(err){
+  productsAvailable=false;
+  $('affiliate-products').innerHTML='<div class="catalog-loading"><i class="fa-solid fa-triangle-exclamation"></i><p>We could not load the product catalogue.</p><small>'+esc(err.message||'Check your connection and refresh.')+'</small></div>';
+  $('catalog-count').textContent='Catalogue unavailable';
+  $('assistant-summary').textContent='The product catalogue could not be loaded. Use Refresh data to try again.';
+ }
 }
+function parseProductMarkdown(text,slug){
+ const match=text.match(/^---[\\r\\n]+([\\s\\S]*?)[\\r\\n]+---/);if(!match)return null;
+ const raw=match[1],out={slug,gallery:[]};
+ const gm=raw.match(/^gallery:\\s*\\n((?:(?:  |\\t)[^\\n]*\\n?)*)/m);
+ if(gm)gm[1].split(/\\n(?=  -)/).filter(x=>x.trim()).forEach(item=>{const im=item.match(/image:\\s*"?([^"\\n]+?)"?\\s*$/m),cm=item.match(/caption:\\s*"?([^"\\n]+?)"?\\s*$/m);if(im)out.gallery.push({image:im[1].trim(),caption:cm?cm[1].trim():''});});
+ const lines=raw.replace(/^gallery:\\s*\\n((?:(?:  |\\t)[^\\n]*\\n?)*)/m,'').split(/\\r?\\n/);
+ for(let i=0;i<lines.length;i++){const m=lines[i].match(/^([\\w_]+):\\s*(.*?)\\s*$/);if(!m)continue;const key=m[1];let v=m[2].trim();
+  if(/^[|>][+-]?\\d*$/.test(v)){const style=v[0],block=[];while(i+1<lines.length){const n=lines[i+1];if(!n.trim()){block.push('');i++;continue;}if(!/^\\s/.test(n))break;block.push(n.trim());i++;}v=block.join('\\n');if(style==='>')v=v.replace(/([^\\n])\\n(?!\\n)/g,'$1 ').replace(/\\n{2,}/g,'\\n\\n');v=v.trim();}
+  else{if(!v&&key!=='original_price')continue;if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);if(v)while(i+1<lines.length&&/^\\s+/.test(lines[i+1])&&!/^\\s+-\\s+/.test(lines[i+1]))v+=' '+lines[++i].trim();}
+  if(key==='price'||key==='original_price')out[key]=parseFloat(v)||0;else if(key==='stock')out[key]=parseInt(v)||0;else if(key==='featured')out[key]=v==='true';else out[key]=v;
+ }
+ const body=text.slice(match[0].length).trim();out.body=body.replace(/^#+\\s*/gm,'').replace(/\\*\\*(.*?)\\*\\*/g,'$1').replace(/\\[(.*?)\\]\\((.*?)\\)/g,'$1');return out;
+}
+
 function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
 function isConfirmed(s){return ['confirmed','paid','delivered','complete','completed'].includes(String(s||'').toLowerCase());}
 function renderStats(){
@@ -326,78 +382,78 @@ function renderOfferPlaybook(available){
  host.querySelectorAll('[data-offer-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.offerShare);if(p)window.open('https://wa.me/?text='+encodeURIComponent(offerCaption(p,b.dataset.offerType)),'_blank','noopener');}));
  host.querySelectorAll('[data-offer-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.offerCopy);if(!p)return;try{await navigator.clipboard.writeText(offerCaption(p,b.dataset.offerType));b.innerHTML='<i class="fa-solid fa-check"></i> Copied';}catch{window.prompt('Copy this product pitch',offerCaption(p,b.dataset.offerType));}}));
 }
-function renderProducts(){
- const referralInput=$('agent-referral-code');
- if(referralInput&&!referralInput.dataset.bound){
-  try{referralInput.value=localStorage.getItem('py2_agent_personal_ref')||''}catch(_){}
-  referralInput.addEventListener('input',()=>{
-   const code=String(referralInput.value||'').trim().replace(/\s+/g,'').slice(0,40);
-   referralInput.value=code;
-   try{if(/^[A-Za-z0-9_-]{3,40}$/.test(code))localStorage.setItem('py2_agent_personal_ref',code);else localStorage.removeItem('py2_agent_personal_ref')}catch(_){}
-  });
-  referralInput.dataset.bound='true';
- }
- const available=products.filter(p=>Number(p.stock)>0&&Number(p.price)>0);
- renderOfferPlaybook(available);
- const rank=p=>p.sales_priority==='promote'?0:p.sales_priority==='campaign'?1:2;
- const recommended=[...available].sort((a,b)=>rank(a)-rank(b)||(Number(!!b.featured)-Number(!!a.featured))||(Number(b.date_added?new Date(b.date_added).getTime():0)-Number(a.date_added?new Date(a.date_added).getTime():0))||Number(a.price)-Number(b.price)).slice(0,8);
- const dated=[...available].sort((a,b)=>rank(a)-rank(b)||new Date(b.date_added||0)-new Date(a.date_added||0)).slice(0,8);
- $('recommended-products').innerHTML=!productsAvailable?'<div class="empty">Product catalogue unavailable — check the live data warning above.</div>':recommended.length?recommended.map((p,i)=>productCard(p,i===0?'START HERE':'RECOMMENDED')).join(''):'<div class="empty">No in-stock products were found in the catalogue.</div>';
- $('new-products').innerHTML=!productsAvailable?'<div class="empty">Product catalogue unavailable — check the live data warning above.</div>':dated.length?dated.map(p=>productCard(p,'IN STOCK')).join(''):'<div class="empty">No available stock found. Check the product catalogue.</div>';
- const stockPicks=[...available].sort((a,b)=>Number(b.stock||0)-Number(a.stock||0)).slice(0,6);
- drawChart('stock-chart',productsAvailable?stockPicks.map(p=>Number(p.stock||0)):[],productsAvailable?stockPicks.map(p=>String(p.title||'Product').split(' ').slice(0,2).join(' ').slice(0,12)):[]);
- const select=$('earn-product');
- if(select){
-  const previous=select.value;
-  select.innerHTML=available.map(p=>'<option value="'+esc(p.slug)+'">'+esc(p.title)+' · '+money(p.price)+'</option>').join('');
-  if(previous&&available.some(p=>p.slug===previous))select.value=previous;
-  if(!select.dataset.bound){select.addEventListener('change',renderCalculator);$('earn-units').addEventListener('input',renderCalculator);$('earn-target').addEventListener('input',renderCalculator);select.dataset.bound='true';}
-  renderCalculator();
- }
- const search=$('agent-product-search');
- if(search&&!search.dataset.bound){search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();document.querySelectorAll('[data-product-card]').forEach(card=>{card.hidden=!card.textContent.toLowerCase().includes(q);});});search.dataset.bound='true';}
- document.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.share);if(!p)return;const url='https://wa.me/?text='+encodeURIComponent(caption(p));window.open(url,'_blank','noopener');}));
- document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.copy);if(!p)return;try{await navigator.clipboard.writeText(caption(p));const old=b.innerHTML;b.innerHTML='<i class="fa-solid fa-check"></i> Copied';setTimeout(()=>b.innerHTML=old,1500);}catch{window.prompt('Copy this product sales message',caption(p));}}));
+function imageUrl(path){
+ const value=String(path||'').trim();if(!value)return '';
+ if(/^https?:\\/\\//i.test(value)||value.startsWith('data:'))return value;
+ return value.startsWith('/')?value:'../'+value.replace(/^\\.\\//,'');
 }
-function renderAnalytics(){
- if(!analytics?.summary){$('ga-sessions').textContent='—';$('ga-views').textContent='—';$('ga-events').textContent='—';$('ga-note').textContent='Live Google Analytics unavailable: '+(analytics?.error||'endpoint/configuration failed')+'. Check Cloudflare Production variables GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT_JSON, and ensure the service account has Viewer access to the GA4 property.';$('ga-note').className='notice';return;}
- $('ga-sessions').textContent=num(analytics.summary.sessions);$('ga-views').textContent=num(analytics.summary.page_views);$('ga-events').textContent=num(analytics.summary.events);
- $('ga-note').textContent='Aggregate store-wide report. Updated '+new Date(analytics.generated_at||Date.now()).toLocaleString()+'. This does not identify visitors referred by you.';
+function productUrl(p){
+ const slug=String(p.slug||p.id||'product'),code=personalReferralCode();
+ return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(slug)+'&utm_source=phoneya2_affiliate&utm_medium=affiliate_share&utm_campaign='+encodeURIComponent(slug)+(code?'&ref='+encodeURIComponent(code):'');
 }
+function caption(p){
+ const e=commissionFor(p.price);
+ return 'Check this out at PhoneYa2:\\n\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||p.body||'See full details and current availability on PhoneYa2.')+'\\nEstimated earning per confirmed sale: '+money(e.commission)+' ('+e.percentage+'% fallback estimate; final rate subject to active rules).\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
+}
+function renderAffiliateCatalogue(){
+ const host=$('affiliate-products');if(!host)return;
+ const categories=[...new Set(products.map(p=>String(p.category||'Other').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+ const cat=$('catalog-category'),old=cat.value||'all';cat.innerHTML='<option value="all">All categories</option>'+categories.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');if(categories.includes(old))cat.value=old;
+ const search=$('agent-product-search'),sort=$('catalog-sort');
+ function render(){
+  const q=(search.value||'').trim().toLowerCase(),category=cat.value,order=sort.value;
+  let list=products.filter(p=>(category==='all'||String(p.category||'Other')===category)&&(!q||[p.title,p.category,p.description,p.sales_hook,p.offer_details,p.brand,p.body].join(' ').toLowerCase().includes(q)));
+  const earning=p=>commissionFor(p.price).commission;
+  if(order==='price-low')list.sort((a,b)=>a.price-b.price);else if(order==='price-high')list.sort((a,b)=>b.price-a.price);else if(order==='earn-high')list.sort((a,b)=>earning(b)-earning(a));else if(order==='newest')list.sort((a,b)=>new Date(b.date_added||b.created_at||0)-new Date(a.date_added||a.created_at||0));else list.sort((a,b)=>Number(!!b.featured)-Number(!!a.featured)||Number(a.stock<=0)-Number(b.stock<=0)||String(a.title).localeCompare(String(b.title)));
+  $('catalog-count').textContent=list.length+' product'+(list.length===1?'':'s')+' available to explore';
+  if(!list.length){host.innerHTML='<div class="catalog-loading"><i class="fa-solid fa-magnifying-glass"></i><p>No products match that search.</p><small>Try another keyword or choose All categories.</small></div>';return;}
+  host.innerHTML=list.map(p=>{
+   const e=commissionFor(p.price),img=imageUrl(p.image||p.gallery?.[0]?.image),out=Number(p.stock)<=0;
+   const badge=p.offer_label|| (p.sales_priority==='promote'?'PROMOTE':p.sales_priority==='campaign'?'CAMPAIGN PICK':p.featured?'FEATURED':'PHONEYA2 PICK');
+   return '<article class="affiliate-product-card" tabindex="0" role="button" aria-label="Open details for '+esc(p.title)+'" data-open-product="'+esc(p.slug)+'"><div class="affiliate-card-image">'+(img?'<img src="'+esc(img)+'" alt="'+esc(p.title)+'" loading="lazy" onload="this.nextElementSibling.classList.remove(\'visible\')" onerror="this.classList.add(\'image-missing\');this.nextElementSibling.classList.add(\'visible\')">':'')+'<div class="image-fallback '+(img?'':'visible')+'"><i class="fa-solid fa-box-open"></i><span>Image not available</span></div><span class="affiliate-card-badge">'+esc(badge)+'</span></div><div class="affiliate-card-body"><span class="affiliate-card-category">'+esc(p.category||'PhoneYa2 product')+'</span><h3 class="affiliate-card-title">'+esc(p.title)+'</h3><div class="affiliate-card-price">'+money(p.price)+'</div><div class="affiliate-card-stock '+(out?'out':'')+'">'+(out?'Currently out of stock':Number(p.stock)+' in stock')+'</div><div class="affiliate-card-earning">Estimated earning · 1 sale<strong>'+money(e.commission)+'</strong><small>'+e.percentage+'% fallback estimate</small></div><button class="affiliate-card-open" type="button" data-open-product="'+esc(p.slug)+'">View details &amp; earning <i class="fa-solid fa-arrow-right"></i></button></div></article>';
+  }).join('');
+  host.querySelectorAll('[data-open-product]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();openProductDetails(el.dataset.openProduct)}));
+  host.querySelectorAll('.affiliate-product-card').forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openProductDetails(el.dataset.openProduct)}}));
+ }
+ if(!search.dataset.bound){search.addEventListener('input',render);cat.addEventListener('change',render);sort.addEventListener('change',render);search.dataset.bound='true';}
+ render();
+}
+function openProductDetails(slug){
+ const p=products.find(x=>String(x.slug)===String(slug));if(!p)return;
+ const e=commissionFor(p.price),modal=$('affiliate-detail-modal'),img=$('detail-image'),fallback=$('detail-image-fallback');
+ $('detail-title').textContent=p.title||'PhoneYa2 product';
+ $('detail-badge').textContent=p.offer_label||p.category||'PhoneYa2 product';
+ $('detail-price').textContent=money(p.price);
+ $('detail-stock').textContent=Number(p.stock)>0?Number(p.stock)+' in stock — confirm availability before promising a customer':'Currently out of stock — confirm availability with PhoneYa2';
+ $('detail-stock').classList.toggle('out',Number(p.stock)<=0);
+ $('detail-earning').textContent=money(e.commission);
+ $('detail-rate-note').textContent=e.percentage+'% fallback estimate on a '+money(p.price)+' product. Final eligible commission depends on active PhoneYa2 rules.';
+ $('detail-description').textContent=p.sales_hook||p.description||'Open the full shop page for the latest product information.';
+ $('detail-facts').innerHTML=[['Category',p.category||'Other'],['Brand',p.brand||'Not specified'],['Listed stock',Number(p.stock)||0],['Original price',Number(p.original_price)>Number(p.price)?money(p.original_price):'Not listed']].map(([k,v])=>'<div class="detail-fact"><span>'+esc(k)+'</span><strong>'+esc(v)+'</strong></div>').join('');
+ const long=String(p.description||p.body||p.offer_details||'').trim();$('detail-long-description').textContent=long===(p.sales_hook||'')?'':long;
+ const images=[...(p.image?[{image:p.image,caption:p.title}]:[]),...(Array.isArray(p.gallery)?p.gallery:[])].filter((x,i,a)=>x.image&&a.findIndex(y=>imageUrl(y.image)===imageUrl(x.image))===i);
+ const gallery=$('detail-gallery');gallery.innerHTML=images.map((g,i)=>'<button type="button" class="detail-thumb '+(i===0?'active':'')+'" data-detail-image="'+i+'" aria-label="View product image '+(i+1)+'"><img src="'+esc(imageUrl(g.image))+'" alt="'+esc(g.caption||p.title)+'" onerror="this.style.opacity=\'.2\'"></button>').join('');
+ function setImage(i){const g=images[i];if(!g){img.removeAttribute('src');img.classList.add('image-missing');fallback.classList.add('visible');return;}img.classList.remove('image-missing');fallback.classList.remove('visible');img.src=imageUrl(g.image);img.alt=g.caption||p.title;gallery.querySelectorAll('.detail-thumb').forEach((b,j)=>b.classList.toggle('active',i===j));}
+ if(images.length){setImage(0);gallery.querySelectorAll('[data-detail-image]').forEach(b=>b.addEventListener('click',()=>setImage(Number(b.dataset.detailImage))));}else{img.removeAttribute('src');img.classList.add('image-missing');fallback.classList.add('visible');}
+ $('detail-open-shop').href='https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(p.slug);
+ $('detail-share').onclick=()=>{if(Number(p.stock)<=0){if(!confirm('This product is marked out of stock. Share it only to discuss availability?'))return;}window.open('https://wa.me/?text='+encodeURIComponent(caption(p)),'_blank','noopener');};
+ $('detail-copy').onclick=async()=>{try{await navigator.clipboard.writeText(caption(p));$('detail-copy').innerHTML='<i class="fa-solid fa-check"></i> Copied';setTimeout(()=>$('detail-copy').innerHTML='<i class="fa-regular fa-copy"></i> Copy sales message',1400);}catch{window.prompt('Copy the product sales message',caption(p));}};
+ modal.classList.remove('hidden');document.body.style.overflow='hidden';$('detail-close-focus')?.focus();
+}
+function closeProductDetails(){const m=$('affiliate-detail-modal');if(m&&!m.classList.contains('hidden')){m.classList.add('hidden');document.body.style.overflow='';}}
+document.querySelectorAll('[data-close-detail]').forEach(el=>el.addEventListener('click',closeProductDetails));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProductDetails()});
 function initWorkspaceTabs(){
- const tabs=[...document.querySelectorAll('.workspace-tab[role="tab"]')];
- const panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls')));
- function activate(tab,focus=false){
-  tabs.forEach((item,i)=>{const active=item===tab;item.setAttribute('aria-selected',String(active));item.tabIndex=active?0:-1;panels[i].hidden=!active;});
-  try{sessionStorage.setItem('py2_360_active_tab',tab.id);}catch(_){}
-  if(focus)tab.focus();
- }
- tabs.forEach((tab,i)=>{
-  tab.addEventListener('click',()=>activate(tab));
-  tab.addEventListener('keydown',e=>{
-   let next=i;
-   if(e.key==='ArrowRight')next=(i+1)%tabs.length;
-   else if(e.key==='ArrowLeft')next=(i-1+tabs.length)%tabs.length;
-   else if(e.key==='Home')next=0;
-   else if(e.key==='End')next=tabs.length-1;
-   else return;
-   e.preventDefault();activate(tabs[next],true);
-  });
- });
- let saved='tab-overview';try{saved=sessionStorage.getItem('py2_360_active_tab')||saved}catch(_){}
- activate(tabs.find(t=>t.id===saved)||tabs[0]);
+ const tabs=[...document.querySelectorAll('.workspace-tab[role="tab"]')],panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls')));
+ function activate(tab,focus=false){tabs.forEach((item,i)=>{const active=item===tab;item.setAttribute('aria-selected',String(active));item.tabIndex=active?0:-1;panels[i].hidden=!active;});try{sessionStorage.setItem('py2_affiliate_tab',tab.id)}catch(_){}if(focus)tab.focus();}
+ tabs.forEach((tab,i)=>{tab.addEventListener('click',()=>activate(tab));tab.addEventListener('keydown',e=>{let n=i;if(e.key==='ArrowRight')n=(i+1)%tabs.length;else if(e.key==='ArrowLeft')n=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else return;e.preventDefault();activate(tabs[n],true);});});
+ let saved='tab-overview';try{saved=sessionStorage.getItem('py2_affiliate_tab')||saved}catch(_){}activate(tabs.find(t=>t.id===saved)||tabs[0]);
 }
 initWorkspaceTabs();
-$('login-form').addEventListener('submit',function(e){e.preventDefault();login(e);});
-$('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}catch(e){$('assistant-summary').textContent='Some information could not be refreshed. Check your connection and try again.';}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh data';}});
+$('login-form').addEventListener('submit',e=>{e.preventDefault();login(e);});
+$('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh data';}});
 $('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_agent_code');location.reload();});
-window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden'))renderCharts();});
-document.addEventListener('DOMContentLoaded',async()=>{
- 
- const savedCode=sessionStorage.getItem('py2_agent_code');
- if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode);}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your agent code again.');}}
-});
+document.addEventListener('DOMContentLoaded',async()=>{const savedCode=sessionStorage.getItem('py2_agent_code');if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode)}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your access code again.')}}});
 })();
-</script>
 </body>
 </html>
