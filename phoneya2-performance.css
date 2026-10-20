@@ -1,0 +1,26 @@
+/* PhoneYa2 performance layer: preserve the design while prioritising scroll responsiveness. */
+html,body{scroll-behavior:auto!important}
+html.py2-is-scrolling *,html.py2-is-scrolling *::before,html.py2-is-scrolling *::after{animation-play-state:paused!important}
+html.py2-is-scrolling{scroll-behavior:auto!important}
+img,video{max-width:100%}
+@media(max-width:768px){
+  /* Blurring large fixed layers is expensive on mid-range mobile GPUs. Keep their solid styling. */
+  body>.top-header,body>header,body>header.top,body>nav.py2-quick-tabs,
+  .bottom-nav,.mobile-bottom-nav,.top-header,.site-header{
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+  /* Static luminous deal frames while scrolling; the animated deal treatment resumes at rest. */
+  html.py2-is-scrolling :is(.pcard,.pc,.py2-product-card,.side-prod):has(.pc-orig),
+  html.py2-is-scrolling :is(.pcard,.pc,.py2-product-card,.side-prod):has(.price-drop-banner),
+  html.py2-is-scrolling :is(.pcard,.pc,.py2-product-card,.side-prod):has(.drop-banner){
+    animation:none!important;
+  }
+  /* Decorative ambient watermarks do not need to animate on small screens. */
+  .py2-page-logo-ambient,.phoneya2-home-intro::before{
+    animation:none!important;will-change:auto!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  *,*::before,*::after{scroll-behavior:auto!important}
+}
