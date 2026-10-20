@@ -41,7 +41,7 @@ function featuredProductsPreview(p){
  ensureFeaturedProductPreviewStyles();
  return '<div class="py2-featured-product-strip"><div class="py2-featured-product-label">PRODUCTS IN THIS STORY · READY TO EXPLORE</div><div class="py2-featured-product-items">'+items.slice(0,4).map(function(item){
   var href='/product.html?id='+encodeURIComponent(item.slug);
-  return '<a class="py2-featured-product-mini" href="'+href+'" aria-label="View '+esc(item.title)+'"><img src="'+esc(item.image||'')+'" alt="'+esc(item.title)+'" loading="lazy" decoding="async" onerror="this.style.visibility=\\'hidden\\'"><span>'+esc(item.title)+'</span>'+(item.offer_label?'<em>'+esc(item.offer_label)+'</em>':'')+(item.price?'<small>K'+esc(Number(item.price).toLocaleString('en-ZM',{maximumFractionDigits:2}))+'</small>':'')+'<b>View &amp; buy ↗</b></a>'
+  return '<a class="py2-featured-product-mini" href="'+href+'" aria-label="View '+esc(item.title)+'"><img src="'+esc(item.image||'')+'" alt="'+esc(item.title)+'" loading="lazy" decoding="async" onerror="this.style.visibility=\'hidden\'"><span>'+esc(item.title)+'</span>'+(item.offer_label?'<em>'+esc(item.offer_label)+'</em>':'')+(item.price?'<small>K'+esc(Number(item.price).toLocaleString('en-ZM',{maximumFractionDigits:2}))+'</small>':'')+'<b>View &amp; buy ↗</b></a>'
  }).join('')+(items.length>4?'<a class="py2-featured-product-more" href="/blog-post.html?slug='+encodeURIComponent(p.slug)+'">+'+(items.length-4)+' more</a>':'')+'</div><a class="py2-story-shop-cta" href="/shop.html">Explore all PhoneYa2 products <span aria-hidden="true">→</span></a></div>';
 }
 function ensureFeaturedProductPreviewStyles(){
