@@ -111,3 +111,29 @@ body.py2-water-page .pcard::after,body.py2-water-page .product-card::after,body.
 @keyframes py2-water-edge-flow{from{background-position:100% 0}to{background-position:-140% 0}}
 body.py2-water-page .top-header,body.py2-water-page .cat-nav,body.py2-water-page .py2-quick-tabs,body.py2-water-page .mob-nav-panel,body.py2-water-page .footer,body.py2-water-page footer{background-color:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 @media(prefers-reduced-motion:reduce){body.py2-water-page .pcard::after,body.py2-water-page .product-card::after,body.py2-water-page .section-card::after,body.py2-water-page .panel::after,body.py2-water-page .benefit::after,body.py2-water-page .contact-card::after,body.py2-water-page .about-card::after,body.py2-water-page .policy-card::after,body.py2-water-page .checkout-card::after,body.py2-water-page .order-summary::after,body.py2-water-page .howto-mini-inner::after{animation:none}}
+
+
+/* FINAL HOMEPAGE CANVAS GUARD — 2026-10-20.
+   The fixed water canvas is decorative; the document canvas underneath it must
+   never fall back to the old deep-blue gradient between transparent sections. */
+html.py2-water-enabled {
+  background-color: #eef9fd !important;
+  background-image: linear-gradient(145deg,#f8fcff 0%,#eaf8fc 48%,#e1f4fa 100%) !important;
+  background-attachment: scroll !important;
+}
+body.py2-water-page {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body.py2-water-page .main-wrap,
+body.py2-water-page .hero-zone,
+body.py2-water-page .products-section,
+body.py2-water-page .trust-strip,
+body.py2-water-page .search-bar,
+body.py2-water-page .filter-bar,
+body.py2-water-page .home-content,
+body.py2-water-page .home-sections,
+body.py2-water-page .endless-products-section {
+  background-color: transparent !important;
+  background-image: none !important;
+}
