@@ -1,14 +1,7 @@
-/* Tiny passive scroll coordinator: pauses decorative CSS animation while the user scrolls. */
+/* PhoneYa2 lightweight performance guard. Avoid scroll listeners that trigger repeated style recalculation. */
 (function(){
   'use strict';
-  if(window.__py2PerformanceScrollCoordinator)return;
-  window.__py2PerformanceScrollCoordinator=true;
-  var root=document.documentElement,timer=0,raf=0;
-  function onScroll(){
-    if(!root.classList.contains('py2-is-scrolling'))root.classList.add('py2-is-scrolling');
-    if(timer)clearTimeout(timer);
-    timer=setTimeout(function(){root.classList.remove('py2-is-scrolling');timer=0},170);
-  }
-  window.addEventListener('scroll',onScroll,{passive:true});
-  window.addEventListener('pagehide',function(){if(timer)clearTimeout(timer);if(raf)cancelAnimationFrame(raf);root.classList.remove('py2-is-scrolling')},{passive:true});
+  if(window.__py2PerformanceGuardLoaded)return;
+  window.__py2PerformanceGuardLoaded=true;
+  // Deliberately no scroll handler: native touch scrolling should remain fully in browser control.
 })();
