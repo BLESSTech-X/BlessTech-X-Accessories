@@ -288,9 +288,11 @@ function parseProductMarkdown(text,slug){
 
 function personalReferralCode(){try{const code=String(localStorage.getItem('py2_agent_personal_ref')||'').trim();return /^[A-Za-z0-9_-]{3,40}$/.test(code)?code:''}catch(_){return ''}}
 function commissionFor(amount){
- const tiers=[{min:1,max:100,pct:4},{min:101,max:500,pct:3},{min:501,max:1000,pct:2.5},{min:1001,max:5000,pct:1.5},{min:5001,max:Infinity,pct:1}];
+ // Conservative fallback estimates: protect PhoneYa2 margins on higher-priced items.
+ // These are display estimates only until an approved commission-rate source is connected.
+ const tiers=[{min:1,max:100,pct:3},{min:101,max:500,pct:2},{min:501,max:1000,pct:1.5},{min:1001,max:5000,pct:1},{min:5001,max:Infinity,pct:0.5}];
  const price=Math.max(0,Number(amount)||0);const tier=tiers.find(t=>price>=t.min&&price<=t.max);
- const commission=tier?Math.min(50,Math.round(price*tier.pct/100)):0;
+ const commission=tier?Math.min(20,Math.round(price*tier.pct/100)):0;
  return {percentage:tier?tier.pct:0,commission};
 }
 
