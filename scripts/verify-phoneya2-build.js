@@ -6,6 +6,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const sitemapPath = path.join(root, 'sitemap.xml');
 const indexPath = path.join(root, 'content', 'products', 'index.json');
+const catalogPath = path.join(root, 'content', 'products', 'catalog.json');
 const requiredPages = [
   'index.html', 'shop.html', 'cart.html', 'checkout.html', 'account.html',
   'product.html', 'blog.html', 'blog-post.html', 'advertise/index.html',
@@ -30,6 +31,20 @@ try {
 } catch (error) {
   fail('Product index validation failed: ' + error.message);
   process.exit();
+}
+
+try {
+  const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+  if (!Array.isArray(catalog) || catalog.length !== slugs.length) throw new Error('Product catalogue count does not match product index.');
+  const requiredSalesFields = ['sales_hook', 'offer_label', 'offer_details', 'sales_priority'];
+  for (const product of catalog) {
+    if (!product || !slugs.includes(product.slug)) throw new Error('Catalogue contains a product absent from the index.');
+    if (requiredSalesFields.some(field => typeof product[field] !== 'string')) throw new Error('Sales messaging fields are missing for ' + product.slug + '.');
+    if (!Number.isFinite(Number(product.price)) || Number(product.price) < 0) throw new Error('Invalid price for ' + product.slug + '.');
+  }
+  pass('Product catalogue includes all products and CMS-managed sales fields (' + catalog.length + ').');
+} catch (error) {
+  fail('Product catalogue validation failed: ' + error.message);
 }
 
 let xml;
