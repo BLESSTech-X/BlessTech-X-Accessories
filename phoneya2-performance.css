@@ -112,3 +112,28 @@ body.py2-water-page .product-card {
     background: linear-gradient(160deg,#f8fcff 0%,#eaf8fc 52%,#e1f4fa 100%) !important;
   }
 }
+
+
+/* Final background authority: do not let the scroll-performance layer replace
+   the water experience with a pale or dark fallback between product sections. */
+html.py2-water-enabled {
+  background-color: #087c9b !important;
+  background-image: linear-gradient(145deg,#087c9b 0%,#119bb5 28%,#087f9f 57%,#043d61 100%) !important;
+  background-attachment: fixed !important;
+}
+body.py2-water-page {
+  background: transparent !important;
+}
+body.py2-water-page.shop-page :is(main,.main-wrap,.shop-main,.page-content,.products-section,.products-grid,.products-container,.products-wrap,.endless-products-section,.search-bar,.filter-bar,.trust-strip,.shop-content) {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body.py2-water-page.shop-page :is(.pcard,.product-card,.product-item,.skel-card) {
+  background: #fff !important;
+  color: #17243a !important;
+}
+@media (max-width: 768px) {
+  html.py2-water-enabled {
+    background-image: linear-gradient(160deg,#087c9b 0%,#119bb5 28%,#087f9f 57%,#043d61 100%) !important;
+  }
+}
