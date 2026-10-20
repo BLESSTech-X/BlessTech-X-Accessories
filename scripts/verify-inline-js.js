@@ -5,7 +5,8 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
-const files = ['index.html', 'shop.html', 'product.html'];
+const files = ['index.html', 'shop.html', 'product.html', 'blog.html', 'agents/py2-360.html'];
+const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js'];
 let checked = 0;
 for (const file of files) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
@@ -28,4 +29,13 @@ for (const file of files) {
     }
   }
 }
-if (!process.exitCode) console.log('PASS: Parsed ' + checked + ' inline JavaScript blocks across homepage, shop and product pages.');
+for (const file of externalScripts) {
+  try {
+    new vm.Script(fs.readFileSync(path.join(root, file), 'utf8'), { filename: file });
+    checked++;
+  } catch (error) {
+    console.error('FAIL: JavaScript syntax error in ' + file + ': ' + error.message);
+    process.exitCode = 1;
+  }
+}
+if (!process.exitCode) console.log('PASS: Parsed ' + checked + ' inline and external JavaScript blocks across storefront, blog and agent desk.');
