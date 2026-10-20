@@ -196,7 +196,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-let agent=null, sales=[], leads=[], products=[], analytics=null, agentDataAvailable=false, productsAvailable=false;
+let agent=null, products=[], productsAvailable=false;
 const money=n=>'K'+Number(n||0).toLocaleString('en-ZM',{maximumFractionDigits:2});
 const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -264,50 +264,7 @@ function parseProductMarkdown(text,slug){
  const body=text.slice(match[0].length).trim();out.body=body.replace(/^#+\s*/gm,'').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\[(.*?)\]\((.*?)\)/g,'$1');return out;
 }
 
-function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
-function isConfirmed(s){return ['confirmed','paid','delivered','complete','completed'].includes(String(s||'').toLowerCase());}
-function renderStats(){
- const pending=sales.filter(s=>String(s.status||'').toLowerCase()==='pending');
- const confirmed=sales.filter(s=>['confirmed','processing','shipped','delivered'].includes(String(s.status||'').toLowerCase()));
- const delivered=sales.filter(s=>String(s.status||'').toLowerCase()==='delivered');
- $('kpi-sales').textContent=agentDataAvailable?num(sales.length):'—';
- $('kpi-pending').textContent=agentDataAvailable?num(pending.length):'—';
- $('kpi-revenue').textContent=agentDataAvailable?money(confirmed.reduce((a,s)=>a+Number(s.amount||0),0)):'—';
- $('kpi-leads').textContent=agentDataAvailable?num(delivered.length):'—';
- $('kpi-visitors').textContent=analytics?.summary?num(analytics.summary.active_users):'—';
- const cancelled=sales.filter(s=>String(s.status||'').toLowerCase()==='cancelled').length;
- let summary='';
- if(!agentDataAvailable) summary='Order data is unavailable. Check the live data warning below; unavailable data is not reported as zero.';
- else if(!sales.length) summary='The live order system returned zero checkout orders. That is a real zero for the connected order table, not an agent-sales placeholder. Choose one product to promote and track the enquiries it generates.';
- else summary='PhoneYa2 has '+sales.length+' checkout order(s) in the connected order system. '+pending.length+' are pending, '+confirmed.length+' are confirmed/in fulfilment, and '+delivered.length+' are delivered. '+(cancelled?'Review '+cancelled+' cancelled order(s) for recurring reasons.':'No cancelled orders are recorded in the loaded order data.')+' These are store-wide figures, not your personal attributed sales.';
- $('assistant-summary').textContent=summary;
-}
-function drawChart(canvas,values,labels){
- const c=$(canvas),ctx=c.getContext('2d'),dpr=window.devicePixelRatio||1,w=c.clientWidth||600,h=210;
- c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
- const pad={l:34,r:8,t:14,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b,max=Math.max(1,...values);
- ctx.font='11px system-ui';ctx.strokeStyle='#e9edf4';ctx.fillStyle='#778196';ctx.lineWidth=1;
- for(let i=0;i<4;i++){const y=pad.t+ch*i/3;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(Math.round(max*(1-i/3)).toString(),2,y+4);}
- const gap=10,bw=Math.max(8,(cw-gap*(values.length-1))/values.length);
- values.forEach((v,i)=>{const x=pad.l+i*(bw+gap),bh=ch*v/max,y=pad.t+ch-bh;ctx.fillStyle='#ff6000';ctx.beginPath();const radius=Math.min(5,bw/2);ctx.roundRect(x,y,bw,Math.max(2,bh),[radius,radius,0,0]);ctx.fill();ctx.fillStyle='#667085';ctx.textAlign='center';ctx.fillText(labels[i],x+bw/2,h-9);});
-}
-function renderCharts(){
- const now=new Date(),buckets=Array.from({length:6},(_,i)=>{const start=new Date(now);start.setDate(now.getDate()-(5-i)*7-6);start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+7);return {start,end,label:'W'+(i+1),count:0};});
- sales.forEach(s=>{const d=new Date(s.created_at||s.confirmed_at||0);if(!Number.isFinite(d.getTime()))return;const b=buckets.find(x=>d>=x.start&&d<x.end);if(b)b.count++;});
- drawChart('sales-chart',agentDataAvailable?buckets.map(b=>b.count):[],agentDataAvailable?buckets.map(b=>b.label):[]);
- $('sales-chart-note').textContent=!agentDataAvailable?'Sales data unavailable — check the live data warning above.':sales.length?'Counts are based on sale-record creation dates, not guaranteed payment dates.':'No sale records yet. Your chart will fill as sales are recorded.';
-}
-function renderLeadPipeline(){
- const stages=[['pending','Pending'],['confirmed','Confirmed'],['processing','Processing'],['shipped','Shipped'],['delivered','Delivered'],['cancelled','Cancelled']];
- const counts=stages.map(([status])=>sales.filter(o=>String(o.status||'').toLowerCase()===status).length);
- drawChart('lead-chart',agentDataAvailable?counts:[],stages.map(s=>s[1]));
- $('lead-pipeline').innerHTML=!agentDataAvailable?'<div class="empty">Order data unavailable — check the live data warning above.</div>':stages.map(([status,label],i)=>'<div class="mini-row"><span>'+label+'</span><strong>'+counts[i]+'</strong></div>').join('');
- if(!agentDataAvailable){$('lead-insight').innerHTML='<strong>Order data unavailable</strong><p>The dashboard could not retrieve the live checkout orders. It will not treat a failed request as zero.</p>';return;}
- const pending=counts[0],cancelled=counts[5],delivered=counts[4];
- $('lead-insight').innerHTML='<strong>Operational insight</strong><p>'+(pending?'There '+(pending===1?'is ':'are ')+pending+' pending order(s). The store admin should confirm availability and delivery expectations. ':'No pending orders are currently recorded. ')+(cancelled?' Review '+cancelled+' cancelled order(s) for repeated issues. ':'')+(delivered?' '+delivered+' order(s) are marked delivered.':'')+'</p>';
-}
 function personalReferralCode(){try{const code=String(localStorage.getItem('py2_agent_personal_ref')||'').trim();return /^[A-Za-z0-9_-]{3,40}$/.test(code)?code:''}catch(_){return ''}}
-function productUrl(p){const slug=String(p.slug||p.id||'product');const code=personalReferralCode();return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(slug)+'&utm_source=py2_360&utm_medium=agent_share&utm_campaign='+encodeURIComponent(slug)+(code?'&ref='+encodeURIComponent(code):'');}
 function commissionFor(amount){
  const tiers=[{min:1,max:100,pct:10},{min:101,max:500,pct:8},{min:501,max:1000,pct:6},{min:1001,max:5000,pct:4},{min:5001,max:Infinity,pct:3}];
  const price=Number(amount)||0;const tier=tiers.find(t=>price>=t.min&&price<=t.max);
@@ -315,74 +272,6 @@ function commissionFor(amount){
 }
 
 function caption(p){const estimate=commissionFor(p.price);return 'I recommend this PhoneYa2 pick:\n\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||'See product details and availability on PhoneYa2.')+'\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% estimate; subject to confirmation and active commission rules)\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);}
-function offerCaption(p,type){
- const estimate=commissionFor(p.price);
- const angle=type==='ENTRY OPTION'?'A more accessible option to consider:':type==='HIGHER-VALUE OPTION'?'A higher-value alternative to compare:':'PhoneYa2 is highlighting this product as a priority pick:';
- return 'Hi! I thought this PhoneYa2 option might suit you.\n\n'+angle+'\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||'Check product details and current availability.')+'\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% fallback estimate; subject to active rules and confirmed sale).\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);
-}
-function productCard(p,label){
- const stock=Number(p.stock||0),img=p.image||'',earn=commissionFor(p.price);
- const priority=String(p.sales_priority||'standard');
- const badge=p.offer_label||label|| (priority==='promote'?'PROMOTE MORE':priority==='campaign'?'CAMPAIGN PICK':'RECOMMENDED');
- return '<article class="product" data-product-card="'+esc(p.slug)+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(p.title)+'" loading="lazy" onerror="this.style.visibility=\'hidden\'">':'<div style="height:138px;display:grid;place-items:center;background:#fafbfe;font-size:32px">📦</div>')+'<div class="product-body"><span class="tag '+esc(priority)+'">'+esc(badge)+'</span><h3>'+esc(p.title)+'</h3><div class="price">'+money(p.price)+'</div><div class="stock">'+(stock>0?stock+' in stock':'Out of stock')+'</div>'+(p.sales_hook?'<div class="product-hook">'+esc(p.sales_hook)+'</div>':'')+(p.offer_details?'<div class="product-hook"><strong>Offer note:</strong> '+esc(p.offer_details)+'</div>':'')+'<div class="product-earn">Sell 1 · Earn est. '+money(earn.commission)+'<small>'+earn.percentage+'% fallback tier estimate · confirm active rate</small></div><div class="product-actions"><button class="btn btn-green" data-share="'+esc(p.slug)+'" '+(stock<=0?'disabled':'')+'><i class="fa-brands fa-whatsapp"></i> Sell this &amp; share</button><button class="btn btn-light" data-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy sales message</button><a class="btn btn-light" href="'+esc(productUrl(p))+'" target="_blank" rel="noopener">Open product ↗</a></div></div></article>';
-}
-function renderCalculator(){
- const select=$('earn-product'),unitsInput=$('earn-units'),targetInput=$('earn-target');
- if(!select||!unitsInput||!targetInput)return;
- const available=products.filter(p=>Number(p.stock)>0&&Number(p.price)>0);
- const chosen=available.find(p=>p.slug===select.value)||available[0];
- if(!chosen){$('earn-per-sale').textContent='—';$('earn-total').textContent='—';$('earn-needed').textContent='—';return;}
- if(select.value!==chosen.slug)select.value=chosen.slug;
- const estimate=commissionFor(chosen.price);
- const units=Math.max(1,Math.min(1000,Math.floor(Number(unitsInput.value)||1)));
- const target=Math.max(1,Number(targetInput.value)||500);
- const perSale=estimate.commission;
- $('earn-per-sale').textContent=money(perSale);
- $('earn-total').textContent=money(perSale*units);
- $('earn-needed').textContent=perSale>0?num(Math.ceil(target/perSale))+' sales':'—';
- renderTargetRecommendations(target);
-}
-function renderTargetRecommendations(target){
- const host=$('target-products');if(!host)return;
- const available=products.filter(p=>Number(p.stock)>0&&Number(p.price)>0);
- if(!productsAvailable||!available.length){host.innerHTML='<div class="empty">Live product data is unavailable. Refresh the Agent Desk before planning.</div>';return;}
- const goal=Math.max(1,Number(target)||500);
- const options=available.map(p=>{
-  const estimate=commissionFor(p.price);
-  const needed=estimate.commission>0?Math.ceil(goal/estimate.commission):Infinity;
-  const stock=Math.max(0,Math.floor(Number(p.stock)||0));
-  return {p,estimate,needed,stock,reachable:Number.isFinite(needed)&&needed<=stock};
- }).filter(x=>Number.isFinite(x.needed)&&x.needed>0&&x.stock>0)
- .sort((x,y)=>Number(y.reachable)-Number(x.reachable)||x.needed-y.needed||y.estimate.commission-x.estimate.commission)
- .slice(0,6);
- if(!options.length){host.innerHTML='<div class="empty">No in-stock product has a valid commission estimate yet.</div>';return;}
- host.innerHTML=options.map(x=>{
-  const p=x.p;
-  return '<article class="target-product-option"><h4>'+esc(p.title)+'</h4><div class="target-metric">Price: <strong>'+money(p.price)+'</strong><br>Est. commission per sale: <strong>'+money(x.estimate.commission)+'</strong><br>Sales for target: <strong>'+num(x.needed)+'</strong><br>Current stock: <strong>'+num(x.stock)+'</strong><br>'+ (x.reachable?'<strong>Target is within listed stock</strong>':'<strong>Target exceeds current listed stock</strong>')+'</div><div class="target-product-actions"><button type="button" class="btn btn-green" data-target-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share</button><button type="button" class="btn btn-light" data-target-select="'+esc(p.slug)+'">Calculate</button></div></article>';
- }).join('');
- host.querySelectorAll('[data-target-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.targetShare);if(p)window.open('https://wa.me/?text='+encodeURIComponent(offerCaption(p,'PRIORITY PICK')),'_blank','noopener');}));
- host.querySelectorAll('[data-target-select]').forEach(b=>b.addEventListener('click',()=>{const select=$('earn-product');if(select){select.value=b.dataset.targetSelect;renderCalculator();select.scrollIntoView({behavior:'smooth',block:'center'});}}));
-}
-function offerPlaybookCard(p,type,title,reason){
- const earn=commissionFor(p.price);
- return '<article class="offer-angle"><div class="angle-type">'+esc(type)+'</div><h3>'+esc(title)+'</h3><div class="angle-price">'+money(p.price)+'</div><div class="angle-earn">Est. '+money(earn.commission)+' commission per confirmed sale <small style="display:block;font-size:9px;font-weight:700">Fallback estimate only</small></div><p>'+esc(p.sales_hook||p.description||reason)+' '+esc(reason)+'</p><div class="angle-actions"><button class="btn btn-green" type="button" data-offer-type="'+esc(type)+'" data-offer-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share this angle</button><button class="btn btn-light" type="button" data-offer-type="'+esc(type)+'" data-offer-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy pitch</button></div></article>';
-}
-function renderOfferPlaybook(available){
- const host=$('offer-playbook-cards');if(!host)return;
- if(!productsAvailable||!available.length){host.innerHTML='<div class="empty">The selling playbook needs a loaded catalogue with in-stock products and valid prices.</div>';return;}
- const unique=[];
- const add=(p,type,title,reason)=>{if(p&&!unique.some(x=>x.p.slug===p.slug))unique.push({p,type,title,reason});};
- const rank=p=>p.sales_priority==='promote'?0:p.sales_priority==='campaign'?1:2;
- const promoted=[...available].sort((a,b)=>rank(a)-rank(b)||Number(!!b.featured)-Number(!!a.featured)||Number(a.price)-Number(b.price));
- const budget=[...available].sort((a,b)=>Number(a.price)-Number(b.price));
- const premium=[...available].sort((a,b)=>Number(b.price)-Number(a.price));
- add(budget[0],'ENTRY OPTION','Start with an accessible option','Lead with the use case and make sure it fits the customer’s needs.');
- add(promoted[0],'PRIORITY PICK','Lead with a product PhoneYa2 is prioritising','Explain the practical benefit first; answer questions honestly.');
- add(premium[0],'HIGHER-VALUE OPTION','Offer a higher-value alternative','Compare features and value clearly; never pressure someone into spending more.');
- host.innerHTML=unique.map(x=>offerPlaybookCard(x.p,x.type,x.title,x.reason)).join('');
- host.querySelectorAll('[data-offer-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.offerShare);if(p)window.open('https://wa.me/?text='+encodeURIComponent(offerCaption(p,b.dataset.offerType)),'_blank','noopener');}));
- host.querySelectorAll('[data-offer-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.offerCopy);if(!p)return;try{await navigator.clipboard.writeText(offerCaption(p,b.dataset.offerType));b.innerHTML='<i class="fa-solid fa-check"></i> Copied';}catch{window.prompt('Copy this product pitch',offerCaption(p,b.dataset.offerType));}}));
-}
 function imageUrl(path){
  const value=String(path||'').trim();if(!value)return '';
  if(/^https?:\/\//i.test(value)||value.startsWith('data:'))return value;
