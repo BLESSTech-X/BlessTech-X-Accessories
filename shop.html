@@ -1480,7 +1480,7 @@ function renderGrid(appendOnly) {
       ? '<div class="pcard-actions"><button type="button" class="py2-add-cart" onclick="event.stopPropagation();PhoneYa2Cart.add(\''+p.slug+'\',1,'+Number(p.stock||0)+')"><i class="fa-solid fa-cart-plus"></i> Add to cart</button><a href="'+orderUrl(p)+'" class="btn-order" onclick="event.stopPropagation()"><i class="fa-solid fa-bolt"></i> Buy now</a></div>'
       : '<button class="btn-notify" onclick="event.stopPropagation();notifyMe(\''+escJs(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify When Available</button>';
     const card = document.createElement('div');
-    card.className = 'pcard';
+    card.className = 'pcard' + (hasDrop ? ' py2-discount-card' : '');
     card.style.animationDelay = Math.min(i * 0.018, 0.12) + 's';
     card.setAttribute('role','article');
     card.setAttribute('aria-label', p.title);
