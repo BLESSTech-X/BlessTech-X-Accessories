@@ -166,7 +166,6 @@ body:not(.py2-blog-page) .pcard .py2-add-cart:hover{
 body:not(.py2-blog-page) .btn-order,
 body:not(.py2-blog-page) .pcard .btn-order,
 body:not(.py2-blog-page) .pcard .pc-order-link,
-body:not(.py2-blog-page) .pcard .pc-wa,
 body:not(.py2-blog-page) .pc-order-link,
 body:not(.py2-blog-page) .btn-order-main,
 body:not(.py2-blog-page) .product-main-actions .btn-order-main{
@@ -177,7 +176,6 @@ body:not(.py2-blog-page) .product-main-actions .btn-order-main{
 body:not(.py2-blog-page) .btn-order:hover,
 body:not(.py2-blog-page) .pcard .btn-order:hover,
 body:not(.py2-blog-page) .pcard .pc-order-link:hover,
-body:not(.py2-blog-page) .pcard .pc-wa:hover,
 body:not(.py2-blog-page) .pc-order-link:hover,
 body:not(.py2-blog-page) .btn-order-main:hover{
   filter:brightness(1.07);transform:translateY(-1px);
