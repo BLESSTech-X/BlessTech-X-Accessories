@@ -455,5 +455,6 @@ $('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.d
 $('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_agent_code');location.reload();});
 document.addEventListener('DOMContentLoaded',async()=>{const savedCode=sessionStorage.getItem('py2_agent_code');if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode)}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your access code again.')}}});
 })();
+</script>
 </body>
 </html>
