@@ -153,3 +153,65 @@ body.py2-blog-page .py2-quick-tabs{box-shadow:0 5px 18px rgba(23,54,103,.08)!imp
 @media(prefers-reduced-motion:reduce){
  body:not(.py2-blog-page) .pcard,body.py2-blog-page .py2-post-card,body.py2-blog-page .py2-product-card{transition:none!important}
 }
+
+
+/* Conversion controls: orange means save it to cart; red means buy now. */
+body:not(.py2-blog-page) .py2-add-cart,
+body:not(.py2-blog-page) .pcard .py2-add-cart,
+body:not(.py2-blog-page) .pcard .py2-add-cart:hover{
+  background:linear-gradient(135deg,#ff8a00 0%,#ff6500 100%)!important;
+  color:#fff!important;border:1px solid #f05a00!important;
+  box-shadow:0 5px 13px rgba(255,101,0,.22)!important;
+}
+body:not(.py2-blog-page) .btn-order,
+body:not(.py2-blog-page) .pcard .btn-order,
+body:not(.py2-blog-page) .pcard .pc-order-link,
+body:not(.py2-blog-page) .pcard .pc-wa,
+body:not(.py2-blog-page) .pc-order-link,
+body:not(.py2-blog-page) .btn-order-main,
+body:not(.py2-blog-page) .product-main-actions .btn-order-main{
+  background:linear-gradient(135deg,#f52235 0%,#d90d28 100%)!important;
+  color:#fff!important;border:1px solid #c90c24!important;
+  box-shadow:0 5px 13px rgba(217,13,40,.2)!important;
+}
+body:not(.py2-blog-page) .btn-order:hover,
+body:not(.py2-blog-page) .pcard .btn-order:hover,
+body:not(.py2-blog-page) .pcard .pc-order-link:hover,
+body:not(.py2-blog-page) .pcard .pc-wa:hover,
+body:not(.py2-blog-page) .pc-order-link:hover,
+body:not(.py2-blog-page) .btn-order-main:hover{
+  filter:brightness(1.07);transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(217,13,40,.27)!important;
+}
+body:not(.py2-blog-page) .py2-add-cart:hover{
+  filter:brightness(1.06);transform:translateY(-1px);
+  box-shadow:0 8px 17px rgba(255,101,0,.28)!important;
+}
+
+/* Compact shop hero with the PhoneYa2 brand mark clearly visible behind the copy. */
+body:not(.py2-blog-page) .shop-hero{
+  min-height:112px!important;padding:15px 20px 14px!important;
+  background-image:
+    linear-gradient(105deg,rgba(12,34,77,.94) 0%,rgba(27,59,133,.88) 48%,rgba(76,46,151,.76) 100%),
+    url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg")!important;
+  background-position:center,center 48%!important;
+  background-size:cover,auto 92%!important;background-repeat:no-repeat!important;
+}
+body:not(.py2-blog-page) .shop-hero-inner{max-width:1280px!important}
+body:not(.py2-blog-page) .shop-hero .sec-tag{font-size:10px;letter-spacing:1.8px;margin-bottom:1px}
+body:not(.py2-blog-page) .shop-hero h1{font-size:clamp(1.35rem,2.8vw,2rem)!important;margin:0 0 3px!important;line-height:1.12}
+body:not(.py2-blog-page) .shop-hero p{font-size:12px!important;line-height:1.35;margin:0!important;color:#f2f6ff!important}
+body:not(.py2-blog-page) .shop-hero .py2-shop-hero-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+body:not(.py2-blog-page) .shop-hero .py2-hero-primary,
+body:not(.py2-blog-page) .shop-hero .py2-hero-secondary{font-size:11px!important;padding:7px 10px!important;min-height:30px}
+body:not(.py2-blog-page) .shop-hero .py2-hero-note{font-size:10px!important;margin-top:6px!important}
+body:not(.py2-blog-page) .shop-hero-orb1,
+body:not(.py2-blog-page) .shop-hero-orb2{display:none!important}
+@media(max-width:600px){
+  body:not(.py2-blog-page) .shop-hero{min-height:94px!important;padding:12px 14px!important;background-size:cover,auto 78%!important}
+  body:not(.py2-blog-page) .shop-hero h1{font-size:1.35rem!important}
+  body:not(.py2-blog-page) .shop-hero p{font-size:11px!important;max-width:36rem}
+  body:not(.py2-blog-page) .shop-hero .py2-shop-hero-actions{gap:6px;margin-top:7px}
+  body:not(.py2-blog-page) .shop-hero .py2-hero-secondary{display:none}
+  body:not(.py2-blog-page) .shop-hero .py2-hero-note{display:none}
+}
