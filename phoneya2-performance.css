@@ -40,3 +40,46 @@ img,video{max-width:100%}
     box-shadow:0 0 0 1px rgba(0,145,255,.15),0 3px 12px rgba(25,65,120,.10)!important;
   }
 }
+
+
+/* PhoneYa2 stable background + mobile rendering guard (2026-10-20).
+   Keep the page canvas explicitly light and stop animated watermark/filter layers
+   from repainting the entire viewport during long scrolls. */
+html, body {
+  background-color: #f2f5f9 !important;
+  background-image: none !important;
+  scroll-behavior: auto !important;
+}
+body {
+  color: #17243a;
+  background: #f2f5f9 !important;
+  background-image: none !important;
+  background-attachment: scroll !important;
+}
+body::before, body::after {
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  will-change: auto !important;
+}
+@media (max-width: 768px) {
+  /* Avoid animated full-viewport logo layers and GPU-heavy moving card frames on phones. */
+  body::before, body::after { opacity: 0 !important; }
+  .pcard.py2-discount-card,
+  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.pc-orig),
+  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.price-drop-banner),
+  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.drop-banner),
+  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.prod-save),
+  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.pcard-save),
+  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.py2-selling-savings) {
+    animation: none !important;
+    filter: none !important;
+    will-change: auto !important;
+  }
+  .pcard.py2-discount-card {
+    background: #fff !important;
+    border: 1px solid #dce7f3 !important;
+    box-shadow: 0 3px 12px rgba(25,65,120,.10) !important;
+  }
+}
