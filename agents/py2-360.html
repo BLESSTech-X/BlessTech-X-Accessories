@@ -181,13 +181,13 @@ function renderLeadPipeline(){
  const pending=counts[0],cancelled=counts[5],delivered=counts[4];
  $('lead-insight').innerHTML='<strong>Operational insight</strong><p>'+(pending?'There '+(pending===1?'is ':'are ')+pending+' pending order(s). The store admin should confirm availability and delivery expectations. ':'No pending orders are currently recorded. ')+(cancelled?' Review '+cancelled+' cancelled order(s) for repeated issues. ':'')+(delivered?' '+delivered+' order(s) are marked delivered.':'')+'</p>';
 }
-function productUrl(p){const slug=String(p.slug||p.id||'product');return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(slug)+'&utm_source=py2_360&utm_medium=agent_share&utm_campaign='+encodeURIComponent(slug);}
+function productUrl(p){const slug=String(p.slug||p.id||'product');const code=String(sessionStorage.getItem('py2_agent_code')||'').trim();return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(slug)+'&utm_source=py2_360&utm_medium=agent_share&utm_campaign='+encodeURIComponent(slug)+(code?'&ref='+encodeURIComponent(code):'');}
 function commissionFor(amount){
  const tiers=[{min:1,max:100,pct:10},{min:101,max:500,pct:8},{min:501,max:1000,pct:6},{min:1001,max:5000,pct:4},{min:5001,max:Infinity,pct:3}];
  const price=Number(amount)||0;const tier=tiers.find(t=>price>=t.min&&price<=t.max);
  return tier?{percentage:tier.pct,commission:Math.round(price*tier.pct/100)}:{percentage:0,commission:0};
 }
-function productUrl(p){const slug=String(p.slug||p.id||'product');return 'https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(slug)+'&utm_source=py2_360&utm_medium=agent_share&utm_campaign='+encodeURIComponent(slug);}
+
 function caption(p){const estimate=commissionFor(p.price);return 'I recommend this PhoneYa2 pick:\n\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||'See product details and availability on PhoneYa2.')+'\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% estimate; subject to confirmation and active commission rules)\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);}
 function productCard(p,label){
  const stock=Number(p.stock||0),img=p.image||'',earn=commissionFor(p.price);
