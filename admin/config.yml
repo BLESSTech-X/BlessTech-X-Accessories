@@ -77,6 +77,8 @@ collections:
       - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ" }
       - { label: "Category", name: "category", widget: "select", options: ["Offers", "Product News", "Buying Guides", "Tips & Tricks", "PhoneYa2 Updates", "Community"] }
       - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
+      - { label: "Sales Message (optional)", name: "sales_message", widget: "text", required: false, hint: "A useful next step or product-value message for readers. Avoid fake urgency, unsupported claims or invented discounts. Shown in a clear action box on the blog feed." }
+      - { label: "Action Button Label", name: "sales_cta_label", widget: "string", required: false, default: "Explore this pick", hint: "Short action text such as Shop this guide, Compare options, or Explore this pick. The button opens the first attached featured product, or the shop if none is attached." }
       - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
       - label: "Additional Images"
         name: "gallery"
