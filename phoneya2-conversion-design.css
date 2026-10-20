@@ -247,12 +247,13 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
 
 /* Global discount treatment: all product surfaces, not only the Shop grid. */
 @keyframes py2DiscountSweep{0%{background-position:0% 50%}100%{background-position:220% 50%}}
+@keyframes py2DealBlueGlow{0%,100%{box-shadow:0 0 0 1px rgba(0,150,255,.22),0 0 9px rgba(0,145,255,.48),0 0 18px rgba(0,90,255,.28)}50%{box-shadow:0 0 0 2px rgba(0,180,255,.35),0 0 15px rgba(0,170,255,.82),0 0 29px rgba(0,95,255,.56)}}
 :is(.price-drop-banner,.drop-banner){
- position:relative!important;isolation:isolate!important;overflow:hidden!important;color:#fff!important;font-weight:900!important;
+ position:relative!important;isolation:isolate!important;overflow:hidden!important;color:#ff1028!important;font-weight:900!important;
  background:linear-gradient(110deg,#f00035 0%,#ff3b30 20%,#ff7800 42%,#ffcf00 58%,#ff258d 78%,#713bff 100%)!important;
  background-size:240% 240%!important;border:1px solid rgba(255,255,255,.82)!important;border-radius:10px!important;
- text-shadow:0 1px 2px rgba(60,0,15,.35)!important;box-shadow:0 0 0 1px rgba(255,32,67,.15),0 0 12px rgba(255,35,65,.42),0 0 23px rgba(255,120,0,.22)!important;
- animation:py2DiscountSweep 3.6s ease-in-out infinite alternate,py2DealBorderGlow 3s ease-in-out infinite!important;
+ text-shadow:0 1px 2px rgba(255,255,255,.65),0 0 5px rgba(255,20,45,.24)!important;box-shadow:0 0 0 1px rgba(0,150,255,.25),0 0 12px rgba(0,145,255,.65),0 0 23px rgba(0,90,255,.42)!important;
+ animation:py2DiscountSweep 3.6s ease-in-out infinite alternate,py2DealBlueGlow 3s ease-in-out infinite!important;
 }
 :is(.price-drop-banner,.drop-banner)::before{content:""!important;position:absolute!important;z-index:-1!important;inset:0!important;left:-130%!important;width:65%!important;background:linear-gradient(100deg,transparent,rgba(255,255,255,.72),transparent)!important;transform:skewX(-22deg)!important;animation:py2GlobalDiscountShine 3s ease-in-out infinite!important;pointer-events:none!important}
 :is(.price-drop-banner,.drop-banner) i{color:#fff!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.75))!important}
