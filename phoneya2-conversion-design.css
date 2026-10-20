@@ -289,3 +289,24 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
  animation:py2DealBorderRotate 5s linear infinite,py2DealBorderGlow 2.7s ease-in-out infinite!important;
  box-shadow:0 0 10px rgba(255,28,62,.24),0 0 18px rgba(255,106,0,.13)!important;
 }
+
+
+/* Canonical price-drop banner: identical text, gradient container, and blue glow wherever used. */
+@keyframes py2CanonicalBlueDealGlow{
+  0%,100%{box-shadow:0 0 0 1px rgba(0,150,255,.24),0 0 10px rgba(0,145,255,.55),0 0 20px rgba(0,90,255,.32)}
+  50%{box-shadow:0 0 0 2px rgba(0,180,255,.36),0 0 15px rgba(0,170,255,.78),0 0 27px rgba(0,95,255,.48)}
+}
+:is(.price-drop-banner,.drop-banner){
+  color:#ff1028!important;
+  background:linear-gradient(110deg,#f00035 0%,#ff3b30 20%,#ff7800 42%,#ffcf00 58%,#ff258d 78%,#713bff 100%)!important;
+  background-size:240% 240%!important;
+  border:1px solid rgba(255,255,255,.82)!important;
+  border-radius:10px!important;
+  text-shadow:0 1px 2px rgba(255,255,255,.65),0 0 5px rgba(255,20,45,.24)!important;
+  box-shadow:0 0 0 1px rgba(0,150,255,.25),0 0 12px rgba(0,145,255,.65),0 0 23px rgba(0,90,255,.42)!important;
+  animation:py2DiscountSweep 3.6s ease-in-out infinite alternate,py2CanonicalBlueDealGlow 3s ease-in-out infinite!important;
+}
+:is(.price-drop-banner,.drop-banner) i{color:#ff1028!important;filter:none!important}
+@media(prefers-reduced-motion:reduce){
+  :is(.price-drop-banner,.drop-banner){animation:none!important;box-shadow:0 0 0 1px rgba(0,150,255,.25),0 0 12px rgba(0,145,255,.5)!important}
+}
