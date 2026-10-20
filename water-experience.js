@@ -8,6 +8,9 @@
   if (!body) return;
   /* Checkout keeps the living-water effect, but uses a brighter aqua palette for readability. */
   var isCheckoutPage = /(?:^|\/)checkout\.html$/.test(window.location.pathname);
+  /* The homepage needs a bright, consistent water surface; a dark fixed canvas
+     was showing through transparent sections after Flash Sales while scrolling. */
+  var isHomePage = window.location.pathname === '/' || /(?:^|\/)index\.html$/.test(window.location.pathname);
   root.classList.add('py2-water-enabled');
   body.classList.add('py2-water-page');
 
@@ -66,7 +69,7 @@
     var dw = logo.naturalWidth * ratio, dh = logo.naturalHeight * ratio;
     var left = (w - dw) / 2, top = h * .53 - dh / 2;
     bg.save();
-    bg.globalAlpha = .17;
+    bg.globalAlpha = isHomePage ? .055 : .17;
     bg.globalCompositeOperation = 'multiply';
     /* Draw narrow horizontal slices with tiny phase-shifted offsets: the mark appears beneath moving water. */
     var slices = lowPower ? 28 : 54;
@@ -89,6 +92,12 @@
       base.addColorStop(.28, '#8edbe8');
       base.addColorStop(.57, '#66c7dc');
       base.addColorStop(1, '#379bbd');
+    } else if (isHomePage) {
+      /* Bright aqua-to-pale-blue canvas stays readable below every homepage section. */
+      base.addColorStop(0, '#f5fbff');
+      base.addColorStop(.28, '#e8f8fc');
+      base.addColorStop(.57, '#dff3f9');
+      base.addColorStop(1, '#d5edf6');
     } else {
       base.addColorStop(0, '#087c9b');
       base.addColorStop(.28, '#119bb5');
@@ -99,10 +108,10 @@
     bg.fillRect(0, 0, w, h);
 
     var glow = bg.createRadialGradient(w * (.22 + Math.sin(t * .34) * .06), h * .12, 0, w * .32, h * .16, Math.max(w, h) * .8);
-    glow.addColorStop(0, 'rgba(190,250,255,.30)');
-    glow.addColorStop(.28, 'rgba(87,221,235,.15)');
-    glow.addColorStop(.7, 'rgba(20,139,180,.045)');
-    glow.addColorStop(1, isCheckoutPage ? 'rgba(10,90,125,.06)' : 'rgba(0,34,66,.22)');
+    glow.addColorStop(0, isHomePage ? 'rgba(255,255,255,.48)' : 'rgba(190,250,255,.30)');
+    glow.addColorStop(.28, isHomePage ? 'rgba(87,221,235,.12)' : 'rgba(87,221,235,.15)');
+    glow.addColorStop(.7, isHomePage ? 'rgba(20,139,180,.018)' : 'rgba(20,139,180,.045)');
+    glow.addColorStop(1, isCheckoutPage ? 'rgba(10,90,125,.06)' : (isHomePage ? 'rgba(0,34,66,.015)' : 'rgba(0,34,66,.22)'));
     bg.fillStyle = glow;
     bg.fillRect(0, 0, w, h);
 
@@ -140,7 +149,7 @@
     /* Soft vignette creates underwater depth at the edges. */
     var shade = bg.createRadialGradient(w * .5, h * .44, Math.min(w, h) * .12, w * .5, h * .5, Math.max(w, h) * .78);
     shade.addColorStop(0, 'rgba(0,0,0,0)');
-    shade.addColorStop(1, isCheckoutPage ? 'rgba(0,52,80,.07)' : 'rgba(0,24,48,.24)');
+    shade.addColorStop(1, isCheckoutPage ? 'rgba(0,52,80,.07)' : (isHomePage ? 'rgba(0,24,48,.035)' : 'rgba(0,24,48,.24)'));
     bg.fillStyle = shade;
     bg.fillRect(0, 0, w, h);
   }
