@@ -83,3 +83,32 @@ body::before, body::after {
     box-shadow: 0 3px 12px rgba(25,65,120,.10) !important;
   }
 }
+
+
+/* FINAL mobile + desktop scroll background guard.
+   Use a bright page canvas behind all homepage sections, not a viewport-dependent
+   dark gradient. Keep actual cards opaque white so text never sits on water. */
+html.py2-water-enabled {
+  background: linear-gradient(145deg,#f8fcff 0%,#eaf8fc 48%,#e1f4fa 100%) !important;
+  background-color: #eef9fd !important;
+}
+body.py2-water-page {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body.py2-water-page .section-card,
+body.py2-water-page .side-card,
+body.py2-water-page .howto-section,
+body.py2-water-page .cat-showcase,
+body.py2-water-page .trust-item,
+body.py2-water-page .pcard,
+body.py2-water-page .pc,
+body.py2-water-page .product-card {
+  background-color: #fff !important;
+  color: #17243a !important;
+}
+@media (max-width: 768px) {
+  html.py2-water-enabled {
+    background: linear-gradient(160deg,#f8fcff 0%,#eaf8fc 52%,#e1f4fa 100%) !important;
+  }
+}
