@@ -185,3 +185,22 @@ body:has(.review-card) select, body:has(.review-card) textarea {
 }
 .py2-comment-status { margin:0; color:#35516e; font-size:13px; line-height:1.5; }
 .py2-comment-honeypot { position:absolute !important; width:1px !important; height:1px !important; overflow:hidden !important; clip-path:inset(50%) !important; white-space:nowrap !important; }
+
+
+/* Sales-conversion layer: short value proposition and honest offer labels. */
+.py2-sales-label {
+  display: inline-flex; align-items: center; width: fit-content; max-width: 100%;
+  margin: 0 0 7px; padding: 4px 9px; border-radius: 999px;
+  color: #075c3b; background: #e7f8ef; border: 1px solid #bcebd0;
+  font-size: 10px; font-weight: 850; line-height: 1.35; letter-spacing: .025em;
+}
+.py2-sales-hook {
+  margin: 0 0 10px; color: #41536a; font-size: 12px; line-height: 1.45;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  line-clamp: 2; overflow: hidden;
+}
+.py2-offer-details {
+  margin: 0 0 10px; padding: 8px 10px; border-radius: 9px;
+  background: #fff8e8; border: 1px solid #f5dfaa; color: #7c4a03;
+  font-size: 11px; line-height: 1.4; font-weight: 650;
+}
