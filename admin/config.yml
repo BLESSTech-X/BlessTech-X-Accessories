@@ -42,6 +42,18 @@ collections:
           - { label: "Watches & Smartwatches", value: "watch" }
           - { label: "Other Phone Accessories", value: "accessory" }
           - { label: "Other / Miscellaneous", value: "other" }
+      - { label: "Sales Hook", name: "sales_hook", widget: "string", required: false, hint: "A short customer-focused reason to consider this product. Lead with a practical benefit; only claim features you can confirm." }
+      - { label: "Offer Badge", name: "offer_label", widget: "string", required: false, hint: "Optional label shown on product cards, e.g. Featured Pick, Bundle Idea, or Back-to-School Pick. Do not claim a discount unless the Original Price is accurate." }
+      - { label: "Offer Details", name: "offer_details", widget: "string", required: false, hint: "Optional short offer terms or bundle details. Keep accurate, include end date/conditions when relevant, and do not invent scarcity." }
+      - label: "Sales Priority"
+        name: "sales_priority"
+        widget: "select"
+        required: false
+        default: "standard"
+        options:
+          - { label: "Standard", value: "standard" }
+          - { label: "Promote More", value: "promote" }
+          - { label: "Seasonal / Campaign", value: "campaign" }
       - { label: "Description", name: "description", widget: "text", hint: "Write 1–2 short, clear sentences about the product and its main benefit. Avoid long paragraphs; include only details you can confirm." }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
