@@ -151,6 +151,12 @@ body{background:#eef3f8;color:#152238;background-image:radial-gradient(circle at
 @media(max-width:900px){.product-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:620px){.top{gap:8px}.brand{font-size:17px}.wrap{padding:0 11px 34px}.welcome{border-radius:17px}.product-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product img{height:112px;padding:8px}.product-body{padding:10px}.product h3{font-size:12px;min-height:34px}.product .price{font-size:16px}.product-actions .btn{padding:9px 6px;font-size:11px}.workspace-tabs{top:0}}
 </style>
+
+<style id="affiliate-product-gallery-reliability">
+.detail-gallery{min-height:0;max-width:100%;padding:10px 2px 3px;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+.detail-gallery:empty{display:none}.detail-thumb{display:grid;place-items:center;scroll-snap-align:start;transition:border-color .15s,background .15s;overflow:hidden}.detail-thumb img{display:block;width:100%;height:100%;object-fit:contain}.detail-thumb[hidden]{display:none!important}.detail-thumb:focus-visible{outline:3px solid #16834a;outline-offset:2px}
+@media(max-width:600px){.detail-gallery{gap:7px}.detail-thumb{width:58px;height:58px;flex-basis:58px}}
+</style>
 </head>
 <body>
 <header class="top">
@@ -338,10 +344,32 @@ function openProductDetails(slug){
  $('detail-description').textContent=p.sales_hook||p.description||'Open the full shop page for the latest product information.';
  $('detail-facts').innerHTML=[['Category',p.category||'Other'],['Brand',p.brand||'Not specified'],['Listed stock',Number(p.stock)||0],['Original price',Number(p.original_price)>Number(p.price)?money(p.original_price):'Not listed']].map(([k,v])=>'<div class="detail-fact"><span>'+esc(k)+'</span><strong>'+esc(v)+'</strong></div>').join('');
  const long=String(p.description||p.body||p.offer_details||'').trim();$('detail-long-description').textContent=long===(p.sales_hook||'')?'':long;
- const images=[...(p.image?[{image:p.image,caption:p.title}]:[]),...(Array.isArray(p.gallery)?p.gallery:[])].filter((x,i,a)=>x.image&&a.findIndex(y=>imageUrl(y.image)===imageUrl(x.image))===i);
- const gallery=$('detail-gallery');gallery.innerHTML=images.map((g,i)=>'<button type="button" class="detail-thumb '+(i===0?'active':'')+'" data-detail-image="'+i+'" aria-label="View product image '+(i+1)+'"><img src="'+esc(imageUrl(g.image))+'" alt="'+esc(g.caption||p.title)+'" onerror="this.style.opacity=\'.2\'"></button>').join('');
- function setImage(i){const g=images[i];if(!g){img.removeAttribute('src');img.classList.add('image-missing');fallback.classList.add('visible');return;}img.classList.remove('image-missing');fallback.classList.remove('visible');img.src=imageUrl(g.image);img.alt=g.caption||p.title;gallery.querySelectorAll('.detail-thumb').forEach((b,j)=>b.classList.toggle('active',i===j));}
- if(images.length){setImage(0);gallery.querySelectorAll('[data-detail-image]').forEach(b=>b.addEventListener('click',()=>setImage(Number(b.dataset.detailImage))));}else{img.removeAttribute('src');img.classList.add('image-missing');fallback.classList.add('visible');}
+ const normalizeGalleryItem=item=>{
+  if(typeof item==='string')return {image:item.replace(/^image:\\s*/,'').trim(),caption:''};
+  if(!item||typeof item!=='object')return {image:'',caption:''};
+  return {image:String(item.image||item.src||item.url||item.path||'').trim(),caption:String(item.caption||item.title||item.description||'').trim()};
+ };
+ const galleryItems=[...(p.image?[{image:p.image,caption:p.title}]:[]),
+  ...(Array.isArray(p.gallery)?p.gallery:[]),
+  ...(Array.isArray(p.images)?p.images:[])].map(normalizeGalleryItem);
+ const images=galleryItems.filter((x,i,a)=>x.image&&a.findIndex(y=>imageUrl(y.image)===imageUrl(x.image))===i);
+ const gallery=$('detail-gallery');
+ let activeImageIndex=0;
+ gallery.innerHTML=images.length>1?images.map((g,i)=>'<button type="button" class="detail-thumb '+(i===0?'active':'')+'" data-detail-image="'+i+'" aria-label="View product image '+(i+1)+' of '+images.length+'"><img src="'+esc(imageUrl(g.image))+'" alt="'+esc(g.caption||p.title)+'" loading="lazy" onerror="this.closest(\'button\').hidden=true"></button>').join(''):'';
+ gallery.classList.toggle('has-gallery',images.length>1);
+ function setImage(i){
+  if(!images.length){img.removeAttribute('src');img.classList.add('image-missing');fallback.classList.add('visible');return;}
+  activeImageIndex=(i+images.length)%images.length;
+  const g=images[activeImageIndex];
+  img.classList.remove('image-missing');fallback.classList.remove('visible');
+  img.onerror=()=>{img.classList.add('image-missing');fallback.classList.add('visible');};
+  img.src=imageUrl(g.image);img.alt=g.caption||p.title;
+  gallery.querySelectorAll('.detail-thumb').forEach((b,j)=>b.classList.toggle('active',j===activeImageIndex));
+ }
+ if(images.length){
+  setImage(0);
+  gallery.querySelectorAll('[data-detail-image]').forEach(b=>b.addEventListener('click',()=>setImage(Number(b.dataset.detailImage))));
+ }else{img.removeAttribute('src');img.classList.add('image-missing');fallback.classList.add('visible');}
  $('detail-open-shop').href='https://phoneya2.pages.dev/product.html?id='+encodeURIComponent(p.slug);
  $('detail-share').onclick=()=>{if(Number(p.stock)<=0){if(!confirm('This product is marked out of stock. Share it only to discuss availability?'))return;}window.open('https://wa.me/?text='+encodeURIComponent(caption(p)),'_blank','noopener');};
  $('detail-copy').onclick=async()=>{try{await navigator.clipboard.writeText(caption(p));$('detail-copy').innerHTML='<i class="fa-solid fa-check"></i> Copied';setTimeout(()=>$('detail-copy').innerHTML='<i class="fa-regular fa-copy"></i> Copy sales message',1400);}catch{window.prompt('Copy the product sales message',caption(p));}};
