@@ -1239,6 +1239,16 @@ if (window.netlifyIdentity) {
 }
 
 const WA         = '260979603741';
+(function captureAgentReferral(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const code = String(params.get('ref') || '').trim();
+    if (/^[A-Za-z0-9_-]{3,40}$/.test(code)) {
+      localStorage.setItem('py2_agent_ref', code);
+      localStorage.setItem('py2_agent_ref_captured_at', new Date().toISOString());
+    }
+  } catch (_) {}
+})();
 
 function orderUrl(p, qty) {
   qty = Math.max(1, Number(qty) || 1);
