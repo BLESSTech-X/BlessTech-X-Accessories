@@ -1486,7 +1486,9 @@ function renderGrid(appendOnly) {
       '<div class="pcard-body">'+
         '<div class="pcard-cat">'+escHtml(cat)+'</div>'+
         '<div class="pcard-name">'+escHtml(p.title)+'</div>'+
-        '<div class="pcard-desc">'+escHtml(p.description||'')+'</div>'+
+        (p.offer_label?'<div class="py2-sales-label">'+escHtml(p.offer_label)+'</div>':'')+
+        '<div class="pcard-desc">'+escHtml(p.sales_hook||p.description||'')+'</div>'+
+        (p.offer_details?'<div class="py2-offer-details">'+escHtml(p.offer_details)+'</div>':'')+
         dropBanner + priceRow + btn +
         '<div class="card-share-row">'+
           '<button class="card-share-btn card-share-facebook" onclick="event.stopPropagation();shareFacebookProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>'+
