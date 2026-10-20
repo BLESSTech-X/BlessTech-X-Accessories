@@ -225,3 +225,22 @@ body:not(.py2-blog-page) .shop-hero-orb2{display:none!important}
 .py2-product-sales .py2-sales-hook{
   color:#75caff!important;
 }
+
+
+/* Rainbow deal frame: only discounted products receive the animated luminous border. */
+@property --py2-deal-angle{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes py2DealBorderRotate{to{--py2-deal-angle:360deg}}
+@keyframes py2DealBorderGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(255,24,55,.38)) drop-shadow(0 0 7px rgba(255,115,0,.16))}50%{filter:drop-shadow(0 0 7px rgba(255,24,55,.62)) drop-shadow(0 0 12px rgba(131,56,236,.32))}}
+body:not(.py2-blog-page) .pcard.py2-discount-card{
+  --py2-deal-angle:0deg;
+  border:2px solid transparent!important;
+  background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--py2-deal-angle),#ff173d,#ff7a00,#ffe600,#25e6a4,#00c8ff,#6e42ff,#ff36b7,#ff173d) border-box!important;
+  animation:py2DealBorderRotate 5s linear infinite,py2DealBorderGlow 2.7s ease-in-out infinite;
+  box-shadow:0 0 10px rgba(255,28,62,.24),0 0 18px rgba(255,106,0,.13)!important;
+}
+body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
+  box-shadow:0 0 13px rgba(255,28,62,.36),0 0 24px rgba(117,66,255,.22),0 12px 28px rgba(25,65,120,.13)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  body:not(.py2-blog-page) .pcard.py2-discount-card{animation:none!important;border-color:#ff4266!important;box-shadow:0 0 0 2px rgba(255,66,102,.12),0 0 12px rgba(255,66,102,.25)!important}
+}
