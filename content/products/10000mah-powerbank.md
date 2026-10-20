@@ -13,4 +13,7 @@ gallery:
   - image: /assets/images/uploads/1000147649.png
 description: Dual cameras with Portrait Mode.
 featured: true
+sales_hook: "An iPhone 7 Plus option for buyers looking for this model. Review the product photos and confirm condition and availability before ordering."
+offer_label: "Phone Pick"
+offer_details: "Contact PhoneYa2 to confirm condition, included items and delivery options before purchase."
 ---
