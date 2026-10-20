@@ -1,6 +1,6 @@
 /* PhoneYa2 performance layer: preserve the design while prioritising scroll responsiveness. */
 html,body{scroll-behavior:auto!important}
-html.py2-is-scrolling *,html.py2-is-scrolling *::before,html.py2-is-scrolling *::after{animation-play-state:paused!important}
+/* Do not freeze every animation during scroll: that can leave animated gradients stuck on a dark frame. */
 html.py2-is-scrolling{scroll-behavior:auto!important}
 img,video{max-width:100%}
 @media(max-width:768px){
