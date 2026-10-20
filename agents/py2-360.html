@@ -250,17 +250,17 @@ async function loadAll(){
  }
 }
 function parseProductMarkdown(text,slug){
- const match=text.match(/^---[\\r\\n]+([\\s\\S]*?)[\\r\\n]+---/);if(!match)return null;
+ const match=text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---/);if(!match)return null;
  const raw=match[1],out={slug,gallery:[]};
- const gm=raw.match(/^gallery:\\s*\\n((?:(?:  |\\t)[^\\n]*\\n?)*)/m);
- if(gm)gm[1].split(/\\n(?=  -)/).filter(x=>x.trim()).forEach(item=>{const im=item.match(/image:\\s*"?([^"\\n]+?)"?\\s*$/m),cm=item.match(/caption:\\s*"?([^"\\n]+?)"?\\s*$/m);if(im)out.gallery.push({image:im[1].trim(),caption:cm?cm[1].trim():''});});
- const lines=raw.replace(/^gallery:\\s*\\n((?:(?:  |\\t)[^\\n]*\\n?)*)/m,'').split(/\\r?\\n/);
- for(let i=0;i<lines.length;i++){const m=lines[i].match(/^([\\w_]+):\\s*(.*?)\\s*$/);if(!m)continue;const key=m[1];let v=m[2].trim();
-  if(/^[|>][+-]?\\d*$/.test(v)){const style=v[0],block=[];while(i+1<lines.length){const n=lines[i+1];if(!n.trim()){block.push('');i++;continue;}if(!/^\\s/.test(n))break;block.push(n.trim());i++;}v=block.join('\\n');if(style==='>')v=v.replace(/([^\\n])\\n(?!\\n)/g,'$1 ').replace(/\\n{2,}/g,'\\n\\n');v=v.trim();}
-  else{if(!v&&key!=='original_price')continue;if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);if(v)while(i+1<lines.length&&/^\\s+/.test(lines[i+1])&&!/^\\s+-\\s+/.test(lines[i+1]))v+=' '+lines[++i].trim();}
+ const gm=raw.match(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m);
+ if(gm)gm[1].split(/\n(?=  -)/).filter(x=>x.trim()).forEach(item=>{const im=item.match(/image:\s*"?([^"\n]+?)"?\s*$/m),cm=item.match(/caption:\s*"?([^"\n]+?)"?\s*$/m);if(im)out.gallery.push({image:im[1].trim(),caption:cm?cm[1].trim():''});});
+ const lines=raw.replace(/^gallery:\s*\n((?:(?:  |\t)[^\n]*\n?)*)/m,'').split(/\r?\n/);
+ for(let i=0;i<lines.length;i++){const m=lines[i].match(/^([\w_]+):\s*(.*?)\s*$/);if(!m)continue;const key=m[1];let v=m[2].trim();
+  if(/^[|>][+-]?\d*$/.test(v)){const style=v[0],block=[];while(i+1<lines.length){const n=lines[i+1];if(!n.trim()){block.push('');i++;continue;}if(!/^\s/.test(n))break;block.push(n.trim());i++;}v=block.join('\n');if(style==='>')v=v.replace(/([^\n])\n(?!\n)/g,'$1 ').replace(/\n{2,}/g,'\n\n');v=v.trim();}
+  else{if(!v&&key!=='original_price')continue;if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);if(v)while(i+1<lines.length&&/^\s+/.test(lines[i+1])&&!/^\s+-\s+/.test(lines[i+1]))v+=' '+lines[++i].trim();}
   if(key==='price'||key==='original_price')out[key]=parseFloat(v)||0;else if(key==='stock')out[key]=parseInt(v)||0;else if(key==='featured')out[key]=v==='true';else out[key]=v;
  }
- const body=text.slice(match[0].length).trim();out.body=body.replace(/^#+\\s*/gm,'').replace(/\\*\\*(.*?)\\*\\*/g,'$1').replace(/\\[(.*?)\\]\\((.*?)\\)/g,'$1');return out;
+ const body=text.slice(match[0].length).trim();out.body=body.replace(/^#+\s*/gm,'').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\[(.*?)\]\((.*?)\)/g,'$1');return out;
 }
 
 function isPending(s){return ['pending','submitted','awaiting_confirmation'].includes(String(s||'').toLowerCase());}
@@ -384,8 +384,8 @@ function renderOfferPlaybook(available){
 }
 function imageUrl(path){
  const value=String(path||'').trim();if(!value)return '';
- if(/^https?:\\/\\//i.test(value)||value.startsWith('data:'))return value;
- return value.startsWith('/')?value:'../'+value.replace(/^\\.\\//,'');
+ if(/^https?:\/\//i.test(value)||value.startsWith('data:'))return value;
+ return value.startsWith('/')?value:'../'+value.replace(/^\.\//,'');
 }
 function productUrl(p){
  const slug=String(p.slug||p.id||'product'),code=personalReferralCode();
@@ -393,7 +393,7 @@ function productUrl(p){
 }
 function caption(p){
  const e=commissionFor(p.price);
- return 'Check this out at PhoneYa2:\\n\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||p.body||'See full details and current availability on PhoneYa2.')+'\\nEstimated earning per confirmed sale: '+money(e.commission)+' ('+e.percentage+'% fallback estimate; final rate subject to active rules).\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
+ return 'Check this out at PhoneYa2:\n\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||p.body||'See full details and current availability on PhoneYa2.')+'\nEstimated earning per confirmed sale: '+money(e.commission)+' ('+e.percentage+'% fallback estimate; final rate subject to active rules).\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);
 }
 function renderAffiliateCatalogue(){
  const host=$('affiliate-products');if(!host)return;
