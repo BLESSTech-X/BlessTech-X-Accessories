@@ -257,3 +257,17 @@ body :is(.pcard,.py2-product-card,.product-card,.product-item,.side-prod) {
   filter: none !important;
 }
 :is(.price-drop-banner,.drop-banner)::before { content: none !important; display: none !important; }
+
+/* Specificity guard: replace older Shop-only rainbow badge overrides with the homepage endless-scroll badge. */
+.shop-page .price-drop-banner,
+.shop-page .drop-banner {
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;
+  min-height:0!important;padding:5px 10px!important;margin-bottom:8px!important;
+  border:1px solid #fed7aa!important;border-radius:7px!important;background:#fff7ed!important;background-image:none!important;
+  color:#b45309!important;-webkit-text-fill-color:#b45309!important;font-size:11px!important;font-weight:600!important;
+  line-height:1.35!important;letter-spacing:normal!important;text-align:left!important;text-shadow:none!important;
+  box-shadow:none!important;animation:none!important;overflow:visible!important;isolation:auto!important;
+}
+.shop-page .price-drop-banner i,.shop-page .price-drop-banner i::before,
+.shop-page .drop-banner i,.shop-page .drop-banner i::before {color:#b45309!important;-webkit-text-fill-color:#b45309!important;filter:none!important}
+.shop-page .price-drop-banner::before,.shop-page .drop-banner::before {content:none!important;display:none!important}
