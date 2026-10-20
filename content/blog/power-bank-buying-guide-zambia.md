@@ -1,5 +1,4 @@
----
-title: "Buying a Power Bank? 6 Things to Check Before You Pay"
+---title: "Buying a Power Bank? 6 Things to Check Before You Pay"
 date: "2026-10-11T08:00:00Z"
 category: "Buying Guides"
 excerpt: "Choose a power bank by matching capacity, output, ports and portability to your routine—and inspect it for damage before buying."
@@ -15,6 +14,8 @@ tags:
 featured_products:
   - product: "power-bank-20000mah"
     caption: "A 20,000mAh power bank listed on PhoneYa2. Check the current price, stock and output details on its product page before ordering."
+sales_message: "Compare capacity, output, connector support and current stock before choosing. Open a product below to check its listed price and details."
+sales_cta_label: "Compare power banks"
 ---
 
 A power bank is useful when you are away from a socket, but capacity is only one part of the decision. Check these points before you pay.
