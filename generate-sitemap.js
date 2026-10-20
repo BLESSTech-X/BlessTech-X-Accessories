@@ -14,8 +14,6 @@ const staticPages = [
   { loc: '/contact.html', priority: 0.7, changefreq: 'monthly' },
   { loc: '/privacy-policy.html', priority: 0.4, changefreq: 'yearly' },
   { loc: '/return-policy.html', priority: 0.4, changefreq: 'yearly' },
-  { loc: '/privacy-policy.html', priority: 0.4, changefreq: 'yearly' },
-  { loc: '/return-policy.html', priority: 0.4, changefreq: 'yearly' },
   { loc: '/blog.html', priority: 0.9, changefreq: 'daily' },
 ];
 
@@ -50,7 +48,15 @@ try {
     }
   }
 
-  const allEntries = [...staticPages, ...productEntries, ...blogEntries];
+  // Keep one canonical entry per URL. Duplicate static entries can waste crawl budget
+  // and make generated sitemap totals misleading when new sources overlap.
+  const seenUrls = new Set();
+  const allEntries = [...staticPages, ...productEntries, ...blogEntries].filter((entry) => {
+    const url = `${baseUrl}${entry.loc}`;
+    if (seenUrls.has(url)) return false;
+    seenUrls.add(url);
+    return true;
+  });
 
   const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';
   const xmlNamespace = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -72,7 +78,7 @@ try {
   console.log(`   - Static pages: ${staticPages.length}`);
   console.log(`   - Products: ${productEntries.length}`);
   console.log(`   - Published blog posts: ${blogEntries.length}`);
-  console.log(`   - Total URLs: ${allEntries.length}`);
+  console.log(`   - Total unique URLs: ${allEntries.length}`);
 } catch (err) {
   console.error('❌ Failed to generate sitemap:', err.message);
   process.exit(1);

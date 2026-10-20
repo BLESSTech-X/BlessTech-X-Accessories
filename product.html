@@ -1065,6 +1065,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 <link rel="stylesheet" href="/phoneya2-footer.css?v=20261017-py2shortcut1">
 
 <link rel="stylesheet" href="/phoneya2-smooth-scroll.css?v=20261018-smooth1">
+<link rel="stylesheet" href="/phoneya2-premium-layer.css?v=20261020-sales2">
 </head>
 <body>
 
@@ -1238,6 +1239,16 @@ if (window.netlifyIdentity) {
 }
 
 const WA         = '260979603741';
+(function captureAgentReferral(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const code = String(params.get('ref') || '').trim();
+    if (/^[A-Za-z0-9_-]{3,40}$/.test(code)) {
+      localStorage.setItem('py2_agent_ref', code);
+      localStorage.setItem('py2_agent_ref_captured_at', new Date().toISOString());
+    }
+  } catch (_) {}
+})();
 
 function orderUrl(p, qty) {
   qty = Math.max(1, Number(qty) || 1);
@@ -1648,6 +1659,13 @@ function renderProduct(p) {
   const orderNoteHTML = p.order_note
     ? '<div class="order-note"><i class="fa-solid fa-circle-info"></i>' + escHtml(p.order_note) + '</div>'
     : '';
+  const salesMessageHTML = (p.offer_label || p.sales_hook || p.offer_details)
+    ? '<section class="py2-product-sales" aria-label="Product details">'
+      + (p.offer_label ? '<div class="py2-sales-label">' + escHtml(p.offer_label) + '</div>' : '')
+      + (p.sales_hook ? '<p class="py2-sales-hook">' + escHtml(p.sales_hook) + '</p>' : '')
+      + (p.offer_details ? '<div class="py2-offer-details">' + escHtml(p.offer_details) + '</div>' : '')
+      + '</section>'
+    : '';
 
   const qtyBlock = st.canOrder
     ? '<div class="qty-block"><span class="qty-lbl">Quantity</span><div class="qty-ctrl"><button class="qty-btn" onclick="changeQty(-1)" aria-label="Decrease">−</button><span class="qty-num" id="qty-disp">1</span><button class="qty-btn" onclick="changeQty(1)" aria-label="Increase">+</button></div><span class="qty-total" id="qty-total">Total: <strong>ZMW '+(p.price||0).toLocaleString()+'</strong></span></div>'
@@ -1684,6 +1702,7 @@ function renderProduct(p) {
       <h1 class="prod-title">${escHtml(p.title)}</h1>
       ${dropBanner}
       ${priceHTML}
+      ${salesMessageHTML}
       <div class="stock-pill ${st.cls}"><i class="${st.ico}"></i> ${st.label}</div>
       <div class="feat-pills">
         <span class="fpill">✅ 100% Genuine</span>

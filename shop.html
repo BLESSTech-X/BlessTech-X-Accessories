@@ -1029,6 +1029,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
 <link rel="stylesheet" href="/phoneya2-visual-contrast.css?v=20261017-depth2">
 
 <link rel="stylesheet" href="/phoneya2-smooth-scroll.css?v=20261018-smooth1">
+<link rel="stylesheet" href="/phoneya2-premium-layer.css?v=20261020-sales2">
 </head>
 <body class="shop-page py2-show-floating-top">
 
@@ -1109,7 +1110,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     <div class="sec-tag">All Products</div>
     <h1>Shop All Accessories</h1>
     <p><span>Everyday tech, made easier.</span> Find accessories for your devices, compare prices, and order securely online.</p>
-    <div class="py2-shop-hero-actions"><a href="#products-grid" class="py2-hero-primary"><i class="fa-solid fa-bag-shopping"></i> Explore products</a><a href="https://wa.me/260979603741?text=Hi%20PhoneYa2!%20I%20need%20help%20choosing%20an%20accessory." target="_blank" rel="noopener" class="py2-hero-secondary"><i class="fa-brands fa-whatsapp"></i> Need help choosing?</a></div>
+    <div class="py2-shop-hero-actions"><a href="#products-grid" class="py2-hero-primary"><i class="fa-solid fa-bag-shopping"></i> Explore products</a><a href="https://wa.me/260979603741?text=Hi%20PhoneYa2!%20I%20need%20help%20choosing%20an%20accessory." target="_blank" rel="noopener" class="py2-hero-secondary"><i class="fa-brands fa-whatsapp"></i> Need help choosing?</a><a href="https://wa.me/260979603741?text=Hi%20PhoneYa2!%20I%20am%20interested%20in%20a%20bulk%20or%20business%20order.%20Please%20share%20available%20options%20and%20pricing." target="_blank" rel="noopener" class="py2-hero-secondary"><i class="fa-solid fa-building"></i> Bulk &amp; Business Orders</a></div>
     <div class="py2-hero-note"><i class="fa-solid fa-location-dot"></i> Shopping in Zambia <span>•</span> <i class="fa-solid fa-shield-halved"></i> Personal support when you need it</div>
   </div>
 </section>
@@ -1438,6 +1439,10 @@ function renderGrid(appendOnly) {
   });
 
   const sort = document.getElementById('sort-sel').value;
+  if (sort === 'default' || sort === 'recommended') list.sort((a,b) => {
+    const rank = value => value === 'promote' ? 0 : value === 'campaign' ? 1 : 2;
+    return rank(a.sales_priority) - rank(b.sales_priority);
+  });
   if (sort === 'price-asc')   list.sort((a,b) => a.price - b.price);
   if (sort === 'price-desc')  list.sort((a,b) => b.price - a.price);
   if (sort === 'name-asc')    list.sort((a,b) => (a.title||'').localeCompare(b.title||''));
@@ -1485,7 +1490,9 @@ function renderGrid(appendOnly) {
       '<div class="pcard-body">'+
         '<div class="pcard-cat">'+escHtml(cat)+'</div>'+
         '<div class="pcard-name">'+escHtml(p.title)+'</div>'+
-        '<div class="pcard-desc">'+escHtml(p.description||'')+'</div>'+
+        (p.offer_label?'<div class="py2-sales-label">'+escHtml(p.offer_label)+'</div>':'')+
+        '<div class="pcard-desc">'+escHtml(p.sales_hook||p.description||'')+'</div>'+
+        (p.offer_details?'<div class="py2-offer-details">'+escHtml(p.offer_details)+'</div>':'')+
         dropBanner + priceRow + btn +
         '<div class="card-share-row">'+
           '<button class="card-share-btn card-share-facebook" onclick="event.stopPropagation();shareFacebookProduct(allProductsMap[\''+p.slug+'\'])" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>'+

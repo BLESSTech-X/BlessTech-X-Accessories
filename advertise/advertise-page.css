@@ -144,3 +144,53 @@
 @media (prefers-reduced-motion:reduce) {
   .py2-advertise-layout *, .py2-advertise-layout *:before, .py2-advertise-layout *:after { animation:none!important;transition:none!important;scroll-behavior:auto!important; }
 }
+
+/* Final responsive polish for the advertiser registration page.
+   Keep every rule scoped here so dashboard and shared ad pages are untouched. */
+.py2-page { min-width: 320px; overflow-x: clip; }
+.py2-page .py2-topbar,
+.py2-page .py2-topbar-inner { width: 100%; }
+.py2-page .py2-topbar-inner { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.py2-page .py2-topbar-brand { min-width:0; }
+.py2-page .py2-topbar-nav { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
+.py2-advertise-layout { box-sizing:border-box; }
+.py2-advertise-layout > * { min-width:0; }
+.py2-advertise-layout .py2-auth-card { align-self:start; box-shadow:0 24px 70px rgba(13,48,57,.12); }
+.py2-advertise-layout #py2-signup-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; }
+.py2-advertise-layout #py2-signup-form .py2-field { min-width:0; }
+.py2-advertise-layout #py2-signup-form input,
+.py2-advertise-layout #py2-signup-form select,
+.py2-advertise-layout #py2-signup-form textarea { width:100%; min-width:0; max-width:100%; }
+.py2-advertise-layout .py2-input { min-height:48px; border-radius:12px; border:1px solid #d6e2e6; background:#fff; color:#172b3a; box-shadow:0 1px 2px rgba(16,42,54,.03); }
+.py2-advertise-layout .py2-input:focus { border-color:#0f9f8f; box-shadow:0 0 0 4px rgba(15,159,143,.13); outline:none; }
+.py2-advertise-layout .py2-input::placeholder { color:#91a2ad; opacity:1; }
+.py2-advertise-layout .py2-label { display:block; margin-bottom:7px; color:#263f4c; font-size:13px; font-weight:750; line-height:1.4; }
+.py2-advertise-layout .py2-help { line-height:1.5; }
+.py2-advertise-layout #py2-submit-btn { min-height:50px; border-radius:13px; font-weight:850; box-shadow:0 10px 22px rgba(15,159,143,.2); }
+.py2-advertise-layout #py2-submit-btn:focus-visible,
+.py2-page a:focus-visible { outline:3px solid rgba(15,159,143,.42); outline-offset:3px; }
+.py2-advertise-layout .py2-check,
+.py2-advertise-layout #err-terms,
+.py2-advertise-layout #py2-submit-btn { grid-column:1 / -1; }
+@media (max-width: 900px) {
+  .py2-advertise-layout { grid-template-columns:minmax(0,1fr); max-width:760px; gap:18px; padding-top:22px; }
+  .py2-advertise-hero { padding:clamp(24px,5vw,38px); }
+  .py2-advertise-hero h2 { max-width:680px; }
+  .py2-hero-benefits { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .py2-hero-benefit { align-items:flex-start; }
+}
+@media (max-width: 640px) {
+  .py2-page .py2-topbar-inner { align-items:flex-start; gap:10px; }
+  .py2-page .py2-topbar-brand { font-size:16px; }
+  .py2-page .py2-topbar-nav { gap:5px; }
+  .py2-page .py2-topbar-nav a { padding:8px 10px; font-size:11px; }
+  .py2-advertise-layout { padding:14px 12px 26px; }
+  .py2-advertise-hero { padding:24px 20px; border-radius:20px; }
+  .py2-advertise-hero h2 { font-size:clamp(1.85rem,8vw,2.4rem); }
+  .py2-hero-benefits { grid-template-columns:minmax(0,1fr); gap:13px; }
+  .py2-advertise-layout .py2-auth-card { padding:22px 17px; }
+  .py2-advertise-layout #py2-signup-form { grid-template-columns:minmax(0,1fr); }
+  .py2-advertise-layout .py2-check,
+  .py2-advertise-layout #err-terms,
+  .py2-advertise-layout #py2-submit-btn { grid-column:1; }
+}

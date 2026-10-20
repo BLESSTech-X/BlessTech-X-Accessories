@@ -118,6 +118,10 @@ try {
       stock: Number(meta.stock) || 0,
       category: String(meta.category || 'other'),
       description: String(meta.description || ''),
+      sales_hook: String(meta.sales_hook || ''),
+      offer_label: String(meta.offer_label || ''),
+      offer_details: String(meta.offer_details || ''),
+      sales_priority: String(meta.sales_priority || 'standard'),
       image: String(meta.image || ''),
       video_url: String(meta.video_url || ''),
       order_note: String(meta.order_note || ''),
@@ -158,7 +162,7 @@ try {
         related_products: Array.isArray(meta.related_products) ? meta.related_products : [],
         featured_products: parseFeaturedProducts(source, meta.featured_products).map(item => {
           const product = productCatalog.find(candidate => candidate.slug === item.product);
-          return product ? { product: item.product, slug: product.slug, title: product.title, image: product.image, price: product.price, caption: item.caption } : item;
+          return product ? { product: item.product, slug: product.slug, title: product.title, image: product.image, price: product.price, caption: item.caption, sales_hook: product.sales_hook || '', offer_label: product.offer_label || '', offer_details: product.offer_details || '', original_price: product.original_price || 0 } : item;
         })
       };
     })

@@ -56,7 +56,7 @@ async function fetchStaticAsset(context, path) {
   return fetch(url);
 }
 async function loadProduct(context, slug) {
-  if (!/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug)) return null;
+  if (!/^[\p{L}\p{N}\p{M}\p{S}][\p{L}\p{N}\p{M}\p{S}-]{0,100}$/u.test(slug)) return null;
   const indexResponse = await fetchStaticAsset(context, "/content/products/index.json");
   if (!indexResponse.ok) throw new Error("Product catalog is temporarily unavailable.");
   const slugs = await indexResponse.json();
@@ -355,6 +355,13 @@ export async function onRequest(context) {
     const phone = cleanText(body.phone, 40);
     const address = cleanText(body.address, 500);
     const note = cleanText(body.note, 1000);
+    const submittedReferral = cleanText(body.agent_referral_code, 40);
+    const agentReferralCode = /^[A-Za-z0-9_-]{3,40}$/.test(submittedReferral) ? submittedReferral : "";
+    // Keep attribution visible to the store in the existing order-note field without requiring a schema migration.
+    // It is marked as unverified; this is a lead-tracking hint, not commission approval.
+    const storedNote = agentReferralCode
+      ? [note, "Agent referral code (verify before crediting): " + agentReferralCode].filter(Boolean).join("\n").slice(0, 1000)
+      : note;
     if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
         phone.length < 7 || address.length < 5) {
       return json({ error: "Please complete your name, valid email, phone number and delivery address." }, 400);
@@ -397,7 +404,7 @@ export async function onRequest(context) {
           p_customer_phone: phone,
           p_delivery_address: address,
           p_items: items,
-          p_customer_note: note
+          p_customer_note: storedNote
         })
       });
       if (!rpc.ok && !note) {
