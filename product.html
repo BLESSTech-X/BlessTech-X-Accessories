@@ -1726,7 +1726,6 @@ function renderProduct(p) {
       <h1 class="prod-title">${escHtml(p.title)}</h1>
       ${dropBanner}
       ${priceHTML}
-      ${affiliateRewardHTML}
       ${salesMessageHTML}
       <div class="stock-pill ${st.cls}"><i class="${st.ico}"></i> ${st.label}</div>
       <div class="feat-pills">
@@ -1757,6 +1756,7 @@ function renderProduct(p) {
         <div class="desc-txt clamped" id="desc-txt">${escHtml(p.description||'No description available.')}</div>
         <button class="desc-toggle" id="desc-toggle" onclick="toggleDesc()">Read more ↓</button>
       </div>
+      ${affiliateRewardHTML}
       <div class="howto-block">
         <div class="howto-block-hdr" onclick="toggleHowTo()" role="button" aria-expanded="false">
           <h4><i class="fa-brands fa-whatsapp" style="color:var(--green)"></i> How to Order</h4>
