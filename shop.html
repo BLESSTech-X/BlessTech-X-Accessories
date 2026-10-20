@@ -1439,6 +1439,10 @@ function renderGrid(appendOnly) {
   });
 
   const sort = document.getElementById('sort-sel').value;
+  if (sort === 'recommended') list.sort((a,b) => {
+    const rank = value => value === 'promote' ? 0 : value === 'campaign' ? 1 : 2;
+    return rank(a.sales_priority) - rank(b.sales_priority);
+  });
   if (sort === 'price-asc')   list.sort((a,b) => a.price - b.price);
   if (sort === 'price-desc')  list.sort((a,b) => b.price - a.price);
   if (sort === 'name-asc')    list.sort((a,b) => (a.title||'').localeCompare(b.title||''));
