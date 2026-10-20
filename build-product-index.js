@@ -152,6 +152,8 @@ try {
         date: String(meta.date || ''),
         category: String(meta.category || 'PhoneYa2 Updates'),
         excerpt: String(meta.excerpt || ''),
+        sales_message: String(meta.sales_message || ''),
+        sales_cta_label: String(meta.sales_cta_label || 'Explore this pick'),
         image: String(meta.featured_image || ''),
         gallery: parseBlogGallery(source, meta.gallery),
         video_url: videoUrl,
