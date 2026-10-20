@@ -93,11 +93,11 @@
       base.addColorStop(.57, '#66c7dc');
       base.addColorStop(1, '#379bbd');
     } else if (isHomePage) {
-      /* Bright aqua-to-pale-blue canvas stays readable below every homepage section. */
-      base.addColorStop(0, '#f5fbff');
-      base.addColorStop(.28, '#e8f8fc');
-      base.addColorStop(.57, '#dff3f9');
-      base.addColorStop(1, '#d5edf6');
+      /* Keep the homepage canvas nearly white: water is a subtle highlight, never a blue page wash. */
+      base.addColorStop(0, '#ffffff');
+      base.addColorStop(.28, '#fbfeff');
+      base.addColorStop(.57, '#f5fbfd');
+      base.addColorStop(1, '#eff8fb');
     } else {
       base.addColorStop(0, '#087c9b');
       base.addColorStop(.28, '#119bb5');
@@ -109,8 +109,8 @@
 
     var glow = bg.createRadialGradient(w * (.22 + Math.sin(t * .34) * .06), h * .12, 0, w * .32, h * .16, Math.max(w, h) * .8);
     glow.addColorStop(0, isHomePage ? 'rgba(255,255,255,.48)' : 'rgba(190,250,255,.30)');
-    glow.addColorStop(.28, isHomePage ? 'rgba(87,221,235,.12)' : 'rgba(87,221,235,.15)');
-    glow.addColorStop(.7, isHomePage ? 'rgba(20,139,180,.018)' : 'rgba(20,139,180,.045)');
+    glow.addColorStop(.28, isHomePage ? 'rgba(87,221,235,.045)' : 'rgba(87,221,235,.15)');
+    glow.addColorStop(.7, isHomePage ? 'rgba(20,139,180,.006)' : 'rgba(20,139,180,.045)');
     glow.addColorStop(1, isCheckoutPage ? 'rgba(10,90,125,.06)' : (isHomePage ? 'rgba(0,34,66,.015)' : 'rgba(0,34,66,.22)'));
     bg.fillStyle = glow;
     bg.fillRect(0, 0, w, h);
