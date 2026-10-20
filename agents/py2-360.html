@@ -391,5 +391,45 @@ $('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_age
 document.addEventListener('DOMContentLoaded',async()=>{const savedCode=sessionStorage.getItem('py2_agent_code');if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode)}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your access code again.')}}});
 })();
 </script>
+
+
+<style id="phoneya2-vivid-professional-agent-theme">
+/* PhoneYa2 vivid professional colour system — bright accents, solid readable surfaces */
+:root{--ink:#17233d;--muted:#596985;--line:#e0e7f5;--orange:#ff6b35;--green:#10b981;--navy:#152449;--vivid-blue:#326bff;--vivid-purple:#7c3aed;--vivid-pink:#ec4899;--vivid-cyan:#06b6d4;--vivid-yellow:#fbbf24}
+body{background:linear-gradient(145deg,#f4f7ff 0%,#fff7f2 44%,#f3fbff 100%);color:var(--ink)}
+.top{background:linear-gradient(105deg,#111b38 0%,#253c78 48%,#572d8d 100%);box-shadow:0 5px 0 #13b981,0 12px 28px #263d781c}
+.brand{letter-spacing:-.35px}.brand b{color:#ffb547}.badge{background:#ffffff12;border-color:#ffffff40;color:#f1f5ff}
+.workspace-tabs{background:linear-gradient(105deg,#17264a,#293d73 60%,#45266d);border-color:#5c6fa3;box-shadow:0 10px 25px #263d7825}
+.workspace-tab[aria-selected="true"]{background:linear-gradient(110deg,#fff,#f1f5ff);color:#1a2a50;border-color:#fff;box-shadow:0 3px 0 #13b981,0 6px 16px #10182820}
+.btn-orange{background:linear-gradient(115deg,#ff6b35,#ff3d77);box-shadow:0 5px 13px #ff5c4d30;color:#fff}
+.btn-green{background:linear-gradient(115deg,#d9fff0,#e7fff5);color:#087a53;border:1px solid #a9f1d3}
+.btn-dark{background:linear-gradient(115deg,#253d78,#5635a4);color:#fff}
+.welcome{background:linear-gradient(115deg,#182c61 0%,#355fe2 43%,#7739bd 74%,#e34c91 100%);box-shadow:0 16px 36px #4458b82b;border:1px solid #ffffff40;position:relative;overflow:hidden}
+.welcome:after{content:"";position:absolute;width:260px;height:260px;right:-75px;top:-115px;border-radius:50%;border:34px solid #ffffff15;box-shadow:0 0 0 25px #ffffff09,0 0 0 58px #ffffff06;pointer-events:none}
+.welcome>*{position:relative;z-index:1}.eyebrow{color:#b9ffe0}.welcome p{color:#f0f4ff}.today-box{background:#ffffff18;border-color:#ffffff40;box-shadow:inset 0 1px #ffffff15}
+.kpi,.panel{border-color:#e0e7f5;box-shadow:0 8px 24px #243d7310;transition:transform .18s ease,box-shadow .18s ease}
+.kpi:hover,.product:hover{transform:translateY(-3px);box-shadow:0 13px 28px #243d731b}
+.kpi{position:relative;overflow:hidden;background:linear-gradient(150deg,#fff 0%,#fbfcff 100%)}
+.kpi:after{content:"";height:4px;position:absolute;inset:0 0 auto;background:linear-gradient(90deg,#326bff,#7c3aed,#ec4899,#ff9f43,#10b981)}
+.kpi-icon{background:linear-gradient(135deg,#fff0e6,#ffe0d2);color:#e84d23}
+.kpi:nth-child(2) .kpi-icon{background:#e8efff;color:#326bff}.kpi:nth-child(3) .kpi-icon{background:#f2eaff;color:#7c3aed}.kpi:nth-child(4) .kpi-icon{background:#dffbf2;color:#059669}.kpi:nth-child(5) .kpi-icon{background:#fff3cf;color:#b77908}
+.section-heading h2,.panel h2{color:#172b55}
+.panel{background:linear-gradient(155deg,#fff 0%,#fcfdff 100%)}
+.insight{background:linear-gradient(115deg,#e5fff4,#f1fff9);border-color:#a7f0d2}.insight.warn{background:linear-gradient(115deg,#fff0e8,#fff8e8);border-color:#ffc99d}
+.pill{background:#ffeadf;color:#b43c13}.pill.green{background:#d9fff0;color:#087a53}.pill.gray{background:#e9efff;color:#3456a0}
+.product{border-color:#dfe6f5;box-shadow:0 5px 18px #23385e0a;transition:transform .18s ease,box-shadow .18s ease}
+.product img{background:linear-gradient(145deg,#f2f6ff,#fff4ee)}
+.product .product-earn{background:linear-gradient(110deg,#dcfff0,#e4f1ff);color:#075f50;border:1px solid #b5f0da}
+.tag{background:#d9fff0;color:#087a53}.tag.campaign{background:#e2eaff;color:#244db3}.tag.promote{background:#ffe4f0;color:#ad235d}
+.sales-calculator{background:linear-gradient(120deg,#182b61 0%,#305ce0 43%,#6739b5 75%,#b93887 100%);box-shadow:0 15px 32px #344fba2c;border:1px solid #ffffff40}
+.sales-calculator p{color:#f0f4ff}.earn-controls label,.agent-referral-controls label{color:#f0f4ff}
+.earn-controls input,.earn-controls select,.agent-referral-controls input{border-color:#c8d5ff;box-shadow:0 2px 8px #091a4010}
+.earn-result{background:#ffffff19;border-color:#ffffff42}.earn-result span{color:#e0e8ff}.earn-result strong{color:#fff}.earn-disclaimer{color:#e0e8ff!important}
+.target-products-panel{background:#101f48a8;border-color:#ffffff35}.target-product-option{background:linear-gradient(145deg,#1c2c58,#32205f);border-color:#ffffff35}.target-product-option .target-metric strong{color:#69ffd0}
+.offer-playbook{background:linear-gradient(120deg,#fff 0%,#edf4ff 42%,#fff0f7 74%,#edfff6 100%);border-color:#d4ddff;box-shadow:0 10px 28px #304c8910}
+.field input:focus,.field select:focus{outline:3px solid #326bff30;border-color:#326bff}
+@media(prefers-reduced-motion:reduce){.kpi,.product{transition:none}}
+</style>
+
 </body>
 </html>
