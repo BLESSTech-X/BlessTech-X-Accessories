@@ -93,11 +93,11 @@
       base.addColorStop(.57, '#66c7dc');
       base.addColorStop(1, '#379bbd');
     } else if (isHomePage) {
-      /* Keep the homepage canvas nearly white: water is a subtle highlight, never a blue page wash. */
-      base.addColorStop(0, '#ffffff');
-      base.addColorStop(.28, '#fbfeff');
-      base.addColorStop(.57, '#f5fbfd');
-      base.addColorStop(1, '#eff8fb');
+      /* Restore PhoneYa2's original deep aqua-blue water gradient. */
+      base.addColorStop(0, '#087c9b');
+      base.addColorStop(.28, '#119bb5');
+      base.addColorStop(.57, '#087f9f');
+      base.addColorStop(1, '#043d61');
     } else {
       base.addColorStop(0, '#087c9b');
       base.addColorStop(.28, '#119bb5');
@@ -108,10 +108,10 @@
     bg.fillRect(0, 0, w, h);
 
     var glow = bg.createRadialGradient(w * (.22 + Math.sin(t * .34) * .06), h * .12, 0, w * .32, h * .16, Math.max(w, h) * .8);
-    glow.addColorStop(0, isHomePage ? 'rgba(255,255,255,.48)' : 'rgba(190,250,255,.30)');
-    glow.addColorStop(.28, isHomePage ? 'rgba(87,221,235,.045)' : 'rgba(87,221,235,.15)');
-    glow.addColorStop(.7, isHomePage ? 'rgba(20,139,180,.006)' : 'rgba(20,139,180,.045)');
-    glow.addColorStop(1, isCheckoutPage ? 'rgba(10,90,125,.06)' : (isHomePage ? 'rgba(0,34,66,.015)' : 'rgba(0,34,66,.22)'));
+    glow.addColorStop(0, 'rgba(190,250,255,.30)');
+    glow.addColorStop(.28, 'rgba(87,221,235,.15)');
+    glow.addColorStop(.7, 'rgba(20,139,180,.045)');
+    glow.addColorStop(1, isCheckoutPage ? 'rgba(10,90,125,.06)' : 'rgba(0,34,66,.22)');
     bg.fillStyle = glow;
     bg.fillRect(0, 0, w, h);
 
@@ -149,7 +149,7 @@
     /* Soft vignette creates underwater depth at the edges. */
     var shade = bg.createRadialGradient(w * .5, h * .44, Math.min(w, h) * .12, w * .5, h * .5, Math.max(w, h) * .78);
     shade.addColorStop(0, 'rgba(0,0,0,0)');
-    shade.addColorStop(1, isCheckoutPage ? 'rgba(0,52,80,.07)' : (isHomePage ? 'rgba(0,24,48,.035)' : 'rgba(0,24,48,.24)'));
+    shade.addColorStop(1, isCheckoutPage ? 'rgba(0,52,80,.07)' : 'rgba(0,24,48,.24)');
     bg.fillStyle = shade;
     bg.fillRect(0, 0, w, h);
   }
