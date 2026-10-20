@@ -10,4 +10,5 @@ featured: true
 sales_hook: "A wearable tech option for everyday use. Check the listed features and phone compatibility before ordering."
 offer_label: "Featured Pick"
 offer_details: "Ask us to confirm compatibility and current availability before you order."
+sales_priority: promote
 ---
