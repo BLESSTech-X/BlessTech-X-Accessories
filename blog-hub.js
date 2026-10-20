@@ -78,6 +78,23 @@ async function loadComments(panel,slug){
   panel.dataset.loaded='true';
  }catch(err){list.innerHTML='<p class="py2-comment-status">'+esc(err.message||'Comments are temporarily unavailable.')+' Please try again shortly.</p>'}
 }
+
+function salesConversionBlock(p){
+ var message=String(p.sales_message||'').trim();
+ if(!message)return '';
+ ensureSalesConversionStyles();
+ var first=Array.isArray(p.featured_products)?p.featured_products.find(function(item){return item&&item.slug}):null;
+ var target=first?'/product.html?id='+encodeURIComponent(first.slug):'/shop.html';
+ var label=String(p.sales_cta_label||'Explore this pick').trim().slice(0,48)||'Explore this pick';
+ return '<section class="py2-sales-conversion" aria-label="Suggested next step"><div><span class="py2-sales-conversion-kicker">MAKE YOUR NEXT SMART CHOICE</span><p>'+esc(message)+'</p></div><a href="'+target+'">'+esc(label)+' <span aria-hidden="true">→</span></a></section>';
+}
+function ensureSalesConversionStyles(){
+ if(document.getElementById('py2-sales-conversion-style'))return;
+ var s=document.createElement('style');s.id='py2-sales-conversion-style';
+ s.textContent='.py2-sales-conversion{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 2px;padding:13px 14px;border:1px solid #bfe8d0;border-radius:13px;background:linear-gradient(120deg,#f0fff6,#f1f7ff)}.py2-sales-conversion-kicker{font-size:9px;letter-spacing:1.1px;font-weight:900;color:#16834a}.py2-sales-conversion p{margin:5px 0 0;color:#263247;font-size:12px;line-height:1.5;font-weight:650}.py2-sales-conversion a{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;padding:10px 12px;border-radius:9px;background:#16834a;color:#fff;text-decoration:none;font-size:11px;font-weight:900;box-shadow:0 3px 0 #0d6236}.py2-sales-conversion a:hover{filter:brightness(1.04);transform:translateY(-1px)}@media(max-width:480px){.py2-sales-conversion{align-items:stretch}.py2-sales-conversion a{justify-content:center;width:100%}}';
+ document.head.appendChild(s);
+}
+
 function card(p){
  var href='/blog-post.html?slug='+encodeURIComponent(p.slug);
  var saved=getSaved().indexOf(p.slug)>=0;
@@ -97,6 +114,7 @@ function card(p){
   mediaMarkup(p),
   galleryPreview(p),
   featuredProductsPreview(p),
+  salesConversionBlock(p),
   '<div class="py2-post-tags">',tags,'</div>',
   '<div class="py2-post-actions"><button type="button" class="py2-post-action',saveClass,'" data-save-post="',esc(p.slug),'" aria-pressed="',saved?'true':'false','"><i class="fa-',saveIcon,' fa-bookmark" aria-hidden="true"></i><span>',saveLabel,'</span></button>',
   '<button type="button" class="py2-post-action" data-share-post="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button>',
