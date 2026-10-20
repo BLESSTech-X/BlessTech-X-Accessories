@@ -1,5 +1,4 @@
----
-title: "Choosing Earphones on PhoneYa2: Check the Connector and Fit"
+---title: "Choosing Earphones on PhoneYa2: Check the Connector and Fit"
 date: "2026-10-15T19:50:00Z"
 category: "PhoneYa2 Products"
 excerpt: "Compare wired and wireless options, check connector compatibility, and read the live PhoneYa2 listing before choosing earphones."
@@ -18,6 +17,8 @@ featured_products:
     caption: "A wireless option to compare for everyday listening. Check the current listing and your phone's Bluetooth support before ordering."
   - product: "amigo-ag-02-earphones"
     caption: "A wired earphone option. Confirm the connector matches your phone or adapter."
+sales_message: "Choose by fit, connection type, microphone needs and phone compatibility. Compare the current listings below and check product details before ordering."
+sales_cta_label: "Compare earphones"
 ---
 
 The right earphones depend on how you use them and what your phone supports. A little checking before ordering can help you avoid choosing the wrong connector or style.
