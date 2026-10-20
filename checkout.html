@@ -397,8 +397,17 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     if(orderSubmitting)return;
     orderSubmitting=true;
     const button=$("submit");button.disabled=true;button.textContent="Submitting order…";
+    let agentReferralCode="";
+    try {
+      const params=new URLSearchParams(window.location.search);
+      const incoming=String(params.get("ref")||"").trim();
+      if(/^[A-Za-z0-9_-]{3,40}$/.test(incoming)){localStorage.setItem("py2_agent_ref",incoming);localStorage.setItem("py2_agent_ref_captured_at",new Date().toISOString());}
+      agentReferralCode=String(localStorage.getItem("py2_agent_ref")||"").trim();
+      if(!/^[A-Za-z0-9_-]{3,40}$/.test(agentReferralCode))agentReferralCode="";
+    } catch {}
     const body={
       name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
+      agent_referral_code:agentReferralCode,
       items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity}))
     };
     try{
