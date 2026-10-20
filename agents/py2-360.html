@@ -215,6 +215,11 @@ function commissionFor(amount){
 }
 
 function caption(p){const estimate=commissionFor(p.price);return 'I recommend this PhoneYa2 pick:\n\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||'See product details and availability on PhoneYa2.')+'\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% estimate; subject to confirmation and active commission rules)\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);}
+function offerCaption(p,type){
+ const estimate=commissionFor(p.price);
+ const angle=type==='ENTRY OPTION'?'A more accessible option to consider:':type==='HIGHER-VALUE OPTION'?'A higher-value alternative to compare:':'PhoneYa2 is highlighting this product as a priority pick:';
+ return 'Hi! I thought this PhoneYa2 option might suit you.\\n\\n'+angle+'\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||'Check product details and current availability.')+'\\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% fallback estimate; subject to active rules and confirmed sale).\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
+}
 function productCard(p,label){
  const stock=Number(p.stock||0),img=p.image||'',earn=commissionFor(p.price);
  const priority=String(p.sales_priority||'standard');
@@ -239,7 +244,7 @@ function renderCalculator(){
 function offerPlaybookCard(p,type,title,reason){
  const earn=commissionFor(p.price);
  const pitch='Hi! I thought this PhoneYa2 option might suit you.\\n\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||'Check the product details and current availability.')+'\\n'+reason+'\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
- return '<article class="offer-angle"><div class="angle-type">'+esc(type)+'</div><h3>'+esc(title)+'</h3><div class="angle-price">'+money(p.price)+'</div><div class="angle-earn">Est. '+money(earn.commission)+' commission per confirmed sale <small style="display:block;font-size:9px;font-weight:700">Fallback estimate only</small></div><p>'+esc(p.sales_hook||p.description||reason)+' '+esc(reason)+'</p><div class="angle-actions"><button class="btn btn-green" type="button" data-offer-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share this angle</button><button class="btn btn-light" type="button" data-offer-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy pitch</button></div></article>';
+ return '<article class="offer-angle"><div class="angle-type">'+esc(type)+'</div><h3>'+esc(title)+'</h3><div class="angle-price">'+money(p.price)+'</div><div class="angle-earn">Est. '+money(earn.commission)+' commission per confirmed sale <small style="display:block;font-size:9px;font-weight:700">Fallback estimate only</small></div><p>'+esc(p.sales_hook||p.description||reason)+' '+esc(reason)+'</p><div class="angle-actions"><button class="btn btn-green" type="button" data-offer-type="'+esc(type)+'" data-offer-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share this angle</button><button class="btn btn-light" type="button" data-offer-type="'+esc(type)+'" data-offer-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy pitch</button></div></article>';
 }
 function renderOfferPlaybook(available){
  const host=$('offer-playbook-cards');if(!host)return;
@@ -247,7 +252,6 @@ function renderOfferPlaybook(available){
  const unique=[];
  const add=(p,type,title,reason)=>{if(p&&!unique.some(x=>x.p.slug===p.slug))unique.push({p,type,title,reason});};
  const rank=p=>p.sales_priority==='promote'?0:p.sales_priority==='campaign'?1:2;
- renderOfferPlaybook(available);
  const promoted=[...available].sort((a,b)=>rank(a)-rank(b)||Number(!!b.featured)-Number(!!a.featured)||Number(a.price)-Number(b.price));
  const budget=[...available].sort((a,b)=>Number(a.price)-Number(b.price));
  const premium=[...available].sort((a,b)=>Number(b.price)-Number(a.price));
@@ -255,8 +259,8 @@ function renderOfferPlaybook(available){
  add(promoted[0],'PRIORITY PICK','Lead with a product PhoneYa2 is prioritising','Explain the practical benefit first; answer questions honestly.');
  add(premium[0],'HIGHER-VALUE OPTION','Offer a higher-value alternative','Compare features and value clearly; never pressure someone into spending more.');
  host.innerHTML=unique.map(x=>offerPlaybookCard(x.p,x.type,x.title,x.reason)).join('');
- host.querySelectorAll('[data-offer-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.offerShare);if(p)window.open('https://wa.me/?text='+encodeURIComponent(caption(p)),'_blank','noopener');}));
- host.querySelectorAll('[data-offer-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.offerCopy);if(!p)return;try{await navigator.clipboard.writeText(caption(p));b.innerHTML='<i class="fa-solid fa-check"></i> Copied';}catch{window.prompt('Copy this product pitch',caption(p));}}));
+ host.querySelectorAll('[data-offer-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.offerShare);if(p)window.open('https://wa.me/?text='+encodeURIComponent(offerCaption(p,b.dataset.offerType)),'_blank','noopener');}));
+ host.querySelectorAll('[data-offer-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.offerCopy);if(!p)return;try{await navigator.clipboard.writeText(offerCaption(p,b.dataset.offerType));b.innerHTML='<i class="fa-solid fa-check"></i> Copied';}catch{window.prompt('Copy this product pitch',offerCaption(p,b.dataset.offerType));}}));
 }
 function renderProducts(){
  const referralInput=$('agent-referral-code');
@@ -270,6 +274,7 @@ function renderProducts(){
   referralInput.dataset.bound='true';
  }
  const available=products.filter(p=>Number(p.stock)>0&&Number(p.price)>0);
+ renderOfferPlaybook(available);
  const rank=p=>p.sales_priority==='promote'?0:p.sales_priority==='campaign'?1:2;
  const recommended=[...available].sort((a,b)=>rank(a)-rank(b)||(Number(!!b.featured)-Number(!!a.featured))||(Number(b.date_added?new Date(b.date_added).getTime():0)-Number(a.date_added?new Date(a.date_added).getTime():0))||Number(a.price)-Number(b.price)).slice(0,8);
  const dated=[...available].sort((a,b)=>rank(a)-rank(b)||new Date(b.date_added||0)-new Date(a.date_added||0)).slice(0,8);
