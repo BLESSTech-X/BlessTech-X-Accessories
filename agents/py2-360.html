@@ -134,6 +134,22 @@
 @media(max-width:700px){.wrap{padding:0 10px 30px;margin-top:12px}.welcome{grid-template-columns:1fr;padding:14px;margin-bottom:10px}.today-box{max-width:none}.catalog-hero{padding:17px;gap:10px}.catalog-hero-mark{min-width:75px}.catalog-hero-mark i{font-size:28px}.catalog-hero-mark span{font-size:9px;text-align:center}.catalog-toolbar{grid-template-columns:1fr 1fr}.catalog-search-wrap{grid-column:1/-1}.catalog-summary{align-items:flex-start;flex-direction:column;gap:4px}.affiliate-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affiliate-card-image{height:115px;padding:7px}.affiliate-card-body{padding:8px;gap:5px}.affiliate-card-title{font-size:11px}.affiliate-card-price{font-size:14px}.affiliate-card-earning{padding:7px}.affiliate-card-earning strong{font-size:14px}.affiliate-card-open{padding:8px;font-size:10px}.affiliate-detail-sheet{padding:16px;border-radius:16px;max-height:94vh}.detail-layout{grid-template-columns:1fr;gap:12px}.detail-main-image{height:240px}.detail-copy{padding-top:0}.detail-copy h2{font-size:23px}.detail-price{font-size:23px}.detail-gallery{padding-top:7px}.detail-actions{display:grid;grid-template-columns:1fr 1fr}.detail-actions .btn:last-child{grid-column:1/-1}.affiliate-steps{gap:8px}.affiliate-steps article{padding:15px 12px}.affiliate-steps article>i{font-size:20px;margin-bottom:10px}.affiliate-steps h3{font-size:13px}.affiliate-steps p{font-size:10px}}
 @media(max-width:420px){.affiliate-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.affiliate-card-image{height:130px}.catalog-toolbar{grid-template-columns:1fr}.catalog-search-wrap{grid-column:auto}.catalog-hero{align-items:flex-start}.catalog-hero-mark{display:none}.affiliate-steps{grid-template-columns:1fr 1fr}.affiliate-detail-sheet{padding:12px}.detail-main-image{height:210px}.detail-facts{grid-template-columns:1fr 1fr}.detail-actions{grid-template-columns:1fr}.detail-actions .btn:last-child{grid-column:auto}}
 
+
+/* PhoneYa2 affiliate catalogue — cleaner storefront-style redesign */
+body{background:#eef3f8;color:#152238;background-image:radial-gradient(circle at 5% 0%,#d8f7e6 0,transparent 28%),radial-gradient(circle at 95% 8%,#ffe6d3 0,transparent 25%)}
+.top{background:#101a2c;padding-top:12px;padding-bottom:12px;box-shadow:0 4px 0 #20a35a}
+.wrap{max-width:1180px;margin:18px auto;padding:0 16px 42px}
+.login{border-radius:22px;border:1px solid #dbe4ef;box-shadow:0 20px 55px #10223d14;padding:clamp(22px,4vw,34px)}
+.login h1{font-size:clamp(25px,4vw,34px);letter-spacing:-.8px;line-height:1.1}
+.login:before{content:'SMART CHOICES. BETTER CONNECTED';display:inline-block;margin-bottom:13px;padding:7px 10px;border-radius:8px;background:#e6f8ed;color:#14733f;font-size:10px;font-weight:900;letter-spacing:1px}
+.welcome{border-radius:22px;background:linear-gradient(120deg,#101a2c 0%,#183c37 70%,#14643c 100%);padding:clamp(20px,3vw,30px);box-shadow:0 12px 30px #15243b15}
+.welcome h1{letter-spacing:-.8px}.today-box{background:#ffffff10;border-color:#ffffff25}
+.workspace-tabs{background:#fff;border:1px solid #dce4ee;border-radius:14px;padding:7px;box-shadow:0 6px 18px #15243b0a;top:6px}
+.workspace-tab{color:#5a6679;border-radius:10px}.workspace-tab:hover{background:#f2f7f5;color:#172033}.workspace-tab[aria-selected="true"]{background:#e5f8ed;color:#126b3a;border-color:#c4ebd1;box-shadow:none}
+.section-heading h2{font-size:clamp(19px,2.5vw,24px);letter-spacing:-.4px}
+.product-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.product{border-color:#dfe6ef;border-radius:16px;box-shadow:0 5px 18px #13243a08;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.product:hover{transform:translateY(-3px);box-shadow:0 13px 25px #13243a12;border-color:#a8dabb}.product img{height:150px;background:linear-gradient(180deg,#f8fafc,#eef4f7);padding:12px}.product-body{padding:13px;gap:8px}.product h3{font-size:14px;min-height:39px}.price{font-size:18px;color:#14233a}.product-actions{grid-template-columns:1fr}.product-actions .btn{font-size:12px;padding:10px}.panel,.kpi{border-radius:16px;box-shadow:0 5px 18px #13243a08}.sales-calculator{border-radius:16px;background:linear-gradient(120deg,#142238,#174e39);padding:18px}.notice{border-radius:13px}
+@media(max-width:900px){.product-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.top{gap:8px}.brand{font-size:17px}.wrap{padding:0 11px 34px}.welcome{border-radius:17px}.product-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product img{height:112px;padding:8px}.product-body{padding:10px}.product h3{font-size:12px;min-height:34px}.product .price{font-size:16px}.product-actions .btn{padding:9px 6px;font-size:11px}.workspace-tabs{top:0}}
 </style>
 </head>
 <body>
@@ -266,9 +282,10 @@ function parseProductMarkdown(text,slug){
 
 function personalReferralCode(){try{const code=String(localStorage.getItem('py2_agent_personal_ref')||'').trim();return /^[A-Za-z0-9_-]{3,40}$/.test(code)?code:''}catch(_){return ''}}
 function commissionFor(amount){
- const tiers=[{min:1,max:100,pct:10},{min:101,max:500,pct:8},{min:501,max:1000,pct:6},{min:1001,max:5000,pct:4},{min:5001,max:Infinity,pct:3}];
- const price=Number(amount)||0;const tier=tiers.find(t=>price>=t.min&&price<=t.max);
- return tier?{percentage:tier.pct,commission:Math.round(price*tier.pct/100)}:{percentage:0,commission:0};
+ const tiers=[{min:1,max:100,pct:4},{min:101,max:500,pct:3},{min:501,max:1000,pct:2.5},{min:1001,max:5000,pct:1.5},{min:5001,max:Infinity,pct:1}];
+ const price=Math.max(0,Number(amount)||0);const tier=tiers.find(t=>price>=t.min&&price<=t.max);
+ const commission=tier?Math.min(50,Math.round(price*tier.pct/100)):0;
+ return {percentage:tier?tier.pct:0,commission};
 }
 
 function caption(p){const estimate=commissionFor(p.price);return 'I recommend this PhoneYa2 pick:\n\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||'See product details and availability on PhoneYa2.')+'\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% estimate; subject to confirmation and active commission rules)\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);}
