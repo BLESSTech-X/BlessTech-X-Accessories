@@ -188,3 +188,72 @@ body.shop-page .pcard-img {
     box-shadow: 0 2px 4px rgba(20,45,75,.05),0 6px 15px rgba(20,45,75,.10),0 12px 22px rgba(20,45,75,.06) !important;
   }
 }
+
+
+/* SITE-WIDE WHITE CANVAS + PRODUCT DEPTH (2026-10-20).
+   Apply the Shop's clean white background and stronger product-card separation across the site. */
+html, html.py2-water-enabled,
+html.py2-water-enabled:has(body),
+html.py2-water-enabled body,
+body, body.py2-water-page {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  background-attachment: scroll !important;
+}
+body #py2-water-surface,
+body #py2-water-interaction-surface {
+  display: none !important;
+}
+body :is(.pcard,.py2-product-card,.product-card,.product-item,.side-prod) {
+  background-color: #ffffff !important;
+  border: 1px solid #e2eaf3 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 5px rgba(20,45,75,.05), 0 8px 18px rgba(20,45,75,.10), 0 16px 30px rgba(20,45,75,.07) !important;
+}
+@media (hover:hover) {
+  body :is(.pcard,.py2-product-card,.product-card,.product-item,.side-prod):hover {
+    transform: translateY(-3px);
+    border-color: #b8d7f4 !important;
+    box-shadow: 0 4px 8px rgba(20,45,75,.06), 0 14px 28px rgba(20,45,75,.14), 0 24px 42px rgba(20,45,75,.10) !important;
+  }
+}
+@media (max-width:768px) {
+  body :is(.pcard,.py2-product-card,.product-card,.product-item,.side-prod) {
+    box-shadow: 0 2px 4px rgba(20,45,75,.05), 0 6px 15px rgba(20,45,75,.10), 0 12px 22px rgba(20,45,75,.06) !important;
+  }
+}
+
+/* Match the price-drop badge to the homepage endless-scroll product cards everywhere. */
+:is(.price-drop-banner,.drop-banner) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+  min-height: 0 !important;
+  padding: 5px 10px !important;
+  margin-bottom: 8px !important;
+  border: 1px solid #fed7aa !important;
+  border-radius: 7px !important;
+  background: #fff7ed !important;
+  background-image: none !important;
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  letter-spacing: normal !important;
+  text-align: left !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+  overflow: visible !important;
+  isolation: auto !important;
+}
+:is(.price-drop-banner,.drop-banner) i,
+:is(.price-drop-banner,.drop-banner) i::before {
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+  filter: none !important;
+}
+:is(.price-drop-banner,.drop-banner)::before { content: none !important; display: none !important; }
