@@ -218,7 +218,7 @@ function caption(p){const estimate=commissionFor(p.price);return 'I recommend th
 function offerCaption(p,type){
  const estimate=commissionFor(p.price);
  const angle=type==='ENTRY OPTION'?'A more accessible option to consider:':type==='HIGHER-VALUE OPTION'?'A higher-value alternative to compare:':'PhoneYa2 is highlighting this product as a priority pick:';
- return 'Hi! I thought this PhoneYa2 option might suit you.\\n\\n'+angle+'\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||'Check product details and current availability.')+'\\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% fallback estimate; subject to active rules and confirmed sale).\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
+ return 'Hi! I thought this PhoneYa2 option might suit you.\n\n'+angle+'\n'+p.title+'\nPrice: '+money(p.price)+'\n'+(p.sales_hook||p.description||'Check product details and current availability.')+'\nEstimated agent commission: '+money(estimate.commission)+' ('+estimate.percentage+'% fallback estimate; subject to active rules and confirmed sale).\n\nSmart CHOICES. Better CONNECTED 💙\n'+productUrl(p);
 }
 function productCard(p,label){
  const stock=Number(p.stock||0),img=p.image||'',earn=commissionFor(p.price);
@@ -243,7 +243,6 @@ function renderCalculator(){
 }
 function offerPlaybookCard(p,type,title,reason){
  const earn=commissionFor(p.price);
- const pitch='Hi! I thought this PhoneYa2 option might suit you.\\n\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||'Check the product details and current availability.')+'\\n'+reason+'\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
  return '<article class="offer-angle"><div class="angle-type">'+esc(type)+'</div><h3>'+esc(title)+'</h3><div class="angle-price">'+money(p.price)+'</div><div class="angle-earn">Est. '+money(earn.commission)+' commission per confirmed sale <small style="display:block;font-size:9px;font-weight:700">Fallback estimate only</small></div><p>'+esc(p.sales_hook||p.description||reason)+' '+esc(reason)+'</p><div class="angle-actions"><button class="btn btn-green" type="button" data-offer-type="'+esc(type)+'" data-offer-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share this angle</button><button class="btn btn-light" type="button" data-offer-type="'+esc(type)+'" data-offer-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy pitch</button></div></article>';
 }
 function renderOfferPlaybook(available){
