@@ -40,6 +40,26 @@
 .product .product-body{gap:8px}.product .product-hook{font-size:11px;color:#5b6678;line-height:1.45}.product .product-earn{border-radius:9px;background:#e8f8ee;color:#126d3c;padding:8px;font-size:11px;font-weight:900;line-height:1.4}.product .product-earn small{display:block;font-size:9px;font-weight:700;opacity:.8}
 .product .product-actions{grid-template-columns:1fr}.product .product-actions .btn{width:100%;font-size:12px}
 .product .tag.campaign{background:#eaf2ff;color:#1558a6}.product .tag.promote{background:#fff0e3;color:#9b4200}
+.offer-playbook{margin:16px 0;padding:20px;border:1px solid #d9e7df;border-radius:18px;background:linear-gradient(135deg,#fff 0%,#f0faf4 55%,#f4f8ff 100%);box-shadow:0 8px 26px #102b1b0b}
+.offer-playbook-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:15px}
+.offer-eyebrow{font-size:10px;font-weight:950;letter-spacing:1.2px;color:#137342;margin-bottom:7px}
+.offer-playbook h2{font-size:clamp(20px,2.5vw,27px);margin:0 0 7px;color:#142238}
+.offer-playbook-head p{font-size:12px;line-height:1.6;color:#596779;max-width:670px;margin:0}
+.offer-live-pill{display:inline-flex;gap:6px;align-items:center;background:#e2f8e9;border:1px solid #bce9cb;border-radius:99px;padding:7px 10px;color:#116c3b;font-size:10px;font-weight:900}
+.offer-playbook-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.offer-angle{min-width:0;border:1px solid #e0e7e3;background:#fff;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.offer-angle .angle-type{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:#147544;font-weight:950}
+.offer-angle h3{font-size:15px;line-height:1.35;margin:0;color:#172033}
+.offer-angle .angle-price{font-size:22px;font-weight:950;color:#111827}
+.offer-angle .angle-earn{padding:9px;border-radius:9px;background:#e8f8ee;color:#126d3c;font-size:12px;font-weight:900}
+.offer-angle p{font-size:11px;color:#586678;line-height:1.55;margin:0;flex:1}
+.offer-angle .angle-actions{display:grid;gap:7px;margin-top:4px}
+.offer-angle .angle-actions .btn{font-size:11px;padding:10px 8px}
+.offer-next-step{display:flex;align-items:center;gap:9px 16px;flex-wrap:wrap;margin-top:13px;padding:12px 13px;background:#132b25;color:#fff;border-radius:12px;font-size:11px;line-height:1.5}
+.offer-next-step strong{color:#a5efbd}
+@media(max-width:760px){.offer-playbook{padding:14px}.offer-playbook-grid{grid-template-columns:1fr}.offer-angle{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}.offer-angle .angle-type,.offer-angle h3,.offer-angle p{grid-column:1/-1}.offer-angle .angle-price{grid-column:1}.offer-angle .angle-earn{grid-column:2;grid-row:3;align-self:center}.offer-angle .angle-actions{grid-column:1/-1;grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.offer-angle .angle-actions{grid-template-columns:1fr}.offer-next-step{align-items:flex-start;flex-direction:column;gap:5px}}
+
 @media(max-width:900px){.product-row{grid-template-columns:repeat(2,minmax(0,1fr))}.earn-controls{grid-template-columns:1fr 1fr}.earn-controls label:first-child{grid-column:1/-1}}
 @media(max-width:480px){.earn-results{grid-template-columns:1fr}.earn-result{display:flex;align-items:center;justify-content:space-between;gap:12px}.earn-result strong{font-size:20px;margin:0}.product-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.product img{height:105px}.product .product-body{padding:9px}.product h3{font-size:12px}}
 </style>
@@ -80,6 +100,11 @@
 <section class="panel"><div class="panel-head"><div><h2>Order pipeline</h2><p class="sub">Real checkout orders grouped by their current order status.</p></div></div><canvas id="lead-chart" class="chart" aria-label="Lead pipeline chart"></canvas><div id="lead-pipeline" class="mini-list"><div class="empty">Loading your lead pipeline…</div></div><div class="insight" id="lead-insight"><strong>Assistant insight</strong><p>We'll identify the next follow-up from your lead records.</p></div></section>
 </div>
 <div class="grid"><section class="panel"><div class="panel-head"><div><h2>Stock availability at a glance</h2><p class="sub">Available units across your recommended products. Check live stock before promising delivery.</p></div></div><canvas id="stock-chart" class="chart" aria-label="Recommended product stock chart"></canvas><p class="footer-note">This is the published catalogue stock field, not a reservation of physical stock.</p></section><section class="panel"><div class="panel-head"><div><h2>Quick execution plan</h2><p class="sub">A repeatable daily sales routine.</p></div></div><div class="mini-list"><div class="mini-row"><span>1. Pick one in-stock product</span><span class="pill green">Choose</span></div><div class="mini-row"><span>2. Share with a use-case</span><span class="pill">Reach</span></div><div class="mini-row"><span>3. Start real conversations</span><span class="pill">Engage</span></div><div class="mini-row"><span>4. Log warm prospects as leads</span><span class="pill">Track</span></div><div class="mini-row"><span>5. Follow up and record outcomes</span><span class="pill green">Convert</span></div></div></section></div><section class="sales-calculator" aria-labelledby="earn-title"><h2 id="earn-title"><i class="fa-solid fa-calculator"></i> Sell this. Calculate your earnings.</h2><p>Choose a real product, set a sales target and see an estimate before you share. This is a planning tool—not a promise of sales or payout.</p><div class="earn-controls"><label>Product<select id="earn-product" aria-label="Choose a product for commission calculation"><option value="">Loading products…</option></select></label><label>Units to sell<input id="earn-units" type="number" min="1" max="1000" step="1" value="1" inputmode="numeric"></label><label>Target commission (K)<input id="earn-target" type="number" min="1" max="1000000" step="10" value="500" inputmode="numeric"></label></div><div class="agent-referral-controls"><label for="agent-referral-code">Your personal agent code (if issued)</label><input id="agent-referral-code" type="text" inputmode="text" maxlength="40" autocomplete="off" placeholder="Enter your own agent code"><small>Use your own code from PhoneYa2. Leave blank if you have not been issued one. The code is added to order notes for manual verification; it does not automatically confirm commission.</small></div><div class="earn-results" aria-live="polite"><div class="earn-result"><span>Estimated commission per sale</span><strong id="earn-per-sale">—</strong></div><div class="earn-result"><span>Estimated total for selected units</span><strong id="earn-total">—</strong></div><div class="earn-result"><span>Sales needed for your target</span><strong id="earn-needed">—</strong></div></div><p class="earn-disclaimer">Estimate uses the existing published fallback commission tiers by sale value (10%, 8%, 6%, 4%, or 3%). Actual eligible rates may differ if the admin commission settings are changed. Commission is not earned until a sale is confirmed under PhoneYa2 rules.</p></section>
+<section class="offer-playbook" aria-labelledby="offer-playbook-title">
+ <div class="offer-playbook-head"><div><div class="offer-eyebrow"><i class="fa-solid fa-bullseye"></i> TODAY'S SELLING PLAYBOOK</div><h2 id="offer-playbook-title">Three ways to make the next sale</h2><p>Choose the approach that fits the buyer. Prices and stock come from the current PhoneYa2 catalogue. These are sales angles—not fake discounts or guaranteed earnings.</p></div><span class="offer-live-pill"><i class="fa-solid fa-circle-check"></i> Catalogue-based</span></div>
+ <div id="offer-playbook-cards" class="offer-playbook-grid"><div class="empty">Building your sales playbook from current products…</div></div>
+ <div class="offer-next-step"><strong><i class="fa-solid fa-list-check"></i> Your next 15 minutes</strong><span>1. Pick one buyer group.</span><span>2. Share one relevant product with a useful reason to buy.</span><span>3. Ask a question and record interested prospects for follow-up.</span></div>
+</section>
 <section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-bolt" style="color:#ff6000"></i> Recommended to sell next</h2><p class="sub">Promoted and campaign products are prioritized, then featured, in-stock and value-aware picks. Use the calculator to plan your target and share directly.</p></div><span class="pill green">SELLING ACTIONS</span></div><label for="agent-product-search" class="sub">Find the right product for your audience</label><input id="agent-product-search" class="agent-product-search" type="search" placeholder="Search products, benefits or offers…" autocomplete="off"><div id="recommended-products" class="product-row"><div class="empty">Loading products…</div></div></section>
 <section class="panel" style="margin:14px 0"><div class="panel-head"><div><h2><i class="fa-solid fa-sparkles" style="color:#ff6000"></i> New stock row</h2><p class="sub">Uses the CMS date_added/created_at field when present. Products without dates fall back to the available catalogue order, so mark new arrivals with a date in the CMS for accurate sorting.</p></div><a href="../shop.html" class="btn btn-light">Open shop <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><div id="new-products" class="product-row"><div class="empty">Loading newest products…</div></div></section>
 <div class="grid">
@@ -210,6 +235,28 @@ function renderCalculator(){
  $('earn-per-sale').textContent=money(perSale);
  $('earn-total').textContent=money(perSale*units);
  $('earn-needed').textContent=perSale>0?num(Math.ceil(target/perSale))+' sales':'—';
+}
+function offerPlaybookCard(p,type,title,reason){
+ const earn=commissionFor(p.price);
+ const pitch='Hi! I thought this PhoneYa2 option might suit you.\\n\\n'+p.title+'\\nPrice: '+money(p.price)+'\\n'+(p.sales_hook||p.description||'Check the product details and current availability.')+'\\n'+reason+'\\n\\nSmart CHOICES. Better CONNECTED 💙\\n'+productUrl(p);
+ return '<article class="offer-angle"><div class="angle-type">'+esc(type)+'</div><h3>'+esc(title)+'</h3><div class="angle-price">'+money(p.price)+'</div><div class="angle-earn">Est. '+money(earn.commission)+' commission per confirmed sale <small style="display:block;font-size:9px;font-weight:700">Fallback estimate only</small></div><p>'+esc(p.sales_hook||p.description||reason)+' '+esc(reason)+'</p><div class="angle-actions"><button class="btn btn-green" type="button" data-offer-share="'+esc(p.slug)+'"><i class="fa-brands fa-whatsapp"></i> Share this angle</button><button class="btn btn-light" type="button" data-offer-copy="'+esc(p.slug)+'"><i class="fa-regular fa-copy"></i> Copy pitch</button></div></article>';
+}
+function renderOfferPlaybook(available){
+ const host=$('offer-playbook-cards');if(!host)return;
+ if(!productsAvailable||!available.length){host.innerHTML='<div class="empty">The selling playbook needs a loaded catalogue with in-stock products and valid prices.</div>';return;}
+ const unique=[];
+ const add=(p,type,title,reason)=>{if(p&&!unique.some(x=>x.p.slug===p.slug))unique.push({p,type,title,reason});};
+ const rank=p=>p.sales_priority==='promote'?0:p.sales_priority==='campaign'?1:2;
+ renderOfferPlaybook(available);
+ const promoted=[...available].sort((a,b)=>rank(a)-rank(b)||Number(!!b.featured)-Number(!!a.featured)||Number(a.price)-Number(b.price));
+ const budget=[...available].sort((a,b)=>Number(a.price)-Number(b.price));
+ const premium=[...available].sort((a,b)=>Number(b.price)-Number(a.price));
+ add(budget[0],'ENTRY OPTION','Start with an accessible option','Lead with the use case and make sure it fits the customer’s needs.');
+ add(promoted[0],'PRIORITY PICK','Lead with a product PhoneYa2 is prioritising','Explain the practical benefit first; answer questions honestly.');
+ add(premium[0],'HIGHER-VALUE OPTION','Offer a higher-value alternative','Compare features and value clearly; never pressure someone into spending more.');
+ host.innerHTML=unique.map(x=>offerPlaybookCard(x.p,x.type,x.title,x.reason)).join('');
+ host.querySelectorAll('[data-offer-share]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.slug===b.dataset.offerShare);if(p)window.open('https://wa.me/?text='+encodeURIComponent(caption(p)),'_blank','noopener');}));
+ host.querySelectorAll('[data-offer-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=products.find(x=>x.slug===b.dataset.offerCopy);if(!p)return;try{await navigator.clipboard.writeText(caption(p));b.innerHTML='<i class="fa-solid fa-check"></i> Copied';}catch{window.prompt('Copy this product pitch',caption(p));}}));
 }
 function renderProducts(){
  const referralInput=$('agent-referral-code');
