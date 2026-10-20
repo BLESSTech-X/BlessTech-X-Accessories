@@ -242,7 +242,7 @@ async function loadAll(){
   productsAvailable=products.length>0;
   renderAffiliateCatalogue();
   $('assistant-summary').textContent=productsAvailable?products.length+' PhoneYa2 products loaded. Open any product to view its details and estimated earning.':'No products are available in the current catalogue.';
-  $('last-updated').textContent='Catalogue refreshed '+new Date().toLocaleString();
+  const refreshedAt=$('last-updated');if(refreshedAt)refreshedAt.textContent='Catalogue refreshed '+new Date().toLocaleString();
  }catch(err){
   productsAvailable=false;
   $('affiliate-products').innerHTML='<div class="catalog-loading"><i class="fa-solid fa-triangle-exclamation"></i><p>We could not load the product catalogue.</p><small>'+esc(err.message||'Check your connection and refresh.')+'</small></div>';
