@@ -310,3 +310,30 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
 @media(prefers-reduced-motion:reduce){
   :is(.price-drop-banner,.drop-banner){animation:none!important;box-shadow:0 0 0 1px rgba(0,150,255,.25),0 0 12px rgba(0,145,255,.5)!important}
 }
+
+
+/* Shop price-drop notice: restore the requested red lettering, rainbow container and blue glow. */
+.shop-page .price-drop-banner {
+  color: #ff1028 !important;
+  -webkit-text-fill-color: #ff1028 !important;
+  background: linear-gradient(110deg,#f00035 0%,#ff3b30 20%,#ff7800 42%,#ffcf00 58%,#ff258d 78%,#713bff 100%) !important;
+  background-size: 240% 240% !important;
+  border: 1px solid rgba(255,255,255,.9) !important;
+  border-radius: 10px !important;
+  text-shadow: 0 1px 2px rgba(255,255,255,.75), 0 0 5px rgba(255,16,40,.28) !important;
+  box-shadow: 0 0 0 1px rgba(0,150,255,.28), 0 0 12px rgba(0,145,255,.65), 0 0 23px rgba(0,90,255,.42) !important;
+}
+.shop-page .price-drop-banner i,
+.shop-page .price-drop-banner i::before {
+  color: #ff1028 !important;
+  -webkit-text-fill-color: #ff1028 !important;
+  filter: none !important;
+}
+@media (max-width: 768px) {
+  .shop-page .price-drop-banner {
+    animation: none !important;
+    background-position: 50% 50% !important;
+    box-shadow: 0 0 0 1px rgba(0,150,255,.22), 0 0 10px rgba(0,145,255,.48) !important;
+  }
+  .shop-page .price-drop-banner::before { animation: none !important; }
+}
