@@ -2463,7 +2463,7 @@ function buildFeaturedCard(p) {
   const disc = hasDrop ? Math.round(((op - p.price) / op) * 100) : 0;
 
   const div = document.createElement('div');
-  div.className = 'pc pc-featured';
+  div.className = 'pc pc-featured' + (hasDrop ? ' py2-discount-card' : '');
   div.setAttribute('role', 'article');
   div.setAttribute('aria-label', p.title);
 
@@ -2565,7 +2565,7 @@ function buildCard(p) {
     ? '<div class="pc-actions"><button type="button" class="py2-add-cart" onclick="event.stopPropagation();PhoneYa2Cart.add(\''+p.slug+'\',1,'+Number(p.stock||0)+')"><i class="fa-solid fa-cart-plus"></i> Add to cart</button><a href="'+orderUrl(p)+'" class="pc-wa" onclick="event.stopPropagation()"><i class="fa-solid fa-bolt"></i> Buy now</a></div>'
     : '<button class="pc-notify" onclick="event.stopPropagation();notifyMe(\''+escHtml(p.title).replace(/'/g,"\\'")+'\')"><i class="fa-regular fa-bell"></i> Notify Me</button>';
   const div = document.createElement('div');
-  div.className='pc';
+  div.className='pc' + (hasDrop ? ' py2-discount-card' : '');
   div.setAttribute('role','article');
   div.setAttribute('aria-label',p.title);
   div.innerHTML=
