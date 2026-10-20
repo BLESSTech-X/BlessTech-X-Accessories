@@ -25,8 +25,8 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Date Added", name: "date_added", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}", required: false, hint: "Used to order New Arrivals newest first. Keep the default for new products." }
-      - { label: "Price", name: "price", widget: "number" }
-      - { label: "Original Price", name: "original_price", widget: "number", required: false }
+      - { label: "Selling Price (ZMW)", name: "price", widget: "number", hint: "The actual price customers pay. Keep this updated when prices change." }
+      - { label: "Original / Reference Price (ZMW)", name: "original_price", widget: "number", required: false, hint: "Only enter a genuine previous/reference price higher than the selling price. The site calculates savings from these two values; do not use a made-up comparison price." }
       - { label: "Stock", name: "stock", widget: "number", default: 10 }
       - label: "Category"
         name: "category"
