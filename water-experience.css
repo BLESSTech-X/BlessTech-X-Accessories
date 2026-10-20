@@ -137,3 +137,29 @@ body.py2-water-page .endless-products-section {
   background-color: transparent !important;
   background-image: none !important;
 }
+
+
+/* FIX: keep the original ocean-blue surface continuous behind the entire shop,
+   including product-grid sections and endless-loaded cards while scrolling. */
+html.py2-water-enabled,
+html.py2-water-enabled body {
+  background-color: #087c9b !important;
+  background-image: linear-gradient(145deg,#087c9b 0%,#119bb5 28%,#087f9f 57%,#043d61 100%) !important;
+  background-attachment: fixed !important;
+}
+body.py2-water-page,
+body.py2-water-page.shop-page {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body.py2-water-page.shop-page :is(main,.main-wrap,.shop-main,.page-content,.products-section,.products-grid,.products-container,.products-wrap,.endless-products-section,.search-bar,.filter-bar,.trust-strip,.shop-content) {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body.py2-water-page.shop-page :is(.pcard,.product-card,.product-item,.skel-card) {
+  background: #fff !important;
+  color: #17243a !important;
+}
+body.py2-water-page.shop-page :is(.pcard-img,.pc-img) {
+  background: linear-gradient(145deg,#fbfcfd,#f0f8fa) !important;
+}
