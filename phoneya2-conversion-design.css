@@ -1,0 +1,155 @@
+/* PhoneYa2 customer-facing conversion layer — bright, confident, readable, never warning-like. */
+:root{
+ --py2-conv-blue:#1769e8;--py2-conv-blue-deep:#124eb5;--py2-conv-violet:#6842d8;
+ --py2-conv-teal:#087f8c;--py2-conv-green:#16834a;--py2-conv-ink:#14243b;
+ --py2-conv-muted:#52647a;--py2-conv-line:#dce7f3;
+ --py2-conv-gradient:linear-gradient(120deg,#1769e8 0%,#6842d8 52%,#087f8c 100%);
+ --py2-conv-shadow:0 10px 26px rgba(25,65,120,.12);
+ --py2-conv-shadow-hover:0 16px 34px rgba(25,65,120,.18);
+}
+body:not(.py2-blog-page) .hero-banner,
+body:not(.py2-blog-page) .shop-hero{
+ box-shadow:0 12px 34px rgba(19,43,74,.15);
+}
+body:not(.py2-blog-page) .shop-hero{
+ background:linear-gradient(118deg,#102c59 0%,#2447a3 48%,#5739a7 100%)!important;
+}
+body:not(.py2-blog-page) .shop-hero h1,
+body:not(.py2-blog-page) .shop-hero h2{color:#fff!important;text-shadow:0 2px 14px rgba(0,0,0,.18)!important}
+body:not(.py2-blog-page) .shop-hero p{color:#edf5ff!important}
+body:not(.py2-blog-page) .py2-hero-primary,
+body:not(.py2-blog-page) .promo-banner-btn,
+body:not(.py2-blog-page) .py2-endless-shop-link{
+ background:linear-gradient(120deg,#18a766,#087f8c)!important;color:#fff!important;
+ border:1px solid rgba(255,255,255,.24)!important;
+ box-shadow:0 7px 18px rgba(8,127,92,.24)!important;
+}
+body:not(.py2-blog-page) .py2-hero-primary:hover,
+body:not(.py2-blog-page) .promo-banner-btn:hover,
+body:not(.py2-blog-page) .py2-endless-shop-link:hover{
+ filter:brightness(1.07);transform:translateY(-2px);box-shadow:0 11px 25px rgba(8,127,92,.3)!important;
+}
+body:not(.py2-blog-page) .py2-hero-secondary{
+ background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.42)!important;
+ color:#fff!important;backdrop-filter:blur(6px);
+}
+body:not(.py2-blog-page) .py2-hero-note{color:#e4efff!important}
+body:not(.py2-blog-page) .py2-hero-note span{color:#b9f5dc!important}
+body:not(.py2-blog-page) .pcard,
+body:not(.py2-blog-page) .py2-endless-grid .pcard{
+ border:1px solid #dce7f3!important;border-radius:17px!important;
+ box-shadow:0 7px 20px rgba(25,65,120,.11),0 2px 5px rgba(25,65,120,.05)!important;
+}
+body:not(.py2-blog-page) .pcard:hover,
+body:not(.py2-blog-page) .py2-endless-grid .pcard:hover{
+ transform:translateY(-4px);box-shadow:var(--py2-conv-shadow-hover)!important;border-color:#b9d3f5!important;
+}
+body:not(.py2-blog-page) .pcard .py2-add-cart,
+body:not(.py2-blog-page) .pcard .btn-order,
+body:not(.py2-blog-page) .pcard .pc-order-link,
+body:not(.py2-blog-page) .pcard .pc-wa{
+ min-height:40px;border-radius:10px!important;font-weight:850!important;
+}
+body:not(.py2-blog-page) .pcard .py2-add-cart{
+ background:#edf5ff!important;color:#1658b5!important;border:1px solid #c8dcfa!important;
+}
+body:not(.py2-blog-page) .pcard .py2-add-cart:hover{background:#dcecff!important}
+body:not(.py2-blog-page) .pcard .btn-order,
+body:not(.py2-blog-page) .pcard .pc-order-link{
+ background:linear-gradient(120deg,#16834a,#087f8c)!important;color:#fff!important;border:0!important;
+}
+body:not(.py2-blog-page) .cat-badge{
+ background:linear-gradient(120deg,#1769e8,#6842d8)!important;
+ box-shadow:0 3px 10px rgba(23,105,232,.22);
+}
+body:not(.py2-blog-page) .stock-badge{border-radius:999px!important;font-weight:800!important}
+body:not(.py2-blog-page) .join-cta{
+ background:linear-gradient(120deg,#142e66 0%,#3348a8 52%,#6540bb 100%)!important;
+ box-shadow:0 12px 28px rgba(37,55,140,.22);
+}
+body:not(.py2-blog-page) .join-cta-btn{
+ background:linear-gradient(120deg,#19a767,#087f8c)!important;color:#fff!important;
+ box-shadow:0 7px 18px rgba(8,127,92,.25)!important;
+}
+body.py2-blog-page,body.py2-blog-redesigned{
+ background:linear-gradient(145deg,#edf5ff 0%,#f8faff 48%,#f0edff 100%)!important;
+ color:var(--py2-conv-ink)!important;
+}
+body.py2-blog-page .py2-blog-main{max-width:1160px!important}
+body.py2-blog-page .py2-brand-splash{
+ border:1px solid #d8e6fb!important;border-radius:22px!important;
+ background:linear-gradient(120deg,#e0efff 0%,#f0eaff 54%,#ddf8f1 100%)!important;
+ box-shadow:0 12px 28px rgba(40,79,145,.11)!important;
+}
+body.py2-blog-page .py2-brand-splash-slogan{color:#18345f!important;font-weight:850!important}
+body.py2-blog-page .py2-brand-splash-slogan strong{color:#1769e8!important}
+body.py2-blog-page .blog-content-section,
+body.py2-blog-page .blog-shop-section{
+ background:rgba(255,255,255,.94)!important;border:1px solid #dce7f3!important;
+ border-radius:20px!important;box-shadow:var(--py2-conv-shadow)!important;
+}
+body.py2-blog-page .blog-section-heading h2,
+body.py2-blog-page .blog-business-banner h2{
+ color:#172b4d!important;font-weight:900!important;letter-spacing:-.025em;
+}
+body.py2-blog-page .blog-eyebrow{
+ color:#1769e8!important;font-weight:900!important;letter-spacing:1.35px;
+}
+body.py2-blog-page .blog-intro-text,
+body.py2-blog-page .blog-section-heading p,
+body.py2-blog-page .blog-business-banner p{color:#52647a!important}
+body.py2-blog-page .blog-category-tab{
+ border:1px solid #d6e2f2!important;background:#f3f7ff!important;color:#304968!important;
+ border-radius:999px!important;font-weight:800!important;transition:all .18s ease;
+}
+body.py2-blog-page .blog-category-tab:hover{background:#e5efff!important;border-color:#9bbef2!important}
+body.py2-blog-page .blog-category-tab.active{
+ background:linear-gradient(120deg,#1769e8,#6842d8)!important;color:#fff!important;border-color:transparent!important;
+ box-shadow:0 5px 14px rgba(75,82,194,.22)!important;
+}
+body.py2-blog-page .blog-search-control,
+body.py2-blog-page .blog-saved-control{
+ border:1px solid #d6e2f2!important;border-radius:12px!important;background:#f8fbff!important;
+}
+body.py2-blog-page .blog-saved-control,
+body.py2-blog-page .blog-text-link,
+body.py2-blog-page #share-blog-button{
+ color:#1658b5!important;font-weight:850!important;
+}
+body.py2-blog-page .py2-post-card,
+body.py2-blog-page .py2-post,
+body.py2-blog-page .py2-product-card{
+ background:#fff!important;border:1px solid #dce7f3!important;border-radius:16px!important;
+ box-shadow:0 8px 22px rgba(25,65,120,.1)!important;overflow:hidden;
+}
+body.py2-blog-page .py2-post-card:hover,
+body.py2-blog-page .py2-post:hover,
+body.py2-blog-page .py2-product-card:hover{
+ transform:translateY(-3px);box-shadow:var(--py2-conv-shadow-hover)!important;
+}
+body.py2-blog-page .py2-product-card .py2-selling-cta,
+body.py2-blog-page .blog-business-banner>a,
+body.py2-blog-page #share-blog-button{
+ background:linear-gradient(120deg,#16834a,#087f8c)!important;color:#fff!important;
+ border:0!important;border-radius:11px!important;box-shadow:0 7px 18px rgba(8,127,92,.2)!important;
+}
+body.py2-blog-page .py2-product-card .py2-selling-cta:hover,
+body.py2-blog-page .blog-business-banner>a:hover,
+body.py2-blog-page #share-blog-button:hover{filter:brightness(1.06);transform:translateY(-2px)}
+body.py2-blog-page .blog-business-banner{
+ background:linear-gradient(120deg,#e1efff 0%,#e9e5ff 54%,#ddf8f0 100%)!important;
+ border:1px solid #cbdcf6!important;border-radius:20px!important;
+ box-shadow:var(--py2-conv-shadow)!important;
+}
+body.py2-blog-page .py2-quick-tabs a.is-active{
+ color:#1769e8!important;border-bottom-color:#1769e8!important;
+}
+body.py2-blog-page .py2-quick-tabs{box-shadow:0 5px 18px rgba(23,54,103,.08)!important}
+@media(max-width:700px){
+ body.py2-blog-page .py2-brand-splash{border-radius:15px!important}
+ body.py2-blog-page .blog-content-section,body.py2-blog-page .blog-shop-section{border-radius:14px!important}
+ body:not(.py2-blog-page) .pcard:hover,body:not(.py2-blog-page) .py2-endless-grid .pcard:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+ body:not(.py2-blog-page) .pcard,body.py2-blog-page .py2-post-card,body.py2-blog-page .py2-product-card{transition:none!important}
+}
