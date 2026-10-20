@@ -252,9 +252,9 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
  background:linear-gradient(110deg,#f00035 0%,#ff3b30 20%,#ff7800 42%,#ffcf00 58%,#ff258d 78%,#713bff 100%)!important;
  background-size:240% 240%!important;border:1px solid rgba(255,255,255,.82)!important;border-radius:10px!important;
  text-shadow:0 1px 2px rgba(60,0,15,.35)!important;box-shadow:0 0 0 1px rgba(255,32,67,.15),0 0 12px rgba(255,35,65,.42),0 0 23px rgba(255,120,0,.22)!important;
- animation:py2DiscountSweep 3.6s ease-in-out infinite alternate,py2DealGlow 3s ease-in-out infinite!important;
+ animation:py2DiscountSweep 3.6s ease-in-out infinite alternate,py2DealBorderGlow 3s ease-in-out infinite!important;
 }
-:is(.price-drop-banner,.drop-banner)::before{content:""!important;position:absolute!important;z-index:-1!important;inset:0!important;left:-130%!important;width:65%!important;background:linear-gradient(100deg,transparent,rgba(255,255,255,.72),transparent)!important;transform:skewX(-22deg)!important;animation:py2DealShine 3s ease-in-out infinite!important;pointer-events:none!important}
+:is(.price-drop-banner,.drop-banner)::before{content:""!important;position:absolute!important;z-index:-1!important;inset:0!important;left:-130%!important;width:65%!important;background:linear-gradient(100deg,transparent,rgba(255,255,255,.72),transparent)!important;transform:skewX(-22deg)!important;animation:py2GlobalDiscountShine 3s ease-in-out infinite!important;pointer-events:none!important}
 :is(.price-drop-banner,.drop-banner) i{color:#fff!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.75))!important}
 :is(.pcard,.pc,.py2-product-card,.side-prod):has(.price-drop-banner),
 :is(.pcard,.pc,.py2-product-card,.side-prod):has(.drop-banner),
@@ -263,7 +263,7 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
 .py2-product-card:has(.py2-selling-savings),.side-prod:has(.side-prod-orig){
  position:relative!important;border:2px solid transparent!important;
  background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--py2-deal-angle,0deg),#ff173d,#ff7a00,#ffe600,#25e6a4,#00c8ff,#6e42ff,#ff36b7,#ff173d) border-box!important;
- animation:py2DealBorderRotate 5s linear infinite,py2DealGlow 2.7s ease-in-out infinite!important;
+ animation:py2DealBorderRotate 5s linear infinite,py2DealBorderGlow 2.7s ease-in-out infinite!important;
  box-shadow:0 0 10px rgba(255,28,62,.24),0 0 18px rgba(255,106,0,.13)!important;
 }
 :is(.pcard,.pc,.py2-product-card,.side-prod):has(.price-drop-banner):hover,
@@ -278,4 +278,13 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.drop-banner),
  :is(.pcard,.pc,.py2-product-card,.side-prod):has(.pcard-save),
  .py2-product-card:has(.py2-selling-savings),.prod-save{animation:none!important}
+}
+
+@keyframes py2GlobalDiscountShine{0%,15%{left:-130%}70%,100%{left:160%}}
+:is(.pcard,.pc,.py2-product-card,.side-prod):has(.pc-orig),
+:is(.pcard,.pc,.py2-product-card,.side-prod):has(.side-prod-orig){
+ position:relative!important;border:2px solid transparent!important;
+ background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--py2-deal-angle,0deg),#ff173d,#ff7a00,#ffe600,#25e6a4,#00c8ff,#6e42ff,#ff36b7,#ff173d) border-box!important;
+ animation:py2DealBorderRotate 5s linear infinite,py2DealBorderGlow 2.7s ease-in-out infinite!important;
+ box-shadow:0 0 10px rgba(255,28,62,.24),0 0 18px rgba(255,106,0,.13)!important;
 }
