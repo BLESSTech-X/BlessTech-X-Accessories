@@ -2577,7 +2577,8 @@ function buildCard(p) {
       '<div class="pc-name">'+escHtml(p.title)+'</div>'+
       (p.offer_label?'<div class="py2-sales-label">'+escHtml(p.offer_label)+'</div>':'')+
       (p.sales_hook?'<div class="py2-sales-hook">'+escHtml(p.sales_hook)+'</div>':'')+
-      '<div class="pc-price-row">'+
+      (p.offer_details?'<div class="py2-offer-details">'+escHtml(p.offer_details)+'</div>':'')+
+      '<div class="pc-price-row>'+
         '<div class="pc-price">ZMW '+(p.price||0).toLocaleString()+'</div>'+
         (hasDrop?'<div class="pc-orig">ZMW '+op.toLocaleString()+'</div>':'')+
       '</div>'+
@@ -3361,7 +3362,10 @@ async function init() {
   fillTrack('deals-track', dealsList, buildFeaturedCard, 'No active deals right now.');
 
   // "For You" is currently discovery, not personalisation: show available items only.
-  const forYou = shuffle(products.filter(p => Number(p.stock) > 0));
+  const forYou = shuffle(products.filter(p => Number(p.stock) > 0)).sort((a, b) => {
+    const rank = value => value === 'promote' ? 0 : value === 'campaign' ? 1 : 2;
+    return rank(a.sales_priority) - rank(b.sales_priority);
+  });
   fillTrack('jfy-track', forYou, buildCard, 'No in-stock products to recommend right now.');
 
   renderCsGrid('case');
