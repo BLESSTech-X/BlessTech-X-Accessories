@@ -213,3 +213,15 @@ body:not(.py2-blog-page) .shop-hero-orb2{display:none!important}
   body:not(.py2-blog-page) .shop-hero .py2-hero-secondary{display:none}
   body:not(.py2-blog-page) .shop-hero .py2-hero-note{display:none}
 }
+
+
+/* Product supporting details should read as helpful product highlights, not warnings. */
+.py2-offer-details{
+  color:#75caff!important;
+  background:rgba(63,169,245,.09)!important;
+  border-color:rgba(117,202,255,.22)!important;
+}
+.py2-product-sales .py2-offer-details,
+.py2-product-sales .py2-sales-hook{
+  color:#75caff!important;
+}
