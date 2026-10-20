@@ -2575,6 +2575,8 @@ function buildCard(p) {
     '</div>'+
     '<div class="pc-body">'+
       '<div class="pc-name">'+escHtml(p.title)+'</div>'+
+      (p.offer_label?'<div class="py2-sales-label">'+escHtml(p.offer_label)+'</div>':'')+
+      (p.sales_hook?'<div class="py2-sales-hook">'+escHtml(p.sales_hook)+'</div>':'')+
       '<div class="pc-price-row">'+
         '<div class="pc-price">ZMW '+(p.price||0).toLocaleString()+'</div>'+
         (hasDrop?'<div class="pc-orig">ZMW '+op.toLocaleString()+'</div>':'')+
