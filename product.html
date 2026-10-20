@@ -153,11 +153,17 @@ img{max-width:100%;display:block;}
 .prod-info{animation:fadeIn .5s .1s ease both;}
 .prod-cat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
 .prod-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);line-height:1.15;margin-bottom:14px;}
-.drop-banner{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#c2410c;font-weight:600;display:flex;align-items:center;gap:7px;}
+.drop-banner{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(105deg,#ff102f 0%,#ff354f 28%,#ff6b00 55%,#ff168c 78%,#7c3aed 100%);background-size:220% 220%;animation:py2DealGlow 4s ease-in-out infinite;color:#fff!important;border:1px solid rgba(255,255,255,.72);border-radius:13px;padding:12px 15px;margin-bottom:14px;font-size:13px;font-weight:900;display:flex;align-items:center;gap:9px;box-shadow:0 0 0 1px rgba(255,28,65,.16),0 0 14px rgba(255,20,52,.42),0 0 27px rgba(255,91,0,.2);text-shadow:0 1px 2px rgba(80,0,0,.24);}
+.drop-banner:before{content:"";position:absolute;z-index:-1;inset:0;left:-120%;width:70%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.58),transparent);transform:skewX(-22deg);animation:py2DealShine 3.2s ease-in-out infinite;pointer-events:none}
+.drop-banner i{color:#fff!important;font-size:16px;filter:drop-shadow(0 0 5px rgba(255,255,255,.65))}
+@keyframes py2DealGlow{0%,100%{background-position:0% 50%;box-shadow:0 0 0 1px rgba(255,28,65,.16),0 0 14px rgba(255,20,52,.42),0 0 27px rgba(255,91,0,.2)}50%{background-position:100% 50%;box-shadow:0 0 0 1px rgba(255,28,65,.24),0 0 21px rgba(255,20,52,.62),0 0 34px rgba(124,58,237,.28)}}
+@keyframes py2DealShine{0%,35%{left:-120%}75%,100%{left:150%}}
 .price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .prod-price{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradShift 4s linear infinite;}
 .prod-orig{font-size:1.1rem;color:var(--muted);text-decoration:line-through;font-weight:400;}
-.prod-save{font-size:12px;font-weight:700;color:#ea580c;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);padding:3px 10px;border-radius:100px;}
+.prod-save{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:900;letter-spacing:.1px;color:#fff!important;background:linear-gradient(110deg,#e60026 0%,#ff1744 32%,#ff6a00 65%,#d500f9 100%);background-size:220% 220%;animation:py2SavePulse 2.8s ease-in-out infinite;border:1px solid rgba(255,255,255,.8);padding:6px 11px;border-radius:999px;box-shadow:0 0 9px rgba(255,22,55,.48),0 0 18px rgba(255,95,0,.22);text-shadow:0 1px 2px rgba(70,0,0,.3);white-space:nowrap}
+.prod-save:before{content:"";position:absolute;z-index:-1;inset:0;left:-120%;width:65%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-20deg);animation:py2DealShine 3s ease-in-out infinite;pointer-events:none}
+@keyframes py2SavePulse{0%,100%{background-position:0% 50%;filter:saturate(1)}50%{background-position:100% 50%;filter:saturate(1.25)}}
 .stock-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;margin-bottom:16px;}
 .sp-in{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);color:#16a34a;}
 .sp-low{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:#ea580c;}
@@ -345,6 +351,7 @@ iframe[src*="tawk.to"]{bottom:70px !important;}
 /* Product benefits: calm light-blue text, never caution-style messaging. */
 .py2-offer-details{color:#75caff!important;background:rgba(63,169,245,.09)!important;border-color:rgba(117,202,255,.22)!important}
 .py2-product-sales .py2-offer-details,.py2-product-sales .py2-sales-hook{color:#75caff!important}
+@media(prefers-reduced-motion:reduce){.drop-banner,.drop-banner:before,.prod-save,.prod-save:before{animation:none!important}}
 </style>
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
