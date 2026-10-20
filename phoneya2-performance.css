@@ -271,3 +271,13 @@ body :is(.pcard,.py2-product-card,.product-card,.product-item,.side-prod) {
 .shop-page .price-drop-banner i,.shop-page .price-drop-banner i::before,
 .shop-page .drop-banner i,.shop-page .drop-banner i::before {color:#b45309!important;-webkit-text-fill-color:#b45309!important;filter:none!important}
 .shop-page .price-drop-banner::before,.shop-page .drop-banner::before {content:none!important;display:none!important}
+
+
+/* Price-drop offer: blue edge glow, while retaining the homepage's warm deal badge. */
+.price-drop-banner,
+.drop-banner,
+body.shop-page .price-drop-banner,
+body.shop-page .drop-banner {
+  border: 1px solid #60a5fa !important;
+  box-shadow: 0 0 0 1px rgba(59,130,246,.30), 0 0 8px rgba(37,99,235,.45), 0 0 16px rgba(37,99,235,.24) !important;
+}
