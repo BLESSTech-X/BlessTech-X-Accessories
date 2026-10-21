@@ -61,7 +61,7 @@ export async function onRequest({ request, env }) {
         method: "POST",
         headers: { authorization: "Bearer " + token, "content-type": "application/json" },
         body: JSON.stringify({
-          dateRanges: [{ startDate: "29daysAgo", endDate: "today" }],
+          dateRanges: [{ startDate: "2020-01-01", endDate: "today" }],
           metrics: [
             { name: "activeUsers" },
             { name: "sessions" },
@@ -78,7 +78,7 @@ export async function onRequest({ request, env }) {
     }
     const values = (data.rows?.[0]?.metricValues || []).map(v => Number(v.value || 0));
     return json({
-      period: "Last 30 days",
+      period: "All time",
       summary: {
         active_users: values[0] || 0,
         sessions: values[1] || 0,
