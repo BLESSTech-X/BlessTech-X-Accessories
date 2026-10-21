@@ -8,19 +8,6 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
-# Automatically optimize new uploads. Individual image fields below override
-# the square default with the crop shape best suited to that content.
-media_processing:
-  enabled: true
-  format:
-    enabled: true
-    default: webp
-  quality: 86
-  strip_metadata: true
-  width: 1200
-  height: 1200
-  aspect_ratio: "1:1"
-
 site_url: "https://phoneya2.pages.dev"
 display_url: "https://phoneya2.pages.dev"
 locale: "en"
@@ -68,19 +55,148 @@ collections:
           - { label: "Promote More", value: "promote" }
           - { label: "Seasonal / Campaign", value: "campaign" }
       - { label: "Description", name: "description", widget: "text", hint: "Write 1–2 short, clear sentences about the product and its main benefit. Avoid long paragraphs; include only details you can confirm." }
-      - label: "Image"
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
+      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. The site will embed supported links in the page." }
+      - { label: "Order Note", name: "order_note", widget: "string", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+
+
+  - name: "blog_posts"
+    label: "Blog & Updates"
+    label_singular: "Post"
+    folder: "content/blog"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    summary: "{{title}} — {{date}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - { label: "Post Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ" }
+      - { label: "Category", name: "category", widget: "select", options: ["Offers", "Product News", "Buying Guides", "Tips & Tricks", "PhoneYa2 Updates", "Community"] }
+      - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
+      - { label: "Sales Message (optional)", name: "sales_message", widget: "text", required: false, hint: "A useful next step or product-value message for readers. Avoid fake urgency, unsupported claims or invented discounts. Shown in a clear action box on the blog feed." }
+      - { label: "Action Button Label", name: "sales_cta_label", widget: "string", required: false, default: "Explore this pick", hint: "Short action text such as Shop this guide, Compare options, or Explore this pick. The button opens the first attached featured product, or the shop if none is attached." }
+      - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
+      - label: "Additional Images"
+        name: "gallery"
+        widget: "list"
+        required: false
+        summary: "{{fields.title}}"
+        hint: "Add extra story photos. Each image can have its own optional title and explanatory paragraph. Leave both blank for a clean image-only photo."
+        fields:
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Image Title (optional)", name: "title", widget: "string", required: false }
+          - { label: "Image Description (optional)", name: "description", widget: "text", required: false }
+          - { label: "Legacy Caption (optional)", name: "caption", widget: "string", required: false, hint: "Kept for older posts; used as the title if no new title is supplied." }
+      - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. YouTube videos also appear in blog preview cards across the site. If this field is blank, a YouTube URL in the article body is detected automatically." }
+      - { label: "Author", name: "author", widget: "string", default: "PhoneYa2" }
+      - { label: "Featured Post", name: "featured", widget: "boolean", default: false }
+      - { label: "Publish This Post", name: "publish", widget: "boolean", default: false, hint: "Keep off while drafting. Only published posts appear publicly." }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - label: "Featured Products"
+        name: "featured_products"
+        widget: "list"
+        required: false
+        summary: "{{fields.product}}"
+        hint: "Choose products from the existing PhoneYa2 catalogue. Selected products appear as small images on the blog feed and as product cards with a Buy Now button in the full article. Add an optional caption for each product."
+        fields:
+          - label: "Product"
+            name: "product"
+            widget: "relation"
+            collection: "products"
+            search_fields: ["title", "category"]
+            value_field: "{{slug}}"
+            display_fields: ["title", "price", "category"]
+          - { label: "Product Caption (optional)", name: "caption", widget: "text", required: false, hint: "Explain why this product is relevant to the story. Leave blank if no caption is needed." }
+      - { label: "Related Product Slugs (legacy)", name: "related_products", widget: "list", required: false, hint: "Legacy links for older posts. Use Featured Products for full product cards." }
+      - { label: "Article Body", name: "body", widget: "markdown" }
+
+  - name: "blog_comments"
+    label: "Blog Comments"
+    label_singular: "Comment"
+    folder: "content/blog-comments"
+    branch: "community-comments"
+    create: false
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    summary: "{{fields.status}} — {{fields.commenter}} on {{fields.post_slug}}"
+    fields:
+      - { label: "Commenter", name: "commenter", widget: "string" }
+      - { label: "Post Slug", name: "post_slug", widget: "string" }
+      - { label: "Comment", name: "message", widget: "text" }
+      - { label: "Moderation Status", name: "status", widget: "select", options: ["pending", "approved", "rejected"], default: "pending" }
+      - { label: "Submitted At", name: "submitted_at", widget: "datetime" }
+
+  - name: "site_content"
+    label: "Website Content"
+    description: "Edit existing website wording and contact details. These forms edit existing JSON files; they do not change the page layout or product system."
+    format: "json"
+    files:
+      - label: "Homepage"
+        name: "homepage"
+        file: "content/settings/homepage.json"
+        fields:
+          - { label: "Hero line 1", name: "hero_line1", widget: "string", hint: "Keep this short; it appears in the main homepage heading." }
+          - { label: "Hero line 2", name: "hero_line2", widget: "string", hint: "Second line of the main homepage heading." }
+          - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Automatically show discounted products as Special Offers", name: "show_discounted_products", widget: "boolean", default: true, required: false, hint: "When enabled, in-stock products with an Original Price higher than Price are added to the homepage hero carousel as Special Offers." }
+          - { label: "Maximum automatic Special Offer slides", name: "max_discounted_promotions", widget: "number", min: 0, max: 12, default: 6, required: false, hint: "Choose how many discounted products can be added automatically. Set to 0 to turn off automatic sale slides." }
+          - label: "Additional Homepage Hero Promotions"
+            name: "hero_promotions"
+            widget: "list"
+            required: false
+            summary: "{{fields.product}} — {{fields.badge}}"
+            hint: "Add extra product slides to the main homepage banner. Select a product from the catalogue; optionally customize its badge, heading, description, image and button label. Turn Active off to hide a slide."
+            fields:
+              - label: "Product"
+                name: "product"
+                widget: "relation"
+                collection: "products"
+                search_fields: ["title", "category"]
+                value_field: "{{slug}}"
+                display_fields: ["title", "price", "category"]
+              - { label: "Badge", name: "badge", widget: "string", default: "Featured Pick", required: false }
+              - { label: "Heading Override", name: "title", widget: "string", required: false }
+              - { label: "Description Override", name: "description", widget: "text", required: false }
+              - { label: "Image Override", name: "image", widget: "image", required: false }
+              - { label: "Price Label", name: "price_label", widget: "string", required: false, hint: "For example: Only, From, or Special offer." }
+              - { label: "Button Label", name: "button_label", widget: "string", default: "View Product", required: false }
+              - { label: "Active", name: "active", widget: "boolean", default: true }
+          - { label: "Stat 1", name: "stat1", widget: "string" }
+          - { label: "Stat 2", name: "stat2", widget: "string" }
+          - { label: "Stat 3", name: "stat3", widget: "string" }
+          - { label: "Stat 4", name: "stat4", widget: "string" }
+
+      - label: "About Page"
+        name: "about"
+        file: "content/settings/about.json"
+        fields:
+          - { label: "Hero line 1", name: "hero_line1", widget: "string" }
+          - { label: "Hero line 2", name: "hero_line2", widget: "string" }
+          - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Stat cards", name: "stats", widget: "list", summary: "{{fields.value}} — {{fields.label}}", fields: [{ label: "Value", name: "value", widget: "string" }, { label: "Label", name: "label", widget: "string" }] }
+          - { label: "Venture card title", name: "venture_title", widget: "string" }
+          - { label: "Venture card text", name: "venture_text", widget: "text" }
+          - { label: "Venture website button", name: "venture_button", widget: "string" }
+          - { label: "Venture website URL", name: "venture_url", widget: "string" }
+          - { label: "Country badge", name: "country_badge", widget: "string" }
+          - { label: "Story label", name: "story_label", widget: "string" }
+          - { label: "Story heading", name: "story_heading", widget: "string" }
+          - { label: "Story paragraphs", name: "story_paragraphs", widget: "list", fields: [{ label: "Paragraph", name: "text", widget: "text" }] }
+          - { label: "Values label", name: "values_label", widget: "string" }
+          - { label: "Values heading", name: "values_heading", widget: "string" }
+          - { label: "Core values", name: "values", widget: "list", summary: "{{fields.title}}", fields: [{ label: "Icon / Emoji", name: "icon", widget: "string" }, { label: "Title", name: "title", widget: "string" }, { label: "Description", name: "description", widget: "text" }] }
+          - { label: "Team section label", name: "team_label", widget: "string" }
+          - { label: "Team section heading", name: "team_heading", widget: "string" }
+          - { label: "Team members / partners", name: "team", widget: "list", summary: "{{fields.name}} — {{fields.role}}", fields: [{ label: "Name", name: "name", widget: "string" }, { label: "Role / Position", name: "role", widget: "string" }, { label: "Biography", name: "bio", widget: "text" }, { label: "Portrait / Photo", name: "image", widget: "image", required: false }, { label: "Fallback Emoji", name: "emoji", widget: "string", required: false }, { label: "WhatsApp URL", name: "whatsapp", widget: "string", required: false }, { label: "Website / Profile URL", name: "website", widget: "string", required: false }, { label: "Facebook URL", name: "facebook", widget: "string", required: false }, { label: "LinkedIn URL", name: "linkedin", widget: "string", required: false }, { label: "Display this person", name: "active", widget: "boolean", default: true }] }
           - { label: "Businesses section label", name: "businesses_label", widget: "string" }
           - { label: "Businesses section heading", name: "businesses_heading", widget: "string" }
           - { label: "Businesses section intro", name: "businesses_intro", widget: "text" }
-          - label: "Businesses / Ventures"
-            name: "businesses"
-            widget: "list"
-            summary: "{{fields.name}}"
-            fields:
-              - { label: "Business / Venture Name", name: "name", widget: "string" }
-              - { label: "Short Tagline", name: "tagline", widget: "string", required: false }
-              - { label: "Description", name: "description", widget: "text" }
-              - label: "Logo"
+          - { label: "Businesses / Ventures", name: "businesses", widget: "list", summary: "{{fields.name}}", fields: [{ label: "Business / Venture Name", name: "name", widget: "string" }, { label: "Short Tagline", name: "tagline", widget: "string", required: false }, { label: "Description", name: "description", widget: "text" }, { label: "Logo", name: "logo", widget: "image", required: false }, { label: "Website URL", name: "website", widget: "string", required: false }, { label: "Display this business", name: "active", widget: "boolean", default: true }] }
           - { label: "CTA heading", name: "cta_heading", widget: "string" }
           - { label: "CTA text", name: "cta_text", widget: "text" }
           - { label: "CTA business button label", name: "cta_business_label", widget: "string" }
