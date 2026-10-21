@@ -365,3 +365,76 @@ body {
     padding-top: calc(var(--py2-cms-header-height) + var(--py2-cms-toolbar-height)) !important;
   }
 }
+
+
+/* PhoneYa2 Content Studio — premium navigation shell */
+:root {
+  --py2-studio-height: 68px;
+  --py2-studio-navy: #10243b;
+  --py2-studio-blue: #1769d2;
+}
+#py2-studio-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20000;
+  height: var(--py2-studio-height);
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  box-sizing: border-box;
+  padding: 0 clamp(12px, 2.4vw, 30px);
+  color: #edf5ff;
+  background: linear-gradient(110deg, #0b1b2d 0%, #122b47 58%, #123a59 100%);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 8px 28px rgba(6,22,40,.22);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.py2-studio-brand { display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; flex:0 0 auto; }
+.py2-brand-mark { display:grid; place-items:center; width:40px; height:40px; border-radius:12px; color:#fff; background:linear-gradient(145deg,#19a86b,#087e9b); font-weight:900; letter-spacing:-1px; box-shadow:0 5px 16px rgba(0,180,143,.24); }
+.py2-brand-mark span { color:#ffad42; }
+.py2-brand-copy { display:flex; flex-direction:column; gap:2px; line-height:1.05; }
+.py2-brand-copy strong { font-size:15px; letter-spacing:.1px; }
+.py2-brand-copy small { color:#9fb7d0; font-size:9px; letter-spacing:1.7px; font-weight:800; }
+.py2-studio-tabs { display:flex; align-items:center; align-self:stretch; gap:4px; min-width:0; flex:1 1 auto; overflow-x:auto; scrollbar-width:none; }
+.py2-studio-tabs::-webkit-scrollbar { display:none; }
+.py2-studio-tab { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px; align-self:stretch; flex:0 0 auto; padding:0 13px; border:0; border-radius:0; color:#b9c9db; background:transparent; font:600 12px/1.2 inherit; cursor:pointer; white-space:nowrap; transition:color .18s ease, background .18s ease; }
+.py2-studio-tab:hover, .py2-studio-tab:focus-visible { color:#fff; background:rgba(255,255,255,.08); outline:0; }
+.py2-studio-tab.is-active { color:#fff; background:rgba(35,135,224,.16); }
+.py2-studio-tab.is-active::after { content:""; position:absolute; bottom:0; left:13px; right:13px; height:3px; border-radius:3px 3px 0 0; background:#42b9ff; }
+.py2-studio-tab > span:first-child { font-size:15px; opacity:.95; }
+.py2-studio-actions { display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+.py2-view-site { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 12px; color:#e8f5ff; text-decoration:none; font-size:11px; font-weight:750; border:1px solid rgba(170,208,241,.3); border-radius:9px; background:rgba(255,255,255,.06); white-space:nowrap; }
+.py2-view-site:hover { background:rgba(255,255,255,.13); }
+.py2-menu-toggle { display:flex; flex-direction:column; justify-content:center; gap:5px; width:40px; height:40px; padding:10px; border:1px solid rgba(180,213,243,.25); border-radius:10px; background:rgba(255,255,255,.06); cursor:pointer; }
+.py2-menu-toggle span { display:block; height:2px; width:100%; border-radius:2px; background:#edf5ff; }
+.py2-menu-toggle[aria-expanded="true"] { background:#1769d2; }
+.py2-studio-menu { position:absolute; top:calc(100% + 9px); right:14px; width:min(300px, calc(100vw - 24px)); padding:10px; border:1px solid #dbe5ef; border-radius:15px; background:#fff; color:#172a40; box-shadow:0 20px 55px rgba(7,24,44,.24); }
+.py2-studio-menu[hidden] { display:none !important; }
+.py2-menu-heading { padding:8px 10px 10px; color:#6e8196; font-size:10px; font-weight:850; letter-spacing:1.5px; }
+.py2-studio-menu button, .py2-studio-menu a { display:flex; align-items:center; gap:10px; width:100%; min-height:43px; box-sizing:border-box; padding:9px 10px; border:0; border-radius:9px; background:transparent; color:#20364e; text-decoration:none; text-align:left; font:650 13px/1.3 inherit; cursor:pointer; }
+.py2-studio-menu button:hover, .py2-studio-menu a:hover { background:#eef6ff; color:#145db5; }
+.py2-studio-menu button b, .py2-studio-menu a b { margin-left:auto; color:#8ba0b6; font-size:19px; font-weight:500; }
+.py2-menu-tip { margin:9px 4px 2px; padding:10px; border-radius:9px; color:#62768a; background:#f3f7fb; font-size:11px; line-height:1.5; }
+body { padding-top: calc(var(--py2-studio-height) + 4px) !important; }
+[class*="AppHeader"], [class*="AppHeaderContainer"], [class*="AppHeaderContent"] { display:none !important; }
+[class*="EditorControlBar"], [class*="EditorToolbar"], [class*="EditorControlBarContainer"] { top:var(--py2-studio-height) !important; }
+@media (max-width: 900px) {
+  #py2-studio-header { gap:10px; padding-inline:10px; }
+  .py2-brand-mark { width:36px; height:36px; border-radius:10px; }
+  .py2-brand-copy strong { font-size:13px; }
+  .py2-brand-copy small { font-size:8px; letter-spacing:1.2px; }
+  .py2-studio-tab { padding-inline:10px; font-size:11px; }
+  .py2-view-site { display:none; }
+}
+@media (max-width: 560px) {
+  :root { --py2-studio-height:62px; }
+  #py2-studio-header { gap:8px; padding-inline:9px; }
+  .py2-brand-copy { display:none; }
+  .py2-brand-mark { width:36px; height:36px; flex:0 0 36px; }
+  .py2-studio-tabs { gap:1px; }
+  .py2-studio-tab { gap:5px; padding-inline:9px; font-size:10px; }
+  .py2-studio-tab > span:first-child { font-size:14px; }
+  .py2-menu-toggle { width:36px; height:36px; padding:9px; }
+  [class*="EditorControlBar"], [class*="EditorToolbar"], [class*="EditorControlBarContainer"] { top:var(--py2-studio-height) !important; }
+}
+@media (prefers-reduced-motion: reduce) { .py2-studio-tab { transition:none; } }
