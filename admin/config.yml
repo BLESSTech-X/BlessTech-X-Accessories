@@ -8,6 +8,19 @@ backend:
 media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
+# Automatically optimize new uploads. Individual image fields below override
+# the square default with the crop shape best suited to that content.
+media_processing:
+  enabled: true
+  format:
+    enabled: true
+    default: webp
+  quality: 86
+  strip_metadata: true
+  width: 1200
+  height: 1200
+  aspect_ratio: "1:1"
+
 site_url: "https://phoneya2.pages.dev"
 display_url: "https://phoneya2.pages.dev"
 locale: "en"
@@ -55,8 +68,34 @@ collections:
           - { label: "Promote More", value: "promote" }
           - { label: "Seasonal / Campaign", value: "campaign" }
       - { label: "Description", name: "description", widget: "text", hint: "Write 1–2 short, clear sentences about the product and its main benefit. Avoid long paragraphs; include only details you can confirm." }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Gallery", name: "gallery", widget: "list", fields: [{ label: "Image", name: "image", widget: "image" }, { label: "Caption", name: "caption", widget: "string", required: false }], required: false }
+      - label: "Image"
+        name: "image"
+        widget: "image"
+        media_processing:
+          enabled: true
+          format: { enabled: true, default: webp }
+          quality: 86
+          strip_metadata: true
+          width: 1200
+          height: 1200
+          aspect_ratio: "1:1"
+      - label: "Gallery"
+        name: "gallery"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Image"
+            name: "image"
+            widget: "image"
+            media_processing:
+              enabled: true
+              format: { enabled: true, default: webp }
+              quality: 86
+              strip_metadata: true
+              width: 1200
+              height: 1200
+              aspect_ratio: "1:1"
+          - { label: "Caption", name: "caption", widget: "string", required: false }
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. The site will embed supported links in the page." }
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
@@ -79,7 +118,18 @@ collections:
       - { label: "Short Preview", name: "excerpt", widget: "text", hint: "A clear 1–2 sentence preview shown on the blog and other pages." }
       - { label: "Sales Message (optional)", name: "sales_message", widget: "text", required: false, hint: "A useful next step or product-value message for readers. Avoid fake urgency, unsupported claims or invented discounts. Shown in a clear action box on the blog feed." }
       - { label: "Action Button Label", name: "sales_cta_label", widget: "string", required: false, default: "Explore this pick", hint: "Short action text such as Shop this guide, Compare options, or Explore this pick. The button opens the first attached featured product, or the shop if none is attached." }
-      - { label: "Cover Image", name: "featured_image", widget: "image", required: false }
+      - label: "Cover Image"
+        name: "featured_image"
+        widget: "image"
+        required: false
+        media_processing:
+          enabled: true
+          format: { enabled: true, default: webp }
+          quality: 86
+          strip_metadata: true
+          width: 1600
+          height: 900
+          aspect_ratio: "16:9"
       - label: "Additional Images"
         name: "gallery"
         widget: "list"
@@ -87,7 +137,17 @@ collections:
         summary: "{{fields.title}}"
         hint: "Add extra story photos. Each image can have its own optional title and explanatory paragraph. Leave both blank for a clean image-only photo."
         fields:
-          - { label: "Image", name: "image", widget: "image" }
+          - label: "Image"
+            name: "image"
+            widget: "image"
+            media_processing:
+              enabled: true
+              format: { enabled: true, default: webp }
+              quality: 86
+              strip_metadata: true
+              width: 1200
+              height: 900
+              aspect_ratio: "4:3"
           - { label: "Image Title (optional)", name: "title", widget: "string", required: false }
           - { label: "Image Description (optional)", name: "description", widget: "text", required: false }
           - { label: "Legacy Caption (optional)", name: "caption", widget: "string", required: false, hint: "Kept for older posts; used as the title if no new title is supplied." }
@@ -162,7 +222,18 @@ collections:
               - { label: "Badge", name: "badge", widget: "string", default: "Featured Pick", required: false }
               - { label: "Heading Override", name: "title", widget: "string", required: false }
               - { label: "Description Override", name: "description", widget: "text", required: false }
-              - { label: "Image Override", name: "image", widget: "image", required: false }
+              - label: "Image Override"
+                name: "image"
+                widget: "image"
+                required: false
+                media_processing:
+                  enabled: true
+                  format: { enabled: true, default: webp }
+                  quality: 86
+                  strip_metadata: true
+                  width: 1600
+                  height: 900
+                  aspect_ratio: "16:9"
               - { label: "Price Label", name: "price_label", widget: "string", required: false, hint: "For example: Only, From, or Special offer." }
               - { label: "Button Label", name: "button_label", widget: "string", default: "View Product", required: false }
               - { label: "Active", name: "active", widget: "boolean", default: true }
@@ -192,11 +263,33 @@ collections:
           - { label: "Core values", name: "values", widget: "list", summary: "{{fields.title}}", fields: [{ label: "Icon / Emoji", name: "icon", widget: "string" }, { label: "Title", name: "title", widget: "string" }, { label: "Description", name: "description", widget: "text" }] }
           - { label: "Team section label", name: "team_label", widget: "string" }
           - { label: "Team section heading", name: "team_heading", widget: "string" }
-          - { label: "Team members / partners", name: "team", widget: "list", summary: "{{fields.name}} — {{fields.role}}", fields: [{ label: "Name", name: "name", widget: "string" }, { label: "Role / Position", name: "role", widget: "string" }, { label: "Biography", name: "bio", widget: "text" }, { label: "Portrait / Photo", name: "image", widget: "image", required: false }, { label: "Fallback Emoji", name: "emoji", widget: "string", required: false }, { label: "WhatsApp URL", name: "whatsapp", widget: "string", required: false }, { label: "Website / Profile URL", name: "website", widget: "string", required: false }, { label: "Facebook URL", name: "facebook", widget: "string", required: false }, { label: "LinkedIn URL", name: "linkedin", widget: "string", required: false }, { label: "Display this person", name: "active", widget: "boolean", default: true }] }
+          - { label: "Team members / partners", name: "team", widget: "list", summary: "{{fields.name}} — {{fields.role}}", fields: [{ label: "Name", name: "name", widget: "string" }, { label: "Role / Position", name: "role", widget: "string" }, { label: "Biography", name: "bio", widget: "text" }, label: "Portrait / Photo"
+                  name: "image"
+                  widget: "image"
+                  required: false
+                  media_processing:
+                    enabled: true
+                    format: { enabled: true, default: webp }
+                    quality: 86
+                    strip_metadata: true
+                    width: 900
+                    height: 1200
+                    aspect_ratio: "3:4", { label: "Fallback Emoji", name: "emoji", widget: "string", required: false }, { label: "WhatsApp URL", name: "whatsapp", widget: "string", required: false }, { label: "Website / Profile URL", name: "website", widget: "string", required: false }, { label: "Facebook URL", name: "facebook", widget: "string", required: false }, { label: "LinkedIn URL", name: "linkedin", widget: "string", required: false }, { label: "Display this person", name: "active", widget: "boolean", default: true }] }
           - { label: "Businesses section label", name: "businesses_label", widget: "string" }
           - { label: "Businesses section heading", name: "businesses_heading", widget: "string" }
           - { label: "Businesses section intro", name: "businesses_intro", widget: "text" }
-          - { label: "Businesses / Ventures", name: "businesses", widget: "list", summary: "{{fields.name}}", fields: [{ label: "Business / Venture Name", name: "name", widget: "string" }, { label: "Short Tagline", name: "tagline", widget: "string", required: false }, { label: "Description", name: "description", widget: "text" }, { label: "Logo", name: "logo", widget: "image", required: false }, { label: "Website URL", name: "website", widget: "string", required: false }, { label: "Display this business", name: "active", widget: "boolean", default: true }] }
+          - { label: "Businesses / Ventures", name: "businesses", widget: "list", summary: "{{fields.name}}", fields: [{ label: "Business / Venture Name", name: "name", widget: "string" }, { label: "Short Tagline", name: "tagline", widget: "string", required: false }, { label: "Description", name: "description", widget: "text" }, label: "Logo"
+                  name: "logo"
+                  widget: "image"
+                  required: false
+                  media_processing:
+                    enabled: true
+                    format: { enabled: true, default: webp }
+                    quality: 86
+                    strip_metadata: true
+                    width: 900
+                    height: 900
+                    aspect_ratio: "1:1", { label: "Website URL", name: "website", widget: "string", required: false }, { label: "Display this business", name: "active", widget: "boolean", default: true }] }
           - { label: "CTA heading", name: "cta_heading", widget: "string" }
           - { label: "CTA text", name: "cta_text", widget: "text" }
           - { label: "CTA business button label", name: "cta_business_label", widget: "string" }
