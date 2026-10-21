@@ -33,6 +33,7 @@
         ${navItems.map((item, i) => `<button type="button" class="py2-studio-tab" data-nav="${i}"><span aria-hidden="true">${item.icon}</span><span>${item.label}</span></button>`).join("")}
       </nav>
       <div class="py2-studio-actions">
+        <div class="py2-editor-actions-area" id="py2-editor-actions-area" aria-label="Entry publishing actions"></div>
         <a class="py2-view-site" href="/" target="_blank" rel="noopener">View site ↗</a>
         <button type="button" class="py2-menu-toggle" aria-expanded="false" aria-controls="py2-studio-menu" aria-label="Open studio menu"><span></span><span></span><span></span></button>
       </div>
