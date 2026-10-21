@@ -503,3 +503,11 @@
 .py2-blog-redesigned .py2-brand-splash-secondary{background:rgba(5,24,49,.62)!important;color:#f3f8ff!important;border:1px solid rgba(192,220,255,.52)!important}
 .py2-blog-redesigned .py2-brand-splash-slogan{color:#f8fbff!important}
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan{animation:none!important;transform:none!important}}
+
+
+/* Brand slogan colours: each phrase has its own deliberate, high-contrast colour. */
+.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-smart{color:#f8fbff!important}
+.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-choices{color:#ff9b32!important;text-shadow:0 0 18px #ff7a1a45!important}
+.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-better{color:#65c7ff!important}
+.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-connected{color:#42e58b!important;text-shadow:0 0 18px #13d66b40!important}
+.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-heart{color:#55bfff!important}
