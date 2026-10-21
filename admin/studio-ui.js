@@ -12,7 +12,7 @@
     const target = candidates.find((el) => {
       if (el.closest("#py2-studio-header")) return false;
       const text = (el.innerText || el.getAttribute("aria-label") || el.title || "").trim().replace(/\s+/g, " ");
-      return labels.some((label) => text === label || text.toLowerCase() === label.toLowerCase());
+      return labels.some((label) => text === label || text.toLowerCase() === label.toLowerCase() || text.toLowerCase().startsWith(label.toLowerCase() + " "));
     });
     if (target) { target.click(); return true; }
     return false;
