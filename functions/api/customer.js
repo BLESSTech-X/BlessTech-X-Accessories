@@ -44,40 +44,86 @@ async function addProductImages(context, orders) {
   }));
   return orders.map(order => ({ ...order, order_items: (order.order_items || []).map(item => ({ ...item, product_image: images.get(item.product_slug) || "" })) }));
 }
+
+function base64url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function fromBase64url(value) {
+  const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+async function signRecoveryPayload(payload, secret) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return base64url(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload))));
+}
+async function verifyRecoveryToken(token, secret) {
+  const parts = String(token || "").split(".");
+  if (parts.length !== 2 || !secret) return null;
+  const expected = await signRecoveryPayload(parts[0], secret);
+  if (expected !== parts[1]) return null;
+  let payload;
+  try { payload = JSON.parse(new TextDecoder().decode(fromBase64url(parts[0]))); } catch { return null; }
+  if (!payload.email || !Number.isFinite(payload.exp) || payload.exp < Date.now()) return null;
+  return payload;
+}
+async function fetchOrdersForEmail(env, context, email) {
+  const buildQuery = includeNote => new URLSearchParams({
+    select: "id,order_number,customer_name,customer_email,customer_phone," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
+    customer_email: "eq." + email, order: "created_at.desc", limit: "100"
+  });
+  let response = await supabaseFetch(env, "/rest/v1/orders?" + buildQuery(true).toString(), { method: "GET", headers: { accept: "application/json" } });
+  if (!response.ok) response = await supabaseFetch(env, "/rest/v1/orders?" + buildQuery(false).toString(), { method: "GET", headers: { accept: "application/json" } });
+  if (!response.ok) {
+    console.error("PhoneYa2 email order recovery query failed:", response.status, (await response.text()).slice(0, 240));
+    return null;
+  }
+  const orders = await response.json();
+  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true };
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
-  if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
   const url = new URL(request.url);
-  const recoveryEmail = String(url.searchParams.get("email") || "").trim().toLowerCase();
-  const recoveryPhone = String(url.searchParams.get("phone") || "").trim();
-  // Password-free order recovery requires BOTH the order email and phone number.
-  if (recoveryEmail || recoveryPhone) {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recoveryEmail) || recoveryEmail.length > 254 ||
-        recoveryPhone.length < 7 || recoveryPhone.length > 40) {
-      return json({ error: "Enter the email address and phone number used when placing your order." }, 400);
-    }
-    if (!base || !getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY")) {
-      return json({ error: "Order recovery is temporarily unavailable. Please try again shortly." }, 503);
-    }
+  const recoverySecret = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+  if (request.method === "POST") {
+    let body;
+    try { body = await request.json(); } catch { return json({ error: "Enter the email address used for your PhoneYa2 orders." }, 400); }
+    const email = String(body.email || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return json({ error: "Enter a valid order email address." }, 400);
+    const apiKey = env.RESEND_API_KEY;
+    const from = env.RESEND_FROM;
+    if (!base || !recoverySecret || !apiKey || !from) return json({ error: "Email order recovery is temporarily unavailable. Please try again shortly." }, 503);
     try {
-      const buildRecoveryQuery = includeNote => new URLSearchParams({
-        select: "id,order_number,customer_name,customer_email,customer_phone," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-        customer_email: "eq." + recoveryEmail,
-        customer_phone: "eq." + recoveryPhone,
-        order: "created_at.desc",
-        limit: "100"
-      });
-      let response = await supabaseFetch(env, "/rest/v1/orders?" + buildRecoveryQuery(true).toString(), { method: "GET", headers: { accept: "application/json" } });
-      if (!response.ok) response = await supabaseFetch(env, "/rest/v1/orders?" + buildRecoveryQuery(false).toString(), { method: "GET", headers: { accept: "application/json" } });
-      if (!response.ok) {
-        console.error("Password-free customer order recovery failed:", response.status, (await response.text()).slice(0, 240));
-        return json({ error: "We could not retrieve your order history right now. Please try again." }, 503);
+      const payload = base64url(new TextEncoder().encode(JSON.stringify({ email, exp: Date.now() + 15 * 60 * 1000 })));
+      const signature = await signRecoveryPayload(payload, recoverySecret);
+      const link = new URL("/account.html?restore=" + encodeURIComponent(payload + "." + signature), request.url).toString();
+      const html = "<div style=\"font-family:Arial,sans-serif;color:#172033;max-width:560px;margin:auto;padding:24px\"><h2 style=\"color:#128c4b\">Restore your PhoneYa2 orders</h2><p>Someone requested access to the order history associated with this email address.</p><p>Tap below to securely restore your orders. This link expires in 15 minutes and does not require a password.</p><p style=\"margin:26px 0\"><a href=\"" + link.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + "\" style=\"display:inline-block;padding:13px 20px;background:#159447;color:white;text-decoration:none;border-radius:9px;font-weight:bold\">Restore my orders</a></p><p>If you did not request this, ignore this email.</p><p>PhoneYa2 Team</p></div>";
+      const sent = await fetch("https://api.resend.com/emails", { method: "POST", headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" }, body: JSON.stringify({ from, to: [email], subject: "Restore your PhoneYa2 order history", html }) });
+      if (!sent.ok) {
+        console.error("PhoneYa2 recovery email failed:", sent.status, (await sent.text()).slice(0, 240));
+        return json({ error: "We could not send the recovery email right now. Please try again shortly." }, 502);
       }
-      const orders = await response.json();
-      return json({ customer: { email: recoveryEmail, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true });
+      return json({ ok: true, message: "If orders exist for that email, a secure recovery link has been sent. Check your inbox and Spam/Junk folder." });
     } catch (error) {
-      console.error("PhoneYa2 customer recovery error:", String(error).slice(0, 240));
+      console.error("PhoneYa2 email recovery request failed:", String(error).slice(0, 200));
+      return json({ error: "Email order recovery is temporarily unavailable. Please try again." }, 503);
+    }
+  }
+  if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
+  const recoveryToken = url.searchParams.get("restore") || "";
+  if (recoveryToken) {
+    const payload = await verifyRecoveryToken(recoveryToken, recoverySecret);
+    if (!payload) return json({ error: "This recovery link is invalid or has expired. Request a new email link." }, 401);
+    try {
+      const result = await fetchOrdersForEmail(env, context, String(payload.email).trim().toLowerCase());
+      if (!result) return json({ error: "We could not retrieve your order history right now. Please try again." }, 503);
+      return json(result);
+    } catch (error) {
+      console.error("PhoneYa2 verified order recovery failed:", String(error).slice(0, 200));
       return json({ error: "Order recovery is temporarily unavailable. Please try again." }, 503);
     }
   }
