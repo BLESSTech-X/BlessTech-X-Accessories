@@ -462,3 +462,25 @@
 /* Slightly deeper neutral canvas for the blog hub and article pages. */
 .py2-blog-page{background:#e7ebf1!important}
 .py2-blog-redesigned{background:#e7ebf1!important}
+
+
+/* PhoneYa2 journal hero: richer editorial hierarchy, bright brand accents, and mobile-first actions. */
+.py2-blog-redesigned .py2-brand-splash{min-height:0;padding:clamp(24px,4vw,42px) clamp(16px,4vw,36px) clamp(25px,4vw,38px);margin-bottom:clamp(20px,3vw,30px);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,#1e639e 0%,#10395f 43%,#07172c 100%);box-shadow:0 20px 46px #03102435,inset 0 1px 0 #ffffff26}
+.py2-blog-redesigned .py2-brand-splash:after{content:"";position:absolute;z-index:-1;inset:auto -8% -55% -8%;height:70%;border-radius:50%;border:1px solid #65c4ff24;box-shadow:0 0 0 18px #65c4ff08,0 0 0 38px #65c4ff06;pointer-events:none}
+.py2-blog-redesigned .py2-brand-splash-inner{position:relative;z-index:1;width:min(100%,760px);gap:13px}
+.py2-blog-redesigned .py2-brand-splash-logo{width:clamp(138px,18vw,194px);height:clamp(138px,18vw,194px);border-radius:24px;filter:drop-shadow(0 10px 22px #0007)!important}
+.py2-blog-redesigned .py2-brand-splash-slogan{margin-top:1px;font-size:clamp(20px,3vw,29px);line-height:1.4;letter-spacing:.005em}
+.py2-blog-redesigned .py2-brand-splash-description{max-width:570px;margin:0 auto;color:#e1efff;font-size:clamp(13px,1.6vw,16px);line-height:1.65;text-wrap:balance;animation:py2SloganReveal .38s ease-out .34s both}
+.py2-blog-redesigned .py2-brand-splash-topics{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin-top:2px}
+.py2-blog-redesigned .py2-brand-splash-topics span{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #b7ddff36;border-radius:999px;background:#ffffff0d;color:#f4f8ff;font-size:11px;font-weight:750;letter-spacing:.015em}
+.py2-blog-redesigned .py2-brand-splash-topics span i{color:#66dca0;font-size:11px}
+.py2-blog-redesigned .py2-brand-splash-actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin-top:6px}
+.py2-blog-redesigned .py2-brand-splash-actions a{display:inline-flex;min-height:44px;align-items:center;justify-content:center;gap:8px;padding:11px 17px;border-radius:12px;text-decoration:none;font-size:13px;font-weight:900;transition:transform .18s ease,background .18s ease,border-color .18s ease;touch-action:manipulation}
+.py2-blog-redesigned .py2-brand-splash-actions a:hover{transform:translateY(-2px)}
+.py2-blog-redesigned .py2-brand-splash-primary{background:linear-gradient(135deg,#ff9b32,#ff7a1a);color:#172033;box-shadow:0 7px 20px #ff8b2630}
+.py2-blog-redesigned .py2-brand-splash-primary:hover{background:#ffb15c}
+.py2-blog-redesigned .py2-brand-splash-secondary{border:1px solid #a8d7ff80;background:#ffffff0d;color:#fff}
+.py2-blog-redesigned .py2-brand-splash-secondary:hover{background:#ffffff1a;border-color:#d1eaff}
+.py2-blog-redesigned .py2-brand-splash-actions a:focus-visible{outline:3px solid #8ed4ff;outline-offset:3px}
+@media(max-width:520px){.py2-blog-redesigned .py2-brand-splash{padding:22px 14px 24px;border-radius:18px}.py2-blog-redesigned .py2-brand-splash-inner{gap:11px}.py2-blog-redesigned .py2-brand-splash-logo{width:126px;height:126px;border-radius:18px}.py2-blog-redesigned .py2-brand-splash-slogan{font-size:18px;gap:0 5px}.py2-blog-redesigned .py2-brand-splash-description{font-size:13px;line-height:1.55}.py2-blog-redesigned .py2-brand-splash-topics{gap:6px}.py2-blog-redesigned .py2-brand-splash-topics span{padding:6px 9px;font-size:10px}.py2-blog-redesigned .py2-brand-splash-actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}.py2-blog-redesigned .py2-brand-splash-actions a{padding:10px 8px;font-size:12px;min-width:0}}
+@media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-description,.py2-blog-redesigned .py2-brand-splash-actions a{animation:none!important;transition:none!important}}
