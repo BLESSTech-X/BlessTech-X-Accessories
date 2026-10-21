@@ -276,6 +276,9 @@ button{font-family:'DM Sans',sans-serif;}
 .pc-image-link{cursor:pointer;color:inherit;text-decoration:none}
 .pc-view-details{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:36px;margin:8px 0;padding:8px 10px;border:1px solid rgba(46,204,113,.45);border-radius:9px;background:linear-gradient(135deg,rgba(46,204,113,.12),rgba(52,152,219,.10));color:var(--green,#20bf6b);font-size:12px;font-weight:800;text-decoration:none;box-sizing:border-box}
 .pc-view-details:hover,.pc-view-details:focus-visible{background:rgba(46,204,113,.2);border-color:var(--green,#20bf6b);outline-offset:2px}
+.side-prod-details{display:inline-flex;align-items:center;gap:5px;margin-top:6px;color:var(--green,#20bf6b);font-size:11px;font-weight:800;text-decoration:none}
+.side-prod-details:focus-visible{outline:2px solid var(--green,#20bf6b);outline-offset:3px;border-radius:3px}
+
 
 .pc:hover .pc-img img{transform:scale(1.06);}
 .pc-discount{position:absolute;top:6px;left:6px;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;}
@@ -2620,8 +2623,8 @@ function buildSideRow(p) {
   div.innerHTML=
     '<div class="side-prod-img">'+(p.image?'<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'📱\'">':'📱')+'</div>'+
     '<div><div class="side-prod-name">'+escHtml(p.title)+'</div>'+
-    '<div><span class="side-prod-price">ZMW '+(p.price||0).toLocaleString()+'</span>'+(hasDrop?'<span class="side-prod-orig">'+op.toLocaleString()+'</span>':'')+'</div></div>';
-  div.addEventListener('click',()=>{ window.location.href='product.html?id='+p.slug; });
+    '<div><span class="side-prod-price">ZMW '+(p.price||0).toLocaleString()+'</span>'+(hasDrop?'<span class="side-prod-orig">'+op.toLocaleString()+'</span>':'')+'</div>'+
+    '<a class="side-prod-details" href="product.html?id='+encodeURIComponent(p.slug)+'">View Details <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>';
   return div;
 }
 
