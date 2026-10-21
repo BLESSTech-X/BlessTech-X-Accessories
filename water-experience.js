@@ -22,6 +22,11 @@
     document.head.appendChild(link);
   }
 
+  /* The site-wide performance layer intentionally hides both water canvases.
+     Do not keep repainting invisible canvases at 30–60fps: that wastes CPU/GPU
+     time and can make touch scrolling stutter on mobile devices. */
+  if (document.querySelector('link[href*="phoneya2-performance.css"]')) return;
+
   var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var saveData = !!(navigator.connection && navigator.connection.saveData);
   var lowPower = saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
