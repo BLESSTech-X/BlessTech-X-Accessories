@@ -263,7 +263,32 @@ collections:
           - { label: "Core values", name: "values", widget: "list", summary: "{{fields.title}}", fields: [{ label: "Icon / Emoji", name: "icon", widget: "string" }, { label: "Title", name: "title", widget: "string" }, { label: "Description", name: "description", widget: "text" }] }
           - { label: "Team section label", name: "team_label", widget: "string" }
           - { label: "Team section heading", name: "team_heading", widget: "string" }
-          - { label: "Team members / partners", name: "team", widget: "list", summary: "{{fields.name}} — {{fields.role}}", fields: [{ label: "Name", name: "name", widget: "string" }, { label: "Role / Position", name: "role", widget: "string" }, { label: "Biography", name: "bio", widget: "text" }, label: "Portrait / Photo"
+          - label: "Team members / partners"
+            name: "team"
+            widget: "list"
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Role / Position", name: "role", widget: "string" }
+              - { label: "Biography", name: "bio", widget: "text" }
+              - label: "Portrait / Photo"
+                name: "image"
+                widget: "image"
+                required: false
+                media_processing:
+                  enabled: true
+                  format: { enabled: true, default: webp }
+                  quality: 86
+                  strip_metadata: true
+                  width: 900
+                  height: 1200
+                  aspect_ratio: "3:4"
+              - { label: "Fallback Emoji", name: "emoji", widget: "string", required: false }
+              - { label: "WhatsApp URL", name: "whatsapp", widget: "string", required: false }
+              - { label: "Website / Profile URL", name: "website", widget: "string", required: false }
+              - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
+              - { label: "LinkedIn URL", name: "linkedin", widget: "string", required: false }
+              - { label: "Display this person", name: "active", widget: "boolean", default: true }
                   name: "image"
                   widget: "image"
                   required: false
@@ -278,7 +303,28 @@ collections:
           - { label: "Businesses section label", name: "businesses_label", widget: "string" }
           - { label: "Businesses section heading", name: "businesses_heading", widget: "string" }
           - { label: "Businesses section intro", name: "businesses_intro", widget: "text" }
-          - { label: "Businesses / Ventures", name: "businesses", widget: "list", summary: "{{fields.name}}", fields: [{ label: "Business / Venture Name", name: "name", widget: "string" }, { label: "Short Tagline", name: "tagline", widget: "string", required: false }, { label: "Description", name: "description", widget: "text" }, label: "Logo"
+          - label: "Businesses / Ventures"
+            name: "businesses"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Business / Venture Name", name: "name", widget: "string" }
+              - { label: "Short Tagline", name: "tagline", widget: "string", required: false }
+              - { label: "Description", name: "description", widget: "text" }
+              - label: "Logo"
+                name: "logo"
+                widget: "image"
+                required: false
+                media_processing:
+                  enabled: true
+                  format: { enabled: true, default: webp }
+                  quality: 86
+                  strip_metadata: true
+                  width: 900
+                  height: 900
+                  aspect_ratio: "1:1"
+              - { label: "Website URL", name: "website", widget: "string", required: false }
+              - { label: "Display this business", name: "active", widget: "boolean", default: true }
                   name: "logo"
                   widget: "image"
                   required: false
