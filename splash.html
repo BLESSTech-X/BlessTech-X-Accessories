@@ -1,368 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PhoneYa2-ZM</title>
-  <meta name="theme-color" content="#0d0d0d">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071426">
+  <meta name="color-scheme" content="dark">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
+  <title>PhoneYa2 — Smart CHOICES. Better CONNECTED</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, 'Segoe UI', Roboto, 'DM Sans', sans-serif;
-      background: #0d0d0d;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-    
-    /* ─── BACKGROUND ORBS ───────────────────────────────────── */
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      pointer-events: none;
-      opacity: 0.4;
-    }
-    .orb-1 {
-      width: 300px;
-      height: 300px;
-      background: #ff6000;
-      top: -80px;
-      right: -100px;
-      animation: orbFloat1 6s ease-in-out infinite alternate;
-    }
-    .orb-2 {
-      width: 200px;
-      height: 200px;
-      background: #25d366;
-      bottom: -60px;
-      left: -80px;
-      animation: orbFloat2 8s ease-in-out infinite alternate;
-    }
-    .orb-3 {
-      width: 180px;
-      height: 180px;
-      background: #54a0ff;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation: orbFloat3 10s ease-in-out infinite alternate;
-    }
-    
-    @keyframes orbFloat1 {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(-40px, 30px) scale(1.2); }
-    }
-    @keyframes orbFloat2 {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(50px, -40px) scale(1.3); }
-    }
-    @keyframes orbFloat3 {
-      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
-      100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0.5; }
-    }
-    
-    /* ─── SPLASH CONTAINER ────────────────────────────────────── */
-    .splash {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 40px;
-      max-width: 400px;
-      width: 100%;
-      animation: fadeIn 0.8s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    
-    /* ─── LOGO ────────────────────────────────────────────────── */
-    .logo-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-    
-    .logo-img {
-      width: 120px;
-      height: 120px;
-      border-radius: 24px;
-      object-fit: cover;
-      box-shadow: 0 12px 40px rgba(255, 96, 0, 0.25);
-      animation: logoPulse 2.5s ease-in-out infinite;
-    }
-    
-    @keyframes logoPulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 12px 40px rgba(255, 96, 0, 0.25); }
-      50% { transform: scale(1.04); box-shadow: 0 16px 56px rgba(255, 96, 0, 0.4); }
-    }
-    
-    .logo-text {
-      font-family: 'Syne', -apple-system, sans-serif;
-      font-weight: 800;
-      font-size: 28px;
-      color: white;
-      margin-top: 16px;
-      letter-spacing: 1px;
-    }
-    
-    .logo-text span {
-      background: linear-gradient(135deg, #ff6000, #ff9f43);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .logo-sub {
-      font-size: 11px;
-      color: rgba(255,255,255,0.35);
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-top: 4px;
-      font-weight: 500;
-    }
-    
-    /* ─── LOADING BAR ──────────────────────────────────────────── */
-    .loading-wrap {
-      width: 100%;
-      max-width: 280px;
-      margin: 0 auto 20px;
-    }
-    
-    .loading-track {
-      width: 100%;
-      height: 4px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .loading-bar {
-      height: 100%;
-      width: 0%;
-      border-radius: 4px;
-      background: linear-gradient(90deg, #ff6000, #ff9f43, #25d366, #54a0ff);
-      background-size: 300% 100%;
-      animation: barProgress 2.8s ease-in-out forwards, barShimmer 1.5s ease infinite;
-      transition: width 0.3s ease;
-    }
-    
-    @keyframes barProgress {
-      0% { width: 0%; }
-      20% { width: 18%; }
-      40% { width: 38%; }
-      60% { width: 62%; }
-      80% { width: 82%; }
-      95% { width: 96%; }
-      100% { width: 100%; }
-    }
-    
-    @keyframes barShimmer {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 300% 50%; }
-    }
-    
-    /* ─── STATUS TEXT ──────────────────────────────────────────── */
-    .status-wrap {
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .status-text {
-      font-size: 14px;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 0.3px;
-      font-weight: 400;
-      transition: opacity 0.4s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .status-text .dot {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #25d366;
-      animation: dotPulse 1.2s ease-in-out infinite;
-    }
-    
-    @keyframes dotPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.2; transform: scale(0.6); }
-    }
-    
-    .status-text .emoji {
-      font-size: 18px;
-    }
-    
-    /* ─── FOOTER ────────────────────────────────────────────────── */
-    .splash-footer {
-      margin-top: 32px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.2);
-      letter-spacing: 0.5px;
-    }
-    
-    .splash-footer a {
-      color: rgba(255,255,255,0.3);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    
-    .splash-footer a:hover {
-      color: rgba(255,255,255,0.6);
-    }
-    
-    /* ─── FADE OUT ON EXIT ──────────────────────────────────────── */
-    .splash-exit {
-      animation: fadeOut 0.6s ease forwards;
-    }
-    
-    @keyframes fadeOut {
-      from { opacity: 1; transform: scale(1); }
-      to { opacity: 0; transform: scale(1.05); }
-    }
-    
-    /* ─── RESPONSIVE ───────────────────────────────────────────── */
-    @media (max-width: 480px) {
-      .logo-img {
-        width: 90px;
-        height: 90px;
-      }
-      .logo-text {
-        font-size: 22px;
-      }
-      .loading-wrap {
-        max-width: 220px;
-      }
-      .status-text {
-        font-size: 12px;
-      }
-    }
+    :root{color-scheme:dark;--orange:#ff6a00;--green:#20d878;--blue:#31c8ff;--purple:#8c5cff}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;min-height:100%;background:#071426!important}
+    body{min-height:100svh;min-height:100dvh;display:grid;place-items:center;overflow:hidden;isolation:isolate;color:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+    .scene{position:fixed;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#12365a 0%,#0a1c34 43%,#050b17 100%)}
+    .glow{position:absolute;border-radius:50%;filter:blur(54px);opacity:.5;will-change:transform;animation:drift 8s ease-in-out infinite alternate}
+    .glow.orange{width:min(70vw,420px);height:min(70vw,420px);background:#ff5c16;top:-22%;right:-18%}
+    .glow.green{width:min(62vw,360px);height:min(62vw,360px);background:#00d68f;bottom:-24%;left:-18%;animation-delay:-3s}
+    .glow.blue{width:min(58vw,340px);height:min(58vw,340px);background:#287bff;top:35%;left:34%;opacity:.25;animation-delay:-5s}
+    .stars{position:absolute;inset:0;opacity:.38;background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#7be4ff 1px,transparent 1.5px);background-size:53px 53px,91px 91px;background-position:0 0,22px 31px;mask-image:linear-gradient(transparent,#000 18%,#000 80%,transparent)}
+    .splash{width:min(100% - 36px,420px);padding:32px 22px 26px;text-align:center;animation:enter .72s cubic-bezier(.2,.8,.2,1) both;cursor:pointer;user-select:none}
+    .brand-mark{width:clamp(94px,25vw,124px);height:clamp(94px,25vw,124px);margin:0 auto 22px;position:relative;display:grid;place-items:center}
+    .brand-mark:before,.brand-mark:after{content:"";position:absolute;inset:-9px;border-radius:30%;border:1px solid rgba(88,214,255,.62);transform:rotate(45deg);animation:ring 3.6s ease-in-out infinite}
+    .brand-mark:after{inset:-18px;border-color:rgba(255,106,0,.35);animation-delay:-1.8s}
+    .logo{width:100%;height:100%;object-fit:cover;border-radius:25%;position:relative;z-index:1;box-shadow:0 0 24px #31c8ff35,0 14px 40px #0008;animation:logoFloat 3.4s ease-in-out infinite}
+    .brand-name{font-size:clamp(32px,8vw,43px);font-weight:850;letter-spacing:-1.8px;line-height:1.05;margin:0}
+    .brand-name .ya{color:#26d977}
+    .brand-name .two{color:#ff7b21;text-shadow:0 0 24px #ff7b2155}
+    .tagline{margin:12px 0 0;font-size:11px;letter-spacing:2.1px;text-transform:uppercase;color:#b8cce2;font-weight:650}
+    .tagline strong{color:#fff}
+    .divider{width:58px;height:3px;border-radius:9px;margin:25px auto 22px;background:linear-gradient(90deg,var(--orange),var(--green),var(--blue),var(--purple));background-size:200% 100%;animation:colorShift 2.4s linear infinite}
+    .loading{width:min(100%,258px);margin:0 auto}
+    .track{height:5px;border-radius:20px;background:#ffffff19;overflow:hidden;box-shadow:inset 0 1px 2px #0005}
+    .bar{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--orange),#ffc14f,var(--green),var(--blue),var(--purple));background-size:220% 100%;box-shadow:0 0 14px #31c8ff88;animation:progress 1.45s cubic-bezier(.4,0,.2,1) forwards,colorShift 2s linear infinite}
+    .status{display:flex;align-items:center;justify-content:center;gap:9px;min-height:34px;margin-top:12px;color:#c4d4e6;font-size:12px;letter-spacing:.15px}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px #20d878;animation:blink 1s ease-in-out infinite}
+    .footer{margin-top:29px;color:#8ea7c0;font-size:11px;letter-spacing:.2px}
+    .footer a{color:#dcecff;text-decoration:none}
+    .skip{display:inline-block;margin-top:18px;color:#91aac4;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+    .exit{animation:leave .34s ease-in forwards;pointer-events:none}
+    @keyframes enter{from{opacity:0;transform:translateY(14px) scale(.97);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
+    @keyframes leave{to{opacity:0;transform:scale(1.035);filter:blur(6px)}}
+    @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+    @keyframes ring{0%,100%{transform:rotate(45deg) scale(.96);opacity:.5}50%{transform:rotate(225deg) scale(1.04);opacity:1}}
+    @keyframes drift{from{transform:translate3d(-2%,0,0) scale(.96)}to{transform:translate3d(4%,3%,0) scale(1.08)}}
+    @keyframes progress{0%{width:0}35%{width:44%}72%{width:78%}100%{width:100%}}
+    @keyframes colorShift{to{background-position:200% 50%}}
+    @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.72)}}
+    @media(max-height:620px){.splash{padding-top:18px;padding-bottom:14px}.brand-mark{width:78px;height:78px;margin-bottom:16px}.brand-mark:before{inset:-6px}.brand-mark:after{inset:-12px}.divider{margin:18px auto 16px}.footer{margin-top:16px}.skip{margin-top:10px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}.bar{width:100%}}
   </style>
-<link rel="stylesheet" href="/phoneya2-premium-layer.css?v=20261019-major1">
-  <link rel="stylesheet" href="/phoneya2-performance.css?v=20261020-sitewide-white-badges1">
 </head>
 <body>
-
-  <!-- BACKGROUND ORBS -->
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
-  <!-- SPLASH CONTENT -->
-  <div class="splash" id="splash">
-
-    <!-- LOGO -->
-    <div class="logo-wrap">
-      <img 
-        src="/icon-512x512.jpg" 
-        alt="PhoneYa2-ZM" 
-        class="logo-img"
-        onerror="this.src='https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg'"
-        loading="eager"
-      >
-      <div class="logo-text">Phone<span>Ya</span><span style="background:linear-gradient(135deg,#25d366,#54a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">2</span></div>
-      <div class="logo-sub">Smarter Choices. Better Connected.</div>
-    </div>
-
-    <!-- LOADING BAR -->
-    <div class="loading-wrap">
-      <div class="loading-track">
-        <div class="loading-bar" id="loadingBar"></div>
-      </div>
-    </div>
-
-    <!-- STATUS TEXT -->
-    <div class="status-wrap">
-      <div class="status-text" id="statusText">
-        <span class="emoji">📱</span>
-        <span id="statusMessage">Getting things ready...</span>
-        <span class="dot"></span>
-      </div>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="splash-footer">
-      <a href="https://wa.me/260979603741" target="_blank">📲 WhatsApp: +260 979 603 741</a>
-    </div>
-  </div>
-
+  <div class="scene" aria-hidden="true"><div class="glow orange"></div><div class="glow green"></div><div class="glow blue"></div><div class="stars"></div></div>
+  <main class="splash" id="splash" aria-label="PhoneYa2 opening screen" role="status" aria-live="polite">
+    <div class="brand-mark"><img class="logo" src="/icon-512x512.jpg" alt="PhoneYa2 logo" fetchpriority="high" onerror="this.onerror=null;this.src='/icon-512x512.png'"></div>
+    <h1 class="brand-name">Phone<span class="ya">Ya</span><span class="two">2</span></h1>
+    <p class="tagline">Smart <strong>CHOICES.</strong> Better <strong>CONNECTED.</strong></p>
+    <div class="divider" aria-hidden="true"></div>
+    <div class="loading" aria-hidden="true"><div class="track"><div class="bar" id="loadingBar"></div></div></div>
+    <div class="status"><span class="status-dot" aria-hidden="true"></span><span id="statusMessage">A smarter way to stay connected…</span></div>
+    <div class="footer"><a href="https://wa.me/260979603741" target="_blank" rel="noopener">Need help? Chat with PhoneYa2</a></div>
+    <span class="skip">Tap to enter</span>
+  </main>
   <script>
-    // ─── STATUS MESSAGES ────────────────────────────────────────────────────
-    const messages = [
-      { emoji: '📱', text: 'Loading products...' },
-      { emoji: '⚡', text: 'Checking stock...' },
-      { emoji: '📦', text: 'Preparing your shop...' },
-      { emoji: '🚀', text: 'Almost ready...' },
-    ];
-
-    let msgIndex = 0;
-    const statusEl = document.getElementById('statusMessage');
-    const statusWrap = document.querySelector('.status-text');
-
-    function updateStatus() {
-      const msg = messages[msgIndex % messages.length];
-      // Fade out, change text, fade in
-      statusWrap.style.opacity = '0';
-      setTimeout(() => {
-        statusEl.textContent = msg.text;
-        statusWrap.querySelector('.emoji').textContent = msg.emoji;
-        statusWrap.style.opacity = '1';
-      }, 300);
-      msgIndex++;
-    }
-
-    // ─── START STATUS ROTATION ─────────────────────────────────────────────
-    // First update after 0.6s, then every 0.8s
-    setTimeout(updateStatus, 600);
-    setInterval(updateStatus, 800);
-
-    // ─── REDIRECT TO MAIN PAGE ────────────────────────────────────────────
-    // Wait for loading bar to finish (3s), then redirect
-    const splash = document.getElementById('splash');
-
-    setTimeout(() => {
-      // Fade out splash
-      splash.classList.add('splash-exit');
-      
-      // Redirect after fade out
-      setTimeout(() => {
-        window.location.href = '/index.html';
-      }, 600);
-    }, 3000);
-
-    // ─── FALLBACK: If user taps during loading, redirect immediately ──────
-    splash.addEventListener('click', () => {
-      window.location.href = '/index.html';
-    });
-
-    // ─── ALTERNATIVE: Prevent white flash ──────────────────────────────────
-    // Force dark background even before CSS loads
-    document.documentElement.style.backgroundColor = '#0d0d0d';
-
-    console.log('[Splash] PhoneYa2-ZM loading...');
+    (() => {
+      'use strict';
+      const splash = document.getElementById('splash');
+      const status = document.getElementById('statusMessage');
+      let leaving = false;
+      const messages = ['Smart choices are loading…','Getting your shop ready…','Almost there…'];
+      let messageIndex = 0;
+      const messageTimer = window.setInterval(() => {
+        if (leaving) return;
+        messageIndex = (messageIndex + 1) % messages.length;
+        status.textContent = messages[messageIndex];
+      }, 480);
+      function enterSite() {
+        if (leaving) return;
+        leaving = true;
+        window.clearInterval(messageTimer);
+        splash.classList.add('exit');
+        window.setTimeout(() => { window.location.replace('/index.html'); }, 340);
+      }
+      window.setTimeout(enterSite, 1580);
+      splash.addEventListener('click', event => {
+        if (event.target.closest('a')) return;
+        enterSite();
+      });
+      window.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') enterSite();
+      });
+    })();
   </script>
-
-<script src="/blog-header-button.js" defer></script>
-<link rel="stylesheet" href="/smart-guide.css?v=20261015-center2"><script src="/smart-guide.js?v=20261017-context-help6" defer></script></body>
+</body>
 </html>
