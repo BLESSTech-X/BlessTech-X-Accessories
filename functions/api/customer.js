@@ -47,8 +47,41 @@ async function addProductImages(context, orders) {
 export async function onRequest(context) {
   const { request, env } = context;
   if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
-  const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i)?.[1];
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
+  const url = new URL(request.url);
+  const recoveryEmail = String(url.searchParams.get("email") || "").trim().toLowerCase();
+  const recoveryPhone = String(url.searchParams.get("phone") || "").trim();
+  // Password-free order recovery requires BOTH the order email and phone number.
+  if (recoveryEmail || recoveryPhone) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recoveryEmail) || recoveryEmail.length > 254 ||
+        recoveryPhone.length < 7 || recoveryPhone.length > 40) {
+      return json({ error: "Enter the email address and phone number used when placing your order." }, 400);
+    }
+    if (!base || !getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY")) {
+      return json({ error: "Order recovery is temporarily unavailable. Please try again shortly." }, 503);
+    }
+    try {
+      const buildRecoveryQuery = includeNote => new URLSearchParams({
+        select: "id,order_number,customer_name,customer_email,customer_phone," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
+        customer_email: "eq." + recoveryEmail,
+        customer_phone: "eq." + recoveryPhone,
+        order: "created_at.desc",
+        limit: "100"
+      });
+      let response = await supabaseFetch(env, "/rest/v1/orders?" + buildRecoveryQuery(true).toString(), { method: "GET", headers: { accept: "application/json" } });
+      if (!response.ok) response = await supabaseFetch(env, "/rest/v1/orders?" + buildRecoveryQuery(false).toString(), { method: "GET", headers: { accept: "application/json" } });
+      if (!response.ok) {
+        console.error("Password-free customer order recovery failed:", response.status, (await response.text()).slice(0, 240));
+        return json({ error: "We could not retrieve your order history right now. Please try again." }, 503);
+      }
+      const orders = await response.json();
+      return json({ customer: { email: recoveryEmail, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true });
+    } catch (error) {
+      console.error("PhoneYa2 customer recovery error:", String(error).slice(0, 240));
+      return json({ error: "Order recovery is temporarily unavailable. Please try again." }, 503);
+    }
+  }
+  const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i)?.[1];
   const anonKey = getSecret(env, "SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
   if (!token || !base || !anonKey) return json({ error: "Please sign in to view your orders." }, 401);
   try {
