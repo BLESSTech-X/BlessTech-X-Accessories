@@ -162,30 +162,20 @@ body{background:#eef3f8;color:#152238;background-image:radial-gradient(circle at
 <header class="top">
 <a class="brand" href="../"><b>Phone</b>Ya2 <span style="color:#a7b1c4;font-weight:600">/ Affiliate Program</span></a>
 <span class="badge">AFFILIATE MARKETING PROGRAM</span><span class="spacer"></span>
-<span id="agent-label" class="badge">Agent sign-in required</span>
+<span id="agent-label" class="badge">PUBLIC · NO SIGN-IN</span>
 <a class="btn btn-dark" href="../shop.html"><i class="fa-solid fa-store"></i> Open shop</a>
-<button class="btn btn-dark hidden" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+
 </header>
 <main class="wrap">
-<section id="login-screen" class="login">
-<div style="font-size:34px;margin-bottom:8px">🤝</div><h1>PhoneYa2 Affiliate Marketing Program</h1>
-<p>Sign in to explore products and estimated affiliate earnings.</p>
-<form id="login-form">
-<div class="field"><label for="agent-code">Agent code</label><input id="agent-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="Enter your code"></div>
-<div id="login-error" class="err" role="alert"></div>
-<button class="btn btn-orange" id="login-btn" type="submit" style="width:100%"><i class="fa-solid fa-arrow-right-to-bracket"></i> Continue</button>
-</form>
-<p class="footer-note">Use the affiliate program access code provided by PhoneYa2.</p>
-</section>
-<section id="dashboard" class="hidden">
+<section id="dashboard">
 <div class="welcome">
 <div><div class="eyebrow">PhoneYa2 · Affiliate product centre</div><h1 id="hello-title">Welcome to the Affiliate Program.</h1><p id="hello-copy">Explore PhoneYa2 products, understand what you are sharing, and see the estimated earning shown for each eligible confirmed sale.</p></div>
-<div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Your daily growth assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh data</button></div>
+<div class="today-box"><strong><i class="fa-solid fa-wand-magic-sparkles"></i> Live catalogue assistant</strong><p id="assistant-summary">Reading your activity and today's product opportunities…</p><button class="btn btn-orange" id="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh catalogue</button></div>
 </div>
 <nav class="workspace-tabs" role="tablist" aria-label="Affiliate program sections">
 <button class="workspace-tab" id="tab-overview" role="tab" type="button" aria-controls="pane-overview" aria-selected="true" tabindex="0"><i class="fa-solid fa-store"></i> Product catalogue</button>
 <button class="workspace-tab" id="tab-products" role="tab" type="button" aria-controls="pane-products" aria-selected="false" tabindex="-1"><i class="fa-solid fa-circle-info"></i> How it works</button>
-<span class="spacer"></span><span class="workspace-status"><i class="fa-solid fa-circle"></i> Affiliate workspace</span>
+<span class="spacer"></span><span class="workspace-status"><i class="fa-solid fa-circle"></i> Public affiliate catalogue</span>
 </nav>
 <section class="tab-panel" id="pane-overview" role="tabpanel" aria-labelledby="tab-overview">
 <div class="catalog-hero"><div><div class="eyebrow">PhoneYa2 · Earn by connecting people with products</div><h1>PhoneYa2 Affiliate Marketing Program</h1><p>Explore the complete product catalogue. Open any product to see its details, current price, availability and estimated earnings for one confirmed sale.</p></div><div class="catalog-hero-mark"><i class="fa-solid fa-handshake-angle"></i><span>Share · Connect · Earn</span></div></div>
@@ -218,32 +208,10 @@ body{background:#eef3f8;color:#152238;background-image:radial-gradient(circle at
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-let agent=null, products=[], productsAvailable=false;
+let products=[], productsAvailable=false;
 const money=n=>'K'+Number(n||0).toLocaleString('en-ZM',{maximumFractionDigits:2});
 const num=n=>Number(n||0).toLocaleString('en-ZM');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function setError(s){$('login-error').textContent=s||'';}
-function showDashboard(){ $('login-screen').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout-btn').classList.remove('hidden');$('agent-label').textContent='Affiliate partner session';}
-// PY2-360 access code is checked locally; login does not call a database or authentication API.
-const PY2_360_ACCESS_CODE = 'PY2-360';
-async function establishAgent(code){
- const normalized=String(code||'').trim().toUpperCase();
- if(normalized!==PY2_360_ACCESS_CODE) throw new Error('Incorrect access code. Try again.');
- agent={agent_code:'PY2-360',agent_id:'PY2-360',full_name:'Affiliate Partner'};
- sessionStorage.setItem('py2_agent_code',normalized);
- showDashboard();
- await loadAll();
-}
-async function login(e){
- e.preventDefault();
- const code=$('agent-code').value.trim().toUpperCase();
- $('login-btn').disabled=true;
- $('login-btn').textContent='Checking code…';
- setError('');
- try { await establishAgent(code); }
- catch(err) { sessionStorage.removeItem('py2_agent_code'); $('login-screen').classList.remove('hidden'); $('dashboard').classList.add('hidden'); setError(err.message||'Could not sign in.'); }
- finally { $('login-btn').disabled=false; $('login-btn').innerHTML='<i class="fa-solid fa-arrow-right-to-bracket"></i> Continue'; }
-}
 async function loadAll(){
  $('hello-title').textContent='Welcome to the PhoneYa2 Affiliate Marketing Program.';
  $('assistant-summary').textContent='Loading the full live PhoneYa2 catalogue…';
@@ -387,10 +355,8 @@ function initWorkspaceTabs(){
  let saved='tab-overview';try{saved=sessionStorage.getItem('py2_affiliate_tab')||saved}catch(_){}activate(tabs.find(t=>t.id===saved)||tabs[0]);
 }
 initWorkspaceTabs();
-$('login-form').addEventListener('submit',e=>{e.preventDefault();login(e);});
-$('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh data';}});
-$('logout-btn').addEventListener('click',()=>{sessionStorage.removeItem('py2_agent_code');location.reload();});
-document.addEventListener('DOMContentLoaded',async()=>{const savedCode=sessionStorage.getItem('py2_agent_code');if(savedCode){$('agent-code').value=savedCode;try{await establishAgent(savedCode)}catch(e){sessionStorage.removeItem('py2_agent_code');setError(e.message||'Please enter your access code again.')}}});
+$('refresh-btn').addEventListener('click',async()=>{const b=$('refresh-btn');b.disabled=true;b.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Refreshing';try{await loadAll();}finally{b.disabled=false;b.innerHTML='<i class="fa-solid fa-rotate"></i> Refresh catalogue';}});
+document.addEventListener('DOMContentLoaded',()=>{loadAll();});
 })();
 </script>
 
