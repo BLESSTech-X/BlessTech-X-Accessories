@@ -238,13 +238,16 @@
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan,.py2-blog-redesigned .py2-slogan-heart{animation:none!important;opacity:1;transform:none;will-change:auto}}
 
 
-/* Brand splash refinement: sharp logo, quick motion, exact slogan. */
-.py2-blog-redesigned .py2-brand-splash-logo{filter:none!important;-webkit-filter:none!important;image-rendering:auto;animation:py2LogoSnapIn .38s cubic-bezier(.2,.75,.25,1) both!important;will-change:transform}
-.py2-blog-redesigned .py2-brand-splash-slogan{animation:py2SloganReveal .3s ease-out .28s both!important}
+/* Brand splash refinement: vivid PhoneYa2 brand colours with high contrast. */
+.py2-blog-redesigned .py2-brand-splash{background:radial-gradient(ellipse at 50% 0%,#1b5a91 0%,#10395f 42%,#07172c 100%);border-color:#2789c9;box-shadow:0 18px 42px #03102480,inset 0 1px 0 #ffffff20}
+.py2-blog-redesigned .py2-brand-splash:before{background:radial-gradient(ellipse at 50% 38%,#168bff35,transparent 52%),linear-gradient(115deg,transparent 0%,#ffffff0b 48%,transparent 72%)}
+.py2-blog-redesigned .py2-brand-splash-logo{filter:saturate(1.32) contrast(1.08) drop-shadow(0 8px 18px #0008)!important;-webkit-filter:saturate(1.32) contrast(1.08) drop-shadow(0 8px 18px #0008)!important;image-rendering:auto;animation:py2LogoSnapIn .38s cubic-bezier(.2,.75,.25,1) both!important;will-change:transform}
+.py2-blog-redesigned .py2-brand-splash-slogan{animation:py2SloganReveal .3s ease-out .28s both!important;color:#fff!important;font-weight:750;text-shadow:0 2px 12px #0008;gap:0 7px}
 @keyframes py2LogoSnapIn{0%{transform:scale(.88) rotate(-2deg)}75%{transform:scale(1.025) rotate(.4deg)}100%{transform:scale(1) rotate(0)}}
-.py2-blog-redesigned .py2-brand-splash-slogan{color:#fff;font-weight:650}
-.py2-blog-redesigned .py2-brand-splash-slogan strong{color:#fff}
-.py2-blog-redesigned .py2-slogan-heart{color:#69b9ff;text-shadow:0 0 12px #168bff88;filter:none!important}
+.py2-blog-redesigned .py2-brand-splash-slogan strong:first-of-type{color:#ff9b32!important;font-weight:950;text-shadow:0 0 18px #ff7a1a45}
+.py2-blog-redesigned .py2-brand-splash-slogan strong:nth-of-type(2){color:#42e58b!important;font-weight:950;text-shadow:0 0 18px #13d66b40}
+.py2-blog-redesigned .py2-slogan-heart{color:#55bfff;text-shadow:0 0 14px #168bffcc;filter:none!important}
+@media(max-width:520px){.py2-blog-redesigned .py2-brand-splash-slogan{font-size:18px;line-height:1.5}}
 /* Smart guide: small centered floating prompt, not a bottom-corner toast. */
 .py2-smart-guide{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%);width:min(318px,calc(100vw - 30px))!important;padding:13px 14px!important;border-color:#65a9f4!important;background:linear-gradient(145deg,#fff,#edf5ff)!important;box-shadow:0 16px 42px #071c3b45,0 0 26px #2688f75c!important;animation:py2GuideIn .32s ease-out,py2GuideFloat 4.2s ease-in-out .32s infinite!important}
 .py2-smart-guide:before{border-color:#2688f788!important;box-shadow:0 0 22px #2688f73d!important}
