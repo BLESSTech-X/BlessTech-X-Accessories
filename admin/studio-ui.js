@@ -7,6 +7,61 @@
     { label: "Website Content", icon: "⌘", match: ["Website Content", "Site Content"] },
     { label: "Comments", icon: "◉", match: ["Blog Comments", "Comments"] }
   ];
+  const actionRules = [
+    { key: "publish", label: "Publish", test: /\\bpublish\\b/i },
+    { key: "save", label: "Save", test: /\\bsave\\b/i },
+    { key: "preview", label: "Preview", test: /\\bpreview\\b/i },
+    { key: "unpublish", label: "Unpublish", test: /\\bunpublish\\b/i },
+    { key: "delete", label: "Delete", test: /\\bdelete\\b/i },
+    { key: "status", label: "Status", test: /\\b(draft|review|published|status|workflow)\\b/i },
+    { key: "more", label: "More", test: /\\b(more options|entry actions|actions)\\b/i }
+  ];
+  function actionText(el) {
+    return [
+      el.innerText,
+      el.textContent,
+      el.getAttribute("aria-label"),
+      el.getAttribute("title"),
+      el.getAttribute("data-testid")
+    ].filter(Boolean).join(" ").replace(/\\s+/g, " ").trim();
+  }
+  function syncEditorActions() {
+    const area = document.getElementById("py2-editor-actions-area");
+    if (!area) return;
+    const candidates = Array.from(document.querySelectorAll("button,a,[role='button'],[role='menuitem']"))
+      .filter((el) => !el.closest("#py2-studio-header") && el.offsetParent !== null);
+    const found = [];
+    for (const rule of actionRules) {
+      const native = candidates.find((el) => {
+        const text = actionText(el);
+        if (!text || text.length > 90) return false;
+        if (!rule.test.test(text)) return false;
+        // Prefer compact controls from Decap's app header/editor toolbar, not content fields.
+        return !!el.closest("[class*='AppHeader'],[class*='EditorControlBar'],[class*='EditorToolbar'],[class*='Workflow']");
+      });
+      if (native) found.push({ rule, native, text: actionText(native) });
+    }
+    const signature = found.map(({rule, text}) => rule.key + ":" + text).join("|");
+    if (area.dataset.signature === signature) return;
+    area.dataset.signature = signature;
+    area.replaceChildren();
+    found.forEach(({rule, native, text}) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "py2-editor-action";
+      button.dataset.actionKey = rule.key;
+      button.textContent = rule.key === "status" ? (text.match(/draft|review|published|status|workflow/i)?.[0] || "Status") : rule.label;
+      button.setAttribute("aria-label", rule.label + " entry");
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        // Click the real Decap control so its React handlers and menus remain intact.
+        native.click();
+      });
+      area.appendChild(button);
+    });
+    area.classList.toggle("has-actions", found.length > 0);
+  }
   const nativeClick = (labels) => {
     const candidates = Array.from(document.querySelectorAll("a,button,[role='button'],[role='menuitem']"));
     const target = candidates.find((el) => {
@@ -44,6 +99,10 @@
         <div class="py2-menu-tip">Changes are saved to PhoneYa2’s content repository.</div>
       </div>`;
     document.body.appendChild(header);
+    syncEditorActions();
+    const actionObserver = new MutationObserver(() => syncEditorActions());
+    actionObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "title", "disabled"] });
+    window.setInterval(syncEditorActions, 1200);
     const route = (index) => {
       const item = navItems[index];
       if (!item) return;
@@ -87,9 +146,9 @@
     window.addEventListener("hashchange", updateActive);
     updateActive();
   }
-  const observer = new MutationObserver(() => install());
+  const observer = new MutationObserver(() => { install(); syncEditorActions(); });
   observer.observe(document.documentElement, { childList: true, subtree: true });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", install);
   else install();
-  window.setTimeout(install, 1200);
+  window.setTimeout(() => { install(); syncEditorActions(); }, 1200);
 })();
