@@ -484,3 +484,22 @@
 .py2-blog-redesigned .py2-brand-splash-actions a:focus-visible{outline:3px solid #8ed4ff;outline-offset:3px}
 @media(max-width:520px){.py2-blog-redesigned .py2-brand-splash{padding:22px 14px 24px;border-radius:18px}.py2-blog-redesigned .py2-brand-splash-inner{gap:11px}.py2-blog-redesigned .py2-brand-splash-logo{width:126px;height:126px;border-radius:18px}.py2-blog-redesigned .py2-brand-splash-slogan{font-size:18px;gap:0 5px}.py2-blog-redesigned .py2-brand-splash-description{font-size:13px;line-height:1.55}.py2-blog-redesigned .py2-brand-splash-topics{gap:6px}.py2-blog-redesigned .py2-brand-splash-topics span{padding:6px 9px;font-size:10px}.py2-blog-redesigned .py2-brand-splash-actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}.py2-blog-redesigned .py2-brand-splash-actions a{padding:10px 8px;font-size:12px;min-width:0}}
 @media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-description,.py2-blog-redesigned .py2-brand-splash-actions a{animation:none!important;transition:none!important}}
+
+
+/* PhoneYa2 blog brand hero — deep blue container with crisp, high-contrast content. */
+.py2-blog-redesigned .py2-brand-splash{
+  background:linear-gradient(128deg,#071a35 0%,#0b2d57 30%,#104a80 62%,#071a35 100%)!important;
+  border:1px solid #2d73b8!important;
+  box-shadow:0 20px 48px rgba(3,18,42,.34),inset 0 1px 0 rgba(255,255,255,.16)!important;
+  color:#f7fbff!important;
+}
+.py2-blog-redesigned .py2-brand-splash:before{
+  background:radial-gradient(ellipse at 18% 18%,rgba(57,151,255,.28),transparent 48%),radial-gradient(ellipse at 85% 80%,rgba(24,91,168,.35),transparent 48%),linear-gradient(115deg,transparent 0%,rgba(255,255,255,.055) 48%,transparent 72%)!important;
+}
+.py2-blog-redesigned .py2-brand-splash-inner{position:relative;z-index:1}
+.py2-blog-redesigned .py2-brand-splash-description{color:#dceaff!important;text-shadow:0 1px 3px rgba(0,0,0,.24)}
+.py2-blog-redesigned .py2-brand-splash-topics span{color:#eaf4ff!important;background:rgba(4,20,43,.48)!important;border:1px solid rgba(151,197,245,.32)!important}
+.py2-blog-redesigned .py2-brand-splash-primary{background:linear-gradient(135deg,#2584e8,#1762b2)!important;color:#fff!important;border:1px solid #69b2ff!important;box-shadow:0 7px 18px rgba(0,0,0,.2)!important}
+.py2-blog-redesigned .py2-brand-splash-secondary{background:rgba(5,24,49,.62)!important;color:#f3f8ff!important;border:1px solid rgba(192,220,255,.52)!important}
+.py2-blog-redesigned .py2-brand-splash-slogan{color:#f8fbff!important}
+@media(prefers-reduced-motion:reduce){.py2-blog-redesigned .py2-brand-splash-logo,.py2-blog-redesigned .py2-brand-splash-slogan{animation:none!important;transform:none!important}}
