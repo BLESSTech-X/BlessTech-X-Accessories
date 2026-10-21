@@ -3300,7 +3300,7 @@ async function init() {
         const el = document.getElementById(id);
         if (el && Number.isFinite(Number(values[key]))) el.textContent = format(values[key]);
       });
-      if (note) note.textContent = 'Catalogue is current · Site traffic from Google Analytics since tracking began · Updated ' + new Date(data.generated_at || Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      if (note) note.textContent = 'Traffic totals are cumulative from the first activity recorded by Google Analytics through today — not just the last 30 days. Updated ' + new Date(data.generated_at || Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     } catch (error) {
       if (note) note.textContent = 'Catalogue figures update automatically · Site traffic is temporarily unavailable; visit the PhoneYa2 Analytics dashboard for reports.';
     }
