@@ -281,3 +281,39 @@ body.shop-page .drop-banner {
   border: 1px solid #60a5fa !important;
   box-shadow: 0 0 0 1px rgba(59,130,246,.30), 0 0 8px rgba(37,99,235,.45), 0 0 16px rgba(37,99,235,.24) !important;
 }
+
+
+/* FINAL BLOG HERO OVERRIDE — loaded last to defeat earlier light-gradient theme rules. */
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro,
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash{
+  color:#f7fbff!important;
+  background:linear-gradient(120deg,#06152d 0%,#0a2850 38%,#102f61 68%,#07152d 100%)!important;
+  border:1px solid #285c96!important;
+  box-shadow:0 18px 42px rgba(3,13,31,.38),inset 0 1px 0 rgba(255,255,255,.10)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro:after,
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash:before{
+  background:radial-gradient(ellipse at 16% 15%,rgba(48,139,255,.22),transparent 43%),radial-gradient(ellipse at 84% 24%,rgba(93,94,255,.17),transparent 44%),linear-gradient(115deg,transparent 0%,rgba(255,255,255,.045) 48%,transparent 72%)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro .blog-eyebrow,
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro h1,
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro h1 span,
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro .blog-intro-text,
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan,
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-description{
+  color:#f4f8ff!important;
+  -webkit-text-fill-color:#f4f8ff!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.28)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro .blog-eyebrow{color:#8bc7ff!important;-webkit-text-fill-color:#8bc7ff!important}
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro h1 span{color:#8fc5ff!important;-webkit-text-fill-color:#8fc5ff!important}
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro .blog-business-link{
+  background:#f8fbff!important;color:#102849!important;border-color:#91bce9!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.24)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .blog-page-intro .blog-business-link :is(strong,span,p){
+  color:#18395f!important;-webkit-text-fill-color:#18395f!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-topics span{
+  color:#eaf4ff!important;background:rgba(2,15,35,.72)!important;border-color:#426fa7!important;
+}
