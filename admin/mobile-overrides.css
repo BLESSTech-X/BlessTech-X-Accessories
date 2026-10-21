@@ -589,3 +589,39 @@ body {
     padding-top: calc(var(--py2-studio-height) + var(--py2-native-actions-height) + 12px) !important;
   }
 }
+
+
+/* Integrated editor actions: publishing controls are mirrored into the custom
+   PhoneYa2 header; the native Decap header remains visually hidden. */
+#py2-studio-header { gap: 10px !important; }
+.py2-editor-actions-area {
+  display: none; align-items: center; gap: 6px; min-width: 0;
+  flex: 0 1 auto; overflow-x: auto; scrollbar-width: none;
+}
+.py2-editor-actions-area.has-actions { display: flex; }
+.py2-editor-actions-area::-webkit-scrollbar { display:none; }
+.py2-editor-action {
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  min-height: 36px !important; padding: 0 11px !important;
+  border: 1px solid rgba(174,211,244,.35) !important; border-radius: 9px !important;
+  color: #f4f9ff !important; background: rgba(255,255,255,.09) !important;
+  font: 700 11px/1.2 Inter, ui-sans-serif, system-ui, sans-serif !important;
+  white-space: nowrap !important; cursor: pointer !important;
+}
+.py2-editor-action:hover { background:rgba(255,255,255,.18) !important; }
+.py2-editor-action:focus-visible { outline:2px solid #61c6ff !important; outline-offset:2px !important; }
+.py2-editor-actions-area .py2-editor-action:first-child { background:#087e65 !important; border-color:#21bd94 !important; }
+@media (max-width: 900px) {
+  #py2-studio-header { gap:7px !important; }
+  .py2-editor-actions-area { max-width: 38vw; }
+  .py2-editor-action { min-height:34px !important; padding:0 8px !important; font-size:10px !important; }
+}
+@media (max-width: 560px) {
+  :root { --py2-studio-height: 62px; }
+  #py2-studio-header { gap:5px !important; }
+  .py2-editor-actions-area { max-width: 42vw; gap:4px; }
+  .py2-editor-action { min-height:32px !important; padding:0 6px !important; font-size:9px !important; }
+  .py2-studio-tabs { flex:1 1 30px; }
+  .py2-studio-tab { padding-inline:6px !important; }
+  .py2-studio-actions { gap:5px !important; }
+}
