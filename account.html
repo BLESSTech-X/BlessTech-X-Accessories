@@ -4,7 +4,6 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ff6000"><title>My Account — PhoneYa2</title>
 <meta name="description" content="View PhoneYa2 orders, track purchases and reorder accessories.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--orange:#ff6000;--ink:#171725;--muted:#6b7280;--line:#e8e8ef;--bg:#f4f5f9;--green:#128c7e}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}a{color:inherit;text-decoration:none}
@@ -741,9 +740,7 @@ body:has(#account-panel) main>#account-panel h2,body:has(#account-panel) main>#a
 <script>
 (function(){
 "use strict";
-const SUPABASE_URL="https://signnapmkdctdcfpnsiu.supabase.co";
-const SUPABASE_KEY="sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD";
-const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+// Password-free smart recognition is intentionally device-local. No login SDK is required.
 const $=id=>document.getElementById(id);
 const money=n=>"ZMW "+Number(n||0).toLocaleString("en-ZM",{minimumFractionDigits:2,maximumFractionDigits:2});
 function message(text,type="info"){const el=$("notice");el.textContent=text;el.className="notice "+type;}
@@ -824,57 +821,46 @@ function mergeOrderRecords(remote,local){
  [...(Array.isArray(remote)?remote:[]),...(Array.isArray(local)?local:[])].forEach(order=>{if(order&&order.order_number)merged.set(String(order.order_number),order);});
  return [...merged.values()].sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
 }
-async function loadOrders(session){
+async function loadOrders(){
  const button=$("refresh-orders");if(button)button.disabled=true;
- const host=$("orders");const deviceOrders=readDeviceOrders();
- if(!cachedOrders.length)host.innerHTML='<div class="empty">Recognising this device…</div>';
+ const host=$("orders");
  try{
-  if(session&&session.access_token){
-   const response=await fetch("/api/customer",{cache:"no-store",headers:{authorization:"Bearer "+session.access_token,"cache-control":"no-cache"}});
-   const data=await response.json().catch(()=>({}));
-   if(!response.ok)throw new Error(data.error||"Could not load synced orders.");
-   cachedOrders=mergeOrderRecords(Array.isArray(data.orders)?data.orders:[],deviceOrders);
-   $("customer-email").textContent=data.customer?.full_name||data.customer?.name||"Recognised PhoneYa2 customer";
-  }else{
-   cachedOrders=deviceOrders;
-   let name="Recognised on this device";
-   try{name=localStorage.getItem("py2_customer_name")||name;}catch(_){}
-   $("customer-email").textContent=name;
-  }
-  lastOrderRefresh=Date.now();
+  cachedOrders=readDeviceOrders().sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
+  let name="Recognised on this device";
+  try{name=localStorage.getItem("py2_customer_name")||name;}catch(_){}
+  $("customer-email").textContent=name;
   applyCustomerOrderFilters();
   renderPurchasedProducts(cachedOrders);
   renderAccountStatistics(cachedOrders);
   const statusMessage=$("order-refresh-message");
-  if(statusMessage)statusMessage.textContent=session?"Synced order history · updated just now":(cachedOrders.length?"Showing orders saved on this device":"Smart recognition is ready · orders placed on this device will appear here");
+  if(statusMessage)statusMessage.textContent=cachedOrders.length
+    ? "Showing "+cachedOrders.length+" order receipt"+(cachedOrders.length===1?"":"s")+" saved on this device"
+    : "Smart recognition is ready · no order receipts are saved on this device yet";
   const heading=$("recognition-heading"),copy=$("recognition-copy"),status=$("recognition-status");
-  if(cachedOrders.length){if(heading)heading.textContent="Welcome back to PhoneYa2";if(copy)copy.textContent="This browser has recognised your PhoneYa2 activity. Your saved order history and purchased products are shown below.";if(status)status.textContent="Device recognised · "+cachedOrders.length+" saved order"+(cachedOrders.length===1?"":"s");}
-  else{if(heading)heading.textContent="Your PhoneYa2 space is ready";if(copy)copy.textContent="No order history is saved on this device yet. Shop normally and your confirmed order receipt will be remembered here automatically—no login or account setup.";if(status)status.textContent="Smart recognition active · no saved orders on this device yet.";}
+  if(cachedOrders.length){
+   if(heading)heading.textContent="Welcome back to PhoneYa2";
+   if(copy)copy.textContent="This browser recognises you and has your saved order receipts. No login or password is needed.";
+   if(status)status.textContent="Device recognised · "+cachedOrders.length+" saved order"+(cachedOrders.length===1?"":"s");
+  }else{
+   if(heading)heading.textContent="Your PhoneYa2 space is ready";
+   if(copy)copy.textContent="Your order receipts will appear here automatically when you place orders using this browser. No login or account setup is needed.";
+   if(status)status.textContent="Smart recognition active · waiting for your first order on this device.";
+  }
  }catch(e){
-  cachedOrders=deviceOrders;
-  $("customer-email").textContent="Recognised on this device";
-  applyCustomerOrderFilters();renderPurchasedProducts(cachedOrders);renderAccountStatistics(cachedOrders);
-  const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Showing orders saved on this device";
-  const status=$("recognition-status");if(status)status.textContent="Device recognition is active. Online order history could not be synced.";
+  console.error("[PhoneYa2] Could not load device order history:",e);
+  const statusMessage=$("order-refresh-message");
+  if(statusMessage)statusMessage.textContent="Could not read saved orders on this device. Check browser storage settings and try again.";
+  if(host)host.innerHTML='<div class="orders-filter-empty">PhoneYa2 could not read this device’s saved order history. Make sure site storage is enabled, then refresh.</div>';
  }finally{if(button)button.disabled=false;}
 }
-async function showSession(session){try{await loadOrders(session);}catch(e){message(e.message,"error");}}
 document.querySelectorAll("[data-order-filter]").forEach(button=>button.addEventListener("click",()=>{activeOrderFilter=button.dataset.orderFilter;applyCustomerOrderFilters();}));
 $("order-sort").addEventListener("change",applyCustomerOrderFilters);
-let lastOrderRefresh=0,refreshingOrders=false;
 $("refresh-orders").addEventListener("click",async()=>{
- const {data}=await client.auth.getSession();
- try{await loadOrders(data.session||null);message("Your PhoneYa2 activity has been refreshed.","success");}
- catch(e){message(e.message||"Could not refresh activity.","error");}
+ await loadOrders();
+ message("Your saved PhoneYa2 order history has been refreshed.","success");
 });
-async function refreshOrdersIfVisible(){if(document.visibilityState!=="visible"||refreshingOrders||Date.now()-lastOrderRefresh<5000)return;const {data}=await client.auth.getSession();if(!data.session||$("account-panel").classList.contains("hidden"))return;refreshingOrders=true;try{await loadOrders(data.session);lastOrderRefresh=Date.now();}catch(e){message(e.message,"error");}finally{refreshingOrders=false;}}
-window.addEventListener("focus",refreshOrdersIfVisible);
-document.addEventListener("visibilitychange",refreshOrdersIfVisible);
-window.setInterval(refreshOrdersIfVisible,30000);
-
-client.auth.onAuthStateChange((_event,session)=>{if(session)showSession(session);});
-client.auth.getSession().then(({data})=>{if(data.session)showSession(data.session);else loadOrders(null);}).catch(()=>loadOrders(null));
-})();
+loadOrders();
+);
 </script>
 
 <script src="/blog-header-button.js" defer></script>
