@@ -411,3 +411,66 @@ body:not(.py2-blog-page) .pcard.py2-discount-card:hover{
   background: linear-gradient(100deg,transparent 15%,rgba(0,145,255,.08) 48%,transparent 80%) !important;
   opacity: .8 !important;
 }
+
+
+/* PhoneYa2 blog hero brand finish — deliberately last to defeat older theme overrides. */
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash,
+body.py2-blog-page .py2-brand-splash{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(36,111,190,.42) 0%,transparent 52%),
+    radial-gradient(ellipse at 10% 100%,rgba(15,118,110,.18) 0%,transparent 42%),
+    linear-gradient(125deg,#06152b 0%,#0b2345 44%,#102d55 72%,#07172c 100%)!important;
+  border:1px solid #28558a!important;
+  box-shadow:0 20px 48px rgba(3,12,28,.34),inset 0 1px 0 rgba(255,255,255,.12)!important;
+  color:#f8fbff!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash:before{
+  background:
+    radial-gradient(ellipse at 50% 38%,rgba(56,156,255,.19),transparent 54%),
+    linear-gradient(115deg,transparent 0%,rgba(255,255,255,.045) 48%,transparent 72%)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan{
+  display:flex!important;align-items:center;justify-content:center;flex-wrap:wrap;
+  gap:0 7px!important;color:#f8fbff!important;font-weight:850!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.38)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-smart{
+  color:#f8fbff!important;font-weight:750!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan strong.py2-slogan-choices{
+  color:#ffb547!important;font-weight:950!important;
+  text-shadow:0 0 18px rgba(255,181,71,.25)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-better{
+  color:#7dd3fc!important;font-weight:800!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan strong.py2-slogan-connected{
+  color:#5cf0ad!important;font-weight:950!important;
+  text-shadow:0 0 18px rgba(92,240,173,.23)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan .py2-slogan-heart{
+  color:#60a5fa!important;text-shadow:0 0 15px rgba(59,130,246,.7)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-primary{
+  background:linear-gradient(130deg,#ffb02e 0%,#ff7139 100%)!important;
+  border:1px solid #ffd08b!important;color:#172033!important;
+  box-shadow:0 8px 22px rgba(255,126,47,.26)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-primary:hover{
+  background:linear-gradient(130deg,#ffc45b 0%,#ff8a54 100%)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-secondary{
+  background:linear-gradient(130deg,rgba(37,99,235,.30),rgba(124,58,237,.30))!important;
+  border:1px solid rgba(147,197,253,.72)!important;color:#f8fbff!important;
+  box-shadow:0 8px 22px rgba(37,99,235,.17)!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-secondary:hover{
+  background:linear-gradient(130deg,rgba(37,99,235,.5),rgba(124,58,237,.48))!important;
+  border-color:#bfdbfe!important;
+}
+body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-actions a:focus-visible{
+  outline:3px solid #fde68a!important;outline-offset:3px!important;
+}
+@media(max-width:520px){
+  body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-slogan{gap:2px 5px!important;line-height:1.55!important}
+}
