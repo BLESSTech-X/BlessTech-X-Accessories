@@ -1884,10 +1884,10 @@ body .hero-slide .hero-slide-title span {
       <div class="py2-mini-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong id="py2-stat-categories">—</strong><span>Categories</span></div>
       <div class="py2-mini-metric"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><strong id="py2-stat-stock">—</strong><span>In stock</span></div>
       <div class="py2-mini-metric"><i class="fa-solid fa-tag" aria-hidden="true"></i><strong id="py2-stat-from">—</strong><span>From</span></div>
-      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-person-walking" aria-hidden="true"></i><strong id="py2-traffic-visits">—</strong><span>Visits · 30d</span></div>
-      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-users" aria-hidden="true"></i><strong id="py2-traffic-users">—</strong><span>Visitors · 30d</span></div>
-      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-eye" aria-hidden="true"></i><strong id="py2-traffic-views">—</strong><span>Page views · 30d</span></div>
-      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong id="py2-traffic-events">—</strong><span>Events · 30d</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-person-walking" aria-hidden="true"></i><strong id="py2-traffic-visits">—</strong><span>Visits · All time</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-users" aria-hidden="true"></i><strong id="py2-traffic-users">—</strong><span>Visitors · All time</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-eye" aria-hidden="true"></i><strong id="py2-traffic-views">—</strong><span>Page views · All time</span></div>
+      <div class="py2-mini-metric py2-mini-traffic"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong id="py2-traffic-events">—</strong><span>Events · All time</span></div>
     </div>
     <p class="py2-mini-insights-note" id="py2-mini-insights-note">Catalogue updates automatically. Traffic figures load from Google Analytics.</p>
   </div>
@@ -3300,7 +3300,7 @@ async function init() {
         const el = document.getElementById(id);
         if (el && Number.isFinite(Number(values[key]))) el.textContent = format(values[key]);
       });
-      if (note) note.textContent = 'Catalogue is current · Site traffic from Google Analytics over the last 30 days · Updated ' + new Date(data.generated_at || Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      if (note) note.textContent = 'Catalogue is current · Site traffic from Google Analytics since tracking began · Updated ' + new Date(data.generated_at || Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     } catch (error) {
       if (note) note.textContent = 'Catalogue figures update automatically · Site traffic is temporarily unavailable; visit the PhoneYa2 Analytics dashboard for reports.';
     }
