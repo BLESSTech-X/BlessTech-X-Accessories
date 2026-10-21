@@ -171,3 +171,118 @@ button, [role="button"] { touch-action: manipulation; }
   }
   button, [role="button"] { min-height: 38px; }
 }
+
+
+/* 2026-10-21: keep the CMS identity and publishing controls visible and reachable.
+   Decap's editor header/toolbar must never be clipped by mobile overflow rules. */
+[class*="AppHeader"],
+[class*="AppHeaderContent"],
+[class*="AppHeaderContainer"] {
+  box-sizing: border-box !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  background: #fff !important;
+  color: #15243a !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+[class*="AppHeaderContent"] {
+  min-height: 56px !important;
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 10px 14px !important;
+}
+[class*="AppHeaderContent"] * {
+  visibility: visible;
+}
+[class*="LibraryTitle"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+[class*="EditorControlBar"],
+[class*="EditorToolbar"],
+[class*="EditorControlBarContainer"] {
+  position: sticky !important;
+  top: 56px !important;
+  z-index: 900 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px !important;
+  background: #fff !important;
+  border-bottom: 1px solid #d8e2ee !important;
+  box-shadow: 0 4px 12px rgba(19,43,74,.08) !important;
+  overflow: visible !important;
+}
+[class*="EditorControlBar"] button,
+[class*="EditorToolbar"] button,
+[class*="EditorControlBar"] [role="button"],
+[class*="EditorToolbar"] [role="button"] {
+  min-height: 42px !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  flex-shrink: 0 !important;
+}
+@media (max-width: 799px) {
+  [class*="AppHeader"],
+  [class*="AppHeaderContent"],
+  [class*="AppHeaderContainer"] {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+  }
+  [class*="AppHeaderContent"] {
+    min-height: 58px !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+  [class*="AppHeaderContent"] button,
+  [class*="AppHeaderContent"] [role="button"],
+  [class*="AppHeaderContent"] a {
+    min-height: 42px !important;
+    max-width: 100% !important;
+  }
+  [class*="EditorControlBar"],
+  [class*="EditorToolbar"],
+  [class*="EditorControlBarContainer"] {
+    top: 0 !important;
+    max-width: 100vw !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+  /* Publishing actions remain on-screen instead of being pushed off the right edge. */
+  [class*="PublishButton"],
+  [class*="PublishDropdown"],
+  [aria-label*="Publish"],
+  button[title*="Publish"] {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1100 !important;
+    min-height: 44px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    flex: 0 1 auto !important;
+    white-space: normal !important;
+  }
+  [class*="EditorContainer"],
+  [class*="ControlPaneContainer"],
+  [class*="AppMainContainer"] {
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+  }
+}
