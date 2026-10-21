@@ -488,13 +488,13 @@
 
 /* PhoneYa2 blog brand hero — deep blue container with crisp, high-contrast content. */
 .py2-blog-redesigned .py2-brand-splash{
-  background:linear-gradient(128deg,#07152f 0%,#102d60 26%,#30245f 48%,#174b83 72%,#101b43 100%)!important;
+  background:linear-gradient(128deg,#030916 0%,#071a3b 27%,#17143b 49%,#0b2b50 73%,#050b1c 100%)!important;
   border:1px solid #2d73b8!important;
   box-shadow:0 20px 48px rgba(3,18,42,.34),inset 0 1px 0 rgba(255,255,255,.16)!important;
   color:#f7fbff!important;
 }
 .py2-blog-redesigned .py2-brand-splash:before{
-  background:radial-gradient(ellipse at 14% 15%,rgba(57,151,255,.30),transparent 43%),radial-gradient(ellipse at 82% 24%,rgba(147,75,255,.27),transparent 45%),radial-gradient(ellipse at 75% 88%,rgba(43,111,216,.24),transparent 47%),linear-gradient(115deg,transparent 0%,rgba(255,255,255,.055) 48%,transparent 72%)!important;
+  background:radial-gradient(ellipse at 14% 15%,rgba(57,151,255,.20),transparent 43%),radial-gradient(ellipse at 82% 24%,rgba(147,75,255,.18),transparent 45%),radial-gradient(ellipse at 75% 88%,rgba(43,111,216,.17),transparent 47%),linear-gradient(115deg,transparent 0%,rgba(255,255,255,.055) 48%,transparent 72%)!important;
 }
 .py2-blog-redesigned .py2-brand-splash-inner{position:relative;z-index:1}
 .py2-blog-redesigned .py2-brand-splash-description{color:#dceaff!important;text-shadow:0 1px 3px rgba(0,0,0,.24)}
