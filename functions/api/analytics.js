@@ -57,16 +57,16 @@ export async function onRequest({ request, env }) {
     let sa;
     try { sa = JSON.parse(env.GA4_SERVICE_ACCOUNT_JSON); } catch { return json({ error: "GA4_SERVICE_ACCOUNT_JSON must contain valid JSON." }, 503); }
     const access = await googleToken(sa);
-    const range = [{ startDate: "29daysAgo", endDate: "today" }];
+    const range = [{ startDate: "2020-01-01", endDate: "today" }];
     const [summary, daily, sources, pages] = await Promise.all([
       report(property, access, { dateRanges: range, metrics: [{ name: "activeUsers" }, { name: "sessions" }, { name: "screenPageViews" }, { name: "eventCount" }] }),
-      report(property, access, { dateRanges: range, dimensions: [{ name: "date" }], metrics: [{ name: "sessions" }, { name: "screenPageViews" }], orderBys: [{ dimension: { dimensionName: "date" } }], limit: 30 }),
+      report(property, access, { dateRanges: range, dimensions: [{ name: "date" }], metrics: [{ name: "sessions" }, { name: "screenPageViews" }], orderBys: [{ dimension: { dimensionName: "date" } }], limit: 10000 }),
       report(property, access, { dateRanges: range, dimensions: [{ name: "sessionSourceMedium" }], metrics: [{ name: "sessions" }, { name: "activeUsers" }], orderBys: [{ metric: { metricName: "sessions" }, desc: true }], limit: 8 }),
       report(property, access, { dateRanges: range, dimensions: [{ name: "pagePath" }], metrics: [{ name: "screenPageViews" }, { name: "activeUsers" }], orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }], limit: 8 })
     ]);
     const totals = vals(summary.rows?.[0]);
     return json({
-      property_id: property, period: "Last 30 days",
+      property_id: property, period: "All time",
       summary: { active_users: totals[0] || 0, sessions: totals[1] || 0, page_views: totals[2] || 0, events: totals[3] || 0 },
       daily: (daily.rows || []).map(r => ({ date: r.dimensionValues?.[0]?.value || "", sessions: vals(r)[0] || 0, page_views: vals(r)[1] || 0 })),
       sources: (sources.rows || []).map(r => ({ source: r.dimensionValues?.[0]?.value || "(not set)", sessions: vals(r)[0] || 0, users: vals(r)[1] || 0 })),
