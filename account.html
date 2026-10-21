@@ -867,7 +867,6 @@ $("refresh-orders").addEventListener("click",async()=>{
  try{await loadOrders(data.session||null);message("Your PhoneYa2 activity has been refreshed.","success");}
  catch(e){message(e.message||"Could not refresh activity.","error");}
 });
-let lastOrderRefresh=0,refreshingOrders=false;
 async function refreshOrdersIfVisible(){if(document.visibilityState!=="visible"||refreshingOrders||Date.now()-lastOrderRefresh<5000)return;const {data}=await client.auth.getSession();if(!data.session||$("account-panel").classList.contains("hidden"))return;refreshingOrders=true;try{await loadOrders(data.session);lastOrderRefresh=Date.now();}catch(e){message(e.message,"error");}finally{refreshingOrders=false;}}
 window.addEventListener("focus",refreshOrdersIfVisible);
 document.addEventListener("visibilitychange",refreshOrdersIfVisible);
