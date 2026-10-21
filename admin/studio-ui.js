@@ -8,13 +8,13 @@
     { label: "Comments", icon: "◉", match: ["Blog Comments", "Comments"] }
   ];
   const actionRules = [
-    { key: "publish", label: "Publish", test: /\\bpublish\\b/i },
-    { key: "save", label: "Save", test: /\\bsave\\b/i },
-    { key: "preview", label: "Preview", test: /\\bpreview\\b/i },
-    { key: "unpublish", label: "Unpublish", test: /\\bunpublish\\b/i },
-    { key: "delete", label: "Delete", test: /\\bdelete\\b/i },
-    { key: "status", label: "Status", test: /\\b(draft|review|published|status|workflow)\\b/i },
-    { key: "more", label: "More", test: /\\b(more options|entry actions|actions)\\b/i }
+    { key: "publish", label: "Publish", test: /\bpublish\b/i },
+    { key: "save", label: "Save", test: /\bsave\b/i },
+    { key: "preview", label: "Preview", test: /\bpreview\b/i },
+    { key: "unpublish", label: "Unpublish", test: /\bunpublish\b/i },
+    { key: "delete", label: "Delete", test: /\bdelete\b/i },
+    { key: "status", label: "Status", test: /\b(draft|review|published|status|workflow)\b/i },
+    { key: "more", label: "More", test: /\b(more options|entry actions|actions)\b/i }
   ];
   function actionText(el) {
     return [
@@ -23,7 +23,7 @@
       el.getAttribute("aria-label"),
       el.getAttribute("title"),
       el.getAttribute("data-testid")
-    ].filter(Boolean).join(" ").replace(/\\s+/g, " ").trim();
+    ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
   }
   function syncEditorActions() {
     const area = document.getElementById("py2-editor-actions-area");
