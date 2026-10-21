@@ -431,6 +431,9 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
           list.unshift(localOrder);localStorage.setItem("py2_customer_orders_v1",JSON.stringify(list.slice(0,100)));
         }
         localStorage.setItem("py2_customer_name",String(body.name||"PhoneYa2 customer").slice(0,100));
+        // Keep only the matching keys needed for password-free order recovery on this device.
+        localStorage.setItem("py2_customer_email",String(body.email||"").trim().toLowerCase().slice(0,254));
+        localStorage.setItem("py2_customer_phone",String(body.phone||"").trim().slice(0,40));
       }catch(storageError){console.warn("[PhoneYa2] Device recognition receipt could not be saved.",storageError);}
 
       trackEvent("purchase",{
