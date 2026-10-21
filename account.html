@@ -725,12 +725,11 @@ body:has(#account-panel) main>#account-panel h2,body:has(#account-panel) main>#a
 <p id="recognition-copy" class="muted" style="margin:-8px 0 18px">PhoneYa2 automatically recognises this browser. Orders placed on this device will appear here without creating an account or signing in.</p>
 <div class="account-recognition-status"><i class="fa-solid fa-fingerprint" aria-hidden="true"></i><span id="recognition-status">Smart recognition is active on this device.</span></div>
 <div class="order-recovery-box" style="margin:16px 0;padding:16px;border:1px solid #dce9df;border-radius:14px;background:#f8fcf9">
-  <h3 style="margin:0 0 6px;font-size:16px;color:#17271e">Recover orders after clearing browser data</h3>
-  <p class="muted" style="margin:0 0 12px;font-size:13px">Your orders are stored securely by PhoneYa2, not in Decap CMS. If this device has forgotten them, enter the same email and phone number used at checkout to reconnect your order history. No password or account is needed.</p>
-  <form id="order-recovery-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;align-items:end">
+  <h3 style="margin:0 0 6px;font-size:16px;color:#17271e">Restore your orders by email</h3>
+  <p class="muted" style="margin:0 0 12px;font-size:13px">Enter the email address used when placing your PhoneYa2 orders. We’ll send you a secure, one-time link to restore your order history. No password, login, or phone number is needed.</p>
+  <form id="order-recovery-form" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end">
     <label class="field" style="margin:0"><span style="font-size:12px;font-weight:750">Order email</span><input id="recovery-email" type="email" autocomplete="email" maxlength="254" required placeholder="Email used at checkout" style="width:100%;padding:11px;border:1px solid #d8dfeb;border-radius:10px"></label>
-    <label class="field" style="margin:0"><span style="font-size:12px;font-weight:750">Phone / WhatsApp</span><input id="recovery-phone" type="tel" autocomplete="tel" minlength="7" maxlength="40" required placeholder="Same phone used at checkout" style="width:100%;padding:11px;border:1px solid #d8dfeb;border-radius:10px"></label>
-    <button class="btn primary" id="recover-orders-button" type="submit" style="min-height:42px">Recover my orders</button>
+    <button class="btn primary" id="recover-orders-button" type="submit" style="min-height:42px">Email me a recovery link</button>
   </form>
   <p id="recovery-message" role="status" aria-live="polite" style="margin:10px 0 0;font-size:12px"></p>
 </div>
@@ -776,7 +775,7 @@ function renderOrderFilters(orders){
 function renderCustomerOrders(orders){
  const host=$("orders");host.replaceChildren();const now=Date.now(),recentMs=30*24*60*60*1000;
  const filtered=orders.filter(order=>{const status=orderStatus(order),age=now-new Date(order.created_at).getTime();if(activeOrderFilter==="all")return true;if(activeOrderFilter==="recent")return age<=recentMs;if(activeOrderFilter==="older")return age>recentMs;if(activeOrderFilter==="progress")return ["confirmed","processing","shipped"].includes(status);return status===activeOrderFilter;}).sort((a,b)=>{const d=new Date(a.created_at).getTime()-new Date(b.created_at).getTime();return $("order-sort").value==="oldest"?d:-d;});
- if(!filtered.length){const e=document.createElement("div");e.className="orders-filter-empty";e.textContent=orders.length?("No "+({all:"",recent:"recent",older:"older",progress:"in-progress",pending:"pending",delivered:"delivered",cancelled:"cancelled"}[activeOrderFilter]||"matching")+" orders found. Choose another filter to see more of your history."):"No orders are saved on this device yet. Place an order and PhoneYa2 will remember its receipt here automatically.";host.append(e);return;}
+ if(!filtered.length){const e=document.createElement("div");e.className="orders-filter-empty";e.textContent=orders.length?("No "+({all:"",recent:"recent",older:"older",progress:"in-progress",pending:"pending",delivered:"delivered",cancelled:"cancelled"}[activeOrderFilter]||"matching")+" orders found. Choose another filter to see more of your history."):"No saved orders are available in this browser yet. Use the email recovery link to restore previous orders.";host.append(e);return;}
  filtered.forEach(order=>{const st=orderStatus(order),card=document.createElement("details");card.className="order order-list-card";const summary=document.createElement("summary");summary.className="order-list-summary";const identity=document.createElement("div");identity.className="order-list-identity";const number=document.createElement("strong");number.className="number";number.textContent=order.order_number||"PhoneYa2 order";const date=document.createElement("span");date.className="order-list-date";date.textContent=new Date(order.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});identity.append(number,date);const status=document.createElement("span");status.className="pill status-"+st;status.textContent=st.replace(/_/g," ");const view=document.createElement("span");view.className="view-full-label";view.textContent="View full";summary.append(identity,status,view);card.append(summary);const detail=document.createElement("div");detail.className="order-expanded";const items=document.createElement("div");items.className="items";
  (order.order_items||[]).forEach(item=>{const row=document.createElement("div");row.className="item";const left=document.createElement("div");left.className="item-main";const image=document.createElement("img");image.className="item-thumb";image.alt=item.product_name||"Product";image.loading="lazy";if(item.product_image){image.src=item.product_image;image.onerror=()=>image.style.display="none";}else image.style.display="none";const details=document.createElement("div"),title=document.createElement("div"),meta=document.createElement("div");title.className="item-name";title.textContent=item.product_name||"Product";meta.className="item-meta";meta.textContent="Qty "+item.quantity+" × "+money(item.unit_price);details.append(title,meta);left.append(image,details);const price=document.createElement("strong");price.textContent=money(item.line_total);row.append(left,price);items.append(row);});detail.append(items);
  if(order.customer_note){const note=document.createElement("div"),label=document.createElement("strong"),nt=document.createElement("div");note.className="order-note";label.textContent="Your order note";nt.textContent=order.customer_note;note.append(label,nt);detail.append(note);}
@@ -837,16 +836,15 @@ async function loadOrders(){
  try{
   cachedOrders=readDeviceOrders().sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
   let name="Recognised on this device";
-  let savedEmail="",savedPhone="";
-  try{name=localStorage.getItem("py2_customer_name")||name;savedEmail=localStorage.getItem("py2_customer_email")||"";savedPhone=localStorage.getItem("py2_customer_phone")||"";}catch(_){}
+  let savedEmail="";
+  try{name=localStorage.getItem("py2_customer_name")||name;savedEmail=localStorage.getItem("py2_customer_email")||"";}catch(_){}
   $("customer-email").textContent=savedEmail||name;
   if(savedEmail)$("recovery-email").value=savedEmail;
-  if(savedPhone)$("recovery-phone").value=savedPhone;
   applyCustomerOrderFilters();renderPurchasedProducts(cachedOrders);renderAccountStatistics(cachedOrders);
   const statusMessage=$("order-refresh-message");
   if(statusMessage)statusMessage.textContent=cachedOrders.length
     ? "Showing "+cachedOrders.length+" order receipt"+(cachedOrders.length===1?"":"s")+" saved on this device"
-    : "Smart recognition is ready · use order recovery if this browser data was cleared";
+    : "Smart recognition is ready · use email recovery if this browser data was cleared";
   const heading=$("recognition-heading"),copy=$("recognition-copy"),status=$("recognition-status");
   if(cachedOrders.length){
    if(heading)heading.textContent="Welcome back to PhoneYa2";
@@ -854,59 +852,68 @@ async function loadOrders(){
    if(status)status.textContent="Device recognised · "+cachedOrders.length+" saved order"+(cachedOrders.length===1?"":"s");
   }else{
    if(heading)heading.textContent="Your PhoneYa2 space is ready";
-   if(copy)copy.textContent="No account or password is needed. If browser data was cleared, recover your previous orders below.";
+   if(copy)copy.textContent="No account or password is needed. If browser data was cleared, restore your orders using the email link below.";
    if(status)status.textContent="Smart recognition active · ready to reconnect your order history.";
   }
-  // If checkout identity survived, silently restore the authoritative order history from the database.
-  if(savedEmail&&savedPhone)await recoverOrders(savedEmail,savedPhone,false);
+  // Saved receipts load instantly. If browser storage was cleared, restore them through an email-verified link.
  }catch(e){
   console.error("[PhoneYa2] Could not load order history:",e);
   const statusMessage=$("order-refresh-message");
   if(statusMessage)statusMessage.textContent="Could not load order history. Use the recovery form below or refresh.";
-  if(host&&!cachedOrders.length)host.innerHTML='<div class="orders-filter-empty">Your order history could not be loaded. Try recovering it with the email and phone number used at checkout.</div>';
+  if(host&&!cachedOrders.length)host.innerHTML='<div class="orders-filter-empty">Your order history could not be loaded. Request a secure recovery link by email.</div>';
  }finally{if(button)button.disabled=false;}
 }
-async function recoverOrders(email,phone,showFeedback=true){
+async function recoverOrders(email,showFeedback=true){
  const formMessage=$("recovery-message"),recoverButton=$("recover-orders-button");
- if(recoverButton){recoverButton.disabled=true;recoverButton.textContent="Finding your orders…";}
- if(formMessage){formMessage.style.color="#596985";formMessage.textContent="Checking PhoneYa2’s secure order records…";}
+ if(recoverButton){recoverButton.disabled=true;recoverButton.textContent="Sending secure link…";}
+ if(formMessage){formMessage.style.color="#596985";formMessage.textContent="Requesting a secure recovery link for your email…";}
  try{
-  const query=new URLSearchParams({email:String(email||"").trim(),phone:String(phone||"").trim()});
-  const response=await fetch("/api/customer?"+query.toString(),{method:"GET",headers:{accept:"application/json"},cache:"no-store"});
+  const response=await fetch("/api/customer",{method:"POST",headers:{"content-type":"application/json",accept:"application/json"},body:JSON.stringify({email:String(email||"").trim().toLowerCase()}),cache:"no-store"});
   const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||"Order history could not be retrieved. Please try again.");
+  if(!response.ok)throw new Error(data.error||"We could not send the recovery email. Please try again.");
+  if(formMessage){formMessage.style.color="#16703b";formMessage.textContent=data.message||"If orders exist for that email, a secure recovery link has been sent. Check your inbox and Spam/Junk folder.";}
+  if(showFeedback)message("Check your email for the secure PhoneYa2 order recovery link.","success");
+  return true;
+ }catch(error){
+  if(formMessage){formMessage.style.color="#a32d2d";formMessage.textContent=error.message||"Email recovery failed. Please try again.";}
+  if(showFeedback)message(error.message||"Email recovery failed.","error");
+  return false;
+ }finally{if(recoverButton){recoverButton.disabled=false;recoverButton.textContent="Email me a recovery link";}}
+}
+async function restoreOrdersFromEmailLink(token){
+ const formMessage=$("recovery-message");
+ if(formMessage){formMessage.style.color="#596985";formMessage.textContent="Verifying your email link and restoring orders…";}
+ try{
+  const response=await fetch("/api/customer?restore="+encodeURIComponent(token),{headers:{accept:"application/json"},cache:"no-store"});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||"This recovery link could not be used. Request a new one.");
   const orders=Array.isArray(data.orders)?data.orders:[];
-  if(!orders.length){
-   if(formMessage){formMessage.style.color="#9a4b0d";formMessage.textContent="No matching orders were found. Check that both details exactly match the ones used when ordering.";}
-   if(showFeedback)message("No orders matched those details. Check your email and phone number.","error");
-   return false;
-  }
+  if(!orders.length){if(formMessage){formMessage.style.color="#9a4b0d";formMessage.textContent="No orders were found for this email address yet.";}return;}
   cachedOrders=mergeOrderRecords(orders,readDeviceOrders()).sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
   try{
    localStorage.setItem("py2_customer_orders_v1",JSON.stringify(cachedOrders.slice(0,100)));
-   localStorage.setItem("py2_customer_email",String(data.customer?.email||email).trim().toLowerCase());
-   localStorage.setItem("py2_customer_phone",String(phone).trim());
+   localStorage.setItem("py2_customer_email",String(data.customer?.email||"").trim().toLowerCase());
    if(data.customer?.name)localStorage.setItem("py2_customer_name",String(data.customer.name).slice(0,100));
+   localStorage.removeItem("py2_customer_phone");
   }catch(_){}
-  $("customer-email").textContent=String(data.customer?.email||email);
+  $("customer-email").textContent=String(data.customer?.email||"");
   applyCustomerOrderFilters();renderPurchasedProducts(cachedOrders);renderAccountStatistics(cachedOrders);
-  const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Recovered "+orders.length+" order"+(orders.length===1?"":"s")+" from PhoneYa2’s order records";
-  const heading=$("recognition-heading"),copy=$("recognition-copy"),status=$("recognition-status");
-  if(heading)heading.textContent="Welcome back to PhoneYa2";
-  if(copy)copy.textContent="Your order history has been reconnected. This device can recognise you again using the saved details, without a password.";
-  if(status)status.textContent="Order history restored · "+orders.length+" order"+(orders.length===1?"":"s")+" found";
-  if(formMessage){formMessage.style.color="#16703b";formMessage.textContent="Order history restored. Your future visits on this device will remember these details.";}
-  if(showFeedback)message("Your PhoneYa2 order history has been restored.","success");
-  return true;
+  const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Restored "+orders.length+" order"+(orders.length===1?"":"s")+" from PhoneYa2’s secure records";
+  $("recognition-heading").textContent="Welcome back to PhoneYa2";
+  $("recognition-copy").textContent="Your order history has been restored. This browser can remember your receipts; if browser data is cleared again, request a new email recovery link.";
+  $("recognition-status").textContent="Email verified · "+orders.length+" order"+(orders.length===1?"":"s")+" restored";
+  if(formMessage){formMessage.style.color="#16703b";formMessage.textContent="Your orders have been restored successfully.";}
+  message("Your PhoneYa2 order history has been restored.","success");
  }catch(error){
-  if(formMessage){formMessage.style.color="#a32d2d";formMessage.textContent=error.message||"Order recovery failed. Please try again.";}
-  if(showFeedback)message(error.message||"Order recovery failed. Please try again.","error");
-  return false;
- }finally{if(recoverButton){recoverButton.disabled=false;recoverButton.textContent="Recover my orders";}}
+  if(formMessage){formMessage.style.color="#a32d2d";formMessage.textContent=error.message||"Order recovery failed. Request a new email link.";}
+  message(error.message||"Order recovery failed.","error");
+ }finally{
+  const cleanUrl=new URL(location.href);cleanUrl.searchParams.delete("restore");history.replaceState({},document.title,cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
+ }
 }
 $("order-recovery-form").addEventListener("submit",async event=>{
  event.preventDefault();
- await recoverOrders($("recovery-email").value,$("recovery-phone").value,true);
+ await recoverOrders($("recovery-email").value,true);
 });
 document.querySelectorAll("[data-order-filter]").forEach(button=>button.addEventListener("click",()=>{activeOrderFilter=button.dataset.orderFilter;applyCustomerOrderFilters();}));
 $("order-sort").addEventListener("change",applyCustomerOrderFilters);
@@ -915,6 +922,8 @@ $("refresh-orders").addEventListener("click",async()=>{
  message("Your saved PhoneYa2 order history has been refreshed.","success");
 });
 loadOrders();
+const recoveryToken=new URLSearchParams(location.search).get("restore");
+if(recoveryToken)restoreOrdersFromEmailLink(recoveryToken);
 })();
 </script>
 
