@@ -7,6 +7,6 @@ stock: 1000
 category: powerbank
 sales_priority: standard
 description: Venus power bank 12000capacity
-image: /assets/images/uploads/1000247629.jpg
+image: /assets/images/uploads/1000247622.jpg
 featured: true
 ---
