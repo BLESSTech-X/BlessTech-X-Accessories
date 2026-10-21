@@ -260,9 +260,9 @@ img{max-width:100%;display:block;}
 .related-section{max-width:1280px;margin:0 auto;padding:0 24px 60px;}
 .sec-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:8px;background:var(--grad2);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s linear infinite;}
 .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:16px;}
-.rel-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);cursor:pointer;transition:transform .25s,box-shadow .25s;position:relative;}
+.rel-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);cursor:default;transition:transform .25s,box-shadow .25s;position:relative;}
 .rel-card:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,.12);}
-.rel-img{height:160px;width:100%;object-fit:cover;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.rel-img{height:160px;width:100%;object-fit:cover;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;text-decoration:none;color:inherit;}.rel-img img{display:block}.rel-details{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;padding:9px 12px;border-radius:9px;background:linear-gradient(135deg,#16a34a,#128c7e);color:#fff;text-decoration:none;font-size:12px;font-weight:800}.rel-details:focus-visible{outline:3px solid #86efac;outline-offset:2px}
 .rel-img img{width:100%;height:100%;object-fit:cover;}
 .rel-stock{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;}
 .sb-in{background:rgba(22,163,74,.12);color:#16a34a;border:1px solid rgba(22,163,74,.25);}
@@ -1854,12 +1854,13 @@ function renderRelated(allProds, currentSlug, category) {
     const card = document.createElement('div');
     card.className = 'rel-card';
     card.setAttribute('role','article');
+    const productUrl='product.html?id='+encodeURIComponent(p.slug);
     card.innerHTML =
       '<div class="rel-stock '+st.cls+'">'+st.label+'</div>'+
-      '<div class="rel-img">'+(p.image?'<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'📱\'">':'📱')+'</div>'+
+      '<a class="rel-img" href="'+productUrl+'" aria-label="View details for '+escHtml(p.title)+'">'+(p.image?'<img src="'+escHtml(p.image)+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.textContent=\'📱\'">':'📱')+'</a>'+
       '<div class="rel-body"><div class="rel-name">'+escHtml(p.title)+'</div>'+
-      '<div class="rel-price-row"><div class="rel-price">ZMW '+(p.price||0).toLocaleString()+'</div>'+(hasDrop?'<div class="rel-orig">ZMW '+op.toLocaleString()+'</div>':'')+'</div></div>';
-    card.addEventListener('click', () => { window.location.href = 'product.html?id='+p.slug; });
+      '<div class="rel-price-row"><div class="rel-price">ZMW '+(p.price||0).toLocaleString()+'</div>'+(hasDrop?'<div class="rel-orig">ZMW '+op.toLocaleString()+'</div>':'')+'</div>'+
+      '<a class="rel-details" href="'+productUrl+'"><i class="fa-solid fa-eye" aria-hidden="true"></i> View Details</a></div>';
     grid.appendChild(card);
   });
 }
