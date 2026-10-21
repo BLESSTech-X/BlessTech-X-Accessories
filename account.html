@@ -872,7 +872,7 @@ async function refreshOrdersIfVisible(){if(document.visibilityState!=="visible"|
 window.addEventListener("focus",refreshOrdersIfVisible);
 document.addEventListener("visibilitychange",refreshOrdersIfVisible);
 window.setInterval(refreshOrdersIfVisible,30000);
-$("signout").addEventListener("click",async()=>{cachedOrders=[];await client.auth.signOut();$("account-panel").classList.add("hidden");$("auth-panel").classList.remove("hidden");message("You have signed out.","success");});
+
 client.auth.onAuthStateChange((_event,session)=>{if(session)showSession(session);});
 client.auth.getSession().then(({data})=>{if(data.session)showSession(data.session);else loadOrders(null);}).catch(()=>loadOrders(null));
 })();
