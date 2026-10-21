@@ -416,13 +416,30 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
       const response=await fetch("/api/orders",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
       const result=await response.json().catch(()=>({}));
       if(!response.ok||!result.success)throw new Error(result.error||"Your order could not be submitted.");
+      /* Remember a minimal order receipt on this browser for password-free smart recognition.
+         Contact details are not copied into the local order history. */
+      try{
+        const localItems=body.items.map(item=>{
+          const product=products.get(item.slug)||{};
+          const quantity=Math.max(1,Number(item.quantity)||1),unitPrice=Math.max(0,Number(product.price)||0);
+          return {id:item.slug,product_slug:item.slug,product_name:String(product.title||item.slug),product_image:String(product.image||""),quantity,unit_price:unitPrice,line_total:unitPrice*quantity};
+        });
+        const localOrder={order_number:String(result.order_number||""),created_at:new Date().toISOString(),status:"pending",total_amount:Number(result.total_amount)||localItems.reduce((sum,item)=>sum+item.line_total,0),currency:"ZMW",order_items:localItems};
+        if(localOrder.order_number){
+          const saved=JSON.parse(localStorage.getItem("py2_customer_orders_v1")||"[]");
+          const list=Array.isArray(saved)?saved.filter(order=>String(order.order_number)!==localOrder.order_number):[];
+          list.unshift(localOrder);localStorage.setItem("py2_customer_orders_v1",JSON.stringify(list.slice(0,100)));
+        }
+        localStorage.setItem("py2_customer_name",String(body.name||"PhoneYa2 customer").slice(0,100));
+      }catch(storageError){console.warn("[PhoneYa2] Device recognition receipt could not be saved.",storageError);}
+
       trackEvent("purchase",{
         transaction_id:String(result.order_number||""),
         value:Number(result.total_amount)||0,
         currency:"ZMW",
         items:analyticsItems()
       });
-      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p><p class="small">Delivery is usually within 24 hours. In some circumstances, please allow up to 3 days.</p>'+(result.account_invited?'<p class="small">We have emailed you a secure invitation to activate your PhoneYa2 account and access your order history.</p>':'<p class="small">Your order is saved. If you do not receive an account invitation, contact PhoneYa2 to get help activating access to your order history. <a href="/account.html" style="color:#ff6000;text-decoration:underline">My PhoneYa2</a>.</p>')+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
+      $("order-form").innerHTML='<div class="receipt"><i class="fa-solid fa-circle-check" style="color:#128c7e;font-size:30px"></i><h2>Order received</h2><p>Order number: <strong>'+String(result.order_number).replace(/[&<>"']/g,"")+'</strong></p><p>Total: <strong>'+money(result.total_amount)+'</strong></p><p>Your order is pending confirmation. PhoneYa2 will contact you using the details provided.</p><p class="small">Delivery is usually within 24 hours. In some circumstances, please allow up to 3 days.</p>'+'<p class="small">PhoneYa2 will remember this order on this device, so your My PhoneYa2 space can recognise you automatically. <a href="/account.html" style="color:#ff6000;text-decoration:underline">Open My PhoneYa2</a>.</p>'+(result.notification_sent?"<p class=\"small\">The store has been notified.</p>":"<p class=\"small\">Your order was saved. Store email notification may be delayed; keep your order number.</p>")+'<a class="btn primary" href="/shop.html">Continue shopping</a></div>';
       cart.clear();renderCart();
     }catch(error){orderReviewed=false;orderSubmitting=false;notice(error.message||"Something went wrong. Please try again.","error");button.disabled=false;button.innerHTML='<i class="fa-solid fa-lock"></i> Place order';}
   });
