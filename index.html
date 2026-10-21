@@ -2518,12 +2518,6 @@ function buildFeaturedCard(p) {
   name.textContent = p.title;
   body.appendChild(name);
 
-  const details = document.createElement('a');
-  details.className = 'pc-view-details';
-  details.href = 'product.html?id=' + encodeURIComponent(p.slug);
-  details.innerHTML = '<i class="fa-solid fa-eye" aria-hidden="true"></i> View Details';
-  body.appendChild(details);
-
   const priceRow = document.createElement('div');
   priceRow.className = 'pc-price-row';
   const priceEl = document.createElement('div');
@@ -2537,6 +2531,12 @@ function buildFeaturedCard(p) {
     priceRow.appendChild(origEl);
   }
   body.appendChild(priceRow);
+
+  const details = document.createElement('a');
+  details.className = 'pc-view-details';
+  details.href = 'product.html?id=' + encodeURIComponent(p.slug);
+  details.innerHTML = '<i class="fa-solid fa-eye" aria-hidden="true"></i> View Details';
+  body.appendChild(details);
 
   if (st.canOrder) {
     const btn = document.createElement('a');
@@ -2595,11 +2595,11 @@ function buildCard(p) {
       (p.offer_label?'<div class="py2-sales-label">'+escHtml(p.offer_label)+'</div>':'')+
       (p.sales_hook?'<div class="py2-sales-hook">'+escHtml(p.sales_hook)+'</div>':'')+
       (p.offer_details?'<div class="py2-offer-details">'+escHtml(p.offer_details)+'</div>':'')+
-      '<a class="pc-view-details" href="product.html?id='+encodeURIComponent(p.slug)+'"><i class="fa-solid fa-eye" aria-hidden="true"></i> View Details</a>'+
       '<div class="pc-price-row">'+
         '<div class="pc-price">ZMW '+(p.price||0).toLocaleString()+'</div>'+
         (hasDrop?'<div class="pc-orig">ZMW '+op.toLocaleString()+'</div>':'')+
       '</div>'+
+      '<a class="pc-view-details" href="product.html?id='+encodeURIComponent(p.slug)+'"><i class="fa-solid fa-eye" aria-hidden="true"></i> View Details</a>'+
       btn+
       '<div class="pc-share-row">'+
         '<button class="pc-share-btn pc-share-facebook" onclick="event.stopPropagation();shareFacebookProduct(allProducts.find(x=>x.slug===\''+p.slug+'\'))" aria-label="Share on Facebook" title="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></button>'+
@@ -2787,11 +2787,11 @@ function renderCsGrid(cat) {
     const div=document.createElement('div');
     div.className='pc';
     div.innerHTML=
-      '<a class="pc-img pc-image-link" href="product.html?id="'+encodeURIComponent(p.slug)+'" aria-label="View details for '+escHtml(p.title)+'"><div class="pc-stock-badge '+st.cls+'">'+st.label+'</div>'+
+      '<a class="pc-img pc-image-link" href="product.html?id='+encodeURIComponent(p.slug)+'" aria-label="View details for '+escHtml(p.title)+'">'+(hasDrop?'<div class="pc-discount">SALE</div>':'')+'<div class="pc-stock-badge '+st.cls+'">'+st.label+'</div>'+
       (p.image?'<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'📱\'">':'📱')+
       '</a><div class="pc-body"><div class="pc-name">'+escHtml(p.title)+'</div>'+
-      '<a class="pc-view-details" href="product.html?id='+encodeURIComponent(p.slug)+'"><i class="fa-solid fa-eye" aria-hidden="true"></i> View Details</a>'+
       '<div class="pc-price-row"><div class="pc-price">ZMW '+(p.price||0).toLocaleString()+'</div>'+(hasDrop?'<div class="pc-orig">ZMW '+op.toLocaleString()+'</div>':'')+'</div>'+
+      '<a class="pc-view-details" href="product.html?id='+encodeURIComponent(p.slug)+'"><i class="fa-solid fa-eye" aria-hidden="true"></i> View Details</a>'+
       (st.canOrder?'<div class="pc-actions"><button type="button" class="py2-add-cart" onclick="event.stopPropagation();PhoneYa2Cart.add(\''+p.slug+'\',1,'+Number(p.stock||0)+')"><i class="fa-solid fa-cart-plus"></i> Add to cart</button><a href="'+orderUrl(p)+'" class="pc-wa" onclick="event.stopPropagation()"><i class="fa-solid fa-bolt"></i> Buy now</a></div>':'<button class="pc-notify" onclick="event.stopPropagation();notifyMe(\''+escHtml(p.title)+'\')"><i class="fa-regular fa-bell"></i> Notify Me</button>')+
       '</div>';
     /* Only image and View Details links navigate to the product page. */
