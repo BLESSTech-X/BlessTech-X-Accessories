@@ -107,14 +107,7 @@ self.addEventListener('fetch', event => {
       const cached = await cache.match(request);
       const cachedAt = cached ? Number(cached.headers.get('X-PhoneYa2-Cached-At') || 0) : 0;
       const isFresh = cached && cachedAt > 0 && (Date.now() - cachedAt) < PAGE_TTL_MS;
-      if (isFresh) {
-        event.waitUntil(fetch(request).then(async response => {
-          if (response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
-            await cache.put(request, stampResponse(response));
-          }
-        }).catch(() => {}));
-        return cached;
-      }
+      if (isFresh) return cached;
       try {
         const response = await fetch(request);
         if (response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
