@@ -2,8 +2,8 @@ const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache
 const ALLOWED_STATUSES = new Set(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]);
 const MAX_LINES = 30;
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
+function json(data, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(data), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
 }
 function cleanText(value, max) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -20,6 +20,54 @@ function getSecret(env, ...keys) {
   for (const key of keys) if (env[key]) return env[key];
   return "";
 }
+function readCookie(request, name) {
+  const prefix = name + "=";
+  for (const part of (request.headers.get("cookie") || "").split(";")) {
+    const item = part.trim();
+    if (item.startsWith(prefix)) return item.slice(prefix.length);
+  }
+  return "";
+}
+function base64url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function fromBase64url(value) {
+  const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+async function signDevicePayload(payload, secret) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return base64url(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload))));
+}
+async function verifyDeviceToken(token, secret) {
+  const parts = String(token || "").split(".");
+  if (parts.length !== 2 || !secret) return null;
+  if (await signDevicePayload(parts[0], secret) !== parts[1]) return null;
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(fromBase64url(parts[0])));
+    if (payload.purpose !== "phoneya2_device_orders" || !payload.email ||
+        !Number.isFinite(payload.exp) || payload.exp < Date.now() ||
+        !Array.isArray(payload.order_numbers)) return null;
+    return {
+      email: String(payload.email).trim().toLowerCase(),
+      order_numbers: [...new Set(payload.order_numbers.map(String).filter(x => /^[A-Za-z0-9_-]{3,100}$/.test(x)))].slice(-100),
+      exp: payload.exp
+    };
+  } catch { return null; }
+}
+async function createDeviceToken(email, orderNumbers, secret) {
+  const payload = base64url(new TextEncoder().encode(JSON.stringify({
+    purpose: "phoneya2_device_orders",
+    email: String(email || "").trim().toLowerCase(),
+    order_numbers: [...new Set(orderNumbers.map(String))].slice(-100),
+    exp: Date.now() + 180 * 24 * 60 * 60 * 1000
+  })));
+  return payload + "." + await signDevicePayload(payload, secret);
+}
+
 async function supabaseFetch(env, path, init = {}) {
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
   const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
@@ -486,6 +534,22 @@ export async function onRequest(context) {
       if (!telegramSent && !emailSent && !formspreeResult.ok) {
         console.error("Order saved but both Telegram and email notifications failed for", order.order_number);
       }
+      // Remember only order numbers actually created on this browser. This lets
+      // the account page restore device orders automatically without exposing
+      // every order associated with a merely typed email address.
+      const rememberSecret = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+      const orderNumber = String(order.order_number || "");
+      let deviceCookie = "";
+      if (rememberSecret && orderNumber) {
+        try {
+          const prior = await verifyDeviceToken(readCookie(request, "py2_device_orders"), rememberSecret);
+          const knownNumbers = prior && prior.email === email ? prior.order_numbers : [];
+          const token = await createDeviceToken(email, [...knownNumbers, orderNumber], rememberSecret);
+          deviceCookie = "py2_device_orders=" + token + "; Max-Age=15552000; Path=/api/; HttpOnly; Secure; SameSite=Lax";
+        } catch (error) {
+          console.error("PhoneYa2 device recognition cookie could not be created:", String(error).slice(0, 160));
+        }
+      }
       return json({
         success: true,
         order_number: order.order_number,
@@ -493,7 +557,7 @@ export async function onRequest(context) {
         currency: "ZMW",
         notification_sent: notificationSent,
         account_invited: accountInvited
-      }, 201);
+      }, 201, deviceCookie ? { "set-cookie": deviceCookie } : {});
     } catch (error) {
       console.error("PhoneYa2 order submission failed:", String(error));
       return json({ error: "Ordering is temporarily unavailable. Please try again shortly." }, 503);
