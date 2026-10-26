@@ -1,20 +1,24 @@
 {
-  "name": "PhoneYa2-ZM Accessories",
+  "name": "PhoneYa2 — Smart Choices. Better Connected",
   "short_name": "PhoneYa2",
-  "description": "Phone accessories and everyday tech essentials. Browse products, use the cart and checkout, or contact PhoneYa2 for support.",
+  "description": "Shop phone accessories and everyday tech essentials in Zambia.",
   "start_url": "/splash.html",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait",
-  "theme_color": "#25d366",
-  "background_color": "#0d0d0d",
+  "theme_color": "#ff6000",
+  "background_color": "#ffffff",
   "lang": "en",
   "icons": [
     {
       "src": "/icon-512x512.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
