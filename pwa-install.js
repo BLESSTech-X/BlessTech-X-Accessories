@@ -29,7 +29,7 @@
     '#py2-install-copy strong{display:block;font-size:14px;line-height:1.25;font-weight:800}',
     '#py2-install-copy span{display:block;margin-top:3px;color:#667085;font-size:11px;line-height:1.4}',
     '#py2-install-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}',
-    '#py2-install-now{border:0;border-radius:10px;background:#ff6000;color:#fff;font:700 12px inherit;padding:10px 12px;min-height:38px;cursor:pointer}',
+    '#py2-install-now{border:0;border-radius:10px;background:#ff6000;color:#fff;font:700 12px 'DM Sans',sans-serif;padding:10px 12px;min-height:38px;cursor:pointer}',
     '#py2-install-close{width:30px;height:30px;border:0;border-radius:50%;background:#f2f4f7;color:#475467;font-size:19px;line-height:1;cursor:pointer}',
     '#py2-install-help{display:none;margin:8px 0 0;color:#475467;font-size:11px;line-height:1.45}',
     '@keyframes py2InstallIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}',
