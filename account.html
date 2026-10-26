@@ -898,31 +898,48 @@ async function loadOrders(){
  const host=$("orders");
  try{
   cachedOrders=readDeviceOrders().sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
-  let name="Recognised on this device";
-  let savedEmail="";
+  let name="Recognised on this device",savedEmail="";
   try{name=localStorage.getItem("py2_customer_name")||name;savedEmail=localStorage.getItem("py2_customer_email")||"";}catch(_){}
   $("customer-email").textContent=savedEmail||name;
   if(savedEmail)$("recovery-email").value=savedEmail;
+  // Show local receipts immediately, then quietly reconcile the full server history.
   applyCustomerOrderFilters();renderPurchasedProducts(cachedOrders);renderAccountStatistics(cachedOrders);
   const statusMessage=$("order-refresh-message");
   if(statusMessage)statusMessage.textContent=cachedOrders.length
-    ? "Showing "+cachedOrders.length+" order receipt"+(cachedOrders.length===1?"":"s")+" saved on this device"
-    : "Smart recognition is ready · use email recovery if this browser data was cleared";
+    ? "Your saved receipts are ready · checking for order updates…"
+    : "Checking whether this device securely recognises you…";
+  try{
+   const response=await fetch("/api/customer",{headers:{accept:"application/json"},cache:"no-store",credentials:"same-origin"});
+   const data=await response.json().catch(()=>({}));
+   if(response.ok&&Array.isArray(data.orders)&&data.remembered){
+    cachedOrders=mergeOrderRecords(data.orders,readDeviceOrders()).sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
+    try{
+     localStorage.setItem("py2_customer_orders_v1",JSON.stringify(cachedOrders.slice(0,100)));
+     localStorage.setItem("py2_customer_email",String(data.customer?.email||"").trim().toLowerCase());
+     if(data.customer?.name)localStorage.setItem("py2_customer_name",String(data.customer.name).slice(0,100));
+    }catch(_){}
+    savedEmail=String(data.customer?.email||savedEmail||"").trim().toLowerCase();
+    $("customer-email").textContent=savedEmail||name;
+    if(savedEmail)$("recovery-email").value=savedEmail;
+   }
+  }catch(error){console.warn("[PhoneYa2] Background order refresh unavailable; keeping saved receipts.",error);}
+  applyCustomerOrderFilters();renderPurchasedProducts(cachedOrders);renderAccountStatistics(cachedOrders);
   const heading=$("recognition-heading"),copy=$("recognition-copy"),status=$("recognition-status");
   if(cachedOrders.length){
+   if(statusMessage)statusMessage.textContent="Showing "+cachedOrders.length+" order receipt"+(cachedOrders.length===1?"":"s")+" · automatically refreshed";
    if(heading)heading.textContent="Welcome back to PhoneYa2";
-   if(copy)copy.textContent="This browser recognises you and has your saved order receipts. No login or password is needed.";
+   if(copy)copy.textContent="PhoneYa2 recognises this device and refreshes your order history securely in the background. No password or repeat verification is needed.";
    if(status)status.textContent="Device recognised · "+cachedOrders.length+" saved order"+(cachedOrders.length===1?"":"s");
   }else{
+   if(statusMessage)statusMessage.textContent="No saved receipts on this device yet.";
    if(heading)heading.textContent="Your PhoneYa2 space is ready";
-   if(copy)copy.textContent="No account or password is needed. If browser data was cleared, restore your orders using the email link below.";
-   if(status)status.textContent="Smart recognition active · ready to reconnect your order history.";
+   if(copy)copy.textContent="After you restore your orders once using the secure email link, PhoneYa2 will remember this device and load your full history automatically.";
+   if(status)status.textContent="Smart recognition ready · no password needed";
   }
-  // Saved receipts load instantly. If browser storage was cleared, restore them through an email-verified link.
  }catch(e){
   console.error("[PhoneYa2] Could not load order history:",e);
   const statusMessage=$("order-refresh-message");
-  if(statusMessage)statusMessage.textContent="Could not load order history. Use the recovery form below or refresh.";
+  if(statusMessage)statusMessage.textContent="Could not load order history. Your saved receipts remain available; refresh to try again.";
   if(host&&!cachedOrders.length)host.innerHTML='<div class="orders-filter-empty">Your order history could not be loaded. Request a secure recovery link by email.</div>';
  }finally{if(button)button.disabled=false;}
 }
@@ -963,8 +980,8 @@ async function restoreOrdersFromEmailLink(token){
   applyCustomerOrderFilters();renderPurchasedProducts(cachedOrders);renderAccountStatistics(cachedOrders);
   const statusMessage=$("order-refresh-message");if(statusMessage)statusMessage.textContent="Restored "+orders.length+" order"+(orders.length===1?"":"s")+" from PhoneYa2’s secure records";
   $("recognition-heading").textContent="Welcome back to PhoneYa2";
-  $("recognition-copy").textContent="Your order history has been restored. This browser can remember your receipts; if browser data is cleared again, request a new email recovery link.";
-  $("recognition-status").textContent="Email verified · "+orders.length+" order"+(orders.length===1?"":"s")+" restored";
+  $("recognition-copy").textContent="Your order history is restored. PhoneYa2 has securely remembered this device, so future visits load your full history automatically without another verification email.";
+  $("recognition-status").textContent="Device remembered · "+orders.length+" order"+(orders.length===1?"":"s")+" restored";
   if(formMessage){formMessage.style.color="#16703b";formMessage.textContent="Your orders have been restored successfully.";}
   message("Your PhoneYa2 order history has been restored.","success");
  }catch(error){
