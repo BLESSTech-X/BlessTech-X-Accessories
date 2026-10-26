@@ -911,7 +911,7 @@ async function loadOrders(){
   try{
    const response=await fetch("/api/customer",{headers:{accept:"application/json"},cache:"no-store",credentials:"same-origin"});
    const data=await response.json().catch(()=>({}));
-   if(response.ok&&Array.isArray(data.orders)&&data.remembered){
+   if(response.ok&&Array.isArray(data.orders)&&(data.remembered||data.deviceRecognized)){
     cachedOrders=mergeOrderRecords(data.orders,readDeviceOrders()).sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());
     try{
      localStorage.setItem("py2_customer_orders_v1",JSON.stringify(cachedOrders.slice(0,100)));
@@ -928,12 +928,14 @@ async function loadOrders(){
   if(cachedOrders.length){
    if(statusMessage)statusMessage.textContent="Showing "+cachedOrders.length+" order receipt"+(cachedOrders.length===1?"":"s")+" · automatically refreshed";
    if(heading)heading.textContent="Welcome back to PhoneYa2";
-   if(copy)copy.textContent="PhoneYa2 recognises this device and refreshes your order history securely in the background. No password or repeat verification is needed.";
-   if(status)status.textContent="Device recognised · "+cachedOrders.length+" saved order"+(cachedOrders.length===1?"":"s");
+   if(copy)copy.textContent=data.remembered
+    ?"PhoneYa2 recognises this device and securely refreshes your complete order history in the background."
+    :"PhoneYa2 automatically restores orders placed on this device and refreshes their status. Use secure email recovery only to restore older orders from other devices.";
+   if(status)status.textContent=(data.remembered?"Account remembered":"This device recognised")+" · "+cachedOrders.length+" order"+(cachedOrders.length===1?"":"s");
   }else{
    if(statusMessage)statusMessage.textContent="No saved receipts on this device yet.";
    if(heading)heading.textContent="Your PhoneYa2 space is ready";
-   if(copy)copy.textContent="After you restore your orders once using the secure email link, PhoneYa2 will remember this device and load your full history automatically.";
+   if(copy)copy.textContent="Orders placed on this device will appear here automatically. To restore older orders from another device, use the secure email link below.";
    if(status)status.textContent="Smart recognition ready · no password needed";
   }
  }catch(e){
