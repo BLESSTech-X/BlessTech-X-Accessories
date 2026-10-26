@@ -1,6 +1,6 @@
 // ─── PhoneYa2 Service Worker ─────────────────────────────────────────────────
 // Version: bump this number any time you want to force a cache refresh
-const VERSION   = 'phoneya2-v16';
+const VERSION   = 'phoneya2-v17';
 const CACHE     = VERSION;
 // Navigation documents are reused for five minutes, then refreshed from the network.
 const PAGE_TTL_MS = 5 * 60 * 1000;
@@ -32,6 +32,7 @@ const PRECACHE = [
   '/agents/py2-360.html',
   '/manifest.json',
   '/pwa-install.js',
+  '/navigation-boost.js',
   '/icon-512x512.jpg',
 ];
 
@@ -83,15 +84,37 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Navigation: reuse a recently visited HTML page instantly, but refresh it after 5 minutes.
-  // Browser back/forward can additionally restore the exact previous page from BFCache.
+  // Keep transactional/personal pages network-first and out of the navigation cache.
+  // This prevents a cached checkout, cart or account document from appearing authoritative.
   if (request.mode === 'navigate') {
+    const path = url.pathname.toLowerCase();
+    const sensitive = path === '/checkout.html' || path === '/cart.html' ||
+      path === '/account.html' || path.startsWith('/admin') || path.startsWith('/api/');
+    if (sensitive) {
+      event.respondWith(fetch(request).catch(async () => {
+        const cache = await caches.open(CACHE);
+        const fallback = await cache.match(request);
+        return fallback || new Response('You appear to be offline. Reconnect to continue.', {
+          status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+      }));
+      return;
+    }
+    // Stale-while-revalidate for browse pages: show a warmed page immediately,
+    // refresh its cache in the background, and use fresh HTML on the next visit.
     event.respondWith((async () => {
       const cache = await caches.open(CACHE);
       const cached = await cache.match(request);
       const cachedAt = cached ? Number(cached.headers.get('X-PhoneYa2-Cached-At') || 0) : 0;
       const isFresh = cached && cachedAt > 0 && (Date.now() - cachedAt) < PAGE_TTL_MS;
-      if (isFresh) return cached;
+      if (isFresh) {
+        event.waitUntil(fetch(request).then(async response => {
+          if (response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
+            await cache.put(request, stampResponse(response));
+          }
+        }).catch(() => {}));
+        return cached;
+      }
       try {
         const response = await fetch(request);
         if (response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
