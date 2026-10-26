@@ -1,6 +1,6 @@
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
+function json(data, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(data), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
 }
 function getSecret(env, ...keys) {
   for (const key of keys) if (env[key]) return env[key];
@@ -69,6 +69,29 @@ async function verifyRecoveryToken(token, secret) {
   if (!payload.email || !Number.isFinite(payload.exp) || payload.exp < Date.now()) return null;
   return payload;
 }
+function getCookie(request, name) {
+  const prefix = name + "=";
+  for (const part of (request.headers.get("cookie") || "").split(";")) {
+    const item = part.trim();
+    if (item.startsWith(prefix)) return item.slice(prefix.length);
+  }
+  return "";
+}
+async function createRememberToken(email, secret) {
+  const payload = base64url(new TextEncoder().encode(JSON.stringify({
+    purpose: "phoneya2_customer_remember",
+    email: String(email || "").trim().toLowerCase(),
+    exp: Date.now() + 180 * 24 * 60 * 60 * 1000
+  })));
+  return payload + "." + await signRecoveryPayload(payload, secret);
+}
+async function verifyRememberToken(token, secret) {
+  const payload = await verifyRecoveryToken(token, secret);
+  if (!payload || payload.purpose !== "phoneya2_customer_remember") return null;
+  const email = String(payload.email || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+  return { ...payload, email };
+}
 async function fetchOrdersForEmail(env, context, email) {
   const buildQuery = includeNote => new URLSearchParams({
     select: "id,order_number,customer_name,customer_email,customer_phone," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
@@ -119,17 +142,34 @@ export async function onRequest(context) {
     const payload = await verifyRecoveryToken(recoveryToken, recoverySecret);
     if (!payload) return json({ error: "This recovery link is invalid or has expired. Request a new email link." }, 401);
     try {
-      const result = await fetchOrdersForEmail(env, context, String(payload.email).trim().toLowerCase());
+      const email = String(payload.email).trim().toLowerCase();
+      const result = await fetchOrdersForEmail(env, context, email);
       if (!result) return json({ error: "We could not retrieve your order history right now. Please try again." }, 503);
-      return json(result);
+      // Only a successful, signed email recovery can establish a remembered device.
+      const rememberToken = await createRememberToken(email, recoverySecret);
+      return json(result, 200, {
+        "set-cookie": "py2_customer_remember=" + rememberToken + "; Max-Age=15552000; Path=/api/customer; HttpOnly; Secure; SameSite=Lax"
+      });
     } catch (error) {
       console.error("PhoneYa2 verified order recovery failed:", String(error).slice(0, 200));
       return json({ error: "Order recovery is temporarily unavailable. Please try again." }, 503);
     }
   }
+  // Silently reload server-side history for devices remembered after email verification.
+  const remembered = await verifyRememberToken(getCookie(request, "py2_customer_remember"), recoverySecret);
+  if (remembered) {
+    try {
+      const result = await fetchOrdersForEmail(env, context, remembered.email);
+      if (!result) return json({ error: "We could not load your remembered order history. Please try again." }, 503);
+      return json({ ...result, remembered: true });
+    } catch (error) {
+      console.error("PhoneYa2 remembered customer lookup failed:", String(error).slice(0, 200));
+      return json({ error: "Your remembered account is temporarily unavailable." }, 503);
+    }
+  }
   const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i)?.[1];
   const anonKey = getSecret(env, "SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
-  if (!token || !base || !anonKey) return json({ error: "Please sign in to view your orders." }, 401);
+  if (!token || !base || !anonKey) return json({ error: "No remembered customer session." }, 401);
   try {
     const userResponse = await fetch(base + "/auth/v1/user", {
       headers: { apikey: anonKey, authorization: "Bearer " + token }
