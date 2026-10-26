@@ -92,6 +92,31 @@ async function verifyRememberToken(token, secret) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
   return { ...payload, email };
 }
+async function fetchOrdersForDevice(env, context, email, orderNumbers) {
+  const valid = [...new Set(orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
+  if (!valid.length) return { customer: { email, name: "" }, orders: [], deviceRecognized: true };
+  const query = new URLSearchParams({
+    select: "id,order_number,customer_name,customer_email,customer_phone,customer_note,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
+    customer_email: "eq." + email,
+    order_number: "in.(" + valid.join(",") + ")",
+    order: "created_at.desc",
+    limit: "100"
+  });
+  let response = await supabaseFetch(env, "/rest/v1/orders?" + query.toString(), { method: "GET", headers: { accept: "application/json" } });
+  if (!response.ok) {
+    const fallback = new URLSearchParams(query);
+    fallback.delete("customer_note");
+    fallback.set("select", "id,order_number,customer_name,customer_email,customer_phone,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)");
+    response = await supabaseFetch(env, "/rest/v1/orders?" + fallback.toString(), { method: "GET", headers: { accept: "application/json" } });
+  }
+  if (!response.ok) {
+    console.error("PhoneYa2 device order query failed:", response.status, (await response.text()).slice(0, 200));
+    return null;
+  }
+  const orders = await response.json();
+  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), deviceRecognized: true };
+}
+
 async function fetchOrdersForEmail(env, context, email) {
   const buildQuery = includeNote => new URLSearchParams({
     select: "id,order_number,customer_name,customer_email,customer_phone," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
@@ -155,7 +180,7 @@ export async function onRequest(context) {
       return json({ error: "Order recovery is temporarily unavailable. Please try again." }, 503);
     }
   }
-  // Silently reload server-side history for devices remembered after email verification.
+  // First preference: a customer who verified their inbox can load all orders for that email.
   const remembered = await verifyRememberToken(getCookie(request, "py2_customer_remember"), recoverySecret);
   if (remembered) {
     try {
@@ -165,6 +190,18 @@ export async function onRequest(context) {
     } catch (error) {
       console.error("PhoneYa2 remembered customer lookup failed:", String(error).slice(0, 200));
       return json({ error: "Your remembered account is temporarily unavailable." }, 503);
+    }
+  }
+  // Without email verification, return only orders this browser actually placed.
+  const device = await verifyDeviceToken(getCookie(request, "py2_device_orders"), recoverySecret);
+  if (device) {
+    try {
+      const result = await fetchOrdersForDevice(env, context, device.email, device.order_numbers);
+      if (!result) return json({ error: "We could not refresh orders saved on this device." }, 503);
+      return json(result);
+    } catch (error) {
+      console.error("PhoneYa2 device order lookup failed:", String(error).slice(0, 200));
+      return json({ error: "Your saved orders are temporarily unavailable." }, 503);
     }
   }
   const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i)?.[1];
