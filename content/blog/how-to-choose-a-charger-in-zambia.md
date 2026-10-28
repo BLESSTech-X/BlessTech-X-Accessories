@@ -8,7 +8,7 @@ featured: false
 publish: true
 ---
 
-# How to Choose a Safe Phone Charger in Zambia
+## How to Choose a Safe Phone Charger in Zambia
 
 A charger should do more than fit into a socket. The connector, charging standard, cable and condition all affect whether it works well with your phone. Use this guide before buying a replacement in Lusaka or anywhere else in Zambia. If your phone's manual gives a specific requirement, use that as your first reference.
 
