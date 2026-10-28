@@ -141,7 +141,10 @@ function loadLatestCommentPreviews(){
   box.dataset.requested='true';
   fetch('/api/blog-comments?slug='+encodeURIComponent(slug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.json()}).then(function(data){
    var comments=Array.isArray(data.comments)?data.comments:[];
-   if(!comments.length)return;
+   if(!comments.length){
+    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Join the conversation</span></div><p>Be the first to comment on this article.</p><a href="/blog-post.html?slug='+encodeURIComponent(slug)+'#article-comments">Be the first to comment ↗</a>';
+    box.hidden=false;return;
+   }
    var latest=comments[0],date='';
    try{date=latest.date?new Date(latest.date).toLocaleDateString(undefined,{month:'short',day:'numeric'}):''}catch(e){}
    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Latest comment</span></div><p><strong>'+esc(latest.name||'Reader')+(date?' · '+esc(date):'')+'</strong><br>'+esc(latest.message||'')+'</p><a href="/blog-post.html?slug='+encodeURIComponent(slug)+'#article-comments">View all comments ('+comments.length+') ↗</a>';
