@@ -11,10 +11,10 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="page-title">Product — PhoneYa2 Accessories</title>
-<meta name="description" id="page-desc" content="Genuine phone accessories. Same-day delivery in Lusaka, Zambia.">
-<meta property="og:title" id="og-title" content="PhoneYa2 Accessories">
-<meta property="og:description" id="og-desc" content="Genuine phone accessories. Same-day delivery in Lusaka.">
+<title id="page-title">PhoneYa2 Product Catalogue — Phone Accessories in Zambia</title>
+<meta name="description" id="page-desc" content="Browse phone cases, chargers, cables, earphones and other accessories from PhoneYa2. Check each listing for current price, compatibility, stock and ordering details.">
+<meta property="og:title" id="og-title" content="PhoneYa2 Product Catalogue — Phone Accessories in Zambia">
+<meta property="og:description" id="og-desc" content="Browse phone accessories from PhoneYa2 and check each listing for current price, compatibility, stock and ordering details.">
 <meta property="og:image" id="og-image" content="">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ff6000">
@@ -1638,11 +1638,11 @@ function renderProduct(p) {
 
   document.getElementById('page-title').textContent = p.title + ' – ZMW ' + p.price + ' | PhoneYa2';
   const descEl = document.getElementById('page-desc');
-  if (descEl) descEl.content = (p.description || '') + ' Same-day delivery in Lusaka.';
+  if (descEl) descEl.content = (p.description || ('Browse ' + p.title + ' on PhoneYa2.')) + ' Check the listing and contact PhoneYa2 to confirm compatibility, availability and delivery details.';
 
   const setMeta = (id, val) => { const el=document.getElementById(id); if(el) el.content=val; };
   setMeta('og-title',  p.title + ' – ZMW ' + p.price + ' | PhoneYa2');
-  setMeta('og-desc',   (p.description||'Genuine phone accessory from PhoneYa2.') + ' Same-day delivery in Lusaka, Zambia.');
+  setMeta('og-desc',   (p.description||('Browse ' + p.title + ' on PhoneYa2.')) + ' Check compatibility, availability and delivery details before ordering.');
   setMeta('og-image',  productImg);
   let ogUrl = document.getElementById('og-url');
   if (!ogUrl) {
@@ -1667,16 +1667,19 @@ function renderProduct(p) {
     "sku": String(p.slug || ""),
     "url": productUrl,
     "brand": { "@type": "Brand", "name": "PhoneYa2" },
-    "offers": {
+  };
+  // Only publish Offer markup when the listing has a valid positive price.
+  // Do not assert a new/used condition unless the listing explicitly verifies it.
+  if (Number(p.price) > 0) {
+    productSchema.offers = {
       "@type": "Offer",
       "url": productUrl,
       "priceCurrency": "ZMW",
-      "price": Math.max(0, Number(p.price) || 0).toFixed(2),
+      "price": Number(p.price).toFixed(2),
       "availability": Number(p.stock) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "itemCondition": "https://schema.org/NewCondition",
       "seller": { "@type": "Organization", "name": "PhoneYa2", "url": window.location.origin + "/" }
-    }
-  };
+    };
+  }
   let productJsonLd = document.getElementById('product-jsonld');
   if (!productJsonLd) {
     productJsonLd = document.createElement('script');
