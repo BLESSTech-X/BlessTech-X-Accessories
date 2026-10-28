@@ -225,3 +225,10 @@ body:has(.review-card) select, body:has(.review-card) textarea {
 .py2-selling-pick .py2-selling-cta{display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;margin-top:3px;border-radius:10px;background:#16834a;color:#fff!important;font-weight:900;text-decoration:none}
 .py2-selling-pick .py2-selling-cta:hover{background:#11683a}
 @media(max-width:520px){.py2-selling-pick .py2-product-image-link{min-height:112px;padding:8px}.py2-selling-pick .py2-product-image-link img{height:105px}.py2-selling-pick .py2-product-card-body{padding:10px;gap:7px}.py2-selling-pick h3{font-size:13px}.py2-selling-pick .py2-product-price{font-size:17px}}
+
+
+/* Blog comment contrast and empty-state visibility fixes. */
+.py2-comments-panel .py2-comment-form button[type="submit"], .py2-comments-modal .py2-modal-comment-form button[type="submit"] { background:#1677e8 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; opacity:1; }
+.py2-comments-panel .py2-comment-form button[type="submit"]:hover, .py2-comments-modal .py2-modal-comment-form button[type="submit"]:hover { background:#1159b4 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; }
+.py2-latest-comment[hidden] { display:block !important; }
+.py2-latest-comment .py2-open-comments-popup { display:inline-flex; align-items:center; justify-content:center; min-height:36px; margin-top:5px; padding:8px 12px; border:0; border-radius:9px; background:#1677e8; color:#fff !important; -webkit-text-fill-color:#fff !important; font-weight:850; cursor:pointer; }
