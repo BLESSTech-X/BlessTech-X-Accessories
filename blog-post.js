@@ -39,7 +39,7 @@ function setupArticleComments(postSlug){
  function commentMarkup(c){var date='';try{date=c.date?new Date(c.date).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):''}catch(e){}return '<article class="py2-comment"><div class="py2-comment-head"><strong>'+esc(c.name||'Reader')+'</strong><span class="py2-comment-date">'+esc(date)+'</span></div><p class="py2-comment-message">'+esc(c.message||'')+'</p></article>'}
  function showComments(comments){
   approved=comments;
-  if(!comments.length){list.innerHTML='<p class="py2-comment-status">No approved comments yet. Start the conversation.</p>';actions.hidden=true;return}
+  if(!comments.length){list.innerHTML='<div class="py2-empty-comments"><strong>Be the first to comment on this article.</strong><p>Share your thoughts using the form below.</p></div>';actions.hidden=true;return}
   list.innerHTML=comments.slice(0,3).map(commentMarkup).join('');
   actions.hidden=comments.length<=3;
   more.textContent='View more comments ('+comments.length+')';
