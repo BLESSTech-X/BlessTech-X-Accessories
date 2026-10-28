@@ -8,7 +8,7 @@ featured: false
 publish: true
 ---
 
-# How to Choose a Phone Case and Screen Protector That Actually Fit
+## How to Choose a Phone Case and Screen Protector That Actually Fit
 
 A case or screen protector can look right in a product photo and still be the wrong fit. Phone names often include several versions—standard, Plus, Pro, Pro Max, 4G and 5G—and small differences can change the camera opening, button position or screen dimensions.
 
