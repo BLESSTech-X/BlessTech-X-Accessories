@@ -101,6 +101,11 @@ function parseFrontmatter(markdown) {
 try {
   const productSlugs = fs.readdirSync(productsDir)
     .filter(f => f.endsWith('.md') && f !== 'README.md')
+    .filter(file => {
+      const source = fs.readFileSync(path.join(productsDir, file), 'utf8');
+      const meta = parseFrontmatter(source);
+      return meta.publish !== false;
+    })
     .map(f => f.replace(/\.md$/, ''))
     .sort();
   fs.writeFileSync(path.join(productsDir, 'index.json'), JSON.stringify(productSlugs, null, 2));
