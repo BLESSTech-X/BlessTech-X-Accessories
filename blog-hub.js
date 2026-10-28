@@ -122,6 +122,7 @@ function card(p){
   '<a class="py2-post-action py2-post-open" href="',href,'" data-blog-open="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span>Open post</span></a></div>',
   '<div class="py2-post-footer"><span><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Smart choices. Better connected.</span>',
   '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div>',
+  '<div class="py2-latest-comment" data-latest-comment="',esc(p.slug),'" aria-live="polite" hidden></div>',
   commentsPanel(p),'</article>'
  ].join('');
 }
@@ -133,11 +134,32 @@ function populateCategoryFilters(){
  var labelMap={'Buying Guides':'Buying guides','Tips & Tricks':'Tips & tricks','Product News':'Product news','PhoneYa2 Updates':'PhoneYa2 updates'};
  filters.innerHTML='<button class="blog-category-tab'+(category==='All'?' active':'')+'" data-category="All">All stories</button>'+names.map(function(name){return '<button class="blog-category-tab'+(category===name?' active':'')+'" data-category="'+esc(name)+'">'+esc(labelMap[name]||name)+'</button>'}).join('');
 }
+function loadLatestCommentPreviews(){
+ var feed=document.getElementById('blog-feed');if(!feed)return;
+ feed.querySelectorAll('[data-latest-comment]').forEach(function(box){
+  var slug=box.getAttribute('data-latest-comment');if(!slug||box.dataset.requested==='true')return;
+  box.dataset.requested='true';
+  fetch('/api/blog-comments?slug='+encodeURIComponent(slug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.json()}).then(function(data){
+   var comments=Array.isArray(data.comments)?data.comments:[];
+   if(!comments.length)return;
+   var latest=comments[0],date='';
+   try{date=latest.date?new Date(latest.date).toLocaleDateString(undefined,{month:'short',day:'numeric'}):''}catch(e){}
+   box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Latest comment</span></div><p><strong>'+esc(latest.name||'Reader')+(date?' · '+esc(date):'')+'</strong><br>'+esc(latest.message||'')+'</p><a href="/blog-post.html?slug='+encodeURIComponent(slug)+'#article-comments">View all comments ('+comments.length+') ↗</a>';
+   box.hidden=false;
+  }).catch(function(){});
+ });
+}
+function ensureLatestCommentStyles(){
+ if(document.getElementById('py2-latest-comment-style'))return;
+ var s=document.createElement('style');s.id='py2-latest-comment-style';
+ s.textContent='.py2-latest-comment{margin:0 12px 12px;padding:12px 13px;border:1px solid #dbeafe;border-radius:12px;background:linear-gradient(120deg,#f8fbff,#f0f7ff);overflow-wrap:anywhere}.py2-latest-comment-heading{display:flex;align-items:center;gap:7px;color:#174ea6;font-size:10px;font-weight:900;letter-spacing:.4px;text-transform:uppercase}.py2-latest-comment p{margin:7px 0 9px;color:#344256;font-size:12px;line-height:1.6;white-space:pre-wrap}.py2-latest-comment p strong{color:#172033;font-size:11px}.py2-latest-comment>a{display:inline-flex;align-items:center;gap:5px;color:#1558a6;font-size:11px;font-weight:900;text-decoration:none}.py2-latest-comment>a:hover{text-decoration:underline}';
+ document.head.appendChild(s);
+}
 function render(){
  var saved=getSaved();
  var list=posts.filter(function(p){var matchesCategory=category==='All'||p.category===category;var hay=(p.title+' '+p.excerpt+' '+(p.tags||[]).join(' ')+' '+(p.category||'')).toLowerCase();return matchesCategory&&hay.includes(search.toLowerCase())&&(!showSaved||saved.indexOf(p.slug)>=0)});
  var count=document.getElementById('post-count');if(count)count.textContent=list.length+' post'+(list.length===1?'':'s');
- var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?visible.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<span>Keep scrolling for more stories</span><button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}}
+ var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?visible.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<span>Keep scrolling for more stories</span><button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}ensureLatestCommentStyles();loadLatestCommentPreviews()}
  document.querySelectorAll('[data-rail-category]').forEach(function(b){b.classList.toggle('is-active',b.getAttribute('data-rail-category')===category)});
  updateSavedCount();track('blog_feed_render',{category:category,result_count:list.length,visible_count:Math.min(list.length,visibleCount),search_used:!!search,saved_view:showSaved})
 }
