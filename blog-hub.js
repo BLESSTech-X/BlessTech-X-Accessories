@@ -118,7 +118,7 @@ function card(p){
   '<div class="py2-post-tags">',tags,'</div>',
   '<div class="py2-post-actions"><button type="button" class="py2-post-action',saveClass,'" data-save-post="',esc(p.slug),'" aria-pressed="',saved?'true':'false','"><i class="fa-',saveIcon,' fa-bookmark" aria-hidden="true"></i><span>',saveLabel,'</span></button>',
   '<button type="button" class="py2-post-action" data-share-post="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button>',
-  '<button type="button" class="py2-post-action" data-toggle-comments="',esc(p.slug),'" aria-expanded="false"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Comments</span></button>',
+  '<button type="button" class="py2-post-action" data-open-comments-popup="',esc(p.slug),'" data-comment-title="',esc(p.title||'Article comments'),'"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Comments</span></button>',
   '<a class="py2-post-action py2-post-open" href="',href,'" data-blog-open="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span>Open post</span></a></div>',
   '<div class="py2-post-footer"><span><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Smart choices. Better connected.</span>',
   '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div>',
