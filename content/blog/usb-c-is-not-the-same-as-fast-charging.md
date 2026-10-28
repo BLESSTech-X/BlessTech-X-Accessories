@@ -8,7 +8,7 @@ featured: false
 publish: true
 ---
 
-# USB-C Does Not Always Mean Fast Charging
+## USB-C Does Not Always Mean Fast Charging
 
 USB-C describes the shape of a connector. It does not, by itself, tell you how quickly a phone will charge, how much power a cable can carry, or whether every feature is supported. This distinction can save you from buying an accessory based on its connector alone.
 
