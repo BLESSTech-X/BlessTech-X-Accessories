@@ -134,6 +134,26 @@ function populateCategoryFilters(){
  var labelMap={'Buying Guides':'Buying guides','Tips & Tricks':'Tips & tricks','Product News':'Product news','PhoneYa2 Updates':'PhoneYa2 updates'};
  filters.innerHTML='<button class="blog-category-tab'+(category==='All'?' active':'')+'" data-category="All">All stories</button>'+names.map(function(name){return '<button class="blog-category-tab'+(category===name?' active':'')+'" data-category="'+esc(name)+'">'+esc(labelMap[name]||name)+'</button>'}).join('');
 }
+function openScrollableComments(slug,title){
+ var overlay=document.createElement('div');overlay.className='py2-comments-modal';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Comments on '+(title||'this article'));
+ overlay.innerHTML='<section class="py2-comments-modal-card"><header class="py2-comments-modal-head"><div><h2>'+esc(title||'Article comments')+'</h2><p>Loading approved comments…</p></div><button class="py2-comments-modal-close" type="button" aria-label="Close comments">×</button></header><div class="py2-comments-modal-list"><p class="py2-comment-status">Loading comments…</p></div></section>';
+ document.body.appendChild(overlay);var close=overlay.querySelector('.py2-comments-modal-close'),list=overlay.querySelector('.py2-comments-modal-list'),sub=overlay.querySelector('.py2-comments-modal-head p');
+ function remove(){overlay.remove();document.removeEventListener('keydown',onKey)}
+ function onKey(e){if(e.key==='Escape')remove()}
+ close.addEventListener('click',remove);overlay.addEventListener('click',function(e){if(e.target===overlay)remove()});document.addEventListener('keydown',onKey);close.focus();
+ fetch('/api/blog-comments?slug='+encodeURIComponent(slug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.json()}).then(function(data){
+  var comments=Array.isArray(data.comments)?data.comments:[];sub.textContent=comments.length+' approved '+(comments.length===1?'comment':'comments');
+  if(!comments.length){list.innerHTML='<div class="py2-empty-comments"><strong>Be the first to comment</strong><p>No approved comments yet. Start the conversation on this story.</p><a href="/blog-post.html?slug='+encodeURIComponent(slug)+'#article-comments">Write a comment ↗</a></div>';return}
+  list.innerHTML=comments.map(function(c){var d='';try{d=c.date?new Date(c.date).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):''}catch(e){}return '<article class="py2-comment"><div class="py2-comment-head"><strong>'+esc(c.name||'Reader')+'</strong><span class="py2-comment-date">'+esc(d)+'</span></div><p class="py2-comment-message">'+esc(c.message||'')+'</p></article>'}).join('');
+ }).catch(function(){sub.textContent='Comments unavailable';list.innerHTML='<p class="py2-comment-status">We could not load comments right now. Please try again.</p>'});
+}
+function ensureScrollableCommentsStyles(){
+ if(document.getElementById('py2-shared-comments-modal-style'))return;
+ var s=document.createElement('style');s.id='py2-shared-comments-modal-style';
+ s.textContent='.py2-comments-modal{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(15,23,42,.68);backdrop-filter:blur(4px)}.py2-comments-modal-card{display:flex;flex-direction:column;width:min(100%,620px);max-height:min(84vh,760px);overflow:hidden;border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 24px 80px #02061755}.py2-comments-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #e5eaf2;background:linear-gradient(110deg,#f0fdf4,#eff6ff)}.py2-comments-modal-head h2{margin:0;color:#111827;font-size:19px}.py2-comments-modal-head p{margin:4px 0 0;color:#64748b;font-size:12px}.py2-comments-modal-close{flex:0 0 auto;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#172033;font-size:25px;cursor:pointer;box-shadow:0 2px 8px #0f172a12}.py2-comments-modal-list{padding:14px;overflow-y:auto;overscroll-behavior:contain;min-height:100px}.py2-comments-modal-list .py2-comment{margin-bottom:10px}.py2-comments-modal-list .py2-comment:last-child{margin-bottom:0}.py2-empty-comments{padding:18px;border:1px dashed #bfdbfe;border-radius:13px;background:#f8fbff;color:#334155}.py2-empty-comments p{font-size:13px;line-height:1.55}.py2-empty-comments a,.py2-open-comments-popup{display:inline-flex;align-items:center;gap:6px;color:#1558a6!important;font-size:11px;font-weight:900;text-decoration:none}.py2-open-comments-popup{border:0;padding:0;background:transparent;cursor:pointer}.py2-open-comments-popup:hover,.py2-empty-comments a:hover{text-decoration:underline}@media(max-width:480px){.py2-comments-modal{padding:8px;align-items:flex-end}.py2-comments-modal-card{max-height:88vh;border-radius:18px 18px 12px 12px}.py2-comments-modal-head{padding:14px}.py2-comments-modal-list{padding:10px}}';
+ document.head.appendChild(s);
+}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-open-comments-popup]');if(!b)return;e.preventDefault();ensureScrollableCommentsStyles();openScrollableComments(b.getAttribute('data-open-comments-popup'),b.getAttribute('data-comment-title')||'Article comments')});
 function loadLatestCommentPreviews(){
  var feed=document.getElementById('blog-feed');if(!feed)return;
  feed.querySelectorAll('[data-latest-comment]').forEach(function(box){
@@ -142,12 +162,12 @@ function loadLatestCommentPreviews(){
   fetch('/api/blog-comments?slug='+encodeURIComponent(slug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.json()}).then(function(data){
    var comments=Array.isArray(data.comments)?data.comments:[];
    if(!comments.length){
-    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Join the conversation</span></div><p>Be the first to comment on this article.</p><a href="/blog-post.html?slug='+encodeURIComponent(slug)+'#article-comments">Be the first to comment ↗</a>';
+    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Join the conversation</span></div><p>Be the first to comment on this article.</p><button type="button" class="py2-open-comments-popup" data-open-comments-popup="'+esc(slug)+'" data-comment-title="Comments">Be the first to comment ↗</button>';
     box.hidden=false;return;
    }
    var latest=comments[0],date='';
    try{date=latest.date?new Date(latest.date).toLocaleDateString(undefined,{month:'short',day:'numeric'}):''}catch(e){}
-   box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Latest comment</span></div><p><strong>'+esc(latest.name||'Reader')+(date?' · '+esc(date):'')+'</strong><br>'+esc(latest.message||'')+'</p><a href="/blog-post.html?slug='+encodeURIComponent(slug)+'#article-comments">View all comments ('+comments.length+') ↗</a>';
+   box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Latest comment</span></div><p><strong>'+esc(latest.name||'Reader')+(date?' · '+esc(date):'')+'</strong><br>'+esc(latest.message||'')+'</p><button type="button" class="py2-open-comments-popup" data-open-comments-popup="'+esc(slug)+'" data-comment-title="Comments · '+esc(comments.length)+'">View all comments ('+comments.length+') ↗</button>';
    box.hidden=false;
   }).catch(function(){});
  });
