@@ -118,7 +118,7 @@ function card(p){
   '<div class="py2-post-tags">',tags,'</div>',
   '<div class="py2-post-actions"><button type="button" class="py2-post-action',saveClass,'" data-save-post="',esc(p.slug),'" aria-pressed="',saved?'true':'false','"><i class="fa-',saveIcon,' fa-bookmark" aria-hidden="true"></i><span>',saveLabel,'</span></button>',
   '<button type="button" class="py2-post-action" data-share-post="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><span>Share</span></button>',
-  '<button type="button" class="py2-post-action" data-open-comments-popup="',esc(p.slug),'" data-comment-title="',esc(p.title||'Article comments'),'"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Comments</span></button>',
+  '<button type="button" class="py2-post-action" data-toggle-comments="',esc(p.slug),'" aria-expanded="false"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Comments</span></button>',
   '<a class="py2-post-action py2-post-open" href="',href,'" data-blog-open="',esc(p.slug),'"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span>Open post</span></a></div>',
   '<div class="py2-post-footer"><span><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Smart choices. Better connected.</span>',
   '<a href="',href,'" data-blog-open="',esc(p.slug),'">Read full post ↗</a></div>',
@@ -160,20 +160,20 @@ function loadLatestCommentPreviews(){
   fetch('/api/blog-comments?slug='+encodeURIComponent(slug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.json()}).then(function(data){
    var comments=Array.isArray(data.comments)?data.comments:[];
    if(!comments.length){
-    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Join the conversation</span></div><p>Be the first to comment on this article.</p><button type="button" class="py2-open-comments-popup" data-open-comments-popup="'+esc(slug)+'" data-comment-title="Comments">Be the first to comment ↗</button>';
+    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Join the conversation</span></div><p>Be the first to comment on this article.</p><button type="button" class="py2-open-comments-popup" data-toggle-comments="'+esc(slug)+'" aria-expanded="false">Be the first to comment</button>';
     box.hidden=false;return;
    }
    var latest=comments[0],date='';
    try{date=latest.date?new Date(latest.date).toLocaleDateString(undefined,{month:'short',day:'numeric'}):''}catch(e){}
    box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Latest comment</span></div><p><strong>'+esc(latest.name||'Reader')+(date?' · '+esc(date):'')+'</strong><br>'+esc(latest.message||'')+'</p><button type="button" class="py2-open-comments-popup" data-open-comments-popup="'+esc(slug)+'" data-comment-title="Comments · '+esc(comments.length)+'">View all comments ('+comments.length+') ↗</button>';
    box.hidden=false;
-  }).catch(function(){ box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Join the conversation</span></div><p>Start the conversation on this article.</p><button type="button" class="py2-open-comments-popup" data-open-comments-popup="'+esc(slug)+'" data-comment-title="Comments">Be the first to comment ↗</button>';box.hidden=false; });
+  }).catch(function(){ box.innerHTML='<div class="py2-latest-comment-heading"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>Be the first to comment</span></div><p>Start the conversation on this article.</p><button type="button" class="py2-open-comments-popup" data-toggle-comments="'+esc(slug)+'" aria-expanded="false">Be the first to comment</button>';box.hidden=false; });
  });
 }
 function ensureLatestCommentStyles(){
  if(document.getElementById('py2-latest-comment-style'))return;
  var s=document.createElement('style');s.id='py2-latest-comment-style';
- s.textContent='.py2-comment-form button[type=submit]{color:#fff!important;-webkit-text-fill-color:#fff!important;background:#2563eb!important;border-color:#2563eb!important}.py2-latest-comment{margin:0 12px 12px;padding:12px 13px;border:1px solid #dbeafe;border-radius:12px;background:linear-gradient(120deg,#f8fbff,#f0f7ff);overflow-wrap:anywhere}.py2-latest-comment-heading{display:flex;align-items:center;gap:7px;color:#174ea6;font-size:10px;font-weight:900;letter-spacing:.4px;text-transform:uppercase}.py2-latest-comment p{margin:7px 0 9px;color:#344256;font-size:12px;line-height:1.6;white-space:pre-wrap}.py2-latest-comment p strong{color:#172033;font-size:11px}.py2-latest-comment>a{display:inline-flex;align-items:center;gap:5px;color:#1558a6;font-size:11px;font-weight:900;text-decoration:none}.py2-latest-comment>a:hover{text-decoration:underline}';
+ s.textContent='.py2-post-actions button[data-toggle-comments]{color:#174ea6!important;-webkit-text-fill-color:#174ea6!important;background:#eff6ff!important;border:1px solid #bfdbfe!important}.py2-post-actions button[data-toggle-comments] span{color:#174ea6!important;-webkit-text-fill-color:#174ea6!important}.py2-post-actions button[data-toggle-comments]:hover{background:#dbeafe!important}.py2-comment-form button[type=submit]{color:#fff!important;-webkit-text-fill-color:#fff!important;background:#2563eb!important;border-color:#2563eb!important}.py2-latest-comment{margin:0 12px 12px;padding:12px 13px;border:1px solid #dbeafe;border-radius:12px;background:linear-gradient(120deg,#f8fbff,#f0f7ff);overflow-wrap:anywhere}.py2-latest-comment-heading{display:flex;align-items:center;gap:7px;color:#174ea6;font-size:10px;font-weight:900;letter-spacing:.4px;text-transform:uppercase}.py2-latest-comment p{margin:7px 0 9px;color:#344256;font-size:12px;line-height:1.6;white-space:pre-wrap}.py2-latest-comment p strong{color:#172033;font-size:11px}.py2-latest-comment>a{display:inline-flex;align-items:center;gap:5px;color:#1558a6;font-size:11px;font-weight:900;text-decoration:none}.py2-latest-comment>a:hover{text-decoration:underline}';
  document.head.appendChild(s);
 }
 function render(){
