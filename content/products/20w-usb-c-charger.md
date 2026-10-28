@@ -1,4 +1,5 @@
 ---
+publish: false
 title: iPhone 11 128GB
 price: 4200
 original_price: 4350
