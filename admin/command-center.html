@@ -131,6 +131,31 @@
   <div id="global-message" role="status" aria-live="polite"></div>
   <div id="heads-up" class="headsup" role="status" aria-live="polite" hidden><div class="headsup-icon">✦</div><div class="headsup-copy"><strong id="heads-up-title">PhoneYa2 heads-up</strong><p id="heads-up-text"></p><div class="headsup-actions" id="heads-up-actions"></div></div><button class="headsup-close" id="heads-up-close" aria-label="Dismiss heads-up">×</button></div>
 
+  <section class="panel section" id="seasonal-studio" style="margin:17px 0;border:1px solid #e3e8f2">
+    <div class="section-head"><div><h2>🎉 Seasonal &amp; Event Studio</h2><p>Change the public storefront look for holidays, campaigns and special events.</p></div><span class="icon">✨</span></div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin:12px 0">
+      <button type="button" class="btn" data-season="none">Default look</button>
+      <button type="button" class="btn" data-season="black-friday">🖤 Black Friday</button>
+      <button type="button" class="btn" data-season="christmas">🎄 Christmas</button>
+      <button type="button" class="btn" data-season="independence">🇿🇲 Zambia Independence</button>
+      <button type="button" class="btn" data-season="new-year">🎆 New Year</button>
+      <button type="button" class="btn" data-season="valentines">❤️ Valentine’s</button>
+      <button type="button" class="btn" data-season="easter">🐣 Easter</button>
+      <button type="button" class="btn" data-season="custom">✨ Special campaign</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0">
+      <div class="field"><label for="seasonal-title">Campaign headline</label><input id="seasonal-title" maxlength="90" placeholder="e.g. Christmas Smart Deals"></div>
+      <div class="field"><label for="seasonal-message">Popup / banner message</label><input id="seasonal-message" maxlength="220" placeholder="A short message customers will see"></div>
+      <div class="field"><label for="seasonal-end">Campaign end date (optional)</label><input id="seasonal-end" type="date"></div>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0">
+      <label style="display:flex;align-items:center;gap:7px"><input id="seasonal-effects" type="checkbox" checked style="width:auto"> Decorations / seasonal effects</label>
+      <label style="display:flex;align-items:center;gap:7px"><input id="seasonal-popup" type="checkbox" checked style="width:auto"> Show campaign popup once per visitor</label>
+      <label style="display:flex;align-items:center;gap:7px"><input id="seasonal-banner" type="checkbox" checked style="width:auto"> Show campaign banner</label>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn primary" id="seasonal-publish">Publish storefront look</button><button type="button" class="btn dark" id="seasonal-preview">Preview on this device</button><span id="seasonal-status" class="muted" role="status" aria-live="polite">Loading current storefront theme…</span></div>
+    <p class="note" style="margin-top:10px">Changes publish to the live storefront for all visitors. Use Default look to turn off an event theme. The theme is visual only; product prices and checkout remain unchanged.</p>
+  </section>
   <div class="stats">
     <article class="panel stat"><div class="stat-top"><span>Total orders</span><span class="icon">▤</span></div><strong id="stat-orders">—</strong><small id="orders-sub">Orders recorded</small></article>
     <article class="panel stat"><div class="stat-top"><span>Order value</span><span class="icon">ZK</span></div><strong id="stat-sales">—</strong><small>Excludes cancelled orders; not cash collected</small></article>
@@ -460,6 +485,34 @@ function buildFullBriefing(){
 function speakFullBriefing(){if(!('speechSynthesis'in window)){const answer=$('assistant-answer');if(answer)answer.textContent='Voice playback is not supported by this browser. You can still read the complete briefing in the answer panel.';return;}const text=buildFullBriefing();const answer=$('assistant-answer');if(answer)answer.textContent=text;voiceBriefingEnabled=true;localStorage.setItem('phoneya2_voice_briefing','on');const toggle=$('voice-toggle');if(toggle){toggle.setAttribute('aria-pressed','true');toggle.textContent='🔊 Voice briefing: On';}speakBriefing(text);}
 function stopVoiceBriefing(){if('speechSynthesis'in window)speechSynthesis.cancel();}
 function readAssistantAnswer(){const text=$('assistant-answer')?.textContent?.trim();if(text)speakBriefing(text);}
+
+
+// Seasonal & Event Studio: authenticated publishing to the shared storefront theme.
+async function seasonalRequest(method='GET', payload){
+ const headers={'content-type':'application/json'};
+ if(session?.access_token) headers.authorization='Bearer '+session.access_token;
+ const res=await fetch('/api/seasonal-theme',{method,headers, ...(payload?{body:JSON.stringify(payload)}:{})});
+ const data=await res.json().catch(()=>({}));
+ if(!res.ok) throw new Error(data.error||'Could not reach the seasonal theme service.');
+ return data;
+}
+const seasonalPresets={
+ none:{theme:'none',title:'',message:'',effects:false,popup:false,banner:false},
+ 'black-friday':{theme:'black-friday',title:'Black Friday Deals',message:'Discover special Black Friday offers on PhoneYa2.',effects:true,popup:true,banner:true},
+ christmas:{theme:'christmas',title:'Christmas Smart Deals 🎄',message:'Make the season brighter with PhoneYa2 gifts and accessories.',effects:true,popup:true,banner:true},
+ independence:{theme:'independence',title:'Happy Independence Day, Zambia! 🇿🇲',message:'Celebrate Zambia with smart choices and better connections.',effects:true,popup:true,banner:true},
+ 'new-year':{theme:'new-year',title:'New Year, Better Connections',message:'Start the year connected with PhoneYa2.',effects:true,popup:true,banner:true},
+ valentines:{theme:'valentines',title:'Share the Love ❤️',message:'Thoughtful tech gifts and accessories for someone special.',effects:true,popup:true,banner:true},
+ easter:{theme:'easter',title:'Easter Smart Deals',message:'Enjoy the season with PhoneYa2.',effects:true,popup:true,banner:true},
+ custom:{theme:'custom',title:'A special PhoneYa2 event',message:'Explore this special campaign from PhoneYa2.',effects:true,popup:true,banner:true}
+};
+function seasonalSetForm(v){$('seasonal-title').value=v.title||'';$('seasonal-message').value=v.message||'';$('seasonal-effects').checked=!!v.effects;$('seasonal-popup').checked=!!v.popup;$('seasonal-banner').checked=!!v.banner;$('seasonal-end').value=v.end_date||'';}
+function seasonalReadForm(theme){return {theme,title:$('seasonal-title').value.trim(),message:$('seasonal-message').value.trim(),effects:$('seasonal-effects').checked,popup:$('seasonal-popup').checked,banner:$('seasonal-banner').checked,end_date:$('seasonal-end').value||null,updated_at:new Date().toISOString()};}
+async function seasonalLoad(){try{const d=await seasonalRequest();const v=d.config||seasonalPresets.none;seasonalSetForm(v);document.querySelectorAll('[data-season]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.season===v.theme)));$('seasonal-status').textContent='Live theme: '+(v.theme||'none')+'.';}catch(e){$('seasonal-status').textContent='Theme service needs setup: '+e.message;}}
+document.querySelectorAll('[data-season]').forEach(b=>b.addEventListener('click',()=>{const v=seasonalPresets[b.dataset.season];if(v)seasonalSetForm(v);document.querySelectorAll('[data-season]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('seasonal-status').textContent='Preset selected. Publish to apply it to all visitors.';}));
+$('seasonal-preview')?.addEventListener('click',()=>{const v=seasonalReadForm(document.querySelector('[data-season][aria-pressed="true"]')?.dataset.season||'custom');window.PhoneYa2SeasonalTheme?.apply(v);$('seasonal-status').textContent='Preview applied on this device only. Publish to update the live storefront.';});
+$('seasonal-publish')?.addEventListener('click',async()=>{const b=$('seasonal-publish');b.disabled=true;try{const v=seasonalReadForm(document.querySelector('[data-season][aria-pressed="true"]')?.dataset.season||'custom');const d=await seasonalRequest('PUT',v);window.PhoneYa2SeasonalTheme?.apply(d.config||v);$('seasonal-status').textContent='Published successfully. The public storefront will load this theme for all visitors.';}catch(e){$('seasonal-status').textContent=e.message;}finally{b.disabled=false;}});
+seasonalLoad();
 
 setupWorkspace();
 
