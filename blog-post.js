@@ -65,7 +65,7 @@ function setupArticleComments(postSlug){
   notice.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
   track('blog_comment_submitted',{post_slug:postSlug});
  }
- fetch('/api/blog-comments?slug=+encodeURIComponent(postSlug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){return r.json().then(function(d){if(!r.ok)throw Error(d.error||'Comments are temporarily unavailable.');return d})}).then(function(d){showComments(Array.isArray(d.comments)?d.comments:[])}).catch(function(e){list.innerHTML='<p class="py2-comment-status">'+esc(e.message||'Comments are temporarily unavailable.')+'</p>';actions.hidden=true});
+ fetch('/api/blog-comments?slug='+encodeURIComponent(postSlug),{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){return r.json().then(function(d){if(!r.ok)throw Error(d.error||'Comments are temporarily unavailable.');return d})}).then(function(d){showComments(Array.isArray(d.comments)?d.comments:[])}).catch(function(e){list.innerHTML='<p class="py2-comment-status">'+esc(e.message||'Comments are temporarily unavailable.')+'</p>';actions.hidden=true});
  root.addEventListener('submit',async function(e){
   var form=e.target.closest('[data-article-comment-form]');if(!form)return;e.preventDefault();
   var submit=form.querySelector('button[type="submit"]'),status=form.querySelector('[data-comment-status]');
