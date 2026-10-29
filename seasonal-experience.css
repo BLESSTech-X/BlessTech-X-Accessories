@@ -1,0 +1,25 @@
+/* PhoneYa2 seasonal design system — Christmas */
+:root{--py2-xmas-evergreen:#123d2e;--py2-xmas-pine:#1d6045;--py2-xmas-red:#c92f3b;--py2-xmas-gold:#d8ad55;--py2-xmas-cream:#fffaf0}
+html.py2-xmas{--py2-accent:var(--py2-xmas-red);--py2-accent-2:var(--py2-xmas-evergreen);--py2-surface:#fffdf8}
+html.py2-xmas body{background-color:#fffdf8}
+html.py2-xmas body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.16;background-image:radial-gradient(circle at 10% 10%,#d8ad5522 0 1px,transparent 2px),radial-gradient(circle at 80% 30%,#1d604522 0 1px,transparent 2px);background-size:38px 38px,54px 54px}
+html.py2-xmas body>*{position:relative}
+html.py2-xmas :is(button,.btn,[role=button],input[type=submit]){transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s}
+html.py2-xmas :is(button,.btn,[role=button],input[type=submit]):focus-visible,html.py2-xmas a:focus-visible{outline:3px solid #d8ad55!important;outline-offset:3px}
+html.py2-xmas :is(.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"]){background:linear-gradient(135deg,#d73743,#a91f2d)!important;color:#fff!important;border-color:#b72532!important;box-shadow:0 5px 14px #c92f3b24}
+html.py2-xmas :is(.add-to-cart,.addToCart,[data-action="add-to-cart"]){background:linear-gradient(135deg,#1d6045,#123d2e)!important;color:#fff!important;border-color:#164b37!important}
+html.py2-xmas :is(.product-card,.product-card-v2,.product-item,.product){border-color:#e8dfcc}
+html.py2-xmas :is(.discount,.discount-badge,.sale-badge,.offer-badge,.badge-discount){background:#c92f3b!important;color:#fff!important}
+.py2-xmas-garland{height:5px;background:repeating-linear-gradient(110deg,#123d2e 0 18px,#d8ad55 18px 22px,#c92f3b 22px 40px);box-shadow:0 2px 8px #123d2e1c;pointer-events:none}
+.py2-xmas-decoration{display:inline-flex;align-items:center;gap:.35em;margin-inline-start:.35em;font-size:.78em;vertical-align:middle;white-space:nowrap;pointer-events:none}
+.py2-xmas-decoration img{width:1.8em;height:1.8em;object-fit:contain}
+#py2-xmas-snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9998}
+#py2-xmas-popup{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:#081c16a8;backdrop-filter:blur(5px)}
+#py2-xmas-popup[hidden]{display:none!important}
+.py2-xmas-modal{width:min(440px,100%);position:relative;padding:30px 24px 24px;border:1px solid #d8ad55;border-radius:22px;background:linear-gradient(145deg,#fffdf8,#f5ead4);box-shadow:0 24px 90px #06150f55;text-align:center;color:#173c2e}
+.py2-xmas-modal:before{content:"";position:absolute;inset:7px;border:1px solid #d8ad5577;border-radius:16px;pointer-events:none}
+.py2-xmas-modal h2{font-size:clamp(24px,6vw,32px);line-height:1.12;margin:10px 0;color:#123d2e}
+.py2-xmas-modal p{color:#53655a;line-height:1.6}
+.py2-xmas-modal .py2-xmas-cta{display:inline-flex;justify-content:center;align-items:center;min-height:46px;padding:12px 20px;border-radius:12px;background:#c92f3b;color:#fff;font-weight:850;text-decoration:none}
+.py2-xmas-close{position:absolute;right:15px;top:13px;border:0;background:#123d2e10;color:#123d2e;border-radius:50%;width:34px;height:34px;font-size:22px;cursor:pointer;z-index:1}
+@media(prefers-reduced-motion:reduce){#py2-xmas-snow{display:none!important}html.py2-xmas *,html.py2-xmas *:before,html.py2-xmas *:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
