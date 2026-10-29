@@ -2,7 +2,7 @@
 -- Run once in Supabase Dashboard → SQL Editor.
 -- Reuses the existing Supabase project and built-in anon role; creates no new role.
 -- Public visitors can read approved comments and submit pending comments only.
--- Moderation can be performed in the Supabase Table Editor.
+-- Moderation is available in the PhoneYa2 Command Centre; the Supabase Table Editor remains an emergency fallback.
 
 create table if not exists public.blog_comments (
   id uuid primary key default gen_random_uuid(),
