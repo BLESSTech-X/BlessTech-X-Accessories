@@ -1,6 +1,155 @@
-const REPO='BLESSTech-X/BlessTech-X-Accessories',BRANCH='community-comments',API='https://api.github.com';
-const recentSubmissions=new Map();
-function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','access-control-allow-origin':'https://phoneya2.pages.dev','access-control-allow-methods':'GET, POST, OPTIONS','access-control-allow-headers':'Content-Type','x-content-type-options':'nosniff'}})}
-function parse(md){const m=String(md).match(/^---\s*\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);if(!m)return null;const o={};for(const line of m[1].split(/\r?\n/)){const x=line.match(/^([a-z_]+):\s*(.*)$/i);if(x){try{o[x[1]]=JSON.parse(x[2])}catch(e){o[x[1]]=x[2].replace(/^['"]|['"]$/g,'')}}}return o}
-async function readComments(slug){const r=await fetch(API+'/repos/'+REPO+'/contents/content/blog-comments?ref='+BRANCH,{headers:{Accept:'application/vnd.github+json','User-Agent':'PhoneYa2-Blog'}});if(r.status===404)return[];if(!r.ok)throw Error();const files=await r.json();if(!Array.isArray(files))return[];const rows=await Promise.all(files.filter(f=>f.type==='file'&&f.name.endsWith('.md')).slice(0,100).map(async f=>{try{const x=await fetch(f.download_url,{cache:'no-store'});if(!x.ok)return null;const d=parse(await x.text());return d&&d.status==='approved'&&d.post_slug===slug?{name:String(d.commenter||'Reader'),message:String(d.message||''),date:String(d.submitted_at||'')}:null}catch(e){return null}}));return rows.filter(Boolean).sort((a,b)=>b.date.localeCompare(a.date))}
-export async function onRequest(c){const req=c.request,u=new URL(req.url);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:{'access-control-allow-origin':'https://phoneya2.pages.dev','access-control-allow-methods':'GET, POST, OPTIONS','access-control-allow-headers':'Content-Type'}});if(req.method==='GET'){const slug=u.searchParams.get('slug')||'';if(!/^[a-z0-9-]{1,180}$/.test(slug))return json({error:'Invalid post'},400);try{return json({comments:await readComments(slug)})}catch(e){return json({error:'Comments are temporarily unavailable.'},503)}}if(req.method!=='POST')return json({error:'Method not allowed'},405);if(req.headers.get('origin')!=='https://phoneya2.pages.dev')return json({error:'Origin not allowed'},403);const token=c.env.GITHUB_COMMENTS_TOKEN;if(!token)return json({error:'Comment submission is not configured yet. Please try again later.'},503);let b;try{b=await req.json()}catch(e){return json({error:'Invalid submission.'},400)}if(b.website)return json({ok:true,message:'Thank you for your comment.'},201);const slug=String(b.post_slug||''),name=String(b.name||'').trim(),message=String(b.message||'').trim();if(!/^[a-z0-9-]{1,180}$/.test(slug)||name.length<2||name.length>60||message.length<3||message.length>1200)return json({error:'Please enter a name and a comment between 3 and 1,200 characters.'},400);const idx=await c.env.ASSETS.fetch(new Request(new URL('/content/blog/index.json',u.origin)));if(!idx.ok)return json({error:'Posts are unavailable.'},503);const posts=await idx.json();if(!Array.isArray(posts)||!posts.some(p=>p&&p.slug===slug&&p.publish===true))return json({error:'This post is unavailable for comments.'},404);const ip=req.headers.get('CF-Connecting-IP')||'unknown',now=Date.now(),last=recentSubmissions.get(ip)||0;if(now-last<60000)return json({error:'Please wait a minute before sending another comment.'},429);if(c.env.COMMENTS_KV){const key='blog-comment-rate:'+ip.replace(/[^a-zA-Z0-9_.:-]/g,'_'),count=Number(await c.env.COMMENTS_KV.get(key)||'0');if(count>=5)return json({error:'You have reached the comment limit for now. Please try again later.'},429);await c.env.COMMENTS_KV.put(key,String(count+1),{expirationTtl:3600})}recentSubmissions.set(ip,now);if(recentSubmissions.size>2000)recentSubmissions.clear();const date=new Date().toISOString(),commentPath='content/blog-comments/comment-'+crypto.randomUUID()+'.md',content=['---','commenter: '+JSON.stringify(name),'post_slug: '+JSON.stringify(slug),'message: '+JSON.stringify(message),'status: "pending"','submitted_at: '+JSON.stringify(date),'---',''].join('\n');const r=await fetch(API+'/repos/'+REPO+'/contents/'+commentPath,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json','User-Agent':'PhoneYa2-Blog'},body:JSON.stringify({message:'Add pending blog comment',content:btoa(unescape(encodeURIComponent(content))),branch:BRANCH})});if(!r.ok){let detail={};try{detail=await r.json()}catch(e){}console.error('PhoneYa2 comment storage failed',{status:r.status,github_message:String(detail.message||'').slice(0,240),github_documentation:detail.documentation_url||''});const hint=r.status===401?'The comment storage token is invalid or expired.':r.status===403?'The comment storage token lacks permission to write comments, or GitHub has rate-limited the request.':r.status===404?'The comment storage repository, branch, or path could not be found.':r.status===409?'The comment storage branch changed during submission. Please try again.':'The comment storage service rejected the submission.';return json({error:'Your comment could not be saved. '+hint+' Please try again later.'},502)}if(c.env.RESEND_API_KEY&&c.env.COMMENT_NOTIFICATION_EMAIL){const reviewUrl='https://github.com/'+REPO+'/edit/'+BRANCH+'/'+commentPath;const safeName=name.replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]));const safeMessage=message.replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]));try{await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+c.env.RESEND_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({from:c.env.COMMENT_NOTIFICATION_FROM||'PhoneYa2 Comments <onboarding@resend.dev>',to:[c.env.COMMENT_NOTIFICATION_EMAIL],subject:'New PhoneYa2 blog comment awaiting review',html:'<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#172033"><h2>New blog comment needs your review</h2><p><b>Post:</b> '+slug+'</p><p><b>From:</b> '+safeName+'</p><blockquote style="padding:14px;border-left:4px solid #2563eb;background:#f8fafc;white-space:pre-wrap">'+safeMessage+'</blockquote><p><a href="'+reviewUrl+'" style="display:inline-block;padding:12px 18px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold">Review / approve comment</a></p><p>On GitHub, change <code>status: &quot;pending&quot;</code> to <code>status: &quot;approved&quot;</code>, then commit the change. Use <code>rejected</code> to reject it.</p></div>',text:'New PhoneYa2 blog comment awaiting review. Post: '+slug+'; From: '+name+'; Comment: '+message+'; Review and edit status here: '+reviewUrl+' . Change status from pending to approved and commit.'})})}catch(e){}}return json({ok:true,message:'Thanks! Your comment is saved and will appear after review.'},201)}
+const DEFAULT_SUPABASE_URL = 'https://signnapmkdctdcfpnsiu.supabase.co';
+const DEFAULT_PUBLISHABLE_KEY = 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
+const recentSubmissions = new Map();
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+      'access-control-allow-origin': 'https://phoneya2.pages.dev',
+      'access-control-allow-methods': 'GET, POST, OPTIONS',
+      'access-control-allow-headers': 'Content-Type',
+      'x-content-type-options': 'nosniff'
+    }
+  });
+}
+
+function config(env) {
+  return {
+    url: String(env.SUPABASE_URL || DEFAULT_SUPABASE_URL).replace(/\/$/, ''),
+    key: String(env.SUPABASE_ANON_KEY || env.SUPABASE_PUBLISHABLE_KEY || DEFAULT_PUBLISHABLE_KEY)
+  };
+}
+
+async function supabaseRequest(env, path, init = {}) {
+  const cfg = config(env);
+  return fetch(cfg.url + '/rest/v1/' + path, {
+    ...init,
+    headers: {
+      apikey: cfg.key,
+      authorization: 'Bearer ' + cfg.key,
+      accept: 'application/json',
+      'content-type': 'application/json',
+      ...(init.headers || {})
+    }
+  });
+}
+
+export async function onRequest({ request, env }) {
+  const url = new URL(request.url);
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'access-control-allow-origin': 'https://phoneya2.pages.dev',
+        'access-control-allow-methods': 'GET, POST, OPTIONS',
+        'access-control-allow-headers': 'Content-Type'
+      }
+    });
+  }
+
+  if (request.method === 'GET') {
+    const slug = url.searchParams.get('slug') || '';
+    if (!/^[a-z0-9][a-z0-9-]{0,179}$/.test(slug)) {
+      return json({ error: 'Invalid post.' }, 400);
+    }
+
+    try {
+      const query = 'blog_comments?select=commenter,message,submitted_at&post_slug=eq.' +
+        encodeURIComponent(slug) + '&status=eq.approved&order=submitted_at.desc&limit=100';
+      const response = await supabaseRequest(env, query, { method: 'GET' });
+      if (!response.ok) {
+        console.error('PhoneYa2 comments read failed', response.status);
+        return json({ error: 'Comments are temporarily unavailable.' }, 503);
+      }
+      const rows = await response.json();
+      const comments = (Array.isArray(rows) ? rows : []).map(row => ({
+        name: String(row.commenter || 'Reader'),
+        message: String(row.message || ''),
+        date: String(row.submitted_at || '')
+      }));
+      return json({ comments });
+    } catch (error) {
+      console.error('PhoneYa2 comments read failed', String(error));
+      return json({ error: 'Comments are temporarily unavailable.' }, 503);
+    }
+  }
+
+  if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
+  if (request.headers.get('origin') !== 'https://phoneya2.pages.dev') {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
+
+  let body;
+  try {
+    const raw = await request.text();
+    if (raw.length > 8000) return json({ error: 'Comment is too long.' }, 413);
+    body = JSON.parse(raw);
+  } catch (error) {
+    return json({ error: 'Invalid submission.' }, 400);
+  }
+
+  // Honeypot: silently accept automated submissions without storing them.
+  if (body.website) return json({ ok: true, message: 'Thank you for your comment.' }, 201);
+
+  const slug = String(body.post_slug || '');
+  const name = String(body.name || '').trim();
+  const message = String(body.message || '').trim();
+
+  if (!/^[a-z0-9][a-z0-9-]{0,179}$/.test(slug) ||
+      name.length < 2 || name.length > 60 ||
+      message.length < 3 || message.length > 1200) {
+    return json({ error: 'Please enter a name and a comment between 3 and 1,200 characters.' }, 400);
+  }
+
+  try {
+    const indexResponse = await env.ASSETS.fetch(new Request(new URL('/content/blog/index.json', url.origin)));
+    if (!indexResponse.ok) return json({ error: 'Posts are unavailable.' }, 503);
+    const posts = await indexResponse.json();
+    if (!Array.isArray(posts) || !posts.some(post => post && post.slug === slug && post.publish === true)) {
+      return json({ error: 'This post is unavailable for comments.' }, 404);
+    }
+
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const now = Date.now();
+    const last = recentSubmissions.get(ip) || 0;
+    if (now - last < 60000) {
+      return json({ error: 'Please wait a minute before sending another comment.' }, 429);
+    }
+
+    if (env.COMMENTS_KV) {
+      const key = 'blog-comment-rate:' + ip.replace(/[^a-zA-Z0-9_.:-]/g, '_');
+      const count = Number(await env.COMMENTS_KV.get(key) || '0');
+      if (count >= 5) return json({ error: 'You have reached the comment limit for now. Please try again later.' }, 429);
+      await env.COMMENTS_KV.put(key, String(count + 1), { expirationTtl: 3600 });
+    }
+    recentSubmissions.set(ip, now);
+    if (recentSubmissions.size > 2000) recentSubmissions.clear();
+
+    // RLS allows anonymous inserts only when status is pending. The database
+    // generates id, status and submitted_at; clients cannot approve themselves.
+    const response = await supabaseRequest(env, 'blog_comments', {
+      method: 'POST',
+      headers: { prefer: 'return=minimal' },
+      body: JSON.stringify({ post_slug: slug, commenter: name, message: message })
+    });
+
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      console.error('PhoneYa2 comment insert failed', response.status, detail.slice(0, 300));
+      return json({
+        error: response.status === 401 || response.status === 403
+          ? 'Comment storage permissions need attention. Please try again later.'
+          : 'Your comment could not be saved. Please try again later.'
+      }, 502);
+    }
+
+    return json({ ok: true, message: 'Thanks! Your comment is saved and will appear after review.' }, 201);
+  } catch (error) {
+    console.error('PhoneYa2 comment submission failed', String(error));
+    return json({ error: 'Your comment could not be saved. Please try again later.' }, 503);
+  }
+}
