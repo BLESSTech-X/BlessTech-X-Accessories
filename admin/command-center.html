@@ -141,6 +141,11 @@
       <button type="button" class="btn" data-season="new-year">🎆 New Year</button>
       <button type="button" class="btn" data-season="valentines">❤️ Valentine’s</button>
       <button type="button" class="btn" data-season="easter">🐣 Easter</button>
+      <button type="button" class="btn" data-season="heroes-unity">🇿🇲 Heroes &amp; Unity Day</button>
+      <button type="button" class="btn" data-season="africa-freedom">🌍 Africa Freedom Day</button>
+      <button type="button" class="btn" data-season="labour-day">🛠️ Labour Day</button>
+      <button type="button" class="btn" data-season="youth-day">💡 Youth Day</button>
+      <button type="button" class="btn" data-season="farmers-day">🌾 Farmers’ Day</button>
       <button type="button" class="btn" data-season="custom">✨ Special campaign</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0">
@@ -504,6 +509,11 @@ const seasonalPresets={
  'new-year':{theme:'new-year',title:'New Year, Better Connections',message:'Start the year connected with PhoneYa2.',effects:true,popup:true,banner:true},
  valentines:{theme:'valentines',title:'Share the Love ❤️',message:'Thoughtful tech gifts and accessories for someone special.',effects:true,popup:true,banner:true},
  easter:{theme:'easter',title:'Easter Smart Deals',message:'Enjoy the season with PhoneYa2.',effects:true,popup:true,banner:true},
+ 'heroes-unity':{theme:'heroes-unity',title:'Remembering Zambia’s Heroes 🇿🇲',message:'Honouring the courage, unity and spirit that shape our nation.',effects:true,popup:true,banner:true},
+ 'africa-freedom':{theme:'africa-freedom',title:'Happy Africa Freedom Day 🌍',message:'Celebrating African unity, possibility and connection.',effects:true,popup:true,banner:true},
+ 'labour-day':{theme:'labour-day',title:'Happy Labour Day 🛠️',message:'Celebrating the people whose work moves us forward.',effects:true,popup:true,banner:true},
+ 'youth-day':{theme:'youth-day',title:'Happy Youth Day 💡',message:'Celebrating Zambia’s creativity, ambition and next generation.',effects:true,popup:true,banner:true},
+ 'farmers-day':{theme:'farmers-day',title:'Happy Farmers’ Day 🌾',message:'Honouring the farmers who help feed and grow our nation.',effects:true,popup:true,banner:true},
  custom:{theme:'custom',title:'A special PhoneYa2 event',message:'Explore this special campaign from PhoneYa2.',effects:true,popup:true,banner:true}
 };
 function seasonalSetForm(v){$('seasonal-title').value=v.title||'';$('seasonal-message').value=v.message||'';$('seasonal-effects').checked=!!v.effects;$('seasonal-popup').checked=!!v.popup;$('seasonal-banner').checked=!!v.banner;$('seasonal-end').value=v.end_date||'';}
