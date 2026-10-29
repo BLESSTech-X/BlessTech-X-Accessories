@@ -25,8 +25,8 @@ function config(env) {
 
 
 async function requireCommentAdmin(request, env) {
-  const token = (request.headers.get('authorization') || '').match(/^Bearer\\s+(.+)$/i)?.[1];
-  const base = String(env.SUPABASE_URL || '').replace(/\\/$/, '');
+  const token = (request.headers.get('authorization') || '').match(/^Bearer\s+(.+)$/i)?.[1];
+  const base = String(env.SUPABASE_URL || '').replace(/\/$/, '');
   const anonKey = String(env.SUPABASE_ANON_KEY || env.SUPABASE_PUBLISHABLE_KEY || DEFAULT_PUBLISHABLE_KEY);
   const adminEmail = String(env.ADMIN_EMAIL || 'singbless89@gmail.com').trim().toLowerCase();
   if (!token || !base || !anonKey || !adminEmail) return null;
@@ -39,7 +39,7 @@ async function requireCommentAdmin(request, env) {
 }
 
 async function privilegedSupabaseRequest(env, path, init = {}) {
-  const base = String(env.SUPABASE_URL || '').replace(/\\/$/, '');
+  const base = String(env.SUPABASE_URL || '').replace(/\/$/, '');
   const key = String(env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SECRET_KEY || '');
   if (!base || !key) throw new Error('Server database admin credentials are not configured.');
   return fetch(base + '/rest/v1/' + path, {
