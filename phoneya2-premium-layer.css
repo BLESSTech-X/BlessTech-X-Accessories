@@ -231,3 +231,23 @@ body:has(.review-card) select, body:has(.review-card) textarea {
 .py2-comments-panel .py2-comment-form button[type="submit"], .py2-comments-modal .py2-modal-comment-form button[type="submit"] { background:#1677e8 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; opacity:1; }
 .py2-comments-panel .py2-comment-form button[type="submit"]:hover, .py2-comments-modal .py2-modal-comment-form button[type="submit"]:hover { background:#1159b4 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; }
 .py2-latest-comment .py2-open-comments-popup { display:inline-flex; align-items:center; justify-content:center; min-height:36px; margin-top:5px; padding:8px 12px; border:0; border-radius:9px; background:#1677e8; color:#fff !important; -webkit-text-fill-color:#fff !important; font-weight:850; cursor:pointer; }
+
+
+/* Site-wide product-card touch feedback: decorative/non-interactive content is not pressable.
+   Keep real links and controls interactive and keyboard focus visible. */
+:where(.pcard,.pc,.product-card,.product-item,.py2-product-card,.py2-selling-pick,.side-prod,.affiliate-product-card) {
+  -webkit-tap-highlight-color: transparent;
+}
+:where(.pcard,.pc,.product-card,.product-item,.py2-product-card,.py2-selling-pick,.side-prod,.affiliate-product-card)
+:where(h1,h2,h3,h4,p,span,strong,em,small,del,s,ins,figure,figcaption,.price,.product-price,.pcard-name,.pcard-desc,.stock-badge,.cat-badge,.discount-badge,.prod-save,.price-drop-banner,.drop-banner,.product-label,.product-meta) {
+  -webkit-tap-highlight-color: transparent;
+  user-select: text;
+}
+:where(.pcard,.pc,.product-card,.product-item,.py2-product-card,.py2-selling-pick,.side-prod,.affiliate-product-card):active {
+  -webkit-tap-highlight-color: transparent;
+}
+/* Do not remove focus feedback from genuine interactive controls inside cards. */
+:where(.pcard,.pc,.product-card,.product-item,.py2-product-card,.py2-selling-pick,.side-prod,.affiliate-product-card)
+:where(a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[role="button"],[role="link"],[tabindex]:not([tabindex="-1"])) {
+  -webkit-tap-highlight-color: transparent;
+}
