@@ -21,7 +21,7 @@ function remove(){
  document.documentElement.removeAttribute('data-py2-season');
  document.getElementById('py2-seasonal-style')?.remove();
 }
-function makeDecor(id,items,cls){const el=document.createElement('div');el.id=id;el.className=cls;el.setAttribute('aria-hidden','true');items.forEach((item,i)=>{const s=document.createElement('span');s.textContent=item;s.style.setProperty('--i',i);el.appendChild(s)});document.body.appendChild(el);return el;}
+function makeDecor(id,items,cls){const el=document.createElement('div');el.id=id;el.className=cls;el.setAttribute('aria-hidden','true');items.forEach((item,i)=>{const s=document.createElement('span');s.textContent=item;s.style.setProperty('--i',i);s.style.top=(16+i*9)+'vh';el.appendChild(s)});document.body.appendChild(el);return el;}
 function apply(c){
  if(!c)return;remove();if(!c.theme||c.theme==='none')return;
  if(c.end_date&&new Date(c.end_date+'T23:59:59')<new Date())return;
@@ -53,8 +53,8 @@ function apply(c){
  #py2-seasonal-garland span{position:relative;margin-top:3px;font-size:clamp(15px,2.3vw,24px);filter:drop-shadow(0 2px 2px #173b2a22)}
  #py2-seasonal-side-decor{position:fixed;inset:0;z-index:24;pointer-events:none;overflow:hidden}
  #py2-seasonal-side-decor span{position:absolute;font-size:clamp(22px,4vw,42px);opacity:.76;filter:drop-shadow(0 3px 5px #173b2a20)}
- #py2-seasonal-side-decor span:nth-child(odd){left:8px;top:calc(18vh + var(--i)*7vh)}
- #py2-seasonal-side-decor span:nth-child(even){right:8px;top:calc(22vh + var(--i)*7vh)}
+ #py2-seasonal-side-decor span:nth-child(odd){left:8px}
+ #py2-seasonal-side-decor span:nth-child(even){right:8px}
  #py2-seasonal-popup-backdrop{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:#101322b5;backdrop-filter:blur(7px)}
  #py2-seasonal-popup{position:relative;isolation:isolate;overflow:hidden;width:min(470px,100%);padding:30px 24px 25px;border:1px solid ${p.accent}55;border-radius:24px;background:linear-gradient(145deg,#fff 0%,${p.bg} 100%);color:#182033;text-align:center;box-shadow:0 28px 90px #0005}
  #py2-seasonal-popup:before{content:"";position:absolute;z-index:-1;inset:0 0 auto;height:7px;background:linear-gradient(90deg,${p.banner},${p.accent},${p.banner})}
