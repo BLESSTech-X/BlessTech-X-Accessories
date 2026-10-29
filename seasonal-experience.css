@@ -43,3 +43,19 @@ html.py2-xmas :is(.product-card,.product-card-v2,.product-item){background:#fff;
 #py2-seasonal-admin .py2-admin-note{font-size:11px;color:#68766d;margin:12px 0 0;line-height:1.6}
 @media(max-width:600px){.py2-xmas-modal{padding:30px 20px 22px}#py2-seasonal-admin{padding:17px}}
 @media(prefers-reduced-motion:reduce){#py2-xmas-snow{display:none!important}html.py2-xmas *,html.py2-xmas *:before,html.py2-xmas *:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Cross-page seasonal components */
+html.py2-xmas :is(.top-header,.site-header,.main-header){border-bottom-color:#d9c69d;box-shadow:0 3px 18px #123b2d0c}
+html.py2-xmas :is(.search-box,.header-search,.search-wrap){border-color:#c9a45b}
+html.py2-xmas :is(.search-box button,.search-btn){background:#123b2d;color:#fff}
+html.py2-xmas :is(.category-tab,.filter-tab,.shop-tab)[aria-selected=true],html.py2-xmas :is(.category-tab,.filter-tab,.shop-tab).active{background:#123b2d;color:#fff;border-color:#123b2d}
+html.py2-xmas :is(.cart-summary,.order-summary,.checkout-summary,.form-card,.contact-card){border-color:#e9e1d2;box-shadow:0 8px 26px #49391a0a}
+html.py2-xmas :is(input,select,textarea){border-color:#ddd7c9}
+html.py2-xmas :is(input,select,textarea):focus{border-color:#1d6045;box-shadow:0 0 0 3px #1d60451c}
+html.py2-xmas :is(.success,.success-message,.notice-success){border-color:#c9dfce;background:#f1f8f1;color:#245b3d}
+html.py2-xmas :is(.error,.error-message,.notice-error){border-color:#edc8c8;background:#fff5f4;color:#982d35}
+html.py2-xmas :is(.stock,.stock-label,.in-stock){color:#236447}
+html.py2-xmas :is(.offer-strip,.promo-strip,.announcement-bar){background:linear-gradient(100deg,#123b2d,#1d6045);color:#fff}
+html.py2-xmas :is(.offer-strip a,.promo-strip a,.announcement-bar a){color:#f4d99d}
+html.py2-xmas .py2-xmas-heading{display:flex;align-items:center;flex-wrap:wrap;gap:3px}
