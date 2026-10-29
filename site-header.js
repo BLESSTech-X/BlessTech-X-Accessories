@@ -35,7 +35,10 @@ document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.
 const query=new URLSearchParams(location.search).get('q');
 if(query){document.querySelectorAll('body>.top-header .header-search input, #main-search').forEach(i=>{i.value=query;});}
 /* Shared sitewide background and professional button polish. */
-(function(){if(!document.querySelector('link[data-py2-sitewide-polish]')){var polish=document.createElement('link');polish.rel='stylesheet';polish.href='/sitewide-polish.css?v=20261015-center3';polish.setAttribute('data-py2-sitewide-polish','');document.head.appendChild(polish)}})();
+(function(){if(!document.querySelector('link[data-py2-sitewide-polish]')){var polish=document.createElement('link');polish.rel='stylesheet';polish.href='/sitewide-polish.css?v=20261015-center3';polish.setAttribute('data-py2-sitewide-polish','');document.head.appendChild(polish)}
+/* Public seasonal storefront theme, controlled from Command Centre. */
+(function(){if(document.querySelector('script[data-py2-seasonal-theme]'))return;var s=document.createElement('script');s.src='/seasonal-theme.js?v=20261029';s.defer=true;s.setAttribute('data-py2-seasonal-theme','');document.body.appendChild(s)})();
+})();
 /* Contextual, dismissible smart help is shared across public site pages. */
 (function(){if(document.querySelector('link[data-py2-smart-guide]'))return;var css=document.createElement('link');css.rel='stylesheet';css.href='/smart-guide.css?v=20261015-center2';css.setAttribute('data-py2-smart-guide','');document.head.appendChild(css);var js=document.createElement('script');js.src='/smart-guide.js?v=20261015-glow3';js.defer=true;document.body.appendChild(js)})();
 })();
