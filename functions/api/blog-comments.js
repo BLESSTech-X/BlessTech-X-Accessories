@@ -53,7 +53,8 @@ async function privilegedSupabaseRequest(env, path, init = {}) {
     }
   });
 }
-\nasync function supabaseRequest(env, path, init = {}) {
+
+async function supabaseRequest(env, path, init = {}) {
   const cfg = config(env);
   return fetch(cfg.url + '/rest/v1/' + path, {
     ...init,
