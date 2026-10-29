@@ -59,3 +59,10 @@ html.py2-xmas :is(.stock,.stock-label,.in-stock){color:#236447}
 html.py2-xmas :is(.offer-strip,.promo-strip,.announcement-bar){background:linear-gradient(100deg,#123b2d,#1d6045);color:#fff}
 html.py2-xmas :is(.offer-strip a,.promo-strip a,.announcement-bar a){color:#f4d99d}
 html.py2-xmas .py2-xmas-heading{display:flex;align-items:center;flex-wrap:wrap;gap:3px}
+
+/* Minimal seasonal identity: campaign banners do the festive work */
+html.py2-xmas .py2-xmas-garland,
+html.py2-xmas .py2-xmas-ornament,
+html.py2-xmas #py2-xmas-snow{display:none!important}
+.py2-season-mark{display:inline-block;margin-inline-start:3px;font-size:.78em;line-height:1;vertical-align:baseline;filter:none}
+html.py2-xmas .py2-xmas-hero:after{opacity:.45}
