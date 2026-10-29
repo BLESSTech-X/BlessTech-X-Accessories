@@ -28,7 +28,7 @@ export async function onRequest({request,env}){
   if(request.method==="PUT"){
    if(!await requireAdmin(request,env))return json({error:"Administrator sign-in required. Sign in again and retry."},401);
    let body;try{body=await request.json();}catch{return json({error:"Invalid theme settings."},400);}
-   const themes=["none","black-friday","christmas","independence","new-year","valentines","easter","custom"];
+   const themes=["none","black-friday","christmas","independence","new-year","valentines","easter","heroes-unity","africa-freedom","labour-day","youth-day","farmers-day","custom"];
    const theme=String(body.theme||"none");if(!themes.includes(theme))return json({error:"Choose a supported event theme."},400);
    const config={theme,title:String(body.title||"").slice(0,90),message:String(body.message||"").slice(0,220),effects:body.effects===true,popup:body.popup===true,banner:body.banner===true,end_date:body.end_date&&/^\d{4}-\d{2}-\d{2}$/.test(body.end_date)?body.end_date:null,updated_at:new Date().toISOString()};
    const r=await db(env,"/rest/v1/phoneya2_site_settings?on_conflict=setting_key",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=representation"},body:JSON.stringify({setting_key:"seasonal_theme",setting_value:config,updated_at:config.updated_at})});
