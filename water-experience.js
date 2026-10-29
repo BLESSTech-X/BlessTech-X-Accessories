@@ -273,7 +273,9 @@
     if (now - lastPointerAt < 260) return;
     lastPointerAt = now;
     var target = event.target;
-    if (target && target.closest && target.closest('button, a, [role="button"], input, select, .pcard, .pc, .pcard-img, .product-card')) {
+    /* Only real interactive controls should create a touch ripple. A product card's
+       display-only surface, title, price, badges or empty space must not react as if clickable. */
+    if (target && target.closest && target.closest('button:not(:disabled), a[href], [role="button"], [role="link"], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [data-clickable="true"]')) {
       /* Put the impact just outside a solid surface so the ring appears in surrounding water. */
       var surface = target.closest('.pcard, .product-card, .section-card, .panel, .benefit, .contact-card, .about-card, .policy-card, .checkout-card, .order-summary, .howto-mini-inner, button, a, [role="button"]');
       var x = event.clientX, y = event.clientY;
