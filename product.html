@@ -1642,7 +1642,7 @@ function renderProduct(p) {
 
   const setMeta = (id, val) => { const el=document.getElementById(id); if(el) el.content=val; };
   setMeta('og-title',  p.title + ' – ZMW ' + p.price + ' | PhoneYa2');
-  setMeta('og-desc',   (p.description||('Browse ' + p.title + ' on PhoneYa2.')) + ' Check compatibility, availability and delivery details before ordering.');
+  setMeta('og-desc',   (p.description||('Browse ' + p.title + ' on PhoneYa2.')) + ' Check the listing, compatibility, availability and delivery arrangements before ordering.');
   setMeta('og-image',  productImg);
   let ogUrl = document.getElementById('og-url');
   if (!ogUrl) {
@@ -1779,8 +1779,8 @@ function renderProduct(p) {
       ${salesMessageHTML}
       <div class="stock-pill ${st.cls}"><i class="${st.ico}"></i> ${st.label}</div>
       <div class="feat-pills">
-        <span class="fpill">✅ 100% Genuine</span>
-        <span class="fpill">📦 Delivery details confirmed</span>
+        <span class="fpill">🔎 Review product details</span>
+        <span class="fpill">📦 Confirm delivery before ordering</span>
         <a class="fpill" href="/return-policy.html">🔄 7-Day Return Policy</a>
         <span class="fpill">💬 WhatsApp Support</span>
       </div>
