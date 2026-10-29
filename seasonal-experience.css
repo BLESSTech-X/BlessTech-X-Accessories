@@ -36,7 +36,7 @@ html.py2-xmas :is(.product-card,.product-card-v2,.product-item){background:#fff;
 #py2-seasonal-admin .py2-admin-actions .primary{background:#123b2d;color:#fff;border-color:#123b2d}
 #py2-seasonal-admin .py2-admin-note{font-size:11px;color:#68766d;margin:12px 0 0;line-height:1.6}
 @media(max-width:600px){.py2-xmas-modal{padding:30px 20px 22px}#py2-seasonal-admin{padding:17px}}
-@media(prefers-reduced-motion:reduce){#py2-xmas-snow{display:none!important}html.py2-xmas *,html.py2-xmas *:before,html.py2-xmas *:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){html.py2-xmas *,html.py2-xmas *:before,html.py2-xmas *:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
 
 
 /* Cross-page seasonal components */
@@ -52,11 +52,7 @@ html.py2-xmas :is(.error,.error-message,.notice-error){border-color:#edc8c8;back
 html.py2-xmas :is(.stock,.stock-label,.in-stock){color:#236447}
 html.py2-xmas :is(.offer-strip,.promo-strip,.announcement-bar){background:linear-gradient(100deg,#123b2d,#1d6045);color:#fff}
 html.py2-xmas :is(.offer-strip a,.promo-strip a,.announcement-bar a){color:#f4d99d}
-html.py2-xmas .py2-xmas-heading{display:flex;align-items:center;flex-wrap:wrap;gap:3px}
 
 /* Minimal seasonal identity: campaign banners do the festive work */
-html.py2-xmas .py2-xmas-garland,
-html.py2-xmas .py2-xmas-ornament,
-html.py2-xmas #py2-xmas-snow{display:none!important}
 .py2-season-mark{display:inline-block;margin-inline-start:3px;font-size:.78em;line-height:1;vertical-align:baseline;filter:none}
 html.py2-xmas .py2-xmas-hero:after{opacity:.45}
