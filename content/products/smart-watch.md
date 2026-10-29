@@ -8,7 +8,7 @@ sales_hook: High Class .Best Pick ⌚
 offer_label: Featured Pick
 offer_details: if You Love High Quality This Is For You
 sales_priority: promote
-description: ✅ 100% genuine.✅ Same-day delivery Lusaka
+description: "Smartwatch option to compare. Check the listed features, phone compatibility, charging method and included accessories before ordering."
 image: /assets/images/uploads/1000152674.jpg
 featured: true
 ---
