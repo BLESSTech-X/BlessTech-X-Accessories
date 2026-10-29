@@ -117,7 +117,7 @@ function renderCrawlerProduct(product, slug, url) {
     + '<p><a class="py2-seo-button" href="/contact.html">Ask about this product</a> <a href="/return-policy.html">Read the return policy</a></p>'
     + '</div></div><section><h2>' + esc(guide.heading) + '</h2><p>' + esc(guide.intro) + '</p><ul>' + checks + '</ul></section>'
     + '<section><h2>How ordering works</h2><ol><li>Review the product description, price and listed availability.</li><li>Ask PhoneYa2 to confirm compatibility or any unclear details.</li><li>Submit your order and wait for confirmation of availability, delivery or collection, and payment arrangements.</li></ol></section>'
-    + '<p>For more practical advice, browse the <a href="/guides.html">PhoneYa2 phone and accessory guides</a>, or see the <a href="/shop.html">full catalogue</a>.</p>'
+    + '<p>For more practical advice and product tips, visit the <a href="/blog.html">PhoneYa2 Blog</a>, or see the <a href="/shop.html">full catalogue</a>.</p>'
     + '</article>';
 }
 
