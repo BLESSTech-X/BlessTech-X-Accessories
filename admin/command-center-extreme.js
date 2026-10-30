@@ -140,18 +140,45 @@
     if(action.run){action.run();return;}
     if(action.href){if(action.external)window.open(action.href,'_blank','noopener,noreferrer');else window.location.href=action.href;}
   }
+  function ensureCommandFooter() {
+    const dashboard=$('#dashboard');
+    if(!dashboard)return null;
+    let footer=$('#cc-global-footer');
+    if(!footer){
+      footer=document.createElement('footer');
+      footer.id='cc-global-footer';
+      footer.className='cc-global-footer';
+      footer.innerHTML='<div class="cc-footer-top"><div class="cc-footer-heading"><span class="cc-footer-kicker">PHONEYA2 · COMMAND CENTRE</span><strong>Workspace controls</strong><small>Quick access stays here across every section.</small></div><div class="cc-footer-controls"></div></div><div class="cc-footer-links"></div><div class="cc-footer-message" id="cc-footer-message"></div><div class="cc-footer-fastlane"></div>';
+      dashboard.append(footer);
+    }
+    const controls=footer.querySelector('.cc-footer-controls');
+    const actions=$('.intro-actions');
+    if(actions&&actions.parentElement!==controls){
+      actions.classList.add('cc-footer-controls');
+      controls.replaceWith(actions);
+    }
+    const blogLink=$('.comment-top-link');
+    const links=footer.querySelector('.cc-footer-links');
+    if(blogLink&&blogLink.parentElement!==links)links.append(blogLink);
+    const message=$('#global-message');
+    const messageSlot=$('#cc-footer-message');
+    if(message&&message.parentElement!==messageSlot)messageSlot.append(message);
+    return footer;
+  }
   function updateRefreshStamp() {
+    const footer=ensureCommandFooter();
+    if(!footer)return;
     let stamp=$('#cc-refresh-stamp');
-    if(!stamp){stamp=document.createElement('span');stamp.id='cc-refresh-stamp';stamp.className='cc-refresh-stamp';const actionsBox=$('.intro-actions');if(actionsBox)actionsBox.prepend(stamp);}
+    if(!stamp){stamp=document.createElement('span');stamp.id='cc-refresh-stamp';stamp.className='cc-refresh-stamp';const actionsBox=footer.querySelector('.cc-footer-controls');if(actionsBox)actionsBox.prepend(stamp);}
     stamp.textContent=state.lastRefresh?'Refresh requested '+state.lastRefresh.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):'Ready · refresh data when needed';
     stamp.title='This records when refresh was requested, not when every source finished successfully.';
   }
   function addQuickActions() {
-    const intro=$('.intro');
-    if(!intro||$('#cc-quick-actions'))return;
+    const footer=ensureCommandFooter();
+    if(!footer||$('#cc-quick-actions'))return;
     const section=document.createElement('section');section.id='cc-quick-actions';section.className='cc-quick-actions panel';
     section.innerHTML='<div class="cc-quick-heading"><div><span class="cc-quick-eyebrow">FAST LANE</span><h2>Quick actions</h2><p>Go straight to the work that moves the business.</p></div><button type="button" class="btn" id="cc-open-command-menu">⌘ Open command menu</button></div><div class="cc-quick-grid"><a href="/admin/orders.html" class="cc-quick-card"><span>▤</span><strong>Follow up orders</strong><small>Fulfilment and pending buyers</small><b>Open Order Desk →</b></a><a href="/admin/" class="cc-quick-card"><span>▦</span><strong>Improve product offers</strong><small>Catalogue, pricing and publishing</small><b>Open Product CMS →</b></a><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer" class="cc-quick-card"><span>↗</span><strong>Find traffic opportunities</strong><small>Acquisition and page performance</small><b>Open Analytics ↗</b></a><button type="button" class="cc-quick-card" id="cc-export-card"><span>▧</span><strong>Export a KPI snapshot</strong><small>Keep a dated operational record</small><b>Download CSV ↓</b></button></div>';
-    const destination=$('#view-overview')||intro;destination.append(section);
+    footer.querySelector('.cc-footer-fastlane').append(section);
     $('#cc-open-command-menu').addEventListener('click',openPalette);
     $('#cc-export-card').addEventListener('click',exportSnapshot);
   }
