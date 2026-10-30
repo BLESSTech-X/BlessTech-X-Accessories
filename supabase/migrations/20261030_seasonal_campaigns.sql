@@ -81,3 +81,28 @@ grant insert, update, delete on public.seasonal_campaigns to authenticated;
 insert into public.seasonal_campaigns (id)
 values ('global')
 on conflict (id) do nothing;
+
+
+-- Public display bucket; only the PhoneYa2 administrator can upload or replace assets.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('phoneya2-seasonal', 'PhoneYa2 Seasonal Media', true, 5242880,
+        array['image/jpeg','image/png','image/webp','image/avif'])
+on conflict (id) do update
+set public = true, file_size_limit = 5242880,
+    allowed_mime_types = array['image/jpeg','image/png','image/webp','image/avif'];
+
+drop policy if exists "PhoneYa2 admin uploads seasonal media" on storage.objects;
+create policy "PhoneYa2 admin uploads seasonal media"
+  on storage.objects for insert to authenticated
+  with check (bucket_id = 'phoneya2-seasonal' and lower(coalesce(auth.jwt() ->> 'email','')) = 'singbless89@gmail.com');
+
+drop policy if exists "PhoneYa2 admin updates seasonal media" on storage.objects;
+create policy "PhoneYa2 admin updates seasonal media"
+  on storage.objects for update to authenticated
+  using (bucket_id = 'phoneya2-seasonal' and lower(coalesce(auth.jwt() ->> 'email','')) = 'singbless89@gmail.com')
+  with check (bucket_id = 'phoneya2-seasonal' and lower(coalesce(auth.jwt() ->> 'email','')) = 'singbless89@gmail.com');
+
+drop policy if exists "PhoneYa2 admin deletes seasonal media" on storage.objects;
+create policy "PhoneYa2 admin deletes seasonal media"
+  on storage.objects for delete to authenticated
+  using (bucket_id = 'phoneya2-seasonal' and lower(coalesce(auth.jwt() ->> 'email','')) = 'singbless89@gmail.com');
