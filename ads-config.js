@@ -64,22 +64,23 @@
   }
   function loadSession() {
     try {
-      var raw = sessionStorage.getItem(SESSION_KEY);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object' && parsed.access_token && parsed.user) return parsed;
-      }
-    } catch (e) {}
-    // Reuse the authenticated Supabase-js session created by Command Centre.
-    try {
       var shared = JSON.parse(localStorage.getItem(SHARED_AUTH_KEY) || 'null');
       if (shared && shared.access_token && shared.user) {
-        var session = { access_token: shared.access_token, refresh_token: shared.refresh_token, expires_at: shared.expires_at, user: shared.user };
-        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (e) {}
-        return session;
+        var current = { access_token: shared.access_token, refresh_token: shared.refresh_token, expires_at: shared.expires_at, user: shared.user };
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(current)); } catch (e) {}
+        return current;
       }
     } catch (e) {}
-    return null;
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      return parsed;
+    } catch (e) {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (e2) {}
+      return null;
+    }
   }
   function clearSession() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
