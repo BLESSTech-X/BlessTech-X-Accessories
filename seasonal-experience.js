@@ -8,7 +8,7 @@ const params=new URLSearchParams(location.search);
 function localDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Lusaka',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function inSchedule(){return !!(settings.scheduled&&settings.start&&settings.end&&localDay()>=settings.start.slice(0,10)&&localDay()<=settings.end.slice(0,10))}
 function pageCovered(){const p=location.pathname.toLowerCase();if(settings.coverage==='shopping')return p==='/'||/^\/(shop|product|cart|checkout|account)(\.html)?$/.test(p);if(settings.coverage==='content')return /blog|about|contact|policy|newsletter|advertis|agent/.test(p);return true}
-function active(){return pageCovered()&&(settings.enabled||inSchedule()||params.has('py2-seasonal-preview'))}
+function active(){const campaignLive=settings.scheduled?inSchedule():!!settings.enabled;return pageCovered()&&(campaignLive||params.has('py2-seasonal-preview'))}
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function decorateHeadings(){
  if(!settings.decorations)return;
