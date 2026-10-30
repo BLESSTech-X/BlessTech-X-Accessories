@@ -267,6 +267,7 @@ collections:
       - label: "Seasonal Campaigns"
         name: "seasonal_campaigns"
         file: "content/settings/seasonal-campaigns.json"
+        format: "json"
         description: "Control PhoneYa2 seasonal themes, Christmas decorations, snowfall, campaign scheduling and promotional popup. Save and publish to make changes live."
         fields:
           - { label: "Campaign enabled", name: "enabled", widget: "boolean", default: false, hint: "Turn on to activate the seasonal experience on the public website." }
