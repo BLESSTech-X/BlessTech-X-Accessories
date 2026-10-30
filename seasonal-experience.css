@@ -56,3 +56,13 @@ html.py2-xmas :is(.offer-strip a,.promo-strip a,.announcement-bar a){color:#f4d9
 /* Minimal seasonal identity: campaign banners do the festive work */
 .py2-season-mark{display:inline-block;margin-inline-start:3px;font-size:.78em;line-height:1;vertical-align:baseline;filter:none}
 html.py2-xmas .py2-xmas-hero:after{opacity:.45}
+
+
+/* Restrained heading ornaments: decorations stay attached to headings. */
+html.py2-xmas [data-py2-seasonal-heading]{position:relative;display:inline-block;padding-inline:.08em;isolation:isolate}
+html.py2-xmas [data-py2-seasonal-heading]::after{content:var(--py2-seasonal-ornament,"✦");display:inline-block;margin-inline-start:.48em;color:var(--xmas-gold);font-size:.72em;line-height:1;vertical-align:super;text-shadow:0 2px 8px #c9a45b35;transform:rotate(-8deg)}
+html.py2-xmas [data-py2-seasonal-heading]::before{content:"";position:absolute;left:0;right:1.5em;bottom:-.18em;height:1px;background:linear-gradient(90deg,#c9a45b70,transparent);pointer-events:none}
+#py2-seasonal-snow{position:fixed;inset:0;z-index:9998;overflow:hidden;pointer-events:none;contain:strict}
+.py2-snowflake{position:absolute;top:-24px;color:#d9e9f3;font-style:normal;line-height:1;text-shadow:0 1px 5px #66849b45;animation:py2-snow-fall linear infinite;will-change:transform}
+@keyframes py2-snow-fall{0%{transform:translate3d(0,-5vh,0) rotate(0deg)}50%{transform:translate3d(var(--snow-drift,24px),52vh,0) rotate(180deg)}100%{transform:translate3d(calc(var(--snow-drift,24px)*-.45),110vh,0) rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#py2-seasonal-snow{display:none!important}.py2-snowflake{animation:none!important}}
