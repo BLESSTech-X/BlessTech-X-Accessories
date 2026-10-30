@@ -147,3 +147,30 @@ html.py2-xmas body, html[class*="py2-season-"] body {
   background-image:none !important;
   background-attachment:scroll !important;
 }
+
+
+/* Multi-season campaign palettes and decorations */
+html.py2-season-active{--py2-season-primary:#365b8c;--py2-season-secondary:#e8a83e;--py2-season-accent:#fff7e8;--py2-season-ink:#20334d}
+html.py2-season-theme-christmas{--py2-season-primary:#123b2d;--py2-season-secondary:#c8323e;--py2-season-accent:#fffdf8;--py2-season-ink:#203329}
+html.py2-season-theme-valentines{--py2-season-primary:#8d244e;--py2-season-secondary:#e85d87;--py2-season-accent:#fff3f6;--py2-season-ink:#562039}
+html.py2-season-theme-easter{--py2-season-primary:#477b58;--py2-season-secondary:#e6a7bd;--py2-season-accent:#fff9e9;--py2-season-ink:#294b35}
+html.py2-season-theme-halloween{--py2-season-primary:#38234f;--py2-season-secondary:#ed792e;--py2-season-accent:#fff6ed;--py2-season-ink:#30203f}
+html.py2-season-theme-black-friday{--py2-season-primary:#191919;--py2-season-secondary:#d6ad4c;--py2-season-accent:#fffaf0;--py2-season-ink:#252525}
+html.py2-season-theme-new-year{--py2-season-primary:#172b54;--py2-season-secondary:#d5b45e;--py2-season-accent:#f5f8ff;--py2-season-ink:#1b2b4a}
+html.py2-season-theme-mothers-day{--py2-season-primary:#80506f;--py2-season-secondary:#d89bb5;--py2-season-accent:#fff5f8;--py2-season-ink:#54364c}
+html.py2-season-theme-fathers-day{--py2-season-primary:#244b70;--py2-season-secondary:#d2a653;--py2-season-accent:#f4f8fc;--py2-season-ink:#20364c}
+html.py2-season-theme-back-to-school{--py2-season-primary:#245c86;--py2-season-secondary:#e5a93d;--py2-season-accent:#f4f9ff;--py2-season-ink:#203b53}
+html.py2-season-theme-summer{--py2-season-primary:#087d86;--py2-season-secondary:#f0a33a;--py2-season-accent:#f0ffff;--py2-season-ink:#17464b}
+html.py2-season-theme-independence{--py2-season-primary:#167444;--py2-season-secondary:#e5a52f;--py2-season-accent:#fffaf0;--py2-season-ink:#193d2a}
+html.py2-season-active .py2-seasonal-ornament{display:inline-block!important;margin-inline-start:.42em!important;font-family:system-ui,sans-serif!important;font-size:.78em!important;line-height:1!important;vertical-align:baseline!important;opacity:1!important;color:var(--py2-season-secondary)!important;text-shadow:0 2px 7px #00000016!important}
+html.py2-season-active .py2-seasonal-tab-mark{display:inline-block!important;flex:0 0 auto!important;margin-inline-end:4px!important;font-size:1.05em!important;line-height:1!important;vertical-align:middle!important}
+html.py2-season-active .py2-seasonal-brand-marks{display:inline-flex!important;align-items:center!important;gap:2px!important;margin-inline-start:7px!important;vertical-align:middle!important;white-space:nowrap!important;line-height:1!important}
+html.py2-season-active .py2-seasonal-brand-marks span{display:inline-block!important;font-size:clamp(23px,3vw,31px)!important;line-height:1!important;filter:none!important;transform:translateY(-1px)!important}
+html.py2-season-active #py2-xmas-ribbon{background-color:var(--py2-season-primary);background-image:linear-gradient(90deg,color-mix(in srgb,var(--py2-season-primary) 94%,transparent),color-mix(in srgb,var(--py2-season-primary) 62%,transparent)),var(--py2-xmas-banner-image);border-color:var(--py2-season-secondary)}
+html.py2-season-active .py2-xmas-ribbon-mark{color:var(--py2-season-secondary)}
+html.py2-season-active .py2-xmas-ribbon-link{background:var(--py2-season-secondary);border-color:var(--py2-season-secondary);color:#fff!important}
+html.py2-season-active .py2-xmas-modal{color:var(--py2-season-ink)}
+html.py2-season-active .py2-xmas-modal h2{color:var(--py2-season-primary)}
+html.py2-season-active .py2-xmas-cta{background:var(--py2-season-secondary)}
+html.py2-season-active .py2-xmas-modal-art{background-color:var(--py2-season-primary)}
+@media(max-width:480px){html.py2-season-active .py2-seasonal-brand-marks span{font-size:24px!important}}
