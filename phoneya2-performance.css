@@ -321,7 +321,8 @@ body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-topics span{
 /* SITE-WIDE BACKGROUND STANDARD — match Shop's plain white canvas everywhere.
    This deliberately overrides every legacy water/blue/seasonal page-canvas rule. */
 html, html.py2-water-enabled, html.py2-xmas, html[class*="py2-season-"],
-body, body.py2-water-page, body.shop-page {
+body, body.py2-water-page, body.shop-page,
+html.py2-xmas body, html[class*="py2-season-"] body {
   background: #ffffff !important;
   background-color: #ffffff !important;
   background-image: none !important;
