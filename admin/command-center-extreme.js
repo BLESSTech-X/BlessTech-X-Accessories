@@ -5,6 +5,7 @@
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
   const state = { paletteOpen: false, focusMode: false, lastRefresh: null };
   const actions = [
+    {title:'Open Seasonal Studio', detail:'Manage seasons, banners, popups and campaign timing', group:'Marketing', keys:'seasonal campaigns christmas valentines easter banners popups', run:() => document.getElementById('tab-seasonal-studio')?.click()},
     {title:'Open Order Desk', detail:'Review orders and fulfilment', group:'Operations', keys:'orders', href:'/admin/orders.html'},
     {title:'Open Product CMS', detail:'Manage products and publish changes', group:'Catalogue', keys:'products cms catalogue', href:'/admin/'},
     {title:'Open Google Analytics', detail:'Visitors, acquisition and conversions', group:'Growth', keys:'traffic visitors analytics', href:'https://analytics.google.com/analytics/web/', external:true},
