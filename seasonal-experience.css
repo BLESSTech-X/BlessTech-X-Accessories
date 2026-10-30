@@ -66,3 +66,25 @@ html.py2-xmas [data-py2-seasonal-heading]::before{content:"";position:absolute;l
 .py2-snowflake{position:absolute;top:-24px;color:#d9e9f3;font-style:normal;line-height:1;text-shadow:0 1px 5px #66849b45;animation:py2-snow-fall linear infinite;will-change:transform}
 @keyframes py2-snow-fall{0%{transform:translate3d(0,-5vh,0) rotate(0deg)}50%{transform:translate3d(var(--snow-drift,24px),52vh,0) rotate(180deg)}100%{transform:translate3d(calc(var(--snow-drift,24px)*-.45),110vh,0) rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#py2-seasonal-snow{display:none!important}.py2-snowflake{animation:none!important}}
+
+/* Complete Christmas campaign presentation */
+#py2-xmas-ribbon{position:relative;z-index:20;width:100%;color:#fff;background:linear-gradient(105deg,#102f25 0%,#1d6045 52%,#123b2d 100%);border-bottom:1px solid #c9a45b;box-shadow:0 5px 18px #123b2d18}
+.py2-xmas-ribbon-inner{max-width:1240px;min-height:58px;margin:auto;padding:9px 22px;display:flex;align-items:center;gap:14px}
+.py2-xmas-ribbon-mark{color:#e8cf91;font-size:21px;flex:0 0 auto}
+.py2-xmas-ribbon-copy{display:flex;align-items:baseline;gap:10px;min-width:0;flex:1}
+.py2-xmas-ribbon-copy strong{font-size:13px;letter-spacing:.025em;color:#fff}
+.py2-xmas-ribbon-copy span{font-size:12px;color:#e7eee9}
+.py2-xmas-ribbon-link{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 15px;border-radius:8px;background:#c8323e;color:#fff!important;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap;border:1px solid #e06b72;box-shadow:0 3px 10px #071b1430}
+.py2-xmas-ribbon-close{width:30px;height:30px;flex:0 0 auto;border:1px solid #ffffff35;border-radius:50%;background:#ffffff12;color:#fff;font-size:20px;line-height:1;cursor:pointer}
+html.py2-xmas .py2-xmas-hero{border-radius:18px;position:relative;isolation:isolate;overflow:hidden}
+html.py2-xmas .py2-xmas-hero:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(115deg,#123b2d12,transparent 52%),radial-gradient(circle at 90% 0%,#d8bd7920,transparent 34%)}
+html.py2-xmas .py2-xmas-hero>*{position:relative;z-index:1}
+html.py2-xmas :is(.hero-zone .hero-banner,.shop-hero){border-color:#c9a45b}
+html.py2-xmas :is(.promo-banner,.promo-card,.hero-slide){outline:1px solid #c9a45b30;outline-offset:-1px}
+html.py2-xmas :is(button,.btn,[role=button],input[type=submit],a.btn-primary,a.btn,.py2-hero-primary,.py2-hero-secondary,.py2-add-cart,.btn-order,.btn-order-main,.btn-primary,.btn-secondary,.primary,.secondary){border-radius:10px;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+html.py2-xmas :is(button,.btn,[role=button],input[type=submit],a.btn-primary,a.btn,.py2-hero-primary,.py2-hero-secondary,.py2-add-cart,.btn-order,.btn-order-main,.btn-primary,.btn-secondary,.primary,.secondary):hover{transform:translateY(-1px);box-shadow:0 6px 16px #123b2d20}
+html.py2-xmas :is(.py2-add-cart,.add-to-cart,.addToCart,[data-action="add-to-cart"]){background:linear-gradient(135deg,#e18b32,#c66a19)!important;color:#fff!important;border:1px solid #b85d14!important}
+html.py2-xmas :is(.btn-order,.btn-order-main,.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"],.py2-hero-primary){background:linear-gradient(135deg,#d83c48,#a92130)!important;color:#fff!important;border:1px solid #a92130!important}
+html.py2-xmas :is(.py2-hero-secondary,.btn-secondary,.btn.secondary,.btn-sec){background:#fff!important;color:#174b37!important;border:1px solid #c9a45b!important}
+html.py2-xmas :is(.hero-offer-alert,.price-drop-banner,.drop-banner){border-color:#c9a45b}
+@media(max-width:640px){.py2-xmas-ribbon-inner{padding:9px 12px;gap:9px;min-height:54px}.py2-xmas-ribbon-copy{display:grid;gap:2px}.py2-xmas-ribbon-copy strong{font-size:11px}.py2-xmas-ribbon-copy span{font-size:10px}.py2-xmas-ribbon-link{min-height:34px;padding:7px 10px;font-size:10px}.py2-xmas-ribbon-mark{font-size:17px}}
