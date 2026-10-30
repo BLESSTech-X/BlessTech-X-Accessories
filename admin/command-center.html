@@ -107,7 +107,7 @@
 .modules .module.comment-module h3:after{content:"QUICK ACCESS";display:inline-block;vertical-align:middle;margin-left:7px;padding:3px 5px;border-radius:5px;background:#dbeafe;color:#1d4ed8;font-size:8px;font-weight:950;letter-spacing:.5px}
 @media(max-width:650px){.comment-shortcut{grid-template-columns:auto minmax(0,1fr);gap:11px;padding:14px}.comment-shortcut-icon{width:43px;height:43px}.comment-shortcut-action{grid-column:1/-1;width:100%;white-space:normal}.intro-actions .comment-top-link{order:-1}}
 </style>
-<link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261030-studio-inventory-redesign1">
+<link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261030-growth-intelligence1">
 </head>
 <body>
 <div id="lab-intro" class="lab-intro" role="dialog" aria-modal="true" aria-label="PhoneYa2 system startup"><div class="lab-core"><div class="lab-kicker">PHONEYA2 // OPERATIONS INTELLIGENCE</div><h2>Command Centre Online</h2><p id="lab-copy">Connecting the live business signals. Preparing your operations view.</p><div class="lab-readout"><div><strong id="lab-orders">—</strong><span>ORDERS</span></div><div><strong id="lab-pending">—</strong><span>NEED ACTION</span></div><div><strong id="lab-visitors">—</strong><span>VISITORS · 30D</span></div></div><div class="lab-progress"><span id="lab-progress-fill"></span></div><div id="lab-status" class="lab-status">INITIALIZING SECURE WORKSPACE</div><button type="button" id="lab-skip" class="lab-skip">Enter dashboard →</button></div></div>
@@ -171,6 +171,9 @@
   <section class="panel section" id="analytics-live-panel" style="margin:17px 0">
     <div class="section-head"><div><h2>Live Google Analytics</h2><p id="ga4-period">Real GA4 reporting · last 30 days</p></div><button class="btn" id="ga4-refresh">Refresh traffic</button></div>
     <div id="ga4-message" class="muted" style="font-size:12px;margin:0 0 12px">Loading Google Analytics reports…</div>
+    <div id="ga4-insights" class="ga4-insights" aria-live="polite">
+      <div class="ga4-insight-card ga4-insight-lead"><span class="ga4-insight-label">ACQUISITION SIGNAL</span><strong>Reading your traffic mix…</strong><small>Live signals will appear here after Analytics refreshes.</small></div>
+    </div>
     <div class="stats" style="margin-bottom:16px">
       <div class="stat"><span>Active users</span><strong id="ga4-users">—</strong><small>Unique active visitors</small></div>
       <div class="stat"><span>Sessions</span><strong id="ga4-sessions">—</strong><small>Visits to the website</small></div>
@@ -406,6 +409,24 @@ function renderGa4List(id,items,labelKey,valueKey,subKey){
  host.append(row,sub);
  });
 }
+function renderGa4Insights(data){
+ const host=$('ga4-insights');if(!host)return;host.replaceChildren();
+ const sources=Array.isArray(data.sources)?data.sources:[],pages=Array.isArray(data.pages)?data.pages:[];
+ const total=Number(data.summary?.sessions||0);
+ const top=[...sources].sort((a,b)=>Number(b.sessions||0)-Number(a.sessions||0))[0];
+ const home=[...pages].sort((a,b)=>Number(b.views||0)-Number(a.views||0))[0];
+ const social=sources.filter(x=>/facebook/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
+ const ai=sources.filter(x=>/chatgpt|openai|perplexity|copilot/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
+ const organic=sources.filter(x=>/google\\s*\\/\\s*organic|bing\\s*\\/\\s*organic/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
+ const cards=[
+  {label:'LEADING SOURCE',value:top?.source||'No source data',detail:top?Number(top.sessions||0).toLocaleString()+' sessions · '+(total?Math.round(Number(top.sessions||0)/total*100):0)+'% of reported sessions':'No acquisition rows returned',tone:'lead'},
+  {label:'TOP PAGE',value:home?.path||'No page data',detail:home?Number(home.views||0).toLocaleString()+' page views · '+Number(home.users||0).toLocaleString()+' active users':'No page rows returned',tone:'page'},
+  {label:'SOCIAL DISCOVERY',value:social.toLocaleString()+' sessions',detail:'Facebook and mobile Facebook referrals combined',tone:'social'},
+  {label:'AI DISCOVERY',value:ai.toLocaleString()+' sessions',detail:'ChatGPT and other identified AI referrals',tone:'ai'},
+  {label:'SEARCH DISCOVERY',value:organic.toLocaleString()+' sessions',detail:'Identified Google and Bing organic sessions',tone:'search'}
+ ];
+ cards.forEach((item,i)=>{const card=document.createElement('article');card.className='ga4-insight-card ga4-insight-'+item.tone;const label=document.createElement('span');label.className='ga4-insight-label';label.textContent=item.label;const value=document.createElement('strong');value.textContent=item.value;const detail=document.createElement('small');detail.textContent=item.detail;card.append(label,value,detail);host.append(card);});
+}
 async function refreshGa4(){
  const button=$('ga4-refresh');if(button)button.disabled=true;
  $('ga4-message').textContent='Loading real Google Analytics data…';
@@ -419,6 +440,7 @@ async function refreshGa4(){
   $('ga4-period').textContent=(data.period||'Last 30 days')+' · Property '+data.property_id;
   renderGa4List('ga4-sources',data.sources,'source','sessions','users');
   renderGa4List('ga4-pages',data.pages,'path','views','users');
+  renderGa4Insights(data);
   $('ga4-message').textContent='Connected to Google Analytics. Values below are returned by the GA4 Data API.';
   $('ga4-updated').textContent='Report retrieved '+new Date(data.generated_at||Date.now()).toLocaleString();
  }catch(e){
