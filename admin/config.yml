@@ -275,6 +275,7 @@ collections:
             name: "theme"
             widget: "select"
             default: "christmas"
+            hint: "This chooses which saved seasonal preset is live on the website. To customize wording, open the matching season under Seasonal Content Library; each season keeps its own saved copy."
             options:
               - { label: "Christmas 🎄", value: "christmas" }
               - { label: "Valentine's Day 💗", value: "valentines" }
@@ -319,7 +320,7 @@ collections:
     delete: false
     extension: "json"
     format: "json"
-    summary: "{{season_label}} — {{bannerTitle}}"
+    summary: "{{fields.season_label}} — {{fields.bannerTitle}}"
     description: "Each season has its own saved wording. Edit a season here; changing the active season in Seasonal Campaigns will use that season's saved content automatically."
     fields:
       - { label: "Season ID", name: "season", widget: "hidden" }
