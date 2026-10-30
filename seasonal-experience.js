@@ -17,6 +17,29 @@ function decorateHeadings(){
  const ornaments=['🎄','✦','🔔','❄'];
  nodes.forEach((node,i)=>{node.setAttribute('data-py2-seasonal-heading','');node.style.setProperty('--py2-seasonal-ornament','"'+ornaments[i%ornaments.length]+'"')});
 }
+function createCampaignBanner(){
+ if(!settings.banner||document.getElementById('py2-xmas-ribbon'))return;
+ const ribbon=document.createElement('aside');ribbon.id='py2-xmas-ribbon';ribbon.className='py2-xmas-ribbon';
+ ribbon.setAttribute('aria-label','PhoneYa2 Christmas campaign');
+ const inner=document.createElement('div');inner.className='py2-xmas-ribbon-inner';
+ const mark=document.createElement('span');mark.className='py2-xmas-ribbon-mark';mark.setAttribute('aria-hidden','true');mark.textContent='✦';
+ const copy=document.createElement('div');copy.className='py2-xmas-ribbon-copy';
+ const title=document.createElement('strong');title.textContent=settings.bannerTitle||'The PhoneYa2 Christmas Edit';
+ const message=document.createElement('span');message.textContent=settings.bannerMessage||'Thoughtful tech gifts. Better-connected moments.';
+ copy.append(title,message);
+ const link=document.createElement('a');link.className='py2-xmas-ribbon-link';link.href=safeDestination(settings.bannerUrl||'/shop.html');link.textContent=settings.bannerButton||'Explore gifts';
+ const close=document.createElement('button');close.type='button';close.className='py2-xmas-ribbon-close';close.setAttribute('aria-label','Dismiss Christmas banner');close.textContent='×';
+ close.addEventListener('click',()=>{ribbon.remove();sessionStorage.setItem('py2-xmas-ribbon-dismissed','1')});
+ inner.append(mark,copy,link,close);ribbon.append(inner);
+ if(sessionStorage.getItem('py2-xmas-ribbon-dismissed'))return;
+ const header=document.querySelector('.top-header,.site-header,header');
+ if(header&&header.parentNode)header.insertAdjacentElement('afterend',ribbon);
+ else {const main=document.querySelector('main');(main||document.body).insertAdjacentElement('afterbegin',ribbon)}
+}
+function applyHeroTreatment(){
+ const heroes=document.querySelectorAll('.hero-zone,.hero-banner,.shop-hero,.hero-section,.hero,.hero-content,.intro');
+ heroes.forEach(el=>{if(!el.closest('#py2-xmas-popup')&&!el.classList.contains('py2-xmas-hero'))el.classList.add('py2-xmas-hero')});
+}
 function makeSnow(){
  if(!settings.snow||!active()||matchMedia('(prefers-reduced-motion: reduce)').matches||snowLayer)return;
  const count=Math.max(5,Math.min(60,Number(settings.snowIntensity)||24));
@@ -43,7 +66,7 @@ function showPopup(){
 function apply(){
  const enabled=active();document.documentElement.classList.toggle('py2-xmas',enabled);
  if(!enabled)return;
- decorateHeadings();makeSnow();showPopup();
+ decorateHeadings();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
 async function load(){
  try{
@@ -54,5 +77,5 @@ async function load(){
   apply();
  }catch(error){console.warn('[PhoneYa2 Seasonal]',error)}
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();\nconst observer=new MutationObserver(()=>{if(document.documentElement.classList.contains('py2-xmas')){decorateHeadings();applyHeroTreatment()}});\nobserver.observe(document.documentElement,{childList:true,subtree:true});
 })();
