@@ -1,0 +1,22 @@
+{
+  "season": "halloween",
+  "season_label": "Halloween",
+  "heroTitle": "The PhoneYa2 Halloween Edit",
+  "heroSubtitle": "A little tech magic. A lot more connection.",
+  "bannerTitle": "The PhoneYa2 Halloween Edit",
+  "bannerMessage": "A little tech magic. A lot more connection.",
+  "bannerButton": "Explore Halloween Picks",
+  "bannerUrl": "/shop.html",
+  "bannerImage": "",
+  "popupTitle": "Discover the Halloween Edit",
+  "popupMessage": "Explore fun finds and everyday tech essentials in our Halloween collection.",
+  "popupButton": "Shop Halloween Picks",
+  "popupUrl": "/shop.html",
+  "popupImage": "",
+  "marks": [
+    "🎃",
+    "🦇",
+    "👻",
+    "🕸️"
+  ]
+}
