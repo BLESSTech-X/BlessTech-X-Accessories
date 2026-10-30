@@ -25,8 +25,11 @@
       document.getElementById('workspace-modal-subtitle').textContent='Manage PhoneYa2 content inside the Command Centre';
       var newtab=document.getElementById('workspace-modal-newtab');
       if(newtab)newtab.href=url;
+      frame.title=(button.getAttribute('data-cms-title')||'PhoneYa2')+' — direct management';
       frame.src=url;
       modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      document.body.classList.add('py2-management-open');
       document.body.style.overflow='hidden';
       var close=document.getElementById('workspace-modal-close');
       if(close)close.focus();
