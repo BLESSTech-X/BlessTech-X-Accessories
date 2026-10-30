@@ -216,5 +216,13 @@ html.py2-season-active .py2-seasonal-brand-marks span{display:inline-block}
 html.py2-season-active #py2-xmas-popup .py2-xmas-modal{border-color:var(--py2-season-gold);background:linear-gradient(145deg,var(--py2-season-paper),#fff);color:var(--py2-season-accent-2)}
 html.py2-season-active #py2-xmas-popup .py2-xmas-modal h2{color:var(--py2-season-accent-2)}
 html.py2-season-active #py2-xmas-popup .py2-xmas-cta{background:var(--py2-season-accent);border:1px solid var(--py2-season-gold)}
-html.py2-season-theme-christmas #py2-xmas-ribbon{background:linear-gradient(105deg,#102f25 0%,#1d6045 52%,#123b2d 100%)}
+/* Keep the Decap-selected photo visible for Christmas too; never use the
+   background shorthand here because it would erase the image layer above. */
+html.py2-season-theme-christmas #py2-xmas-ribbon{
+  background-color:#123b2d;
+  background-image:linear-gradient(90deg,rgba(7,28,19,.72) 0%,rgba(7,28,19,.48) 52%,rgba(7,28,19,.22) 100%),var(--py2-xmas-banner-image,none);
+  background-size:cover;
+  background-position:center 46%;
+  background-repeat:no-repeat;
+}
 @supports not (background:color-mix(in srgb,red,white)){html.py2-season-active .py2-seasonal-hero:not(.py2-xmas-hero){background:var(--py2-season-accent-2)!important}}
