@@ -271,7 +271,22 @@ collections:
         description: "Control PhoneYa2 seasonal themes, Christmas decorations, snowfall, campaign scheduling and promotional popup. Save and publish to make changes live."
         fields:
           - { label: "Campaign enabled", name: "enabled", widget: "boolean", default: false, hint: "Turn on to activate the seasonal experience on the public website." }
-          - { label: "Theme", name: "theme", widget: "select", options: [{ label: "Christmas 🎄", value: "christmas" }, { label: "Valentine’s Day 💗", value: "valentines" }, { label: "Easter 🐣", value: "easter" }, { label: "Halloween 🎃", value: "halloween" }, { label: "Black Friday 🏷️", value: "black-friday" }, { label: "New Year 🎆", value: "new-year" }, { label: "Mother’s Day 💐", value: "mothers-day" }, { label: "Father’s Day 🎁", value: "fathers-day" }, { label: "Back to School 🎒", value: "back-to-school" }, { label: "Summer ☀️", value: "summer" }, { label: "Zambian Independence 🇿🇲", value: "independence" }], default: "christmas" }
+          - label: "Theme / Season"
+            name: "theme"
+            widget: "select"
+            default: "christmas"
+            options:
+              - { label: "Christmas 🎄", value: "christmas" }
+              - { label: "Valentine's Day 💗", value: "valentines" }
+              - { label: "Easter 🐣", value: "easter" }
+              - { label: "Halloween 🎃", value: "halloween" }
+              - { label: "Black Friday 🏷️", value: "black-friday" }
+              - { label: "New Year 🎆", value: "new-year" }
+              - { label: "Mother's Day 💐", value: "mothers-day" }
+              - { label: "Father's Day 🎁", value: "fathers-day" }
+              - { label: "Back to School 🎒", value: "back-to-school" }
+              - { label: "Summer ☀️", value: "summer" }
+              - { label: "Zambian Independence 🇿🇲", value: "independence" }
           - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained festive ornaments beside selected page and section headings. Does not scatter emojis around the site." }
           - { label: "Snowfall", name: "snow", widget: "boolean", default: false, hint: "Only snowflakes fall. Other decorations remain fixed to headings." }
           - { label: "Snowfall intensity", name: "snowIntensity", widget: "number", min: 5, max: 60, step: 5, default: 24, hint: "Controls the number of snowflakes. Keep it subtle for mobile performance." }
@@ -279,7 +294,7 @@ collections:
           - { label: "Campaign start date", name: "start", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
-          - { label: "Christmas campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show a coordinated festive announcement ribbon across supported pages." }
+          - { label: "Seasonal campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show a coordinated festive announcement ribbon across supported pages." }
           - { label: "Banner heading", name: "bannerTitle", widget: "string", default: "The PhoneYa2 Christmas Edit" }
           - { label: "Banner background image URL", name: "bannerImage", widget: "string", default: "https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200", hint: "Paste a direct HTTPS image URL. Use a wide landscape photo with the subject positioned away from the text." }
           - { label: "Banner message", name: "bannerMessage", widget: "string", default: "Thoughtful tech gifts. Better-connected moments." }
