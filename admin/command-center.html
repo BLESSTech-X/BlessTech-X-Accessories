@@ -266,10 +266,10 @@ function renderExecutiveDashboard(){
  const customers=new Set(monthOrders.map(o=>String(o.customer_email||o.customer_phone||o.customer_name||'').trim().toLowerCase()).filter(Boolean));
  const avg=monthKept?monthValue/monthKept:0,goalPct=Math.min(100,monthCount/30*100),cancelPct=biPercent(monthCancelled,monthCount);
  const label=biPeriod==='today'?'Today':biPeriod==='7'?'Weekly':'Monthly';
- biSetText('bi-total',total.toLocaleString());biSetText('bi-order-value',money(value));biSetText('bi-growth-percent',Math.round(goalPct)+'%');
+ biSetText('bi-total',monthCount.toLocaleString());biSetText('bi-order-value',money(monthValue));biSetText('bi-growth-percent',Math.round(goalPct)+'%');
  const growthFill=$('bi-growth-fill');if(growthFill)growthFill.style.width=goalPct+'%';
- biSetText('bi-pending',pending.toLocaleString());biSetText('bi-delivered',delivered.toLocaleString());biSetText('bi-cancelled',cancelled.toLocaleString());
- [['pending',pending],['delivered',delivered],['cancel',cancelled]].forEach(([key,n])=>{biSetText('bi-'+key+'-percent',biPercent(n,total).toFixed(1)+'%');const el=$('bi-'+key+'-fill');if(el)el.style.width=biPercent(n,total)+'%';});
+ biSetText('bi-pending',monthOrders.filter(o=>o.status==='pending').length.toLocaleString());biSetText('bi-delivered',monthOrders.filter(o=>o.status==='delivered').length.toLocaleString());biSetText('bi-cancelled',monthCancelled.toLocaleString());
+ [['pending',monthOrders.filter(o=>o.status==='pending').length],['delivered',monthOrders.filter(o=>o.status==='delivered').length],['cancel',monthCancelled]].forEach(([key,n])=>{biSetText('bi-'+key+'-percent',biPercent(n,monthCount).toFixed(1)+'%');const el=$('bi-'+key+'-fill');if(el)el.style.width=biPercent(n,monthCount)+'%';});
  biSetText('bi-status-title',label+' order breakdown');biSetText('bi-donut-total',total.toLocaleString());
  const segments=[{name:'Pending',count:pending,color:'#ffc93c'},{name:'Delivered',count:delivered,color:'#4d96ff'},{name:'Cancelled',count:cancelled,color:'#ff6b6b'},{name:'Other',count:Math.max(0,total-pending-delivered-cancelled),color:'#a8b1c2'}];
  let cursor=0;const stops=segments.filter(x=>x.count>0).map(x=>{const start=cursor;cursor+=biPercent(x.count,total);return x.color+' '+start+'% '+cursor+'%';});
