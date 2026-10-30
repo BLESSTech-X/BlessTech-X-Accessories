@@ -303,7 +303,7 @@ collections:
 
 
   - name: "seasonal_presets"
-    label: "Seasonal Content Library"
+    label: "Seasonal Campaign Content"
     label_singular: "Season"
     folder: "content/settings/seasonal-presets"
     create: false
@@ -311,7 +311,7 @@ collections:
     extension: "json"
     format: "json"
     summary: "{{fields.season_label}} — {{fields.bannerTitle}}"
-    description: "Each season has its own saved wording. Edit a season here; changing the active season in Seasonal Campaigns will use that season's saved content automatically."
+    description: "Each season has its own independent headings, messages, buttons, images and decorations. Open the season you want to edit here. Seasonal Campaign Control decides which saved season is live."
     fields:
       - { label: "Season ID", name: "season", widget: "hidden" }
       - { label: "Season name", name: "season_label", widget: "string" }
