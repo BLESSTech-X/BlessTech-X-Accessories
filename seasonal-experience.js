@@ -104,7 +104,9 @@ async function loadPublishedSettings(){
    const payload=await live.json();
    if(payload&&payload.settings&&typeof payload.settings==='object'){
     dbPresets=payload.presets&&typeof payload.presets==='object'?payload.presets:{};
-    return payload.settings;
+    // An empty preset map means the database has only just been initialized.
+    // Keep the already-published Decap campaign live until the admin imports/saves it.
+    if(Object.keys(dbPresets).length)return payload.settings;
    }
   }
  }catch(_){}
