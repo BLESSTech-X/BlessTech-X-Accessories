@@ -1552,3 +1552,34 @@ body:has(#dashboard:not(.hidden)) .wrap{padding-top:20px!important}
   .cc-header-tab-icon{width:22px;height:20px;font-size:16px}
   .cc-header-tab-label{font-size:9px}
 }
+
+
+/* Keep the header menu button: it opens the full workspace drawer on demand. */
+#cc-menu-toggle{display:grid!important;flex:0 0 38px!important;position:relative!important;z-index:96!important}
+#cc-menu-toggle span{width:16px!important}
+.cc-nav-overlay{display:none}
+body.cc-nav-open .cc-nav-overlay{display:block!important;position:fixed!important;inset:72px 0 0!important;z-index:92!important;border:0!important;background:rgba(13,22,39,.28)!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation{
+  position:fixed!important;z-index:95!important;left:12px!important;top:82px!important;bottom:12px!important;
+  width:min(290px,calc(100vw - 24px))!important;max-width:none!important;height:auto!important;
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;
+  gap:12px!important;overflow-y:auto!important;overflow-x:hidden!important;padding:15px 12px!important;
+  background:#fff!important;border:1px solid #e6ebf3!important;border-radius:17px!important;
+  box-shadow:0 18px 50px rgba(18,30,52,.2)!important;
+}
+body.cc-nav-open #workspace-nav.cc-header-navigation .cc-nav-heading{display:flex!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation .cc-nav-group{display:grid!important;gap:3px!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation .cc-nav-group-label{display:block!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation .workspace-tab{
+  width:100%!important;min-width:0!important;flex-direction:row!important;justify-content:flex-start!important;
+  gap:11px!important;padding:10px 11px!important;text-align:left!important;
+}
+body.cc-nav-open #workspace-nav.cc-header-navigation .cc-header-tab-icon{width:23px!important;height:23px!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation .cc-header-tab-label{font-size:12px!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation .cc-nav-footer{display:flex!important}
+@media(max-width:560px){
+ body:has(#dashboard:not(.hidden)) .topbar{flex-wrap:wrap!important}
+ #cc-menu-toggle{order:0!important}
+ body.cc-nav-open .cc-nav-overlay{inset:104px 0 0!important}
+ body.cc-nav-open #workspace-nav.cc-header-navigation{top:112px!important}
+}
