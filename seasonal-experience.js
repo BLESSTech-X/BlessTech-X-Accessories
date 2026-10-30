@@ -13,10 +13,13 @@ function safeImage(value){try{const u=new URL(value,location.origin);return (u.p
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function decorateHeadings(){
  if(!settings.decorations)return;
- const selectors='main h1, .hero h1, .hero-section h1, .hero-banner h1, .section-head h2, .section-heading h2, .blog-section-heading h2, main section h2';
- const nodes=[...document.querySelectorAll(selectors)].filter(n=>!n.closest('#py2-xmas-popup')&&!n.hasAttribute('data-py2-seasonal-heading'));
+ const selectors='main h1,main h2,main h3,.hero h1,.hero h2,.hero-section h1,.hero-section h2,.hero-banner h1,.hero-banner h2,.section-head h2,.section-heading h2,.blog-section-heading h2,main section h2,.heading,.section-title';
+ const nodes=[...document.querySelectorAll(selectors)].filter(n=>!n.closest('#py2-xmas-popup')&&!n.querySelector(':scope > .py2-seasonal-ornament'));
  const ornaments=['🎄','✦','🔔','❄'];
- nodes.forEach((node,i)=>{node.setAttribute('data-py2-seasonal-heading','');node.style.setProperty('--py2-seasonal-ornament','"'+ornaments[i%ornaments.length]+'"')});
+ nodes.forEach((node,i)=>{const mark=document.createElement('span');mark.className='py2-seasonal-ornament';mark.setAttribute('aria-hidden','true');mark.textContent=ornaments[i%ornaments.length];node.append(mark)});
+ const tabMarks=['🎄','🎀','⚡','✨','🎧','🔋','⭐','📱','⌚','🎁','✨'];
+ const tabs=[...document.querySelectorAll('body>nav.py2-quick-tabs a, .cat-nav .cat-nav-item, .bottom-nav .bnav-item')];
+ tabs.forEach((tab,i)=>{if(tab.querySelector(':scope > .py2-seasonal-tab-mark'))return;const mark=document.createElement('span');mark.className='py2-seasonal-tab-mark';mark.setAttribute('aria-hidden','true');mark.textContent=tabMarks[i%tabMarks.length];tab.prepend(mark)});
 }
 function createCampaignBanner(){
  if(!settings.banner||document.getElementById('py2-xmas-ribbon'))return;
