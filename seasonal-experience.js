@@ -76,7 +76,7 @@ function showPopup(){
  const art=document.createElement('div');art.className='py2-xmas-modal-art';const image=(themeKey()==='christmas'||settings.popupImage!==defaults.popupImage)?safeImage(settings.popupImage):'';if(image)art.style.backgroundImage='linear-gradient(180deg,#071b1420 0%,#071b1499 100%),url('+JSON.stringify(image)+')';
  const eyebrow=document.createElement('span');eyebrow.className='py2-xmas-modal-eyebrow';eyebrow.textContent='PHONEYA2 • '+themeLabel().toUpperCase()+' COLLECTION';
  const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.popupTitle||''))?'Celebrate '+themeLabel()+' with PhoneYa2':settings.popupTitle;art.append(eyebrow,title);
- const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;
+ const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;art.append(copy);
  const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.popupButton||''))?'Explore '+themeLabel()+' Picks':settings.popupButton;link.href=safeDestination(settings.popupUrl);
  section.append(close,art,copy,link);wrap.append(section);document.body.append(wrap);
  const dismiss=()=>{wrap.hidden=true;sessionSet('py2-xmas-dismissed','1')};
