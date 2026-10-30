@@ -2,7 +2,7 @@ const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache
 const ADMIN_FALLBACK = "singbless89@gmail.com";
 const SETTINGS_FIELDS = [
   "enabled","theme","decorations","snow","snowIntensity","scheduled","start","end","coverage",
-  "popup","popupMode","popupDelay","popupScroll","banner","bannerImage","popupImage"
+  "popup","popupMode","popupDelay","popupScroll","banner"
 ];
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 function secret(env,...names){for(const name of names)if(env[name])return env[name];return "";}
@@ -43,8 +43,10 @@ export async function onRequest({request,env}){
     const raw=await request.text();if(raw.length>1024*1024)return json({error:"Seasonal settings payload is too large."},413);
     let body;try{body=JSON.parse(raw);}catch{return json({error:"Submit valid JSON."},400);}
     const source=body?.settings&&typeof body.settings==="object"?body.settings:{};
+    const presets=body?.presets&&typeof body.presets==="object"&&!Array.isArray(body.presets)?body.presets:null;
     const settings={id:"global"};
     for(const key of SETTINGS_FIELDS)if(Object.prototype.hasOwnProperty.call(source,key))settings[key]=source[key];
+    if(presets)settings.presets=presets;
     settings.updated_at=new Date().toISOString();
     const response=await database(env,"seasonal_campaigns?id=eq.global",{method:"PATCH",headers:{prefer:"return=representation"},body:JSON.stringify(settings)});
     if(!response.ok){const detail=await response.text();return json({error:"Could not save seasonal settings: "+detail.slice(0,300)},502);}
