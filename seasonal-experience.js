@@ -1,7 +1,7 @@
 /* PhoneYa2 Seasonal Experience — shared Christmas campaign engine */
 (()=>{'use strict';
 const TABLE='seasonal_campaigns',ID='global',KEY='phoneya2-seasonal-preview-v2';
-const defaults={id:ID,enabled:false,theme:'christmas',decorations:false,snow:false,snowIntensity:0,popup:false,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html',popupMode:'delay',popupDelay:5,popupScroll:35,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',updated_at:null};
+const defaults={id:ID,enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,popup:false,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html',popupMode:'delay',popupDelay:5,popupScroll:35,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',updated_at:null};
 let settings={...defaults},adminMounted=false;
 const $=(id,root=document)=>root.querySelector('#'+id);
 const cfg=()=>window.PY2_ADS_CONFIG||{};
