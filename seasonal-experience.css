@@ -194,7 +194,18 @@ html.py2-season-theme-fathers-day{--py2-season-accent:#2673b8;--py2-season-accen
 html.py2-season-theme-back-to-school{--py2-season-accent:#e2a51d;--py2-season-accent-2:#234b78;--py2-season-gold:#f2d06d;--py2-season-paper:#fffdf4}
 html.py2-season-theme-summer{--py2-season-accent:#e87524;--py2-season-accent-2:#087f82;--py2-season-gold:#f5d36e;--py2-season-paper:#fffaf0}
 html.py2-season-theme-independence{--py2-season-accent:#e87524;--py2-season-accent-2:#167345;--py2-season-gold:#1e1e1e;--py2-season-paper:#fffdf8}
-html.py2-season-active #py2-xmas-ribbon{background:linear-gradient(105deg,var(--py2-season-accent-2),color-mix(in srgb,var(--py2-season-accent-2),#fff 13%),var(--py2-season-accent-2));border-bottom-color:var(--py2-season-gold)}
+html.py2-season-active #py2-xmas-ribbon{
+  background-color:var(--py2-season-accent-2);
+  background-image:linear-gradient(90deg,
+    color-mix(in srgb,var(--py2-season-accent-2) 82%,transparent) 0%,
+    color-mix(in srgb,var(--py2-season-accent-2) 58%,transparent) 55%,
+    color-mix(in srgb,var(--py2-season-accent-2) 28%,transparent) 100%),
+    var(--py2-xmas-banner-image,none);
+  background-size:cover;
+  background-position:center 46%;
+  background-repeat:no-repeat;
+  border-bottom-color:var(--py2-season-gold)
+}
 html.py2-season-active .py2-xmas-ribbon-mark{color:var(--py2-season-gold)}
 html.py2-season-active .py2-xmas-ribbon-link{background:var(--py2-season-accent);border-color:var(--py2-season-gold)}
 html.py2-season-active .py2-seasonal-hero:not(.py2-xmas-hero){position:relative;isolation:isolate;border:1px solid var(--py2-season-gold)!important;border-radius:16px;background:linear-gradient(120deg,var(--py2-season-accent-2),color-mix(in srgb,var(--py2-season-accent-2),var(--py2-season-accent) 24%))!important;color:#fff!important;box-shadow:0 14px 32px color-mix(in srgb,var(--py2-season-accent-2),transparent 82%)}
