@@ -78,7 +78,7 @@ function showPopup(){
  const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.popupTitle||''))?'Celebrate '+themeLabel()+' with PhoneYa2':settings.popupTitle;art.append(eyebrow,title);
  const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;art.append(copy);
  const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.popupButton||''))?'Explore '+themeLabel()+' Picks':settings.popupButton;link.href=safeDestination(settings.popupUrl);
- section.append(close,art,copy,link);wrap.append(section);document.body.append(wrap);
+ section.append(close,art,link);wrap.append(section);document.body.append(wrap);
  const dismiss=()=>{wrap.hidden=true;sessionSet('py2-xmas-dismissed','1')};
  close.addEventListener('click',dismiss);wrap.addEventListener('click',e=>{if(e.target===wrap)dismiss()});
  const reveal=()=>{if(!sessionStorage.getItem('py2-xmas-dismissed'))wrap.hidden=false};
