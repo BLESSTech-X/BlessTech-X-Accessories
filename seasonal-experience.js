@@ -15,7 +15,7 @@ function safeImage(value){try{const u=new URL(value,location.origin);return (u.p
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function themeKey(){return String(settings.theme||'default').toLowerCase().replace(/[^a-z0-9-]/g,'-')}
 function themeLabel(){const labels={christmas:'Christmas',valentines:'Valentine’s Day',easter:'Easter',halloween:'Halloween','black-friday':'Black Friday','new-year':'New Year','mothers-day':'Mother’s Day','fathers-day':'Father’s Day','back-to-school':'Back to School',summer:'Summer',independence:'Zambian Independence'};return labels[themeKey()]||'Seasonal'}
-function themeMarks(){const key=themeKey();if(key.includes('valentine'))return ['💗','🌹','💝','💕'];if(key.includes('easter'))return ['🐣','🌷','🐰','🥚'];if(key.includes('halloween'))return ['🎃','🦇','👻','🕸️'];if(key.includes('black'))return ['🛍️','🏷️','⭐','🛒'];if(key.includes('new-year')||key.includes('newyear'))return ['🎆','✨','🥂','🎇'];if(key.includes('school'))return ['🎒','📚','✏️','⭐'];if(key.includes('mother'))return ['🌷','💐','💗','🎁'];if(key.includes('father'))return ['🎁','⭐','🏆','💙'];if(key.includes('summer'))return ['☀️','🌴','🌊','🍉'];if(key.includes('independence'))return ['🇿🇲','💚','🖤','🧡','❤️'];if(key.includes('christmas'))return ['🎄','🎅','🔔','🎁','🦌','⛄'];return ['✦','✧','•','✦']}
+function themeMarks(){if(Array.isArray(settings.marks)&&settings.marks.length)return settings.marks.map(x=>String(x||'').trim()).filter(Boolean);const key=themeKey();if(key.includes('valentine'))return ['💗','🌹','💝','💕'];if(key.includes('easter'))return ['🐣','🌷','🐰','🥚'];if(key.includes('halloween'))return ['🎃','🦇','👻','🕸️'];if(key.includes('black'))return ['🛍️','🏷️','⭐','🛒'];if(key.includes('new-year')||key.includes('newyear'))return ['🎆','✨','🥂','🎇'];if(key.includes('school'))return ['🎒','📚','✏️','⭐'];if(key.includes('mother'))return ['🌷','💐','💗','🎁'];if(key.includes('father'))return ['🎁','⭐','🏆','💙'];if(key.includes('summer'))return ['☀️','🌴','🌊','🍉'];if(key.includes('independence'))return ['🇿🇲','💚','🖤','🧡','❤️'];if(key.includes('christmas'))return ['🎄','🎅','🔔','🎁','🦌','⛄'];return ['✦','✧','•','✦']}
 function decorateHeadings(){
  if(!settings.decorations)return;
  const selectors='main h1,main h2,main h3,.hero h1,.hero h2,.hero-section h1,.hero-section h2,.hero-banner h1,.hero-banner h2,.section-head h2,.section-heading h2,.blog-section-heading h2,.sec-hdr-left h2,.py2-endless-heading h2,main section h2,.heading,.section-title';
@@ -106,6 +106,16 @@ async function load(){
  try{
   const published=await loadPublishedSettings();
   settings={...defaults,...published};
+  // Each season has an independent Decap-managed JSON preset. Load only the
+  // selected season so edits never leak into another season.
+  const selectedTheme=themeKey();
+  try{
+   const presetResponse=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(selectedTheme)+'.json?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
+   if(presetResponse.ok){
+    const preset=await presetResponse.json();
+    if(preset&&typeof preset==='object'&&!Array.isArray(preset))settings={...settings,...preset};
+   }
+  }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load '+selectedTheme+' preset:',error)}
   if(params.has('py2-seasonal-preview')){try{const draft=JSON.parse(localStorage.getItem(PREVIEW_KEY)||'null');if(draft)settings={...settings,...draft}}catch{}}
   apply();
  }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load Decap-published settings:',error)}
