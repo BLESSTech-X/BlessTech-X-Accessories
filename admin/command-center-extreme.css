@@ -688,3 +688,7 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
   .cc-quick-heading .btn{font-size:8px!important;padding:4px 5px!important}
   .cc-quick-card{padding:7px!important}
 }
+
+@media(max-width:700px){
+  #dashboard>.intro .comment-top-link{display:inline-flex!important;align-self:flex-start!important;min-height:24px!important;padding:4px 7px!important;font-size:8px!important;border-radius:7px!important}
+}
