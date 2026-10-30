@@ -12,6 +12,7 @@ function active(){const campaignLive=!!settings.enabled&&(!settings.scheduled||i
 function safeImage(value){try{const u=new URL(value,location.origin);return (u.protocol==='https:'||u.origin===location.origin)?u.href:''}catch{return ''}}
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function themeKey(){return String(settings.theme||'default').toLowerCase().replace(/[^a-z0-9-]/g,'-')}
+function themeLabel(){const labels={christmas:'Christmas',valentines:'Valentine’s Day',easter:'Easter',halloween:'Halloween','black-friday':'Black Friday','new-year':'New Year','mothers-day':'Mother’s Day','fathers-day':'Father’s Day','back-to-school':'Back to School',summer:'Summer',independence:'Zambian Independence'};return labels[themeKey()]||'Seasonal'}
 function themeMarks(){const key=themeKey();if(key.includes('valentine'))return ['💗','🌹','💝','💕'];if(key.includes('easter'))return ['🐣','🌷','🐰','🥚'];if(key.includes('halloween'))return ['🎃','🦇','👻','🕸️'];if(key.includes('black'))return ['🛍️','🏷️','⭐','🛒'];if(key.includes('new-year')||key.includes('newyear'))return ['🎆','✨','🥂','🎇'];if(key.includes('school'))return ['🎒','📚','✏️','⭐'];if(key.includes('mother'))return ['🌷','💐','💗','🎁'];if(key.includes('father'))return ['🎁','⭐','🏆','💙'];if(key.includes('summer'))return ['☀️','🌴','🌊','🍉'];if(key.includes('independence'))return ['🇿🇲','💚','🖤','🧡','❤️'];if(key.includes('christmas'))return ['🎄','🎅','🔔','🎁','🦌','⛄'];return ['✦','✧','•','✦']}
 function decorateHeadings(){
  if(!settings.decorations)return;
@@ -37,7 +38,7 @@ function decorateBrand(){
 function createCampaignBanner(){
  if(!settings.banner||document.getElementById('py2-xmas-ribbon'))return;
  const ribbon=document.createElement('aside');ribbon.id='py2-xmas-ribbon';ribbon.className='py2-xmas-ribbon';if(settings.bannerImage){const image=safeImage(settings.bannerImage);if(image)ribbon.style.setProperty('--py2-xmas-banner-image','url('+JSON.stringify(image)+')')}
- ribbon.setAttribute('aria-label','PhoneYa2 Christmas campaign');
+ ribbon.setAttribute('aria-label','PhoneYa2 '+themeLabel()+' campaign');
  const inner=document.createElement('div');inner.className='py2-xmas-ribbon-inner';
  const mark=document.createElement('span');mark.className='py2-xmas-ribbon-mark';mark.setAttribute('aria-hidden','true');mark.textContent='✦';
  const copy=document.createElement('div');copy.className='py2-xmas-ribbon-copy';
@@ -70,7 +71,7 @@ function showPopup(){
  const section=document.createElement('section');section.className='py2-xmas-modal';section.setAttribute('role','dialog');section.setAttribute('aria-modal','true');section.setAttribute('aria-labelledby','py2-xmas-title');
  const close=document.createElement('button');close.className='py2-xmas-close';close.type='button';close.setAttribute('aria-label','Close promotion');close.textContent='×';
  const art=document.createElement('div');art.className='py2-xmas-modal-art';const image=safeImage(settings.popupImage);if(image)art.style.backgroundImage='linear-gradient(180deg,#071b1420 0%,#071b1499 100%),url('+JSON.stringify(image)+')';
- const eyebrow=document.createElement('span');eyebrow.className='py2-xmas-modal-eyebrow';eyebrow.textContent='PHONEYA2 • CHRISTMAS COLLECTION';
+ const eyebrow=document.createElement('span');eyebrow.className='py2-xmas-modal-eyebrow';eyebrow.textContent='PHONEYA2 • '+themeLabel().toUpperCase()+' COLLECTION';
  const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=settings.popupTitle;art.append(eyebrow,title);
  const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;
  const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=settings.popupButton;link.href=safeDestination(settings.popupUrl);
