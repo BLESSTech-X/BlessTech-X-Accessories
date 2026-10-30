@@ -107,7 +107,7 @@
  }
  function preview(){
   const key=$('ss-edit-season').value;
-  const draft={...settings,enabled:true,theme:$('ss-active-season').value,coverage:'all',...readPreset(key)};
+  const draft={...settings,enabled:true,theme:key,coverage:'all',...readPreset(key)};
   try{localStorage.setItem('phoneya2-seasonal-preview-v3',JSON.stringify(draft));window.open('/?py2-seasonal-preview=1','_blank','noopener');setStatus('Preview opened in a new tab. It does not publish your changes.','success');}
   catch(e){setStatus('Could not open preview: '+e.message,'error');}
  }
