@@ -28,9 +28,9 @@ body {
 ) {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  scroll-behavior: smooth;
-  scroll-padding-inline: 12px;
-  scrollbar-gutter: stable;
+  scroll-behavior: auto;
+  scroll-padding-inline: 0;
+  scrollbar-gutter: auto;
 }
 :where(
   .cat-nav-inner,
@@ -81,7 +81,7 @@ body {
 .h-scroll,
 .horizontal-scroll,
 .carousel-scroll {
-  scroll-snap-type: x proximity;
+  scroll-snap-type: none;
 }
 .cat-products-grid > *,
 .product-scroll > *,
@@ -95,7 +95,7 @@ body {
 }
 /* Transform-driven homepage product rail: smooth settle after arrow presses. */
 .h-track {
-  transition: transform 460ms cubic-bezier(.22,.72,.22,1) !important;
+  transition: transform 150ms cubic-bezier(.2,.65,.3,1) !important;
   backface-visibility: hidden;
 }
 /* Keep dragging direct and responsive rather than easing behind the finger. */
@@ -113,3 +113,7 @@ body {
   ) { scroll-behavior: auto !important; }
   .h-track { transition-duration: .01ms !important; }
 }
+/* Product rails should follow the finger immediately: no eased native scroll or snap resistance. */
+:where(.cat-products-grid,.product-scroll,.product-row,.product-rail,.product-carousel,.products-carousel,.related-products,.related-products-grid,.h-scroll,.horizontal-scroll,.carousel-scroll,[data-horizontal-scroll="true"]){scroll-behavior:auto!important;scroll-snap-type:none!important;touch-action:pan-x pan-y pinch-zoom}
+.h-track{transition:transform 150ms cubic-bezier(.2,.65,.3,1)!important}
+.h-track.is-dragging{transition:none!important}
