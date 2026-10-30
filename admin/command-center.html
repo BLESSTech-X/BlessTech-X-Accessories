@@ -429,7 +429,7 @@ function drawTrafficSourceChart(data){
  for(let i=0;i<=4;i++){const y=top+plotH*i/4;ctx.strokeStyle='#edf0f5';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle='#8993a2';ctx.fillText(Math.round(max*(1-i/4)).toLocaleString(),left-6,y);}
  const slot=plotW/items.length,bw=Math.min(40,slot*.48);
  items.forEach((it,i)=>{const x=left+slot*i+(slot-bw)/2,bh=it.value/max*(plotH-8),y=top+plotH-bh;ctx.fillStyle=it.color;ctx.beginPath();ctx.roundRect(x,y,bw,bh,5);ctx.fill();ctx.fillStyle='#26364d';ctx.font='bold 10px Inter,system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(it.value.toLocaleString(),x+bw/2,Math.max(10,y-9));ctx.fillStyle='#748094';ctx.font='9px Inter,system-ui,sans-serif';ctx.fillText(it.label,x+bw/2,h-18);});
- const legend=$('ga4-source-legend');if(legend){legend.replaceChildren();items.forEach(it=>{const s=document.createElement('span'),dot=document.createElement('i');dot.style.background=it.color;s.append(dot,document.createTextNode(it.label+' '+it.value));legend.append(s);});}
+ const legend=$('ga4-source-legend');if(legend){legend.replaceChildren();items.forEach(it=>{const s=document.createElement('span'),dot=document.createElement('i');dot.style.background=it.color;s.append(dot,document.createTextNode(it.label+' '+it.value+(Number(data?.summary?.sessions||0)?' · '+(it.value/Number(data.summary.sessions)*100).toFixed(1)+'%':'')));legend.append(s);});}
 }
 function renderGa4Pages(items){
  const host=$('ga4-pages');if(!host)return;host.replaceChildren();const list=(Array.isArray(items)?items:[]).slice(0,5),max=Math.max(1,...list.map(x=>Number(x.views||0)));
