@@ -3,7 +3,7 @@
 const CONFIG='/content/settings/seasonal-campaigns.json';
 const PREVIEW_KEY='phoneya2-seasonal-preview-v3';
 const defaults={enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',popup:false,popupMode:'delay',popupDelay:5,popupScroll:35,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html',banner:true,bannerTitle:'The PhoneYa2 Christmas Edit',bannerMessage:'Thoughtful tech gifts. Better-connected moments.',bannerButton:'Explore Christmas Picks',bannerUrl:'/shop.html',bannerImage:'https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200',popupImage:'https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600'};
-let settings={...defaults},snowLayer=null,popupCreated=false;
+let settings={...defaults},snowLayer=null,popupCreated=false,dbPresets={};
 const sessionGet=key=>{try{return sessionStorage.getItem(key)}catch(_){return null}};
 const sessionSet=(key,value)=>{try{sessionStorage.setItem(key,value)}catch(_){}};
 const params=new URLSearchParams(location.search);
@@ -96,10 +96,23 @@ function apply(){
  decorateHeadings();decorateBrand();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
 async function loadPublishedSettings(){
+ // Prefer the shared database settings managed in Command Centre.
+ // Decap's published JSON remains the fallback and can be imported from Seasonal Studio.
+ try{
+  const live=await fetch('/api/seasonal?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
+  if(live.ok){
+   const payload=await live.json();
+   if(payload&&payload.settings&&typeof payload.settings==='object'){
+    dbPresets=payload.presets&&typeof payload.presets==='object'?payload.presets:{};
+    return payload.settings;
+   }
+  }
+ }catch(_){}
  const response=await fetch(CONFIG+'?v='+encodeURIComponent(document.documentElement.dataset.seasonalVersion||'live')+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin'});
  if(!response.ok)throw new Error('Decap seasonal settings file unavailable: '+response.status);
  const data=await response.json();
  if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('Seasonal settings file is not a valid JSON object');
+ dbPresets={};
  return data;
 }
 async function load(){
@@ -110,10 +123,15 @@ async function load(){
   // selected season so edits never leak into another season.
   const selectedTheme=themeKey();
   try{
-   const presetResponse=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(selectedTheme)+'.json?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
-   if(presetResponse.ok){
-    const preset=await presetResponse.json();
-    if(preset&&typeof preset==='object'&&!Array.isArray(preset))settings={...settings,...preset};
+   const databasePreset=dbPresets[selectedTheme];
+   if(databasePreset&&typeof databasePreset==='object'&&!Array.isArray(databasePreset)){
+    settings={...settings,...databasePreset};
+   }else{
+    const presetResponse=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(selectedTheme)+'.json?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
+    if(presetResponse.ok){
+     const preset=await presetResponse.json();
+     if(preset&&typeof preset==='object'&&!Array.isArray(preset))settings={...settings,...preset};
+    }
    }
   }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load '+selectedTheme+' preset:',error)}
   if(params.has('py2-seasonal-preview')){try{const draft=JSON.parse(localStorage.getItem(PREVIEW_KEY)||'null');if(draft)settings={...settings,...draft}}catch{}}
