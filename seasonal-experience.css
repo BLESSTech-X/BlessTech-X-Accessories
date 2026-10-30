@@ -138,3 +138,12 @@ html.py2-season-back-to-school,html.py2-season-backtoschool{--py2-season-page:#f
 html.py2-season-summer{--py2-season-page:#f1fbff;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#38bdf826,transparent 34%),radial-gradient(ellipse at 92% 28%,#facc1520,transparent 36%),linear-gradient(180deg,#f1fbff 0%,#fff 58%,#f2fbf5 100%)}
 html[class*="py2-season-"] :is(.pcard,.product-card,.product-item,.section-card,.form-card,.cart-summary,.checkout-summary){background:#fff}
 @media(max-width:768px){html[class*="py2-season-"] body{background-attachment:scroll!important}}
+
+/* Seasonal decorations never change the underlying Shop-white page canvas. */
+html.py2-xmas, html[class*="py2-season-"],
+html.py2-xmas body, html[class*="py2-season-"] body {
+  background:#ffffff !important;
+  background-color:#ffffff !important;
+  background-image:none !important;
+  background-attachment:scroll !important;
+}
