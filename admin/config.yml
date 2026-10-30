@@ -279,6 +279,11 @@ collections:
           - { label: "Campaign start date", name: "start", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
+          - { label: "Christmas campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show a coordinated festive announcement ribbon across supported pages." }
+          - { label: "Banner heading", name: "bannerTitle", widget: "string", default: "The PhoneYa2 Christmas Edit" }
+          - { label: "Banner message", name: "bannerMessage", widget: "string", default: "Thoughtful tech gifts. Better-connected moments." }
+          - { label: "Banner button", name: "bannerButton", widget: "string", default: "Explore Christmas Picks" }
+          - { label: "Banner destination", name: "bannerUrl", widget: "string", default: "/shop.html" }
           - { label: "Promotional popup", name: "popup", widget: "boolean", default: false }
           - { label: "Popup display", name: "popupMode", widget: "select", options: [{ label: "After a short delay", value: "delay" }, { label: "Immediately", value: "immediate" }, { label: "After scrolling", value: "scroll" }], default: "delay" }
           - { label: "Popup delay (seconds)", name: "popupDelay", widget: "number", min: 0, max: 60, default: 5 }
