@@ -172,7 +172,7 @@
     const search=document.createElement('div');search.className='cc-nav-search';
     search.innerHTML='<label for="cc-nav-filter">Find a section</label><input id="cc-nav-filter" type="search" placeholder="Search sections…" autocomplete="off">';
     const heading=document.createElement('div');heading.className='cc-nav-heading';
-    heading.innerHTML='<span class="cc-nav-mark">P<span>2</span></span><div><strong>WORKSPACE</strong><small>Choose what to manage</small></div>';
+    heading.innerHTML='<img class="cc-nav-logo" src="/logo-wide.png" alt="PhoneYa2 logo"><div><strong>WORKSPACE</strong><small>Choose what to manage</small></div>';
     nav.replaceChildren(heading,search);
     groups.forEach(group=>{
       const section=document.createElement('div');section.className='cc-nav-group';
