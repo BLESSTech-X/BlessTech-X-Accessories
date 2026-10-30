@@ -1496,3 +1496,59 @@ body:has(#dashboard:not(.hidden)) .wrap{width:100%;min-width:0}
  #cc-global-footer .cc-quick-card{min-height:30px!important;padding:5px 7px!important}
  #cc-global-footer .cc-footer-bottom{flex-wrap:wrap!important}
 }
+
+
+/* Header-attached icon navigation */
+body:has(#dashboard:not(.hidden)) .topbar{
+  height:auto!important;min-height:72px!important;display:flex!important;align-items:center!important;
+  flex-wrap:nowrap!important;gap:16px!important;padding:9px clamp(12px,2.2vw,28px)!important;
+}
+body:has(#dashboard:not(.hidden)) .topbar .brand{flex:0 0 auto;white-space:nowrap}
+body:has(#dashboard:not(.hidden)) .topbar .top-right{flex:0 0 auto;margin-left:auto!important;white-space:nowrap}
+#workspace-nav.cc-header-navigation{
+  position:static!important;inset:auto!important;transform:none!important;z-index:auto!important;
+  width:auto!important;max-width:min(68vw,980px)!important;min-width:0!important;height:auto!important;
+  flex:1 1 auto!important;display:flex!important;flex-direction:row!important;align-items:center!important;
+  justify-content:flex-start!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;
+  padding:4px!important;margin:0!important;background:transparent!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch;
+}
+#workspace-nav.cc-header-navigation::-webkit-scrollbar{display:none}
+#workspace-nav.cc-header-navigation .cc-nav-heading,
+#workspace-nav.cc-header-navigation .cc-nav-search,
+#workspace-nav.cc-header-navigation .cc-nav-group-label,
+#workspace-nav.cc-header-navigation .cc-nav-footer{display:none!important}
+#workspace-nav.cc-header-navigation .cc-nav-group{display:contents!important}
+#workspace-nav.cc-header-navigation .workspace-tab{
+  width:auto!important;min-width:max-content!important;flex:0 0 auto!important;display:inline-flex!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;
+  padding:7px 10px!important;border:1px solid transparent!important;border-radius:10px!important;
+  background:transparent!important;color:#657187!important;font-size:10px!important;font-weight:800!important;
+  line-height:1.1!important;text-align:center!important;white-space:nowrap!important;
+}
+#workspace-nav.cc-header-navigation .workspace-tab:hover{background:#f3f6fb!important;transform:translateY(-1px)!important}
+#workspace-nav.cc-header-navigation .workspace-tab[aria-selected="true"]{
+  background:#eaf1ff!important;color:#245dc0!important;border-color:#dce8ff!important;
+  box-shadow:inset 0 -2px #3478f6!important;
+}
+.cc-header-tab-icon{display:grid;place-items:center;width:25px;height:23px;font-size:17px;line-height:1;font-weight:900}
+.cc-header-tab-label{font-size:10px;letter-spacing:-.1px}
+#dashboard>.intro,#dashboard>#global-message,#dashboard>#heads-up,#workspace-views{margin-left:0!important}
+body:has(#dashboard:not(.hidden)) .wrap{padding-top:20px!important}
+@media(max-width:1050px){
+  body:has(#dashboard:not(.hidden)) .topbar{gap:10px!important}
+  body:has(#dashboard:not(.hidden)) .topbar .brand{font-size:15px}
+  #workspace-nav.cc-header-navigation{max-width:none!important;flex:1 1 100%!important;order:3!important;width:100%!important}
+  body:has(#dashboard:not(.hidden)) .topbar{flex-wrap:wrap!important}
+  body:has(#dashboard:not(.hidden)) .topbar .top-right{margin-left:auto!important}
+}
+@media(max-width:560px){
+  body:has(#dashboard:not(.hidden)) .topbar{min-height:0!important;padding:8px 10px 6px!important;gap:5px 8px!important}
+  body:has(#dashboard:not(.hidden)) .topbar .brand{font-size:14px}
+  body:has(#dashboard:not(.hidden)) .topbar .top-right{font-size:10px}
+  #workspace-nav.cc-header-navigation{gap:3px!important;padding:3px 0 5px!important}
+  #workspace-nav.cc-header-navigation .workspace-tab{padding:6px 8px!important;gap:2px!important}
+  .cc-header-tab-icon{width:22px;height:20px;font-size:16px}
+  .cc-header-tab-label{font-size:9px}
+}
