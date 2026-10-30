@@ -155,8 +155,62 @@
     $('#cc-open-command-menu').addEventListener('click',openPalette);
     $('#cc-export-card').addEventListener('click',exportSnapshot);
   }
+
+  /* Guided navigation: group existing workspaces without replacing their functionality. */
+  function setupGuidedNavigation() {
+    const nav=$('#workspace-nav'), topbar=$('.topbar');
+    if(!nav||!topbar||nav.dataset.guided==='1'||!nav.querySelector('.workspace-tab'))return;
+    nav.dataset.guided='1';
+    const groups=[
+      {label:'YOUR BUSINESS',ids:['overview']},
+      {label:'DAILY WORK',ids:['actions','orders','network']},
+      {label:'STORE MANAGEMENT',ids:['inventory','money']},
+      {label:'GROWTH & MARKETING',ids:['analytics','growth','experiments']},
+      {label:'WEBSITE & TOOLS',ids:['health','resources']}
+    ];
+    const tabs=new Map([...nav.querySelectorAll('.workspace-tab')].map(b=>[b.id.replace('tab-',''),b]));
+    const search=document.createElement('div');search.className='cc-nav-search';
+    search.innerHTML='<label for="cc-nav-filter">Find a section</label><input id="cc-nav-filter" type="search" placeholder="Search sections…" autocomplete="off">';
+    const heading=document.createElement('div');heading.className='cc-nav-heading';
+    heading.innerHTML='<span class="cc-nav-mark">P<span>2</span></span><div><strong>WORKSPACE</strong><small>Choose what to manage</small></div>';
+    nav.replaceChildren(heading,search);
+    groups.forEach(group=>{
+      const section=document.createElement('div');section.className='cc-nav-group';
+      const label=document.createElement('div');label.className='cc-nav-group-label';label.textContent=group.label;section.append(label);
+      group.ids.forEach(id=>{const tab=tabs.get(id);if(tab){tab.classList.add('cc-nav-item');section.append(tab);}});
+      if(section.querySelector('.workspace-tab'))nav.append(section);
+    });
+    const footer=document.createElement('div');footer.className='cc-nav-footer';
+    footer.innerHTML='<span class="cc-nav-footer-dot"></span><span>PhoneYa2 workspace</span>';
+    nav.append(footer);
+    const toggle=document.createElement('button');toggle.type='button';toggle.id='cc-menu-toggle';toggle.className='cc-menu-toggle';toggle.setAttribute('aria-label','Open navigation menu');toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<span></span><span></span><span></span>';
+    topbar.insertBefore(toggle,topbar.firstChild);
+    const overlay=document.createElement('button');overlay.type='button';overlay.className='cc-nav-overlay';overlay.setAttribute('aria-label','Close navigation menu');document.body.append(overlay);
+    const close=()=>{document.body.classList.remove('cc-nav-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation menu');};
+    const open=()=>{document.body.classList.add('cc-nav-open');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close navigation menu');};
+    toggle.addEventListener('click',()=>document.body.classList.contains('cc-nav-open')?close():open());
+    overlay.addEventListener('click',close);
+    nav.addEventListener('click',e=>{if(e.target.closest('.workspace-tab'))close();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+    $('#cc-nav-filter').addEventListener('input',e=>{
+      const q=e.target.value.trim().toLowerCase();
+      nav.querySelectorAll('.cc-nav-group').forEach(group=>{
+        let visible=0;
+        group.querySelectorAll('.workspace-tab').forEach(tab=>{const match=!q||tab.textContent.toLowerCase().includes(q);tab.hidden=!match;if(match)visible++;});
+        group.hidden=visible===0;
+      });
+    });
+    const brand=$('.topbar .brand');
+    if(brand&&!$('#cc-topbar-caption')){const cap=document.createElement('span');cap.id='cc-topbar-caption';cap.textContent='Business control room';brand.insertAdjacentElement('afterend',cap);}
+  }
+  function watchGuidedNavigation(){
+    const nav=$('#workspace-nav');if(!nav)return;
+    const apply=()=>{if(nav.querySelector('.workspace-tab'))setupGuidedNavigation();};
+    apply();new MutationObserver(apply).observe(nav,{childList:true,subtree:true});
+  }
+
   function init() {
-    createPalette(); addQuickActions(); updateRefreshStamp();
+    createPalette(); addQuickActions(); updateRefreshStamp(); watchGuidedNavigation();
     const refresh=$('#refresh'); if(refresh)refresh.addEventListener('click',()=>{state.lastRefresh=new Date();updateRefreshStamp();},{capture:true});
     document.addEventListener('keydown',e=>{
       if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();state.paletteOpen?closePalette():openPalette();}
