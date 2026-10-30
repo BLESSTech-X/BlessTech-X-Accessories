@@ -449,3 +449,14 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 #dashboard>.comment-shortcut .comment-shortcut-action{font-size:9px!important}
 @media(max-width:900px){#dashboard>#overview-chart-grid{margin-left:0!important;grid-template-columns:minmax(0,1.35fr) minmax(175px,.85fr)!important}}
 @media(max-width:560px){#dashboard>#overview-chart-grid{grid-template-columns:1fr!important}#dashboard>#overview-chart-grid .chart-wrap{height:112px!important}}
+
+
+/* Retain all ten operational values in a tight two-row KPI matrix */
+#dashboard>.stats>.stat:nth-child(n+6){display:block!important}
+#dashboard>.stats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+#dashboard>.stats>.stat{padding:7px 8px!important}
+#dashboard>.stats .stat-top{font-size:8px!important}
+#dashboard>.stats .stat strong{font-size:clamp(15px,1.35vw,19px)!important}
+#dashboard>.stats .stat small{font-size:7px!important}
+@media(max-width:900px){#dashboard>.stats{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
+@media(max-width:560px){#dashboard>.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
