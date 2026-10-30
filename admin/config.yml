@@ -263,3 +263,26 @@ collections:
               - { label: "City", name: "city", widget: "string" }
               - { label: "Displayed time", name: "time", widget: "string", hint: "Use wording that remains accurate, such as 'yesterday' only when true." }
               - { label: "Active", name: "active", widget: "boolean", default: true }
+
+      - label: "Seasonal Campaigns"
+        name: "seasonal_campaigns"
+        file: "content/settings/seasonal-campaigns.json"
+        description: "Control PhoneYa2 seasonal themes, Christmas decorations, snowfall, campaign scheduling and promotional popup. Save and publish to make changes live."
+        fields:
+          - { label: "Campaign enabled", name: "enabled", widget: "boolean", default: false, hint: "Turn on to activate the seasonal experience on the public website." }
+          - { label: "Theme", name: "theme", widget: "select", options: [{ label: "Christmas", value: "christmas" }], default: "christmas" }
+          - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained festive ornaments beside selected page and section headings. Does not scatter emojis around the site." }
+          - { label: "Snowfall", name: "snow", widget: "boolean", default: false, hint: "Only snowflakes fall. Other decorations remain fixed to headings." }
+          - { label: "Snowfall intensity", name: "snowIntensity", widget: "number", min: 5, max: 60, step: 5, default: 24, hint: "Controls the number of snowflakes. Keep it subtle for mobile performance." }
+          - { label: "Schedule campaign", name: "scheduled", widget: "boolean", default: false }
+          - { label: "Campaign start date", name: "start", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
+          - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
+          - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
+          - { label: "Promotional popup", name: "popup", widget: "boolean", default: false }
+          - { label: "Popup display", name: "popupMode", widget: "select", options: [{ label: "After a short delay", value: "delay" }, { label: "Immediately", value: "immediate" }, { label: "After scrolling", value: "scroll" }], default: "delay" }
+          - { label: "Popup delay (seconds)", name: "popupDelay", widget: "number", min: 0, max: 60, default: 5 }
+          - { label: "Scroll threshold (%)", name: "popupScroll", widget: "number", min: 5, max: 90, default: 35 }
+          - { label: "Popup heading", name: "popupTitle", widget: "string", default: "Make Their Christmas Special" }
+          - { label: "Popup message", name: "popupMessage", widget: "text", default: "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories." }
+          - { label: "Popup button label", name: "popupButton", widget: "string", default: "Shop Christmas Deals" }
+          - { label: "Popup destination", name: "popupUrl", widget: "string", default: "/shop.html", hint: "Use a PhoneYa2 page path or a trusted HTTPS URL." }
