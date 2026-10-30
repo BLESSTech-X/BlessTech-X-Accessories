@@ -151,7 +151,7 @@
     if(!intro||$('#cc-quick-actions'))return;
     const section=document.createElement('section');section.id='cc-quick-actions';section.className='cc-quick-actions panel';
     section.innerHTML='<div class="cc-quick-heading"><div><span class="cc-quick-eyebrow">FAST LANE</span><h2>Quick actions</h2><p>Go straight to the work that moves the business.</p></div><button type="button" class="btn" id="cc-open-command-menu">⌘ Open command menu</button></div><div class="cc-quick-grid"><a href="/admin/orders.html" class="cc-quick-card"><span>▤</span><strong>Follow up orders</strong><small>Fulfilment and pending buyers</small><b>Open Order Desk →</b></a><a href="/admin/" class="cc-quick-card"><span>▦</span><strong>Improve product offers</strong><small>Catalogue, pricing and publishing</small><b>Open Product CMS →</b></a><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer" class="cc-quick-card"><span>↗</span><strong>Find traffic opportunities</strong><small>Acquisition and page performance</small><b>Open Analytics ↗</b></a><button type="button" class="cc-quick-card" id="cc-export-card"><span>▧</span><strong>Export a KPI snapshot</strong><small>Keep a dated operational record</small><b>Download CSV ↓</b></button></div>';
-    intro.insertAdjacentElement('afterend',section);
+    const destination=$('#view-overview')||intro;destination.append(section);
     $('#cc-open-command-menu').addEventListener('click',openPalette);
     $('#cc-export-card').addEventListener('click',exportSnapshot);
   }
