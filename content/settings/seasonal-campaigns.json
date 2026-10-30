@@ -15,5 +15,10 @@
   "popupScroll": 35,
   "end": "2026-12-27",
   "popupMessage": "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.",
-  "popupButton": "Shop Christmas Deals"
+  "popupButton": "Shop Christmas Deals",
+  "banner": true,
+  "bannerTitle": "The PhoneYa2 Christmas Edit",
+  "bannerMessage": "Thoughtful tech gifts. Better-connected moments.",
+  "bannerButton": "Explore Christmas Picks",
+  "bannerUrl": "/shop.html"
 }
