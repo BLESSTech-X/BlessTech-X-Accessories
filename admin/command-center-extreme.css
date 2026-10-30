@@ -752,3 +752,70 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
  .inventory-flow-node{min-height:64px!important}
  .inventory-flow-node strong{font-size:20px!important}
 }
+
+
+/* Inventory overview — refined executive dashboard */
+#inventory-overview-panel{padding:20px!important;border:1px solid #e8edf4!important;border-radius:18px!important;background:#fff!important;box-shadow:0 8px 28px rgba(24,39,75,.045)!important}
+#inventory-overview-panel>.section-head{padding:0 1px 13px!important;margin:0 0 14px!important;border-bottom:1px solid #edf1f6}
+#inventory-overview-panel>.section-head h2{font-size:18px!important;font-weight:850!important;letter-spacing:-.45px;color:#17243a}
+#inventory-overview-panel>.section-head p{font-size:11px!important;color:#8792a4!important;max-width:620px}
+#inventory-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:11px!important;margin:0 0 14px!important}
+#inventory-grid .inventory-kpi{position:relative;display:flex;align-items:flex-start;gap:10px;min-height:105px;padding:13px!important;border:1px solid #e9edf4!important;border-radius:13px!important;background:linear-gradient(150deg,#fff 35%,#f8faff)!important;box-shadow:0 3px 10px rgba(20,35,60,.025);overflow:hidden}
+#inventory-grid .inventory-kpi:after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#3979ef}
+#inventory-grid .inventory-kpi-1:after{background:#12a879}
+#inventory-grid .inventory-kpi-2:after{background:#f07825}
+#inventory-grid .inventory-kpi-3:after{background:#e4a02c}
+#inventory-grid .inventory-kpi .health-symbol{display:grid;place-items:center;flex:0 0 31px;width:31px;height:31px;border-radius:10px;background:#edf3ff;color:#326fe0;font-size:14px;font-weight:900}
+#inventory-grid .inventory-kpi-1 .health-symbol{background:#e9f8f1;color:#15966b}
+#inventory-grid .inventory-kpi-2 .health-symbol{background:#fff2e8;color:#e66b1b}
+#inventory-grid .inventory-kpi-3 .health-symbol{background:#fff7e8;color:#bd8017}
+#inventory-grid .inventory-kpi-copy{display:flex;flex-direction:column;min-width:0;gap:3px}
+#inventory-grid .inventory-kpi-copy strong{font-size:10px!important;font-weight:750!important;color:#68758a;line-height:1.3}
+#inventory-grid .inventory-kpi-copy b{font-size:clamp(17px,1.8vw,23px);font-weight:900;letter-spacing:-.75px;line-height:1.2;color:#17243a;overflow-wrap:anywhere}
+#inventory-grid .inventory-kpi-2 .inventory-kpi-copy b{font-size:clamp(13px,1.35vw,18px);color:#d65f16}
+#inventory-grid .inventory-kpi-copy small{font-size:9px!important;line-height:1.35;color:#97a1b0!important}
+.inventory-flow{padding:16px!important;border:1px solid #e8edf4!important;border-radius:15px!important;background:linear-gradient(135deg,#fbfcff,#f6f9fd)!important}
+.inventory-flow-kicker{display:inline-block;font-size:8px;font-weight:900;letter-spacing:1.25px;color:#6d7d96;margin-bottom:2px}
+.inventory-flow-head h3{font-size:16px!important;font-weight:850;letter-spacing:-.35px;color:#1b2940}
+.inventory-flow-head p{font-size:10px!important;color:#8290a4!important}
+.inventory-flow-coverage{padding:7px 10px!important;border:1px solid #ccebdc;background:#eaf8f1!important;color:#18764f!important;border-radius:20px!important;font-size:9px!important}
+.inventory-flow-steps{gap:7px!important;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr) 20px minmax(0,1fr) 20px minmax(0,1.2fr)!important}
+.inventory-flow-node{min-height:108px;padding:13px!important;border:1px solid #e6ebf3!important;border-radius:12px!important;box-shadow:0 3px 9px rgba(26,42,68,.035)}
+.inventory-flow-node small{font-size:8px!important;letter-spacing:.85px;color:#8793a6!important}
+.inventory-flow-node strong{font-size:clamp(19px,2.2vw,27px)!important;font-weight:900;letter-spacing:-.9px!important;margin:8px 0 3px!important}
+.inventory-flow-node span{font-size:9px!important;color:#7c899d!important;line-height:1.4}
+.node-value strong{font-size:clamp(14px,1.55vw,20px)!important}
+.inventory-flow-arrow{font-size:19px!important;color:#a5b0c0!important}
+.inventory-flow-health{margin-top:15px!important;padding-top:13px!important;border-top:1px solid #e7ecf3}
+.inventory-flow-health-title strong{font-size:11px!important;color:#26354c}
+.inventory-flow-health-title span{font-size:9px!important;color:#8995a7}
+.inventory-flow-bar{height:13px!important;background:#e9edf3!important}
+.inventory-flow-legend{gap:18px!important;margin-top:10px!important}
+.inventory-flow-legend span{font-size:10px!important;color:#778398!important}
+.inventory-flow-legend b{font-size:11px;color:#26354c!important}
+.inventory-flow-legend i{width:9px!important;height:9px!important;border-radius:50%!important}
+.inventory-flow-foot{padding-top:9px;border-top:1px dashed #e2e8f0;font-size:9px!important;color:#8995a6!important}
+@media(max-width:760px){
+ #inventory-overview-panel{padding:14px!important}
+ #inventory-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+ #inventory-grid .inventory-kpi{min-height:95px;padding:10px!important;gap:8px}
+ #inventory-grid .inventory-kpi .health-symbol{width:27px;height:27px;flex-basis:27px;font-size:12px}
+ #inventory-grid .inventory-kpi-copy b{font-size:18px}
+ #inventory-grid .inventory-kpi-2 .inventory-kpi-copy b{font-size:14px}
+ .inventory-flow{padding:12px!important}
+ .inventory-flow-head{flex-direction:row!important;align-items:center!important}
+ .inventory-flow-steps{grid-template-columns:minmax(0,1fr)!important;gap:7px!important}
+ .inventory-flow-arrow{display:none!important}
+ .inventory-flow-node{min-height:75px!important;padding:10px 12px!important;display:grid;grid-template-columns:1fr auto;align-items:center}
+ .inventory-flow-node small{grid-column:1}
+ .inventory-flow-node strong{grid-column:2;grid-row:1/3;text-align:right;margin:0!important;font-size:22px!important}
+ .inventory-flow-node span{grid-column:1}
+ .node-value strong{font-size:17px!important}
+ .inventory-flow-legend{gap:9px 14px!important}
+}
+@media(max-width:390px){
+ #inventory-grid .inventory-kpi{gap:6px;padding:9px!important}
+ #inventory-grid .inventory-kpi-copy b{font-size:16px}
+ #inventory-grid .inventory-kpi-2 .inventory-kpi-copy b{font-size:12px}
+ .inventory-flow-head{align-items:flex-start!important;flex-direction:column!important}
+}
