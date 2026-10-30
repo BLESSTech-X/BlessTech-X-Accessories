@@ -1,0 +1,19 @@
+/* PhoneYa2 storefront canvas — match the Shop page and retire the old water theme. */
+html,
+html.py2-water-enabled,
+body,
+body.py2-water-page {
+  background-color: #f6f8fb !important;
+  background-image: none !important;
+  background-attachment: scroll !important;
+}
+/* The former water effect must never paint behind transparent sections. */
+#py2-water-surface,
+#py2-water-interaction-surface,
+html.py2-water-enabled #py2-water-surface,
+html.py2-water-enabled #py2-water-interaction-surface {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  content: none !important;
+}
