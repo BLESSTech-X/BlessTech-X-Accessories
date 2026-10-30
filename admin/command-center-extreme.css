@@ -204,3 +204,9 @@ body:has(#dashboard:not(.hidden)) .top-right{margin-left:auto}
  #workspace-views .stat strong{font-size:22px}
 }
 @media(prefers-reduced-motion:reduce){#workspace-nav{transition:none!important}}
+
+body:has(#dashboard.hidden) #cc-menu-toggle,body:has(#dashboard.hidden) #cc-topbar-caption{display:none!important}
+@media(min-width:901px){
+ body.cc-nav-collapsed #workspace-nav{transform:translateX(calc(-100% - 24px))!important}
+ body.cc-nav-collapsed #dashboard>.intro,body.cc-nav-collapsed #dashboard>#global-message,body.cc-nav-collapsed #dashboard>#heads-up,body.cc-nav-collapsed #workspace-views{margin-left:0!important}
+}
