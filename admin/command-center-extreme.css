@@ -619,3 +619,72 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
  .recent-order-list{max-height:330px}
 }
 @media(max-width:360px){.pipeline-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pipeline-aov>span{max-width:48%}}
+
+
+/* One-screen Command Centre launch layout: preserve every action while removing excess vertical space. */
+@media (min-width: 701px){
+  #dashboard>.intro{padding:0 0 8px!important;margin-bottom:5px!important;gap:10px!important}
+  #dashboard>.intro h1{font-size:23px!important;margin:1px 0!important}
+  #dashboard>.intro p{font-size:10px!important;margin:2px 0!important}
+  #dashboard>.intro .intro-actions{gap:5px!important}
+  #dashboard>.intro .intro-actions .btn{min-height:30px!important;padding:6px 8px!important;font-size:10px!important}
+  #dashboard>.intro .comment-top-link{min-height:30px!important;padding:6px 8px!important;font-size:10px!important}
+  #workspace-nav{gap:4px!important;padding:5px!important;margin-bottom:8px!important}
+  #workspace-nav .workspace-tab{padding:7px 9px!important;font-size:10px!important}
+  #cc-quick-actions{padding:12px 14px!important;margin:0 0 9px!important;border-radius:12px!important}
+  .cc-quick-heading{margin-bottom:8px!important;gap:8px!important}
+  .cc-quick-heading h2{font-size:15px!important}
+  .cc-quick-heading p{font-size:10px!important}
+  .cc-quick-heading .btn{min-height:29px!important;padding:5px 9px!important;font-size:10px!important}
+  .cc-quick-grid{gap:7px!important}
+  .cc-quick-card{padding:9px 10px!important;gap:4px!important;border-radius:10px!important}
+  .cc-quick-card>span{width:27px!important;height:27px!important;font-size:15px!important;border-radius:8px!important}
+  .cc-quick-card strong{font-size:10px!important}
+  .cc-quick-card small{font-size:9px!important;line-height:1.25!important}
+  .cc-quick-card b{font-size:9px!important;margin-top:1px!important}
+  .comment-shortcut{display:none!important}
+  #workspace-views .growth-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-bottom:8px!important}
+  #workspace-views .growth-card{padding:10px!important}
+  #workspace-views .growth-card h2,#workspace-views .growth-card h3{font-size:12px!important;margin:0 0 4px!important}
+  #workspace-views .growth-card p.muted{font-size:9px!important;line-height:1.3!important;margin:3px 0!important}
+  #workspace-views .growth-links{gap:5px!important;margin-top:7px!important}
+  #workspace-views .growth-links a{font-size:9px!important;padding:5px 7px!important;border-radius:6px!important}
+  #global-message{font-size:10px!important;margin:3px 0!important}
+}
+@media (max-width:700px){
+  body:has(#dashboard:not(.hidden)) .wrap{padding-top:9px!important;padding-bottom:16px!important}
+  #workspace-nav{margin:0 -8px 8px!important;padding:5px!important;gap:4px!important}
+  #workspace-nav .workspace-tab{padding:7px 9px!important;font-size:10px!important;white-space:nowrap}
+  #dashboard>.intro{padding:0 0 7px!important;margin-bottom:5px!important;gap:6px!important}
+  #dashboard>.intro h1{font-size:20px!important;margin:0!important}
+  #dashboard>.intro p{font-size:9px!important;line-height:1.25!important;margin:2px 0!important}
+  #dashboard>.intro .eyebrow{font-size:8px!important}
+  #dashboard>.intro .intro-actions{display:flex!important;flex-wrap:nowrap!important;gap:5px!important;width:100%!important}
+  #dashboard>.intro .intro-actions .btn{flex:1 1 0!important;min-width:0!important;min-height:31px!important;padding:5px 4px!important;font-size:9px!important;white-space:nowrap!important}
+  #dashboard>.intro .intro-actions #full-voice-briefing,#dashboard>.intro .intro-actions #stop-voice-briefing{display:none!important}
+  #dashboard>.intro .comment-top-link{display:none!important}
+  .comment-shortcut{display:none!important}
+  #cc-quick-actions{padding:10px!important;margin:0 0 7px!important;border-radius:11px!important}
+  .cc-quick-heading{align-items:center!important;gap:6px!important;margin-bottom:7px!important}
+  .cc-quick-heading h2{font-size:14px!important}
+  .cc-quick-heading p{font-size:9px!important;line-height:1.2!important}
+  .cc-quick-heading .btn{width:auto!important;min-height:29px!important;padding:5px 7px!important;font-size:9px!important;white-space:nowrap}
+  .cc-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+  .cc-quick-card{padding:8px!important;gap:3px!important;border-radius:9px!important;min-height:0!important}
+  .cc-quick-card>span{width:25px!important;height:25px!important;font-size:14px!important;border-radius:7px!important}
+  .cc-quick-card strong{font-size:9px!important;line-height:1.2!important}
+  .cc-quick-card small{font-size:8px!important;line-height:1.2!important}
+  .cc-quick-card b{font-size:8px!important;margin-top:1px!important}
+  #workspace-views .growth-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;margin-bottom:7px!important}
+  #workspace-views .growth-card{padding:9px!important;min-width:0!important}
+  #workspace-views .growth-card h2,#workspace-views .growth-card h3{font-size:11px!important;margin:0 0 3px!important}
+  #workspace-views .growth-card p.muted{font-size:8px!important;line-height:1.2!important;margin:2px 0!important}
+  #workspace-views .growth-links{gap:4px!important;margin-top:5px!important}
+  #workspace-views .growth-links a{font-size:8px!important;padding:4px 5px!important;border-radius:5px!important;flex:1 1 auto!important}
+  #global-message{font-size:9px!important;margin:2px 0!important}
+}
+@media(max-width:380px){
+  #dashboard>.intro .intro-actions .btn{font-size:8px!important;padding:4px 2px!important}
+  .cc-quick-heading .btn{font-size:8px!important;padding:4px 5px!important}
+  .cc-quick-card{padding:7px!important}
+}
