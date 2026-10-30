@@ -745,3 +745,10 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 .inventory-flow-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:#8791a1;font-size:8px}
 @media(max-width:760px){.py2-studio-actions{grid-template-columns:repeat(2,minmax(0,1fr))}#inventory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-flow-steps{grid-template-columns:1fr 15px 1fr;row-gap:7px}.inventory-flow-steps .inventory-flow-node:nth-of-type(3){grid-column:1}.inventory-flow-steps .inventory-flow-node:nth-of-type(4){grid-column:3}.inventory-flow-steps .inventory-flow-arrow:nth-of-type(3){display:none}.inventory-flow-node{padding:8px}.inventory-flow-node strong{font-size:18px}}
 @media(max-width:390px){.py2-studio-head{align-items:flex-start}.py2-studio-copy h2{font-size:15px}.py2-studio-action{grid-template-columns:27px minmax(0,1fr) 9px;gap:6px;padding:8px}.py2-studio-icon{width:27px;height:27px}.py2-studio-action strong{font-size:9px}.py2-studio-action small{font-size:8px}.inventory-flow-head{flex-direction:column}.inventory-flow-coverage{align-self:flex-start}}
+
+@media(max-width:760px){
+ .inventory-flow-steps{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
+ .inventory-flow-arrow{display:none!important}
+ .inventory-flow-node{min-height:64px!important}
+ .inventory-flow-node strong{font-size:20px!important}
+}
