@@ -73,6 +73,14 @@
         return current;
       }
     } catch (e) {}
+    // Preserve legacy per-tab sessions for ordinary advertiser accounts.
+    // The PhoneYa2 administrator must use the shared session so Command Centre
+    // sign-out is respected across every admin workspace.
+    try {
+      var legacy = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+      var legacyEmail = String(legacy && legacy.user && legacy.user.email || '').toLowerCase();
+      if (legacy && legacy.access_token && legacy.user && legacyEmail !== 'singbless89@gmail.com') return legacy;
+    } catch (e) {}
     return null;
   }
   function clearSession() {
