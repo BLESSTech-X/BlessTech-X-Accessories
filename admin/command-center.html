@@ -191,7 +191,7 @@
     <section class="panel section"><div class="section-head"><div><h2>Best-selling products</h2><p>Ranked by units in recorded orders</p></div></div><div id="top-products" class="status-bars"><p class="muted">Loading product performance…</p></div></section>
     <section class="panel section" id="recent-orders-panel"><div class="section-head"><div><h2>Recent orders</h2><p>Latest activity from the order database</p></div><a class="btn" href="/admin/orders.html">Manage orders ↗</a></div><div class="recent-order-list" id="recent-orders"><div class="recent-order-loading">Loading recent orders…</div></div></section>
   </div>
-  <section class="panel section"><div class="section-head"><div><h2>Inventory overview</h2><p>Based on stock and price fields in your published product files. Verify stock values are kept current.</p></div></div><div class="health-grid" id="inventory-grid"><div class="health-item"><div><strong>Loading catalogue inventory…</strong></div></div></div></section>
+  <section class="panel section" id="inventory-overview-panel"><div class="section-head"><div><h2>Inventory overview</h2><p>Based on stock and price fields in your published product files. Verify stock values are kept current.</p></div></div><div class="health-grid" id="inventory-grid"><div class="health-item"><div><strong>Loading catalogue inventory…</strong></div></div></div></section>
   <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Basic availability checks for the storefront and connected services.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
   <div class="section-head" style="margin:24px 0 12px"><div><h2 style="font-size:19px;margin:0">PhoneYa2 Admin Links</h2><p class="muted" style="font-size:12px;margin:4px 0 0">Private tools for managing orders, products, campaigns and operations.</p></div></div>
   <div class="modules">
@@ -369,8 +369,22 @@ async function loadInventory(){
   products=records;renderGrowthPulse();renderExecutiveDashboard();$('stat-products').textContent=slugs.length.toLocaleString();$('products-sub').textContent=records.length+' product files readable';
   const known=records.filter(p=>p.stock!==null),low=known.filter(p=>p.stock<=3),out=known.filter(p=>p.stock===0),units=known.reduce((s,p)=>s+p.stock,0),retail=known.reduce((s,p)=>s+p.stock*(p.price||0),0);
   $('stat-low-stock').textContent=low.length.toLocaleString();$('stock-sub').textContent=out.length+' out of stock · '+known.length+' stock values found';
-  const items=[['Products read',records.length+' / '+slugs.length,'Published product files parsed'],['Units in stock',units.toLocaleString(),'Sum of listed stock quantities'],['Estimated retail stock value',money(retail),'Listed stock × listed selling price'],['Stock alerts',low.length+' low · '+out.length+' out','Low stock threshold: 3 units']];
-  items.forEach((it,i)=>{const el=document.createElement('div');el.className='health-item';const icon=document.createElement('span');icon.className='health-symbol'+(i===3&&low.length?' warn':'');icon.textContent=i===3&&low.length?'!':'✓';const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=it[0];detail.textContent=it[1]+' · '+it[2];body.append(name,detail);el.append(icon,body);host.append(el);});
+  const lowPositive=known.filter(p=>p.stock>0&&p.stock<=3),healthy=known.filter(p=>p.stock>3),stockCoverage=records.length?Math.round(known.length/records.length*100):0;
+  const items=[['Published products',records.length.toLocaleString()+' / '+slugs.length,'Product files successfully read'],['Stock units',units.toLocaleString(),'Total listed quantity across known stock'],['Retail stock value',money(retail),'Estimated at current listed selling prices'],['Stock health',lowPositive.length+' low · '+out.length+' out','Low stock means 1–3 units; out means 0']];
+  items.forEach((it,i)=>{const el=document.createElement('div');el.className='health-item inventory-kpi';const icon=document.createElement('span');icon.className='health-symbol'+(i===3&&(lowPositive.length||out.length)?' warn':'');icon.textContent=['▦','▤','↗','!'][i];const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=it[0];detail.textContent=it[1]+' · '+it[2];body.append(name,detail);el.append(icon,body);host.append(el);});
+  const chart=document.createElement('section');chart.className='inventory-flow';chart.setAttribute('aria-label','Inventory flow chart');
+  const safe=n=>Number(n||0).toLocaleString('en-US'),max=Math.max(1,known.length);
+  chart.innerHTML='<div class="inventory-flow-head"><div><span class="inventory-flow-kicker">CATALOGUE → STOCK → VALUE</span><h3>Inventory flow</h3><p>How published products translate into stock availability and estimated retail value</p></div><span class="inventory-flow-coverage">'+safe(stockCoverage)+'% stock data coverage</span></div>'+
+  '<div class="inventory-flow-steps"><div class="inventory-flow-node node-catalogue"><small>01 · CATALOGUE</small><strong>'+safe(slugs.length)+'</strong><span>Published product files</span></div><i class="inventory-flow-arrow">→</i>'+
+  '<div class="inventory-flow-node node-readable"><small>02 · VERIFIED READ</small><strong>'+safe(records.length)+'</strong><span>Files parsed successfully</span></div><i class="inventory-flow-arrow">→</i>'+
+  '<div class="inventory-flow-node node-units"><small>03 · AVAILABLE STOCK</small><strong>'+safe(units)+'</strong><span>Listed units across '+safe(known.length)+' products</span></div><i class="inventory-flow-arrow">→</i>'+
+  '<div class="inventory-flow-node node-value"><small>04 · RETAIL VALUE</small><strong>'+money(retail)+'</strong><span>Estimated listed selling value</span></div></div>'+
+  '<div class="inventory-flow-health"><div class="inventory-flow-health-title"><strong>Product stock health</strong><span>'+safe(known.length)+' products with a stock value</span></div>'+
+  '<div class="inventory-flow-bar" role="img" aria-label="'+safe(healthy.length)+' healthy products, '+safe(lowPositive.length)+' low-stock products, '+safe(out.length)+' out of stock">'+
+  '<span class="flow-healthy" style="width:'+(healthy.length/max*100)+'%"></span><span class="flow-low" style="width:'+(lowPositive.length/max*100)+'%"></span><span class="flow-out" style="width:'+(out.length/max*100)+'%"></span></div>'+
+  '<div class="inventory-flow-legend"><span><i class="legend-healthy"></i><b>'+safe(healthy.length)+'</b> Healthy · 4+ units</span><span><i class="legend-low"></i><b>'+safe(lowPositive.length)+'</b> Low · 1–3 units</span><span><i class="legend-out"></i><b>'+safe(out.length)+'</b> Out of stock</span></div></div>'+
+  '<div class="inventory-flow-foot"><span>Stock quantity is the sum of listed product stock fields.</span><span>Retail value is not profit or cash balance.</span></div>';
+  host.append(chart);
  }catch(e){const p=document.createElement('p');p.className='muted';p.textContent='Inventory metrics unavailable: '+e.message;host.append(p);$('stat-low-stock').textContent='—';}
 }
 async function checkHealth(){
@@ -543,7 +557,7 @@ $('full-voice-briefing').addEventListener('click',()=>speakFullBriefing());$('st
 })();
 </script>
   <script src="/admin/command-center-extreme.js?v=20261030-logo1" defer></script>
-  <script src="/admin/product-studio.js?v=20261029-studio1" defer></script>
+  <script src="/admin/product-studio.js?v=20261030-inventory-flow1" defer></script>
   <script src="/admin/seasonal-studio.js?v=20261030-command-centre5" defer></script>
   <script src="/admin/customer-studio.js?v=20261030-customer1" defer></script>
   <script src="/password-visibility.js" defer></script>
