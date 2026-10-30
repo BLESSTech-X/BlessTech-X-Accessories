@@ -48,3 +48,32 @@ body.cc-palette-open{overflow:hidden}
 @media(max-width:600px){#cc-command-launcher{right:12px;bottom:12px;padding:8px 9px;border-radius:13px}.cc-launcher-label{display:none}#cc-command-launcher kbd{display:none}.cc-palette-backdrop{padding:6vh 8px 12px}.cc-palette{max-height:88vh;border-radius:16px}.cc-palette-top{padding:17px 16px 12px}.cc-palette-top h2{font-size:19px}.cc-palette-search-label{padding-left:16px;padding-right:16px}.cc-palette-search{margin:0 16px;width:calc(100% - 32px)}.cc-palette-hint{padding:9px 16px}.cc-palette-footer{padding:10px 16px}.cc-quick-actions{padding:14px}.cc-quick-grid{gap:8px}.cc-quick-card{padding:12px}.cc-quick-card small{font-size:10px}.cc-quick-heading .btn{width:100%}.cc-refresh-stamp{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.cc-palette,.cc-toast,#cc-command-launcher,.cc-quick-card{animation:none!important;transition:none!important}}
 @media print{#cc-command-launcher,#cc-command-palette,#cc-toast-stack,.topbar,.workspace-nav,.intro-actions,#cc-quick-actions{display:none!important}body{background:#fff!important}.wrap{max-width:none;padding:0}.panel{box-shadow:none!important;break-inside:avoid}.growth-grid,.grid2{break-inside:avoid}}
+
+
+/* PhoneYa2 Command Centre — simplified professional workspace */
+#lab-intro{display:none!important}
+body:has(#dashboard:not(.hidden)){background:#f7f8fa;color:#182230}
+body:has(#dashboard:not(.hidden)) .topbar{background:#fff;color:#172033;border-bottom:1px solid #e7eaf0;box-shadow:0 2px 12px rgba(20,32,50,.04);padding:12px clamp(16px,3vw,34px)}
+body:has(#dashboard:not(.hidden)) .topbar .brand span:last-child{color:#64748b!important}
+body:has(#dashboard:not(.hidden)) .top-right{color:#64748b}
+body:has(#dashboard:not(.hidden)) .wrap{max-width:1280px;padding-top:22px}
+#workspace-nav{position:static;display:flex;flex-wrap:wrap;gap:5px;padding:6px;margin:0 0 20px;background:#fff;border:1px solid #e8ebf1;border-radius:12px;box-shadow:none}
+#workspace-nav .workspace-tab{padding:9px 12px;border-radius:8px;color:#647084;font-size:12px}
+#workspace-nav .workspace-tab[aria-selected="true"]{background:#172033;color:#fff;border-color:#172033;box-shadow:none}
+.workspace-view{animation:none}
+#workspace-views .panel,#workspace-views .growth-card,#workspace-views .section{border-radius:12px;box-shadow:0 2px 10px rgba(20,32,50,.035);border-color:#e8ebf1}
+#workspace-views .module{min-height:145px;padding:15px;border-radius:12px;box-shadow:none}
+#workspace-views .module:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(20,32,50,.06)}
+#workspace-views .module-icon{margin-bottom:10px}
+#workspace-views .growth-assistant{background:#fff;color:#172033;border:1px solid #e8ebf1;border-radius:12px;box-shadow:none}
+#workspace-views .growth-assistant:before{display:none}
+#workspace-views .assistant-head h2{color:#172033}
+#workspace-views .assistant-head p{color:#647084}
+#workspace-views .assistant-prompts button,#workspace-views .assistant-voice-tools button{background:#f5f6f8;color:#344054;border-color:#e6e9ef}
+#workspace-views .assistant-form input{background:#fff;color:#172033;border-color:#dfe4eb}
+#workspace-views .assistant-answer{background:#f7f8fa;color:#344054;border-color:#e8ebf1}
+#workspace-views .engine-status{background:#f0fbf6}
+#cc-command-launcher{display:none!important}
+#full-voice-briefing,#stop-voice-briefing{display:none!important}
+#workspace-modal .workspace-modal-card{border-radius:14px;box-shadow:0 18px 55px rgba(16,24,40,.18)}
+@media(max-width:700px){#workspace-nav{flex-wrap:nowrap;overflow-x:auto;border-radius:0;margin:0 -14px 16px;padding:7px 10px}#workspace-nav .workspace-tab{flex:0 0 auto}.wrap{padding-left:14px;padding-right:14px}}
