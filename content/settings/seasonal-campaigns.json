@@ -1,0 +1,19 @@
+{
+  "enabled": false,
+  "theme": "christmas",
+  "decorations": true,
+  "snow": false,
+  "snowIntensity": 24,
+  "scheduled": false,
+  "start": "2026-11-15",
+  "end": "2026-12-27",
+  "coverage": "all",
+  "popup": false,
+  "popupMode": "delay",
+  "popupDelay": 5,
+  "popupScroll": 35,
+  "popupTitle": "Make Their Christmas Special",
+  "popupMessage": "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.",
+  "popupButton": "Shop Christmas Deals",
+  "popupUrl": "/shop.html"
+}
