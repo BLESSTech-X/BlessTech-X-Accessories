@@ -548,3 +548,12 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 @media(max-width:700px){#bi-dashboard{gap:9px}.bi-heading h2{font-size:18px}.bi-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.bi-kpi{padding:11px}.bi-kpi strong{font-size:25px}.bi-main-grid{grid-template-columns:1fr}.bi-card{padding:12px}.bi-donut-layout{justify-content:flex-start}.bi-insight{align-items:flex-start}.bi-insight>a{align-self:center}}
 @media(max-width:380px){.bi-period button{padding:6px 7px;font-size:9px}.bi-donut{width:108px;height:108px;flex-basis:108px}.bi-legend-row{font-size:9px}.bi-legend-row b{font-size:9px}.bi-insight{gap:7px;padding:10px}.bi-insight>a{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.bi-mini-track i,.bi-target-track i{transition:none}}
+
+
+/* The workspace shell places the overview inside #view-overview; keep the new BI canvas aligned to that content column. */
+#bi-dashboard{margin:0 0 14px!important}
+#view-overview>.stats,#view-overview>.growth-card,#view-overview>.growth-grid,#view-overview>#overview-chart-grid,#view-overview>.grid2,#view-overview>.section,#view-overview>.modules,#view-overview>.section-head{display:none!important}
+#view-overview>.comment-shortcut{display:none!important}
+#view-overview #bi-dashboard{width:100%;max-width:100%;min-width:0}
+@media(min-width:901px){#view-overview #bi-dashboard{max-width:1200px}}
+@media(max-width:900px){#view-overview #bi-dashboard{margin:0!important}}
