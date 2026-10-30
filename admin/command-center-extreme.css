@@ -324,3 +324,14 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
  #dashboard>.grid2:first-of-type{grid-template-columns:1fr!important}
  #dashboard>.grid2:first-of-type .chart-wrap{height:100px!important;min-height:100px!important}
 }
+
+
+/* Keep the first executive panels visible; collapse only duplicated deep-detail panels */
+#dashboard>.growth-grid{margin-left:270px!important}
+#dashboard>.growth-grid+.growth-grid{display:none!important}
+#dashboard>.grid2{margin-left:270px!important;display:grid!important}
+#dashboard>#analytics-live-panel+.grid2{display:none!important}
+@media(max-width:900px){
+ #dashboard>.growth-grid,#dashboard>.grid2{margin-left:0!important}
+ #dashboard>.growth-grid+.growth-grid,#dashboard>#analytics-live-panel+.grid2{display:none!important}
+}
