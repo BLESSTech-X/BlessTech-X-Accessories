@@ -857,3 +857,60 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
  .node-value strong{font-size:16px!important}
  .inventory-flow-legend{gap:9px 12px!important}
 }
+
+
+/* Give the inventory journey room to breathe: spacious two-column stages */
+#inventory-overview-panel .inventory-flow{padding:20px!important}
+#inventory-overview-panel .inventory-flow-head{margin-bottom:16px!important}
+#inventory-overview-panel .inventory-flow-steps{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:12px!important;
+ align-items:stretch!important
+}
+#inventory-overview-panel .inventory-flow-arrow{display:none!important}
+#inventory-overview-panel .inventory-flow-node{
+ min-height:132px!important;
+ padding:17px 18px!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:center!important;
+ border-radius:14px!important
+}
+#inventory-overview-panel .inventory-flow-node small{font-size:9px!important;letter-spacing:1px!important}
+#inventory-overview-panel .inventory-flow-node strong{
+ font-size:clamp(25px,2.5vw,34px)!important;
+ margin:10px 0 5px!important;
+ line-height:1.1!important
+}
+#inventory-overview-panel .inventory-flow-node span{font-size:11px!important;line-height:1.45!important}
+#inventory-overview-panel .inventory-flow-node.node-value strong{font-size:clamp(19px,2vw,26px)!important}
+#inventory-overview-panel .inventory-flow-health{margin-top:18px!important;padding-top:16px!important}
+#inventory-overview-panel .inventory-flow-bar{height:15px!important}
+#inventory-overview-panel .inventory-flow-legend{gap:12px 22px!important}
+#inventory-overview-panel .inventory-flow-foot{font-size:9px!important;line-height:1.5!important}
+@media(max-width:760px){
+ #inventory-overview-panel .inventory-flow{padding:15px!important}
+ #inventory-overview-panel .inventory-flow-steps{grid-template-columns:minmax(0,1fr)!important;gap:9px!important}
+ #inventory-overview-panel .inventory-flow-node{
+  min-height:94px!important;
+  padding:14px 16px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important
+ }
+ #inventory-overview-panel .inventory-flow-node small{grid-column:1!important}
+ #inventory-overview-panel .inventory-flow-node strong{
+  grid-column:2!important;grid-row:1/3!important;
+  text-align:right!important;font-size:26px!important;margin:0 0 0 10px!important
+ }
+ #inventory-overview-panel .inventory-flow-node span{grid-column:1!important}
+ #inventory-overview-panel .inventory-flow-node.node-value strong{font-size:18px!important}
+ #inventory-overview-panel .inventory-flow-health{margin-top:15px!important;padding-top:13px!important}
+}
+@media(max-width:390px){
+ #inventory-overview-panel .inventory-flow-node{min-height:86px!important;padding:12px!important}
+ #inventory-overview-panel .inventory-flow-node strong{font-size:22px!important}
+ #inventory-overview-panel .inventory-flow-node.node-value strong{font-size:15px!important}
+ #inventory-overview-panel .inventory-flow-legend{gap:8px 12px!important}
+}
