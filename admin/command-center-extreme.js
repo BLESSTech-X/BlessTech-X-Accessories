@@ -190,7 +190,7 @@
     const open=()=>{document.body.classList.add('cc-nav-open');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close navigation menu');};
     toggle.addEventListener('click',()=>{if(window.matchMedia('(max-width:900px)').matches){document.body.classList.contains('cc-nav-open')?close():open();}else{const collapsed=document.body.classList.toggle('cc-nav-collapsed');toggle.setAttribute('aria-expanded',String(!collapsed));toggle.setAttribute('aria-label',collapsed?'Show navigation menu':'Collapse navigation menu');}});
     overlay.addEventListener('click',close);
-    nav.addEventListener('click',e=>{if(e.target.closest('.workspace-tab'))close();});
+    nav.addEventListener('click',e=>{if(e.target.closest('.workspace-tab')&&!e.target.closest('.ss-more'))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
     $('#cc-nav-filter').addEventListener('input',e=>{
       const q=e.target.value.trim().toLowerCase();
