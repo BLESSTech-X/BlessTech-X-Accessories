@@ -118,7 +118,7 @@ async function load(){
   const published=await loadPublishedSettings();
   settings={...defaults,...published};
   // GitHub is the single source of truth for season-specific creative content.
-  const campaignOverrides={bannerImage:published.bannerImage||'',popupImage:published.popupImage||''};
+  const campaignOverrides={};if(published.bannerImage)campaignOverrides.bannerImage=published.bannerImage;if(published.popupImage)campaignOverrides.popupImage=published.popupImage;
   const selectedTheme=themeKey();
   try{
    const presetResponse=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(selectedTheme)+'.json?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
