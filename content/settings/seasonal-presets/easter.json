@@ -1,0 +1,22 @@
+{
+  "season": "easter",
+  "season_label": "Easter",
+  "heroTitle": "The PhoneYa2 Easter Edit",
+  "heroSubtitle": "Fresh finds. Brighter moments. Better connections.",
+  "bannerTitle": "The PhoneYa2 Easter Edit",
+  "bannerMessage": "Fresh finds. Brighter moments. Better connections.",
+  "bannerButton": "Explore Easter Picks",
+  "bannerUrl": "/shop.html",
+  "bannerImage": "",
+  "popupTitle": "Make Easter More Connected",
+  "popupMessage": "Explore useful tech accessories and thoughtful finds for the Easter season.",
+  "popupButton": "Shop Easter Picks",
+  "popupUrl": "/shop.html",
+  "popupImage": "",
+  "marks": [
+    "🐣",
+    "🌷",
+    "🐰",
+    "🥚"
+  ]
+}
