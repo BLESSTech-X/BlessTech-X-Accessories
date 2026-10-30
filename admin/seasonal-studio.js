@@ -66,7 +66,8 @@
  async function save(){
   const token=window.PY2_SEASONAL_AUTH_TOKEN;if(!token){setStatus('Your admin session is missing. Sign out and back into Command Centre.','error');return;}
   const next=collect();
-  if(next.scheduled&&next.start&&next.end&&next.end<next.start){setStatus('The end date must be on or after the start date.','error');return;}
+  if(next.scheduled&&(!next.start||!next.end)){setStatus('Choose both a start date and an end date before scheduling the campaign.','error');return;}
+  if(next.scheduled&&next.end<next.start){setStatus('The end date must be on or after the start date.','error');return;}
   const button=$('ss-save');button.disabled=true;setStatus('Saving campaign controls…');
   try{
    const response=await fetch('/api/seasonal',{method:'PUT',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({settings:next})});
