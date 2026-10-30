@@ -107,7 +107,7 @@
 .modules .module.comment-module h3:after{content:"QUICK ACCESS";display:inline-block;vertical-align:middle;margin-left:7px;padding:3px 5px;border-radius:5px;background:#dbeafe;color:#1d4ed8;font-size:8px;font-weight:950;letter-spacing:.5px}
 @media(max-width:650px){.comment-shortcut{grid-template-columns:auto minmax(0,1fr);gap:11px;padding:14px}.comment-shortcut-icon{width:43px;height:43px}.comment-shortcut-action{grid-column:1/-1;width:100%;white-space:normal}.intro-actions .comment-top-link{order:-1}}
 </style>
-<link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261030-inventory-polish2">
+<link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261030-data-design-persistence1">
 </head>
 <body>
 <div id="lab-intro" class="lab-intro" role="dialog" aria-modal="true" aria-label="PhoneYa2 system startup"><div class="lab-core"><div class="lab-kicker">PHONEYA2 // OPERATIONS INTELLIGENCE</div><h2>Command Centre Online</h2><p id="lab-copy">Connecting the live business signals. Preparing your operations view.</p><div class="lab-readout"><div><strong id="lab-orders">—</strong><span>ORDERS</span></div><div><strong id="lab-pending">—</strong><span>NEED ACTION</span></div><div><strong id="lab-visitors">—</strong><span>VISITORS · 30D</span></div></div><div class="lab-progress"><span id="lab-progress-fill"></span></div><div id="lab-status" class="lab-status">INITIALIZING SECURE WORKSPACE</div><button type="button" id="lab-skip" class="lab-skip">Enter dashboard →</button></div></div>
@@ -460,6 +460,9 @@ function setupWorkspace(){
  setupResourceFinder();renderCommandCentreExtensions();setVoiceBriefing(voiceBriefingEnabled,false);dashboard.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a||a.closest('.modules'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin)return;if(u.pathname==='/admin/orders.html'){e.preventDefault();openWorkspaceModal('Order Desk',u.pathname+u.search);}});const lastAnalytics=Number(localStorage.getItem('phoneya2_cc_tab_analytics')||0),lastHealth=Number(localStorage.getItem('phoneya2_cc_health_checked')||0),dismissed=Number(localStorage.getItem('phoneya2_cc_heads_up_dismissed')||0);
  if(Date.now()-dismissed>86400000){if(lastAnalytics&&Date.now()-lastAnalytics>3*86400000)showHeadsUp('Your traffic dashboard has been waiting','It has been more than '+Math.floor((Date.now()-lastAnalytics)/86400000)+' days since you checked Analytics. Review visitors, sources and product views before choosing your next promotion.',[{label:'Open Analytics',tab:'analytics'},{label:'Remind me later',dismiss:true}]);else if(lastHealth&&Date.now()-lastHealth>7*86400000)showHeadsUp('Time for a website health check','It has been over a week since your last recorded health check. Confirm the shop, product index, sitemap and order service are responding.',[{label:'Run health checks',tab:'health'},{label:'Remind me later',dismiss:true}]);else if(!lastAnalytics)showHeadsUp('Want to see how many people visit your website?','Open Analytics to view actual GA4 visitors, sessions, page views and the pages attracting attention.',[{label:'Show visitor numbers',tab:'analytics'},{label:'Not now',dismiss:true}]);}
  $('heads-up-close').addEventListener('click',dismissHeadsUp);
+ // Restore the last workspace after a page reload instead of always opening Overview.
+ const savedTab=localStorage.getItem('phoneya2_cc_last_tab');
+ if(savedTab&&targets[savedTab])activateWorkspaceTab(savedTab,false);
 }
 
 function renderCommandCentreExtensions(){
