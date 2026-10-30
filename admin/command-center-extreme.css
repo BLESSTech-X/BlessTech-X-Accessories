@@ -1583,3 +1583,23 @@ body.cc-nav-open #workspace-nav.cc-header-navigation .cc-nav-footer{display:flex
  body.cc-nav-open .cc-nav-overlay{inset:104px 0 0!important}
  body.cc-nav-open #workspace-nav.cc-header-navigation{top:112px!important}
 }
+
+
+/* Navigation interaction fix: keep the header and drawer above the dimming layer. */
+body:has(#dashboard:not(.hidden)) .topbar{position:sticky!important;top:0!important;z-index:140!important}
+body.cc-nav-open .topbar{z-index:140!important}
+body.cc-nav-open .cc-nav-overlay{
+  z-index:130!important;
+  background:rgba(13,22,39,.16)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+body.cc-nav-open #workspace-nav.cc-header-navigation{z-index:151!important}
+body.cc-nav-open #cc-menu-toggle{z-index:152!important}
+body.cc-nav-open #workspace-nav.cc-header-navigation .workspace-tab{
+  filter:none!important;opacity:1!important;transform:none!important;
+}
+#workspace-nav.cc-header-navigation .workspace-tab,
+#cc-menu-toggle{ -webkit-tap-highlight-color:transparent; }
+#workspace-nav.cc-header-navigation .workspace-tab:focus-visible,
+#cc-menu-toggle:focus-visible{outline:2px solid #3478f6!important;outline-offset:2px}
