@@ -2,8 +2,7 @@ const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache
 const ADMIN_FALLBACK = "singbless89@gmail.com";
 const SETTINGS_FIELDS = [
   "enabled","theme","decorations","snow","snowIntensity","scheduled","start","end","coverage",
-  "popup","popupMode","popupDelay","popupScroll","popupTitle","popupMessage","popupButton","popupUrl","popupImage",
-  "banner","bannerTitle","bannerMessage","bannerButton","bannerUrl","bannerImage"
+  "popup","popupMode","popupDelay","popupScroll","banner"
 ];
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 function secret(env,...names){for(const name of names)if(env[name])return env[name];return "";}
@@ -46,7 +45,6 @@ export async function onRequest({request,env}){
     const source=body?.settings&&typeof body.settings==="object"?body.settings:{};
     const settings={id:"global"};
     for(const key of SETTINGS_FIELDS)if(Object.prototype.hasOwnProperty.call(source,key))settings[key]=source[key];
-    if(body?.presets&&typeof body.presets==="object"&&!Array.isArray(body.presets))settings.presets=body.presets;
     settings.updated_at=new Date().toISOString();
     const response=await database(env,"seasonal_campaigns?id=eq.global",{method:"PATCH",headers:{prefer:"return=representation"},body:JSON.stringify(settings)});
     if(!response.ok){const detail=await response.text();return json({error:"Could not save seasonal settings: "+detail.slice(0,300)},502);}
