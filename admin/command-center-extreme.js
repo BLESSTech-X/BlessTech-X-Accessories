@@ -195,7 +195,7 @@
     };
     nav.querySelectorAll('.workspace-tab').forEach(tab=>{
       const id=tab.id.replace('tab-','');
-      const label=tab.textContent.replace(/^\\S+\\s*/,'').trim()||tab.textContent.trim();
+      const label=tab.textContent.replace(/^\S+\s*/,'').trim()||tab.textContent.trim();
       tab.classList.add('cc-header-tab');
       tab.setAttribute('aria-label',label);
       tab.title=label;
