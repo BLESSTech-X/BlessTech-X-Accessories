@@ -82,8 +82,16 @@
   if(loading)return;loading=true;setStatus('Loading shared seasonal settings…');
   try{
    const response=await fetch('/api/seasonal?v='+Date.now(),{cache:'no-store'});
-   if(response.ok){const data=await response.json();settings=data.settings||{};presets=data.presets||{};setStatus('Connected to the shared seasonal campaign store.','success');}
-   else await importDecap(false);
+   if(response.ok){
+    const data=await response.json();settings=data.settings||{};presets=data.presets||{};
+    if(!Object.keys(presets).length){
+     await importDecap(false);
+     setStatus('Loaded the current published Decap campaign. Save to initialize the shared campaign store.','info');
+    }else{
+     for(const key of SEASONS){if(!presets[key]){const r=await fetch('/content/settings/seasonal-presets/'+key+'.json?v='+Date.now(),{cache:'no-store'});if(r.ok)presets[key]=await r.json();}}
+     setStatus('Connected to the shared seasonal campaign store.','success');
+    }
+   }else await importDecap(false);
    fillSettings();
   }catch(e){setStatus('Could not load seasonal settings: '+e.message,'error');}
   finally{loading=false;}
