@@ -226,3 +226,84 @@ html.py2-season-theme-christmas #py2-xmas-ribbon{
   background-repeat:no-repeat;
 }
 @supports not (background:color-mix(in srgb,red,white)){html.py2-season-active .py2-seasonal-hero:not(.py2-xmas-hero){background:var(--py2-season-accent-2)!important}}
+
+
+/* Polished seasonal popup: image-led, readable copy and consistent contrast. */
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal{
+  width:min(500px,100%);
+  padding:0 26px 26px;
+  overflow:hidden;
+  border:1px solid var(--py2-season-gold);
+  border-radius:22px;
+  background:linear-gradient(180deg,#ffffff 0%,#fffdf9 100%);
+  color:#243247;
+  box-shadow:0 28px 90px rgba(9,18,31,.34);
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art{
+  position:relative;
+  isolation:isolate;
+  min-height:270px;
+  margin:0 -26px 22px;
+  padding:38px 30px 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:flex-end;
+  gap:9px;
+  text-align:left;
+  background-color:var(--py2-season-accent-2);
+  background-size:cover;
+  background-position:center;
+  color:#fff;
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(180deg,rgba(8,15,28,.10) 0%,rgba(8,15,28,.30) 38%,rgba(8,15,28,.86) 100%);
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art h2,
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art p{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.42)!important;
+  position:relative;
+  z-index:1;
+  max-width:390px;
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art h2{
+  margin:5px 0 0;
+  font-size:clamp(25px,6vw,35px);
+  line-height:1.08;
+  font-weight:900;
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art p{
+  margin:0;
+  font-size:14px;
+  line-height:1.55;
+  font-weight:600;
+  opacity:1!important;
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal-eyebrow{
+  color:#fff!important;
+  text-shadow:0 1px 8px rgba(0,0,0,.5);
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-cta{
+  min-height:48px;
+  padding:13px 24px;
+  border-radius:12px;
+  font-weight:850;
+  letter-spacing:.01em;
+  box-shadow:0 8px 20px rgba(15,23,42,.16);
+}
+html.py2-season-active #py2-xmas-popup .py2-xmas-close{
+  background:rgba(255,255,255,.96);
+  border-color:rgba(255,255,255,.8);
+  box-shadow:0 3px 12px rgba(0,0,0,.18);
+}
+@media(max-width:600px){
+  html.py2-season-active #py2-xmas-popup .py2-xmas-modal{padding:0 20px 22px}
+  html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art{min-height:235px;margin-inline:-20px;padding:32px 23px 21px}
+  html.py2-season-active #py2-xmas-popup .py2-xmas-modal-art p{font-size:13px}
+}
