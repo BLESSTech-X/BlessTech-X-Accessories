@@ -264,18 +264,18 @@ collections:
               - { label: "Displayed time", name: "time", widget: "string", hint: "Use wording that remains accurate, such as 'yesterday' only when true." }
               - { label: "Active", name: "active", widget: "boolean", default: true }
 
-      - label: "Seasonal Campaigns"
+      - label: "Seasonal Campaign Control"
         name: "seasonal_campaigns"
         file: "content/settings/seasonal-campaigns.json"
         format: "json"
-        description: "Choose the active season and campaign settings here. Each season’s wording is saved separately in Seasonal Content Library; switching the active season automatically loads its own saved copy."
+        description: "Control which campaign is live, its schedule, page coverage, decorations and display behaviour. Edit each season's unique headings, messages, buttons and images in Seasonal Campaign Content."
         fields:
           - { label: "Campaign enabled", name: "enabled", widget: "boolean", default: false, hint: "Turn on to activate the seasonal experience on the public website." }
-          - label: "Theme / Season"
+          - label: "Active season"
             name: "theme"
             widget: "select"
             default: "christmas"
-            hint: "This chooses which saved seasonal preset is live on the website. To customize wording, open the matching season under Seasonal Content Library; each season keeps its own saved copy."
+            hint: "Select which season's separately saved campaign content is displayed on the website. To edit its wording, open that season under Seasonal Campaign Content."
             options:
               - { label: "Christmas 🎄", value: "christmas" }
               - { label: "Valentine's Day 💗", value: "valentines" }
@@ -288,28 +288,18 @@ collections:
               - { label: "Back to School 🎒", value: "back-to-school" }
               - { label: "Summer ☀️", value: "summer" }
               - { label: "Zambian Independence 🇿🇲", value: "independence" }
-          - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained festive ornaments beside selected page and section headings. Does not scatter emojis around the site." }
+          - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained seasonal ornaments beside selected page and section headings." }
           - { label: "Snowfall", name: "snow", widget: "boolean", default: false, hint: "Only snowflakes fall. Other decorations remain fixed to headings." }
           - { label: "Snowfall intensity", name: "snowIntensity", widget: "number", min: 5, max: 60, step: 5, default: 24, hint: "Controls the number of snowflakes. Keep it subtle for mobile performance." }
           - { label: "Schedule campaign", name: "scheduled", widget: "boolean", default: false }
           - { label: "Campaign start date", name: "start", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
-          - { label: "Seasonal campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show a coordinated festive announcement ribbon across supported pages." }
-          - { label: "Legacy banner heading (season presets override this)", name: "bannerTitle", widget: "string", default: "The PhoneYa2 Christmas Edit" }
-          - { label: "Banner background image URL", name: "bannerImage", widget: "string", default: "https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200", hint: "Paste a direct HTTPS image URL. Use a wide landscape photo with the subject positioned away from the text." }
-          - { label: "Banner message", name: "bannerMessage", widget: "string", default: "Thoughtful tech gifts. Better-connected moments." }
-          - { label: "Banner button", name: "bannerButton", widget: "string", default: "Explore Christmas Picks" }
-          - { label: "Banner destination", name: "bannerUrl", widget: "string", default: "/shop.html" }
+          - { label: "Seasonal campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show the active season's saved announcement banner." }
           - { label: "Promotional popup", name: "popup", widget: "boolean", default: false }
           - { label: "Popup display", name: "popupMode", widget: "select", options: [{ label: "After a short delay", value: "delay" }, { label: "Immediately", value: "immediate" }, { label: "After scrolling", value: "scroll" }], default: "delay" }
           - { label: "Popup delay (seconds)", name: "popupDelay", widget: "number", min: 0, max: 60, default: 5 }
           - { label: "Scroll threshold (%)", name: "popupScroll", widget: "number", min: 5, max: 90, default: 35 }
-          - { label: "Popup background image URL", name: "popupImage", widget: "string", default: "https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600", hint: "Paste a direct HTTPS image URL. A portrait or landscape festive photo works; the site adds a dark overlay for readable text." }
-          - { label: "Legacy popup heading (season presets override this)", name: "popupTitle", widget: "string", default: "Make Their Christmas Special" }
-          - { label: "Popup message", name: "popupMessage", widget: "text", default: "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories." }
-          - { label: "Popup button label", name: "popupButton", widget: "string", default: "Shop Christmas Deals" }
-          - { label: "Popup destination", name: "popupUrl", widget: "string", default: "/shop.html", hint: "Use a PhoneYa2 page path or a trusted HTTPS URL." }
 
 
   - name: "seasonal_presets"
