@@ -3,7 +3,7 @@
 const CONFIG='/content/settings/seasonal-campaigns.json';
 const PREVIEW_KEY='phoneya2-seasonal-preview-v3';
 const defaults={enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',popup:false,popupMode:'delay',popupDelay:5,popupScroll:35,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html',banner:true,bannerTitle:'The PhoneYa2 Christmas Edit',bannerMessage:'Thoughtful tech gifts. Better-connected moments.',bannerButton:'Explore Christmas Picks',bannerUrl:'/shop.html',bannerImage:'https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200',popupImage:'https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600'};
-let settings={...defaults},snowLayer=null,popupCreated=false;
+let settings={...defaults},snowLayer=null,popupCreated=false;\nconst sessionGet=key=>{try{return sessionStorage.getItem(key)}catch(_){return null}};\nconst sessionSet=(key,value)=>{try{sessionStorage.setItem(key,value)}catch(_){}};
 const params=new URLSearchParams(location.search);
 function localDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Lusaka',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function inSchedule(){return !!(settings.scheduled&&settings.start&&settings.end&&localDay()>=settings.start.slice(0,10)&&localDay()<=settings.end.slice(0,10))}
@@ -47,9 +47,9 @@ function createCampaignBanner(){
  copy.append(title,message);
  const link=document.createElement('a');link.className='py2-xmas-ribbon-link';link.href=safeDestination(settings.bannerUrl||'/shop.html');link.textContent=settings.bannerButton||'Explore gifts';
  const close=document.createElement('button');close.type='button';close.className='py2-xmas-ribbon-close';close.setAttribute('aria-label','Dismiss Christmas banner');close.textContent='×';
- close.addEventListener('click',()=>{ribbon.remove();sessionStorage.setItem('py2-xmas-ribbon-dismissed','1')});
+ close.addEventListener('click',()=>{ribbon.remove();sessionSet('py2-xmas-ribbon-dismissed','1')});
  inner.append(mark,copy,link,close);ribbon.append(inner);
- if(sessionStorage.getItem('py2-xmas-ribbon-dismissed'))return;
+ if(sessionGet('py2-xmas-ribbon-dismissed'))return;
  const header=document.querySelector('.top-header,.site-header,header');
  if(header&&header.parentNode)header.insertAdjacentElement('afterend',ribbon);
  else {const main=document.querySelector('main');(main||document.body).insertAdjacentElement('afterbegin',ribbon)}
@@ -66,7 +66,7 @@ function makeSnow(){
  document.body.append(snowLayer);
 }
 function showPopup(){
- if(!settings.popup||!active()||popupCreated||sessionStorage.getItem('py2-xmas-dismissed'))return;
+ if(!settings.popup||!active()||popupCreated||sessionGet('py2-xmas-dismissed'))return;
  popupCreated=true;const wrap=document.createElement('div');wrap.id='py2-xmas-popup';wrap.hidden=true;
  const section=document.createElement('section');section.className='py2-xmas-modal';section.setAttribute('role','dialog');section.setAttribute('aria-modal','true');section.setAttribute('aria-labelledby','py2-xmas-title');
  const close=document.createElement('button');close.className='py2-xmas-close';close.type='button';close.setAttribute('aria-label','Close promotion');close.textContent='×';
@@ -76,7 +76,7 @@ function showPopup(){
  const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;
  const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=settings.popupButton;link.href=safeDestination(settings.popupUrl);
  section.append(close,art,copy,link);wrap.append(section);document.body.append(wrap);
- const dismiss=()=>{wrap.hidden=true;sessionStorage.setItem('py2-xmas-dismissed','1')};
+ const dismiss=()=>{wrap.hidden=true;sessionSet('py2-xmas-dismissed','1')};
  close.addEventListener('click',dismiss);wrap.addEventListener('click',e=>{if(e.target===wrap)dismiss()});
  const reveal=()=>{if(!sessionStorage.getItem('py2-xmas-dismissed'))wrap.hidden=false};
  if(settings.popupMode==='immediate')setTimeout(reveal,700);
