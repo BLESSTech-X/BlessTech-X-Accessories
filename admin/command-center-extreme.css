@@ -1030,3 +1030,36 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
  #inventory-overview-panel .inventory-flow-legend{gap:9px 14px!important}
  #inventory-overview-panel .inventory-flow-foot{flex-direction:column!important}
 }
+
+
+/* Data presentation language: consistent clarity, distinct visual treatments per workspace */
+#view-actions .priority-item{padding:14px 15px!important;border:1px solid #e8edf3!important;border-radius:12px!important;background:linear-gradient(110deg,#fff,#f9fbfe)!important;gap:12px!important}
+#view-actions .priority-dot{width:30px!important;height:30px!important;flex:0 0 30px!important;display:grid;place-items:center;border-radius:10px!important;background:#edf3ff!important;color:#326fe0!important;font-size:12px!important;font-weight:900!important}
+#view-actions .priority-item strong{font-size:13px!important;color:#1c2a40!important}
+#view-actions .priority-item small{font-size:9px!important;letter-spacing:.45px!important;color:#8491a4!important;line-height:1.5!important}
+#view-money .growth-card{border-radius:16px!important;padding:18px!important}
+#view-money .growth-number{display:inline-flex;align-items:center;max-width:100%;padding:12px 16px;margin:4px 0 9px;border-radius:12px;background:#edf8f2;color:#13784e;font-size:clamp(23px,3vw,34px)!important;font-weight:900;letter-spacing:-1px;overflow-wrap:anywhere}
+#view-money .health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px!important}
+#view-money .health-item{min-height:88px;padding:13px!important;border:1px solid #e8edf3!important;border-radius:12px!important;background:#fbfcfe!important}
+#view-money .health-item strong{font-size:11px!important;color:#26364d!important}
+#view-money .health-item small{font-size:9px!important;line-height:1.45!important;color:#8793a5!important}
+#view-money .growth-card:last-child .health-item{min-height:76px}
+#view-network .growth-card{border-radius:16px!important;padding:19px!important}
+#view-network .growth-card>p{font-size:11px!important;line-height:1.65!important;color:#69778d!important;max-width:850px}
+#view-network .growth-links{display:flex;flex-wrap:wrap;gap:8px!important;margin-top:14px!important}
+#view-network .growth-links a{padding:9px 12px!important;border:1px solid #e5ebf3!important;border-radius:9px!important;background:#f8faff!important;font-size:10px!important;font-weight:800!important}
+#view-experiments .growth-card{border-radius:16px!important;padding:19px!important}
+#view-experiments #growth-experiment-list .priority-item{padding:13px!important;border:1px solid #e8edf3!important;border-radius:12px!important;background:#fbfcfe!important}
+#view-experiments #growth-experiment-list .priority-item strong{font-size:12px!important;color:#26364d}
+#view-experiments #growth-experiment-list .priority-item small{font-size:9px!important;line-height:1.5!important;color:#8793a5!important}
+#view-health .health-grid .health-item,#view-inventory .health-grid .health-item{padding:12px!important;border:1px solid #e8edf3!important;border-radius:11px!important;background:#fbfcfe!important}
+#view-health .health-item strong,#view-inventory .health-item strong{font-size:11px!important;color:#26364d!important}
+#view-health .health-item small,#view-inventory .health-item small{font-size:9px!important;line-height:1.45!important;color:#8793a5!important}
+#view-analytics .panel,#view-orders .panel{border-radius:15px!important}
+#view-analytics .section-head h2,#view-orders .section-head h2,#view-health .section-head h2,#view-growth .section-head h2{font-weight:850!important;letter-spacing:-.35px}
+@media(max-width:700px){
+ #view-money .health-grid{grid-template-columns:1fr!important}
+ #view-money .growth-number{font-size:25px!important}
+ #view-actions .priority-item{padding:11px!important}
+ #view-network .growth-links a{flex:1 1 100%;text-align:center}
+}
