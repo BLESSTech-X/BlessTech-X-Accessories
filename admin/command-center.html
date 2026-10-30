@@ -107,7 +107,7 @@
 .modules .module.comment-module h3:after{content:"QUICK ACCESS";display:inline-block;vertical-align:middle;margin-left:7px;padding:3px 5px;border-radius:5px;background:#dbeafe;color:#1d4ed8;font-size:8px;font-weight:950;letter-spacing:.5px}
 @media(max-width:650px){.comment-shortcut{grid-template-columns:auto minmax(0,1fr);gap:11px;padding:14px}.comment-shortcut-icon{width:43px;height:43px}.comment-shortcut-action{grid-column:1/-1;width:100%;white-space:normal}.intro-actions .comment-top-link{order:-1}}
 </style>
-<link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261030-growth-intelligence1">
+<link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261030-full-sales-intelligence1">
 </head>
 <body>
 <div id="lab-intro" class="lab-intro" role="dialog" aria-modal="true" aria-label="PhoneYa2 system startup"><div class="lab-core"><div class="lab-kicker">PHONEYA2 // OPERATIONS INTELLIGENCE</div><h2>Command Centre Online</h2><p id="lab-copy">Connecting the live business signals. Preparing your operations view.</p><div class="lab-readout"><div><strong id="lab-orders">—</strong><span>ORDERS</span></div><div><strong id="lab-pending">—</strong><span>NEED ACTION</span></div><div><strong id="lab-visitors">—</strong><span>VISITORS · 30D</span></div></div><div class="lab-progress"><span id="lab-progress-fill"></span></div><div id="lab-status" class="lab-status">INITIALIZING SECURE WORKSPACE</div><button type="button" id="lab-skip" class="lab-skip">Enter dashboard →</button></div></div>
@@ -180,20 +180,22 @@
       <div class="stat"><span>Page views</span><strong id="ga4-views">—</strong><small>Total page views</small></div>
       <div class="stat"><span>Events</span><strong id="ga4-events">—</strong><small>Tracked interactions</small></div>
     </div>
-    <div class="grid2">
-      <div><h3 style="font-size:13px;margin:0 0 10px">Top traffic sources</h3><div id="ga4-sources" class="status-bars"><p class="muted">Waiting for data…</p></div></div>
-      <div><h3 style="font-size:13px;margin:0 0 10px">Most-viewed pages</h3><div id="ga4-pages" class="status-bars"><p class="muted">Waiting for data…</p></div></div>
+    <div class="ga4-chart-grid">
+      <section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>ACQUISITION MIX</span><h3>Where visitors come from</h3></div><small>Sessions by channel</small></div><canvas id="ga4-source-chart" height="210" aria-label="Traffic source vertical bar chart"></canvas><div id="ga4-source-legend" class="ga4-source-legend"></div></section>
+      <section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>CONTENT INTEREST</span><h3>Most-viewed pages</h3></div><small>Top 5 pages</small></div><div id="ga4-pages" class="ga4-page-bars"><p class="muted">Waiting for data…</p></div></section>
     </div>
+    <div id="ga4-sources" hidden></div>
     <p class="muted" id="ga4-updated" style="font-size:11px;margin:12px 0 0"></p>
   </section>
   <div class="grid2" id="overview-chart-grid">
     <section class="panel section"><div class="section-head"><div><h2>Order activity</h2><p>Compare order volume and recorded order value over time</p></div><div class="chart-head-tools"><div class="chart-controls" role="group" aria-label="Chart date range"><button type="button" data-chart-days="7" aria-pressed="true">7D</button><button type="button" data-chart-days="30" aria-pressed="false">30D</button><button type="button" data-chart-days="90" aria-pressed="false">90D</button></div><span class="muted" id="range-label" style="font-size:11px"></span></div></div><div class="chart-summary" id="chart-summary"><strong>Loading summary…</strong><span>Orders and recorded value</span></div><div class="chart-wrap"><canvas id="orders-chart" aria-label="Order activity chart"></canvas></div><div class="chart-legend"><span><i class="legend-dot" style="background:#ff6500"></i>Orders</span><span><i class="legend-dot" style="background:#3478f6"></i>Order value (ZMW)</span></div></section>
-    <section class="panel section" id="order-pipeline-panel"><div class="section-head"><div><h2>Order pipeline</h2><p>Current status of recorded orders</p></div></div><div class="status-bars" id="status-bars"><p class="muted">Loading order status…</p></div><div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;gap:10px"><span class="muted">Average order value</span><strong id="stat-aov">—</strong></div></section>
+    <section class="panel section" id="order-pipeline-panel"><div class="section-head"><div><h2>Order pipeline</h2><p>Current status of recorded orders</p></div></div><div class="status-bars" id="status-bars"><p class="muted">Loading order status…</p></div><div id="order-status-donut" class="order-status-donut-wrap"></div><div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;gap:10px"><span class="muted">Average order value</span><strong id="stat-aov">—</strong></div></section>
   </div>
   <div class="grid2">
-    <section class="panel section"><div class="section-head"><div><h2>Best-selling products</h2><p>Ranked by units in recorded orders</p></div></div><div id="top-products" class="status-bars"><p class="muted">Loading product performance…</p></div></section>
+    <section class="panel section" id="product-performance-panel"><div class="section-head"><div><h2>Best-selling products</h2><p>Quantity compared with recorded product value · last 30 days</p></div></div><div class="product-chart-legend"><span><i class="product-legend-qty"></i> Units sold</span><span><i class="product-legend-value"></i> Recorded value</span></div><canvas id="product-performance-chart" height="230" aria-label="Best sellers dual axis chart"></canvas><div id="top-products" class="status-bars"><p class="muted">Loading product performance…</p></div></section>
     <section class="panel section" id="recent-orders-panel"><div class="section-head"><div><h2>Recent orders</h2><p>Latest activity from the order database</p></div><a class="btn" href="/admin/orders.html">Manage orders ↗</a></div><div class="recent-order-list" id="recent-orders"><div class="recent-order-loading">Loading recent orders…</div></div></section>
   </div>
+  <section class="panel section" id="journey-insights-panel"><div class="section-head"><div><h2>Visitor-to-order journey</h2><p>Scale comparison across GA4 activity and recorded orders · rolling 30 days</p></div><span class="journey-note-badge">Directional view</span></div><div id="journey-funnel" class="journey-funnel"></div><p class="journey-footnote">Page views, sessions and active users are different GA4 measurements, not a user-level sequence. This visual compares scale only; it must not be read as a verified conversion funnel.</p><div class="journey-bottom-grid"><div class="journey-highlight"><span>ORDER TARGET</span><strong id="journey-target-value">—</strong><div class="journey-target-track"><i id="journey-target-fill"></i></div><small id="journey-target-note"></small></div><div class="journey-highlight"><span>ORDER CONCENTRATION</span><strong id="journey-peak-day">—</strong><small id="journey-peak-detail">Peak day in rolling 30 days</small><div id="journey-peak-donut" class="journey-peak-donut"></div></div></div></section>
   <section class="panel section" id="inventory-overview-panel"><div class="section-head"><div><h2>Inventory overview</h2><p>Based on stock and price fields in your published product files. Verify stock values are kept current.</p></div></div><div class="health-grid" id="inventory-grid"><div class="health-item"><div><strong>Loading catalogue inventory…</strong></div></div></div></section>
   <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Basic availability checks for the storefront and connected services.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
   <div class="section-head" style="margin:24px 0 12px"><div><h2 style="font-size:19px;margin:0">PhoneYa2 Admin Links</h2><p class="muted" style="font-size:12px;margin:4px 0 0">Private tools for managing orders, products, campaigns and operations.</p></div></div>
@@ -297,7 +299,7 @@ function renderStats(){
  $('stat-orders').textContent=total.toLocaleString();$('orders-sub').textContent=recent.length+' in the last 30 days';
  $('stat-sales').textContent=money(sales);$('stat-pending').textContent=pending.toLocaleString();$('stat-delivered').textContent=delivered.toLocaleString();$('stat-aov').textContent=money(valid.length?sales/valid.length:0);
  $('stat-sales-30').textContent=money(sales30);$('stat-orders-30').textContent=recent.length.toLocaleString();$('stat-customers').textContent=customerKeys.size.toLocaleString();$('customers-sub').textContent='Distinct email / phone / name';$('stat-cancel-rate').textContent=(total?cancelled/total*100:0).toFixed(1)+'%';$('cancel-sub').textContent=cancelled+' cancelled of '+total+' orders';
- renderStatuses();renderRecentOrders();renderTopProducts();drawChart();renderGrowthPulse();renderExecutiveDashboard();
+ renderStatuses();renderRecentOrders();renderTopProducts();drawChart();renderGrowthPulse();renderExecutiveDashboard();renderJourneyInsights();renderOrderStatusDonut();drawProductPerformanceChart();
 }
 function renderGrowthPulse(){
  const recent=orders.filter(o=>withinDays(o,30));
@@ -350,6 +352,7 @@ function renderTopProducts(){
  const totals=new Map();orders.forEach(o=>(o.order_items||[]).forEach(i=>{const name=String(i.product_name||i.title||i.product_slug||'Product'),prev=totals.get(name)||{name,units:0,revenue:0};prev.units+=Number(i.quantity||1);prev.revenue+=Number(i.line_total||Number(i.unit_price||0)*Number(i.quantity||1));totals.set(name,prev);}));
  const host=$('top-products');host.replaceChildren();const list=[...totals.values()].sort((a,b)=>b.units-a.units).slice(0,6);if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='Product sales will appear here as order items are recorded.';host.append(p);return;}
  const max=Math.max(1,...list.map(x=>x.units));list.forEach(item=>{const row=document.createElement('div');row.className='status-row';row.style.gridTemplateColumns='minmax(85px,1.2fr) 1fr 34px';const name=document.createElement('span');name.textContent=item.name;name.title=item.name;name.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap';const track=document.createElement('div');track.className='status-track';const fill=document.createElement('div');fill.className='status-fill';fill.style.width=(item.units/max*100)+'%';track.append(fill);const n=document.createElement('strong');n.className='status-count';n.textContent=item.units;row.append(name,track,n);const small=document.createElement('small');small.textContent=money(item.revenue)+' recorded product value';small.style.cssText='grid-column:1/-1;color:var(--muted);margin:-5px 0 4px';host.append(row,small);});
+ drawProductPerformanceChart();
 }
 function drawChart(){
  const canvas=$('orders-chart'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;if(!rect.width||!rect.height)return;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
@@ -409,6 +412,56 @@ function renderGa4List(id,items,labelKey,valueKey,subKey){
  host.append(row,sub);
  });
 }
+function getTrafficGroups(data){
+ const rows=Array.isArray(data?.sources)?data.sources:[];
+ const sum=fn=>rows.filter(fn).reduce((n,x)=>n+Number(x.sessions||0),0);
+ return [
+  {label:'Direct',value:sum(x=>/direct/i.test(String(x.source||''))),color:'#151a24'},
+  {label:'Facebook',value:sum(x=>/facebook/i.test(String(x.source||''))),color:'#1877F2'},
+  {label:'AI / ChatGPT',value:sum(x=>/chatgpt|openai|perplexity|copilot/i.test(String(x.source||''))),color:'#10A37F'},
+  {label:'Search',value:sum(x=>/google.*organic|bing.*organic/i.test(String(x.source||''))),color:'#E7B52C'}
+ ];
+}
+function drawTrafficSourceChart(data){
+ const canvas=$('ga4-source-chart');if(!canvas)return;const rect=canvas.getBoundingClientRect();if(!rect.width)return;const dpr=window.devicePixelRatio||1,w=rect.width,h=210;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ const items=getTrafficGroups(data),max=Math.max(1,...items.map(x=>x.value)),left=28,right=9,top=17,bottom=39,plotH=h-top-bottom,plotW=w-left-right;
+ ctx.font='9px Inter,system-ui,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';
+ for(let i=0;i<=4;i++){const y=top+plotH*i/4;ctx.strokeStyle='#edf0f5';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle='#8993a2';ctx.fillText(Math.round(max*(1-i/4)).toLocaleString(),left-6,y);}
+ const slot=plotW/items.length,bw=Math.min(40,slot*.48);
+ items.forEach((it,i)=>{const x=left+slot*i+(slot-bw)/2,bh=it.value/max*(plotH-8),y=top+plotH-bh;ctx.fillStyle=it.color;ctx.beginPath();ctx.roundRect(x,y,bw,bh,5);ctx.fill();ctx.fillStyle='#26364d';ctx.font='bold 10px Inter,system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(it.value.toLocaleString(),x+bw/2,Math.max(10,y-9));ctx.fillStyle='#748094';ctx.font='9px Inter,system-ui,sans-serif';ctx.fillText(it.label,x+bw/2,h-18);});
+ const legend=$('ga4-source-legend');if(legend){legend.replaceChildren();items.forEach(it=>{const s=document.createElement('span'),dot=document.createElement('i');dot.style.background=it.color;s.append(dot,document.createTextNode(it.label+' '+it.value));legend.append(s);});}
+}
+function renderGa4Pages(items){
+ const host=$('ga4-pages');if(!host)return;host.replaceChildren();const list=(Array.isArray(items)?items:[]).slice(0,5),max=Math.max(1,...list.map(x=>Number(x.views||0)));
+ list.forEach((item,index)=>{const row=document.createElement('div');row.className='ga4-page-row';const name=document.createElement('span');name.textContent=item.path||'(not set)';const value=document.createElement('b');value.textContent=Number(item.views||0).toLocaleString();const track=document.createElement('div');track.className='ga4-page-track';const fill=document.createElement('i');fill.style.width=(Number(item.views||0)/max*100)+'%';track.append(fill);const small=document.createElement('small');small.textContent=(item.users||0)+' active users';row.append(name,value,track,small);host.append(row);});
+}
+function renderJourneyInsights(){
+ const recent=orders.filter(o=>withinDays(o,30)),total=recent.length,delivered=recent.filter(o=>o.status==='delivered').length;
+ const users=Number(ga4Summary?.active_users||0),sessions=Number(ga4Summary?.sessions||0),views=Number(ga4Summary?.page_views||0);
+ const stages=[{label:'Page views',value:views,color:'#151a24'},{label:'Sessions',value:sessions,color:'#1877F2'},{label:'Active users',value:users,color:'#10A37F'},{label:'Orders',value:total,color:'#e879a8'},{label:'Delivered',value:delivered,color:'#25a56a'}];
+ const host=$('journey-funnel');if(host){host.replaceChildren();const max=Math.max(1,...stages.map(x=>x.value));stages.forEach(x=>{const row=document.createElement('div');row.className='journey-stage';const label=document.createElement('span');label.className='journey-stage-label';label.textContent=x.label;const track=document.createElement('div');track.className='journey-stage-track';const fill=document.createElement('i');fill.style.width=(x.value/max*100)+'%';fill.style.background=x.color;track.append(fill);const val=document.createElement('strong');val.className='journey-stage-value';val.textContent=x.value.toLocaleString();const pct=document.createElement('small');pct.textContent=(views?(x.value/views*100).toFixed(2):'0.00')+'% of page-view count';val.append(pct);row.append(label,track,val);host.append(row);});}
+ const goal=$('journey-target-value');if(goal)goal.textContent=total+' / 30';const fill=$('journey-target-fill');if(fill)fill.style.width=Math.min(100,total/30*100)+'%';const note=$('journey-target-note');if(note)note.textContent=Math.max(0,30-total)+' orders remaining to monthly target';
+ const counts=new Map();recent.forEach(o=>{const d=safeDate(o.created_at);if(d){const key=d.toISOString().slice(0,10);counts.set(key,(counts.get(key)||0)+1);}});
+ const peak=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];const peakDate=peak?new Date(peak[0]+'T12:00:00'):null;
+ const peakEl=$('journey-peak-day');if(peakEl)peakEl.textContent=peakDate?peakDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'No orders';
+ const detail=$('journey-peak-detail');if(detail)detail.textContent=peak?peak[1]+' orders · '+(total?(peak[1]/total*100).toFixed(1):0)+'% of 30-day orders':'No orders recorded in this period';
+ const donut=$('journey-peak-donut');if(donut)donut.style.background=peak&&total?'conic-gradient(#151a24 0 '+(peak[1]/total*100)+'%,#e9edf4 '+(peak[1]/total*100)+'% 100%)':'conic-gradient(#e9edf4 0 100%)';
+}
+function renderOrderStatusDonut(){
+ const host=$('order-status-donut');if(!host)return;host.replaceChildren();const recent=orders.filter(o=>withinDays(o,30)),total=recent.length;
+ const defs=[['Pending',recent.filter(o=>o.status==='pending').length,'#f3bd3d'],['Delivered',recent.filter(o=>o.status==='delivered').length,'#269f70'],['Cancelled',recent.filter(o=>o.status==='cancelled').length,'#ef6262'],['Other',recent.filter(o=>!['pending','delivered','cancelled'].includes(o.status)).length,'#4385ee']];
+ let cursor=0;const stops=defs.filter(x=>x[1]>0).map(x=>{const start=cursor;cursor+=x[1]/Math.max(1,total)*100;return x[2]+' '+start+'% '+cursor+'%';});
+ const wrap=document.createElement('div');wrap.className='order-status-donut-wrap';const donut=document.createElement('div');donut.className='order-status-donut';donut.style.background=total?'conic-gradient('+stops.join(',')+')':'conic-gradient(#e9edf4 0 100%)';const center=document.createElement('b');center.textContent=total;donut.append(center);const legend=document.createElement('div');legend.className='order-status-legend';defs.forEach(x=>{const row=document.createElement('div'),dot=document.createElement('i'),label=document.createElement('span'),value=document.createElement('strong');dot.style.background=x[2];label.textContent=x[0];value.textContent=x[1]+' · '+(total?(x[1]/total*100).toFixed(1):'0.0')+'%';row.append(dot,label,value);legend.append(row);});wrap.append(donut,legend);host.append(wrap);
+}
+function drawProductPerformanceChart(){
+ const canvas=$('product-performance-chart');if(!canvas)return;const rect=canvas.getBoundingClientRect();if(!rect.width)return;const dpr=window.devicePixelRatio||1,w=rect.width,h=230;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ const map=new Map();orders.filter(o=>withinDays(o,30)).forEach(o=>(o.order_items||[]).forEach(i=>{const name=String(i.product_name||i.title||i.product_slug||'Product'),p=map.get(name)||{name,units:0,value:0};const q=Number(i.quantity||1);p.units+=q;p.value+=Number(i.line_total||Number(i.unit_price||0)*q);map.set(name,p);}));
+ const items=[...map.values()].sort((a,b)=>b.units-a.units).slice(0,6);if(!items.length){ctx.fillStyle='#8490a2';ctx.font='11px Inter,system-ui,sans-serif';ctx.fillText('Product sales will appear here when order items are recorded.',8,28);return;}
+ const left=31,right=37,top=18,bottom=48,ph=h-top-bottom,pw=w-left-right,maxQ=Math.max(1,...items.map(x=>x.units)),maxV=Math.max(1,...items.map(x=>x.value)),slot=pw/items.length,bw=Math.min(36,slot*.48),points=[];
+ ctx.font='9px Inter,system-ui,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=3;i++){const y=top+ph*i/3;ctx.strokeStyle='#edf0f5';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle='#3478f6';ctx.fillText(Math.round(maxQ*(1-i/3)),left-5,y);ctx.fillStyle='#ef4444';ctx.textAlign='left';ctx.fillText(Math.round(maxV*(1-i/3)/1000)+'k',w-right+5,y);ctx.textAlign='right';}
+ items.forEach((x,i)=>{const cx=left+slot*i+slot/2,bh=x.units/maxQ*ph,bx=cx-bw/2,by=top+ph-bh;ctx.fillStyle='#3478f6';ctx.beginPath();ctx.roundRect(bx,by,bw,bh,4);ctx.fill();points.push({x:cx,y:top+ph-x.value/maxV*ph});ctx.fillStyle='#687589';ctx.font='8px Inter,system-ui,sans-serif';ctx.textAlign='center';const label=x.name.length>10?x.name.slice(0,9)+'…':x.name;ctx.fillText(label,cx,h-31);ctx.fillStyle='#3478f6';ctx.font='bold 9px Inter,system-ui,sans-serif';ctx.fillText(String(x.units),cx,Math.max(10,by-7));});
+ ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ef4444';ctx.lineWidth=2.5;ctx.stroke();points.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fillStyle='#ef4444';ctx.fill();});
+}
 function renderGa4Insights(data){
  const host=$('ga4-insights');if(!host)return;host.replaceChildren();
  const sources=Array.isArray(data.sources)?data.sources:[],pages=Array.isArray(data.pages)?data.pages:[];
@@ -441,13 +494,15 @@ async function refreshGa4(){
   renderGa4List('ga4-sources',data.sources,'source','sessions','users');
   renderGa4List('ga4-pages',data.pages,'path','views','users');
   renderGa4Insights(data);
+  drawTrafficSourceChart(data);
+  renderGa4Pages(data.pages);
   $('ga4-message').textContent='Connected to Google Analytics. Values below are returned by the GA4 Data API.';
   $('ga4-updated').textContent='Report retrieved '+new Date(data.generated_at||Date.now()).toLocaleString();
  }catch(e){
   ['ga4-users','ga4-sessions','ga4-views','ga4-events'].forEach(id=>$(id).textContent='—');
   $('ga4-message').textContent='Analytics unavailable: '+e.message;
   $('ga4-updated').textContent='Check the service-account permissions, Cloudflare secrets, and deployment status.';
-  ['ga4-sources','ga4-pages'].forEach(id=>{$(id).replaceChildren();const p=document.createElement('p');p.className='muted';p.textContent='No report data available until the connection succeeds.';$(id).append(p);});
+  ['ga4-sources','ga4-pages'].forEach(id=>{$(id).replaceChildren();const p=document.createElement('p');p.className='muted';p.textContent='No report data available until the connection succeeds.';$(id).append(p);});  const chart=$('ga4-source-chart');if(chart){const ctx=chart.getContext('2d');ctx.clearRect(0,0,chart.width,chart.height);}const pages=$('ga4-pages');if(pages)pages.textContent='No report data available until the connection succeeds.';
  }finally{if(button)button.disabled=false;}
 }
 let previousOrderIds=new Set(),hasOrderBaseline=false,voiceBriefingEnabled=localStorage.getItem('phoneya2_voice_briefing')==='on',silentRefreshTimer=null;
