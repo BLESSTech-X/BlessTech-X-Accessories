@@ -93,12 +93,14 @@ body {
 .related-products-grid > * {
   scroll-snap-align: start;
 }
-/* Transform-driven homepage product rail: smooth settle after arrow presses. */
+/* Homepage product rails move immediately with the finger.
+   No easing or delayed settle after release. */
 .h-track {
-  transition: transform 150ms cubic-bezier(.2,.65,.3,1) !important;
+  transition: none !important;
   backface-visibility: hidden;
+  will-change: transform;
+  touch-action: pan-y pinch-zoom;
 }
-/* Keep dragging direct and responsive rather than easing behind the finger. */
 .h-track.is-dragging {
   transition: none !important;
   cursor: grabbing !important;
