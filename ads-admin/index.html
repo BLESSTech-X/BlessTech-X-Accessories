@@ -2433,9 +2433,10 @@
       });
   }
 
-  var existing = P.auth.getSession();
-  if (existing && existing.user) boot();
-  else showScreen('scr-signin');
+  P.auth.refreshSession().then(function (existing) {
+    if (existing && existing.user) boot();
+    else showScreen('scr-signin');
+  });
 })();
 </script>
 
