@@ -268,7 +268,7 @@ collections:
         name: "seasonal_campaigns"
         file: "content/settings/seasonal-campaigns.json"
         format: "json"
-        description: "Control PhoneYa2 seasonal themes, Christmas decorations, snowfall, campaign scheduling and promotional popup. Save and publish to make changes live."
+        description: "Choose the active season and campaign settings here. Each season’s wording is saved separately in Seasonal Content Library; switching the active season automatically loads its own saved copy."
         fields:
           - { label: "Campaign enabled", name: "enabled", widget: "boolean", default: false, hint: "Turn on to activate the seasonal experience on the public website." }
           - label: "Theme / Season"
@@ -295,7 +295,7 @@ collections:
           - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
           - { label: "Seasonal campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show a coordinated festive announcement ribbon across supported pages." }
-          - { label: "Banner heading", name: "bannerTitle", widget: "string", default: "The PhoneYa2 Christmas Edit" }
+          - { label: "Legacy banner heading (season presets override this)", name: "bannerTitle", widget: "string", default: "The PhoneYa2 Christmas Edit" }
           - { label: "Banner background image URL", name: "bannerImage", widget: "string", default: "https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200", hint: "Paste a direct HTTPS image URL. Use a wide landscape photo with the subject positioned away from the text." }
           - { label: "Banner message", name: "bannerMessage", widget: "string", default: "Thoughtful tech gifts. Better-connected moments." }
           - { label: "Banner button", name: "bannerButton", widget: "string", default: "Explore Christmas Picks" }
@@ -305,7 +305,35 @@ collections:
           - { label: "Popup delay (seconds)", name: "popupDelay", widget: "number", min: 0, max: 60, default: 5 }
           - { label: "Scroll threshold (%)", name: "popupScroll", widget: "number", min: 5, max: 90, default: 35 }
           - { label: "Popup background image URL", name: "popupImage", widget: "string", default: "https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600", hint: "Paste a direct HTTPS image URL. A portrait or landscape festive photo works; the site adds a dark overlay for readable text." }
-          - { label: "Popup heading", name: "popupTitle", widget: "string", default: "Make Their Christmas Special" }
+          - { label: "Legacy popup heading (season presets override this)", name: "popupTitle", widget: "string", default: "Make Their Christmas Special" }
           - { label: "Popup message", name: "popupMessage", widget: "text", default: "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories." }
           - { label: "Popup button label", name: "popupButton", widget: "string", default: "Shop Christmas Deals" }
           - { label: "Popup destination", name: "popupUrl", widget: "string", default: "/shop.html", hint: "Use a PhoneYa2 page path or a trusted HTTPS URL." }
+
+
+  - name: "seasonal_presets"
+    label: "Seasonal Content Library"
+    label_singular: "Season"
+    folder: "content/settings/seasonal-presets"
+    create: false
+    delete: false
+    extension: "json"
+    format: "json"
+    summary: "{{season_label}} — {{bannerTitle}}"
+    description: "Each season has its own saved wording. Edit a season here; changing the active season in Seasonal Campaigns will use that season's saved content automatically."
+    fields:
+      - { label: "Season ID", name: "season", widget: "hidden" }
+      - { label: "Season name", name: "season_label", widget: "string" }
+      - { label: "Main campaign heading", name: "heroTitle", widget: "string" }
+      - { label: "Main campaign subtitle", name: "heroSubtitle", widget: "text" }
+      - { label: "Banner heading", name: "bannerTitle", widget: "string" }
+      - { label: "Banner message", name: "bannerMessage", widget: "text" }
+      - { label: "Banner button label", name: "bannerButton", widget: "string" }
+      - { label: "Banner destination", name: "bannerUrl", widget: "string", default: "/shop.html" }
+      - { label: "Banner image URL", name: "bannerImage", widget: "string", required: false, hint: "Optional direct HTTPS image URL for this season. Leave blank to use the site's standard banner treatment." }
+      - { label: "Popup heading", name: "popupTitle", widget: "string" }
+      - { label: "Popup message", name: "popupMessage", widget: "text" }
+      - { label: "Popup button label", name: "popupButton", widget: "string" }
+      - { label: "Popup destination", name: "popupUrl", widget: "string", default: "/shop.html" }
+      - { label: "Popup image URL", name: "popupImage", widget: "string", required: false }
+      - { label: "Seasonal decorations", name: "marks", widget: "list", field: { label: "Emoji / decoration", name: "mark", widget: "string" } }
