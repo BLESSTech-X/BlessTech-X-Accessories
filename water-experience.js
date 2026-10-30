@@ -3,6 +3,13 @@
   'use strict';
   if (window.__py2WaterExperienceV4) return;
   window.__py2WaterExperienceV4 = true;
+  /* The living-water background has been retired site-wide. Keep this legacy
+     entry point inert so cached page references cannot restore the blue canvas. */
+  document.documentElement.classList.remove('py2-water-enabled');
+  if (document.body) document.body.classList.remove('py2-water-page');
+  document.getElementById('py2-water-surface')?.remove();
+  document.getElementById('py2-water-interaction-surface')?.remove();
+  return;
 
   var root = document.documentElement, body = document.body;
   if (!body) return;
