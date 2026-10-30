@@ -317,3 +317,21 @@ body.py2-blog-page.py2-blog-redesigned .blog-page-intro .blog-business-link :is(
 body.py2-blog-page.py2-blog-redesigned .py2-brand-splash-topics span{
   color:#eaf4ff!important;background:rgba(2,15,35,.72)!important;border-color:#426fa7!important;
 }
+
+/* SITE-WIDE BACKGROUND STANDARD — match Shop's plain white canvas everywhere.
+   This deliberately overrides every legacy water/blue/seasonal page-canvas rule. */
+html, html.py2-water-enabled, html.py2-xmas, html[class*="py2-season-"],
+body, body.py2-water-page, body.shop-page {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  background-attachment: scroll !important;
+}
+html.py2-water-enabled::before,
+body.py2-water-page::before,
+body::before#py2-water-surface,
+body #py2-water-surface,
+body #py2-water-interaction-surface {
+  display: none !important;
+  content: none !important;
+}
