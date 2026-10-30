@@ -560,3 +560,62 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 
 .bi-period-summary{display:flex;justify-content:space-between;gap:10px;padding:8px 9px;margin-top:8px;border-radius:8px;background:#f5f7fb;font-size:9px;color:#788092}
 .bi-period-summary b{color:#171923;margin-left:4px;white-space:nowrap}
+
+
+/* Distinct order operations view: pipeline tiles + compact recent activity ledger */
+#view-overview>.grid2:has(#order-pipeline-panel),
+#view-overview>.grid2:has(#recent-orders-panel){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:12px!important;margin:0 0 12px!important;min-width:0}
+#view-overview #order-pipeline-panel,
+#view-overview #recent-orders-panel{display:block!important;min-width:0;padding:15px!important;border:1px solid #e8ecf3!important;border-radius:15px!important;background:#fff!important;box-shadow:0 7px 24px #18243b09!important}
+#view-overview #order-pipeline-panel .section-head,
+#view-overview #recent-orders-panel .section-head{display:flex!important;align-items:center!important;margin:0 0 13px!important;padding:0!important}
+#view-overview #order-pipeline-panel .section-head h2,
+#view-overview #recent-orders-panel .section-head h2{font-size:14px!important;font-weight:900!important;letter-spacing:-.25px!important;margin:0 0 3px!important}
+#view-overview #order-pipeline-panel .section-head p,
+#view-overview #recent-orders-panel .section-head p{display:block!important;font-size:10px!important;color:#8992a3!important}
+#view-overview #order-pipeline-panel .status-bars{display:block!important;gap:0!important}
+.pipeline-overview{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding:10px 12px;margin-bottom:10px;border-radius:11px;background:linear-gradient(120deg,#151a28,#29344a);color:#fff}
+.pipeline-total{display:grid;gap:2px}.pipeline-total span{font-size:8px;letter-spacing:1.1px;font-weight:850;color:#bfc8d8}.pipeline-total strong{font-size:27px;line-height:1.05;letter-spacing:-1px}
+.pipeline-kept-note{font-size:9px;color:#c8d4e6;text-align:right;padding-bottom:3px}
+.pipeline-stage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.pipeline-stage{min-width:0;padding:9px 9px 8px;border:1px solid #edf0f5;border-radius:10px;background:linear-gradient(145deg,#fff,#fafbfe);position:relative;overflow:hidden}
+.pipeline-stage:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--stage-color)}
+.pipeline-stage-top{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.pipeline-stage-icon{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:color-mix(in srgb,var(--stage-color) 13%,white);color:var(--stage-color);font-size:11px;font-weight:950}
+.pipeline-stage-top small{font-size:8px;color:#8992a3;font-weight:800}
+.pipeline-stage>strong{display:block;font-size:20px;line-height:1.15;margin:5px 0 1px;letter-spacing:-.6px}
+.pipeline-stage>span{display:block;font-size:9px;color:#697386;font-weight:750}
+.pipeline-stage-track{height:4px;background:#edf0f4;border-radius:8px;overflow:hidden;margin-top:7px}
+.pipeline-stage-track i{display:block;height:100%;border-radius:8px;background:var(--stage-color)}
+.pipeline-aov{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:9px 11px;border-radius:10px;background:#f0f6ff;border:1px solid #dfebff}
+.pipeline-aov>div{display:grid;gap:2px}.pipeline-aov small{font-size:8px;letter-spacing:.9px;color:#71809a;font-weight:900}.pipeline-aov strong{font-size:16px;color:#1c3155;letter-spacing:-.3px}
+.pipeline-aov>span{font-size:8px;color:#71809a;text-align:right;max-width:42%}
+#view-overview #recent-orders-panel .section-head .btn{font-size:9px!important;padding:7px 9px!important;white-space:nowrap;border-radius:8px!important}
+.recent-order-list{display:grid;gap:6px;max-height:360px;overflow:auto;padding-right:2px}
+.recent-order-card{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:8px;padding:9px 9px;border:1px solid #edf0f5;border-radius:10px;background:#fff;position:relative;min-width:0;transition:background .15s,border-color .15s}
+.recent-order-card:hover{background:#f8faff;border-color:#dce6f7}
+.recent-order-index{width:22px;height:22px;display:grid;place-items:center;border-radius:7px;background:#f0f3f8;color:#8490a3;font-size:8px;font-weight:900}
+.recent-order-main{min-width:0;display:grid;gap:3px}
+.recent-order-number{font-size:9px;font-weight:900;color:#29354b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-order-customer{font-size:9px;color:#8992a3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-order-side{display:grid;justify-items:end;gap:4px}
+.recent-order-amount{font-size:10px;white-space:nowrap;color:#20283a}
+.recent-order-status{display:inline-flex;align-items:center;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900;text-transform:capitalize;white-space:nowrap;background:#eef1f5;color:#657084}
+.recent-order-status.status-pending{background:#fff4d7;color:#986700}
+.recent-order-status.status-confirmed{background:#f0ebff;color:#7150bd}
+.recent-order-status.status-processing{background:#eaf2ff;color:#2865c7}
+.recent-order-status.status-shipped{background:#e4f7f5;color:#13847e}
+.recent-order-status.status-delivered{background:#e6f7ed;color:#16824e}
+.recent-order-status.status-cancelled{background:#ffebeb;color:#c44242}
+.recent-order-empty,.recent-order-loading{padding:20px 10px;text-align:center;color:#8992a3;font-size:11px}
+#view-overview #order-pipeline-panel>div[style*="border-top"]{display:none!important}
+@media(max-width:760px){
+ #view-overview>.grid2:has(#order-pipeline-panel),
+ #view-overview>.grid2:has(#recent-orders-panel){grid-template-columns:1fr!important;gap:9px!important;margin-bottom:9px!important}
+ #view-overview #order-pipeline-panel,#view-overview #recent-orders-panel{padding:12px!important}
+ .pipeline-stage-grid{gap:6px}
+ .pipeline-stage{padding:8px 7px}
+ .pipeline-stage>strong{font-size:18px}
+ .recent-order-list{max-height:330px}
+}
+@media(max-width:360px){.pipeline-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pipeline-aov>span{max-width:48%}}
