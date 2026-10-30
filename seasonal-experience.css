@@ -174,3 +174,10 @@ html.py2-season-active .py2-xmas-modal h2{color:var(--py2-season-primary)}
 html.py2-season-active .py2-xmas-cta{background:var(--py2-season-secondary)}
 html.py2-season-active .py2-xmas-modal-art{background-color:var(--py2-season-primary)}
 @media(max-width:480px){html.py2-season-active .py2-seasonal-brand-marks span{font-size:24px!important}}
+
+
+/* Apply each selected season to key storefront surfaces, not just its ornaments. */
+html.py2-season-active .py2-xmas-hero{border-color:var(--py2-season-secondary)!important;background:radial-gradient(ellipse at 88% 15%,color-mix(in srgb,var(--py2-season-secondary) 28%,transparent),transparent 36%),linear-gradient(118deg,var(--py2-season-primary),color-mix(in srgb,var(--py2-season-primary) 78%,#ffffff),var(--py2-season-primary))!important;color:#fff!important}
+html.py2-season-active :is(.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"],.py2-xmas-cta){background:var(--py2-season-secondary)!important;border-color:var(--py2-season-secondary)!important;color:#fff!important}
+html.py2-season-active :is(.add-to-cart,.addToCart,[data-action="add-to-cart"]){background:var(--py2-season-primary)!important;border-color:var(--py2-season-primary)!important;color:#fff!important}
+html.py2-season-active :is(.discount,.discount-badge,.sale-badge,.offer-badge,.badge-discount){border-color:var(--py2-season-secondary)!important}
