@@ -1221,3 +1221,60 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 @media(max-width:900px){.ga4-insights{grid-template-columns:repeat(3,minmax(0,1fr))!important}#view-analytics>#overview-chart-grid{grid-template-columns:1fr!important}#view-orders{grid-template-columns:1fr!important}}
 @media(max-width:600px){#analytics-live-panel{padding:12px!important}.ga4-insights{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}.ga4-insight-card{min-height:82px;padding:9px!important}.ga4-insight-card strong{font-size:14px!important}#analytics-live-panel>.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}#analytics-live-panel>.stats>.stat{padding:10px!important}#analytics-live-panel>.stats .stat strong{font-size:22px!important}#analytics-live-panel>.grid2{grid-template-columns:1fr!important}#view-analytics .section,#view-orders .section{padding:12px!important}#view-orders .chart-wrap{height:205px!important}}
 
+/* PhoneYa2 acquisition + order intelligence dashboard */
+.ga4-chart-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px;margin:12px 0}
+.ga4-chart-card{min-width:0;padding:14px;border:1px solid #e7ebf2;border-radius:14px;background:#fff}
+.ga4-chart-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.ga4-chart-heading span,.journey-highlight>span{font-size:8px;font-weight:900;letter-spacing:1px;color:#8c96a6}
+.ga4-chart-heading h3{font-size:13px;font-weight:900;color:#1b2b43;margin:4px 0 0}
+.ga4-chart-heading>small{font-size:9px;color:#8c96a6;white-space:nowrap}
+#ga4-source-chart{width:100%;height:210px;display:block}
+.ga4-source-legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin-top:7px}
+.ga4-source-legend span,.product-chart-legend span{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:750;color:#667286}
+.ga4-source-legend i,.product-chart-legend i{width:8px;height:8px;border-radius:3px;display:inline-block}
+#ga4-pages{display:grid;gap:12px;padding:7px 0}
+.ga4-page-row{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:6px 9px;align-items:center}
+.ga4-page-row>span{font-size:10px;font-weight:800;color:#3a4960;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ga4-page-row>b{font-size:10px;text-align:right;color:#17263d}
+.ga4-page-track{grid-column:1/-1;height:7px;background:#eef1f6;border-radius:99px;overflow:hidden}
+.ga4-page-track i{display:block;height:100%;border-radius:99px;background:#3478f6}
+.ga4-page-row:first-child .ga4-page-track i{background:#151a24}
+.ga4-page-row small{grid-column:1/-1;font-size:8px;color:#929cad;margin-top:-4px}
+.journey-note-badge{font-size:8px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:#8a5b16;background:#fff5df;border:1px solid #f4e3bd;border-radius:99px;padding:6px 9px}
+.journey-funnel{display:grid;gap:10px;margin:15px 0}
+.journey-stage{display:grid;grid-template-columns:110px minmax(0,1fr) 100px;gap:10px;align-items:center}
+.journey-stage-label{font-size:10px;font-weight:800;color:#3c4b61}
+.journey-stage-track{height:22px;border-radius:6px;background:#f0f2f6;overflow:hidden}
+.journey-stage-track i{height:100%;display:block;border-radius:6px;min-width:3px}
+.journey-stage-value{text-align:right;font-size:11px;font-weight:900;color:#1b2b43;font-variant-numeric:tabular-nums}
+.journey-stage-value small{display:block;font-size:8px;font-weight:650;color:#8d97a6;margin-top:2px}
+.journey-footnote{font-size:9px;line-height:1.5;color:#8b95a5;background:#f7f8fa;border-radius:9px;padding:9px 11px;margin:10px 0 13px}
+.journey-bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.journey-highlight{position:relative;min-width:0;padding:13px;border:1px solid #e8edf4;border-radius:12px;background:#fbfcfe}
+.journey-highlight>strong{display:block;font-size:22px;letter-spacing:-.7px;color:#1c2d45;margin:6px 0}
+.journey-highlight>small{font-size:9px;color:#8792a2}
+.journey-target-track{height:8px;border-radius:99px;background:#e9edf4;overflow:hidden;margin:8px 0}
+.journey-target-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3478f6,#8db5ff);border-radius:99px}
+.journey-peak-donut{position:absolute;right:14px;top:31px;width:46px;height:46px;border-radius:50%;background:conic-gradient(#151a24 0 50%,#e9edf4 50% 100%);display:grid;place-items:center}
+.journey-peak-donut:after{content:"";width:29px;height:29px;border-radius:50%;background:#fbfcfe}
+#order-status-donut{margin-top:12px}
+.order-status-donut-wrap{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid #edf0f5;border-radius:12px;background:#fcfdff}
+.order-status-donut{width:90px;height:90px;flex:0 0 90px;border-radius:50%;display:grid;place-items:center;position:relative}
+.order-status-donut:after{content:"";position:absolute;width:59px;height:59px;border-radius:50%;background:#fff}
+.order-status-donut b{position:relative;z-index:1;font-size:17px;color:#1c2d45}
+.order-status-legend{display:grid;gap:5px;min-width:0;flex:1}
+.order-status-legend div{display:flex;align-items:center;gap:6px;font-size:9px;color:#687589}
+.order-status-legend i{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+.order-status-legend strong{margin-left:auto;color:#27374f;font-size:9px}
+.product-chart-legend{display:flex;gap:14px;margin:0 0 4px}
+.product-legend-qty{background:#3478f6}
+.product-legend-value{background:#ef4444!important;border-radius:50%!important}
+#product-performance-chart{display:block;width:100%;height:230px;margin:0 0 10px}
+#product-performance-panel #top-products .status-row{grid-template-columns:minmax(90px,1.4fr) minmax(45px,1fr) 28px!important;gap:8px!important}
+#product-performance-panel #top-products .status-fill{background:#3478f6!important}
+#product-performance-panel #top-products .status-row+small{font-size:9px!important;color:#8b96a7!important}
+#view-analytics .ga4-chart-grid{grid-template-columns:1fr 1fr}
+#view-orders #journey-insights-panel{grid-column:1/-1}
+#view-orders #product-performance-panel{grid-column:1/-1}
+@media(max-width:760px){.ga4-chart-grid{grid-template-columns:1fr!important}.journey-bottom-grid{grid-template-columns:1fr}.journey-stage{grid-template-columns:85px minmax(0,1fr) 78px;gap:7px}.order-status-donut-wrap{gap:9px;padding:9px}.order-status-donut{width:76px;height:76px;flex-basis:76px}.order-status-donut:after{width:49px;height:49px}}
+
