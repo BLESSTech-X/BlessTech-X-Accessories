@@ -1145,3 +1145,14 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 #inventory-grid>.inventory-flow .inventory-flow-node span{font-size:10px!important;line-height:1.4!important}
 @media(max-width:760px){#inventory-grid>.inventory-flow .inventory-flow-steps{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}#inventory-grid>.inventory-flow .inventory-flow-node{min-height:100px!important;padding:12px!important}}
 @media(max-width:420px){#inventory-grid>.inventory-flow .inventory-flow-steps{grid-template-columns:minmax(0,1fr)!important}#inventory-grid>.inventory-flow .inventory-flow-node{min-height:82px!important}}
+
+/* Compact inventory flow stages — smaller but still readable */
+#inventory-grid>.inventory-flow .inventory-flow-steps{gap:7px!important}
+#inventory-grid>.inventory-flow .inventory-flow-node{min-height:68px!important;padding:8px 10px!important;border-radius:9px!important}
+#inventory-grid>.inventory-flow .inventory-flow-node small{font-size:7px!important;letter-spacing:.45px!important;line-height:1.2!important}
+#inventory-grid>.inventory-flow .inventory-flow-node strong{font-size:16px!important;line-height:1.1!important;margin:5px 0 3px!important}
+#inventory-grid>.inventory-flow .inventory-flow-node.node-value strong{font-size:12px!important;line-height:1.2!important}
+#inventory-grid>.inventory-flow .inventory-flow-node span{font-size:8px!important;line-height:1.25!important}
+@media(max-width:760px){#inventory-grid>.inventory-flow .inventory-flow-steps{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}#inventory-grid>.inventory-flow .inventory-flow-node{min-height:64px!important;padding:7px 8px!important}}
+@media(max-width:420px){#inventory-grid>.inventory-flow .inventory-flow-steps{grid-template-columns:repeat(2,minmax(0,1fr))!important}#inventory-grid>.inventory-flow .inventory-flow-node{min-height:60px!important;padding:6px 7px!important}#inventory-grid>.inventory-flow .inventory-flow-node small{font-size:6.5px!important}#inventory-grid>.inventory-flow .inventory-flow-node strong{font-size:14px!important}#inventory-grid>.inventory-flow .inventory-flow-node.node-value strong{font-size:10px!important}#inventory-grid>.inventory-flow .inventory-flow-node span{font-size:7px!important}}
+
