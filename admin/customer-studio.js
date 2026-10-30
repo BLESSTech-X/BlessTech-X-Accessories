@@ -13,19 +13,19 @@
    if(!map.has(key))map.set(key,{key,name:name||'Customer',email,phone,orders:[],value:0,last:null});
    const customer=map.get(key);customer.orders.push(order);
    if(order.status!=='cancelled')customer.value+=Number(order.total_amount||0);
-   const date=new Date(order.created_at||0);if(!Number.isNaN(date.getTime())&&(!customer.last||date>customer.last))customer.last=date;
+   const date=new Date(order.created_at||0);if(!Number.isNaN(date.getTime())&&(!customer.last||date>customer.last)){customer.last=date;customer.latestStatus=order.status||'—';}
    if(!customer.name&&name)customer.name=name;
   });
   return [...map.values()].sort((a,b)=>(b.last?.getTime()||0)-(a.last?.getTime()||0));
  }
  function render(){
   const all=records(),filtered=all.filter(c=>[c.name,c.email,c.phone].join(' ').toLowerCase().includes(query));
-  const totalOrders=all.reduce((n,c)=>n+c.orders.length,0),value=all.reduce((n,c)=>n+c.value,0);
+  const orders=window.PY2_GET_ORDERS?.()||[],totalOrders=orders.length,value=orders.filter(o=>o.status!=='cancelled').reduce((n,o)=>n+Number(o.total_amount||0),0);
   $('customer-total').textContent=all.length.toLocaleString();$('customer-orders').textContent=totalOrders.toLocaleString();$('customer-value').textContent=money(value);
   $('customer-results').textContent=filtered.length+' customer'+(filtered.length===1?'':'s');
   $('customer-table-body').innerHTML=filtered.length?filtered.map(c=>{
    const latest=c.last?c.last.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
-   const lastStatus=c.orders[0]?.status||'—';
+   const lastStatus=c.latestStatus||'—';
    return '<tr><td><strong>'+esc(c.name)+'</strong><small>'+esc(c.email||'No email recorded')+'</small></td><td>'+esc(c.phone||'—')+'</td><td>'+c.orders.length+'</td><td><strong>'+money(c.value)+'</strong></td><td>'+esc(latest)+'</td><td><span class="cs-status">'+esc(lastStatus)+'</span></td></tr>';
   }).join(''):'<tr><td colspan="6" class="cs-empty">No matching customer records found.</td></tr>';
   $('customer-mobile-list').innerHTML=filtered.length?filtered.map(c=>'<article class="cs-customer-card"><div><strong>'+esc(c.name)+'</strong><small>'+esc(c.email||'No email recorded')+'</small><small>'+esc(c.phone||'No phone recorded')+'</small></div><div class="cs-card-metrics"><span><b>'+c.orders.length+'</b> orders</span><span><b>'+money(c.value)+'</b> recorded order value</span></div></article>').join(''):'<div class="cs-empty">No matching customer records found.</div>';
