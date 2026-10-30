@@ -1,0 +1,22 @@
+{
+  "season": "black-friday",
+  "season_label": "Black Friday",
+  "heroTitle": "PhoneYa2 Black Friday Deals",
+  "heroSubtitle": "Smart deals on tech essentials. Better value, better connections.",
+  "bannerTitle": "PhoneYa2 Black Friday Deals",
+  "bannerMessage": "Smart deals on tech essentials. Better value, better connections.",
+  "bannerButton": "Shop Black Friday Deals",
+  "bannerUrl": "/shop.html",
+  "bannerImage": "",
+  "popupTitle": "The PhoneYa2 Black Friday Edit",
+  "popupMessage": "Explore selected tech accessories and check current prices before you buy.",
+  "popupButton": "Explore Deals",
+  "popupUrl": "/shop.html",
+  "popupImage": "",
+  "marks": [
+    "🛍️",
+    "🏷️",
+    "⭐",
+    "🛒"
+  ]
+}
