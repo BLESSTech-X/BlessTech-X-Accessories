@@ -281,6 +281,7 @@ collections:
           - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
           - { label: "Christmas campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show a coordinated festive announcement ribbon across supported pages." }
           - { label: "Banner heading", name: "bannerTitle", widget: "string", default: "The PhoneYa2 Christmas Edit" }
+          - { label: "Banner background image URL", name: "bannerImage", widget: "string", default: "https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200", hint: "Paste a direct HTTPS image URL. Use a wide landscape photo with the subject positioned away from the text." }
           - { label: "Banner message", name: "bannerMessage", widget: "string", default: "Thoughtful tech gifts. Better-connected moments." }
           - { label: "Banner button", name: "bannerButton", widget: "string", default: "Explore Christmas Picks" }
           - { label: "Banner destination", name: "bannerUrl", widget: "string", default: "/shop.html" }
@@ -288,6 +289,7 @@ collections:
           - { label: "Popup display", name: "popupMode", widget: "select", options: [{ label: "After a short delay", value: "delay" }, { label: "Immediately", value: "immediate" }, { label: "After scrolling", value: "scroll" }], default: "delay" }
           - { label: "Popup delay (seconds)", name: "popupDelay", widget: "number", min: 0, max: 60, default: 5 }
           - { label: "Scroll threshold (%)", name: "popupScroll", widget: "number", min: 5, max: 90, default: 35 }
+          - { label: "Popup background image URL", name: "popupImage", widget: "string", default: "https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600", hint: "Paste a direct HTTPS image URL. A portrait or landscape festive photo works; the site adds a dark overlay for readable text." }
           - { label: "Popup heading", name: "popupTitle", widget: "string", default: "Make Their Christmas Special" }
           - { label: "Popup message", name: "popupMessage", widget: "text", default: "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories." }
           - { label: "Popup button label", name: "popupButton", widget: "string", default: "Shop Christmas Deals" }
