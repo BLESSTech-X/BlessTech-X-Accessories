@@ -3398,22 +3398,13 @@ async function init() {
 }
 
 function startCarouselAuto() {
-  const configs = [
-    { id: 'flash-track', interval: 3500 },
-    { id: 'jfy-track',   interval: 4200 },
-    { id: 'new-track',   interval: 3800 },
-    { id: 'deals-track', interval: 4000 },
-  ];
-  configs.forEach(({ id, interval }) => {
+  // Homepage product rails are user-controlled. Automatic movement was
+  // interrupting/fighting horizontal swipes, especially on touch screens.
+  // Keep direct drag interaction, but do not start background timers.
+  ['flash-track', 'jfy-track', 'new-track', 'deals-track'].forEach(id => {
     addCarouselDrag(id);
-
-    autoTimers[id] = setInterval(() => {
-      if (document.hidden || userPaused[id]) return;
-      const max = getMaxPos(id);
-      trackPos[id] = (trackPos[id] || 0) < max ? (trackPos[id] || 0) + 1 : 0;
-      applyPos(id);
-    }, interval);
-
+    clearInterval(autoTimers[id]);
+    autoTimers[id] = null;
   });
 }
 
