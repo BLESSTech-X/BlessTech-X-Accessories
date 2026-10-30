@@ -6,7 +6,7 @@
  const KEYS=['enabled','theme','decorations','snow','snowIntensity','scheduled','start','end','coverage','popup','popupMode','popupDelay','popupScroll','banner','bannerImage','popupImage'];
  const DEFAULTS={enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',popup:false,popupMode:'delay',popupDelay:5,popupScroll:35,banner:true,bannerImage:'',popupImage:''};
  const $=id=>document.getElementById(id);
- let settings={...DEFAULTS},mounted=false,loading=false;
+ let settings={...DEFAULTS},imageOverrides={},currentPresetImages={},mounted=false,loading=false;
  function setStatus(message,type='info'){const el=$('seasonal-status');if(el){el.textContent=message;el.dataset.type=type;}}
  function field(label,id,type='text'){return '<label class="ss-field"><span>'+label+'</span><input id="'+id+'" type="'+type+'" autocomplete="off"></label>';}
  function select(label,id,options){return '<label class="ss-field"><span>'+label+'</span><select id="'+id+'">'+options.map(o=>'<option value="'+o[0]+'">'+o[1]+'</option>').join('')+'</select></label>';}
@@ -27,11 +27,17 @@
   function activate(){nav.querySelectorAll('[role=tab]').forEach(b=>{b.setAttribute('aria-selected',String(b===tab));b.tabIndex=b===tab?0:-1;});host.querySelectorAll('[role=tabpanel]').forEach(p=>p.hidden=p!==panel);panel.hidden=false;tab.scrollIntoView({block:'nearest',behavior:'smooth'});if(!loading)load();}
   tab.addEventListener('click',activate);
   $('ss-save').addEventListener('click',save);$('ss-preview').addEventListener('click',preview);
-  $('ss-active-season').addEventListener('change',e=>{settings.theme=e.target.value;setStatus(LABELS[e.target.value]+' selected. Save campaign settings to apply the switch.','info');});
+  $('ss-active-season').addEventListener('change',e=>{settings.theme=e.target.value;loadSeasonImages(e.target.value);setStatus(LABELS[e.target.value]+' selected. Existing GitHub images are loaded; any replacement applies only to this season.','info');});
   ['banner','popup'].forEach(slot=>{$('ss-'+slot+'-image-url').addEventListener('input',e=>showImagePreview(slot,e.target.value));$('ss-'+slot+'-image-file').addEventListener('change',e=>uploadImage(slot,e.target.files&&e.target.files[0]));});
   mounted=true;return true;
  }
  function pickControls(source){const out={...DEFAULTS};KEYS.forEach(k=>{if(source&&Object.prototype.hasOwnProperty.call(source,k))out[k]=source[k];});return out;}
+ async function loadSeasonImages(theme){
+  const preset=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(theme)+'.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():{}).catch(()=>({}));
+  currentPresetImages={bannerImage:preset.bannerImage||'',popupImage:preset.popupImage||''};
+  const saved=imageOverrides[theme]||{};
+  ['banner','popup'].forEach(slot=>{const key=slot+'Image';const value=Object.prototype.hasOwnProperty.call(saved,key)?saved[key]:currentPresetImages[key];$('ss-'+slot+'-image-url').value=value||'';showImagePreview(slot,value||'');});
+ }
  function fill(){
   const s={...DEFAULTS,...settings};
   const map={enabled:'ss-enabled',scheduled:'ss-scheduled',banner:'ss-banner',popup:'ss-popup',decorations:'ss-decorations',snow:'ss-snow'};
@@ -39,27 +45,28 @@
   $('ss-active-season').value=SEASONS.includes(s.theme)?s.theme:'christmas';$('ss-coverage').value=s.coverage||'all';
   $('ss-start').value=s.start||'';$('ss-end').value=s.end||'';
   $('ss-popup-mode').value=s.popupMode||'delay';$('ss-popup-delay').value=Number(s.popupDelay??5);
-  $('ss-banner-image-url').value=s.bannerImage||'';$('ss-popup-image-url').value=s.popupImage||'';showImagePreview('banner',s.bannerImage||'');showImagePreview('popup',s.popupImage||'');
+  loadSeasonImages(s.theme||'christmas');
   $('ss-popup-scroll').value=Number(s.popupScroll??35);$('ss-snow-intensity').value=Number(s.snowIntensity??24);
  }
  async function load(){
   if(loading)return;loading=true;setStatus('Loading saved campaign controls…');
   try{
    let response=await fetch('/api/seasonal?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
-   if(response.ok){const data=await response.json();settings=pickControls(data.settings||{});setStatus('Connected to shared campaign settings.','success');}
+   if(response.ok){const data=await response.json();settings=pickControls(data.settings||{});imageOverrides=data.presets&&typeof data.presets==='object'?data.presets:{};setStatus('Connected to shared campaign settings.','success');}
    else{
     response=await fetch('/content/settings/seasonal-campaigns.json?v='+Date.now(),{cache:'no-store'});
     if(!response.ok)throw new Error('Campaign settings could not be loaded.');
-    settings=pickControls(await response.json());setStatus('Loaded published settings. Save once to connect the shared campaign controls.','info');
+    settings=pickControls(await response.json());imageOverrides={};setStatus('Loaded published settings. Save once to connect the shared campaign controls.','info');
    }
    fill();
   }catch(error){setStatus('Could not load campaign settings: '+error.message,'error');fill();}
   finally{loading=false;}
  }
  function showImagePreview(slot,url){const img=$('ss-'+slot+'-image-preview');if(!img)return;const safe=/^https:\/\//i.test(String(url||''))||String(url||'').startsWith('/');if(safe&&url){img.src=url;img.hidden=false;}else{img.removeAttribute('src');img.hidden=true;}}
- async function uploadImage(slot,file){if(!file)return;if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){setStatus('Choose a JPG, PNG, WebP or AVIF image up to 5 MB.','error');return;}const token=window.PY2_SEASONAL_AUTH_TOKEN;if(!token){setStatus('Your admin session is missing. Sign in again before uploading.','error');return;}const data=new FormData();data.append('file',file);data.append('slot',slot);data.append('theme',$('ss-active-season').value);const input=$('ss-'+slot+'-image-file');input.disabled=true;setStatus('Uploading '+slot+' image…');try{const response=await fetch('/api/seasonal-upload',{method:'POST',headers:{authorization:'Bearer '+token},body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Image upload failed.');$('ss-'+slot+'-image-url').value=result.url;settings[slot+'Image']=result.url;showImagePreview(slot,result.url);setStatus('Image uploaded. Save campaign settings to publish the new image.','success');}catch(error){setStatus(error.message,'error');}finally{input.disabled=false;input.value='';}}
+ async function uploadImage(slot,file){if(!file)return;if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){setStatus('Choose a JPG, PNG, WebP or AVIF image up to 5 MB.','error');return;}const token=window.PY2_SEASONAL_AUTH_TOKEN;if(!token){setStatus('Your admin session is missing. Sign in again before uploading.','error');return;}const data=new FormData();data.append('file',file);data.append('slot',slot);data.append('theme',$('ss-active-season').value);const input=$('ss-'+slot+'-image-file');input.disabled=true;setStatus('Uploading '+slot+' image…');try{const response=await fetch('/api/seasonal-upload',{method:'POST',headers:{authorization:'Bearer '+token},body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Image upload failed.');$('ss-'+slot+'-image-url').value=result.url;settings[slot+'Image']=result.url;imageOverrides[$('ss-active-season').value]={...(imageOverrides[$('ss-active-season').value]||{}),[slot+'Image']:result.url};showImagePreview(slot,result.url);setStatus('Image uploaded. Save campaign settings to publish the new image.','success');}catch(error){setStatus(error.message,'error');}finally{input.disabled=false;input.value='';}}
  function collect(){
-  const next={...settings, bannerImage:$('ss-banner-image-url').value.trim(),popupImage:$('ss-popup-image-url').value.trim(),enabled:$('ss-enabled').checked,theme:$('ss-active-season').value,coverage:$('ss-coverage').value,start:$('ss-start').value,end:$('ss-end').value,scheduled:$('ss-scheduled').checked,banner:$('ss-banner').checked,popup:$('ss-popup').checked,decorations:$('ss-decorations').checked,snow:$('ss-snow').checked,popupMode:$('ss-popup-mode').value,popupDelay:Number($('ss-popup-delay').value||0),popupScroll:Number($('ss-popup-scroll').value||35),snowIntensity:Number($('ss-snow-intensity').value||0)};
+  const theme=$('ss-active-season').value;const existing={...(imageOverrides[theme]||{})};['banner','popup'].forEach(slot=>{const key=slot+'Image',value=$('ss-'+slot+'-image-url').value.trim(),base=currentPresetImages[key]||'';if(value===base)delete existing[key];else existing[key]=value;});imageOverrides[theme]=existing;
+  const next={...settings, bannerImage:existing.bannerImage||'',popupImage:existing.popupImage||'',enabled:$('ss-enabled').checked,theme:$('ss-active-season').value,coverage:$('ss-coverage').value,start:$('ss-start').value,end:$('ss-end').value,scheduled:$('ss-scheduled').checked,banner:$('ss-banner').checked,popup:$('ss-popup').checked,decorations:$('ss-decorations').checked,snow:$('ss-snow').checked,popupMode:$('ss-popup-mode').value,popupDelay:Number($('ss-popup-delay').value||0),popupScroll:Number($('ss-popup-scroll').value||35),snowIntensity:Number($('ss-snow-intensity').value||0)};
   return pickControls(next);
  }
  function preview(){
@@ -74,9 +81,9 @@
   if(next.scheduled&&next.end<next.start){setStatus('The end date must be on or after the start date.','error');return;}
   const button=$('ss-save');button.disabled=true;setStatus('Saving campaign controls…');
   try{
-   const response=await fetch('/api/seasonal',{method:'PUT',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({settings:next})});
+   const response=await fetch('/api/seasonal',{method:'PUT',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({settings:next,presets:imageOverrides})});
    const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Save failed.');
-   settings=next;setStatus('Saved. The storefront will use the selected GitHub season content and these campaign controls.','success');
+   settings=next;setStatus('Saved. Each season keeps its own GitHub images and image replacements.','success');
   }catch(error){setStatus(error.message,'error');}
   finally{button.disabled=false;}
  }
