@@ -3,7 +3,7 @@
 html.py2-xmas{--py2-accent:var(--xmas-red);--py2-accent-2:var(--xmas-forest);--py2-surface:var(--xmas-ivory);color-scheme:light}
 html.py2-xmas body{background:#fffefa}
 html.py2-xmas body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.24;background:radial-gradient(ellipse at 8% 4%,#d8c18a20,transparent 34%),radial-gradient(ellipse at 92% 28%,#174b3710,transparent 38%),linear-gradient(180deg,#fffdf8 0%,#fff 42%,#fffdf8 100%)}
-html.py2-xmas body>*{position:relative}
+/* Do not change positioning of fixed navigation, dialogs or floating controls. */
 html.py2-xmas a:focus-visible,html.py2-xmas button:focus-visible,html.py2-xmas input:focus-visible,html.py2-xmas select:focus-visible,html.py2-xmas textarea:focus-visible{outline:3px solid #c9a45b!important;outline-offset:3px}
 html.py2-xmas :is(button,.btn,[role=button],input[type=submit]){transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s}
 html.py2-xmas :is(.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"]){background:linear-gradient(135deg,#d83c48,#ae2431)!important;color:#fff!important;border:1px solid #a92130!important;box-shadow:0 5px 15px #ae243126}
@@ -102,3 +102,13 @@ html.py2-xmas :is(.hero-offer-alert,.price-drop-banner,.drop-banner){border-colo
 .py2-xmas-modal-eyebrow{position:relative;z-index:1;font-size:10px;letter-spacing:.18em;font-weight:850;color:#f2d99c}
 .py2-xmas-modal p{margin:0 0 20px}
 @media(max-width:640px){#py2-xmas-ribbon{min-height:108px;background-position:center}.py2-xmas-ribbon-inner{min-height:108px;padding:13px 12px}.py2-xmas-ribbon-copy span{font-size:10px}.py2-xmas-modal-art{min-height:190px;margin-inline:-20px;padding:30px 22px 20px}}
+
+/* Christmas ornaments are real inline elements so they remain visible across fonts and heading layouts. */
+html.py2-xmas .py2-seasonal-ornament{display:inline-block!important;margin-inline-start:.42em!important;font-family:system-ui,sans-serif!important;font-size:.78em!important;line-height:1!important;vertical-align:baseline!important;filter:none!important;opacity:1!important;text-shadow:0 2px 7px #c9a45b55!important}
+html.py2-xmas .py2-seasonal-tab-mark{display:inline-block!important;flex:0 0 auto!important;margin-inline-end:4px!important;font-size:1.05em!important;line-height:1!important;vertical-align:middle!important}
+html.py2-xmas body>nav.py2-quick-tabs{position:fixed!important}
+html.py2-xmas .bottom-nav{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:200!important;box-sizing:border-box!important;transform:none!important;translate:none!important;padding-bottom:env(safe-area-inset-bottom)!important}
+html.py2-xmas .bottom-nav .bnav-item{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;overflow:visible!important}
+html.py2-xmas .bottom-nav .bnav-item .py2-seasonal-tab-mark{font-size:11px!important;margin:0 0 1px!important}
+html.py2-xmas #py2-xmas-popup .py2-xmas-modal-art h2,
+html.py2-xmas #py2-xmas-popup h2#py2-xmas-title{color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 2px 14px rgba(0,0,0,.48)!important;background:none!important;filter:none!important;opacity:1!important;font-weight:900!important}
