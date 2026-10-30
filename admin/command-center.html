@@ -234,7 +234,7 @@ let client=null,session=null,orders=[],products=[],ga4Summary=null;
 const statusNames=['pending','confirmed','processing','shipped','delivered','cancelled'];
 const money=n=>'ZMW '+Number(n||0).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
 function message(target,text,type){const el=$(target);el.textContent=text||'';el.className=text?'message '+(type||''):'';}
-async function api(path,options={}){if(!session?.access_token)throw new Error('Please sign in again.');const res=await fetch(path,{...options,headers:{...(options.headers||{}),authorization:'Bearer '+session.access_token,'content-type':'application/json'}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Request failed ('+res.status+').');return data;}
+async function api(path,options={}){const current=client?await client.auth.getSession():null;if(current?.data?.session){session=current.data.session;window.PY2_SEASONAL_AUTH_TOKEN=session.access_token;}const token=session?.access_token;if(!token)throw new Error('Please sign in again.');const res=await fetch(path,{...options,headers:{...(options.headers||{}),authorization:'Bearer '+token,'content-type':'application/json'}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Request failed ('+res.status+').');return data;}
 function safeDate(s){const d=new Date(s);return Number.isNaN(d.getTime())?null:d;}
 function withinDays(o,days){const d=safeDate(o.created_at);return !!d&&Date.now()-d.getTime()>=0&&Date.now()-d.getTime()<days*86400000;}
 function renderStats(){
