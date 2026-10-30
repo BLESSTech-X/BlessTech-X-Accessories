@@ -244,3 +244,10 @@ body:has(#dashboard.hidden) #cc-menu-toggle,body:has(#dashboard.hidden) #cc-topb
  #workspace-views .ss-heading-actions{gap:6px!important}
  #workspace-views .ss-heading-actions .btn{min-height:36px;padding:8px 10px;font-size:11px}
 }
+
+
+/* Use the actual PhoneYa2 brand asset in the workspace header */
+.cc-nav-heading{align-items:center;gap:12px}
+.cc-nav-logo{display:block;width:112px;height:42px;object-fit:contain;object-position:left center;flex:0 0 auto}
+.cc-nav-heading>div{min-width:0}
+@media(max-width:900px){.cc-nav-logo{width:104px;height:40px}}
