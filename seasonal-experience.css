@@ -112,3 +112,13 @@ html.py2-xmas .bottom-nav .bnav-item{position:relative!important;display:flex!im
 html.py2-xmas .bottom-nav .bnav-item .py2-seasonal-tab-mark{font-size:11px!important;margin:0 0 1px!important}
 html.py2-xmas #py2-xmas-popup .py2-xmas-modal-art h2,
 html.py2-xmas #py2-xmas-popup h2#py2-xmas-title{color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 2px 14px rgba(0,0,0,.48)!important;background:none!important;filter:none!important;opacity:1!important;font-weight:900!important}
+
+
+/* Christmas-specific identity and bottom navigation spacing */
+html.py2-xmas .py2-seasonal-brand-marks{display:inline-flex!important;align-items:center!important;gap:2px!important;margin-inline-start:7px!important;vertical-align:middle!important;white-space:nowrap!important;line-height:1!important}
+html.py2-xmas .py2-seasonal-brand-marks span{display:inline-block!important;font-size:clamp(23px,3vw,31px)!important;line-height:1!important;filter:none!important;transform:translateY(-1px)!important}
+html.py2-xmas .bottom-nav{bottom:8px!important;padding-bottom:env(safe-area-inset-bottom)!important}
+html.py2-xmas .bottom-nav .bnav-item{flex-direction:column!important;gap:3px!important;padding-top:5px!important;padding-bottom:5px!important;line-height:1.15!important}
+html.py2-xmas .bottom-nav .bnav-item :is(span,small,strong){position:relative!important;z-index:1!important;display:block!important;line-height:1.15!important;overflow:visible!important}
+html.py2-xmas .bottom-nav .bnav-item .py2-seasonal-tab-mark{font-size:12px!important;margin:0!important;line-height:1!important}
+@media(max-width:480px){html.py2-xmas .py2-seasonal-brand-marks span{font-size:24px!important}html.py2-xmas .bottom-nav{bottom:7px!important}}
