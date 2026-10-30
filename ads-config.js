@@ -186,6 +186,32 @@
      * Sign out. Clears the session locally and, best-effort, tells
      * Supabase to invalidate the token.
      */
+    refreshSession: function () {
+      var current = loadSession();
+      if (!current || !current.refresh_token) return Promise.resolve(null);
+      if (current.expires_at && Date.now() / 1000 < current.expires_at - 90) return Promise.resolve(current);
+      return fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        body: JSON.stringify({ refresh_token: current.refresh_token })
+      }).then(function (response) {
+        return response.json().catch(function () { return {}; }).then(function (data) {
+          if (!response.ok || !data.access_token) {
+            clearSession();
+            return null;
+          }
+          var refreshed = {
+            access_token: data.access_token,
+            refresh_token: data.refresh_token || current.refresh_token,
+            expires_at: data.expires_at || (Math.floor(Date.now() / 1000) + Number(data.expires_in || 3600)),
+            user: data.user || current.user
+          };
+          saveSession(refreshed);
+          return refreshed;
+        });
+      }).catch(function () { return null; });
+    },
+
     signout: function () {
       var s = loadSession();
       clearSession();
