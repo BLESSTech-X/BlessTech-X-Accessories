@@ -1439,3 +1439,19 @@ body:has(#dashboard:not(.hidden)) .wrap{width:100%;min-width:0}
   #cc-global-footer .cc-footer-controls{grid-template-columns:minmax(0,1fr)}
   #cc-global-footer .cc-quick-grid{grid-template-columns:minmax(0,1fr)}
 }
+
+
+/* Dedicated AI Command Engine and Analytics journey placements */
+#view-assistant>.growth-assistant{width:100%;max-width:100%;margin:0;min-width:0}
+#view-assistant .assistant-head{flex-wrap:wrap}
+#view-assistant .assistant-prompts{max-width:100%}
+#view-assistant .assistant-answer{min-height:74px}
+#view-analytics>#ai-measurement{width:100%;margin:0 0 14px;padding:16px;border-radius:14px;background:#fff;border:1px solid #e6ebf2;box-shadow:0 8px 24px rgba(24,39,75,.04)}
+#view-analytics>#ai-measurement h3{font-size:16px;color:#1c2d45}
+#view-analytics>#ai-measurement>p{font-size:11px;color:#8792a4}
+@media(max-width:600px){
+  #view-assistant>.growth-assistant{padding:13px}
+  #view-assistant .assistant-head h2{font-size:16px}
+  #view-assistant .assistant-prompts button{font-size:10px;padding:7px 9px}
+  #view-analytics>#ai-measurement{padding:12px}
+}
