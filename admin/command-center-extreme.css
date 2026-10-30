@@ -210,3 +210,37 @@ body:has(#dashboard.hidden) #cc-menu-toggle,body:has(#dashboard.hidden) #cc-topb
  body.cc-nav-collapsed #workspace-nav{transform:translateX(calc(-100% - 24px))!important}
  body.cc-nav-collapsed #dashboard>.intro,body.cc-nav-collapsed #dashboard>#global-message,body.cc-nav-collapsed #dashboard>#heads-up,body.cc-nav-collapsed #workspace-views{margin-left:0!important}
 }
+
+
+/* Compact Command Centre: show controls first, supporting copy only when needed */
+#dashboard>.intro{margin-bottom:4px!important;padding-bottom:8px!important}
+#dashboard>.intro .eyebrow,#dashboard>.intro>div>p{display:none!important}
+#dashboard>.intro h1{font-size:22px!important;margin:0!important}
+#dashboard>.intro .intro-actions{gap:5px!important}
+#dashboard>.intro .intro-actions #full-voice-briefing,
+#dashboard>.intro .intro-actions #stop-voice-briefing{display:none!important}
+#workspace-views .module{min-height:0!important;padding:13px!important}
+#workspace-views .module p{display:none!important}
+#workspace-views .module h3{margin:5px 0 9px!important;font-size:14px!important}
+#workspace-views .module-icon{margin-bottom:5px!important}
+#workspace-views .panel,#workspace-views .section,#workspace-views .growth-card{margin-bottom:12px!important}
+#workspace-views .section-head p,
+#workspace-views .growth-card>.muted,
+#workspace-views .ss-help,
+#workspace-views .ss-footer-note{display:none!important}
+#workspace-views .ss-heading{gap:10px!important;margin-bottom:12px!important}
+#workspace-views .ss-heading>div>p{display:none!important}
+#workspace-views .ss-heading h2{margin:0!important;font-size:20px!important}
+#workspace-views .ss-card{padding:14px!important}
+#workspace-views .ss-card h3{margin-bottom:10px!important}
+#workspace-views .ss-layout{gap:12px!important}
+#workspace-views .ss-form-grid{gap:10px!important}
+#workspace-views .ss-field>span{font-size:11px!important}
+#workspace-views .ss-toggle-grid{gap:8px!important}
+#workspace-views .ss-more{width:100%;position:relative}
+#workspace-views .ss-more-menu{z-index:120;max-height:65vh;overflow:auto}
+@media(max-width:900px){
+ #workspace-views .ss-more-menu{position:fixed;top:120px;left:16px;right:16px;min-width:0;max-height:65vh;overflow:auto;z-index:120}
+ #workspace-views .ss-heading-actions{gap:6px!important}
+ #workspace-views .ss-heading-actions .btn{min-height:36px;padding:8px 10px;font-size:11px}
+}
