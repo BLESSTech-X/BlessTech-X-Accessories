@@ -190,7 +190,8 @@
     nav.dataset.guided='1';
     const groups=[
       {label:'YOUR BUSINESS',ids:['overview']},
-      {label:'DAILY WORK',ids:['actions','orders','network']},
+      {label:'INTELLIGENCE & ACTION',ids:['assistant','actions']},
+      {label:'DAILY WORK',ids:['orders','network']},
       {label:'STORE MANAGEMENT',ids:['inventory','money']},
       {label:'GROWTH & MARKETING',ids:['analytics','growth','experiments']},
       {label:'WEBSITE & TOOLS',ids:['health','resources']}
