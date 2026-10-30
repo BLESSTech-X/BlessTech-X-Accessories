@@ -1343,9 +1343,14 @@ async function fetchAllProducts() {
   if (!res.ok) throw new Error('index.json ' + res.status);
   const slugs = await res.json();
   if (!Array.isArray(slugs) || !slugs.length) throw new Error('index.json empty');
-  const results = await Promise.allSettled(
-    slugs.map(s => fetch('/content/products/' + s + '.md').then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null))
-  );
+  const results = [];
+  // Keep the legacy fallback gentle on mobile networks and origin request limits.
+  for (let i = 0; i < slugs.length; i += 8) {
+    const batch = await Promise.allSettled(slugs.slice(i, i + 8).map(s =>
+      fetch('/content/products/' + s + '.md').then(r => r.ok ? r.text() : null).then(t => t ? parseFrontmatter(t, s) : null)
+    ));
+    results.push(...batch);
+  }
   const products = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
   if (!products.length) throw new Error('No products parsed');
   return products;
