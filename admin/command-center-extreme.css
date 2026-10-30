@@ -113,3 +113,8 @@ body:has(#dashboard:not(.hidden)) .wrap{max-width:1280px;padding-top:22px}
 .ss-footer-note{margin-top:13px;padding:12px 14px;border-radius:9px;background:#f5f7fa;color:#667085;font-size:11px;line-height:1.6}
 @media(max-width:850px){.ss-layout{grid-template-columns:1fr}}
 @media(max-width:560px){.ss-heading-actions{width:100%}.ss-heading-actions .btn{flex:1}.ss-form-grid{grid-template-columns:1fr}.ss-toggle-grid{grid-template-columns:1fr 1fr}.ss-card{padding:14px}}
+
+
+.ss-upload{display:flex;align-items:center;gap:10px;padding:9px 11px;margin:6px 0 10px;border:1px dashed #d7dde6;border-radius:8px;color:#586579;font-size:11px;font-weight:750;cursor:pointer}
+.ss-upload input{max-width:190px;font-size:11px;color:#647084}
+@media(max-width:700px){.ss-more-menu{position:fixed;top:128px;right:14px;max-height:60vh;overflow:auto;z-index:999}}
