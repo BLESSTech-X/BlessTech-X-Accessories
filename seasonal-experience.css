@@ -88,3 +88,17 @@ html.py2-xmas :is(.btn-order,.btn-order-main,.buy-now,.buyNow,.buy-now-btn,[data
 html.py2-xmas :is(.py2-hero-secondary,.btn-secondary,.btn.secondary,.btn-sec){background:#fff!important;color:#174b37!important;border:1px solid #c9a45b!important}
 html.py2-xmas :is(.hero-offer-alert,.price-drop-banner,.drop-banner){border-color:#c9a45b}
 @media(max-width:640px){.py2-xmas-ribbon-inner{padding:9px 12px;gap:9px;min-height:54px}.py2-xmas-ribbon-copy{display:grid;gap:2px}.py2-xmas-ribbon-copy strong{font-size:11px}.py2-xmas-ribbon-copy span{font-size:10px}.py2-xmas-ribbon-link{min-height:34px;padding:7px 10px;font-size:10px}.py2-xmas-ribbon-mark{font-size:17px}}
+
+/* Image-led campaign creative: images are managed as URLs in Decap CMS */
+#py2-xmas-ribbon{background-color:#102f25;background-image:linear-gradient(90deg,rgba(7,28,19,.92) 0%,rgba(7,28,19,.76) 48%,rgba(7,28,19,.35) 100%),var(--py2-xmas-banner-image);background-size:cover;background-position:center 46%;min-height:118px;display:flex;align-items:center}
+.py2-xmas-ribbon-inner{width:100%;min-height:118px;padding:18px 24px}
+.py2-xmas-ribbon-copy{display:grid;gap:5px;align-content:center}
+.py2-xmas-ribbon-copy strong{font-size:clamp(15px,2vw,20px);letter-spacing:.01em}
+.py2-xmas-ribbon-copy span{font-size:13px;max-width:520px}
+.py2-xmas-modal{padding:0 26px 28px;background:#fffdf8}
+.py2-xmas-modal:before{z-index:2;pointer-events:none}
+.py2-xmas-modal-art{min-height:230px;margin:0 -26px 22px;padding:36px 28px 24px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;text-align:left;background-color:#153d2d;background-size:cover;background-position:center 48%;color:#fff;position:relative}
+.py2-xmas-modal-art h2{position:relative;z-index:1;color:#fff;margin:8px 0 0;max-width:340px;text-shadow:0 2px 16px #0008}
+.py2-xmas-modal-eyebrow{position:relative;z-index:1;font-size:10px;letter-spacing:.18em;font-weight:850;color:#f2d99c}
+.py2-xmas-modal p{margin:0 0 20px}
+@media(max-width:640px){#py2-xmas-ribbon{min-height:108px;background-position:center}.py2-xmas-ribbon-inner{min-height:108px;padding:13px 12px}.py2-xmas-ribbon-copy span{font-size:10px}.py2-xmas-modal-art{min-height:190px;margin-inline:-20px;padding:30px 22px 20px}}
