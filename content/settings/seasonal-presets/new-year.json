@@ -1,0 +1,22 @@
+{
+  "season": "new-year",
+  "season_label": "New Year",
+  "heroTitle": "A New Year. Better Connections.",
+  "heroSubtitle": "Start the year with smart choices and everyday tech essentials.",
+  "bannerTitle": "A New Year. Better Connections.",
+  "bannerMessage": "Start the year with smart choices and everyday tech essentials.",
+  "bannerButton": "Explore New Year Picks",
+  "bannerUrl": "/shop.html",
+  "bannerImage": "",
+  "popupTitle": "Start the Year Connected",
+  "popupMessage": "Discover useful accessories to help you stay powered, organised and connected.",
+  "popupButton": "Shop New Year Picks",
+  "popupUrl": "/shop.html",
+  "popupImage": "",
+  "marks": [
+    "🎆",
+    "✨",
+    "🥂",
+    "🎇"
+  ]
+}
