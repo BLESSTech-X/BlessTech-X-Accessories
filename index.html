@@ -266,8 +266,9 @@ button{font-family:'DM Sans',sans-serif;}
 .scroll-btn:hover{background:var(--orange);color:white;border-color:var(--orange);}
 .section-body{padding:14px 18px;overflow:visible;}
 
-.h-track-wrap{overflow:hidden;width:100%;position:relative;}
-.h-track{display:flex;gap:12px;transition:transform .32s cubic-bezier(.2,.65,.3,1);will-change:transform;min-height:220px;align-items:stretch;touch-action:pan-y pinch-zoom;cursor:grab;}
+.h-track-wrap{width:100%;position:relative;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-behavior:auto;scrollbar-width:none;touch-action:pan-x pan-y pinch-zoom;}
+.h-track-wrap::-webkit-scrollbar{display:none;}
+.h-track{display:flex;width:max-content;min-width:100%;gap:12px;transition:none!important;will-change:auto;min-height:220px;align-items:stretch;touch-action:pan-x pan-y pinch-zoom;cursor:grab;}
 .h-track.is-dragging{transition:none!important;cursor:grabbing;user-select:none;-webkit-user-select:none;}
 
 .pc{width:180px;flex-shrink:0;background:white;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;border:1px solid #f0f0f0;position:relative;}
@@ -2665,12 +2666,12 @@ function applyPos(id) {
 }
 
 window.scrollTrack = function(id, dir) {
-  const max = getMaxPos(id);
-  trackPos[id] = Math.max(0, Math.min((trackPos[id] || 0) + dir, max));
-  applyPos(id);
-  userPaused[id] = true;
-  clearTimeout(window['_pt_' + id]);
-  window['_pt_' + id] = setTimeout(() => { userPaused[id] = false; }, 4000);
+  const track = document.getElementById(id);
+  const wrap = track && track.parentElement;
+  if (!track || !wrap) return;
+  // Use the browser's native horizontal scroller so arrow taps and finger swipes
+  // move the same rail immediately, without transform animation or drag capture.
+  wrap.scrollBy({ left: Number(dir || 0) * getCardW(id), behavior: 'auto' });
 };
 
 function addCarouselDrag(id) {
@@ -3398,11 +3399,9 @@ async function init() {
 }
 
 function startCarouselAuto() {
-  // Homepage product rails are user-controlled. Automatic movement was
-  // interrupting/fighting horizontal swipes, especially on touch screens.
-  // Keep direct drag interaction, but do not start background timers.
+  // Homepage product rails use native overflow scrolling. Do not attach
+  // pointer-capture drag handlers or background auto-advance timers.
   ['flash-track', 'jfy-track', 'new-track', 'deals-track'].forEach(id => {
-    addCarouselDrag(id);
     clearInterval(autoTimers[id]);
     autoTimers[id] = null;
   });
