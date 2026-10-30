@@ -819,3 +819,41 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
  #inventory-grid .inventory-kpi-2 .inventory-kpi-copy b{font-size:12px}
  .inventory-flow-head{align-items:flex-start!important;flex-direction:column!important}
 }
+
+
+/* Give the inventory flow room to breathe: spacious two-column stage layout */
+.inventory-flow{padding:22px!important}
+.inventory-flow-head{margin-bottom:18px!important;align-items:center!important}
+.inventory-flow-head h3{font-size:18px!important;margin:5px 0 4px!important}
+.inventory-flow-head p{font-size:11px!important;max-width:560px;line-height:1.5!important}
+.inventory-flow-steps{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.inventory-flow-arrow{display:none!important}
+.inventory-flow-node{position:relative;min-height:126px!important;padding:17px 18px!important;border-radius:14px!important;display:flex!important;align-items:flex-start!important;justify-content:center!important}
+.inventory-flow-node small{font-size:9px!important;letter-spacing:1px!important}
+.inventory-flow-node strong{font-size:30px!important;margin:10px 0 4px!important;line-height:1.1!important}
+.inventory-flow-node span{font-size:10px!important;line-height:1.45!important}
+.node-value strong{font-size:24px!important}
+.inventory-flow-health{margin-top:20px!important;padding-top:17px!important}
+.inventory-flow-health-title{margin-bottom:10px!important}
+.inventory-flow-bar{height:15px!important}
+.inventory-flow-legend{gap:12px 22px!important;margin-top:12px!important}
+.inventory-flow-foot{margin-top:14px!important;line-height:1.5}
+@media(max-width:760px){
+ .inventory-flow{padding:16px!important}
+ .inventory-flow-steps{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .inventory-flow-node{min-height:112px!important;padding:13px!important;display:flex!important;align-items:flex-start!important}
+ .inventory-flow-node strong{font-size:23px!important;margin:8px 0 3px!important;text-align:left!important}
+ .inventory-flow-node span{font-size:9px!important}
+ .node-value strong{font-size:17px!important}
+ .inventory-flow-health{margin-top:16px!important;padding-top:14px!important}
+}
+@media(max-width:420px){
+ .inventory-flow-head{align-items:flex-start!important;flex-direction:column!important}
+ .inventory-flow-steps{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+ .inventory-flow-node{min-height:82px!important;padding:12px 14px!important;display:grid!important;grid-template-columns:1fr auto!important;align-items:center!important}
+ .inventory-flow-node small{grid-column:1}
+ .inventory-flow-node strong{grid-column:2;grid-row:1/3;text-align:right!important;font-size:22px!important;margin:0!important}
+ .inventory-flow-node span{grid-column:1}
+ .node-value strong{font-size:16px!important}
+ .inventory-flow-legend{gap:9px 12px!important}
+}
