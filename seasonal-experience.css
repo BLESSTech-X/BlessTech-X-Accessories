@@ -181,3 +181,29 @@ html.py2-season-active .py2-xmas-hero{border-color:var(--py2-season-secondary)!i
 html.py2-season-active :is(.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"],.py2-xmas-cta){background:var(--py2-season-secondary)!important;border-color:var(--py2-season-secondary)!important;color:#fff!important}
 html.py2-season-active :is(.add-to-cart,.addToCart,[data-action="add-to-cart"]){background:var(--py2-season-primary)!important;border-color:var(--py2-season-primary)!important;color:#fff!important}
 html.py2-season-active :is(.discount,.discount-badge,.sale-badge,.offer-badge,.badge-discount){border-color:var(--py2-season-secondary)!important}
+
+/* Shared seasonal skin for every theme selectable in Decap CMS. */
+html.py2-season-active{--py2-season-accent:#c8323e;--py2-season-accent-2:#123b2d;--py2-season-gold:#c9a45b;--py2-season-paper:#fffdf8}
+html.py2-season-theme-valentines{--py2-season-accent:#d63384;--py2-season-accent-2:#70264f;--py2-season-gold:#f2a7c8;--py2-season-paper:#fff5fa}
+html.py2-season-theme-easter{--py2-season-accent:#8b5cf6;--py2-season-accent-2:#28734b;--py2-season-gold:#f2c96d;--py2-season-paper:#fbfff8}
+html.py2-season-theme-halloween{--py2-season-accent:#f07818;--py2-season-accent-2:#30213e;--py2-season-gold:#f5bd55;--py2-season-paper:#fffaf3}
+html.py2-season-theme-black-friday{--py2-season-accent:#d5a83c;--py2-season-accent-2:#171717;--py2-season-gold:#f3d98a;--py2-season-paper:#fffdf5}
+html.py2-season-theme-new-year{--py2-season-accent:#d9b45b;--py2-season-accent-2:#24265f;--py2-season-gold:#f4df9c;--py2-season-paper:#f8f8ff}
+html.py2-season-theme-mothers-day{--py2-season-accent:#b84c88;--py2-season-accent-2:#67365f;--py2-season-gold:#e9b8d4;--py2-season-paper:#fff7fb}
+html.py2-season-theme-fathers-day{--py2-season-accent:#2673b8;--py2-season-accent-2:#183b60;--py2-season-gold:#d9bd76;--py2-season-paper:#f6faff}
+html.py2-season-theme-back-to-school{--py2-season-accent:#e2a51d;--py2-season-accent-2:#234b78;--py2-season-gold:#f2d06d;--py2-season-paper:#fffdf4}
+html.py2-season-theme-summer{--py2-season-accent:#e87524;--py2-season-accent-2:#087f82;--py2-season-gold:#f5d36e;--py2-season-paper:#fffaf0}
+html.py2-season-theme-independence{--py2-season-accent:#e87524;--py2-season-accent-2:#167345;--py2-season-gold:#1e1e1e;--py2-season-paper:#fffdf8}
+html.py2-season-active #py2-xmas-ribbon{background:linear-gradient(105deg,var(--py2-season-accent-2),color-mix(in srgb,var(--py2-season-accent-2),#fff 13%),var(--py2-season-accent-2));border-bottom-color:var(--py2-season-gold)}
+html.py2-season-active .py2-xmas-ribbon-mark{color:var(--py2-season-gold)}
+html.py2-season-active .py2-xmas-ribbon-link{background:var(--py2-season-accent);border-color:var(--py2-season-gold)}
+html.py2-season-active .py2-seasonal-hero:not(.py2-xmas-hero){position:relative;isolation:isolate;border:1px solid var(--py2-season-gold)!important;border-radius:16px;background:linear-gradient(120deg,var(--py2-season-accent-2),color-mix(in srgb,var(--py2-season-accent-2),var(--py2-season-accent) 24%))!important;color:#fff!important;box-shadow:0 14px 32px color-mix(in srgb,var(--py2-season-accent-2),transparent 82%)}
+html.py2-season-active .py2-seasonal-ornament{display:inline-block;margin-inline-start:.42em;color:var(--py2-season-accent);font-size:.78em;line-height:1;vertical-align:super}
+html.py2-season-active .py2-seasonal-tab-mark{display:inline-block;margin-inline-end:.3em;color:var(--py2-season-accent);font-size:.9em}
+html.py2-season-active .py2-seasonal-brand-marks{display:inline-flex;gap:3px;margin-inline-start:6px;vertical-align:middle;font-size:.9em}
+html.py2-season-active .py2-seasonal-brand-marks span{display:inline-block}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal{border-color:var(--py2-season-gold);background:linear-gradient(145deg,var(--py2-season-paper),#fff);color:var(--py2-season-accent-2)}
+html.py2-season-active #py2-xmas-popup .py2-xmas-modal h2{color:var(--py2-season-accent-2)}
+html.py2-season-active #py2-xmas-popup .py2-xmas-cta{background:var(--py2-season-accent);border:1px solid var(--py2-season-gold)}
+html.py2-season-theme-christmas #py2-xmas-ribbon{background:linear-gradient(105deg,#102f25 0%,#1d6045 52%,#123b2d 100%)}
+@supports not (background:color-mix(in srgb,red,white)){html.py2-season-active .py2-seasonal-hero:not(.py2-xmas-hero){background:var(--py2-season-accent-2)!important}}
