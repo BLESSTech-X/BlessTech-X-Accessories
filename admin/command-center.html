@@ -417,7 +417,7 @@ function renderGa4Insights(data){
  const home=[...pages].sort((a,b)=>Number(b.views||0)-Number(a.views||0))[0];
  const social=sources.filter(x=>/facebook/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
  const ai=sources.filter(x=>/chatgpt|openai|perplexity|copilot/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
- const organic=sources.filter(x=>/google\\s*\\/\\s*organic|bing\\s*\\/\\s*organic/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
+ const organic=sources.filter(x=>/google.*organic|bing.*organic/i.test(String(x.source||''))).reduce((n,x)=>n+Number(x.sessions||0),0);
  const cards=[
   {label:'LEADING SOURCE',value:top?.source||'No source data',detail:top?Number(top.sessions||0).toLocaleString()+' sessions · '+(total?Math.round(Number(top.sessions||0)/total*100):0)+'% of reported sessions':'No acquisition rows returned',tone:'lead'},
   {label:'TOP PAGE',value:home?.path||'No page data',detail:home?Number(home.views||0).toLocaleString()+' page views · '+Number(home.users||0).toLocaleString()+' active users':'No page rows returned',tone:'page'},
