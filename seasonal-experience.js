@@ -90,11 +90,34 @@ function apply(){
  if(!enabled)return;
  decorateHeadings();decorateBrand();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
+async function loadAdsConfig(){
+ if(window.PY2_ADS_CONFIG?.url&&window.PY2_ADS_CONFIG?.key)return window.PY2_ADS_CONFIG;
+ await new Promise((resolve,reject)=>{
+  const existing=document.querySelector('script[data-py2-ads-config]');
+  if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return}
+  const script=document.createElement('script');script.src='/ads-config.js';script.dataset.py2AdsConfig='1';script.onload=resolve;script.onerror=reject;document.head.append(script);
+ });
+ const cfg=window.PY2_ADS_CONFIG;if(!cfg?.url||!cfg?.key)throw new Error('Supabase public configuration is unavailable');return cfg;
+}
+async function loadPublishedSettings(){
+ const cfg=await loadAdsConfig();
+ const endpoint=cfg.url.replace(/\\/$/,'')+'/rest/v1/seasonal_campaigns?id=eq.global&select=*';
+ const response=await fetch(endpoint,{cache:'no-store',headers:{apikey:cfg.key,Authorization:'Bearer '+cfg.key}});
+ if(!response.ok)throw new Error('Supabase campaign settings unavailable: '+response.status);
+ const rows=await response.json();if(!Array.isArray(rows)||!rows[0])throw new Error('The global seasonal campaign row is missing');
+ return rows[0];
+}
 async function load(){
  try{
-  const response=await fetch(CONFIG,{cache:'no-store'});
-  if(!response.ok)throw new Error('Campaign settings unavailable: '+response.status);
-  const published=await response.json();settings={...defaults,...published};
+  let published;
+  try{published=await loadPublishedSettings();}
+  catch(supabaseError){
+   console.warn('[PhoneYa2 Seasonal] Supabase unavailable; using published static fallback.',supabaseError);
+   const fallback=await fetch(CONFIG,{cache:'no-store'});
+   if(!fallback.ok)throw supabaseError;
+   published=await fallback.json();
+  }
+  settings={...defaults,...published};
   if(params.has('py2-seasonal-preview')){try{const draft=JSON.parse(localStorage.getItem(PREVIEW_KEY)||'null');if(draft)settings={...settings,...draft}}catch{}}
   apply();
  }catch(error){console.warn('[PhoneYa2 Seasonal]',error)}
