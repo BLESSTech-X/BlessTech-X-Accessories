@@ -96,8 +96,7 @@ function apply(){
  decorateHeadings();decorateBrand();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
 async function loadPublishedSettings(){
- // Prefer the shared database settings managed in Command Centre.
- // Decap's published JSON remains the fallback and can be imported from Seasonal Studio.
+ // Campaign controls come from the shared database; published GitHub JSON is the fallback.
  try{
   const live=await fetch('/api/seasonal?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
   if(live.ok){
@@ -112,7 +111,6 @@ async function loadPublishedSettings(){
  if(!response.ok)throw new Error('Decap seasonal settings file unavailable: '+response.status);
  const data=await response.json();
  if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('Seasonal settings file is not a valid JSON object');
- dbPresets={};
  return data;
 }
 async function load(){
