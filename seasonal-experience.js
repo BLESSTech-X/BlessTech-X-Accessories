@@ -3,7 +3,9 @@
 const CONFIG='/content/settings/seasonal-campaigns.json';
 const PREVIEW_KEY='phoneya2-seasonal-preview-v3';
 const defaults={enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',popup:false,popupMode:'delay',popupDelay:5,popupScroll:35,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html',banner:true,bannerTitle:'The PhoneYa2 Christmas Edit',bannerMessage:'Thoughtful tech gifts. Better-connected moments.',bannerButton:'Explore Christmas Picks',bannerUrl:'/shop.html',bannerImage:'https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200',popupImage:'https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600'};
-let settings={...defaults},snowLayer=null,popupCreated=false;\nconst sessionGet=key=>{try{return sessionStorage.getItem(key)}catch(_){return null}};\nconst sessionSet=(key,value)=>{try{sessionStorage.setItem(key,value)}catch(_){}};
+let settings={...defaults},snowLayer=null,popupCreated=false;
+const sessionGet=key=>{try{return sessionStorage.getItem(key)}catch(_){return null}};
+const sessionSet=(key,value)=>{try{sessionStorage.setItem(key,value)}catch(_){}};
 const params=new URLSearchParams(location.search);
 function localDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Lusaka',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function inSchedule(){return !!(settings.scheduled&&settings.start&&settings.end&&localDay()>=settings.start.slice(0,10)&&localDay()<=settings.end.slice(0,10))}
