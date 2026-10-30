@@ -49,24 +49,41 @@
   // ═══════════════════════════════════════════════════════════════════════════
   var SESSION_KEY = 'py2ads_session';
 
+  var SHARED_AUTH_KEY = 'sb-' + SUPABASE_URL.replace(/^https:\/\//,'').split('.')[0] + '-auth-token';
   function saveSession(data) {
     try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch (e) {}
+    // Keep the same Supabase session available to the main Command Centre
+    // and the other same-origin admin workspaces.
+    try {
+      localStorage.setItem(SHARED_AUTH_KEY, JSON.stringify({
+        access_token: data.access_token, token_type: 'bearer',
+        expires_in: Math.max(0, Number(data.expires_at || 0) - Math.floor(Date.now()/1000)),
+        expires_at: data.expires_at, refresh_token: data.refresh_token, user: data.user
+      }));
+    } catch (e) {}
   }
   function loadSession() {
     try {
       var raw = sessionStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      var parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return null;
-      return parsed;
-    } catch (e) {
-      // Corrupted session blob. Clear it so the next call gets a clean miss.
-      try { sessionStorage.removeItem(SESSION_KEY); } catch (e2) {}
-      return null;
-    }
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed.access_token && parsed.user) return parsed;
+      }
+    } catch (e) {}
+    // Reuse the authenticated Supabase-js session created by Command Centre.
+    try {
+      var shared = JSON.parse(localStorage.getItem(SHARED_AUTH_KEY) || 'null');
+      if (shared && shared.access_token && shared.user) {
+        var session = { access_token: shared.access_token, refresh_token: shared.refresh_token, expires_at: shared.expires_at, user: shared.user };
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (e) {}
+        return session;
+      }
+    } catch (e) {}
+    return null;
   }
   function clearSession() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+    try { localStorage.removeItem(SHARED_AUTH_KEY); } catch (e) {}
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
