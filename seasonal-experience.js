@@ -11,13 +11,15 @@ function pageCovered(){const p=location.pathname.toLowerCase();if(settings.cover
 function active(){const campaignLive=!!settings.enabled&&(!settings.scheduled||inSchedule());return pageCovered()&&(campaignLive||params.has('py2-seasonal-preview'))}
 function safeImage(value){try{const u=new URL(value,location.origin);return (u.protocol==='https:'||u.origin===location.origin)?u.href:''}catch{return ''}}
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
+function themeKey(){return String(settings.theme||'default').toLowerCase().replace(/[^a-z0-9-]/g,'-')}
+function themeMarks(){const key=themeKey();if(key.includes('valentine'))return ['💗','🌹','💝','💕'];if(key.includes('easter'))return ['🐣','🌷','🐰','🥚'];if(key.includes('halloween'))return ['🎃','🦇','👻','🕸️'];if(key.includes('black'))return ['🛍️','🏷️','⭐','🛒'];if(key.includes('new-year')||key.includes('newyear'))return ['🎆','✨','🥂','🎇'];if(key.includes('school'))return ['🎒','📚','✏️','⭐'];if(key.includes('mother'))return ['🌷','💐','💗','🎁'];if(key.includes('father'))return ['🎁','⭐','🏆','💙'];if(key.includes('summer'))return ['☀️','🌴','🌊','🍉'];if(key.includes('christmas'))return ['🎄','🎅','🔔','🎁','🦌','⛄'];return ['✦','✧','•','✦']}
 function decorateHeadings(){
  if(!settings.decorations)return;
  const selectors='main h1,main h2,main h3,.hero h1,.hero h2,.hero-section h1,.hero-section h2,.hero-banner h1,.hero-banner h2,.section-head h2,.section-heading h2,.blog-section-heading h2,main section h2,.heading,.section-title';
  const nodes=[...document.querySelectorAll(selectors)].filter(n=>!n.closest('#py2-xmas-popup')&&!n.querySelector(':scope > .py2-seasonal-ornament'));
- const ornaments=['🎄','🎅','🔔','🎁','🦌','⛄'];
+ const ornaments=themeMarks();
  nodes.forEach((node,i)=>{const mark=document.createElement('span');mark.className='py2-seasonal-ornament';mark.setAttribute('aria-hidden','true');mark.textContent=ornaments[i%ornaments.length];node.append(mark)});
- const tabMarks=['🎄','🎁','🔔','🎅','🦌','🛷','⛄','❄️','🧦','🕯️','🎄'];
+ const tabMarks=themeMarks();
  const tabs=[...document.querySelectorAll('body>nav.py2-quick-tabs a, .cat-nav .cat-nav-item, .bottom-nav .bnav-item')];
  tabs.forEach((tab,i)=>{if(tab.querySelector(':scope > .py2-seasonal-tab-mark'))return;const mark=document.createElement('span');mark.className='py2-seasonal-tab-mark';mark.setAttribute('aria-hidden','true');mark.textContent=tabMarks[i%tabMarks.length];tab.prepend(mark)});
 }
@@ -26,9 +28,10 @@ function decorateBrand(){
  document.querySelectorAll('.logo-brand-name,.logo-text-block .brand-name,.logo-wrap .logo-text').forEach(name=>{
   if(name.querySelector(':scope > .py2-seasonal-brand-marks'))return;
   const marks=document.createElement('span');marks.className='py2-seasonal-brand-marks';marks.setAttribute('aria-hidden','true');
-  const santa=document.createElement('span');santa.textContent='🎅';
-  const tree=document.createElement('span');tree.textContent='🎄';
-  marks.append(santa,tree);name.insertAdjacentElement('afterend',marks);
+  const icons=themeMarks();
+  const first=document.createElement('span');first.textContent=icons[0];
+  const second=document.createElement('span');second.textContent=icons[1]||icons[0];
+  marks.append(first,second);name.insertAdjacentElement('afterend',marks);
  });
 }
 function createCampaignBanner(){
@@ -56,7 +59,7 @@ function applyHeroTreatment(){
 }
 function makeSnow(){
  if(!settings.snow||!active()||matchMedia('(prefers-reduced-motion: reduce)').matches||snowLayer)return;
- const count=Math.max(5,Math.min(60,Number(settings.snowIntensity)||24));
+ const mobile=matchMedia('(max-width: 768px)').matches;const requested=Number(settings.snowIntensity)||12;const count=Math.max(4,Math.min(mobile?10:20,requested));
  snowLayer=document.createElement('div');snowLayer.id='py2-seasonal-snow';snowLayer.setAttribute('aria-hidden','true');
  for(let i=0;i<count;i++){const flake=document.createElement('i');flake.className='py2-snowflake';flake.textContent='❄';flake.style.left=(Math.random()*100)+'%';flake.style.animationDuration=(9+Math.random()*13)+'s';flake.style.animationDelay=(-Math.random()*20)+'s';flake.style.setProperty('--snow-drift',(Math.random()*90-45)+'px');flake.style.opacity=(.35+Math.random()*.55).toFixed(2);flake.style.fontSize=(8+Math.random()*9)+'px';snowLayer.append(flake)}
  document.body.append(snowLayer);
@@ -80,7 +83,10 @@ function showPopup(){
  else setTimeout(reveal,Math.max(0,Math.min(60,Number(settings.popupDelay)||0))*1000);
 }
 function apply(){
- const enabled=active();document.documentElement.classList.toggle('py2-xmas',enabled);
+ const enabled=active();const root=document.documentElement;
+ root.classList.remove(...Array.from(root.classList).filter(name=>name.startsWith('py2-season-')));
+ if(enabled){const key=themeKey();root.classList.add('py2-season-'+key);}
+ root.classList.toggle('py2-xmas',enabled&&themeKey().includes('christmas'));
  if(!enabled)return;
  decorateHeadings();decorateBrand();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
@@ -94,6 +100,6 @@ async function load(){
  }catch(error){console.warn('[PhoneYa2 Seasonal]',error)}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
-const observer=new MutationObserver(()=>{if(document.documentElement.classList.contains('py2-xmas')){decorateHeadings();decorateBrand();applyHeroTreatment()}});
-observer.observe(document.documentElement,{childList:true,subtree:true});
+// Deliberately do not observe the entire document: product grids and live widgets mutate often.
+// Decorations are applied once after the page has loaded, avoiding repeated full-page DOM scans.
 })();
