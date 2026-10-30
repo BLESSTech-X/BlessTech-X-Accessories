@@ -188,7 +188,7 @@
     const overlay=document.createElement('button');overlay.type='button';overlay.className='cc-nav-overlay';overlay.setAttribute('aria-label','Close navigation menu');document.body.append(overlay);
     const close=()=>{document.body.classList.remove('cc-nav-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation menu');};
     const open=()=>{document.body.classList.add('cc-nav-open');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close navigation menu');};
-    toggle.addEventListener('click',()=>document.body.classList.contains('cc-nav-open')?close():open());
+    toggle.addEventListener('click',()=>{if(window.matchMedia('(max-width:900px)').matches){document.body.classList.contains('cc-nav-open')?close():open();}else{const collapsed=document.body.classList.toggle('cc-nav-collapsed');toggle.setAttribute('aria-expanded',String(!collapsed));toggle.setAttribute('aria-label',collapsed?'Show navigation menu':'Collapse navigation menu');}});
     overlay.addEventListener('click',close);
     nav.addEventListener('click',e=>{if(e.target.closest('.workspace-tab'))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
