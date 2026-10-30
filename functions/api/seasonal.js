@@ -2,7 +2,7 @@ const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache
 const ADMIN_FALLBACK = "singbless89@gmail.com";
 const SETTINGS_FIELDS = [
   "enabled","theme","decorations","snow","snowIntensity","scheduled","start","end","coverage",
-  "popup","popupMode","popupDelay","popupScroll","banner"
+  "popup","popupMode","popupDelay","popupScroll","banner","bannerImage","popupImage"
 ];
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 function secret(env,...names){for(const name of names)if(env[name])return env[name];return "";}
