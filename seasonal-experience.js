@@ -39,15 +39,15 @@ function decorateBrand(){
 }
 function createCampaignBanner(){
  if(!settings.banner||document.getElementById('py2-xmas-ribbon'))return;
- const ribbon=document.createElement('aside');ribbon.id='py2-xmas-ribbon';ribbon.className='py2-xmas-ribbon';if(settings.bannerImage){const image=safeImage(settings.bannerImage);if(image)ribbon.style.setProperty('--py2-xmas-banner-image','url('+JSON.stringify(image)+')')}
+ const ribbon=document.createElement('aside');ribbon.id='py2-xmas-ribbon';ribbon.className='py2-xmas-ribbon';if(settings.bannerImage&&(themeKey()==='christmas'||settings.bannerImage!==defaults.bannerImage)){const image=safeImage(settings.bannerImage);if(image)ribbon.style.setProperty('--py2-xmas-banner-image','url('+JSON.stringify(image)+')')}
  ribbon.setAttribute('aria-label','PhoneYa2 '+themeLabel()+' campaign');
  const inner=document.createElement('div');inner.className='py2-xmas-ribbon-inner';
  const mark=document.createElement('span');mark.className='py2-xmas-ribbon-mark';mark.setAttribute('aria-hidden','true');mark.textContent='✦';
  const copy=document.createElement('div');copy.className='py2-xmas-ribbon-copy';
- const title=document.createElement('strong');title.textContent=(settings.bannerTitle===defaults.bannerTitle&&themeKey()!=='christmas')?'The PhoneYa2 '+themeLabel()+' Edit':(settings.bannerTitle||'The PhoneYa2 Christmas Edit');
+ const title=document.createElement('strong');title.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.bannerTitle||''))?'The PhoneYa2 '+themeLabel()+' Edit':(settings.bannerTitle||'The PhoneYa2 Christmas Edit');
  const message=document.createElement('span');message.textContent=settings.bannerMessage||'Thoughtful tech gifts. Better-connected moments.';
  copy.append(title,message);
- const link=document.createElement('a');link.className='py2-xmas-ribbon-link';link.href=safeDestination(settings.bannerUrl||'/shop.html');link.textContent=(settings.bannerButton===defaults.bannerButton&&themeKey()!=='christmas')?'Explore '+themeLabel()+' Picks':(settings.bannerButton||'Explore gifts');
+ const link=document.createElement('a');link.className='py2-xmas-ribbon-link';link.href=safeDestination(settings.bannerUrl||'/shop.html');link.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.bannerButton||''))?'Explore '+themeLabel()+' Picks':(settings.bannerButton||'Explore gifts');
  const close=document.createElement('button');close.type='button';close.className='py2-xmas-ribbon-close';close.setAttribute('aria-label','Dismiss Christmas banner');close.textContent='×';
  close.addEventListener('click',()=>{ribbon.remove();sessionSet('py2-season-banner-dismissed-v2','1')});
  inner.append(mark,copy,link,close);ribbon.append(inner);
@@ -73,11 +73,11 @@ function showPopup(){
  popupCreated=true;const wrap=document.createElement('div');wrap.id='py2-xmas-popup';wrap.hidden=true;
  const section=document.createElement('section');section.className='py2-xmas-modal';section.setAttribute('role','dialog');section.setAttribute('aria-modal','true');section.setAttribute('aria-labelledby','py2-xmas-title');
  const close=document.createElement('button');close.className='py2-xmas-close';close.type='button';close.setAttribute('aria-label','Close promotion');close.textContent='×';
- const art=document.createElement('div');art.className='py2-xmas-modal-art';const image=safeImage(settings.popupImage);if(image)art.style.backgroundImage='linear-gradient(180deg,#071b1420 0%,#071b1499 100%),url('+JSON.stringify(image)+')';
+ const art=document.createElement('div');art.className='py2-xmas-modal-art';const image=(themeKey()==='christmas'||settings.popupImage!==defaults.popupImage)?safeImage(settings.popupImage):'';if(image)art.style.backgroundImage='linear-gradient(180deg,#071b1420 0%,#071b1499 100%),url('+JSON.stringify(image)+')';
  const eyebrow=document.createElement('span');eyebrow.className='py2-xmas-modal-eyebrow';eyebrow.textContent='PHONEYA2 • '+themeLabel().toUpperCase()+' COLLECTION';
- const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=(settings.popupTitle===defaults.popupTitle&&themeKey()!=='christmas')?'Celebrate '+themeLabel()+' with PhoneYa2':settings.popupTitle;art.append(eyebrow,title);
+ const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.popupTitle||''))?'Celebrate '+themeLabel()+' with PhoneYa2':settings.popupTitle;art.append(eyebrow,title);
  const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;
- const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=(settings.popupButton===defaults.popupButton&&themeKey()!=='christmas')?'Explore '+themeLabel()+' Picks':settings.popupButton;link.href=safeDestination(settings.popupUrl);
+ const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=(themeKey()!=='christmas'&&/christmas/i.test(settings.popupButton||''))?'Explore '+themeLabel()+' Picks':settings.popupButton;link.href=safeDestination(settings.popupUrl);
  section.append(close,art,copy,link);wrap.append(section);document.body.append(wrap);
  const dismiss=()=>{wrap.hidden=true;sessionSet('py2-xmas-dismissed','1')};
  close.addEventListener('click',dismiss);wrap.addEventListener('click',e=>{if(e.target===wrap)dismiss()});
