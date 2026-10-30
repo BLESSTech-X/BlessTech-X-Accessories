@@ -1,5 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "start": "2026-11-15",
   "popupUrl": "/shop.html",
   "snow": true,
