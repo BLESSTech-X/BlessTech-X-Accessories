@@ -1278,3 +1278,22 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 #view-orders #product-performance-panel{grid-column:1/-1}
 @media(max-width:760px){.ga4-chart-grid{grid-template-columns:1fr!important}.journey-bottom-grid{grid-template-columns:1fr}.journey-stage{grid-template-columns:85px minmax(0,1fr) 78px;gap:7px}.order-status-donut-wrap{gap:9px;padding:9px}.order-status-donut{width:76px;height:76px;flex-basis:76px}.order-status-donut:after{width:49px;height:49px}}
 
+/* Optional Command Centre dark appearance */
+#dashboard[data-cc-theme="dark"]{--bg:#0b1220;--panel:#121d2e;--line:#263449;--text:#e8eef7;--muted:#9aa9bc;color:#e8eef7;background:#0b1220}
+#dashboard[data-cc-theme="dark"] .workspace-nav{background:#101a2a;border-color:#27364b}
+#dashboard[data-cc-theme="dark"] .workspace-tab{background:#172438;border-color:#293a52;color:#d8e2f0}
+#dashboard[data-cc-theme="dark"] .workspace-tab[aria-selected="true"]{background:#e9eff8;color:#101a2a;border-color:#e9eff8}
+#dashboard[data-cc-theme="dark"] .panel,#dashboard[data-cc-theme="dark"] .section,#dashboard[data-cc-theme="dark"] .ga4-chart-card,#dashboard[data-cc-theme="dark"] .ga4-insight-card,#dashboard[data-cc-theme="dark"] .journey-highlight,#dashboard[data-cc-theme="dark"] .order-status-donut-wrap{background:#121d2e!important;border-color:#29394e!important;color:#e8eef7}
+#dashboard[data-cc-theme="dark"] h1,#dashboard[data-cc-theme="dark"] h2,#dashboard[data-cc-theme="dark"] h3,#dashboard[data-cc-theme="dark"] strong,#dashboard[data-cc-theme="dark"] .ga4-insight-card strong,#dashboard[data-cc-theme="dark"] .journey-stage-value,#dashboard[data-cc-theme="dark"] .journey-stage-label{color:#e8eef7}
+#dashboard[data-cc-theme="dark"] p,#dashboard[data-cc-theme="dark"] small,#dashboard[data-cc-theme="dark"] .muted,#dashboard[data-cc-theme="dark"] .ga4-chart-heading>small,#dashboard[data-cc-theme="dark"] .ga4-source-legend span,#dashboard[data-cc-theme="dark"] .product-chart-legend span{color:#9aa9bc}
+#dashboard[data-cc-theme="dark"] .ga4-insight-label,#dashboard[data-cc-theme="dark"] .ga4-chart-heading span,#dashboard[data-cc-theme="dark"] .journey-highlight>span{color:#9aa9bc}
+#dashboard[data-cc-theme="dark"] .ga4-insight-lead,#dashboard[data-cc-theme="dark"] .ga4-insight-social,#dashboard[data-cc-theme="dark"] .ga4-insight-ai,#dashboard[data-cc-theme="dark"] .ga4-insight-search{background:#17263a!important}
+#dashboard[data-cc-theme="dark"] .ga4-page-row>span,#dashboard[data-cc-theme="dark"] .ga4-page-row>b,#dashboard[data-cc-theme="dark"] .order-status-legend span,#dashboard[data-cc-theme="dark"] .order-status-legend strong{color:#dce6f3}
+#dashboard[data-cc-theme="dark"] .ga4-page-track,#dashboard[data-cc-theme="dark"] .journey-stage-track,#dashboard[data-cc-theme="dark"] .journey-target-track{background:#26364b}
+#dashboard[data-cc-theme="dark"] .journey-footnote{background:#17263a;color:#9aa9bc}
+#dashboard[data-cc-theme="dark"] .order-status-donut:after{background:#121d2e}
+#dashboard[data-cc-theme="dark"] .journey-peak-donut:after{background:#121d2e}
+#dashboard[data-cc-theme="dark"] .status-track{background:#26364b}
+#dashboard[data-cc-theme="dark"] .recent-order-card,#dashboard[data-cc-theme="dark"] .health-item,#dashboard[data-cc-theme="dark"] .pipeline-stage{background:#17263a;border-color:#29394e}
+#dashboard[data-cc-theme="dark"] input,#dashboard[data-cc-theme="dark"] select,#dashboard[data-cc-theme="dark"] textarea{background:#17263a;color:#e8eef7;border-color:#34465e}
+@media(prefers-reduced-motion:reduce){#dashboard[data-cc-theme="dark"] *{transition:none!important}}
