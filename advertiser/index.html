@@ -397,7 +397,7 @@
 @media(max-width:600px){.profile-layout{gap:12px}.profile-layout .card-head{align-items:flex-start;flex-wrap:wrap;gap:6px;padding:14px}.profile-layout .card-body{padding:14px}.profile-layout .card-foot{padding:12px 14px}.profile-layout .card-foot .btn{width:100%;min-height:44px}.profile-layout .input,.profile-layout .textarea{width:100%;font-size:16px}.profile-layout .drop{padding:14px;min-height:100px}.profile-layout .social-row{gap:7px}.profile-layout .social-icon{flex:0 0 34px}.slug-row{padding:10px;gap:8px}.slug-row .s-val{flex:1 1 160px}.slug-row button{min-height:38px}.preview-panel-head{padding:12px;font-size:13px}.preview-iframe-wrap{height:64vh;min-height:420px;max-height:650px}.preview-actions{padding:10px}.preview-actions .btn{flex:1 1 calc(50% - 8px);min-height:40px}.profile-quick-buttons .btn{flex:1 1 100%;min-height:42px}}
 </style>
   <link rel="stylesheet" href="/phoneya2-performance.css?v=20261030-white-canvas1">
-  <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-white-canvas1">
+  <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-all-seasons1">
 </head>
 <body>
 
@@ -1737,7 +1737,7 @@
     if (url) frame.src = url;
     else {
       var media = String(ad.media_url || ''), type = String(ad.media_type || 'image').toLowerCase();
-      if (type === 'video' && media && !/youtube\\.com|youtu\\.be|vimeo\\.com|tiktok\\.com/i.test(media)) frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#101827;display:grid;place-items:center;height:100vh"><video src="' + media.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:contain"></video>  <script src="/seasonal-experience.js?v=20261030-seasonal-perf1" defer></script>
+      if (type === 'video' && media && !/youtube\\.com|youtu\\.be|vimeo\\.com|tiktok\\.com/i.test(media)) frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#101827;display:grid;place-items:center;height:100vh"><video src="' + media.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:contain"></video>  <script src="/seasonal-experience.js?v=20261030-all-seasons1" defer></script>
 </body></html>';
       else if (type === 'image' && media) frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#eef2f7;display:grid;place-items:center;height:100vh"><img src="' + media.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '" style="max-width:100%;max-height:100%;object-fit:contain" alt="Ad creative"></body></html>';
       else frame.srcdoc = '<!doctype html><html><body style="margin:0;background:#f1f5f9;display:grid;place-items:center;height:100vh;font:16px Arial;color:#334155;text-align:center;padding:24px;box-sizing:border-box"><div><h2>Creative preview</h2><p>When this ad has a public page, the full live experience will appear here.</p></div></body></html>';
