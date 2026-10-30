@@ -1455,3 +1455,44 @@ body:has(#dashboard:not(.hidden)) .wrap{width:100%;min-width:0}
   #view-assistant .assistant-prompts button{font-size:10px;padding:7px 9px}
   #view-analytics>#ai-measurement{padding:12px}
 }
+
+
+/* Compact, dark shared footer */
+#cc-global-footer{
+  margin:18px 0 2px!important;padding:11px 14px!important;gap:8px!important;
+  border:1px solid #263b56!important;border-radius:11px!important;
+  background:#142238!important;color:#edf3fb!important;box-shadow:none!important;
+}
+#cc-global-footer .cc-footer-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}
+#cc-global-footer .cc-footer-heading{min-width:0!important;display:block!important}
+#cc-global-footer .cc-footer-heading strong{font-size:12px!important;font-weight:850!important;color:#f4f7fb!important}
+#cc-global-footer .cc-footer-heading small,
+#cc-global-footer .cc-footer-kicker{display:none!important}
+#cc-global-footer .cc-footer-controls{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important}
+#cc-global-footer .cc-footer-controls .btn{min-height:30px!important;padding:5px 8px!important;font-size:10px!important;background:#223650!important;border-color:#3b506b!important;color:#f0f4fa!important}
+#cc-global-footer #cc-refresh-stamp{font-size:9px!important;padding:5px 7px!important;background:#1c3b39!important;color:#a9e7ca!important}
+#cc-global-footer .cc-footer-fastlane{min-width:0!important}
+#cc-global-footer #cc-quick-actions{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:#edf3fb!important}
+#cc-global-footer .cc-quick-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin:0 0 6px!important}
+#cc-global-footer .cc-quick-heading strong{font-size:10px!important;letter-spacing:.2px!important;color:#b8c7d9!important}
+#cc-global-footer .cc-quick-heading .btn{min-height:27px!important;padding:4px 8px!important;font-size:9px!important;background:#263c58!important;border-color:#405775!important;color:#f4f7fb!important}
+#cc-global-footer .cc-quick-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
+#cc-global-footer .cc-quick-card{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:7px!important;min-height:32px!important;padding:6px 8px!important;border:1px solid #304761!important;border-radius:7px!important;background:#1b2d44!important;color:#edf3fb!important;text-decoration:none!important}
+#cc-global-footer .cc-quick-card span{font-size:11px!important;color:#ffb276!important}
+#cc-global-footer .cc-quick-card strong{font-size:9px!important;font-weight:750!important;color:#edf3fb!important}
+#cc-global-footer .cc-quick-card small,#cc-global-footer .cc-quick-card b{display:none!important}
+#cc-global-footer .cc-footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+#cc-global-footer .cc-footer-links{justify-content:flex-start!important}
+#cc-global-footer .cc-footer-links .comment-top-link{min-height:25px!important;padding:3px 7px!important;font-size:9px!important;color:#b8c7d9!important}
+#cc-global-footer .cc-footer-message:empty{display:none!important}
+#cc-global-footer .cc-footer-message,#cc-global-footer #global-message{color:#b8c7d9!important;font-size:9px!important}
+#dashboard[data-cc-theme="dark"] #cc-global-footer,
+#dashboard[data-cc-theme="dark"] #cc-global-footer #cc-quick-actions{background:#142238!important;border-color:#263b56!important}
+@media(max-width:650px){
+ #cc-global-footer{padding:9px!important;gap:7px!important}
+ #cc-global-footer .cc-footer-top{align-items:flex-start!important;flex-direction:column!important;gap:6px!important}
+ #cc-global-footer .cc-footer-controls{justify-content:flex-start!important;flex-wrap:wrap!important;width:100%!important}
+ #cc-global-footer .cc-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #cc-global-footer .cc-quick-card{min-height:30px!important;padding:5px 7px!important}
+ #cc-global-footer .cc-footer-bottom{flex-wrap:wrap!important}
+}
