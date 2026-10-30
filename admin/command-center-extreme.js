@@ -148,7 +148,7 @@
       footer=document.createElement('footer');
       footer.id='cc-global-footer';
       footer.className='cc-global-footer';
-      footer.innerHTML='<div class="cc-footer-top"><div class="cc-footer-heading"><span class="cc-footer-kicker">PHONEYA2 · COMMAND CENTRE</span><strong>Workspace controls</strong><small>Quick access stays here across every section.</small></div><div class="cc-footer-controls"></div></div><div class="cc-footer-links"></div><div class="cc-footer-message" id="cc-footer-message"></div><div class="cc-footer-fastlane"></div>';
+      footer.innerHTML='<div class="cc-footer-top"><div class="cc-footer-heading"><strong>Command Centre</strong></div><div class="cc-footer-controls"></div></div><div class="cc-footer-fastlane"></div><div class="cc-footer-bottom"><div class="cc-footer-links"></div><div class="cc-footer-message" id="cc-footer-message"></div></div>';
       dashboard.append(footer);
     }
     const controls=footer.querySelector('.cc-footer-controls');
@@ -177,7 +177,7 @@
     const footer=ensureCommandFooter();
     if(!footer||$('#cc-quick-actions'))return;
     const section=document.createElement('section');section.id='cc-quick-actions';section.className='cc-quick-actions panel';
-    section.innerHTML='<div class="cc-quick-heading"><div><span class="cc-quick-eyebrow">FAST LANE</span><h2>Quick actions</h2><p>Go straight to the work that moves the business.</p></div><button type="button" class="btn" id="cc-open-command-menu">⌘ Open command menu</button></div><div class="cc-quick-grid"><a href="/admin/orders.html" class="cc-quick-card"><span>▤</span><strong>Follow up orders</strong><small>Fulfilment and pending buyers</small><b>Open Order Desk →</b></a><a href="/admin/" class="cc-quick-card"><span>▦</span><strong>Improve product offers</strong><small>Catalogue, pricing and publishing</small><b>Open Product CMS →</b></a><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer" class="cc-quick-card"><span>↗</span><strong>Find traffic opportunities</strong><small>Acquisition and page performance</small><b>Open Analytics ↗</b></a><button type="button" class="cc-quick-card" id="cc-export-card"><span>▧</span><strong>Export a KPI snapshot</strong><small>Keep a dated operational record</small><b>Download CSV ↓</b></button></div>';
+    section.innerHTML='<div class="cc-quick-heading"><strong>Quick actions</strong><button type="button" class="btn" id="cc-open-command-menu">⌘ Command menu</button></div><div class="cc-quick-grid"><a href="/admin/orders.html" class="cc-quick-card"><span>▤</span><strong>Orders</strong></a><a href="/admin/" class="cc-quick-card"><span>▦</span><strong>Product CMS</strong></a><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener noreferrer" class="cc-quick-card"><span>↗</span><strong>Analytics</strong></a><button type="button" class="cc-quick-card" id="cc-export-card"><span>▧</span><strong>Export CSV</strong></button></div>';
     footer.querySelector('.cc-footer-fastlane').append(section);
     $('#cc-open-command-menu').addEventListener('click',openPalette);
     $('#cc-export-card').addEventListener('click',exportSnapshot);
