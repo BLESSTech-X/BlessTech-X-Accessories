@@ -1,0 +1,58 @@
+/* PhoneYa2 Seasonal Experience — art-directed Christmas system */
+:root{--xmas-forest:#123b2d;--xmas-pine:#1d6045;--xmas-red:#c8323e;--xmas-red-deep:#a92130;--xmas-gold:#c9a45b;--xmas-ivory:#fffdf8;--xmas-ink:#203329;--xmas-line:#e9e1d2}
+html.py2-xmas{--py2-accent:var(--xmas-red);--py2-accent-2:var(--xmas-forest);--py2-surface:var(--xmas-ivory);color-scheme:light}
+html.py2-xmas body{background:#fffefa}
+html.py2-xmas body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.24;background:radial-gradient(ellipse at 8% 4%,#d8c18a20,transparent 34%),radial-gradient(ellipse at 92% 28%,#174b3710,transparent 38%),linear-gradient(180deg,#fffdf8 0%,#fff 42%,#fffdf8 100%)}
+html.py2-xmas body>*{position:relative}
+html.py2-xmas a:focus-visible,html.py2-xmas button:focus-visible,html.py2-xmas input:focus-visible,html.py2-xmas select:focus-visible,html.py2-xmas textarea:focus-visible{outline:3px solid #c9a45b!important;outline-offset:3px}
+html.py2-xmas :is(button,.btn,[role=button],input[type=submit]){transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s}
+html.py2-xmas :is(.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"]){background:linear-gradient(135deg,#d83c48,#ae2431)!important;color:#fff!important;border:1px solid #a92130!important;box-shadow:0 5px 15px #ae243126}
+html.py2-xmas :is(.add-to-cart,.addToCart,[data-action="add-to-cart"]){background:linear-gradient(135deg,#236447,#123b2d)!important;color:#fff!important;border:1px solid #123b2d!important}
+html.py2-xmas :is(.buy-now,.buyNow,.buy-now-btn,[data-action="buy-now"]):hover,html.py2-xmas :is(.add-to-cart,.addToCart,[data-action="add-to-cart"]):hover{filter:brightness(1.06);transform:translateY(-1px)}
+html.py2-xmas :is(.product-card,.product-card-v2,.product-item,.product){border-color:#e9e1d2}
+html.py2-xmas :is(.discount,.discount-badge,.sale-badge,.offer-badge,.badge-discount){background:#c8323e!important;color:#fff!important;border-color:#c8323e!important}
+html.py2-xmas :is(.product-card,.product-card-v2,.product-item){background:#fff;border-radius:14px;box-shadow:0 5px 20px #49391a0a}
+.py2-xmas-hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid #d9c69d!important;background:radial-gradient(ellipse at 88% 15%,#d8bd7950,transparent 35%),linear-gradient(118deg,#102f25 0%,#174c38 55%,#255f45 100%)!important;color:#fff!important;box-shadow:0 16px 40px #123b2d20}
+.py2-xmas-hero:after{content:"";position:absolute;right:-34px;top:-48px;width:190px;height:190px;border:1px solid #d9bd7866;border-radius:50%;box-shadow:0 0 0 15px #d9bd7810,0 0 0 32px #d9bd7808;pointer-events:none}
+.py2-xmas-hero :is(h1,h2,p){position:relative;z-index:1}
+#py2-xmas-popup{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:#071b14b8;backdrop-filter:blur(5px)}
+#py2-xmas-popup[hidden]{display:none!important}
+.py2-xmas-modal{width:min(470px,100%);position:relative;overflow:hidden;padding:34px 26px 26px;border:1px solid #c9a45b;border-radius:22px;background:linear-gradient(145deg,#fffefa,#f7f0e2);box-shadow:0 26px 90px #06150f55;text-align:center;color:#173b2d}
+.py2-xmas-modal:before{content:"";position:absolute;inset:8px;border:1px solid #c9a45b70;border-radius:15px;pointer-events:none}
+.py2-xmas-modal:after{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#123b2d 0 33%,#c9a45b 33% 36%,#c8323e 36% 68%,#c9a45b 68% 71%,#123b2d 71%)}
+.py2-xmas-modal h2{font-size:clamp(24px,6vw,33px);line-height:1.12;margin:8px 0 12px;color:#123b2d}
+.py2-xmas-modal p{color:#59675e;line-height:1.65;margin:0 0 20px}
+.py2-xmas-cta{display:inline-flex;justify-content:center;align-items:center;min-height:48px;padding:12px 22px;border-radius:11px;background:linear-gradient(135deg,#d83c48,#a92130);color:#fff!important;font-weight:850;text-decoration:none;box-shadow:0 7px 18px #ae243128}
+.py2-xmas-close{position:absolute;right:17px;top:15px;border:1px solid #e8dfce;background:#fff;color:#234333;border-radius:50%;width:36px;height:36px;font-size:22px;cursor:pointer;z-index:2}
+#py2-seasonal-admin{margin:22px 0;padding:24px;border:1px solid #e5dcc9;border-radius:18px;background:linear-gradient(145deg,#fffefa,#f7f5ed);color:#203329;box-shadow:0 12px 35px #123b2d0b}
+#py2-seasonal-admin h2{margin:4px 0 6px;font-size:24px;color:#123b2d}
+#py2-seasonal-admin .py2-admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:18px}
+#py2-seasonal-admin label{display:grid;gap:6px;font-size:12px;font-weight:750}
+#py2-seasonal-admin label.py2-check{display:flex;align-items:center;gap:9px}
+#py2-seasonal-admin input:not([type=checkbox]):not([type=range]),#py2-seasonal-admin select{width:100%;min-width:0;padding:10px 11px;border:1px solid #d8d5c9;border-radius:9px;background:#fff;color:#203329}
+#py2-seasonal-admin input[type=checkbox]{accent-color:#1d6045;width:17px;height:17px}
+#py2-seasonal-admin .py2-admin-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+#py2-seasonal-admin .py2-admin-actions button{border:1px solid #d9d2c2;border-radius:9px;background:#fff;color:#203329;padding:10px 14px;font-weight:800;cursor:pointer}
+#py2-seasonal-admin .py2-admin-actions .primary{background:#123b2d;color:#fff;border-color:#123b2d}
+#py2-seasonal-admin .py2-admin-note{font-size:11px;color:#68766d;margin:12px 0 0;line-height:1.6}
+@media(max-width:600px){.py2-xmas-modal{padding:30px 20px 22px}#py2-seasonal-admin{padding:17px}}
+@media(prefers-reduced-motion:reduce){html.py2-xmas *,html.py2-xmas *:before,html.py2-xmas *:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Cross-page seasonal components */
+html.py2-xmas :is(.top-header,.site-header,.main-header){border-bottom-color:#d9c69d;box-shadow:0 3px 18px #123b2d0c}
+html.py2-xmas :is(.search-box,.header-search,.search-wrap){border-color:#c9a45b}
+html.py2-xmas :is(.search-box button,.search-btn){background:#123b2d;color:#fff}
+html.py2-xmas :is(.category-tab,.filter-tab,.shop-tab)[aria-selected=true],html.py2-xmas :is(.category-tab,.filter-tab,.shop-tab).active{background:#123b2d;color:#fff;border-color:#123b2d}
+html.py2-xmas :is(.cart-summary,.order-summary,.checkout-summary,.form-card,.contact-card){border-color:#e9e1d2;box-shadow:0 8px 26px #49391a0a}
+html.py2-xmas :is(input,select,textarea){border-color:#ddd7c9}
+html.py2-xmas :is(input,select,textarea):focus{border-color:#1d6045;box-shadow:0 0 0 3px #1d60451c}
+html.py2-xmas :is(.success,.success-message,.notice-success){border-color:#c9dfce;background:#f1f8f1;color:#245b3d}
+html.py2-xmas :is(.error,.error-message,.notice-error){border-color:#edc8c8;background:#fff5f4;color:#982d35}
+html.py2-xmas :is(.stock,.stock-label,.in-stock){color:#236447}
+html.py2-xmas :is(.offer-strip,.promo-strip,.announcement-bar){background:linear-gradient(100deg,#123b2d,#1d6045);color:#fff}
+html.py2-xmas :is(.offer-strip a,.promo-strip a,.announcement-bar a){color:#f4d99d}
+
+/* Minimal seasonal identity: campaign banners do the festive work */
+.py2-season-mark{display:inline-block;margin-inline-start:3px;font-size:.78em;line-height:1;vertical-align:baseline;filter:none}
+html.py2-xmas .py2-xmas-hero:after{opacity:.45}
