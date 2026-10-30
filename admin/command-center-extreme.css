@@ -1646,3 +1646,31 @@ body.cc-nav-open #workspace-nav.cc-header-navigation .workspace-tab{
 #dashboard[data-cc-theme="dark"] #cc-global-footer .cc-quick-heading strong,
 #dashboard[data-cc-theme="dark"] #cc-global-footer .cc-quick-card strong{color:#34445d!important}
 #dashboard[data-cc-theme="dark"] #cc-global-footer #cc-quick-actions{background:transparent!important}
+
+
+/* Seasonal Studio: focused campaign switchboard, not a second content CMS. */
+#view-seasonal-studio .ss-control-card{max-width:980px;padding:22px!important}
+#view-seasonal-studio .ss-section-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+#view-seasonal-studio .ss-section-intro h3{margin:0 0 4px;font-size:17px}
+#view-seasonal-studio .ss-section-intro .ss-help{margin:0}
+#view-seasonal-studio .ss-source-note{flex:0 0 auto;padding:6px 9px;border-radius:999px;background:#edf4ff;color:#3263ad;font-size:9px;font-weight:900;letter-spacing:.8px}
+#view-seasonal-studio .ss-primary-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#view-seasonal-studio .ss-primary-controls .ss-field{margin:0}
+#view-seasonal-studio .ss-toggle-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:20px 0;padding:15px 0;border-top:1px solid #e8edf4;border-bottom:1px solid #e8edf4}
+#view-seasonal-studio .ss-toggle{min-height:43px;display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #e5eaf2;border-radius:10px;background:#fbfcfe;font-size:12px;font-weight:750;color:#34445b}
+#view-seasonal-studio .ss-toggle input{width:17px;height:17px;accent-color:#3478f6}
+#view-seasonal-studio .ss-advanced-controls h4{margin:0 0 10px;font-size:13px;color:#34445b}
+#view-seasonal-studio .ss-advanced-controls .ss-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#view-seasonal-studio .ss-advanced-controls .ss-field{margin:0}
+#view-seasonal-studio .ss-footer-note{max-width:980px;margin:12px 2px 0;color:#7b8798;font-size:11px;line-height:1.6}
+#view-seasonal-studio .ss-heading-actions{display:flex;gap:8px;flex-wrap:wrap}
+#view-seasonal-studio .ss-status{max-width:980px;margin:0 0 14px}
+@media(max-width:650px){
+ #view-seasonal-studio .ss-control-card{padding:15px!important}
+ #view-seasonal-studio .ss-section-intro{display:grid}
+ #view-seasonal-studio .ss-primary-controls,#view-seasonal-studio .ss-advanced-controls .ss-form-grid{grid-template-columns:minmax(0,1fr)}
+ #view-seasonal-studio .ss-toggle-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px 0}
+ #view-seasonal-studio .ss-toggle{padding:9px;font-size:11px}
+ #view-seasonal-studio .ss-heading-actions{width:100%}
+ #view-seasonal-studio .ss-heading-actions .btn{flex:1}
+}
