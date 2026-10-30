@@ -122,3 +122,19 @@ html.py2-xmas .bottom-nav .bnav-item{flex-direction:column!important;gap:3px!imp
 html.py2-xmas .bottom-nav .bnav-item :is(span,small,strong){position:relative!important;z-index:1!important;display:block!important;line-height:1.15!important;overflow:visible!important}
 html.py2-xmas .bottom-nav .bnav-item .py2-seasonal-tab-mark{font-size:12px!important;margin:0!important;line-height:1!important}
 @media(max-width:480px){html.py2-xmas .py2-seasonal-brand-marks span{font-size:24px!important}html.py2-xmas .bottom-nav{bottom:7px!important}}
+
+
+/* Seasonal backgrounds: each campaign gets its own quiet page canvas. Product and form cards remain readable. */
+html[class*="py2-season-"] body{background-color:var(--py2-season-page,#fff)!important;background-image:var(--py2-season-bg,none)!important;background-attachment:scroll!important}
+html.py2-season-christmas{--py2-season-page:#fffaf0;--py2-season-bg:radial-gradient(ellipse at 8% 2%,#d6b86b24,transparent 32%),radial-gradient(ellipse at 94% 24%,#1d604514,transparent 34%),linear-gradient(180deg,#fffaf0 0%,#fff 48%,#f8f5ec 100%)}
+html.py2-season-valentines{--py2-season-page:#fff5f7;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#fb718524,transparent 34%),radial-gradient(ellipse at 94% 30%,#e879a014,transparent 36%),linear-gradient(180deg,#fff5f7 0%,#fff 58%,#fff0f3 100%)}
+html.py2-season-easter{--py2-season-page:#f7fbf2;--py2-season-bg:radial-gradient(ellipse at 10% 3%,#a3c77b30,transparent 34%),radial-gradient(ellipse at 92% 28%,#f4c96a24,transparent 35%),linear-gradient(180deg,#f7fbf2 0%,#fff 58%,#f5f9ed 100%)}
+html.py2-season-halloween{--py2-season-page:#fff8f0;--py2-season-bg:radial-gradient(ellipse at 8% 5%,#f9731624,transparent 34%),radial-gradient(ellipse at 92% 28%,#6d28d914,transparent 36%),linear-gradient(180deg,#fff8f0 0%,#fff 58%,#f8f3ff 100%)}
+html.py2-season-black-friday,html.py2-season-blackfriday{--py2-season-page:#f5f5f6;--py2-season-bg:radial-gradient(ellipse at 10% 3%,#64748b18,transparent 35%),linear-gradient(180deg,#f5f5f6 0%,#fff 62%,#f1f2f4 100%)}
+html.py2-season-new-year,html.py2-season-newyear{--py2-season-page:#f4f8ff;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#60a5fa26,transparent 34%),radial-gradient(ellipse at 92% 28%,#c084fc20,transparent 36%),linear-gradient(180deg,#f4f8ff 0%,#fff 58%,#f5f2ff 100%)}
+html.py2-season-mothers-day,html.py2-season-mothersday{--py2-season-page:#fff6f7;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#f9a8d426,transparent 34%),radial-gradient(ellipse at 92% 28%,#86b98a20,transparent 36%),linear-gradient(180deg,#fff6f7 0%,#fff 58%,#f4faf3 100%)}
+html.py2-season-fathers-day,html.py2-season-fathersday{--py2-season-page:#f3f8fc;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#60a5fa24,transparent 34%),radial-gradient(ellipse at 92% 28%,#0f766e18,transparent 36%),linear-gradient(180deg,#f3f8fc 0%,#fff 58%,#edf5fa 100%)}
+html.py2-season-back-to-school,html.py2-season-backtoschool{--py2-season-page:#f7f9ff;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#818cf824,transparent 34%),radial-gradient(ellipse at 92% 28%,#fbbf2420,transparent 36%),linear-gradient(180deg,#f7f9ff 0%,#fff 58%,#fffaf0 100%)}
+html.py2-season-summer{--py2-season-page:#f1fbff;--py2-season-bg:radial-gradient(ellipse at 8% 4%,#38bdf826,transparent 34%),radial-gradient(ellipse at 92% 28%,#facc1520,transparent 36%),linear-gradient(180deg,#f1fbff 0%,#fff 58%,#f2fbf5 100%)}
+html[class*="py2-season-"] :is(.pcard,.product-card,.product-item,.section-card,.form-card,.cart-summary,.checkout-summary){background:#fff}
+@media(max-width:768px){html[class*="py2-season-"] body{background-attachment:scroll!important}}
