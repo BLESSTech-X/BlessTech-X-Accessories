@@ -12,7 +12,7 @@ function active(){const campaignLive=!!settings.enabled&&(!settings.scheduled||i
 function safeImage(value){try{const u=new URL(value,location.origin);return (u.protocol==='https:'||u.origin===location.origin)?u.href:''}catch{return ''}}
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function themeKey(){return String(settings.theme||'default').toLowerCase().replace(/[^a-z0-9-]/g,'-')}
-function themeMarks(){const key=themeKey();if(key.includes('valentine'))return ['💗','🌹','💝','💕'];if(key.includes('easter'))return ['🐣','🌷','🐰','🥚'];if(key.includes('halloween'))return ['🎃','🦇','👻','🕸️'];if(key.includes('black'))return ['🛍️','🏷️','⭐','🛒'];if(key.includes('new-year')||key.includes('newyear'))return ['🎆','✨','🥂','🎇'];if(key.includes('school'))return ['🎒','📚','✏️','⭐'];if(key.includes('mother'))return ['🌷','💐','💗','🎁'];if(key.includes('father'))return ['🎁','⭐','🏆','💙'];if(key.includes('summer'))return ['☀️','🌴','🌊','🍉'];if(key.includes('christmas'))return ['🎄','🎅','🔔','🎁','🦌','⛄'];return ['✦','✧','•','✦']}
+function themeMarks(){const key=themeKey();if(key.includes('valentine'))return ['💗','🌹','💝','💕'];if(key.includes('easter'))return ['🐣','🌷','🐰','🥚'];if(key.includes('halloween'))return ['🎃','🦇','👻','🕸️'];if(key.includes('black'))return ['🛍️','🏷️','⭐','🛒'];if(key.includes('new-year')||key.includes('newyear'))return ['🎆','✨','🥂','🎇'];if(key.includes('school'))return ['🎒','📚','✏️','⭐'];if(key.includes('mother'))return ['🌷','💐','💗','🎁'];if(key.includes('father'))return ['🎁','⭐','🏆','💙'];if(key.includes('summer'))return ['☀️','🌴','🌊','🍉'];if(key.includes('independence'))return ['🇿🇲','💚','🖤','🧡','❤️'];if(key.includes('christmas'))return ['🎄','🎅','🔔','🎁','🦌','⛄'];return ['✦','✧','•','✦']}
 function decorateHeadings(){
  if(!settings.decorations)return;
  const selectors='main h1,main h2,main h3,.hero h1,.hero h2,.hero-section h1,.hero-section h2,.hero-banner h1,.hero-banner h2,.section-head h2,.section-heading h2,.blog-section-heading h2,main section h2,.heading,.section-title';
@@ -85,42 +85,25 @@ function showPopup(){
 function apply(){
  const enabled=active();const root=document.documentElement;
  root.classList.remove(...Array.from(root.classList).filter(name=>name.startsWith('py2-season-')));
- if(enabled){const key=themeKey();root.classList.add('py2-season-'+key);}
+ if(enabled){const key=themeKey();root.classList.add('py2-season-active','py2-season-theme-'+key);}
  root.classList.toggle('py2-xmas',enabled&&themeKey().includes('christmas'));
  if(!enabled)return;
  decorateHeadings();decorateBrand();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
-async function loadAdsConfig(){
- if(window.PY2_ADS_CONFIG?.url&&window.PY2_ADS_CONFIG?.key)return window.PY2_ADS_CONFIG;
- await new Promise((resolve,reject)=>{
-  const existing=document.querySelector('script[data-py2-ads-config]');
-  if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return}
-  const script=document.createElement('script');script.src='/ads-config.js';script.dataset.py2AdsConfig='1';script.onload=resolve;script.onerror=reject;document.head.append(script);
- });
- const cfg=window.PY2_ADS_CONFIG;if(!cfg?.url||!cfg?.key)throw new Error('Supabase public configuration is unavailable');return cfg;
-}
 async function loadPublishedSettings(){
- const cfg=await loadAdsConfig();
- const endpoint=cfg.url.replace(/\\/$/,'')+'/rest/v1/seasonal_campaigns?id=eq.global&select=*';
- const response=await fetch(endpoint,{cache:'no-store',headers:{apikey:cfg.key,Authorization:'Bearer '+cfg.key}});
- if(!response.ok)throw new Error('Supabase campaign settings unavailable: '+response.status);
- const rows=await response.json();if(!Array.isArray(rows)||!rows[0])throw new Error('The global seasonal campaign row is missing');
- return rows[0];
+ const response=await fetch(CONFIG+'?v='+encodeURIComponent(document.documentElement.dataset.seasonalVersion||'live')+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin'});
+ if(!response.ok)throw new Error('Decap seasonal settings file unavailable: '+response.status);
+ const data=await response.json();
+ if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('Seasonal settings file is not a valid JSON object');
+ return data;
 }
 async function load(){
  try{
-  let published;
-  try{published=await loadPublishedSettings();}
-  catch(supabaseError){
-   console.warn('[PhoneYa2 Seasonal] Supabase unavailable; using published static fallback.',supabaseError);
-   const fallback=await fetch(CONFIG,{cache:'no-store'});
-   if(!fallback.ok)throw supabaseError;
-   published=await fallback.json();
-  }
+  const published=await loadPublishedSettings();
   settings={...defaults,...published};
   if(params.has('py2-seasonal-preview')){try{const draft=JSON.parse(localStorage.getItem(PREVIEW_KEY)||'null');if(draft)settings={...settings,...draft}}catch{}}
   apply();
- }catch(error){console.warn('[PhoneYa2 Seasonal]',error)}
+ }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load Decap-published settings:',error)}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 // Deliberately do not observe the entire document: product grids and live widgets mutate often.
