@@ -166,7 +166,8 @@ body.py2-water-page.shop-page :is(.pcard-img,.pc-img) {
 
 /* RETIRED WATER THEME: use the same plain white canvas as Shop site-wide. */
 html, html.py2-water-enabled, html.py2-xmas, html[class*="py2-season-"],
-body, body.py2-water-page, body.shop-page {
+body, body.py2-water-page, body.shop-page,
+html.py2-xmas body, html[class*="py2-season-"] body {
   background: #ffffff !important;
   background-color: #ffffff !important;
   background-image: none !important;
