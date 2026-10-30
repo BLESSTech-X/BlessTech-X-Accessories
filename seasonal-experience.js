@@ -118,6 +118,7 @@ async function load(){
   const published=await loadPublishedSettings();
   settings={...defaults,...published};
   // GitHub is the single source of truth for season-specific creative content.
+  const campaignOverrides={bannerImage:published.bannerImage||'',popupImage:published.popupImage||''};
   const selectedTheme=themeKey();
   try{
    const presetResponse=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(selectedTheme)+'.json?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
@@ -126,6 +127,7 @@ async function load(){
     if(preset&&typeof preset==='object'&&!Array.isArray(preset))settings={...settings,...preset};
    }else{console.warn('[PhoneYa2 Seasonal] GitHub preset unavailable for '+selectedTheme+': '+presetResponse.status)}
   }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load '+selectedTheme+' preset:',error)}
+  settings={...settings,...campaignOverrides};
   if(params.has('py2-seasonal-preview')){try{const draft=JSON.parse(localStorage.getItem(PREVIEW_KEY)||'null');if(draft)settings={...settings,...draft}}catch{}}
   apply();
  }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load Decap-published settings:',error)}
