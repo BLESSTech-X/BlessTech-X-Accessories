@@ -592,8 +592,19 @@ function openWorkspaceModal(title,url){const modal=$('workspace-modal'),frame=$(
 function closeWorkspaceModal(){const modal=$('workspace-modal');modal.classList.remove('open');$('workspace-modal-frame').src='about:blank';document.body.style.overflow='';}
 function startQuietRefresh(){if(silentRefreshTimer)clearInterval(silentRefreshTimer);silentRefreshTimer=setInterval(()=>{if(session&&!document.hidden)refreshData({silent:true});},60000);}
 
-function activateWorkspaceTab(id,scroll){document.querySelectorAll('#workspace-nav [role="tab"]').forEach(b=>{const active=b.id==='tab-'+id;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});document.querySelectorAll('#workspace-views .workspace-view').forEach(p=>p.hidden=p.id!=='view-'+id);if(id==='analytics'&&ga4Summary===null&&session)refreshGa4();if(id==='health'&&$('health-grid').children.length===0&&session)checkHealth();if(id==='analytics')requestAnimationFrame(()=>{drawChart();if(ga4ReportData){drawTrafficSourceChart(ga4ReportData);renderGa4Pages(ga4ReportData.pages);}});
-if(id==='orders')requestAnimationFrame(()=>{drawChart();drawProductPerformanceChart();renderJourneyInsights();renderOrderStatusDonut();});localStorage.setItem('phoneya2_cc_last_tab',id);recordTabVisit(id);if(scroll)$('tab-'+id)?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+function activateWorkspaceTab(id,scroll){
+ document.querySelectorAll('#workspace-nav [role="tab"]').forEach(b=>{const active=b.id==='tab-'+id;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
+ document.querySelectorAll('#workspace-views .workspace-view').forEach(p=>p.hidden=p.id!=='view-'+id);
+ if(id==='analytics'&&ga4Summary===null&&session)refreshGa4();
+ if(id==='health'&&$('health-grid').children.length===0&&session)checkHealth();
+ if(id==='analytics')requestAnimationFrame(()=>{drawChart();if(ga4ReportData){drawTrafficSourceChart(ga4ReportData);renderGa4Pages(ga4ReportData.pages);}});
+ if(id==='orders')requestAnimationFrame(()=>{drawChart();drawProductPerformanceChart();renderJourneyInsights();renderOrderStatusDonut();});
+ localStorage.setItem('phoneya2_cc_last_tab',id);recordTabVisit(id);
+ if(scroll){
+  const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+  window.scrollTo({top:0,behavior});
+ }
+}
 function recordTabVisit(id){if(id)localStorage.setItem('phoneya2_cc_tab_'+id,String(Date.now()));}
 function showHeadsUp(title,copy,actions){const box=$('heads-up');if(!box||!box.hidden)return;$('heads-up-title').textContent=title;$('heads-up-text').textContent=copy;const host=$('heads-up-actions');host.replaceChildren();actions.forEach(a=>{const b=document.createElement('button');b.type='button';b.textContent=a.label;b.addEventListener('click',()=>{dismissHeadsUp();if(a.tab)activateWorkspaceTab(a.tab,true);if(a.embedUrl)openWorkspaceModal(a.title||a.label,a.embedUrl);if(a.dismiss)return;});host.append(b);});box.hidden=false;}
 function dismissHeadsUp(){$('heads-up').hidden=true;localStorage.setItem('phoneya2_cc_heads_up_dismissed',String(Date.now()));}
@@ -650,7 +661,7 @@ const themeButton=$('cc-theme-toggle');if(themeButton){themeButton.setAttribute(
  document.querySelectorAll('[data-chart-days]').forEach(b=>{const active=Number(b.dataset.chartDays)===window.phoneya2ChartDays;b.setAttribute('aria-pressed',String(active));b.addEventListener('click',()=>{window.phoneya2ChartDays=Number(b.dataset.chartDays);localStorage.setItem('phoneya2_cc_chart_days',String(window.phoneya2ChartDays));document.querySelectorAll('[data-chart-days]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));const subtitle=document.querySelector('#view-analytics .section-head p');if(subtitle&&subtitle.textContent.startsWith('Compare order volume'))subtitle.textContent='Orders created across the last '+window.phoneya2ChartDays+' days';drawChart();});});$('voice-toggle').addEventListener('click',()=>setVoiceBriefing(!voiceBriefingEnabled));$('lab-skip').addEventListener('click',closeLabSequence);$('workspace-modal-close').addEventListener('click',closeWorkspaceModal);$('workspace-modal').addEventListener('click',e=>{if(e.target===$('workspace-modal'))closeWorkspaceModal();});window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeWorkspaceModal();closeLabSequence();}});$('ga4-refresh').addEventListener('click',refreshGa4);$('health-refresh').addEventListener('click',checkHealth);$('logout').addEventListener('click',signOut);window.addEventListener('resize',()=>{if(!$('dashboard').classList.contains('hidden')){drawChart();drawProductPerformanceChart();if(ga4ReportData)drawTrafficSourceChart(ga4ReportData);}});$('clock').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});init().catch(e=>message('login-message',e.message||'Could not initialize sign-in.','error'));
 })();
 </script>
-  <script src="/admin/command-center-extreme.js?v=20261030-ai-routing1" defer></script>
+  <script src="/admin/command-center-extreme.js?v=20261030-scroll-footer1" defer></script>
   <script src="/admin/product-studio.js?v=20261030-inventory-flow1" defer></script>
   <script src="/admin/seasonal-studio.js?v=20261030-command-centre5" defer></script>
   <script src="/admin/customer-studio.js?v=20261030-customer1" defer></script>
