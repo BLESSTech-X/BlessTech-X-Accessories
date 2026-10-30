@@ -2,14 +2,14 @@
 (()=>{'use strict';
 const CONFIG='/content/settings/seasonal-campaigns.json';
 const PREVIEW_KEY='phoneya2-seasonal-preview-v3';
-const defaults={enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',popup:false,popupMode:'delay',popupDelay:5,popupScroll:35,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html'};
+const defaults={enabled:false,theme:'christmas',decorations:true,snow:false,snowIntensity:24,scheduled:false,start:'2026-11-15',end:'2026-12-27',coverage:'all',popup:false,popupMode:'delay',popupDelay:5,popupScroll:35,popupTitle:'Make Their Christmas Special',popupMessage:'Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.',popupButton:'Shop Christmas Deals',popupUrl:'/shop.html',banner:true,bannerTitle:'The PhoneYa2 Christmas Edit',bannerMessage:'Thoughtful tech gifts. Better-connected moments.',bannerButton:'Explore Christmas Picks',bannerUrl:'/shop.html',bannerImage:'https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200',popupImage:'https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600'};
 let settings={...defaults},snowLayer=null,popupCreated=false;
 const params=new URLSearchParams(location.search);
 function localDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Lusaka',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function inSchedule(){return !!(settings.scheduled&&settings.start&&settings.end&&localDay()>=settings.start.slice(0,10)&&localDay()<=settings.end.slice(0,10))}
 function pageCovered(){const p=location.pathname.toLowerCase();if(settings.coverage==='shopping')return p==='/'||/^\/(shop|product|cart|checkout|account)(\.html)?$/.test(p);if(settings.coverage==='content')return /blog|about|contact|policy|newsletter|advertis|agent/.test(p);return true}
 function active(){const campaignLive=!!settings.enabled&&(!settings.scheduled||inSchedule());return pageCovered()&&(campaignLive||params.has('py2-seasonal-preview'))}
-function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
+function safeImage(value){try{const u=new URL(value,location.origin);return (u.protocol==='https:'||u.origin===location.origin)?u.href:''}catch{return ''}}\nfunction safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function decorateHeadings(){
  if(!settings.decorations)return;
  const selectors='main h1, .hero h1, .hero-section h1, .hero-banner h1, .section-head h2, .section-heading h2, .blog-section-heading h2, main section h2';
@@ -19,7 +19,7 @@ function decorateHeadings(){
 }
 function createCampaignBanner(){
  if(!settings.banner||document.getElementById('py2-xmas-ribbon'))return;
- const ribbon=document.createElement('aside');ribbon.id='py2-xmas-ribbon';ribbon.className='py2-xmas-ribbon';
+ const ribbon=document.createElement('aside');ribbon.id='py2-xmas-ribbon';ribbon.className='py2-xmas-ribbon';if(settings.bannerImage){const image=safeImage(settings.bannerImage);if(image)ribbon.style.setProperty('--py2-xmas-banner-image','url('+JSON.stringify(image)+')')}
  ribbon.setAttribute('aria-label','PhoneYa2 Christmas campaign');
  const inner=document.createElement('div');inner.className='py2-xmas-ribbon-inner';
  const mark=document.createElement('span');mark.className='py2-xmas-ribbon-mark';mark.setAttribute('aria-hidden','true');mark.textContent='✦';
@@ -52,10 +52,10 @@ function showPopup(){
  popupCreated=true;const wrap=document.createElement('div');wrap.id='py2-xmas-popup';wrap.hidden=true;
  const section=document.createElement('section');section.className='py2-xmas-modal';section.setAttribute('role','dialog');section.setAttribute('aria-modal','true');section.setAttribute('aria-labelledby','py2-xmas-title');
  const close=document.createElement('button');close.className='py2-xmas-close';close.type='button';close.setAttribute('aria-label','Close promotion');close.textContent='×';
- const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=settings.popupTitle;
+ const art=document.createElement('div');art.className='py2-xmas-modal-art';const image=safeImage(settings.popupImage);if(image)art.style.backgroundImage='linear-gradient(180deg,#071b1420 0%,#071b1499 100%),url('+JSON.stringify(image)+')';\n const eyebrow=document.createElement('span');eyebrow.className='py2-xmas-modal-eyebrow';eyebrow.textContent='PHONEYA2 • CHRISTMAS COLLECTION';\n const title=document.createElement('h2');title.id='py2-xmas-title';title.textContent=settings.popupTitle;art.append(eyebrow,title);
  const copy=document.createElement('p');copy.className='py2-xmas-copy';copy.textContent=settings.popupMessage;
  const link=document.createElement('a');link.className='py2-xmas-cta';link.textContent=settings.popupButton;link.href=safeDestination(settings.popupUrl);
- section.append(close,title,copy,link);wrap.append(section);document.body.append(wrap);
+ section.append(close,art,copy,link);wrap.append(section);document.body.append(wrap);
  const dismiss=()=>{wrap.hidden=true;sessionStorage.setItem('py2-xmas-dismissed','1')};
  close.addEventListener('click',dismiss);wrap.addEventListener('click',e=>{if(e.target===wrap)dismiss()});
  const reveal=()=>{if(!sessionStorage.getItem('py2-xmas-dismissed'))wrap.hidden=false};
@@ -77,5 +77,7 @@ async function load(){
   apply();
  }catch(error){console.warn('[PhoneYa2 Seasonal]',error)}
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();\nconst observer=new MutationObserver(()=>{if(document.documentElement.classList.contains('py2-xmas')){decorateHeadings();applyHeroTreatment()}});\nobserver.observe(document.documentElement,{childList:true,subtree:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+const observer=new MutationObserver(()=>{if(document.documentElement.classList.contains('py2-xmas')){decorateHeadings();applyHeroTreatment()}});
+observer.observe(document.documentElement,{childList:true,subtree:true});
 })();
