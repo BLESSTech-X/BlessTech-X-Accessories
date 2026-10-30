@@ -2873,7 +2873,7 @@ function initHero() {
   }
   function reset() {
     clearInterval(timer);
-    timer = setInterval(() => { if (!paused) go(idx + 1); }, 3000);
+    timer = setInterval(() => { if (!paused && !document.hidden) go(idx + 1); }, 3000);
   }
   document.getElementById('hero-prev')?.addEventListener('click', () => go(idx - 1));
   document.getElementById('hero-next')?.addEventListener('click', () => go(idx + 1));
@@ -2890,25 +2890,6 @@ function initHero() {
   }
   reset();
 }
-
-// Countdown shows when the daily spotlight rotates/resets; it does not claim
-// that the product's actual discounted price expires at midnight.
-(function initOfferCountdown() {
-  const pad = value => String(value).padStart(2, '0');
-  function updateOfferClock() {
-    const now = new Date();
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999);
-    const secondsLeft = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
-    const values = [Math.floor(secondsLeft / 3600), Math.floor((secondsLeft % 3600) / 60), secondsLeft % 60];
-    ['offer-cd-h', 'offer-cd-m', 'offer-cd-s'].forEach((id, index) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = pad(values[index]);
-    });
-  }
-  updateOfferClock();
-  window.setInterval(updateOfferClock, 1000);
-})();
 
 function renderHomepageHeroPromotions(products, settings) {
   const host = document.getElementById('hero-slides');
@@ -3224,7 +3205,7 @@ function startShowcaseAuto() {
   clearInterval(showcaseTimer);
   resetShowcaseProgress();
   showcaseTimer = setInterval(() => {
-    if (showcasePaused) { resetShowcaseProgress(); return; }
+    if (document.hidden || showcasePaused) { resetShowcaseProgress(); return; }
     const slides = document.querySelectorAll('.showcase-slide');
     if (!slides.length) return;
     const next = (showcaseIdx + 1) % slides.length;
@@ -3426,7 +3407,7 @@ function startCarouselAuto() {
     addCarouselDrag(id);
 
     autoTimers[id] = setInterval(() => {
-      if (userPaused[id]) return;
+      if (document.hidden || userPaused[id]) return;
       const max = getMaxPos(id);
       trackPos[id] = (trackPos[id] || 0) < max ? (trackPos[id] || 0) + 1 : 0;
       applyPos(id);
