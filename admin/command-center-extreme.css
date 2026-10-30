@@ -557,3 +557,6 @@ body:has(#dashboard:not(.hidden)) #dashboard>.intro .intro-actions .btn{min-heig
 #view-overview #bi-dashboard{width:100%;max-width:100%;min-width:0}
 @media(min-width:901px){#view-overview #bi-dashboard{max-width:1200px}}
 @media(max-width:900px){#view-overview #bi-dashboard{margin:0!important}}
+
+.bi-period-summary{display:flex;justify-content:space-between;gap:10px;padding:8px 9px;margin-top:8px;border-radius:8px;background:#f5f7fb;font-size:9px;color:#788092}
+.bi-period-summary b{color:#171923;margin-left:4px;white-space:nowrap}
