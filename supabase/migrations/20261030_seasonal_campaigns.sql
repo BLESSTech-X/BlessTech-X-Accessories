@@ -20,6 +20,14 @@ create table if not exists public.seasonal_campaigns (
   start date not null default date '2026-11-15',
   "end" date not null default date '2026-12-27',
   coverage text not null default 'all',
+  banner boolean not null default true,
+  "bannerTitle" text not null default 'The PhoneYa2 Christmas Edit',
+  "bannerMessage" text not null default 'Thoughtful tech gifts. Better-connected moments.',
+  "bannerButton" text not null default 'Explore Christmas Picks',
+  "bannerUrl" text not null default '/shop.html',
+  "bannerImage" text not null default '',
+  "popupImage" text not null default '',
+  presets jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
 
@@ -40,6 +48,14 @@ alter table public.seasonal_campaigns
   add column if not exists start date not null default date '2026-11-15',
   add column if not exists "end" date not null default date '2026-12-27',
   add column if not exists coverage text not null default 'all',
+  add column if not exists banner boolean not null default true,
+  add column if not exists "bannerTitle" text not null default 'The PhoneYa2 Christmas Edit',
+  add column if not exists "bannerMessage" text not null default 'Thoughtful tech gifts. Better-connected moments.',
+  add column if not exists "bannerButton" text not null default 'Explore Christmas Picks',
+  add column if not exists "bannerUrl" text not null default '/shop.html',
+  add column if not exists "bannerImage" text not null default '',
+  add column if not exists "popupImage" text not null default '',
+  add column if not exists presets jsonb not null default '{}'::jsonb,
   add column if not exists updated_at timestamptz not null default now();
 
 alter table public.seasonal_campaigns enable row level security;
