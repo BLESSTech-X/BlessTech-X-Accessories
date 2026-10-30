@@ -63,6 +63,8 @@
     } catch (e) {}
   }
   function loadSession() {
+    // One shared same-origin Supabase session is the source of truth.
+    // This also means signing out in Command Centre revokes access in Ads Admin.
     try {
       var shared = JSON.parse(localStorage.getItem(SHARED_AUTH_KEY) || 'null');
       if (shared && shared.access_token && shared.user) {
@@ -71,16 +73,7 @@
         return current;
       }
     } catch (e) {}
-    try {
-      var raw = sessionStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      var parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return null;
-      return parsed;
-    } catch (e) {
-      try { sessionStorage.removeItem(SESSION_KEY); } catch (e2) {}
-      return null;
-    }
+    return null;
   }
   function clearSession() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
