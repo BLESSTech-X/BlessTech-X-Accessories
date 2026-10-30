@@ -1,0 +1,22 @@
+{
+  "season": "valentines",
+  "season_label": "Valentine's Day",
+  "heroTitle": "The PhoneYa2 Valentine’s Edit",
+  "heroSubtitle": "Thoughtful gifts. Closer connections.",
+  "bannerTitle": "The PhoneYa2 Valentine’s Edit",
+  "bannerMessage": "Thoughtful gifts. Closer connections.",
+  "bannerButton": "Explore Valentine’s Picks",
+  "bannerUrl": "/shop.html",
+  "bannerImage": "",
+  "popupTitle": "Celebrate Love with PhoneYa2",
+  "popupMessage": "Find thoughtful tech gifts and little surprises to make someone feel special.",
+  "popupButton": "Shop Valentine’s Picks",
+  "popupUrl": "/shop.html",
+  "popupImage": "",
+  "marks": [
+    "💗",
+    "🌹",
+    "💝",
+    "💕"
+  ]
+}
