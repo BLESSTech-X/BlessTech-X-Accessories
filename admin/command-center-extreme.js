@@ -207,10 +207,24 @@
     topbar.insertBefore(nav,right);
     const caption=$('#cc-topbar-caption');
     if(caption)caption.remove();
-    const toggle=$('#cc-menu-toggle');
-    if(toggle)toggle.remove();
-    const overlay=$('.cc-nav-overlay');
-    if(overlay)overlay.remove();
+    let toggle=$('#cc-menu-toggle');
+    if(!toggle){
+      toggle=document.createElement('button');
+      toggle.type='button';toggle.id='cc-menu-toggle';toggle.className='cc-menu-togg';
+      toggle.setAttribute('aria-label','Open workspace menu');toggle.setAttribute('aria-expanded','false');
+      toggle.innerHTML='<span></span><span></span><span></span>';
+      topbar.insertBefore(toggle,nav);
+    }else if(toggle.parentElement!==topbar){topbar.insertBefore(toggle,nav);}
+    let overlay=$('.cc-nav-overlay');
+    if(!overlay){overlay=document.createElement('button');overlay.type='button';overlay.className='cc-nav-overlay';overlay.setAttribute('aria-label','Close workspace menu');document.body.append(overlay);}
+    const closeMenu=()=>{document.body.classList.remove('cc-nav-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open workspace menu');};
+    toggle.addEventListener('click',()=>{
+      const open=document.body.classList.toggle('cc-nav-open');
+      toggle.setAttribute('aria-expanded',String(open));
+      toggle.setAttribute('aria-label',open?'Close workspace menu':'Open workspace menu');
+    });
+    overlay.addEventListener('click',closeMenu);
+    nav.querySelectorAll('.workspace-tab').forEach(tab=>tab.addEventListener('click',closeMenu));
     document.body.classList.remove('cc-nav-open','cc-nav-collapsed');
   }
   function watchGuidedNavigation(){
