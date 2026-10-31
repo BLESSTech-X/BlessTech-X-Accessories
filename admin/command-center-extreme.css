@@ -79,8 +79,7 @@ body:has(#dashboard:not(.hidden)) .wrap{max-width:1280px;padding-top:22px}
 @media(max-width:700px){#workspace-nav{flex-wrap:nowrap;overflow-x:auto;border-radius:0;margin:0 -14px 16px;padding:7px 10px}#workspace-nav .workspace-tab{flex:0 0 auto}.wrap{padding-left:14px;padding-right:14px}}
 
 
-/* Seasonal Studio and compact More navigation */
-.ss-secondary-tab{display:none!important}
+/* Seasonal Studio shares the complete Command Centre workspace navigation. */
 .ss-more{position:relative;flex:0 0 auto}
 .ss-more-button{border:1px solid #e7eaf0!important;background:#fff!important;color:#586579!important}
 .ss-more-menu{position:absolute;right:0;top:calc(100% + 7px);z-index:80;min-width:205px;padding:6px;background:#fff;border:1px solid #e6eaf0;border-radius:11px;box-shadow:0 12px 34px rgba(20,32,50,.14)}
