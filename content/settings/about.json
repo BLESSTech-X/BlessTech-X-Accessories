@@ -1,42 +1,27 @@
 {
-  "team_heading": "The functions behind the experience",
+  "team_heading": "The people behind the experience",
   "values": [
     {
       "icon": "🔎",
-      "title": "Useful Product Information",
-      "description": "Clear descriptions and practical details help shoppers make more informed choices before they order."
-    },
-    {
-      "icon": "🏷️",
-      "title": "Clear, Fair Pricing",
-      "description": "We aim to make prices and offers easy to understand, so customers can compare options with confidence."
+      "title": "Clear choices",
+      "description": "Useful product details to help you choose."
     },
     {
       "icon": "💬",
-      "title": "Helpful Customer Support",
-      "description": "Customers should have a clear way to ask questions and get assistance before and after placing an order."
-    },
-    {
-      "icon": "📦",
-      "title": "Convenient Shopping",
-      "description": "A simple catalogue and straightforward ordering experience make everyday tech easier to access."
+      "title": "Helpful support",
+      "description": "A direct way to ask questions and get help."
     },
     {
       "icon": "🇿🇲",
-      "title": "Local Ambition",
-      "description": "We are building from Zambia, with the ambition to serve more customers and create lasting local value."
-    },
-    {
-      "icon": "📈",
-      "title": "Continuous Improvement",
-      "description": "We keep learning from customer needs and use those insights to improve the products and experience."
+      "title": "Local ambition",
+      "description": "Built in Zambia, with room to grow."
     }
   ],
-  "venture_url": "https://blesstech-x.vercel.app",
+  "venture_url": "/shop.html",
   "businesses_label": "Our Foundation",
-  "cta_business_label": "Explore BLESSTech-X",
-  "values_heading": "The standards we are building around",
-  "story_label": "Our Story",
+  "cta_business_label": "Explore the shop",
+  "values_heading": "What you can expect",
+  "story_label": "OUR STORY",
   "venture_title": "A BLESSTech-X Venture",
   "businesses": [
     {
@@ -50,60 +35,57 @@
   ],
   "story_paragraphs": [
     {
-      "text": "PhoneYa2 is a Zambian technology-commerce venture created to make finding and buying phone accessories and everyday tech essentials more straightforward."
+      "text": "PhoneYa2 is a Zambian technology-commerce venture helping people find everyday phone accessories with clearer choices and convenient online ordering."
     },
     {
-      "text": "From product discovery to the final order, our focus is on helping customers understand their options, compare useful essentials and reach us when they need assistance."
-    },
-    {
-      "text": "Our long-term ambition is to grow into a trusted destination for everyday technology needs—online first, with a broader customer experience as the business expands."
+      "text": "We are building a trusted destination for useful tech essentials, with customer experience at the centre."
     }
   ],
   "cta_whatsapp_url": "https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20chat%20about%20your%20products.",
   "businesses_heading": "The digital foundation behind PhoneYa2",
-  "team_label": "Our Operating Model",
-  "cta_heading": "Find your next everyday tech essential.",
-  "cta_whatsapp_label": "WhatsApp Us",
-  "values_label": "What Guides Us",
-  "story_heading": "Built around better buying decisions.",
+  "team_label": "OUR CAPABILITIES",
+  "cta_heading": "Find your next tech essential.",
+  "cta_whatsapp_label": "WhatsApp us",
+  "values_label": "WHAT GUIDES US",
+  "story_heading": "Technology shopping, made simpler.",
   "hero_line1": "Better tech choices.",
-  "venture_text": "PhoneYa2 is built on a digital-first foundation, with a focus on making product discovery and online shopping more useful for customers in Zambia.",
+  "venture_text": "PhoneYa2 is built on a digital-first foundation.",
   "hero_line2": "Made easier.",
   "country_badge": "🇿🇲 Built in Zambia",
-  "hero_sub": "PhoneYa2 is a Zambian technology-commerce venture helping shoppers discover phone accessories and everyday tech essentials with clearer information, convenient ordering and helpful support.",
+  "hero_sub": "Discover phone accessories and everyday tech essentials with clearer choices and convenient online ordering.",
   "businesses_intro": "PhoneYa2 is a BLESSTech-X venture, supported by a digital-first approach to building useful online experiences.",
-  "cta_text": "Explore the PhoneYa2 catalogue or contact us if you need help choosing the right accessory.",
+  "cta_text": "Explore the catalogue or message us for help choosing.",
   "team": [
     {
       "name": "Digital Experience",
       "role": "PRODUCT & TECHNOLOGY",
-      "bio": "Shapes the online shopping journey—from product discovery and useful information to a smoother browsing experience.",
+      "bio": "A smoother online shopping journey.",
       "image": "https://images.pexels.com/photos/13377869/pexels-photo-13377869.jpeg?cs=srgb&dl=pexels-abdullahi-sow-292686948-13377869.jpg&fm=jpg",
-      "image_alt": "Representative stock photograph of a young African professional working at a laptop",
+      "image_alt": "Professional working with digital technology",
       "active": true
     },
     {
       "name": "Customer Care",
       "role": "CUSTOMER EXPERIENCE",
-      "bio": "Represents the support function focused on answering questions, helping shoppers understand options and resolving order concerns.",
+      "bio": "Helpful answers and customer support.",
       "image": "https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?cs=srgb&dl=pexels-mart-production-7709195.jpg&fm=jpg",
-      "image_alt": "Representative stock photograph of a Black woman working in customer support",
+      "image_alt": "Customer support professional at work",
       "active": true
     },
     {
       "name": "Order Operations",
       "role": "OPERATIONS & FULFILMENT",
-      "bio": "Represents the processes behind product availability, order handling and coordinating fulfilment as the operation grows.",
+      "bio": "The processes behind every order.",
       "image": "https://images.pexels.com/photos/6169166/pexels-photo-6169166.jpeg?cs=srgb&dl=pexels-tima-miroshnichenko-6169166.jpg&fm=jpg",
-      "image_alt": "Representative stock photograph of a worker handling a parcel",
+      "image_alt": "Professional handling a delivery parcel",
       "active": true
     },
     {
       "name": "Growth & Partnerships",
       "role": "MARKETING & PARTNERSHIPS",
-      "bio": "Builds awareness, develops relationships and creates opportunities to connect more shoppers with useful products.",
-      "image": "https://images.pexels.com/photos/3869649/pexels-photo-3869649.jpeg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg",
-      "image_alt": "Representative stock photograph of African women collaborating in an office",
+      "bio": "Connecting products with more people.",
+      "image": "https://images.pexels.com/photos/3869649/pexels-photo-2210122-3869649.jpg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg",
+      "image_alt": "African professionals collaborating at work",
       "active": true
     }
   ],
