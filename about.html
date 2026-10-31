@@ -1142,6 +1142,48 @@ body{background:#f6f8fa!important;color:var(--about-ink)!important}
 }
 @media(prefers-reduced-motion:reduce){.team-grid{scroll-behavior:auto}}
 </style>
+<style id="phoneya2-about-gallery-professional-v2">
+.about-hero{min-height:0!important;margin-top:0!important;padding:30px clamp(18px,3.5vw,44px)!important;border-radius:0 0 22px 22px!important}
+.about-hero-content{gap:clamp(20px,3vw,42px)!important}
+.about-hero .section-tag{margin-bottom:9px!important}
+.about-hero h1{font-size:clamp(2rem,4.2vw,3.35rem)!important;line-height:1.02!important;margin:0 0 11px!important;letter-spacing:-.045em!important}
+.about-hero p{font-size:14px!important;line-height:1.6!important}
+.about-hero-actions{margin-top:17px!important;gap:9px!important}
+.about-primary-link,.about-secondary-link{padding:11px 15px!important;font-size:12px!important}
+.about-hero-proof{margin-top:15px!important;gap:14px!important;font-size:11px!important}
+.about-hero-visual{min-height:250px!important;height:250px!important;border-radius:18px!important;background:linear-gradient(135deg,#e8f0eb,#dce7e1)!important}
+.about-hero-visual>img{object-fit:contain!important;object-position:center!important;padding:0!important}
+.about-hero-visual:after{inset:58% 0 0!important;background:linear-gradient(0deg,rgba(8,19,28,.58),transparent)!important}
+.team-section{padding:40px 22px 36px!important}
+.team-section .section-header{margin-bottom:18px!important}
+.team-intro{max-width:580px!important;font-size:12px!important;line-height:1.6!important}
+.team-gallery-shell{max-width:1180px!important;padding:0 34px!important}
+.team-grid{gap:14px!important;padding:3px 2px 12px!important}
+.team-card{flex:0 0 clamp(220px,24%,270px)!important;border:1px solid #e1e9e4!important;border-radius:15px!important;background:#fff!important;box-shadow:0 7px 22px rgba(18,35,53,.07)!important}
+.team-avatar{height:205px!important;width:100%!important;margin:0!important;border-radius:0!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;background:linear-gradient(145deg,#edf3f0,#e3ebe7)!important;border-bottom:1px solid #e5ece8!important}
+.team-avatar img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;padding:5px!important;transform:none!important}
+.team-card:hover .team-avatar img{transform:none!important}
+.team-card-copy{padding:13px 15px 15px!important}
+.team-name{padding:0!important;margin:0 0 4px!important;font-size:15px!important;line-height:1.3!important;color:#182b22!important}
+.team-role{display:block!important;padding:0!important;margin:0 0 7px!important;font-size:9px!important;letter-spacing:.9px!important;line-height:1.35!important;color:#168746!important}
+.team-bio{padding:0!important;margin:0!important;font-size:11px!important;line-height:1.5!important;color:#68796e!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;min-height:33px}
+.team-socials{display:none!important}
+.team-gallery-arrow{top:40%!important}
+@media(max-width:760px){
+.about-hero{padding:22px 16px 24px!important}
+.about-hero-content{gap:18px!important}
+.about-hero h1{font-size:clamp(1.9rem,8vw,2.65rem)!important}
+.about-hero p{font-size:12px!important;line-height:1.55!important}
+.about-hero-visual{height:190px!important;min-height:190px!important}
+.about-hero-actions{margin-top:13px!important}
+.about-hero-proof{margin-top:11px!important}
+.team-section{padding:32px 12px 28px!important}
+.team-gallery-shell{padding:0 24px!important}
+.team-card{flex-basis:78vw!important;max-width:270px!important}
+.team-avatar{height:190px!important}
+}
+@media(prefers-reduced-motion:reduce){.team-card,.team-avatar img{transition:none!important}}
+</style>
 </head>
 <body>
 
@@ -1255,10 +1297,10 @@ body{background:#f6f8fa!important;color:var(--about-ink)!important}
   <div class="team-gallery-shell">
     <button class="team-gallery-arrow team-gallery-prev" type="button" aria-label="Scroll team gallery left" data-team-scroll="-1"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="team-grid" id="about-team-grid">
-      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/13377869/pexels-photo-13377869.jpeg?cs=srgb&dl=pexels-abdullahi-sow-292686948-13377869.jpg&fm=jpg" alt="Professional working with digital technology"></div><div class="team-card-copy"><div class="team-role">PRODUCT &amp; TECHNOLOGY</div><div class="team-name">Digital Experience</div><p class="team-bio">A smoother online shopping journey.</p></div></article>
-      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?cs=srgb&dl=pexels-mart-production-7709195.jpg&fm=jpg" alt="Customer support professional at work"></div><div class="team-card-copy"><div class="team-role">CUSTOMER EXPERIENCE</div><div class="team-name">Customer Care</div><p class="team-bio">Helpful answers and customer support.</p></div></article>
-      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/6169166/pexels-photo-6169166.jpeg?cs=srgb&dl=pexels-tima-miroshnichenko-6169166.jpg&fm=jpg" alt="Professional handling a delivery parcel"></div><div class="team-card-copy"><div class="team-role">OPERATIONS &amp; FULFILMENT</div><div class="team-name">Order Operations</div><p class="team-bio">The processes behind every order.</p></div></article>
-      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/3869649/pexels-photo-3869649.jpeg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg" alt="African professionals collaborating at work"></div><div class="team-card-copy"><div class="team-role">MARKETING &amp; PARTNERSHIPS</div><div class="team-name">Growth &amp; Partnerships</div><p class="team-bio">Connecting products with more people.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/13377869/pexels-photo-13377869.jpeg?cs=srgb&dl=pexels-abdullahi-sow-292686948-13377869.jpg&fm=jpg" alt="Professional working with digital technology"></div><div class="team-card-copy"><div class="team-name">Digital Experience</div><div class="team-role">PRODUCT &amp; TECHNOLOGY</div><p class="team-bio">A smoother online shopping journey.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?cs=srgb&dl=pexels-mart-production-7709195.jpg&fm=jpg" alt="Customer support professional at work"></div><div class="team-card-copy"><div class="team-name">Customer Care</div><div class="team-role">CUSTOMER EXPERIENCE</div><p class="team-bio">Helpful answers and customer support.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/6169166/pexels-photo-6169166.jpeg?cs=srgb&dl=pexels-tima-miroshnichenko-6169166.jpg&fm=jpg" alt="Professional handling a delivery parcel"></div><div class="team-card-copy"><div class="team-name">Order Operations</div><div class="team-role">OPERATIONS &amp; FULFILMENT</div><p class="team-bio">The processes behind every order.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/3869649/pexels-photo-3869649.jpeg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg" alt="African professionals collaborating at work"></div><div class="team-card-copy"><div class="team-name">Growth &amp; Partnerships</div><div class="team-role">MARKETING &amp; PARTNERSHIPS</div><p class="team-bio">Connecting products with more people.</p></div></article>
     </div>
     <button class="team-gallery-arrow team-gallery-next" type="button" aria-label="Scroll team gallery right" data-team-scroll="1"><i class="fa-solid fa-arrow-right"></i></button>
   </div>
