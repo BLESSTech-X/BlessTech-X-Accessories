@@ -57,6 +57,15 @@
   "cta_text": "Explore the catalogue or message us for help choosing.",
   "team": [
     {
+      "name": "Barack Blessings",
+      "role": "Lead Digital Strategist",
+      "bio": "Barack leads the vision and operations at BLESSTech-X, personally ensuring every digital solution meets the quality standard he'd expect for himself. Passionate about tech, community, and building something Zambia can be proud of.",
+      "emoji": "",
+      "whatsapp": "https://wa.me/260979603741",
+      "active": true,
+      "image": "/assets/images/uploads/1000210457.png"
+    },
+    {
       "name": "Digital Experience",
       "role": "PRODUCT & TECHNOLOGY",
       "bio": "A smoother online shopping journey.",
