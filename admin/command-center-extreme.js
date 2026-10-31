@@ -186,46 +186,54 @@
   /* Header navigation: icon-led workspace tabs attached to the top bar. */
   function setupGuidedNavigation() {
     const nav=$('#workspace-nav'), topbar=$('.topbar'), brand=$('.topbar .brand'), right=$('.topbar .top-right');
-    if(!nav||!topbar||!brand||!right||nav.dataset.headerNav==='1'||!nav.querySelector('.workspace-tab'))return;
-    nav.dataset.headerNav='1';
+    if(!nav||!topbar||!brand||!right||!nav.querySelector('.workspace-tab'))return;
     const icons={
       overview:'⌂',assistant:'✦',actions:'⚡',orders:'▤',network:'◎',
       inventory:'▣',money:'＄',analytics:'▥',growth:'↗',experiments:'⌁',
-      health:'♥',resources:'⚙'
+      health:'♥',resources:'⚙', 'seasonal-studio':'🎄',customers:'♙'
     };
     nav.querySelectorAll('.workspace-tab').forEach(tab=>{
       const id=tab.id.replace('tab-','');
-      const label=tab.textContent.replace(/^\S+\s*/,'').trim()||tab.textContent.trim();
-      tab.classList.add('cc-header-tab');
-      tab.setAttribute('aria-label',label);
-      tab.title=label;
-      tab.innerHTML='<span class="cc-header-tab-icon" aria-hidden="true">'+(icons[id]||'•')+'</span><span class="cc-header-tab-label"></span>';
-      tab.querySelector('.cc-header-tab-label').textContent=label;
+      const label=tab.querySelector('.cc-header-tab-label')?.textContent?.trim()
+        ||tab.getAttribute('aria-label')
+        ||tab.textContent.replace(/^\S+\s*/,'').trim()
+        ||tab.textContent.trim();
+      if(!tab.classList.contains('cc-header-tab')||!tab.querySelector('.cc-header-tab-label')){
+        tab.classList.add('cc-header-tab');
+        tab.setAttribute('aria-label',label);
+        tab.title=label;
+        tab.replaceChildren();
+        const icon=document.createElement('span');icon.className='cc-header-tab-icon';icon.setAttribute('aria-hidden','true');icon.textContent=icons[id]||'•';
+        const text=document.createElement('span');text.className='cc-header-tab-label';text.textContent=label;
+        tab.append(icon,text);
+      }
     });
     nav.classList.add('cc-header-navigation');
     nav.setAttribute('aria-label','Command Centre page navigation');
-    topbar.insertBefore(nav,right);
-    const caption=$('#cc-topbar-caption');
-    if(caption)caption.remove();
-    let toggle=$('#cc-menu-toggle');
-    if(!toggle){
-      toggle=document.createElement('button');
-      toggle.type='button';toggle.id='cc-menu-toggle';toggle.className='cc-menu-togg';
-      toggle.setAttribute('aria-label','Open workspace menu');toggle.setAttribute('aria-expanded','false');
-      toggle.innerHTML='<span></span><span></span><span></span>';
-      topbar.insertBefore(toggle,nav);
-    }else if(toggle.parentElement!==topbar){topbar.insertBefore(toggle,nav);}
-    let overlay=$('.cc-nav-overlay');
-    if(!overlay){overlay=document.createElement('button');overlay.type='button';overlay.className='cc-nav-overlay';overlay.setAttribute('aria-label','Close workspace menu');document.body.append(overlay);}
-    const closeMenu=()=>{document.body.classList.remove('cc-nav-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open workspace menu');};
-    toggle.addEventListener('click',()=>{
-      const open=document.body.classList.toggle('cc-nav-open');
-      toggle.setAttribute('aria-expanded',String(open));
-      toggle.setAttribute('aria-label',open?'Close workspace menu':'Open workspace menu');
-    });
-    overlay.addEventListener('click',closeMenu);
-    nav.querySelectorAll('.workspace-tab').forEach(tab=>tab.addEventListener('click',closeMenu));
-    document.body.classList.remove('cc-nav-open','cc-nav-collapsed');
+    if(nav.dataset.headerNav!=='1'){
+      nav.dataset.headerNav='1';
+      topbar.insertBefore(nav,right);
+      const caption=$('#cc-topbar-caption');if(caption)caption.remove();
+      let toggle=$('#cc-menu-toggle');
+      if(!toggle){
+        toggle=document.createElement('button');
+        toggle.type='button';toggle.id='cc-menu-toggle';toggle.className='cc-menu-togg';
+        toggle.setAttribute('aria-label','Open workspace menu');toggle.setAttribute('aria-expanded','false');
+        toggle.innerHTML='<span></span><span></span><span></span>';
+        topbar.insertBefore(toggle,nav);
+        toggle.addEventListener('click',()=>{
+          const open=document.body.classList.toggle('cc-nav-open');
+          toggle.setAttribute('aria-expanded',String(open));
+          toggle.setAttribute('aria-label',open?'Close workspace menu':'Open workspace menu');
+        });
+      }else if(toggle.parentElement!==topbar){topbar.insertBefore(toggle,nav);}
+      let overlay=$('.cc-nav-overlay');
+      if(!overlay){overlay=document.createElement('button');overlay.type='button';overlay.className='cc-nav-overlay';overlay.setAttribute('aria-label','Close workspace menu');document.body.append(overlay);}
+      const closeMenu=()=>{document.body.classList.remove('cc-nav-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open workspace menu');};
+      overlay.addEventListener('click',closeMenu);
+      nav.addEventListener('click',e=>{if(e.target.closest('.workspace-tab'))closeMenu();});
+      document.body.classList.remove('cc-nav-open','cc-nav-collapsed');
+    }
   }
   function watchGuidedNavigation(){
     const nav=$('#workspace-nav');if(!nav)return;
