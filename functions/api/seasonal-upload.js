@@ -22,12 +22,12 @@ export async function onRequest({request,env}){
   if(!["banner","popup"].includes(slot)||!/^[a-z0-9-]{1,40}$/.test(theme))return json({error:"Choose a valid campaign image slot and season."},400);
   if(!(file instanceof File)||!allowed[file.type]||file.size>5*1024*1024)return json({error:"Use a JPG, PNG, WebP or AVIF image up to 5 MB."},400);
   const owner=env.PHONEYA2_GITHUB_OWNER||"BLESSTech-X",repo=env.PHONEYA2_GITHUB_REPO||"BlessTech-X-Accessories",branch=env.PHONEYA2_GITHUB_BRANCH||"main";
-  const ext=allowed[file.type],path="images/seasonal/"+theme+"/"+slot+"-"+Date.now()+"."+ext;
+  const ext=allowed[file.type],path="assets/images/uploads/seasonal/"+theme+"/"+slot+"-"+Date.now()+"."+ext;
   const bytes=new Uint8Array(await file.arrayBuffer()),content=encodeBase64(bytes);
   const response=await fetch("https://api.github.com/repos/"+owner+"/"+repo+"/contents/"+path,{method:"PUT",headers:{accept:"application/vnd.github+json","x-github-api-version":"2022-11-28",authorization:"Bearer "+token,"content-type":"application/json","user-agent":"PhoneYa2-Seasonal-Studio"},body:JSON.stringify({message:"Upload "+theme+" seasonal "+slot+" image",content,branch})});
   if(!response.ok){const detail=await response.text();return json({error:"GitHub image upload failed: "+detail.slice(0,240)},502);}
   const result=await response.json();
-  const url="https://raw.githubusercontent.com/"+owner+"/"+repo+"/"+branch+"/"+path;
+  const url="/assets/images/uploads/seasonal/"+theme+"/"+slot+"-"+path.split("-").pop();
   return json({ok:true,path,url,commit:result.commit?.sha||null});
  }catch(error){return json({error:error?.message||"Image upload failed."},500);}
 }
