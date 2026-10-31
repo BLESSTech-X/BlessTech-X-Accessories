@@ -1084,6 +1084,63 @@ body{background:#f6f8fa!important;color:var(--about-ink)!important}
 @media(max-width:380px){.team-grid{grid-template-columns:1fr!important}.team-avatar{height:230px!important}}
 @media(prefers-reduced-motion:reduce){.about-primary-link,.about-secondary-link,.team-card,.team-avatar img{transition:none!important}}
 </style>
+<style id="phoneya2-about-compact-gallery">
+.about-hero h1,.about-hero h1 *{color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important}
+.about-hero .about-hero-copy h1{color:#fff!important;-webkit-text-fill-color:#fff!important}
+.about-hero .about-hero-copy h1::first-line{color:#fff!important;-webkit-text-fill-color:#fff!important}
+.about-story-compact{background:#fff;padding:48px 24px 34px}
+.about-story-compact-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.7fr);align-items:center;gap:44px}
+.about-story-copy h2,.about-compact-heading h2{font-family:'Syne',sans-serif;font-size:clamp(1.65rem,3vw,2.35rem);letter-spacing:-.035em;line-height:1.13;color:#142235;margin:0 0 13px}
+.about-story-copy p{max-width:680px;color:#64748b;font-size:14px;line-height:1.75;margin:0 0 8px}
+.about-story-links{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:18px}
+.about-story-links .zambian-badge{margin:0;padding:7px 12px;font-size:11px}
+.about-story-links>a{font-size:12px;font-weight:800;color:#168b4b}
+.about-story-side{min-height:155px;border-radius:18px;padding:24px;background:linear-gradient(135deg,#112337,#174b3c);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:9px;box-shadow:0 12px 30px rgba(17,35,55,.12)}
+.about-story-side-icon{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;color:#9ce8b6}
+.about-story-side strong{font-family:'Syne',sans-serif;font-size:17px}.about-story-side span{font-size:12px;color:rgba(255,255,255,.7)}
+.about-hidden-cms{display:none!important}
+.about-values-compact{background:#f6f8fa;padding:32px 24px 38px}
+.about-compact-heading{text-align:center;margin:0 auto 20px}
+.about-compact-heading .section-tag{margin-bottom:6px}
+.about-compact-heading h2{font-size:clamp(1.45rem,2.5vw,1.9rem);margin:0}
+.about-values-compact .values-grid{max-width:1120px;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.about-values-compact .value-card{display:flex;align-items:center;gap:14px;padding:17px 18px;border-radius:14px}
+.about-values-compact .value-icon{flex:none;width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#eaf7ef;font-size:20px;margin:0!important}
+.about-values-compact .value-title{font-size:13px;margin:0 0 3px}.about-values-compact .value-desc{font-size:11px;line-height:1.45;margin:0}
+.team-section{background:#fff!important;padding:48px 24px 44px!important}
+.team-section .section-header{margin-bottom:22px!important}
+.team-intro{font-size:13px!important;margin:8px auto 0!important}
+.team-gallery-shell{position:relative;max-width:1160px;margin:0 auto;padding:0 36px}
+.team-grid{display:flex!important;gap:16px!important;max-width:none!important;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 2px 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.team-grid::-webkit-scrollbar{display:none}
+.team-card{flex:0 0 clamp(220px,26%,285px);min-width:0;scroll-snap-align:start;padding:0!important;overflow:hidden;border-radius:16px!important;text-align:left!important}
+.team-avatar{height:190px!important;width:100%!important;margin:0!important;border-radius:0!important;overflow:hidden!important}
+.team-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.team-card-copy{padding:15px 16px 16px}
+.team-role{font-size:9px!important;letter-spacing:1px!important;margin:0 0 6px!important;padding:0!important;color:#168b4b!important}
+.team-name{font-size:15px!important;padding:0!important;margin:0 0 5px!important}
+.team-bio{font-size:12px!important;line-height:1.5!important;padding:0!important;margin:0!important}
+.team-socials{display:none!important}
+.team-gallery-arrow{position:absolute;z-index:3;top:42%;transform:translateY(-50%);width:34px;height:34px;border:1px solid #e3e9ee;border-radius:50%;background:#fff;color:#1d3348;box-shadow:0 4px 14px rgba(12,31,48,.12);display:grid;place-items:center;cursor:pointer}
+.team-gallery-prev{left:0}.team-gallery-next{right:0}
+.team-gallery-arrow:hover{background:#142235;color:#fff}
+.about-photo-note{margin:12px auto 0!important;font-size:9px!important;color:#94a0ad!important}
+.cta-section{padding:0 24px 48px!important}
+.cta-inner{padding:30px 34px!important}
+.cta-text h2{font-size:clamp(1.25rem,2.2vw,1.65rem)!important}
+.cta-text p{font-size:12px!important}
+@media(max-width:760px){
+ .about-story-compact{padding:34px 18px 24px}.about-story-compact-inner{grid-template-columns:1fr;gap:18px}
+ .about-story-side{min-height:unset;padding:17px 19px}
+ .about-values-compact{padding:24px 16px 28px}.about-values-compact .values-grid{grid-template-columns:1fr;gap:9px}
+ .about-values-compact .value-card{padding:12px 14px}
+ .team-section{padding:36px 14px 32px!important}.team-gallery-shell{padding:0 25px}
+ .team-card{flex-basis:78vw;max-width:290px}.team-avatar{height:175px!important}
+ .team-gallery-arrow{width:30px;height:30px}
+ .cta-section{padding:0 16px 34px!important}.cta-inner{padding:24px 20px!important;gap:20px!important}
+}
+@media(prefers-reduced-motion:reduce){.team-grid{scroll-behavior:auto}}
+</style>
 </head>
 <body>
 
@@ -1161,91 +1218,50 @@ body{background:#f6f8fa!important;color:var(--about-ink)!important}
 </section>
 
 <!-- STATS -->
-<section class="about-stats">
-  <div class="stats-grid" id="about-stats-grid">
-    <div class="stat-card"><div class="stat-num">Zambia</div><div class="stat-label">Built for the local market</div></div>
-    <div class="stat-card"><div class="stat-num">Digital-first</div><div class="stat-label">Browse and order online</div></div>
-    <div class="stat-card"><div class="stat-num">Everyday tech</div><div class="stat-label">Accessories and essentials</div></div>
-    <div class="stat-card"><div class="stat-num">Customer-led</div><div class="stat-label">Support and product guidance</div></div>
-  </div>
-</section>
-
-<!-- STORY -->
-<section class="story-section">
-  <div class="story-inner">
-    <div class="story-left">
-      <div class="story-emoji">🏢</div>
-      <h3 id="about-venture-title">A BLESSTech-X Venture</h3>
-      <p id="about-venture-text">PhoneYa2 is a practical example of what we build for our clients — a real, working business that serves the Zambian market.</p>
-      <a id="about-venture-link" href="https://blesstech-x.vercel.app" target="_blank" rel="noopener" class="btn-btx"><i class="fa-solid fa-globe"></i> Visit BLESSTech-X</a>
-      <div style="margin-top:14px;"><span id="about-country-badge" class="zambian-badge">🇿🇲 Proudly Zambian</span></div>
+<section class="about-story-compact">
+  <div class="about-story-compact-inner">
+    <div class="about-story-copy">
+      <div id="about-story-label" class="section-tag">OUR STORY</div>
+      <h2 id="about-story-heading">Technology shopping, made simpler.</h2>
+      <p id="about-story-p1">PhoneYa2 is a Zambian technology-commerce venture helping people find everyday phone accessories with clearer choices and convenient online ordering.</p>
+      <p id="about-story-p2" class="about-story-extra">We are building a trusted destination for useful tech essentials, with customer experience at the centre.</p>
+      <div class="about-story-links"><span id="about-country-badge" class="zambian-badge">🇿🇲 Built in Zambia</span><a id="about-venture-link" href="https://blesstech-x.vercel.app" target="_blank" rel="noopener">A BLESSTech-X venture <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+      <h3 id="about-venture-title" class="about-hidden-cms">A BLESSTech-X Venture</h3><span id="about-venture-text" class="about-hidden-cms">PhoneYa2 is built on a digital-first foundation.</span>
     </div>
-    <div class="story-right">
-      <div id="about-story-label" class="section-tag">Our Story</div>
-      <h2 id="about-story-heading">Built around better buying decisions.</h2>
-      <p id="about-story-p1">PhoneYa2 is a Zambian technology-commerce venture created to make finding and buying phone accessories and everyday tech essentials more straightforward.</p>
-      <p id="about-story-p2">From product discovery to the final order, our focus is on helping customers understand their options, compare useful essentials and reach us when they need assistance.</p>
-      <p id="about-story-p3">Our long-term ambition is to grow into a trusted destination for everyday technology needs—online first, with a broader customer experience as the business expands.</p>
+    <div class="about-story-side">
+      <div class="about-story-side-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+      <strong>Discover. Choose. Connect.</strong>
+      <span>Everyday tech essentials, all in one place.</span>
     </div>
   </div>
 </section>
 
-<section class="businesses-section" id="about-businesses"><div class="section-header"><div class="section-tag" id="about-businesses-label">Our Ventures</div><h2 class="section-title" id="about-businesses-heading">Businesses &amp; Projects</h2><p id="about-businesses-intro">Explore the businesses and projects we build, operate and grow.</p></div><div class="businesses-grid" id="about-businesses-grid"></div></section>
-
-<!-- VALUES -->
-<section class="values-section">
-  <div class="section-header">
-    <div id="about-values-label" class="section-tag">What We Stand For</div>
-    <h2 id="about-values-heading" class="section-title">Our Core Values</h2>
-  </div>
+<section class="about-values-compact">
+  <div class="about-compact-heading"><div id="about-values-label" class="section-tag">WHAT GUIDES US</div><h2 id="about-values-heading">What you can expect</h2></div>
   <div class="values-grid" id="about-values-grid">
-    <div class="value-card">
-      <div class="value-icon">🛡️</div>
-      <h3 class="value-title">Genuine Quality</h3>
-      <p class="value-desc">Clear descriptions and practical details help shoppers make more informed choices before they order.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-icon">💰</div>
-      <h3 class="value-title">Honest Pricing</h3>
-      <p class="value-desc">We aim to make prices and offers easy to understand, so customers can compare options with confidence.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-icon">⚡</div>
-      <h3 class="value-title">Speed & Reliability</h3>
-      <p class="value-desc">A simple catalogue and straightforward ordering experience make everyday tech easier to access.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-icon">🇿🇲</div>
-      <h3 class="value-title">Community First</h3>
-      <p class="value-desc">We are building from Zambia, with the ambition to serve more customers and create lasting local value.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-icon">💬</div>
-      <h3 class="value-title">Personal Service</h3>
-      <p class="value-desc">Customers should have a clear way to ask questions and get assistance before and after placing an order.</p>
-    </div>
-    <div class="value-card">
-      <div class="value-icon">🔄</div>
-      <h3 class="value-title">Peace of Mind</h3>
-      <p class="value-desc">We keep learning from customer needs and use those insights to improve the products and experience.</p>
-    </div>
+    <article class="value-card"><div class="value-icon">🔎</div><h3 class="value-title">Clear choices</h3><p class="value-desc">Useful product details to help you choose.</p></article>
+    <article class="value-card"><div class="value-icon">💬</div><h3 class="value-title">Helpful support</h3><p class="value-desc">A direct way to ask questions and get help.</p></article>
+    <article class="value-card"><div class="value-icon">🇿🇲</div><h3 class="value-title">Local ambition</h3><p class="value-desc">Built in Zambia, with room to grow.</p></article>
   </div>
 </section>
 
-<!-- TEAM -->
 <section class="team-section">
   <div class="section-header">
-    <div id="about-team-label" class="section-tag">The Founders</div>
-    <h2 id="about-team-heading" class="section-title">The functions behind the experience</h2>
-    <p class="team-intro">PhoneYa2 is being built around the capabilities a dependable shopping experience needs—from product discovery and customer care to order operations and growth. These are representative stock photographs, not portraits of current employees.</p>
+    <div id="about-team-label" class="section-tag">OUR CAPABILITIES</div>
+    <h2 id="about-team-heading" class="section-title">The people behind the experience</h2>
+    <p class="team-intro">Four key functions shaping a better way to shop for tech.</p>
   </div>
-  <div class="team-grid" id="about-team-grid">
-    <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/13377869/pexels-photo-13377869.jpeg?cs=srgb&dl=pexels-abdullahi-sow-292686948-13377869.jpg&fm=jpg" alt="Representative stock photograph illustrating product and technology work"></div><div class="team-name">Digital Experience</div><div class="team-role">PRODUCT &amp; TECHNOLOGY</div><p class="team-bio">Shapes the online shopping journey—from product discovery and useful information to a smoother browsing experience.</p></article>
-    <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?cs=srgb&dl=pexels-mart-production-7709195.jpg&fm=jpg" alt="Representative stock photograph illustrating customer experience work"></div><div class="team-name">Customer Care</div><div class="team-role">CUSTOMER EXPERIENCE</div><p class="team-bio">Represents the support function focused on answering questions, helping shoppers understand options and resolving order concerns.</p></article>
-    <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/6169166/pexels-photo-6169166.jpeg?cs=srgb&dl=pexels-tima-miroshnichenko-6169166.jpg&fm=jpg" alt="Representative stock photograph illustrating order operations"></div><div class="team-name">Order Operations</div><div class="team-role">OPERATIONS &amp; FULFILMENT</div><p class="team-bio">Represents the processes behind product availability, order handling and coordinating fulfilment as the operation grows.</p></article>
-    <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/3869649/pexels-photo-3869649.jpeg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg" alt="Representative stock photograph illustrating growth and partnerships"></div><div class="team-name">Growth &amp; Partnerships</div><div class="team-role">MARKETING &amp; PARTNERSHIPS</div><p class="team-bio">Builds awareness, develops relationships and creates opportunities to connect more shoppers with useful products.</p></article>
+  <div class="team-gallery-shell">
+    <button class="team-gallery-arrow team-gallery-prev" type="button" aria-label="Scroll team gallery left" data-team-scroll="-1"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="team-grid" id="about-team-grid">
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/13377869/pexels-photo-13377869.jpeg?cs=srgb&dl=pexels-abdullahi-sow-292686948-13377869.jpg&fm=jpg" alt="Professional working with digital technology"></div><div class="team-card-copy"><div class="team-role">PRODUCT &amp; TECHNOLOGY</div><div class="team-name">Digital Experience</div><p class="team-bio">A smoother online shopping journey.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?cs=srgb&dl=pexels-mart-production-7709195.jpg&fm=jpg" alt="Customer support professional at work"></div><div class="team-card-copy"><div class="team-role">CUSTOMER EXPERIENCE</div><div class="team-name">Customer Care</div><p class="team-bio">Helpful answers and customer support.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/6169166/pexels-photo-6169166.jpeg?cs=srgb&dl=pexels-tima-miroshnichenko-6169166.jpg&fm=jpg" alt="Professional handling a delivery parcel"></div><div class="team-card-copy"><div class="team-role">OPERATIONS &amp; FULFILMENT</div><div class="team-name">Order Operations</div><p class="team-bio">The processes behind every order.</p></div></article>
+      <article class="team-card"><div class="team-avatar"><img src="https://images.pexels.com/photos/3869649/pexels-photo-2210122-3869649.jpg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg" alt="African professionals collaborating at work"></div><div class="team-card-copy"><div class="team-role">MARKETING &amp; PARTNERSHIPS</div><div class="team-name">Growth &amp; Partnerships</div><p class="team-bio">Connecting products with more people.</p></div></article>
+    </div>
+    <button class="team-gallery-arrow team-gallery-next" type="button" aria-label="Scroll team gallery right" data-team-scroll="1"><i class="fa-solid fa-arrow-right"></i></button>
   </div>
-  <p class="about-photo-note">Photography: <a href="https://www.pexels.com/photo/office-team-having-a-meeting-3869649/" target="_blank" rel="noopener">Picha Stock</a>, <a href="https://www.pexels.com/photo/african-man-working-on-laptop-13377869/" target="_blank" rel="noopener">Abdullahi Sow</a>, <a href="https://www.pexels.com/photo/a-woman-working-as-a-call-center-agent-7709195/" target="_blank" rel="noopener">MART PRODUCTION</a> and <a href="https://www.pexels.com/photo/male-employee-looking-at-a-parcel-6169166/" target="_blank" rel="noopener">Tima Miroshnichenko</a>. Images illustrate business functions and do not imply endorsement or employment.</p>
+  <p class="about-photo-note">Photography: <a href="https://www.pexels.com/photo/african-man-working-on-laptop-13377869/" target="_blank" rel="noopener">Abdullahi Sow</a>, <a href="https://www.pexels.com/photo/a-woman-working-as-a-call-center-agent-7709195/" target="_blank" rel="noopener">MART PRODUCTION</a>, <a href="https://www.pexels.com/photo/male-employee-looking-at-a-parcel-6169166/" target="_blank" rel="noopener">Tima Miroshnichenko</a> and <a href="https://www.pexels.com/photo/office-team-having-a-meeting-3869649/" target="_blank" rel="noopener">Picha Stock</a>.</p>
 </section>
 
 <!-- CTA BANNER -->
@@ -1602,7 +1618,7 @@ s0.parentNode.insertBefore(s1,s0);
 <script src="/cart.js?v=20261017-sharedbadge1" defer></script>
 <script src="/site-header.js?v=20261015-center3" defer></script>
 <script src="/smart-guide.js?v=20261017-context-help7" defer></script><script src="/interest-popups.js?v=20261029-product-picks-more-pages1" defer></script>
-<script src="/about-cms.js?v=20261031-company-redesign1" defer></script>
+<script src="/about-cms.js?v=20261031-compact-gallery2" defer></script>
 
 <script src="/water-experience.js?v=20261030-retired1"></script>
   <script src="/scroll-to-top.js?v=20261017-compact1"></script>
