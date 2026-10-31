@@ -1,102 +1,109 @@
 {
-  "team_heading": "Meet the BLESSTech-X Team",
+  "team_heading": "The functions behind the experience",
   "values": [
     {
-      "icon": "🛡️",
-      "title": "Genuine Quality",
-      "description": "We only stock authentic products from trusted suppliers. Every item is tested and verified before it reaches you."
+      "icon": "🔎",
+      "title": "Useful Product Information",
+      "description": "Clear descriptions and practical details help shoppers make more informed choices before they order."
     },
     {
-      "icon": "💰",
-      "title": "Honest Pricing",
-      "description": "What you see is what you pay. No hidden charges, no inflated prices, no tricks. Just fair value for genuine products."
-    },
-    {
-      "icon": "⚡",
-      "title": "Speed & Reliability",
-      "description": "Order before 3pm and receive your accessories the same day. We respect your time as much as you do."
-    },
-    {
-      "icon": "🇿🇲",
-      "title": "Community First",
-      "description": "We're proudly Zambian and reinvest in our community. When you shop with us, you support local business."
+      "icon": "🏷️",
+      "title": "Clear, Fair Pricing",
+      "description": "We aim to make prices and offers easy to understand, so customers can compare options with confidence."
     },
     {
       "icon": "💬",
-      "title": "Personal Service",
-      "description": "Real people, real conversations. Chat with us on WhatsApp six days a week and get advice you can actually trust."
+      "title": "Helpful Customer Support",
+      "description": "Customers should have a clear way to ask questions and get assistance before and after placing an order."
     },
     {
-      "icon": "🔄",
-      "title": "Peace of Mind",
-      "description": "Our 7-day return policy means every purchase is risk-free. Not satisfied? We'll make it right."
+      "icon": "📦",
+      "title": "Convenient Shopping",
+      "description": "A simple catalogue and straightforward ordering experience make everyday tech easier to access."
+    },
+    {
+      "icon": "🇿🇲",
+      "title": "Local Ambition",
+      "description": "We are building from Zambia, with the ambition to serve more customers and create lasting local value."
+    },
+    {
+      "icon": "📈",
+      "title": "Continuous Improvement",
+      "description": "We keep learning from customer needs and use those insights to improve the products and experience."
     }
   ],
   "venture_url": "https://blesstech-x.vercel.app",
-  "businesses_label": "Our Ventures",
-  "cta_business_label": "Visit BLESSTech-X",
-  "values_heading": "Our Core Values",
+  "businesses_label": "Our Foundation",
+  "cta_business_label": "Explore BLESSTech-X",
+  "values_heading": "The standards we are building around",
   "story_label": "Our Story",
   "venture_title": "A BLESSTech-X Venture",
   "businesses": [
     {
       "name": "BLESSTech-X",
       "tagline": "Digital solutions for growing businesses",
-      "description": "A digital solutions company building websites, e-commerce stores and practical digital systems for Zambian businesses.",
+      "description": "The digital solutions venture behind PhoneYa2, focused on websites, e-commerce experiences and practical digital systems.",
       "logo": "",
       "website": "https://blesstech-x.vercel.app",
-      "active": true
-    },
-    {
-      "name": "PhoneYa2",
-      "tagline": "Phone accessories and everyday tech essentials",
-      "description": "An online phone accessories shop focused on convenient browsing, clear product information and direct customer support.",
-      "logo": "",
-      "website": "https://phoneya2.pages.dev",
       "active": true
     }
   ],
   "story_paragraphs": [
     {
-      "text": "BLESSTech-X is a digital solutions company founded by Barack Blessings and Sylvester Mwila in Lusaka, Zambia. We build websites, e-commerce stores, and digital systems that help Zambian businesses grow."
+      "text": "PhoneYa2 is a Zambian technology-commerce venture created to make finding and buying phone accessories and everyday tech essentials more straightforward."
     },
     {
-      "text": "PhoneYa2 Accessories is one of the ventures born from BLESSTech-X — a practical example of what we build for our clients. We saw a gap in the market for affordable, genuine phone accessories delivered fast in Lusaka, so we built PhoneYa2 to fill it."
+      "text": "From product discovery to the final order, our focus is on helping customers understand their options, compare useful essentials and reach us when they need assistance."
     },
     {
-      "text": "PhoneYa2 is an active e-commerce venture where we keep improving the product catalogue, ordering experience and customer support for shoppers in Zambia."
+      "text": "Our long-term ambition is to grow into a trusted destination for everyday technology needs—online first, with a broader customer experience as the business expands."
     }
   ],
   "cta_whatsapp_url": "https://wa.me/260979603741?text=Hi!%20I%27d%20like%20to%20chat%20about%20your%20products.",
-  "businesses_heading": "Businesses & Projects",
-  "team_label": "The Founders",
-  "cta_heading": "From BLESSTech-X to You",
+  "businesses_heading": "The digital foundation behind PhoneYa2",
+  "team_label": "Our Operating Model",
+  "cta_heading": "Find your next everyday tech essential.",
   "cta_whatsapp_label": "WhatsApp Us",
-  "values_label": "What We Stand For",
-  "story_heading": "Built by BLESSTech-X, for Zambia",
-  "hero_line1": "Built for Zambia.",
-  "venture_text": "PhoneYa2 is a practical example of what we build for our clients — a real, working business that serves the Zambian market.",
-  "hero_line2": "Built with Purpose.",
-  "country_badge": "🇿🇲 Proudly Zambian",
-  "hero_sub": "PhoneYa2 Accessories is a BLESSTech-X venture — bringing genuine phone accessories and quality service to Lusaka.",
-  "businesses_intro": "Explore the businesses and projects we build, operate and grow. You can add a new venture, its logo, story and website from the CMS.",
-  "cta_text": "PhoneYa2 is our proof that digital solutions work. Browse the catalogue, review product details and contact our team if you need help before ordering.",
+  "values_label": "What Guides Us",
+  "story_heading": "Built around better buying decisions.",
+  "hero_line1": "Better tech choices.",
+  "venture_text": "PhoneYa2 is built on a digital-first foundation, with a focus on making product discovery and online shopping more useful for customers in Zambia.",
+  "hero_line2": "Made easier.",
+  "country_badge": "🇿🇲 Built in Zambia",
+  "hero_sub": "PhoneYa2 is a Zambian technology-commerce venture helping shoppers discover phone accessories and everyday tech essentials with clearer information, convenient ordering and helpful support.",
+  "businesses_intro": "PhoneYa2 is a BLESSTech-X venture, supported by a digital-first approach to building useful online experiences.",
+  "cta_text": "Explore the PhoneYa2 catalogue or contact us if you need help choosing the right accessory.",
   "team": [
     {
-      "name": "Barack Blessings",
-      "role": "Lead Digital Strategist",
-      "bio": "Barack leads the vision and operations at BLESSTech-X, personally ensuring every digital solution meets the quality standard he'd expect for himself. Passionate about tech, community, and building something Zambia can be proud of.",
-      "emoji": "",
-      "whatsapp": "https://wa.me/260979603741",
-      "active": true,
-      "image": "/assets/images/uploads/1000210457.png"
+      "name": "Digital Experience",
+      "role": "PRODUCT & TECHNOLOGY",
+      "bio": "Shapes the online shopping journey—from product discovery and useful information to a smoother browsing experience.",
+      "image": "https://images.pexels.com/photos/13377869/pexels-photo-13377869.jpeg?cs=srgb&dl=pexels-abdullahi-sow-292686948-13377869.jpg&fm=jpg",
+      "image_alt": "Representative stock photograph of a young African professional working at a laptop",
+      "active": true
     },
     {
-      "name": "Sylvester Mwila",
-      "role": "Financial Manager & Business Analyst",
-      "bio": "Sylvester is a ZICA-certified accountant with expertise in financial planning, tax compliance, and sustainable growth strategies for Zambian SMEs. He ensures every BLESSTech-X venture is financially sound.",
-      "emoji": "👨🏾‍💻",
-      "whatsapp": "https://wa.me/260979603741",
+      "name": "Customer Care",
+      "role": "CUSTOMER EXPERIENCE",
+      "bio": "Represents the support function focused on answering questions, helping shoppers understand options and resolving order concerns.",
+      "image": "https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?cs=srgb&dl=pexels-mart-production-7709195.jpg&fm=jpg",
+      "image_alt": "Representative stock photograph of a Black woman working in customer support",
+      "active": true
+    },
+    {
+      "name": "Order Operations",
+      "role": "OPERATIONS & FULFILMENT",
+      "bio": "Represents the processes behind product availability, order handling and coordinating fulfilment as the operation grows.",
+      "image": "https://images.pexels.com/photos/6169166/pexels-photo-6169166.jpeg?cs=srgb&dl=pexels-tima-miroshnichenko-6169166.jpg&fm=jpg",
+      "image_alt": "Representative stock photograph of a worker handling a parcel",
+      "active": true
+    },
+    {
+      "name": "Growth & Partnerships",
+      "role": "MARKETING & PARTNERSHIPS",
+      "bio": "Builds awareness, develops relationships and creates opportunities to connect more shoppers with useful products.",
+      "image": "https://images.pexels.com/photos/3869649/pexels-photo-3869649.jpeg?cs=srgb&dl=pexels-picha-stock-2210122-3869649.jpg&fm=jpg",
+      "image_alt": "Representative stock photograph of African women collaborating in an office",
       "active": true
     }
   ],
@@ -104,19 +111,19 @@
   "stats": [
     {
       "value": "Zambia",
-      "label": "Local Market Focus"
+      "label": "Built for the local market"
     },
     {
-      "value": "Online",
-      "label": "Browse & Order"
+      "value": "Digital-first",
+      "label": "Browse and order online"
     },
     {
-      "value": "Same Day",
-      "label": "Delivery in Lusaka"
+      "value": "Everyday tech",
+      "label": "Accessories and essentials"
     },
     {
-      "value": "Direct",
-      "label": "Customer Support"
+      "value": "Customer-led",
+      "label": "Support and product guidance"
     }
   ]
 }
