@@ -96,17 +96,6 @@ function apply(){
  decorateHeadings();decorateBrand();applyHeroTreatment();createCampaignBanner();makeSnow();showPopup();
 }
 async function loadPublishedSettings(){
- // Campaign controls come from the shared database; published GitHub JSON is the fallback.
- try{
-  const live=await fetch('/api/seasonal?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
-  if(live.ok){
-   const payload=await live.json();
-   if(payload&&payload.settings&&typeof payload.settings==='object'){
-    // Campaign controls come from the shared database. Creative content always comes from GitHub.
-    return {...payload.settings,__seasonalImageOverrides:payload.presets&&typeof payload.presets==='object'?payload.presets:{}};
-   }
-  }
- }catch(_){}
  const response=await fetch(CONFIG+'?v='+encodeURIComponent(document.documentElement.dataset.seasonalVersion||'live')+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin'});
  if(!response.ok)throw new Error('Decap seasonal settings file unavailable: '+response.status);
  const data=await response.json();
@@ -117,8 +106,7 @@ async function load(){
  try{
   const published=await loadPublishedSettings();
   settings={...defaults,...published};
-  // GitHub presets own the default images; database overrides are isolated by season.
-  const imageOverrides=published.__seasonalImageOverrides&&typeof published.__seasonalImageOverrides==='object'?published.__seasonalImageOverrides:{};
+  // Decap-managed season preset files are the single source for creative content and images.
   const selectedTheme=themeKey();
   try{
    const presetResponse=await fetch('/content/settings/seasonal-presets/'+encodeURIComponent(selectedTheme)+'.json?v='+Date.now(),{cache:'no-store',credentials:'same-origin'});
@@ -127,10 +115,6 @@ async function load(){
     if(preset&&typeof preset==='object'&&!Array.isArray(preset))settings={...settings,...preset};
    }else{console.warn('[PhoneYa2 Seasonal] GitHub preset unavailable for '+selectedTheme+': '+presetResponse.status)}
   }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load '+selectedTheme+' preset:',error)}
-  const selectedImages=imageOverrides[selectedTheme]&&typeof imageOverrides[selectedTheme]==='object'?imageOverrides[selectedTheme]:{};
-  if(selectedImages.bannerImage)settings.bannerImage=selectedImages.bannerImage;
-  if(selectedImages.popupImage)settings.popupImage=selectedImages.popupImage;
-  delete settings.__seasonalImageOverrides;
   if(params.has('py2-seasonal-preview')){try{const draft=JSON.parse(localStorage.getItem(PREVIEW_KEY)||'null');if(draft)settings={...settings,...draft}}catch{}}
   apply();
  }catch(error){console.warn('[PhoneYa2 Seasonal] Could not load Decap-published settings:',error)}
