@@ -92,51 +92,79 @@ async function verifyRememberToken(token, secret) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
   return { ...payload, email };
 }
+
+function minorToMoney(value) { return Number(value || 0) / 100; }
+async function fetchD1Orders(env, options = {}) {
+  if (!env.DB) return [];
+  let rows;
+  if (options.orderNumbers?.length) {
+    const valid = [...new Set(options.orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
+    if (!valid.length) return [];
+    const marks = valid.map(() => "?").join(",");
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) AND order_number IN (" + marks + ") ORDER BY created_at DESC LIMIT 100")
+      .bind(options.email || "", ...valid).all();
+  } else {
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) ORDER BY created_at DESC LIMIT 100")
+      .bind(options.email || "").all();
+  }
+  const orders = rows.results || [];
+  if (!orders.length) return [];
+  const ids = orders.map(row => row.id);
+  const marks = ids.map(() => "?").join(",");
+  const items = await env.DB.prepare("SELECT * FROM order_items WHERE order_id IN (" + marks + ") ORDER BY rowid ASC").bind(...ids).all();
+  const grouped = new Map();
+  for (const item of items.results || []) {
+    if (!grouped.has(item.order_id)) grouped.set(item.order_id, []);
+    grouped.get(item.order_id).push({
+      id: item.id, order_id: item.order_id, product_slug: item.product_slug,
+      product_name: item.product_name, quantity: item.quantity,
+      unit_price: minorToMoney(item.unit_price_minor), line_total: minorToMoney(item.line_total_minor)
+    });
+  }
+  return orders.map(row => ({
+    id: row.id, order_number: row.order_number, customer_name: row.customer_name,
+    customer_email: row.customer_email, customer_phone: row.customer_phone,
+    delivery_address: row.delivery_address, customer_note: row.customer_note || "",
+    status: row.status, total_amount: minorToMoney(row.total_amount_minor),
+    currency: row.currency || "ZMW", created_at: row.created_at,
+    updated_at: row.updated_at, order_items: grouped.get(row.id) || []
+  }));
+}
+function mergeOrdersByNumber(...lists) {
+  const map = new Map();
+  for (const list of lists) for (const order of list || []) {
+    if (order?.order_number) map.set(String(order.order_number), order);
+  }
+  return [...map.values()].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+}
+
 async function fetchOrdersForDevice(env, context, email, orderNumbers) {
   const valid = [...new Set(orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
   if (!valid.length) return { customer: { email, name: "" }, orders: [], deviceRecognized: true };
-  const query = new URLSearchParams({
-    select: "id,order_number,customer_name,customer_email,customer_phone,customer_note,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-    customer_email: "eq." + email,
-    order_number: "in.(" + valid.join(",") + ")",
-    order: "created_at.desc",
-    limit: "100"
-  });
-  let response = await supabaseFetch(env, "/rest/v1/orders?" + query.toString(), { method: "GET", headers: { accept: "application/json" } });
-  if (!response.ok) {
-    const fallback = new URLSearchParams(query);
-    fallback.delete("customer_note");
-    fallback.set("select", "id,order_number,customer_name,customer_email,customer_phone,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)");
-    response = await supabaseFetch(env, "/rest/v1/orders?" + fallback.toString(), { method: "GET", headers: { accept: "application/json" } });
-  }
-  if (!response.ok) {
-    console.error("PhoneYa2 device order query failed:", response.status, (await response.text()).slice(0, 200));
+  try {
+    const orders = await fetchD1Orders(env, { email, orderNumbers: valid });
+    return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), deviceRecognized: true };
+  } catch (error) {
+    console.error("PhoneYa2 D1 device order query failed:", String(error).slice(0,240));
     return null;
   }
-  const orders = await response.json();
-  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), deviceRecognized: true };
 }
 
 async function fetchOrdersForEmail(env, context, email) {
-  const buildQuery = includeNote => new URLSearchParams({
-    select: "id,order_number,customer_name,customer_email,customer_phone," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-    customer_email: "eq." + email, order: "created_at.desc", limit: "100"
-  });
-  let response = await supabaseFetch(env, "/rest/v1/orders?" + buildQuery(true).toString(), { method: "GET", headers: { accept: "application/json" } });
-  if (!response.ok) response = await supabaseFetch(env, "/rest/v1/orders?" + buildQuery(false).toString(), { method: "GET", headers: { accept: "application/json" } });
-  if (!response.ok) {
-    console.error("PhoneYa2 email order recovery query failed:", response.status, (await response.text()).slice(0, 240));
+  try {
+    const orders = await fetchD1Orders(env, { email });
+    return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true };
+  } catch (error) {
+    console.error("PhoneYa2 D1 email order query failed:", String(error).slice(0,240));
     return null;
   }
-  const orders = await response.json();
-  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true };
 }
 
 export async function onRequest(context) {
   const { request, env } = context;
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
   const url = new URL(request.url);
-  const recoverySecret = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+  const recoverySecret = getSecret(env, "PHONEYA2_ADMIN_PASSWORD", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
   if (request.method === "POST") {
     let body;
     try { body = await request.json(); } catch { return json({ error: "Enter the email address used for your PhoneYa2 orders." }, 400); }
@@ -144,7 +172,7 @@ export async function onRequest(context) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return json({ error: "Enter a valid order email address." }, 400);
     const apiKey = env.RESEND_API_KEY;
     const from = env.RESEND_FROM;
-    if (!base || !recoverySecret || !apiKey || !from) return json({ error: "Email order recovery is temporarily unavailable. Please try again shortly." }, 503);
+    if (!recoverySecret || !apiKey || !from) return json({ error: "Email order recovery is temporarily unavailable. Please try again shortly." }, 503);
     try {
       const payload = base64url(new TextEncoder().encode(JSON.stringify({ email, exp: Date.now() + 15 * 60 * 1000 })));
       const signature = await signRecoveryPayload(payload, recoverySecret);
