@@ -59,15 +59,41 @@ async function signRecoveryPayload(payload, secret) {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return base64url(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload))));
 }
-async function verifyRecoveryToken(token, secret) {
+async function verifyRecoveryToken(token, secrets) {
   const parts = String(token || "").split(".");
-  if (parts.length !== 2 || !secret) return null;
-  const expected = await signRecoveryPayload(parts[0], secret);
-  if (expected !== parts[1]) return null;
+  const keys = (Array.isArray(secrets) ? secrets : [secrets]).filter(Boolean);
+  if (parts.length !== 2 || !keys.length) return null;
+  let valid = false;
+  for (const secret of keys) {
+    try { if (await signRecoveryPayload(parts[0], secret) === parts[1]) { valid = true; break; } } catch {}
+  }
+  if (!valid) return null;
   let payload;
   try { payload = JSON.parse(new TextDecoder().decode(fromBase64url(parts[0]))); } catch { return null; }
   if (!payload.email || !Number.isFinite(payload.exp) || payload.exp < Date.now()) return null;
   return payload;
+}
+async function verifyDeviceToken(token, secrets) {
+  const parts = String(token || "").split(".");
+  const keys = (Array.isArray(secrets) ? secrets : [secrets]).filter(Boolean);
+  if (parts.length !== 2 || !keys.length) return null;
+  let valid = false;
+  for (const secret of keys) {
+    try { if (await signRecoveryPayload(parts[0], secret) === parts[1]) { valid = true; break; } } catch {}
+  }
+  if (!valid) return null;
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(fromBase64url(parts[0])));
+    if (payload.purpose !== "phoneya2_device_orders" || !payload.email ||
+        !Number.isFinite(payload.exp) || payload.exp < Date.now() || !Array.isArray(payload.order_numbers)) return null;
+    return {
+      email: String(payload.email).trim().toLowerCase(),
+      order_numbers: [...new Set(payload.order_numbers.map(String).filter(x => /^[A-Za-z0-9_-]{3,100}$/.test(x)))].slice(-100)
+    };
+  } catch { return null; }
+}
+function getSigningSecrets(env) {
+  return [...new Set([env.PHONEYA2_ADMIN_PASSWORD, env.SUPABASE_SERVICE_ROLE_KEY, env.SUPABASE_SECRET_KEY].map(value => String(value || "")).filter(value => value.length >= 8))];
 }
 function getCookie(request, name) {
   const prefix = name + "=";
@@ -141,30 +167,47 @@ function mergeOrdersByNumber(...lists) {
 async function fetchOrdersForDevice(env, context, email, orderNumbers) {
   const valid = [...new Set(orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
   if (!valid.length) return { customer: { email, name: "" }, orders: [], deviceRecognized: true };
+  let d1Orders = [];
+  try { d1Orders = await fetchD1Orders(env, { email, orderNumbers: valid }); }
+  catch (error) { console.error("PhoneYa2 D1 device order query failed:", String(error).slice(0,240)); }
+  let legacyOrders = [];
   try {
-    const orders = await fetchD1Orders(env, { email, orderNumbers: valid });
-    return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), deviceRecognized: true };
-  } catch (error) {
-    console.error("PhoneYa2 D1 device order query failed:", String(error).slice(0,240));
-    return null;
-  }
+    const query = new URLSearchParams({
+      select: "id,order_number,customer_name,customer_email,customer_phone,customer_note,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
+      customer_email: "eq." + email, order_number: "in.(" + valid.join(",") + ")",
+      order: "created_at.desc", limit: "100"
+    });
+    const response = await supabaseFetch(env, "/rest/v1/orders?" + query.toString(), { method: "GET", headers: { accept: "application/json" } });
+    if (response.ok) legacyOrders = await response.json();
+  } catch {}
+  const orders = mergeOrdersByNumber(legacyOrders, d1Orders);
+  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), deviceRecognized: true };
 }
 
 async function fetchOrdersForEmail(env, context, email) {
+  let d1Orders = [];
+  try { d1Orders = await fetchD1Orders(env, { email }); }
+  catch (error) { console.error("PhoneYa2 D1 email order query failed:", String(error).slice(0,240)); }
+  let legacyOrders = [];
   try {
-    const orders = await fetchD1Orders(env, { email });
-    return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true };
-  } catch (error) {
-    console.error("PhoneYa2 D1 email order query failed:", String(error).slice(0,240));
-    return null;
-  }
+    const query = new URLSearchParams({
+      select: "id,order_number,customer_name,customer_email,customer_phone,customer_note,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
+      customer_email: "eq." + email, order: "created_at.desc", limit: "100"
+    });
+    const response = await supabaseFetch(env, "/rest/v1/orders?" + query.toString(), { method: "GET", headers: { accept: "application/json" } });
+    if (response.ok) legacyOrders = await response.json();
+  } catch {}
+  const orders = mergeOrdersByNumber(legacyOrders, d1Orders);
+  if (!orders.length && !env.DB && !env.SUPABASE_URL) return null;
+  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true };
 }
 
 export async function onRequest(context) {
   const { request, env } = context;
   const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
   const url = new URL(request.url);
-  const recoverySecret = getSecret(env, "PHONEYA2_ADMIN_PASSWORD", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+  const signingSecrets = getSigningSecrets(env);
+  const recoverySecret = signingSecrets[0] || "";
   if (request.method === "POST") {
     let body;
     try { body = await request.json(); } catch { return json({ error: "Enter the email address used for your PhoneYa2 orders." }, 400); }
@@ -192,7 +235,7 @@ export async function onRequest(context) {
   if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
   const recoveryToken = url.searchParams.get("restore") || "";
   if (recoveryToken) {
-    const payload = await verifyRecoveryToken(recoveryToken, recoverySecret);
+    const payload = await verifyRecoveryToken(recoveryToken, signingSecrets);
     if (!payload) return json({ error: "This recovery link is invalid or has expired. Request a new email link." }, 401);
     try {
       const email = String(payload.email).trim().toLowerCase();
@@ -209,7 +252,7 @@ export async function onRequest(context) {
     }
   }
   // First preference: a customer who verified their inbox can load all orders for that email.
-  const remembered = await verifyRememberToken(getCookie(request, "py2_customer_remember"), recoverySecret);
+  const remembered = await verifyRememberToken(getCookie(request, "py2_customer_remember"), signingSecrets);
   if (remembered) {
     try {
       const result = await fetchOrdersForEmail(env, context, remembered.email);
@@ -221,7 +264,7 @@ export async function onRequest(context) {
     }
   }
   // Without email verification, return only orders this browser actually placed.
-  const device = await verifyDeviceToken(getCookie(request, "py2_device_orders"), recoverySecret);
+  const device = await verifyDeviceToken(getCookie(request, "py2_device_orders"), signingSecrets);
   if (device) {
     try {
       const result = await fetchOrdersForDevice(env, context, device.email, device.order_numbers);
