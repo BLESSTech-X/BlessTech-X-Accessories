@@ -73,16 +73,6 @@ async function createDeviceToken(email, orderNumbers, secret) {
   return payload + "." + await signDevicePayload(payload, secret);
 }
 
-async function supabaseFetch(env, path, init = {}) {
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
-  const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
-  if (!base || !key) throw new Error("Server database secrets are not configured.");
-  const headers = new Headers(init.headers || {});
-  headers.set("apikey", key);
-  headers.set("authorization", "Bearer " + key);
-  headers.set("content-type", "application/json");
-  return fetch(base + path, { ...init, headers });
-}
 function parseProductMarkdown(markdown, slug) {
   const front = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);
   if (!front) return null;
@@ -262,24 +252,6 @@ async function sendOrderNtfy(env, order, customer = {}, items = []) {
     return { ok: false, reason: "ntfy.sh returned HTTP " + response.status + "." };
   }
   return { ok: true, reason: "" };
-}
-async function inviteCustomerAccount(env, email, name) {
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
-  const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
-  if (!base || !key) return false;
-  const redirect = "https://phoneya2.pages.dev/account.html";
-  const response = await fetch(base + "/auth/v1/invite?redirect_to=" + encodeURIComponent(redirect), {
-    method: "POST",
-    headers: { apikey: key, authorization: "Bearer " + key, "content-type": "application/json" },
-    body: JSON.stringify({ email, data: { full_name: name, name } })
-  });
-  if (response.ok) return true;
-  const detail = await response.text();
-  // Existing auth accounts are expected for repeat customers; their order still saves.
-  if (response.status !== 422 && response.status !== 400) {
-    console.error("PhoneYa2 customer invite failed:", response.status, detail.slice(0, 250));
-  }
-  return false;
 }
 async function sendOrderTelegram(env, order, customer = {}, items = []) {
   const token = String(env.TELEGRAM_BOT_TOKEN || "").trim();
@@ -513,11 +485,8 @@ export async function onRequest(context) {
         console.error("PhoneYa2 D1 order save failed:", String(error).slice(0,500));
         return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
-      // Customer orders are saved first; account invitations are best-effort and
-      // must never cause a successful order to fail. Existing accounts are left alone.
-      let accountInvited = false;
-      try { accountInvited = await inviteCustomerAccount(env, email, name); }
-      catch (error) { console.error("PhoneYa2 customer invitation failed:", String(error)); }
+      // Customer accounts use password-free device recognition and email recovery; no external auth invitation is required.
+      const accountInvited = false;
       const orderCustomer = { name, email, phone, address, note };
       // Attempt app push (Telegram) and email independently so either can alert the owner.
       let telegramSent = false;
@@ -582,12 +551,12 @@ export async function onRequest(context) {
       // Remember only order numbers actually created on this browser. This lets
       // the account page restore device orders automatically without exposing
       // every order associated with a merely typed email address.
-      const rememberSecret = getSecret(env, "PHONEYA2_ADMIN_PASSWORD", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+      const rememberSecret = getSecret(env, "PHONEYA2_ADMIN_PASSWORD");
       const orderNumber = String(order.order_number || "");
       let deviceCookie = "";
       if (rememberSecret && orderNumber) {
         try {
-          const prior = await verifyDeviceToken(readCookie(request, "py2_device_orders"), [rememberSecret, env.SUPABASE_SERVICE_ROLE_KEY, env.SUPABASE_SECRET_KEY]);
+          const prior = await verifyDeviceToken(readCookie(request, "py2_device_orders"), [rememberSecret]);
           const knownNumbers = prior && prior.email === email ? prior.order_numbers : [];
           const token = await createDeviceToken(email, [...knownNumbers, orderNumber], rememberSecret);
           deviceCookie = "py2_device_orders=" + token + "; Max-Age=15552000; Path=/api/; HttpOnly; Secure; SameSite=Lax";
@@ -648,21 +617,7 @@ export async function onRequest(context) {
         return json({ error: outcomes.join(" ") }, 502);
       }
       if (request.method === "GET") {
-        const d1Orders = await readD1Orders(env, { limit: 200 });
-        let legacyOrders = [];
-        try {
-          const legacyResponse = await supabaseFetch(env,
-            "/rest/v1/orders?select=*,order_items(*)&order=created_at.desc&limit=200",
-            { method: "GET", headers: { accept: "application/json" } }
-          );
-          if (legacyResponse.ok) legacyOrders = await legacyResponse.json();
-        } catch (error) {
-          console.warn("PhoneYa2 legacy order history is temporarily unavailable:", String(error).slice(0,180));
-        }
-        const merged = new Map();
-        for (const order of legacyOrders) if (order?.order_number) merged.set(String(order.order_number), order);
-        for (const order of d1Orders) if (order?.order_number) merged.set(String(order.order_number), order);
-        const orders = [...merged.values()].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0,200);
+        const orders = await readD1Orders(env, { limit: 200 });
         const slugs = [...new Set(orders.flatMap(order => (order.order_items || []).map(item => item.product_slug).filter(Boolean)))];
         const productMap = new Map();
         await Promise.all(slugs.map(async slug => { try { const product = await loadProduct(context, slug); if (product) productMap.set(slug, product); } catch {} }));
@@ -678,39 +633,7 @@ export async function onRequest(context) {
       }
       if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
       const currentRow = await env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first();
-      if (!currentRow) {
-        // Orders created before the D1 migration remain manageable in Supabase.
-        const legacyCurrent = await supabaseFetch(env,
-          "/rest/v1/orders?id=eq." + encodeURIComponent(id) + "&select=id,status,order_number,customer_name,customer_email",
-          { method: "GET", headers: { accept: "application/json" } }
-        );
-        if (!legacyCurrent.ok) throw new Error("Could not verify legacy order status: " + legacyCurrent.status);
-        const legacyRows = await legacyCurrent.json();
-        if (!legacyRows.length) return json({ error: "Order not found." }, 404);
-        const previous = legacyRows[0];
-        const legacyUpdated = await supabaseFetch(env,
-          "/rest/v1/orders?id=eq." + encodeURIComponent(id),
-          { method: "PATCH", headers: { prefer: "return=representation" },
-            body: JSON.stringify({ status, updated_at: new Date().toISOString() }) }
-        );
-        if (!legacyUpdated.ok) throw new Error("Legacy order status update failed: " + legacyUpdated.status);
-        const rows = await legacyUpdated.json();
-        if (!rows.length) return json({ error: "Order not found." }, 404);
-        let deliveryEmailSent = false;
-        if (status === "delivered" && previous.status !== "delivered") {
-          const deliveryEmail = await sendDeliveredOrderEmail(env, rows[0]);
-          deliveryEmailSent = deliveryEmail.ok;
-          await logEmailActivity(env, {
-            eventType: "delivery_update", source: "automatic", triggerSource: "order_marked_delivered",
-            recipientEmail: rows[0].customer_email || "", recipientName: rows[0].customer_name || "",
-            subject: "PhoneYa2 order " + (rows[0].order_number || "") + " — delivery update",
-            status: deliveryEmail.ok ? "sent" : "failed",
-            providerMessageId: deliveryEmail.providerMessageId || "", error: deliveryEmail.error || "",
-            orderNumber: rows[0].order_number || "", metadata: { orderStatus: "delivered", legacy: true }
-          });
-        }
-        return json({ success: true, order: rows[0], delivery_email_sent: deliveryEmailSent });
-      }
+      if (!currentRow) return json({ error: "Order not found." }, 404);
       await env.DB.prepare("UPDATE orders SET status = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").bind(status, id).run();
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
