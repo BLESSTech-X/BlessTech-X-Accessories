@@ -117,36 +117,104 @@ async function requireAdmin(request, env) {
   const { getAdminSession } = await import("../_auth.js");
   return getAdminSession(request, env);
 }
+
+function moneyToMinor(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) throw new Error("Invalid order amount.");
+  return Math.round((number + Number.EPSILON) * 100);
+}
+function minorToMoney(value) {
+  return Number(value || 0) / 100;
+}
+function mapD1Order(row, items = []) {
+  return {
+    id: row.id,
+    order_number: row.order_number,
+    customer_name: row.customer_name,
+    customer_email: row.customer_email,
+    customer_phone: row.customer_phone,
+    delivery_address: row.delivery_address,
+    customer_note: row.customer_note || "",
+    status: row.status,
+    total_amount: minorToMoney(row.total_amount_minor),
+    currency: row.currency || "ZMW",
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    order_items: items.map(item => ({
+      id: item.id,
+      order_id: item.order_id,
+      product_slug: item.product_slug,
+      product_name: item.product_name,
+      quantity: item.quantity,
+      unit_price: minorToMoney(item.unit_price_minor),
+      line_total: minorToMoney(item.line_total_minor)
+    }))
+  };
+}
+async function createD1Order(env, customer, items) {
+  if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
+  const id = crypto.randomUUID();
+  const orderNumber = "PY2-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + crypto.randomUUID().slice(0,8).toUpperCase();
+  const totalMinor = items.reduce((sum, item) => sum + moneyToMinor(item.line_total), 0);
+  const statements = [
+    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW')")
+      .bind(id, orderNumber, customer.name, customer.email, customer.phone, customer.address, customer.note || "", totalMinor)
+  ];
+  for (const item of items) {
+    statements.push(
+      env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
+        .bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total))
+    );
+  }
+  await env.DB.batch(statements);
+  return { id, order_number: orderNumber, total_amount: minorToMoney(totalMinor), currency: "ZMW", item_count: items.length };
+}
+async function readD1Orders(env, options = {}) {
+  if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
+  const limit = Math.min(200, Math.max(1, Number(options.limit) || 100));
+  let rows;
+  if (options.email) {
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) ORDER BY created_at DESC LIMIT ?")
+      .bind(options.email, limit).all();
+  } else if (options.orderNumbers?.length) {
+    const valid = [...new Set(options.orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
+    if (!valid.length) return [];
+    const placeholders = valid.map(() => "?").join(",");
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) AND order_number IN (" + placeholders + ") ORDER BY created_at DESC LIMIT ?")
+      .bind(options.email || "", ...valid, limit).all();
+  } else {
+    rows = await env.DB.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?").bind(limit).all();
+  }
+  const orders = rows.results || [];
+  if (!orders.length) return [];
+  const ids = orders.map(row => row.id);
+  const itemPlaceholders = ids.map(() => "?").join(",");
+  const itemRows = await env.DB.prepare("SELECT * FROM order_items WHERE order_id IN (" + itemPlaceholders + ") ORDER BY rowid ASC")
+    .bind(...ids).all();
+  const byOrder = new Map();
+  for (const item of itemRows.results || []) {
+    if (!byOrder.has(item.order_id)) byOrder.set(item.order_id, []);
+    byOrder.get(item.order_id).push(item);
+  }
+  return orders.map(row => mapD1Order(row, byOrder.get(row.id) || []));
+}
+
 async function logEmailActivity(env, record) {
   try {
-    const response = await supabaseFetch(env, "/rest/v1/email_activity", {
-      method: "POST",
-      headers: { prefer: "return=minimal" },
-      body: JSON.stringify({
-        event_type: record.eventType || "transactional",
-        source: record.source || "automatic",
-        trigger_source: record.triggerSource || "",
-        recipient_email: String(record.recipientEmail || "").slice(0, 254),
-        recipient_name: String(record.recipientName || "").slice(0, 120),
-        subject: String(record.subject || "").slice(0, 300),
-        status: record.status || "failed",
-        provider: record.provider || "resend",
-        provider_message_id: record.providerMessageId || "",
-        error_message: String(record.error || "").slice(0, 1000),
-        related_order_number: record.orderNumber || "",
-        related_product_slug: record.productSlug || "",
-        retry_count: 0,
-        sent_at: record.status === "sent" ? new Date().toISOString() : null,
-        metadata: record.metadata || {}
-      })
-    });
-    if (!response.ok) {
-      console.error("PhoneYa2 email activity log write failed:", response.status, (await response.text()).slice(0, 240));
-      return false;
-    }
+    if (!env.DB) throw new Error("D1 database binding DB is not configured.");
+    await env.DB.prepare("INSERT INTO email_activity (id,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,related_order_number,related_product_slug,retry_count,sent_at,metadata_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)")
+      .bind(
+        crypto.randomUUID(), record.eventType || "transactional", record.source || "automatic",
+        record.triggerSource || "", String(record.recipientEmail || "").slice(0,254),
+        String(record.recipientName || "").slice(0,120), String(record.subject || "").slice(0,300),
+        record.status || "failed", record.provider || "resend", record.providerMessageId || "",
+        String(record.error || "").slice(0,1000), record.orderNumber || "", record.productSlug || "",
+        record.status === "sent" ? new Date().toISOString() : null,
+        JSON.stringify(record.metadata || {})
+      ).run();
     return true;
   } catch (error) {
-    console.error("PhoneYa2 email activity logging failed:", String(error).slice(0, 240));
+    console.error("PhoneYa2 D1 email activity logging failed:", String(error).slice(0,240));
     return false;
   }
 }
@@ -433,30 +501,13 @@ export async function onRequest(context) {
         });
       }
 
-      let rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
-        method: "POST",
-        body: JSON.stringify({
-          p_customer_name: name,
-          p_customer_email: email,
-          p_customer_phone: phone,
-          p_delivery_address: address,
-          p_items: items,
-          p_customer_note: storedNote
-        })
-      });
-      if (!rpc.ok && !note) {
-        // Keep ordinary checkout working until the database note migration is applied.
-        rpc = await supabaseFetch(env, "/rest/v1/rpc/create_phoneya2_order", {
-          method: "POST",
-          body: JSON.stringify({ p_customer_name: name, p_customer_email: email, p_customer_phone: phone, p_delivery_address: address, p_items: items })
-        });
+      let order;
+      try {
+        order = await createD1Order(env, { name, email, phone, address, note: storedNote }, items);
+      } catch (error) {
+        console.error("PhoneYa2 D1 order save failed:", String(error).slice(0,500));
+        return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
       }
-      if (!rpc.ok) {
-        const detail = await rpc.text();
-        console.error("PhoneYa2 order RPC failed:", rpc.status, detail.slice(0, 500));
-        return json({ error: note ? "Order notes are being enabled. Please try again shortly, or remove the note and submit the order." : "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
-      }
-      const order = await rpc.json();
       // Customer orders are saved first; account invitations are best-effort and
       // must never cause a successful order to fail. Existing accounts are left alone.
       let accountInvited = false;
@@ -526,7 +577,7 @@ export async function onRequest(context) {
       // Remember only order numbers actually created on this browser. This lets
       // the account page restore device orders automatically without exposing
       // every order associated with a merely typed email address.
-      const rememberSecret = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
+      const rememberSecret = getSecret(env, "PHONEYA2_ADMIN_PASSWORD", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
       const orderNumber = String(order.order_number || "");
       let deviceCookie = "";
       if (rememberSecret && orderNumber) {
@@ -592,12 +643,7 @@ export async function onRequest(context) {
         return json({ error: outcomes.join(" ") }, 502);
       }
       if (request.method === "GET") {
-        const response = await supabaseFetch(env,
-          "/rest/v1/orders?select=*,order_items(*)&order=created_at.desc&limit=200",
-          { method: "GET", headers: { accept: "application/json" } }
-        );
-        if (!response.ok) throw new Error("Order list request failed: " + response.status);
-        const orders = await response.json();
+        const orders = await readD1Orders(env, { limit: 200 });
         const slugs = [...new Set(orders.flatMap(order => (order.order_items || []).map(item => item.product_slug).filter(Boolean)))];
         const productMap = new Map();
         await Promise.all(slugs.map(async slug => { try { const product = await loadProduct(context, slug); if (product) productMap.set(slug, product); } catch {} }));
@@ -611,37 +657,28 @@ export async function onRequest(context) {
       if (!/^[0-9a-f-]{36}$/i.test(id) || !ALLOWED_STATUSES.has(status)) {
         return json({ error: "Invalid order or status." }, 400);
       }
-      const currentResponse = await supabaseFetch(env,
-        "/rest/v1/orders?id=eq." + encodeURIComponent(id) + "&select=id,status,order_number,customer_name,customer_email",
-        { method: "GET", headers: { accept: "application/json" } }
-      );
-      if (!currentResponse.ok) throw new Error("Could not verify the current order status: " + currentResponse.status);
-      const currentRows = await currentResponse.json();
-      if (!currentRows.length) return json({ error: "Order not found." }, 404);
-      const currentOrder = currentRows[0];
-      const response = await supabaseFetch(env,
-        "/rest/v1/orders?id=eq." + encodeURIComponent(id),
-        { method: "PATCH", headers: { prefer: "return=representation" },
-          body: JSON.stringify({ status, updated_at: new Date().toISOString() }) }
-      );
-      if (!response.ok) throw new Error("Order status update failed: " + response.status);
-      const updated = await response.json();
-      if (!updated.length) return json({ error: "Order not found." }, 404);
+      if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
+      const currentRow = await env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first();
+      if (!currentRow) return json({ error: "Order not found." }, 404);
+      await env.DB.prepare("UPDATE orders SET status = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").bind(status, id).run();
+      const updatedRows = await readD1Orders(env, { limit: 200 });
+      const updatedOrder = updatedRows.find(order => order.id === id);
+      if (!updatedOrder) return json({ error: "Order not found." }, 404);
       let deliveryEmailSent = false;
-      if (status === "delivered" && currentOrder.status !== "delivered") {
-        const deliveryEmail = await sendDeliveredOrderEmail(env, updated[0]);
+      if (status === "delivered" && currentRow.status !== "delivered") {
+        const deliveryEmail = await sendDeliveredOrderEmail(env, updatedOrder);
         deliveryEmailSent = deliveryEmail.ok;
         await logEmailActivity(env, {
           eventType: "delivery_update", source: "automatic", triggerSource: "order_marked_delivered",
-          recipientEmail: updated[0].customer_email || "", recipientName: updated[0].customer_name || "",
-          subject: "PhoneYa2 order " + (updated[0].order_number || "") + " — delivery update",
+          recipientEmail: updatedOrder.customer_email || "", recipientName: updatedOrder.customer_name || "",
+          subject: "PhoneYa2 order " + (updatedOrder.order_number || "") + " — delivery update",
           status: deliveryEmail.ok ? "sent" : "failed",
           providerMessageId: deliveryEmail.providerMessageId || "", error: deliveryEmail.error || "",
-          orderNumber: updated[0].order_number || "", metadata: { orderStatus: "delivered" }
+          orderNumber: updatedOrder.order_number || "", metadata: { orderStatus: "delivered" }
         });
-        if (!deliveryEmail.ok) console.error("PhoneYa2 delivery email failed for", updated[0].order_number, deliveryEmail.error);
+        if (!deliveryEmail.ok) console.error("PhoneYa2 delivery email failed for", updatedOrder.order_number, deliveryEmail.error);
       }
-      return json({ success: true, order: updated[0], delivery_email_sent: deliveryEmailSent });
+      return json({ success: true, order: updatedOrder, delivery_email_sent: deliveryEmailSent });
     } catch (error) {
       console.error("PhoneYa2 admin order action failed:", String(error));
       return json({ error: "Could not complete the request. Please try again." }, 503);
