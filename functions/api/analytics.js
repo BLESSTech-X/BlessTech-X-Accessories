@@ -45,6 +45,7 @@ export async function onRequest({ request, env }) {
   const { getAdminSession } = await import("../_auth.js");
   const user = await getAdminSession(request, env);
   if (!user) return json({ error: "Unauthorized. Please sign in again." }, 401);
+  try {
     const property = String(env.GA4_PROPERTY_ID || "").trim();
     if (!/^\d+$/.test(property) || !env.GA4_SERVICE_ACCOUNT_JSON) return json({ error: "GA4_PROPERTY_ID or GA4_SERVICE_ACCOUNT_JSON is missing in Cloudflare." }, 503);
     let sa;
