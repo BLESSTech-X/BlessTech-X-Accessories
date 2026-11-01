@@ -45,7 +45,7 @@ export async function onRequest({ request, env }) {
   const email = String(body.email || "").trim().toLowerCase();
   const supplied = String(body.password || "");
   const expected = String(env.PHONEYA2_ADMIN_PASSWORD || "");
-  if (expected.length < 20) return json({ error: "Admin authentication is not configured correctly. Check the Cloudflare secret." }, 503);
+  if (expected.length < 8) return json({ error: "Admin authentication is not configured correctly. Check the Cloudflare secret." }, 503);
   if (!(await rateLimit(request, env, "check"))) return json({ error: "Too many failed attempts. Try again in 15 minutes." }, 429);
   if (email !== "singbless89@gmail.com" || supplied.length < 1 || !(await passwordMatches(supplied, expected))) {
     await rateLimit(request, env, "record");
