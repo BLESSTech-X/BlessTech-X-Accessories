@@ -35,7 +35,7 @@ export async function createAdminSession(env) {
 }
 export async function getAdminSession(request, env) {
   const secret = String(env.PHONEYA2_ADMIN_PASSWORD || "");
-  if (secret.length < 20) return null;
+  if (secret.length < 8) return null;
   const token = readCookie(request);
   const parts = token.split(".");
   if (parts.length !== 2) return null;
