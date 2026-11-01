@@ -643,7 +643,21 @@ export async function onRequest(context) {
         return json({ error: outcomes.join(" ") }, 502);
       }
       if (request.method === "GET") {
-        const orders = await readD1Orders(env, { limit: 200 });
+        const d1Orders = await readD1Orders(env, { limit: 200 });
+        let legacyOrders = [];
+        try {
+          const legacyResponse = await supabaseFetch(env,
+            "/rest/v1/orders?select=*,order_items(*)&order=created_at.desc&limit=200",
+            { method: "GET", headers: { accept: "application/json" } }
+          );
+          if (legacyResponse.ok) legacyOrders = await legacyResponse.json();
+        } catch (error) {
+          console.warn("PhoneYa2 legacy order history is temporarily unavailable:", String(error).slice(0,180));
+        }
+        const merged = new Map();
+        for (const order of legacyOrders) if (order?.order_number) merged.set(String(order.order_number), order);
+        for (const order of d1Orders) if (order?.order_number) merged.set(String(order.order_number), order);
+        const orders = [...merged.values()].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0,200);
         const slugs = [...new Set(orders.flatMap(order => (order.order_items || []).map(item => item.product_slug).filter(Boolean)))];
         const productMap = new Map();
         await Promise.all(slugs.map(async slug => { try { const product = await loadProduct(context, slug); if (product) productMap.set(slug, product); } catch {} }));
@@ -659,7 +673,39 @@ export async function onRequest(context) {
       }
       if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
       const currentRow = await env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first();
-      if (!currentRow) return json({ error: "Order not found." }, 404);
+      if (!currentRow) {
+        // Orders created before the D1 migration remain manageable in Supabase.
+        const legacyCurrent = await supabaseFetch(env,
+          "/rest/v1/orders?id=eq." + encodeURIComponent(id) + "&select=id,status,order_number,customer_name,customer_email",
+          { method: "GET", headers: { accept: "application/json" } }
+        );
+        if (!legacyCurrent.ok) throw new Error("Could not verify legacy order status: " + legacyCurrent.status);
+        const legacyRows = await legacyCurrent.json();
+        if (!legacyRows.length) return json({ error: "Order not found." }, 404);
+        const previous = legacyRows[0];
+        const legacyUpdated = await supabaseFetch(env,
+          "/rest/v1/orders?id=eq." + encodeURIComponent(id),
+          { method: "PATCH", headers: { prefer: "return=representation" },
+            body: JSON.stringify({ status, updated_at: new Date().toISOString() }) }
+        );
+        if (!legacyUpdated.ok) throw new Error("Legacy order status update failed: " + legacyUpdated.status);
+        const rows = await legacyUpdated.json();
+        if (!rows.length) return json({ error: "Order not found." }, 404);
+        let deliveryEmailSent = false;
+        if (status === "delivered" && previous.status !== "delivered") {
+          const deliveryEmail = await sendDeliveredOrderEmail(env, rows[0]);
+          deliveryEmailSent = deliveryEmail.ok;
+          await logEmailActivity(env, {
+            eventType: "delivery_update", source: "automatic", triggerSource: "order_marked_delivered",
+            recipientEmail: rows[0].customer_email || "", recipientName: rows[0].customer_name || "",
+            subject: "PhoneYa2 order " + (rows[0].order_number || "") + " — delivery update",
+            status: deliveryEmail.ok ? "sent" : "failed",
+            providerMessageId: deliveryEmail.providerMessageId || "", error: deliveryEmail.error || "",
+            orderNumber: rows[0].order_number || "", metadata: { orderStatus: "delivered", legacy: true }
+          });
+        }
+        return json({ success: true, order: rows[0], delivery_email_sent: deliveryEmailSent });
+      }
       await env.DB.prepare("UPDATE orders SET status = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").bind(status, id).run();
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
