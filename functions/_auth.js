@@ -40,10 +40,6 @@ export async function getAdminSession(request, env) {
   const parts = token.split(".");
   if (parts.length !== 2) return null;
   const expected = await hmac(parts[0], secret);
-  const a = new TextEncoder().encode(expected), b = new TextEncoder().encode(parts[1]);
-  if (a.length !== b.length || !crypto.subtle.timingSafeEqual) {
-    if (a.length !== b.length) return null;
-  }
   let valid = false;
   try {
     const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
