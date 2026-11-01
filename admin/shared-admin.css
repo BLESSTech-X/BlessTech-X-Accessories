@@ -28,3 +28,5 @@ body.py2-admin-shell-active .wrap{max-width:none!important}
  body.py2-admin-shell-active>main{padding:16px 12px 28px!important}
  .py2-admin-topmeta{font-size:10px;gap:5px}
 }
+
+body.py2-admin-shell-active #scr-admin>.topbar{display:none!important}
