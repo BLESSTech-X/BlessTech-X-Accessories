@@ -2,13 +2,9 @@ const JSON_HEADERS={"content-type":"application/json; charset=utf-8","cache-cont
 const ADMIN_FALLBACK="singbless89@gmail.com";
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 async function adminUser(request,env){
- const token=(request.headers.get("authorization")||"").match(/^Bearer\s+(.+)$/i)?.[1];
- const base=String(env.SUPABASE_URL||"").replace(/\/$/,""),anon=env.SUPABASE_ANON_KEY||env.SUPABASE_PUBLISHABLE_KEY||"";
- const allowed=String(env.ADMIN_EMAIL||ADMIN_FALLBACK).trim().toLowerCase();
- if(!token||!base||!anon)return null;
- const response=await fetch(base+"/auth/v1/user",{headers:{apikey:anon,authorization:"Bearer "+token}});
- if(!response.ok)return null;const user=await response.json();
- return user?.email&&String(user.email).toLowerCase()===allowed?user:null;
+ const { getAdminSession, sameOrigin } = await import("../_auth.js");
+ if (!sameOrigin(request)) return null;
+ return await getAdminSession(request, env);
 }
 function encodeBase64(bytes){let binary="";for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(binary);}
 export async function onRequest({request,env}){
