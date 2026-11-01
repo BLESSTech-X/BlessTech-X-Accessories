@@ -173,15 +173,15 @@ async function readD1Orders(env, options = {}) {
   if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
   const limit = Math.min(200, Math.max(1, Number(options.limit) || 100));
   let rows;
-  if (options.email) {
-    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) ORDER BY created_at DESC LIMIT ?")
-      .bind(options.email, limit).all();
-  } else if (options.orderNumbers?.length) {
+  if (options.orderNumbers?.length) {
     const valid = [...new Set(options.orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
     if (!valid.length) return [];
     const placeholders = valid.map(() => "?").join(",");
     rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) AND order_number IN (" + placeholders + ") ORDER BY created_at DESC LIMIT ?")
       .bind(options.email || "", ...valid, limit).all();
+  } else if (options.email) {
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) ORDER BY created_at DESC LIMIT ?")
+      .bind(options.email, limit).all();
   } else {
     rows = await env.DB.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?").bind(limit).all();
   }
