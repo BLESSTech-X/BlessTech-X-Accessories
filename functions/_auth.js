@@ -26,7 +26,7 @@ async function hmac(payload, secret) {
 }
 export async function createAdminSession(env) {
   const secret = String(env.PHONEYA2_ADMIN_PASSWORD || "");
-  if (secret.length < 20) throw new Error("PhoneYa2 admin password secret is missing or too short.");
+  if (secret.length < 8) throw new Error("PhoneYa2 admin password secret is missing or too short.");
   const payload = base64url(new TextEncoder().encode(JSON.stringify({
     email: ADMIN_EMAIL,
     exp: Math.floor(Date.now() / 1000) + SESSION_SECONDS
