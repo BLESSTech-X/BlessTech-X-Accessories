@@ -57,7 +57,7 @@
   finally{loading=false;}
  }
  function showImagePreview(slot,url){const img=$('ss-'+slot+'-image-preview');if(!img)return;const safe=/^https:\/\//i.test(String(url||''))||String(url||'').startsWith('/');if(safe&&url){img.src=url;img.hidden=false;}else{img.removeAttribute('src');img.hidden=true;}}
- async function uploadImage(slot,file){if(!file)return;if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){setStatus('Choose a JPG, PNG, WebP or AVIF image up to 5 MB.','error');return;}const token=window.PY2_SEASONAL_AUTH_TOKEN;if(!token){setStatus('Your admin session is missing. Sign in again before uploading.','error');return;}const data=new FormData();data.append('file',file);data.append('slot',slot);data.append('theme',$('ss-active-season').value);const input=$('ss-'+slot+'-image-file');input.disabled=true;setStatus('Uploading '+slot+' image…');try{const response=await fetch('/api/seasonal-upload',{method:'POST',headers:{authorization:'Bearer '+token},body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Image upload failed.');$('ss-'+slot+'-image-url').value=result.url;settings[slot+'Image']=result.url;imageOverrides[$('ss-active-season').value]={...(imageOverrides[$('ss-active-season').value]||{}),[slot+'Image']:result.url};showImagePreview(slot,result.url);setStatus('Image uploaded. Save campaign settings to publish the new image.','success');}catch(error){setStatus(error.message,'error');}finally{input.disabled=false;input.value='';}}
+ async function uploadImage(slot,file){if(!file)return;if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){setStatus('Choose a JPG, PNG, WebP or AVIF image up to 5 MB.','error');return;}const data=new FormData();data.append('file',file);data.append('slot',slot);data.append('theme',$('ss-active-season').value);const input=$('ss-'+slot+'-image-file');input.disabled=true;setStatus('Uploading '+slot+' image…');try{const response=await fetch('/api/seasonal-upload',{method:'POST',credentials:'same-origin',body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Image upload failed.');$('ss-'+slot+'-image-url').value=result.url;settings[slot+'Image']=result.url;imageOverrides[$('ss-active-season').value]={...(imageOverrides[$('ss-active-season').value]||{}),[slot+'Image']:result.url};showImagePreview(slot,result.url);setStatus('Image uploaded. Save campaign settings to publish the new image.','success');}catch(error){setStatus(error.message,'error');}finally{input.disabled=false;input.value='';}}
  function collect(){
   const theme=$('ss-active-season').value;const existing={...(imageOverrides[theme]||{})};['banner','popup'].forEach(slot=>{const key=slot+'Image',value=$('ss-'+slot+'-image-url').value.trim(),base=currentPresetImages[key]||'';if(value===base)delete existing[key];else existing[key]=value;});imageOverrides[theme]=existing;
   const next={...settings, bannerImage:existing.bannerImage||'',popupImage:existing.popupImage||'',enabled:$('ss-enabled').checked,theme:$('ss-active-season').value,coverage:$('ss-coverage').value,start:$('ss-start').value,end:$('ss-end').value,scheduled:$('ss-scheduled').checked,banner:$('ss-banner').checked,popup:$('ss-popup').checked,decorations:$('ss-decorations').checked,snow:$('ss-snow').checked,popupMode:$('ss-popup-mode').value,popupDelay:Number($('ss-popup-delay').value||0),popupScroll:Number($('ss-popup-scroll').value||35),snowIntensity:Number($('ss-snow-intensity').value||0)};
@@ -69,13 +69,13 @@
   catch(error){setStatus('Could not open preview: '+error.message,'error');}
  }
  async function save(){
-  const token=window.PY2_SEASONAL_AUTH_TOKEN;if(!token){setStatus('Your admin session is missing. Sign out and back into Command Centre.','error');return;}
+  
   const next=collect();
   if(next.scheduled&&(!next.start||!next.end)){setStatus('Choose both a start date and an end date before scheduling the campaign.','error');return;}
   if(next.scheduled&&next.end<next.start){setStatus('The end date must be on or after the start date.','error');return;}
   const button=$('ss-save');button.disabled=true;setStatus('Saving campaign controls…');
   try{
-   const response=await fetch('/api/seasonal',{method:'PUT',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({settings:next,presets:imageOverrides})});
+   const response=await fetch('/api/seasonal',{method:'PUT',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({settings:next,presets:imageOverrides})});
    const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Save failed.');
    settings=next;setStatus('Saved to the Decap-managed GitHub files. Storefront publishing starts automatically.','success');
   }catch(error){setStatus(error.message,'error');}
