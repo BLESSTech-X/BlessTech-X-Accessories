@@ -6,16 +6,6 @@ function getSecret(env, ...keys) {
   for (const key of keys) if (env[key]) return env[key];
   return "";
 }
-async function supabaseFetch(env, path, init = {}) {
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
-  const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
-  if (!base || !key) throw new Error("Server database secrets are not configured.");
-  const headers = new Headers(init.headers || {});
-  headers.set("apikey", key);
-  headers.set("authorization", "Bearer " + key);
-  headers.set("content-type", "application/json");
-  return fetch(base + path, { ...init, headers });
-}
 async function fetchStaticAsset(context, path) {
   const url = new URL(path, context.request.url);
   if (context.env.ASSETS && typeof context.env.ASSETS.fetch === "function") {
@@ -93,7 +83,7 @@ async function verifyDeviceToken(token, secrets) {
   } catch { return null; }
 }
 function getSigningSecrets(env) {
-  return [...new Set([env.PHONEYA2_ADMIN_PASSWORD, env.SUPABASE_SERVICE_ROLE_KEY, env.SUPABASE_SECRET_KEY].map(value => String(value || "")).filter(value => value.length >= 8))];
+  return [...new Set([env.PHONEYA2_ADMIN_PASSWORD].map(value => String(value || "")).filter(value => value.length >= 8))];
 }
 function getCookie(request, name) {
   const prefix = name + "=";
@@ -166,45 +156,26 @@ function mergeOrdersByNumber(...lists) {
 
 async function fetchOrdersForDevice(env, context, email, orderNumbers) {
   const valid = [...new Set(orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
-  if (!valid.length) return { customer: { email, name: "" }, orders: [], deviceRecognized: true };
-  let d1Orders = [];
-  try { d1Orders = await fetchD1Orders(env, { email, orderNumbers: valid }); }
-  catch (error) { console.error("PhoneYa2 D1 device order query failed:", String(error).slice(0,240)); }
-  let legacyOrders = [];
-  try {
-    const query = new URLSearchParams({
-      select: "id,order_number,customer_name,customer_email,customer_phone,customer_note,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-      customer_email: "eq." + email, order_number: "in.(" + valid.join(",") + ")",
-      order: "created_at.desc", limit: "100"
-    });
-    const response = await supabaseFetch(env, "/rest/v1/orders?" + query.toString(), { method: "GET", headers: { accept: "application/json" } });
-    if (response.ok) legacyOrders = await response.json();
-  } catch {}
-  const orders = mergeOrdersByNumber(legacyOrders, d1Orders);
-  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), deviceRecognized: true };
+  const orders = valid.length ? await fetchD1Orders(env, { email, orderNumbers: valid }) : [];
+  return {
+    customer: { email, name: orders[0]?.customer_name || "" },
+    orders: await addProductImages(context, orders),
+    deviceRecognized: true
+  };
 }
 
 async function fetchOrdersForEmail(env, context, email) {
-  let d1Orders = [];
-  try { d1Orders = await fetchD1Orders(env, { email }); }
-  catch (error) { console.error("PhoneYa2 D1 email order query failed:", String(error).slice(0,240)); }
-  let legacyOrders = [];
-  try {
-    const query = new URLSearchParams({
-      select: "id,order_number,customer_name,customer_email,customer_phone,customer_note,status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-      customer_email: "eq." + email, order: "created_at.desc", limit: "100"
-    });
-    const response = await supabaseFetch(env, "/rest/v1/orders?" + query.toString(), { method: "GET", headers: { accept: "application/json" } });
-    if (response.ok) legacyOrders = await response.json();
-  } catch {}
-  const orders = mergeOrdersByNumber(legacyOrders, d1Orders);
-  if (!orders.length && !env.DB && !env.SUPABASE_URL) return null;
-  return { customer: { email, name: orders[0]?.customer_name || "" }, orders: await addProductImages(context, orders), recovery: true };
+  if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
+  const orders = await fetchD1Orders(env, { email });
+  return {
+    customer: { email, name: orders[0]?.customer_name || "" },
+    orders: await addProductImages(context, orders),
+    recovery: true
+  };
 }
 
 export async function onRequest(context) {
   const { request, env } = context;
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
   const url = new URL(request.url);
   const signingSecrets = getSigningSecrets(env);
   const recoverySecret = signingSecrets[0] || "";
@@ -275,39 +246,6 @@ export async function onRequest(context) {
       return json({ error: "Your saved orders are temporarily unavailable." }, 503);
     }
   }
-  const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i)?.[1];
-  const anonKey = getSecret(env, "SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
-  if (!token || !base || !anonKey) return json({ error: "No remembered customer session." }, 401);
-  try {
-    const userResponse = await fetch(base + "/auth/v1/user", {
-      headers: { apikey: anonKey, authorization: "Bearer " + token }
-    });
-    if (!userResponse.ok) return json({ error: "Your session has expired. Please sign in again." }, 401);
-    const user = await userResponse.json();
-    const email = String(user.email || "").trim().toLowerCase();
-    if (!email || !user.email_confirmed_at) {
-      return json({ error: "Please verify your email address before viewing your order history." }, 403);
-    }
-    const buildQuery = includeNote => new URLSearchParams({
-      select: "id,order_number,customer_name,customer_email,customer_phone,delivery_address," + (includeNote ? "customer_note," : "") + "status,total_amount,currency,created_at,order_items(id,product_slug,product_name,quantity,unit_price,line_total)",
-      "customer_email": "ilike." + email.replace(/[\\%_]/g, ch => "\\" + ch),
-      order: "created_at.desc",
-      limit: "100"
-    });
-    let response = await supabaseFetch(env, "/rest/v1/orders?" + buildQuery(true).toString(), { method: "GET", headers: { accept: "application/json" } });
-    let noteSupport = true;
-    if (!response.ok) {
-      response = await supabaseFetch(env, "/rest/v1/orders?" + buildQuery(false).toString(), { method: "GET", headers: { accept: "application/json" } });
-      noteSupport = false;
-    }
-    if (!response.ok) {
-      console.error("Customer order history query failed:", response.status, (await response.text()).slice(0, 300));
-      return json({ error: "We could not load your order history. Please try again." }, 503);
-    }
-    const orders = await response.json();
-    return json({ customer: { id: user.id, email, name: user.user_metadata?.full_name || user.user_metadata?.name || "" }, orders: await addProductImages(context, orders), note_support: noteSupport });
-  } catch (error) {
-    console.error("PhoneYa2 customer endpoint failed:", String(error));
-    return json({ error: "Your account service is temporarily unavailable." }, 503);
-  }
+  if (!env.DB) return json({ error: "Customer order history is temporarily unavailable." }, 503);
+  return json({ error: "No remembered customer session." }, 401);
 }
