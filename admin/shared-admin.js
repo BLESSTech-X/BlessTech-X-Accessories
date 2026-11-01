@@ -3,7 +3,6 @@
 const links=[
  {label:'Overview',icon:'▦',href:'/admin/command-center.html',match:['command-center.html']},
  {label:'Orders',icon:'▤',href:'/admin/orders.html',match:['orders.html']},
- {label:'Campaigns',icon:'◈',href:'/admin/campaigns.html',match:['campaigns.html']},
  {label:'Communications',icon:'✉',href:'/admin/communications.html',match:['communications.html']},
  {label:'Blog comments',icon:'▤',href:'/admin/comments.html',match:['comments.html']},
  {label:'Content studio',icon:'✎',href:'/admin/',match:['/admin/']}
