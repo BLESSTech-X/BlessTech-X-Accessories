@@ -3,6 +3,7 @@
 const links=[
  {label:'Overview',icon:'▦',href:'/admin/command-center.html',match:['command-center.html']},
  {label:'Orders',icon:'▤',href:'/admin/orders.html',match:['orders.html']},
+ {label:'Advertising',icon:'📣',href:'/ads-admin/',match:['/ads-admin/']},
  {label:'Communications',icon:'✉',href:'/admin/communications.html',match:['communications.html']},
  {label:'Blog comments',icon:'▤',href:'/admin/comments.html',match:['comments.html']},
  {label:'Content studio',icon:'✎',href:'/admin/',match:['/admin/']}
@@ -11,7 +12,7 @@ const path=location.pathname;
 function visible(el){return !!el&&!el.classList.contains('hidden')&&getComputedStyle(el).display!=='none'}
 function mount(){
  if(document.body.classList.contains('py2-admin-shell-active'))return;
- const dashboard=document.querySelector('#dashboard');
+ const dashboard=document.querySelector('#dashboard')||document.querySelector('#scr-admin');
  if(!visible(dashboard))return;
  document.body.classList.add('py2-admin-shell-active');
  const active=links.find(x=>x.match.some(m=>m==='/admin/'?path==='/admin/'||path==='/admin/index.html':path.endsWith(m)));
