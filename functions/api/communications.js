@@ -17,19 +17,9 @@ async function supabaseFetch(env, path, init = {}) {
   return fetch(base + path, { ...init, headers });
 }
 async function requireAdmin(request, env) {
-  const authorization = request.headers.get("authorization") || "";
-  const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
-  const anonKey = getSecret(env, "SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
-  const adminEmail = String(env.ADMIN_EMAIL || "").trim().toLowerCase();
-  if (!token || !base || !anonKey || !adminEmail) return null;
-  const response = await fetch(base + "/auth/v1/user", {
-    headers: { apikey: anonKey, authorization: "Bearer " + token }
-  });
-  if (!response.ok) return null;
-  const user = await response.json();
-  if (!user?.email || String(user.email).toLowerCase() !== adminEmail) return null;
-  return user;
+  const { getAdminSession, sameOrigin } = await import("../_auth.js");
+  if (!sameOrigin(request)) return null;
+  return await getAdminSession(request, env);
 }
 export async function onRequest(context) {
   const { request, env } = context;
