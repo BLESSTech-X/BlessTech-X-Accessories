@@ -828,19 +828,10 @@
       <div id="signin-error-text"></div>
     </div>
 
-    <form id="signin-form">
-      <div class="field">
-        <label class="lbl" for="si-email">Email</label>
-        <input class="input" type="email" id="si-email" autocomplete="email" placeholder="admin@example.com" required>
-      </div>
-      <div class="field">
-        <label class="lbl" for="si-password">Password</label>
-        <input class="input" type="password" id="si-password" autocomplete="current-password" placeholder="Your password" required>
-      </div>
-      <button type="submit" class="btn btn-primary btn-lg btn-block" id="signin-submit">
-        <i class="fa-solid fa-shield-halved"></i> Sign In
-      </button>
-    </form>
+    <div class="notice notice-info" style="margin-top:18px;">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div>Advertising Admin uses your shared PhoneYa2 admin session. <a href="/admin/command-center.html" style="font-weight:800;color:#ff6000">Sign in through Command Centre</a>, then return here.</div>
+    </div>
 
     <div class="alt">Not an admin? <a href="/advertiser/">Go to your dashboard</a></div>
   </div>
@@ -1264,6 +1255,16 @@
     return;
   }
   var esc = P.esc;
+  // Admin data is proxied through Cloudflare and protected by the same
+  // signed PhoneYa2 cookie as Command Centre. No Supabase admin login/token
+  // is stored in this page.
+  function adsAdminRequest(url,options){
+    return fetch(url,{...options,credentials:'same-origin',cache:'no-store',headers:{...(options&&options.headers||{}),'content-type':'application/json'}})
+      .then(function(r){return r.json().catch(function(){return {};}).then(function(data){if(!r.ok)throw new Error(data.error||('Request failed ('+r.status+')'));return data;});});
+  }
+  P.db.select=function(table,query){return adsAdminRequest('/api/ads-admin?table='+encodeURIComponent(table)+'&query='+encodeURIComponent(query||''),{});};
+  P.db.update=function(table,query,values){return adsAdminRequest('/api/ads-admin',{method:'POST',body:JSON.stringify({table:table,query:query,values:values})}).then(function(data){return data.rows||[];});};
+  P.db.insert=function(table,values){return adsAdminRequest('/api/ads-admin',{method:'POST',body:JSON.stringify({table:table,action:'insert-log',values:values})}).then(function(data){return data.rows||[];});};
 
   // ═══════════════════════════════════════════════════════════════════════
   // TIER CONFIG — loaded from public.tier_config at boot.
@@ -1404,40 +1405,14 @@
     if (name === 'scr-signin') setTimeout(function () { try { $('si-email').focus(); } catch(e){} }, 100);
   }
 
-  $('signin-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    $('signin-error').style.display = 'none';
-    var email = $('si-email').value.trim();
-    var pw    = $('si-password').value;
-    if (!email || !pw) {
-      $('signin-error-text').textContent = 'Enter your email and password.';
-      $('signin-error').style.display = 'flex';
-      return;
-    }
-    var btn = $('signin-submit');
-    var orig = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Signing in…';
 
-    P.auth.signin(email, pw)
-      .then(function () { return boot(); })
-      .catch(function (err) {
-        $('signin-error-text').textContent = err.message || 'Sign in failed.';
-        $('signin-error').style.display = 'flex';
-        btn.disabled = false;
-        btn.innerHTML = orig;
-      });
-  });
 
   $('btn-signout').addEventListener('click', doSignout);
   $('denied-signout').addEventListener('click', doSignout);
   function doSignout() {
     try { sessionStorage.removeItem('py2_tier_config'); } catch (e) {}
-    P.auth.signout().then(function () {
-      session = null; myProfile = null;
-      ads = []; advertisers = []; reports = []; logEntries = []; statsByAd = {}; TIERS = [];
-      showScreen('scr-signin');
-    });
+    fetch('/api/auth',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'logout'})})
+      .finally(function(){session=null;myProfile=null;ads=[];advertisers=[];reports=[];logEntries=[];statsByAd={};TIERS=[];showScreen('scr-signin');});
   }
 
   function loadAds() {
@@ -2400,16 +2375,16 @@
   }
 
   function boot() {
-    session = P.auth.getSession();
     if (!session || !session.user) { showScreen('scr-signin'); return Promise.resolve(); }
     showScreen('scr-loading');
 
     return loadTierConfig()
       .then(function () {
-        return P.db.select('profiles', 'id=eq.' + encodeURIComponent(session.user.id) + '&limit=1', session.access_token);
+        return P.db.select('profiles', 'email=eq.' + encodeURIComponent(session.user.email) + '&limit=1');
       })
       .then(function (rows) {
         myProfile = rows && rows[0] ? rows[0] : null;
+        if (myProfile && myProfile.id) session.user.id=myProfile.id;
         if (!myProfile || myProfile.role !== 'admin') {
           $('denied-name').textContent = session.user.email ? ('Signed in as ' + session.user.email) : '';
           showScreen('scr-denied');
@@ -2433,10 +2408,7 @@
       });
   }
 
-  P.auth.refreshSession().then(function (existing) {
-    if (existing && existing.user) boot();
-    else showScreen('scr-signin');
-  });
+  fetch('/api/auth',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json().catch(function(){return {};}).then(function(d){if(!r.ok||!d.authenticated){showScreen('scr-signin');return;}session={user:{email:d.email}};return boot();});}).catch(function(){showScreen('scr-signin');});
 })();
 </script>
 
