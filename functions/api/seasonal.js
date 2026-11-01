@@ -5,13 +5,9 @@ const OWNER="BLESSTech-X",REPO="BlessTech-X-Accessories",BRANCH="main",SETTINGS_
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return true;try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
 async function adminUser(request,env){
- const token=(request.headers.get("authorization")||"").match(/^Bearer\s+(.+)$/i)?.[1];
- const base=String(env.SUPABASE_URL||"").replace(/\/$/,""),anon=env.SUPABASE_ANON_KEY||env.SUPABASE_PUBLISHABLE_KEY||"";
- const allowed=String(env.ADMIN_EMAIL||ADMIN_FALLBACK).trim().toLowerCase();
- if(!token||!base||!anon)return null;
- const response=await fetch(base+"/auth/v1/user",{headers:{apikey:anon,authorization:"Bearer "+token}});
- if(!response.ok)return null;const user=await response.json();
- return user?.email&&String(user.email).toLowerCase()===allowed?user:null;
+ const { getAdminSession, sameOrigin } = await import("../_auth.js");
+ if (!sameOrigin(request)) return null;
+ return await getAdminSession(request, env);
 }
 function githubConfig(env){
  const token=env.PHONEYA2_GITHUB_TOKEN||env.GITHUB_TOKEN;
