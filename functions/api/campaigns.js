@@ -10,11 +10,10 @@ async function db(env,path,init={}) {
   return fetch(base+path,{...init,headers});
 }
 async function admin(request,env) {
-  const token=(request.headers.get("authorization")||"").match(/^Bearer\s+(.+)$/i)?.[1];
-  const base=String(env.SUPABASE_URL||"").replace(/\/$/,""), anon=secret(env,"SUPABASE_ANON_KEY","SUPABASE_PUBLISHABLE_KEY"), allowed=String(env.ADMIN_EMAIL||"").trim().toLowerCase();
-  if(!token||!base||!anon||!allowed) return null;
-  const r=await fetch(base+"/auth/v1/user",{headers:{apikey:anon,authorization:"Bearer "+token}});
-  if(!r.ok) return null; const u=await r.json(); return u?.email?.toLowerCase()===allowed?u:null;
+  const { getAdminSession, sameOrigin } = await import("../_auth.js");
+  if (!sameOrigin(request)) return null;
+  const session = await getAdminSession(request, env);
+  return session ? { email: session.email } : null;
 }
 async function activity(env,r) {
   const response=await db(env,"/rest/v1/email_activity",{method:"POST",headers:{prefer:"return=minimal"},body:JSON.stringify({
