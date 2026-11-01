@@ -42,10 +42,15 @@ async function signDevicePayload(payload, secret) {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return base64url(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload))));
 }
-async function verifyDeviceToken(token, secret) {
+async function verifyDeviceToken(token, secrets) {
   const parts = String(token || "").split(".");
-  if (parts.length !== 2 || !secret) return null;
-  if (await signDevicePayload(parts[0], secret) !== parts[1]) return null;
+  const keys = (Array.isArray(secrets) ? secrets : [secrets]).filter(Boolean);
+  if (parts.length !== 2 || !keys.length) return null;
+  let valid = false;
+  for (const secret of keys) {
+    try { if (await signDevicePayload(parts[0], secret) === parts[1]) { valid = true; break; } } catch {}
+  }
+  if (!valid) return null;
   try {
     const payload = JSON.parse(new TextDecoder().decode(fromBase64url(parts[0])));
     if (payload.purpose !== "phoneya2_device_orders" || !payload.email ||
@@ -582,7 +587,7 @@ export async function onRequest(context) {
       let deviceCookie = "";
       if (rememberSecret && orderNumber) {
         try {
-          const prior = await verifyDeviceToken(readCookie(request, "py2_device_orders"), rememberSecret);
+          const prior = await verifyDeviceToken(readCookie(request, "py2_device_orders"), [rememberSecret, env.SUPABASE_SERVICE_ROLE_KEY, env.SUPABASE_SECRET_KEY]);
           const knownNumbers = prior && prior.email === email ? prior.order_numbers : [];
           const token = await createDeviceToken(email, [...knownNumbers, orderNumber], rememberSecret);
           deviceCookie = "py2_device_orders=" + token + "; Max-Age=15552000; Path=/api/; HttpOnly; Secure; SameSite=Lax";
