@@ -25,17 +25,9 @@ function config(env) {
 
 
 async function requireCommentAdmin(request, env) {
-  const token = (request.headers.get('authorization') || '').match(/^Bearer\s+(.+)$/i)?.[1];
-  const base = String(env.SUPABASE_URL || '').replace(/\/$/, '');
-  const anonKey = String(env.SUPABASE_ANON_KEY || env.SUPABASE_PUBLISHABLE_KEY || DEFAULT_PUBLISHABLE_KEY);
-  const adminEmail = String(env.ADMIN_EMAIL || 'singbless89@gmail.com').trim().toLowerCase();
-  if (!token || !base || !anonKey || !adminEmail) return null;
-  const response = await fetch(base + '/auth/v1/user', {
-    headers: { apikey: anonKey, authorization: 'Bearer ' + token }
-  });
-  if (!response.ok) return null;
-  const user = await response.json();
-  return user?.email && String(user.email).toLowerCase() === adminEmail ? user : null;
+  const { getAdminSession, sameOrigin } = await import('../_auth.js');
+  if (!sameOrigin(request)) return null;
+  return await getAdminSession(request, env);
 }
 
 async function privilegedSupabaseRequest(env, path, init = {}) {
