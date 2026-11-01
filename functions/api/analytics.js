@@ -42,16 +42,9 @@ async function report(property, token, body) {
 function vals(row) { return (row?.metricValues || []).map(v => Number(v.value || 0)); }
 export async function onRequest({ request, env }) {
   if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
-  const token = (request.headers.get("authorization") || "").match(/^Bearer\s+(.+)$/i)?.[1];
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
-  const anon = env.SUPABASE_ANON_KEY || env.SUPABASE_PUBLISHABLE_KEY;
-  const admin = String(env.ADMIN_EMAIL || "singbless89@gmail.com").toLowerCase();
-  if (!token || !base || !anon) return json({ error: "Unauthorized." }, 401);
-  try {
-    const auth = await fetch(base + "/auth/v1/user", { headers: { apikey: anon, authorization: "Bearer " + token } });
-    if (!auth.ok) return json({ error: "Unauthorized. Please sign in again." }, 401);
-    const user = await auth.json();
-    if (String(user.email || "").toLowerCase() !== admin) return json({ error: "Unauthorized." }, 401);
+  const { getAdminSession } = await import("../_auth.js");
+  const user = await getAdminSession(request, env);
+  if (!user) return json({ error: "Unauthorized. Please sign in again." }, 401);
     const property = String(env.GA4_PROPERTY_ID || "").trim();
     if (!/^\d+$/.test(property) || !env.GA4_SERVICE_ACCOUNT_JSON) return json({ error: "GA4_PROPERTY_ID or GA4_SERVICE_ACCOUNT_JSON is missing in Cloudflare." }, 503);
     let sa;
