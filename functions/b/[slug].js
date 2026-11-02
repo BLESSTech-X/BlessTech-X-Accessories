@@ -11,22 +11,26 @@ export async function onRequestGet({params,env,request}){
  if(!advertiser)return new Response("Business website not found or not yet published.",{status:404,headers:{"cache-control":"no-store"}});
  const sitePromise=env.DB.prepare("SELECT * FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(advertiser.id).first();
  let site,items,posts;
- try {
-   [site,items,posts]=await Promise.all([
-     sitePromise,
-     env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND moderation_status='approved' AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
-     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,cta_label,cta_url,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
-   ]);
- } catch(error) {
-   const message=String(error?.message||error);
-   if(!/no such column: moderation_status/i.test(message)) throw error;
-   console.warn("Partner moderation migration 0008 is not applied; serving published website content without moderation filtering until migration is applied.");
-   [site,items,posts]=await Promise.all([
-     sitePromise,
-     env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
-     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,cta_label,cta_url,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
-   ]);
+ let useModeration=true,usePostCtas=true;
+ for(let attempt=0;attempt<3;attempt++){
+   try{
+     const itemModeration=useModeration?" AND moderation_status='approved'":"";
+     const postModeration=useModeration?" AND moderation_status='approved'":"";
+     const postCtas=usePostCtas?",cta_label,cta_url":"";
+     [site,items,posts]=await Promise.all([
+       sitePromise,
+       env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1"+itemModeration+" AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
+       env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type"+postCtas+",published_at FROM partner_posts WHERE advertiser_id=? AND status='published'"+postModeration+" ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
+     ]);
+     break;
+   }catch(error){
+     const message=String(error?.message||error);
+     if(usePostCtas&&/no such column: (?:partner_posts\.)?cta_(?:label|url)/i.test(message)){usePostCtas=false;console.warn("Partner post CTA migration 0009 is not applied; using default post buttons until migration is applied.");continue;}
+     if(useModeration&&/no such column: (?:partner_posts|partner_catalog_items\.)?moderation_status/i.test(message)){useModeration=false;console.warn("Partner content moderation migration 0008 is not applied; serving published website content without moderation filtering until migration is applied.");continue;}
+     throw error;
+   }
  }
+ if(!items||!posts)throw new Error("Partner website content could not be loaded after schema compatibility checks.");
  const visitor=await visitorHash(request),source=request.headers.get("referer")?"referral":"direct",now=new Date().toISOString();
  await env.DB.batch([
  env.DB.prepare("INSERT INTO advertiser_profile_views(id,advertiser_id,visitor_hash,source) VALUES(?,?,?,?)").bind(crypto.randomUUID(),advertiser.id,visitor,source),
