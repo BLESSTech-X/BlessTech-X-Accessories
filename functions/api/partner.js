@@ -143,7 +143,7 @@ for(let offset=0;offset<bytes.length;offset+=0x8000)binary+=String.fromCharCode(
 const encoded="data:"+file.type+";base64,"+btoa(binary),id=crypto.randomUUID(),url=new URL("/media/partner/"+id,request.url).href;
 await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,encoded,url,"image",cleanText(file.name,180),file.size).run();
 return json({ok:true,url,id});
-}catch(e){console.error("Partner media upload failed",e?.stack||e);return fail("Image upload failed. Please try a smaller image.",500);}
+}catch(e){console.error("Partner media upload failed",e?.stack||e);const detail=String(e?.message||"Storage operation failed").slice(0,220);return fail("The image reached PhoneYa2, but storage failed: "+detail,500);}
 }
 let body={};try{body=await request.json();}catch{return fail("Invalid JSON request.");}
 const action=String(body.action||"");
