@@ -253,22 +253,32 @@ function render(){const p=data.partner||{};$('account-email').textContent=p.acco
 ['site_title','site_description','hero_title','hero_subtitle','hero_image_url','logo_url','template_key','font_pair','seo_title','seo_description'].forEach(k=>val(k,p[k]));val('primary_color',p.site_primary_color||p.primary_color||'#ff6000');val('accent_color',p.site_accent_color||p.accent_color||'#173f73');let soc={};try{soc=JSON.parse(p.site_social_links_json||'{}')}catch{};['facebook','instagram','tiktok','youtube'].forEach(k=>val('social_'+k,soc[k]));updateWebsitePreview();updatePublishImagePreview();renderItems();renderPosts();renderCampaigns();renderEnquiries();renderRecent()}
 function renderPackages(){
 const plans=data.packages||[],current=data.subscription?.package_key||'free',pending=data.packageRequest;
-const labels={website:{professional:'Professional mini-website',advanced:'Advanced website layout',premium:'Premium website experience'},promotion:{directory:'Standard campaign rotation across PhoneYa2 and participating partner websites',boosted:'Higher campaign rotation priority',priority:'Priority campaign rotation',premium:'Premium campaign exposure',maximum:'Highest campaign rotation priority'},analytics:{essential:'Impressions and clicks reporting',advanced:'Advanced campaign reporting',premium:'Premium performance insights'},branding:{standard:'Standard business branding',expanded:'Expanded branding options',custom:'Custom brand styling',full:'Full brand customisation'}};
-const feature=(group,key)=>labels[group]?.[key]||({website:'Website design and publishing',promotion:'Campaign visibility',analytics:'Campaign performance insights',branding:'Business branding'}[group]||'Included benefit');
-const rotation={free:'1× standard rotation',starter:'3× rotation weight',standard:'6× rotation weight',business:'12× rotation weight',premium:'25× rotation weight'};
-const extra={free:'A business website, catalogue and published updates',starter:'More opportunities to enter the shared ad rotation',standard:'Higher rotation priority plus advanced site layouts',business:'Stronger rotation priority and custom branding',premium:'Highest rotation priority, premium site styling and priority support'};
+const labels={
+website:{professional:'Professional mini-website builder',advanced:'Advanced website layout options',premium:'Premium website experience'},
+promotion:{directory:'Standard shared campaign visibility',boosted:'Enhanced campaign visibility',priority:'Priority campaign visibility',premium:'Premium campaign exposure',maximum:'Highest campaign exposure tier'},
+analytics:{essential:'Campaign impressions, clicks and enquiry totals',advanced:'Expanded campaign performance reporting',premium:'Premium campaign performance insights'},
+branding:{standard:'Standard business branding',expanded:'Expanded brand styling options',custom:'Custom brand styling',full:'Full brand customisation'},
+leads:{inbox:'Customer enquiry inbox',tracking:'Customer enquiry inbox with lead-status tracking'},
+campaigns:{standard:'Create campaigns and submit them for review',reporting:'Campaign management with performance reporting',insights:'Campaign management with expanded performance insights'},
+verification:{none:'',eligible:'Eligible to request manual business verification',priority:'Priority request for manual verification review — approval is not guaranteed'},
+support:{standard:'Standard partner support access',enhanced:'Enhanced partner support access',priority:'Priority partner support contact'}
+};
+const feature=(group,key)=>labels[group]?.[key]||'';
+const rotation={free:'1× standard rotation weight',starter:'3× rotation weight',standard:'6× rotation weight',business:'12× rotation weight',premium:'25× rotation weight'};
+const common=[
+'Your own business website with logo, cover image, brand colours and social links',
+'Product and service catalogue with images, descriptions and pricing',
+'Publish business updates, offers and announcements on your website',
+'Customer enquiries delivered to your Partner Studio inbox',
+'Create PhoneYa2 advertising campaigns and manage their approval status'
+];
 $('plans').innerHTML=plans.map(x=>{
 let b={};try{b=JSON.parse(x.benefits_json||'{}')}catch{};
-const price=Number(x.monthly_price_minor||0)/100,features=[
-'Your own published business website and full product/service catalogue',
-'Publish business updates, offers and announcements',
-'Approved campaigns can appear on PhoneYa2 and participating partner websites',
-rotation[x.package_key]||((x.advertising_weight||1)+'× rotation weight'),
-feature('website',b.website),feature('analytics',b.analytics),feature('branding',b.branding),extra[x.package_key]||''
-].filter(Boolean);
+const price=Number(x.monthly_price_minor||0)/100;
+const features=[...common,feature('website',b.website),feature('analytics',b.analytics),feature('branding',b.branding),feature('promotion',b.promotion),rotation[x.package_key],feature('leads',b.leads),feature('campaigns',b.campaigns),feature('verification',b.verification),feature('support',b.support)].filter(Boolean);
 const isCurrent=x.package_key===current,isPending=pending?.package_key===x.package_key;
 const action=isCurrent?'<button class="btn secondary small" disabled>Current package</button>':isPending?'<button class="btn secondary small" disabled>Request sent · awaiting call</button>':'<button class="btn small" data-request-package="'+esc(x.package_key)+'">Request this package →</button>';
-return '<article class="plan-card '+(isCurrent?'current':'')+'"><span class="badge '+(isCurrent?'approved':'')+'">'+(isCurrent?'CURRENT PACKAGE':isPending?'REQUEST PENDING':'PACKAGE OPTION')+'</span><h3>'+esc(x.display_name)+'</h3><div class="price">'+(price===0?'Free':'K'+price.toLocaleString())+'<small style="font-size:10px;color:var(--muted)"> / month</small></div><ul>'+features.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+action+'</article>';
+return '<article class="plan-card '+(isCurrent?'current':'')+'"><span class="badge '+(isCurrent?'approved':'')+'">'+(isCurrent?'CURRENT PACKAGE':isPending?'REQUEST PENDING':'PACKAGE OPTION')+'</span><h3>'+esc(x.display_name)+'</h3><div class="price">'+(price===0?'Free':'K'+price.toLocaleString())+'<small style="font-size:10px;color:var(--muted)"> / month</small></div><p class="muted" style="font-size:12px;margin:8px 0">A practical business toolkit — not just ad rotation.</p><ul>'+features.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+action+'</article>';
 }).join('')||'<div class="empty">Package details are being prepared.</div>';
 const note=$('package-request-note');
 if(note)note.textContent=pending?'Your '+(pending.package_name||pending.package_key)+' request is with PhoneYa2. We will call you to confirm details and arrange payment outside this website. Your current package remains active until payment is confirmed.':'Choose a package to send a request to PhoneYa2. We will call you, confirm the package and arrange payment outside the website. Your upgrade starts only after payment is confirmed.';
