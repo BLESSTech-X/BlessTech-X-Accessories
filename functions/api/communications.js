@@ -1,82 +1,23 @@
-const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
-}
-function getSecret(env, ...keys) {
-  for (const key of keys) if (env[key]) return env[key];
-  return "";
-}
-async function supabaseFetch(env, path, init = {}) {
-  const base = String(env.SUPABASE_URL || "").replace(/\/$/, "");
-  const key = getSecret(env, "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY");
-  if (!base || !key) throw new Error("Server database secrets are not configured.");
-  const headers = new Headers(init.headers || {});
-  headers.set("apikey", key);
-  headers.set("authorization", "Bearer " + key);
-  headers.set("content-type", "application/json");
-  return fetch(base + path, { ...init, headers });
-}
-async function requireAdmin(request, env) {
-  const { getAdminSession, sameOrigin } = await import("../_auth.js");
-  if (!sameOrigin(request)) return null;
-  return await getAdminSession(request, env);
-}
-export async function onRequest(context) {
-  const { request, env } = context;
-  if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
-  const url = new URL(request.url);
-  if (url.searchParams.get("admin") !== "1") return json({ error: "Not found." }, 404);
-  if (!await requireAdmin(request, env)) return json({ error: "Administrator sign-in required." }, 401);
-  try {
-    const [statsResponse, activityResponse, subscriberResponse, automationResponse] = await Promise.all([
-      supabaseFetch(env, "/rest/v1/rpc/phoneya2_email_stats", { method: "POST", body: "{}" }),
-      supabaseFetch(env, "/rest/v1/email_activity?select=id,created_at,sent_at,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,related_order_number,related_product_slug,campaign_id,retry_count,metadata&order=created_at.desc&limit=250", { method: "GET", headers: { accept: "application/json" } }),
-      supabaseFetch(env, "/rest/v1/customer_subscribers?select=id,status&limit=1000", { method: "GET", headers: { accept: "application/json" } }),
-      supabaseFetch(env, "/rest/v1/communication_automations?select=automation_key,name,description,enabled,approval_required,updated_at&order=name.asc", { method: "GET", headers: { accept: "application/json" } })
-    ]);
-    if (!statsResponse.ok || !activityResponse.ok || !subscriberResponse.ok || !automationResponse.ok) {
-      const statuses = [statsResponse.status, activityResponse.status, subscriberResponse.status, automationResponse.status];
-      console.error("PhoneYa2 communication centre data request failed:", statuses.join(","));
-      return json({ error: "Communication data is not ready. Confirm that supabase/communication-centre.sql has been run in Supabase SQL Editor." }, 503);
-    }
-    const [stats, activity, subscribers, automations] = await Promise.all([
-      statsResponse.json(), activityResponse.json(), subscriberResponse.json(), automationResponse.json()
-    ]);
-    let phoneActivity=[],d1Activity=[],d1Stats={};
-    if(env.DB){
-      try{
-        const [emailRows,counts]=await Promise.all([
-          env.DB.prepare("SELECT id,created_at,sent_at,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,related_order_number,related_product_slug,campaign_id,retry_count,metadata_json FROM email_activity ORDER BY created_at DESC LIMIT 250").all(),
-          env.DB.prepare("SELECT COUNT(*) AS total,SUM(CASE WHEN source='automatic' THEN 1 ELSE 0 END) AS automatic,SUM(CASE WHEN source='manual' THEN 1 ELSE 0 END) AS manual,SUM(CASE WHEN status='sent' THEN 1 ELSE 0 END) AS sent,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,SUM(CASE WHEN created_at>=datetime('now','-30 days') THEN 1 ELSE 0 END) AS last_30_days,SUM(CASE WHEN status='failed' AND created_at>=datetime('now','-30 days') THEN 1 ELSE 0 END) AS failed_last_30_days FROM email_activity").first()
-        ]);
-        d1Activity=(emailRows.results||[]).map(row=>{let metadata={};try{metadata=JSON.parse(row.metadata_json||"{}")}catch{}return {...row,metadata};});
-        d1Stats=counts||{};
-      }catch(error){console.warn("PhoneYa2 D1 email activity is not ready:",String(error).slice(0,160));}
-      try{
-        const phoneRows=await env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all();
-        phoneActivity=phoneRows.results||[];
-      }catch(error){console.warn("PhoneYa2 phone activity table is not ready yet:",String(error).slice(0,160));}
-    }
-    const combinedActivity=[...(Array.isArray(activity)?activity:[]),...d1Activity].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,250);
-    const combinedStats={};
-    for(const key of ["total","automatic","manual","sent","delivered","bounced","failed","queued","last_30_days","failed_last_30_days"])combinedStats[key]=Number(stats?.[key]||0)+Number(d1Stats?.[key]||0);
-    return json({
-      success: true,
-      phone_activity: phoneActivity,
-      stats: combinedStats,
-      activity: combinedActivity,
-      subscriber_summary: {
-        total: Array.isArray(subscribers) ? subscribers.length : 0,
-        subscribed: Array.isArray(subscribers) ? subscribers.filter(s => s.status === "subscribed").length : 0,
-        pending: Array.isArray(subscribers) ? subscribers.filter(s => s.status === "pending").length : 0,
-        unsubscribed: Array.isArray(subscribers) ? subscribers.filter(s => s.status === "unsubscribed").length : 0,
-        bounced: Array.isArray(subscribers) ? subscribers.filter(s => s.status === "bounced").length : 0
-      },
-      automations: Array.isArray(automations) ? automations : [],
-      activity_limit: 250
-    });
-  } catch (error) {
-    console.error("PhoneYa2 communication centre failed:", String(error));
-    return json({ error: "Could not load communication activity. Please try again." }, 503);
-  }
+const JSON_HEADERS={"content-type":"application/json; charset=utf-8","cache-control":"no-store"};
+function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
+async function requireAdmin(request,env){const {getAdminSession,sameOrigin}=await import("../_auth.js");if(!sameOrigin(request))return null;return await getAdminSession(request,env);}
+export async function onRequest({request,env}){
+ if(request.method!=="GET")return json({error:"Method not allowed."},405);
+ const url=new URL(request.url);if(url.searchParams.get("admin")!=="1")return json({error:"Not found."},404);
+ if(!await requireAdmin(request,env))return json({error:"Administrator sign-in required."},401);
+ if(!env.DB)return json({error:"Cloudflare D1 database binding DB is not configured."},503);
+ try{
+  const [stats,activityRows,phoneRows,subscriberRows,automations]=await Promise.all([
+   env.DB.prepare("SELECT COUNT(*) AS total,SUM(CASE WHEN source='automatic' THEN 1 ELSE 0 END) AS automatic,SUM(CASE WHEN source='manual' THEN 1 ELSE 0 END) AS manual,SUM(CASE WHEN status IN ('sent','delivered') THEN 1 ELSE 0 END) AS sent,SUM(CASE WHEN status='delivered' THEN 1 ELSE 0 END) AS delivered,SUM(CASE WHEN status='bounced' THEN 1 ELSE 0 END) AS bounced,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,SUM(CASE WHEN status='queued' THEN 1 ELSE 0 END) AS queued,SUM(CASE WHEN created_at>=datetime('now','-30 days') THEN 1 ELSE 0 END) AS last_30_days,SUM(CASE WHEN status='failed' AND created_at>=datetime('now','-30 days') THEN 1 ELSE 0 END) AS failed_last_30_days FROM email_activity").first(),
+   env.DB.prepare("SELECT id,created_at,sent_at,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,related_order_number,related_product_slug,campaign_id,retry_count,metadata_json FROM email_activity ORDER BY created_at DESC LIMIT 250").all(),
+   env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all(),
+   env.DB.prepare("SELECT status,COUNT(*) AS total FROM customer_subscribers GROUP BY status").all(),
+   env.DB.prepare("SELECT automation_key,name,description,enabled,approval_required,updated_at FROM communication_automations ORDER BY name ASC").all()
+  ]);
+  const summary={total:0,subscribed:0,pending:0,unsubscribed:0,bounced:0};
+  for(const row of subscriberRows.results||[]){summary.total+=Number(row.total||0);summary[row.status]=Number(row.total||0);}
+  const activity=(activityRows.results||[]).map(row=>{let metadata={};try{metadata=JSON.parse(row.metadata_json||"{}")}catch{}return{...row,metadata};});
+  const automationList=(automations.results||[]).map(row=>({...row,enabled:!!row.enabled,approval_required:!!row.approval_required}));
+  return json({success:true,stats:stats||{},activity,phone_activity:phoneRows.results||[],subscriber_summary:summary,automations:automationList,activity_limit:250});
+ }catch(error){console.error("PhoneYa2 D1 Communication Centre failed:",String(error).slice(0,250));return json({error:"Could not load communication activity. Confirm D1 migration 0012 has been applied."},503);}
 }
