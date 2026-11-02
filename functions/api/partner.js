@@ -115,9 +115,22 @@ WHERE partner_catalog_items.advertiser_id=excluded.advertiser_id`).bind(id,partn
 }
 if(action==="catalog.delete"){if(!UUID.test(String(body.id||"")))return fail("Invalid item.");await db.prepare("DELETE FROM partner_catalog_items WHERE id=? AND advertiser_id=?").bind(body.id,partner.advertiser_id).run();return json({ok:true});}
 if(action==="post.save"){
-const id=UUID.test(String(body.id||""))?body.id:crypto.randomUUID();const title=cleanText(body.title,160);if(!title)return fail("Add a post title.");const slug=slugify(body.slug||title);const status=body.status==="published"?"published":"draft";await db.prepare(`INSERT INTO partner_posts(id,advertiser_id,title,slug,excerpt,body,cover_image_url,post_type,status,published_at,updated_at)
+const id=UUID.test(String(body.id||""))?body.id:crypto.randomUUID();
+const title=cleanText(body.title,160);
+if(!title)return fail("Add a post title.");
+let slug=slugify(body.slug||title);
+const existingSlug=await db.prepare("SELECT id FROM partner_posts WHERE advertiser_id=? AND slug=? COLLATE NOCASE LIMIT 1").bind(partner.advertiser_id,slug).first();
+if(existingSlug&&existingSlug.id!==id)slug=slug.slice(0,42)+"-"+crypto.randomUUID().slice(0,5).toLowerCase();
+const status=body.status==="published"?"published":"draft";
+try{
+await db.prepare(`INSERT INTO partner_posts(id,advertiser_id,title,slug,excerpt,body,cover_image_url,post_type,status,published_at,updated_at)
 VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,slug=excluded.slug,excerpt=excluded.excerpt,body=excluded.body,cover_image_url=excluded.cover_image_url,post_type=excluded.post_type,status=excluded.status,published_at=excluded.published_at,updated_at=excluded.updated_at
-WHERE partner_posts.advertiser_id=excluded.advertiser_id`).bind(id,partner.advertiser_id,title,slug,cleanText(body.excerpt,300),cleanText(body.body,20000),cleanText(body.cover_image_url,1000),cleanText(body.post_type,40)||"update",status,status==="published"?now:null,now).run();return json({ok:true,id});
+WHERE partner_posts.advertiser_id=excluded.advertiser_id`).bind(id,partner.advertiser_id,title,slug,cleanText(body.excerpt,300),cleanText(body.body,20000),cleanText(body.cover_image_url,1000),cleanText(body.post_type,40)||"update",status,status==="published"?now:null,now).run();
+}catch(error){
+console.error("Partner post save failed:",String(error?.stack||error).slice(0,1000));
+return fail("Your post could not be saved. Please check the details and try again. If it continues, contact PhoneYa2 support.",500);
+}
+return json({ok:true,id});
 }
 if(action==="post.delete"){if(!UUID.test(String(body.id||"")))return fail("Invalid post.");await db.prepare("DELETE FROM partner_posts WHERE id=? AND advertiser_id=?").bind(body.id,partner.advertiser_id).run();return json({ok:true});}
 if(action==="enquiry.status"){if(!UUID.test(String(body.id||""))||!["new","contacted","qualified","won","closed"].includes(body.status))return fail("Invalid enquiry update.");await db.prepare("UPDATE partner_enquiries SET status=?,updated_at=? WHERE id=? AND advertiser_id=?").bind(body.status,now,body.id,partner.advertiser_id).run();return json({ok:true});}
