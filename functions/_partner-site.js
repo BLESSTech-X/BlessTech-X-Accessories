@@ -386,6 +386,12 @@ document.getElementById("partner-ad-popup-close").addEventListener("click",()=>{
 document.getElementById("partner-ad-popup").addEventListener("click",event=>{if(event.target.id==="partner-ad-popup")event.currentTarget.hidden=true;});
 
 loadPartnerAds();
+document.querySelectorAll(".item-action--enquire").forEach(link => {
+  link.addEventListener("click", () => {
+    const message = document.querySelector('#partner-enquiry textarea[name="message"]');
+    if (message) message.value = "Hello, I'm interested in: " + (link.dataset.item || "this listing") + ". Please share more details.";
+  });
+});
 document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
   const form = event.currentTarget;
