@@ -1,10 +1,10 @@
 /* Sponsored placement for the PhoneYa2 content hub. Uses the existing public Ads system. */
 (function(){
 'use strict';
-var cfg=window.PY2_ADS_CONFIG||{},base=cfg.url,key=cfg.key;if(!base||!key)return;
+
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function hash(){var raw=(navigator.userAgent||'')+'|'+(navigator.language||'')+'|'+new Date().toISOString().slice(0,10)+'|py2ads';if(crypto&&crypto.subtle&&window.TextEncoder)return crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw)).then(function(b){return 'v1_'+Array.from(new Uint8Array(b)).slice(0,12).map(function(x){return x.toString(16).padStart(2,'0')}).join('')});var h=0;for(var i=0;i<raw.length;i++)h=((h<<5)-h+raw.charCodeAt(i))|0;return Promise.resolve('v1_'+Math.abs(h).toString(36))}
-function rest(path,options){options=options||{};options.headers=Object.assign({'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json'},options.headers||{});return fetch(base+'/rest/v1/'+path,options)}
+function rest(path,options){options=options||{};var action=path==='ad_impressions'?'impression':path==='ad_clicks'?'click':'report';return fetch('/api/partner-ads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({},options.body?JSON.parse(options.body):{}, {action:action})),keepalive:true})}
 function track(name,params){try{if(typeof gtag==='function')gtag('event',name,Object.assign({content_group:'PhoneYa2 Sponsored Content'},params||{}))}catch(e){}}
 function record(table,body){hash().then(function(v){body.visitor_hash=v;return rest(table,{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(body),keepalive:true})}).catch(function(){})}
 function videoMarkup(ad){
@@ -25,14 +25,14 @@ return '<video class="py2-sponsored-video-player" controls autoplay muted loop p
 }
 function card(ad,placement){
 placement=placement||'blog_featured';
-var business=ad.advertisers&&ad.advertisers.business_name||'Advertiser';
+var business=ad.advertisers&&ad.advertisers.business_name||'PhoneYa2 Partner';
 var media='';
 if(ad.media_type==='video')media='<div class="py2-sponsored-media py2-sponsored-media-video">'+videoMarkup(ad)+'</div>';
 else if(ad.media_url)media='<div class="py2-sponsored-media"><img src="'+esc(ad.media_url)+'" alt="'+esc(ad.title||'Sponsored promotion')+'" loading="lazy" decoding="async" onerror="this.closest(\'.py2-sponsored-media\').classList.add(\'media-unavailable\');this.remove()"><span class="py2-sponsored-media-fallback" aria-hidden="true">PhoneYa2 promotion</span></div>';
 else media='<div class="py2-sponsored-media py2-sponsored-media-fallback-only">PhoneYa2 promotion</div>';
 var href='/ad/'+encodeURIComponent(ad.slug||'');
 var el=document.createElement('article');el.className='py2-sponsored-card';
-el.innerHTML='<div class="py2-sponsored-head"><span><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Sponsored promotion</span><span>PhoneYa2 Ads</span></div><a class="py2-sponsored-main" href="'+href+'">'+media+'<div class="py2-sponsored-copy"><div class="py2-sponsored-business">'+esc(business)+'</div><h3>'+esc(ad.title||'Discover this business')+'</h3><p>'+esc(ad.description||'Explore this advertiser on PhoneYa2.')+'</p><span class="py2-sponsored-cta">View promotion <span aria-hidden="true">↗</span></span></div></a><div class="py2-sponsored-foot">Paid promotion · Learn more before you buy</div>';
+el.innerHTML='<div class="py2-sponsored-head"><span><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Sponsored promotion</span><span>PhoneYa2 Partners</span></div><a class="py2-sponsored-main" href="'+href+'">'+media+'<div class="py2-sponsored-copy"><div class="py2-sponsored-business">'+esc(business)+'</div><h3>'+esc(ad.title||'Discover this business')+'</h3><p>'+esc(ad.description||'Explore this advertiser on PhoneYa2.')+'</p><span class="py2-sponsored-cta">View promotion <span aria-hidden="true">↗</span></span></div></a><div class="py2-sponsored-foot">Paid promotion · Learn more before you buy</div>';
 var main=el.querySelector('.py2-sponsored-main');
 main.addEventListener('click',function(e){if(e.target.closest('video,iframe,.py2-sponsored-external-video'))e.preventDefault();else{record('ad_clicks',{ad_id:ad.id,placement:placement,source:'blog'});track('blog_sponsored_click',{ad_id:String(ad.id),ad_title:ad.title||'',placement:placement})}});
 var video=el.querySelector('video.py2-sponsored-video-player');if(video&&'IntersectionObserver'in window){var videoObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){video.muted=true;video.play().catch(function(){})}else video.pause()})},{threshold:.25});videoObserver.observe(video)}record('ad_impressions',{ad_id:ad.id,placement:placement,source:'blog'});track('blog_sponsored_impression',{ad_id:String(ad.id),placement:placement});
@@ -71,6 +71,5 @@ function stop(){if(timer){window.clearInterval(timer);timer=null}}
 start();document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start()});
 }
 }
-style();var now=new Date().toISOString();var query='ads?select=id,slug,title,description,media_url,media_type,weight,status,placement,start_date,end_date,created_at,advertiser_id,advertisers(business_name,logo_url,tier)&status=eq.approved&placement=eq.carousel&start_date=lte.'+encodeURIComponent(now)+'&or=(end_date.is.null,end_date.gt.'+encodeURIComponent(now)+')&order=weight.desc,created_at.desc&limit=12';
-rest(query).then(function(r){if(!r.ok)throw Error('ads unavailable');return r.json()}).then(function(ads){if(Array.isArray(ads)&&ads.length)mount(ads)}).catch(function(){/* Sponsored slot stays hidden if the Ads service is unavailable. */});
+style();fetch('/api/partner-ads',{cache:'no-store'}).then(function(r){if(!r.ok)throw Error('campaign feed unavailable');return r.json()}).then(function(data){var ads=(data.ads||[]).filter(function(ad){return !ad.placement||ad.placement==='carousel'||ad.placement==='both'}).slice(0,12);if(ads.length)mount(ads)}).catch(function(){/* Sponsored slot stays hidden if the campaign feed is unavailable. */});
 })();
