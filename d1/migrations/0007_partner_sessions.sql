@@ -20,3 +20,10 @@ CREATE TABLE IF NOT EXISTS partner_auth_attempts (
 );
 CREATE INDEX IF NOT EXISTS idx_partner_auth_attempts_ip_time
   ON partner_auth_attempts(ip_hash, attempted_at);
+
+CREATE TABLE IF NOT EXISTS partner_enquiry_attempts (
+  ip_hash TEXT NOT NULL,
+  attempted_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_partner_enquiry_attempts_ip_time
+  ON partner_enquiry_attempts(ip_hash, attempted_at);
