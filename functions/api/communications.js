@@ -44,8 +44,10 @@ export async function onRequest(context) {
     ]);
     let phoneActivity=[];
     if(env.DB){
-      const phoneRows=await env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all();
-      phoneActivity=phoneRows.results||[];
+      try{
+        const phoneRows=await env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all();
+        phoneActivity=phoneRows.results||[];
+      }catch(error){console.warn("PhoneYa2 phone activity table is not ready yet:",String(error).slice(0,160));}
     }
     return json({
       success: true,
