@@ -13,7 +13,7 @@ export async function onRequest({request,env}){
   FROM ads ad JOIN advertisers adv ON adv.id=ad.advertiser_id LEFT JOIN advertiser_profiles p ON p.advertiser_id=adv.id
   WHERE ad.status='approved' AND adv.status IN ('active','approved') AND (ad.start_date IS NULL OR ad.start_date<=?) AND (ad.end_date IS NULL OR ad.end_date>=?)
   ORDER BY ad.created_at DESC LIMIT 100`).bind(now,now).all();
-  return json({ok:true,ads:rows.results||[]},200,{"cache-control":"public, max-age=60, s-maxage=180"});
+  return json({ok:true,ads:(rows.results||[]).map(ad=>({...ad,advertisers:{business_name:ad.business_name,logo_url:ad.logo_url,tier:ad.tier}}))},200,{"cache-control":"public, max-age=60, s-maxage=180"});
  }
  if(request.method!=="POST")return json({ok:false,error:"Method not allowed."},405);
  let body={};try{body=await request.json()}catch{return json({ok:false,error:"Invalid request."},400)}
