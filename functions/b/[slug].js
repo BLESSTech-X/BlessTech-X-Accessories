@@ -9,11 +9,24 @@ export async function onRequestGet({params,env,request}){
  JOIN partner_site_settings s ON s.advertiser_id=a.id
  WHERE p.slug=? COLLATE NOCASE AND s.published=1 AND a.status IN ('active','approved') LIMIT 1`).bind(slug).first();
  if(!advertiser)return new Response("Business website not found or not yet published.",{status:404,headers:{"cache-control":"no-store"}});
- const [site,items,posts]=await Promise.all([
- env.DB.prepare("SELECT * FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(advertiser.id).first(),
- env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND moderation_status='approved' AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
- env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
- ]);
+ const sitePromise=env.DB.prepare("SELECT * FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(advertiser.id).first();
+ let site,items,posts;
+ try {
+   [site,items,posts]=await Promise.all([
+     sitePromise,
+     env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND moderation_status='approved' AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
+     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
+   ]);
+ } catch(error) {
+   const message=String(error?.message||error);
+   if(!/no such column: moderation_status/i.test(message)) throw error;
+   console.warn("Partner moderation migration 0008 is not applied; serving published website content without moderation filtering until migration is applied.");
+   [site,items,posts]=await Promise.all([
+     sitePromise,
+     env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
+     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
+   ]);
+ }
  const visitor=await visitorHash(request),source=request.headers.get("referer")?"referral":"direct",now=new Date().toISOString();
  await env.DB.batch([
  env.DB.prepare("INSERT INTO advertiser_profile_views(id,advertiser_id,visitor_hash,source) VALUES(?,?,?,?)").bind(crypto.randomUUID(),advertiser.id,visitor,source),
