@@ -341,7 +341,7 @@ async function sendOrderEmail(env, order, customer, items) {
     "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th align=\"left\">Product</th><th>Qty</th><th align=\"right\">Line total</th></tr></thead><tbody>" + rows + "</tbody></table>" +
     "<h3 style=\"text-align:right\">Total: ZMW " + Number(order.total_amount).toFixed(2) + "</h3>" +
     "<p>Status: Pending</p></div>";
-  return await sendBrevoEmail(env,const to = env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com";,"New PhoneYa2 order " + order.order_number,html);}
+  return await sendBrevoEmail(env,to,"New PhoneYa2 order " + order.order_number,html);}
 async function sendOrderFormspree(env, order, customer = {}, items = []) {
   const endpoint = "https://formspree.io/f/mdeabqwq";
   const itemSummary = items.slice(0, 30).map(item =>
@@ -418,7 +418,7 @@ async function sendDeliveredOrderEmail(env, order) {
     "<p>We'd appreciate your honest feedback about the product and delivery experience. Your feedback helps us improve; sharing it is completely optional.</p>" +
     "<p style=\"margin:24px 0\"><a href=\"" + escapeHtml(feedbackUrl) + "\" style=\"display:inline-block;background:#128c7e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:bold\">Share feedback on WhatsApp</a></p>" +
     "<p>If you have not received your order, please contact us so we can investigate.</p><p>Thank you,<br><strong>PhoneYa2 Team</strong></p></div></div>";
-  return await sendBrevoEmail(env,email,"PhoneYa2 order " + orderNumber + " — delivery update,html);}
+  return await sendBrevoEmail(env,email,"PhoneYa2 order " + orderNumber + " — delivery update",html);}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -531,6 +531,8 @@ export async function onRequest(context) {
         customerEmailResult = { ok: false, error: String(error).slice(0, 240) };
         console.error("PhoneYa2 customer order confirmation failed:", String(error));
       }
+      const customerSmsResult=await sendBrevoSms(env,orderCustomer.phone,"PhoneYa2: We received your order "+order.order_number+". Total ZMW "+Number(order.total_amount||0).toFixed(2)+". We will contact you to confirm it.","phoneya2_order_confirmation");
+      await logCommunicationActivity(env,{recipient:normalizeZambiaPhone(orderCustomer.phone),name:orderCustomer.name,channel:"sms",eventType:"order_confirmation",status:customerSmsResult.ok?"sent":customerSmsResult.skipped?"skipped":"failed",messageId:customerSmsResult.messageId,error:customerSmsResult.error});
       await logEmailActivity(env, {
         eventType: "order_confirmation", source: "automatic", triggerSource: "order_created",
         recipientEmail: orderCustomer.email, recipientName: orderCustomer.name,
@@ -608,7 +610,7 @@ export async function onRequest(context) {
         });
         const outcomes = [];
         outcomes.push(telegramSent ? "Telegram app notification sent." : "Telegram failed: " + telegramReason);
-        outcomes.push(emailSent ? "Test email sent to ORDER_NOTIFY_EMAIL." : "Email failed; check RESEND_API_KEY, RESEND_FROM, and ORDER_NOTIFY_EMAIL.");
+        outcomes.push(emailSent ? "Test email sent to ORDER_NOTIFY_EMAIL." : "Email failed; check BREVO_API_KEY, BREVO_FROM_EMAIL, and ORDER_NOTIFY_EMAIL.");
         if (telegramSent || emailSent) return json({ success: true, message: outcomes.join(" ") });
         return json({ error: outcomes.join(" ") }, 502);
       }
@@ -638,6 +640,8 @@ export async function onRequest(context) {
       if (status === "delivered" && currentRow.status !== "delivered") {
         const deliveryEmail = await sendDeliveredOrderEmail(env, updatedOrder);
         deliveryEmailSent = deliveryEmail.ok;
+        const deliverySms=await sendBrevoSms(env,updatedOrder.customer_phone,"PhoneYa2: Your order "+(updatedOrder.order_number||"")+" has been marked as delivered. If you have not received it, please contact us.","phoneya2_delivery_update");
+        await logCommunicationActivity(env,{recipient:normalizeZambiaPhone(updatedOrder.customer_phone),name:updatedOrder.customer_name,channel:"sms",eventType:"delivery_update",status:deliverySms.ok?"sent":deliverySms.skipped?"skipped":"failed",messageId:deliverySms.messageId,error:deliverySms.error});
         await logEmailActivity(env, {
           eventType: "delivery_update", source: "automatic", triggerSource: "order_marked_delivered",
           recipientEmail: updatedOrder.customer_email || "", recipientName: updatedOrder.customer_name || "",
