@@ -87,7 +87,7 @@ async function readTable(db, table, query) {
       FROM partner_catalog_items i JOIN advertisers a ON a.id=i.advertiser_id
       UNION ALL
       SELECT p.id,p.advertiser_id,a.business_name,a.owner_name,a.email,
-        p.title AS content_title,'story' AS content_kind,p.status AS content_status,
+        p.title AS content_title,'story' AS content_kind,CASE WHEN p.status='published' THEN 'published' ELSE 'hidden' END AS content_status,
         p.updated_at,'stories' AS content_table
       FROM partner_posts p JOIN advertisers a ON a.id=p.advertiser_id
       UNION ALL
