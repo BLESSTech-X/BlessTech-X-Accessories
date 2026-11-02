@@ -36,7 +36,7 @@ db.prepare("SELECT ps.*,pp.display_name AS package_name,pp.benefits_json,pp.mont
 db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_impressions WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_clicks WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first()
-]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
+]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order,advertising_weight FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
