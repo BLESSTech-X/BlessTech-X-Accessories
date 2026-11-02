@@ -19,8 +19,8 @@ function safeUrl(value) {
 
 function safeActionUrl(value) {
   const candidate = String(value || "").trim();
-  if (/^#[a-z][a-z0-9_-]*$/i.test(candidate)) return candidate;
-  if (/^\\/(?!\\/)[a-z0-9/_?=&%#.-]*$/i.test(candidate)) return candidate;
+  if (candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\")) return candidate;
+  if (candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\")) return candidate;
   try {
     const parsed = new URL(candidate);
     return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : "";
@@ -104,7 +104,7 @@ export function renderPartnerSite(data) {
           const cover = safeUrl(post.cover_image_url);
           const action = safeActionUrl(post.cta_url) || "#contact";
           const actionLabel = cleanPostLabel(post.cta_label) || meta.action;
-          const external = /^https?:\\/\\//i.test(action);
+          const external = action.startsWith("https://") || action.startsWith("http://");
           const body = post.excerpt || String(post.body || "").slice(0, 220);
           return `<article class="post post--${esc(meta.tone)}">
             <div class="post-art">${cover ? `<img src="${esc(cover)}" alt="${esc(post.title)}" loading="lazy" decoding="async" onerror="this.style.display='none'">` : `<span class="post-art-icon">${meta.icon}</span>`}
