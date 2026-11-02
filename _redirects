@@ -1,1 +1,7 @@
+# Canonical partner entry points — explicitly serve the standalone Pages apps
+/partners-dashboard /partners-dashboard/index.html 200
+/partners-dashboard/ /partners-dashboard/index.html 200
+/partners-admin /partners-admin/index.html 200
+/partners-admin/ /partners-admin/index.html 200
+
 /guides.html /blog.html 301
