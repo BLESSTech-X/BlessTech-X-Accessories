@@ -284,7 +284,7 @@ const note=$('package-request-note');
 if(note)note.textContent=pending?'Your '+(pending.package_name||pending.package_key)+' request is with PhoneYa2. We will call you to confirm details and arrange payment outside this website. Your current package remains active until payment is confirmed.':'Choose a package to send a request to PhoneYa2. We will call you, confirm the package and arrange payment outside the website. Your upgrade starts only after payment is confirmed.';
 $('plans').querySelectorAll('[data-request-package]').forEach(button=>button.onclick=async()=>{
 button.disabled=true;button.textContent='Sending request…';
-try{const result=await api('/api/partner',{action:'package.request',package_key:button.dataset.requestPackage});await refresh();toast(result.message||'Package request sent.');}
+try{const result=await api('package.request',{package_key:button.dataset.requestPackage});await refresh();toast(result.message||'Package request sent.');}
 catch(error){button.disabled=false;button.textContent='Request this package →';toast(error.message||'Could not send package request.');}
 });
 }
