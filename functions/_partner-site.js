@@ -188,6 +188,7 @@ a{color:inherit;text-decoration:none}
 .posts{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
 .post{position:relative;border:0;border-radius:22px;overflow:hidden;box-shadow:0 14px 36px #14233b12;transition:transform .22s ease,box-shadow .22s ease}
 .post:hover{transform:translateY(-5px);box-shadow:0 20px 44px #14233b1c}
+.post .post-art{padding:0}.post .post-copy{padding:20px}
 .post-art{height:218px;position:relative;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#dceeff,#edf4ff)}
 .post-art img{width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:contain;padding:14px;background:transparent}
 .post-art-icon{font-size:70px;font-weight:900;color:#fff;text-shadow:0 8px 25px #14233b35}
