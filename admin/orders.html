@@ -92,9 +92,10 @@ function renderOrderCards(orders){
       const result=await api("/api/orders?admin=1",{method:"PATCH",body:JSON.stringify({id:order.id,status:nextStatus})});
       let statusMessage="Order "+order.order_number+" updated.";
       let statusKind="success";
-      if(nextStatus==="delivered" && previousStatus!=="delivered"){
-        if(result.delivery_email_sent) statusMessage+=" Delivery update email sent with an optional feedback link.";
-        else {statusMessage+=" The order is marked delivered, but the delivery email could not be confirmed. Check the Communications Centre.";statusKind="error";}
+      if(previousStatus!==nextStatus){
+        const channels=[result.status_email_sent?"email":"",result.status_sms_sent?"SMS":""].filter(Boolean);
+        if(channels.length)statusMessage+=" Customer status notification accepted by "+channels.join(" and ")+".";
+        else {statusMessage+=" Customer notification could not be confirmed. Check Brevo configuration and the Communications Centre.";statusKind="error";}
       }
       showMessage("message",statusMessage,statusKind);
       await loadOrders();
