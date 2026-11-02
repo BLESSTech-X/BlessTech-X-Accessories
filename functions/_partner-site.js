@@ -27,7 +27,7 @@ function renderItem(item, primary) {
   const image = safeUrl(item.image_url);
   return `<article class="product">
     ${image
-      ? `<img class="product-image" src="${esc(image)}" alt="${esc(item.title)}" loading="lazy">`
+      ? `<img class="product-image" src="${esc(image)}" alt="${esc(item.title)}" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">`
       : '<div class="product-placeholder">PY2</div>'}
     <div class="product-body">
       <small>${esc(item.item_type === "service" ? "SERVICE" : item.category || "PRODUCT")}</small>
@@ -52,7 +52,7 @@ export function renderPartnerSite(data) {
   try { socials = JSON.parse(site.social_links_json || "{}"); } catch { socials = {}; }
 
   const logo = logoUrl
-    ? `<img src="${esc(logoUrl)}" alt="${esc(businessName)}">`
+    ? `<img src="${esc(logoUrl)}" alt="${esc(businessName)}" decoding="async" onerror="this.remove()">`
     : `<span>${esc(businessName.charAt(0).toUpperCase())}</span>`;
 
   const socialHtml = Object.entries(socials)
@@ -82,7 +82,7 @@ export function renderPartnerSite(data) {
         <div class="section-head"><div><small>FROM THE BUSINESS</small><h2>News &amp; updates</h2></div></div>
         <div class="posts">${posts.map((post) => {
           const cover = safeUrl(post.cover_image_url);
-          return `<article class="post">${cover ? `<img src="${esc(cover)}" alt="" loading="lazy">` : ""}
+          return `<article class="post">${cover ? `<img src="${esc(cover)}" alt="" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">` : ""}
             <div><small>${esc(post.post_type || "UPDATE")}</small><h3>${esc(post.title)}</h3>
             <p>${esc(post.excerpt || String(post.body || "").slice(0, 180))}</p></div>
           </article>`;
