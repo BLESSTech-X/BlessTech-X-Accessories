@@ -116,7 +116,7 @@ a{color:inherit;text-decoration:none}
 .logo{width:42px;height:42px;border-radius:13px;background:${primary};color:white;display:grid;place-items:center;overflow:hidden}
 .logo img{width:100%;height:100%;object-fit:cover}
 .top small{display:block;color:#8190a3;font-size:10px;letter-spacing:1.2px;text-transform:uppercase}
-.top-link{font-weight:750;color:#63748a;font-size:13px}
+.top-link{font-weight:750;color:#63748a;font-size:13px}.site-nav{display:flex;align-items:center;gap:18px;margin-left:auto;margin-right:20px}.site-nav a{font-size:12px;font-weight:800;color:#65758a}.site-nav a:hover{color:${primary}}.site-nav .nav-cta{background:${primary};color:#fff;padding:9px 13px;border-radius:9px}.menu-button{display:none;border:0;background:#edf1f6;border-radius:9px;padding:8px 11px;font-weight:900}
 .hero{margin:22px 0 0;min-height:440px;border-radius:24px;overflow:hidden;position:relative;display:flex;align-items:end;background:linear-gradient(110deg,${accent} 0%,#142b48 100%);color:white}
 .hero:before{content:"";position:absolute;inset:0;background:${heroImage ? `linear-gradient(90deg,rgba(9,24,43,.88),rgba(9,24,43,.18)),url("${heroImage}") center/cover` : "radial-gradient(circle at 85% 20%,rgba(255,255,255,.2),transparent 30%)"}}
 .hero-content{position:relative;z-index:1;padding:clamp(26px,6vw,65px);max-width:760px}
@@ -161,18 +161,18 @@ a{color:inherit;text-decoration:none}
 .socials a{padding:7px 11px;background:#eef2f7;border-radius:20px;font-size:11px;font-weight:800}
 .footer{padding:20px 0 32px;display:flex;justify-content:space-between;color:#8995a5;font-size:11px}
 .footer b{color:#52647c}
-@media(max-width:760px){.site{padding:0 13px}.top{margin:0 -13px;padding:0 10px}.template-storefront .products{grid-template-columns:repeat(2,minmax(0,1fr))}.template-studio .hero{min-height:390px}.top{height:65px}.hero{min-height:360px;border-radius:17px}.hero h1{font-size:38px}.hero p{font-size:14px}.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-image,.product-placeholder{height:155px}.product-body{padding:12px}.product h3{font-size:14px}.posts{grid-template-columns:1fr}.contact{grid-template-columns:1fr;margin:35px 0 20px}.section{padding-top:34px}.section-head h2{font-size:23px}.footer{display:block}.footer span{display:block;margin-top:5px}}
+@media(max-width:760px){.site{padding:0 13px}.site-nav{display:none;position:absolute;top:64px;left:0;right:0;margin:0;padding:14px;background:white;border-bottom:1px solid #e7ebf1;box-shadow:0 10px 22px #132b4a15;flex-direction:column;align-items:stretch;gap:12px}.site-nav.open{display:flex}.menu-button{display:inline-flex;margin-left:auto;margin-right:9px}.top-link{font-size:11px}.top{margin:0 -13px;padding:0 10px}.template-storefront .products{grid-template-columns:repeat(2,minmax(0,1fr))}.template-studio .hero{min-height:390px}.top{height:65px}.hero{min-height:360px;border-radius:17px}.hero h1{font-size:38px}.hero p{font-size:14px}.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-image,.product-placeholder{height:155px}.product-body{padding:12px}.product h3{font-size:14px}.posts{grid-template-columns:1fr}.contact{grid-template-columns:1fr;margin:35px 0 20px}.section{padding-top:34px}.section-head h2{font-size:23px}.footer{display:block}.footer span{display:block;margin-top:5px}}
 @media(max-width:400px){.products{grid-template-columns:1fr}.product-image,.product-placeholder{height:210px}}
 </style>
 </head>
 <body>
 <div class="site">
-<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}<small>Partner business on PhoneYa2</small></div></div><a class="top-link" href="/">Shop PhoneYa2 ↗</a></header>
+<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}<small>Partner business on PhoneYa2</small></div></div><nav id="site-nav" class="site-nav"><a href="#products">Products</a><a href="#services">Services</a><a href="#updates">Updates</a><a href="#about">About</a><a class="nav-cta" href="#contact">Contact</a></nav><button class="menu-button" id="site-menu" aria-label="Open website menu">☰</button><a class="top-link" href="/">Shop PhoneYa2 ↗</a></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
 ${catalogue(services, "Services", "WHAT WE DO")}
 ${postsHtml}
-${site.site_description ? `<section class="about"><h2>About ${esc(businessName)}</h2><p>${esc(site.site_description)}</p></section>` : ""}
+${site.site_description ? `<section class="about" id="about"><h2>About ${esc(businessName)}</h2><p>${esc(site.site_description)}</p></section>` : ""}
 <section class="contact" id="contact">
 <div><small class="eyebrow">LET&#39;S CONNECT</small><h2>How can we help you?</h2><p>Send an enquiry and ${esc(businessName)} will be able to follow up with you.</p>${contact}<div class="socials">${socialHtml}</div></div>
 <form id="partner-enquiry"><input name="name" required maxlength="100" placeholder="Your name"><input name="phone" maxlength="40" placeholder="Phone number"><input name="email" type="email" maxlength="254" placeholder="Email address"><textarea name="message" required maxlength="2000" placeholder="How can we help?"></textarea><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px"><button type="submit">Send enquiry →</button><small id="enquiry-result" aria-live="polite"></small></form>
@@ -180,7 +180,7 @@ ${site.site_description ? `<section class="about"><h2>About ${esc(businessName)}
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
-document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
+document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});\ndocument.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));\ndocument.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const button = form.querySelector("button");
