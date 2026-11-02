@@ -1334,14 +1334,7 @@ document.getElementById('btn-send-another')?.addEventListener('click', () => {
     section.style.display = 'none';
   }
 
-  if (!window.PY2_ADS_CONFIG || !window.PY2_ADS_CONFIG.url || !window.PY2_ADS_CONFIG.key) {
-    hideSection();
-    return;
-  }
-
-  var SUPABASE_URL = window.PY2_ADS_CONFIG.url;
-  var SUPABASE_KEY = window.PY2_ADS_CONFIG.key;
-  var GRID         = document.getElementById('py2-ads-grid-track');
+  var GRID = document.getElementById('py2-ads-grid-track');
   if (!GRID) { hideSection(); return; }
 
   function esc(s) {
@@ -1399,43 +1392,23 @@ document.getElementById('btn-send-another')?.addEventListener('click', () => {
     } catch (e) { return 'direct'; }
   }
 
-  function sbGet(path) {
-    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
-      headers: {
-        'apikey':        SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Accept':        'application/json'
-      }
-    }).then(function (r) {
-      if (!r.ok) throw new Error('Supabase GET ' + r.status);
+  function sbGet() {
+    return fetch('/api/partner-ads', { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('Campaign feed unavailable');
       return r.json();
-    });
+    }).then(function (data) { return data.ads || []; });
   }
-
   function sbPost(path, body) {
-    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
-      method: 'POST',
-      headers: {
-        'apikey':        SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type':  'application/json',
-        'Prefer':        'return=minimal'
-      },
-      body: JSON.stringify(body)
-    });
+    var action = path === 'ad_impressions' ? 'impression' : path === 'ad_clicks' ? 'click' : 'report';
+    return fetch('/api/partner-ads', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(Object.assign({}, body, { action: action }))
+    }).then(function (r) { if (!r.ok) throw new Error('Campaign tracking failed'); return r; });
   }
-
   function fetchAds() {
-    var nowIso = new Date().toISOString();
-    var qs =
-      'ads?select=id,slug,title,description,media_url,media_type,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
-      '&status=eq.approved' +
-      '&placement=eq.carousel' +
-      '&start_date=lte.' + encodeURIComponent(nowIso) +
-      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(nowIso) + ')' +
-      '&order=weight.desc,created_at.desc' +
-      '&limit=9';
-    return sbGet(qs);
+    return sbGet().then(function (rows) {
+      return rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel' || ad.placement === 'both'; }).slice(0, 9);
+    });
   }
 
   function weightedShuffle(list) {
