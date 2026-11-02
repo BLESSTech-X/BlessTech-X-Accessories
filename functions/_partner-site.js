@@ -71,14 +71,14 @@ export function renderPartnerSite(data) {
   const services = items.filter((item) => item.item_type === "service");
 
   const catalogue = (list, heading, eyebrow) => list.length
-    ? `<section class="section">
+    ? `<section class="section" id="${heading.toLowerCase()}">
         <div class="section-head"><div><small>${esc(eyebrow)}</small><h2>${esc(heading)}</h2></div><span>${list.length} listed</span></div>
         <div class="products">${list.map((item) => renderItem(item, primary)).join("")}</div>
       </section>`
     : "";
 
   const postsHtml = posts.length
-    ? `<section class="section">
+    ? `<section class="section" id="updates">
         <div class="section-head"><div><small>FROM THE BUSINESS</small><h2>News &amp; updates</h2></div></div>
         <div class="posts">${posts.map((post) => {
           const cover = safeUrl(post.cover_image_url);
