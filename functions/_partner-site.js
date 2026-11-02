@@ -8,6 +8,7 @@ function esc(value) {
 
 function safeUrl(value) {
   const candidate = String(value || "").trim();
+  if (candidate.startsWith("/media/partner/")) return candidate;
   try {
     const parsed = new URL(candidate);
     return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : "";
