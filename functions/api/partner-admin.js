@@ -232,7 +232,7 @@ async function writeTable(db, body) {
     if (!q.id) throw new Error("A valid package request is required.");
     const row = await db.prepare("SELECT id,advertiser_id,package_key,amount_minor,currency,status FROM partner_subscriptions WHERE id=?").bind(q.id).first();
     if (!row) throw new Error("Package request not found.");
-    if (!["pending_payment","active"].includes(row.status)) throw new Error("This package request cannot be activated.");
+    if (row.status!=="pending_payment") throw new Error("This package request is no longer awaiting payment confirmation.");
     const packageRow = await db.prepare("SELECT package_key,monthly_price_minor FROM partner_packages WHERE package_key=? AND active=1").bind(row.package_key).first();
     if (!packageRow) throw new Error("The requested package is no longer available.");
     const now = new Date().toISOString();
@@ -240,14 +240,14 @@ async function writeTable(db, body) {
     const end = new Date(Date.now()+30*86400000).toISOString();
     const amount = Number(body.amount_minor ?? row.amount_minor ?? packageRow.monthly_price_minor ?? 0);
     if (!Number.isInteger(amount) || amount < 0) throw new Error("Enter a valid confirmed payment amount.");
+    const note=String(body.admin_note||"Offline payment confirmed by PhoneYa2 admin").slice(0,1000);
     await db.batch([
       db.prepare("UPDATE partner_subscriptions SET status='expired',updated_at=? WHERE advertiser_id=? AND status='active'").bind(now,row.advertiser_id),
-      db.prepare("UPDATE partner_subscriptions SET status='active',amount_minor=?,currency=?,starts_at=?,current_period_start=?,current_period_end=?,updated_at=? WHERE id=?").bind(amount,String(body.currency||row.currency||"ZMW").slice(0,8),start,start,end,now,row.id),
+      db.prepare("UPDATE partner_subscriptions SET status='active',amount_minor=?,currency=?,starts_at=?,current_period_start=?,current_period_end=?,updated_at=? WHERE id=? AND status='pending_payment'").bind(amount,String(body.currency||row.currency||"ZMW").slice(0,8),start,start,end,now,row.id),
       db.prepare("UPDATE advertisers SET tier=? WHERE id=?").bind(row.package_key,row.advertiser_id),
-      db.prepare("UPDATE ads SET weight=(SELECT advertising_weight FROM partner_packages WHERE package_key=?) WHERE advertiser_id=? AND status IN ('pending','approved')").bind(row.package_key,row.advertiser_id)
+      db.prepare("UPDATE ads SET weight=(SELECT advertising_weight FROM partner_packages WHERE package_key=?) WHERE advertiser_id=? AND status IN ('pending','approved')").bind(row.package_key,row.advertiser_id),
+      db.prepare("INSERT INTO partner_payment_submissions(id,subscription_id,advertiser_id,amount_minor,currency,payment_method,provider_reference,status,admin_note,reviewed_at,reviewed_by) VALUES(?,?,?,?,?,'offline','CONFIRMED-OFFLINE','confirmed',?,?,?)").bind(crypto.randomUUID(),row.id,row.advertiser_id,amount,String(body.currency||row.currency||"ZMW").slice(0,8),note,now,"admin")
     ]);
-    const note=String(body.admin_note||"Offline payment confirmed by PhoneYa2 admin").slice(0,1000);
-    await db.prepare("INSERT INTO partner_payment_submissions(id,subscription_id,advertiser_id,amount_minor,currency,payment_method,provider_reference,status,admin_note,reviewed_at,reviewed_by) VALUES(?,?,?,?,?,'offline','CONFIRMED-OFFLINE','confirmed',?,?,?)").bind(crypto.randomUUID(),row.id,row.advertiser_id,amount,String(body.currency||row.currency||"ZMW").slice(0,8),note,now,"admin").run();
     return all(db,"SELECT * FROM partner_subscriptions WHERE id=?",[row.id]);
   }
   if (table === "partner_subscriptions" && action === "reject") {
