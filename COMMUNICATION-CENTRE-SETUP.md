@@ -1,51 +1,35 @@
-# PhoneYa2 Smart Communication Centre — Phase 1
+# PhoneYa2 Smart Communication Centre — current production implementation
 
-This phase adds customer order-confirmation emails, records automatic order-alert and customer-confirmation attempts, and provides a protected admin activity dashboard. It is staged on the `feature/phoneya2-smart-communications` branch; it is not deployed to the production site by this change alone.
+The communication system is committed to \`main\`. It uses Brevo for outbound email and transactional SMS. Formspree remains in place for incoming order/newsletter form alerts. Resend is not used by the current communication functions.
 
-## What this phase does
+## Connected audiences
 
-- Keeps the existing order-save process as the source of truth. An email failure does not undo a saved order.
-- Continues to email the store owner about a new order.
-- Sends the customer a transactional confirmation email after the order is successfully saved.
-- Records each owner order alert, customer confirmation, and manual notification test in `public.email_activity`.
-- Shows exact database totals plus the latest 250 activity records in `/admin/communications.html`.
-- Keeps customer email addresses and activity logs behind the existing allowlisted administrator authentication.
-- Does not subscribe customers to marketing automatically. A purchase and a marketing subscription remain separate.
+- **Newsletter marketing:** only subscribers with status \`subscribed\` after double opt-in. Pending, unsubscribed and bounced contacts are excluded.
+- **Registered partners:** all active/approved partners, including free partners, can receive operational Partner Studio updates even if they never joined the newsletter. These are account/platform notices, not marketing-consent bypasses.
+- **Ordering customers:** order confirmation and every order-status change are sent as transactional email and SMS when the relevant provider channel is configured. A purchase does not subscribe the customer to marketing.
+- **Activity:** email events are visible in the Email activity log; SMS and partner notification attempts appear in the SMS and partner notification log.
 
-## Required setup before testing
+## Required setup
 
-1. In the PhoneYa2 Supabase project, open **SQL Editor** and run the complete file `supabase/communication-centre.sql` once.
-2. Confirm Cloudflare Pages has the existing production secrets/variables:
-   - `SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY` (secret)
-   - `SUPABASE_ANON_KEY` (or the existing publishable-key variable)
-   - `ADMIN_EMAIL`
-   - `ORDER_NOTIFY_EMAIL`
-   - `RESEND_API_KEY` (secret)
-   - `RESEND_FROM` (verified sender)
-3. Deploy the reviewed branch only after you approve it. Do not paste secret values into GitHub, chat, or browser-side code.
-4. Open `/admin/communications.html` and sign in with the authorized admin account.
+1. Run the latest complete \`supabase/communication-centre.sql\` in Supabase SQL Editor.
+2. Run D1 migrations \`0010_communication_activity.sql\` and \`0011_partner_package_benefits.sql\` against the PhoneYa2 D1 database.
+3. Configure Cloudflare Pages Production variables/secrets:
+   - \`BREVO_API_KEY\` (secret)
+   - \`BREVO_FROM_EMAIL\` (verified sender)
+   - \`BREVO_FROM_NAME\` (optional; defaults to PhoneYa2 Accessories)
+   - \`BREVO_SMS_SENDER\` (approved Zambia sender ID; defaults to PhoneYa2)
+   - Keep \`ORDER_NOTIFY_EMAIL\`, Supabase secrets and the D1 binding.
+4. Purchase Brevo SMS credits and register/approve the sender ID for Zambia.
+5. Redeploy Cloudflare Pages after the variables and secrets are configured.
 
-## Safe test plan
+## Admin workflow
 
-1. Open the new communication dashboard and confirm it loads the email activity table.
-2. Use a controlled test order with an email address you can access.
-3. Confirm the order still appears in the existing order dashboard.
-4. Confirm the store-owner alert reaches `ORDER_NOTIFY_EMAIL`.
-5. Confirm the customer receives a message titled `We received your PhoneYa2 order <order number>`.
-6. Confirm two activity records appear: `new_order_alert` and `order_confirmation`, with the correct recipient, subject, trigger, order number and provider status.
-7. Temporarily test with a controlled invalid recipient only if appropriate, then confirm a failed attempt is visible. Do not deliberately send to unrelated people's addresses.
-8. Verify an unauthenticated request to `/api/communications?admin=1` returns HTTP 401.
+- \`/admin/campaigns.html\`: select confirmed newsletter subscribers for marketing or all registered partners for operational partner updates. Review the content, save a draft, and explicitly send. Sends process in batches of 20.
+- \`/admin/communications.html\`: inspect email attempts and the SMS/partner notification log.
+- \`/admin/orders.html\`: update order status; the customer is notified by email and SMS when configured.
 
-## Status meanings and limitations
+## Safe testing
 
-- `sent` means Resend accepted the message request. It does **not** prove the email reached the inbox.
-- `delivered` and `bounced` will be shown when delivery webhooks are implemented in a later phase; Phase 1 does not yet ingest those provider events.
-- The table shows the latest 250 records for usability. Summary counters are computed in Supabase across the full email activity table.
-- The dashboard is currently a read-only activity centre. Subscriber management, manual campaigns, scheduling, product-publish detection, delivery webhooks, retries, and campaign performance are later phases.
-- Customer order confirmations are transactional. The new `customer_subscribers` table is not automatically populated from orders, and customers must separately opt in before promotional email is sent.
-- Supabase invitation/account-activation messages are separate from order confirmations and are not currently included in this email activity log.
+Use only contact details you control for initial tests. First confirm newsletter double opt-in and unsubscribe. Then place a test order using your own email and Zambian mobile number. Change its status and check both delivery channels. Finally send one partner update to a test partner and inspect both activity logs.
 
-## Rollback notes
-
-Do not run a destructive rollback on the database. If a problem appears during testing, disable or revert the code branch and leave the activity tables in place so audit records are preserved. The migration is additive and is safe to leave installed if the code is rolled back.
+Brevo acceptance is not proof of inbox/handset delivery. Confirm delivery using Brevo's logs and delivery events. Never put API keys or service-role keys in browser code, GitHub, or chat.
