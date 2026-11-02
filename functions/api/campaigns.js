@@ -17,7 +17,7 @@ async function admin(request,env) {
 }
 async function activity(env,r) {
   const response=await db(env,"/rest/v1/email_activity",{method:"POST",headers:{prefer:"return=minimal"},body:JSON.stringify({
-    event_type:"marketing_campaign",source:"manual",trigger_source:"admin_campaign_send",recipient_email:r.email,recipient_name:r.name||"",
+    event_type:"marketing_campaign",source:"manual",trigger_source:"admin_campaign_send",recipient_email:r.email||"",recipient_name:r.name||"",
     subject:r.subject,status:r.ok?"sent":"failed",provider:"brevo",provider_message_id:r.messageId||"",error_message:r.error||"",
     campaign_id:r.campaignId,retry_count:0,sent_at:r.ok?new Date().toISOString():null,metadata:{campaign_name:r.campaignName,audience:r.audience||"subscribed"}
   })});
@@ -48,6 +48,7 @@ async function sendPartnerSms(env,campaign,partner){
   }catch(e){return{ok:false,error:String(e).slice(0,180)};}
 }
 async function sendOne(env,campaign,recipient) {
+  if(!recipient.email)return{ok:false,skipped:true,error:"Partner email is missing; SMS will be attempted if a valid phone number exists."};
   const key=env.BREVO_API_KEY, fromEmail=env.BREVO_FROM_EMAIL;
   if(!key||!fromEmail) return {ok:false,error:"Brevo is not configured. Add BREVO_API_KEY and BREVO_FROM_EMAIL in Cloudflare Pages secrets."};
   const isPartner=campaign.audience==="partners";
@@ -78,7 +79,7 @@ export async function onRequest(context) {
       if(!campaignsR.ok||!subsR.ok) return json({error:"Campaign tables are not ready. Run the latest communication-centre.sql migration."},503);
       const [campaigns,subs]=await Promise.all([campaignsR.json(),subsR.json()]);
       let partners=0;
-      if(env.DB){const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND TRIM(email)<>''").first();partners=Number(count?.total||0);}
+      if(env.DB){const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(email)<>'' OR TRIM(phone)<>'')").first();partners=Number(count?.total||0);}
       return json({success:true,campaigns,subscribers:{total:subs.length,subscribed:subs.filter(s=>s.status==="subscribed").length,pending:subs.filter(s=>s.status==="pending").length,unsubscribed:subs.filter(s=>s.status==="unsubscribed").length},partners:{total:partners}});
     }
     if(request.method!=="POST") return json({error:"Method not allowed."},405);
@@ -102,7 +103,7 @@ export async function onRequest(context) {
       let audienceList=[];
       if(campaign.audience==="partners"){
         if(!env.DB)return json({error:"Partner audience is unavailable because the D1 database is not connected."},503);
-        const partnerRows=await env.DB.prepare("SELECT email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND TRIM(email)<>'' ORDER BY created_at ASC LIMIT 1000").all();
+        const partnerRows=await env.DB.prepare("SELECT email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(email)<>'' OR TRIM(phone)<>'') ORDER BY created_at ASC LIMIT 1000").all();
         audienceList=(partnerRows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email);
       }else{
         const subR=await db(env,"/rest/v1/customer_subscribers?select=id,email,full_name,confirmation_token&status=eq.subscribed&order=created_at.asc&limit=1000");
