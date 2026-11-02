@@ -86,7 +86,7 @@ env.DB.prepare("INSERT INTO advertiser_profiles(id,advertiser_id,slug,contact_ph
 env.DB.prepare("INSERT INTO partner_site_settings(id,advertiser_id,site_title,site_description,hero_title,hero_subtitle,published) VALUES(?,?,?,?,?,?,0)").bind(siteId,advertiserId,business,"Welcome to "+business,business,"Discover what we offer",0),
 env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,?)").bind(subscriptionId,advertiserId,stamp,stamp,new Date(Date.now()+30*86400000).toISOString())
 ]);
-const token=await createSession(env.DB,accountId);return json({ok:true,authenticated:true,needs_email_verification:false,slug,message:"Your PhoneYa2 Partner workspace is ready."},201,{"set-cookie":sessionCookie(token)});
+const token=await createSession(env.DB,accountId);return json({ok:true,authenticated:true,slug,message:"Your workspace is ready. It remains private until account verification and public publishing are enabled."},201,{"set-cookie":sessionCookie(token)});
 }catch(e){return fail("We could not create the account. Check the details and try again.",409);}
 }
 if(action==="login"){
