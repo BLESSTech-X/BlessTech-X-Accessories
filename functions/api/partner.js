@@ -38,6 +38,16 @@ function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
 if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
+if(action==="site.publish"){
+const ready=await db.prepare("SELECT site_title,hero_title FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
+if(!ready||!String(ready.site_title||"").trim()||!String(ready.hero_title||"").trim())return fail("Add your website title and hero headline before publishing.");
+await db.prepare("UPDATE partner_site_settings SET published=1,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
+return json({ok:true,message:"Your business website is published."});
+}
+if(action==="site.unpublish"){
+await db.prepare("UPDATE partner_site_settings SET published=0,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
+return json({ok:true,message:"Your business website is now private."});
+}
 if(action==="site.save"){
 const fields={site_title:cleanText(body.site_title,100),site_description:cleanText(body.site_description,500),hero_title:cleanText(body.hero_title,140),hero_subtitle:cleanText(body.hero_subtitle,300),hero_image_url:cleanText(body.hero_image_url,1000),logo_url:cleanText(body.logo_url,1000),primary_color:/^#[0-9a-f]{6}$/i.test(body.primary_color||"")?body.primary_color:"#ff6000",accent_color:/^#[0-9a-f]{6}$/i.test(body.accent_color||"")?body.accent_color:"#173f73",font_pair:["modern","editorial","classic"].includes(body.font_pair)?body.font_pair:"modern",template_key:["signature","storefront","studio","hospitality","professional"].includes(body.template_key)?body.template_key:"signature",seo_title:cleanText(body.seo_title,120),seo_description:cleanText(body.seo_description,300),social_links_json:JSON.stringify(body.social_links&&typeof body.social_links==="object"?body.social_links:{})};
 await db.prepare(`UPDATE partner_site_settings SET site_title=?,site_description=?,hero_title=?,hero_subtitle=?,hero_image_url=?,logo_url=?,primary_color=?,accent_color=?,font_pair=?,template_key=?,seo_title=?,seo_description=?,social_links_json=?,updated_at=? WHERE advertiser_id=?`).bind(fields.site_title,fields.site_description,fields.hero_title,fields.hero_subtitle,fields.hero_image_url,fields.logo_url,fields.primary_color,fields.accent_color,fields.font_pair,fields.template_key,fields.seo_title,fields.seo_description,fields.social_links_json,now,partner.advertiser_id).run();
