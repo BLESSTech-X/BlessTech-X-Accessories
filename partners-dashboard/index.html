@@ -252,12 +252,36 @@ async function campaignAction(action,id){try{await api(action,{id});await refres
 function renderEnquiries(){const el=$('enquiries-list');if(!data.enquiries.length){el.innerHTML='<div class="empty">Customer enquiries from your published website appear here.</div>';return}el.innerHTML='<div class="tablewrap"><table><thead><tr><th>Customer</th><th>Contact</th><th>Message</th><th>Status</th><th>Received</th></tr></thead><tbody>'+data.enquiries.map(x=>'<tr><td><b>'+esc(x.customer_name)+'</b></td><td>'+esc(x.customer_phone||x.customer_email||'—')+'</td><td>'+esc(x.message)+'</td><td><select data-enquiry="'+x.id+'">'+['new','contacted','qualified','won','closed'].map(s=>'<option '+(s===x.status?'selected':'')+'>'+s+'</option>').join('')+'</select></td><td>'+new Date(x.created_at).toLocaleDateString()+'</td></tr>').join('')+'</tbody></table></div>';el.querySelectorAll('[data-enquiry]').forEach(s=>s.onchange=async()=>{try{await api('enquiry.status',{id:s.dataset.enquiry,status:s.value});await refresh();toast('Enquiry updated.')}catch(e){toast(e.message)}})}
 function renderRecent(){const a=[...data.enquiries.slice(0,3).map(x=>({t:x.customer_name||'Enquiry',d:x.message,date:x.created_at})),...data.posts.slice(0,2).map(x=>({t:x.title,d:x.status,date:x.updated_at||x.created_at}))].sort((x,y)=>new Date(y.date)-new Date(x.date)).slice(0,5);$('recent').innerHTML=a.length?a.map(x=>'<div class="row"><div class="info"><b>'+esc(x.t)+'</b><small>'+esc(x.d||'')+'</small></div><small>'+new Date(x.date).toLocaleDateString()+'</small></div>').join(''):'<div class="empty">Your latest activity will appear here.</div>'}
 async function preparePartnerImage(file){
-if(!file||!String(file.type||'').startsWith('image/'))throw Error('Choose a valid image file.');
-if(file.size>5*1024*1024)throw Error('Images must be 5 MB or smaller. Choose a smaller image and try again.');
-if(file.type==='image/gif'&&file.size<=1250000)return file;
-if(!('createImageBitmap'in window))throw Error('Your browser cannot optimise this image. Try JPG or PNG.');
-let bitmap;try{bitmap=await createImageBitmap(file)}catch{throw Error('This image format is not supported by your browser. Save it as JPG or PNG and try again.')}
-try{let scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));for(const quality of [.84,.76,.68,.58,.48]){const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));const ctx=canvas.getContext('2d');if(!ctx)throw Error('Image processing is unavailable.');ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));if(blob&&blob.size<=1250000)return new File([blob],file.name.replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'});scale*=.84;}throw Error('Image could not be optimised for storage. Try a smaller or clearer JPG/PNG image.')}finally{bitmap.close?.()}
+const maxOriginal=5*1024*1024, maxStored=900000;
+if(!file||!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type))throw Error('Choose a JPG, PNG, WebP or GIF image.');
+if(file.size>maxOriginal)throw Error('This image is larger than 5 MB. Please choose an image under 5 MB.');
+if(!('createImageBitmap'in window))throw Error('Your browser cannot optimise this image. Please use an updated Chrome, Edge or Firefox browser.');
+let bitmap;
+try{bitmap=await createImageBitmap(file)}catch{throw Error('This image could not be opened for optimisation. Please save it as JPG or PNG and try again.')}
+try{
+let longest=Math.max(bitmap.width,bitmap.height);
+if(!longest)throw Error('This image has invalid dimensions.');
+let scale=Math.min(1,1400/longest);
+for(let pass=0;pass<12;pass++){
+ const canvas=document.createElement('canvas');
+ canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+ canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+ const ctx=canvas.getContext('2d');
+ if(!ctx)throw Error('Image processing is unavailable. Please reload and try again.');
+ ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+ for(const quality of [.82,.72,.62,.52,.42,.32]){
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));
+  if(blob&&blob.size>0&&blob.size<=maxStored){
+   const safeName=(file.name||'partner-image').replace(/\.[^.]+$/,'')+'.webp';
+   return new File([blob],safeName,{type:'image/webp',lastModified:Date.now()});
+  }
+ }
+ scale*=.78;
+ if(Math.max(canvas.width,canvas.height)<=420)break;
+}
+throw Error('This image could not be compressed enough. Try cropping it or choosing a simpler image.');
+}finally{bitmap.close?.()}
 }
 function verifyImageUrl(url){return new Promise((resolve,reject)=>{const img=new Image();const timeout=setTimeout(()=>{img.src='';reject(Error('Image verification timed out. Please retry.'))},12000);img.onload=()=>{clearTimeout(timeout);if(img.naturalWidth>0)resolve(true);else reject(Error('The uploaded image is empty.'))};img.onerror=()=>{clearTimeout(timeout);reject(Error('The uploaded image could not be opened. Please try again.'))};img.src=url})}
 async function uploadImage(file,target){if(!file)return;const field=$(target),picker=document.querySelector('[data-image-target="'+target+'"]');if(!String(file.type||'').startsWith('image/')){toast('⚠️ Please choose an image file.');return}field.disabled=true;if(picker)picker.disabled=true;previewLocalImage(file,target);toast('🖼️ Preparing your image…');try{const prepared=await preparePartnerImage(file);const fd=new FormData();fd.append('file',prepared);const r=await fetch(API,{method:'POST',credentials:'same-origin',body:fd});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw Error(j.error||'Image upload failed');if(!j.url)throw Error('The server did not return an image address. Please retry.');await verifyImageUrl(j.url);field.value=j.url;field.dispatchEvent(new Event('input',{bubbles:true}));updateWebsitePreview();updatePublishImagePreview();if(target==='profile-logo-url')bindImagePreview('profile-logo-preview',null,j.url);if(imagePreviewUrls[target]){URL.revokeObjectURL(imagePreviewUrls[target]);delete imagePreviewUrls[target]}toast('✅ Image uploaded and verified. Save changes to publish it.')}catch(e){toast('⚠️ '+e.message+' Your previous saved image has not been changed.')}finally{field.disabled=false;if(picker)picker.disabled=false}}
