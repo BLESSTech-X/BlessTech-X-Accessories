@@ -43,7 +43,7 @@ const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
 if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
 if(action==="profile.save"){
 const business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40),tagline=cleanText(body.tagline,180),about=cleanText(body.about,1200),contactPhone=cleanText(body.contact_phone,40),whatsapp=cleanText(body.contact_whatsapp,40),contactEmail=cleanText(body.contact_email,254).toLowerCase(),logo=cleanText(body.logo_url,1000);
-if(!business||!owner||phone.replace(/\\D/g,"").length<9)return fail("Enter your business name, owner name and a valid phone number.");
+if(!business||!owner||phone.replace(/\D/g,"").length<9)return fail("Enter your business name, owner name and a valid phone number.");
 const emailParts=contactEmail.split("@");if(contactEmail&&(emailParts.length!==2||!emailParts[0]||!emailParts[1].includes(".")||emailParts[1].startsWith(".")||emailParts[1].endsWith(".")))return fail("Enter a valid public contact email.");
 await db.prepare("UPDATE advertisers SET business_name=?,owner_name=?,phone=?,logo_url=? WHERE id=?").bind(business,owner,phone,logo,partner.advertiser_id).run();
 await db.prepare("UPDATE advertiser_profiles SET tagline=?,about=?,contact_phone=?,contact_whatsapp=?,contact_email=? WHERE advertiser_id=?").bind(tagline,about,contactPhone||phone,whatsapp||contactPhone||phone,contactEmail,partner.advertiser_id).run();
@@ -86,9 +86,10 @@ else{slug=slugify(title);for(let n=0;n<8;n++){const exists=await db.prepare("SEL
 const existing=body.id?await db.prepare("SELECT status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first():null;
 if(existing?.status==="banned")return fail("This campaign has been removed by PhoneYa2 moderation. Contact support if you believe this is an error.",403);
 const status=existing&&existing.status==="approved"?"pending":(existing?existing.status:"pending");
-const tier=await db.prepare("SELECT a.tier,t.rotation_weight,t.ad_limit FROM advertisers a LEFT JOIN ad_tiers t ON t.tier=a.tier WHERE a.id=?").bind(partner.advertiser_id).first();
-if(!existing){const active=await db.prepare("SELECT COUNT(*) AS n FROM ads WHERE advertiser_id=? AND status IN ('pending','approved')").bind(partner.advertiser_id).first();const limit=Number(tier?.ad_limit||3);if(Number(active?.n||0)>=limit)return fail("Your "+(tier?.tier||"Partner")+" package allows "+limit+" active campaigns. Pause or remove an existing campaign, or contact PhoneYa2 to upgrade.");}
-const weight=Number(tier?.rotation_weight||1);
+const tier=await db.prepare("SELECT ps.package_key,pp.advertising_weight FROM partner_subscriptions ps JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? AND ps.status='active' ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first();
+const packageKey=tier?.package_key||"free",packageLimits={free:1,starter:3,standard:6,business:12,premium:25},limit=packageLimits[packageKey]||1;
+if(!existing){const active=await db.prepare("SELECT COUNT(*) AS n FROM ads WHERE advertiser_id=? AND status IN ('pending','approved')").bind(partner.advertiser_id).first();if(Number(active?.n||0)>=limit)return fail("Your "+packageKey+" package allows "+limit+" active campaigns. Pause or remove an existing campaign, or contact PhoneYa2 to upgrade.");}
+const weight=Number(tier?.advertising_weight||1);
 await db.prepare(`INSERT INTO ads(id,advertiser_id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,updated_at)
 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,description=excluded.description,media_url=excluded.media_url,media_type=excluded.media_type,video_provider=excluded.video_provider,destination_type=excluded.destination_type,destination_url=excluded.destination_url,status=excluded.status,placement=excluded.placement,weight=excluded.weight,start_date=excluded.start_date,end_date=excluded.end_date,updated_at=excluded.updated_at
 WHERE ads.advertiser_id=excluded.advertiser_id`).bind(id,partner.advertiser_id,slug,title,description,mediaUrl,mediaType,cleanText(body.video_provider,30),destinationType,destinationUrl,status,placement,weight,start,end,now).run();
@@ -140,7 +141,7 @@ if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type))retu
 if(file.size>5*1024*1024)return fail("Images must be 5 MB or smaller.");
 const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"})[file.type],id=crypto.randomUUID(),key=partner.advertiser_id+"/"+id+"."+ext;
 await env.PARTNER_MEDIA.put(key,file.stream(),{httpMetadata:{contentType:file.type,cacheControl:"public, max-age=31536000, immutable"},customMetadata:{advertiser_id:partner.advertiser_id}});
-const url="/media/partner/"+id;
+const url=new URL("/media/partner/"+id,request.url).href;
 await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,key,url,"image",cleanText(file.name,180),file.size).run();
 return json({ok:true,url,id});
 }catch(e){console.error("Partner media upload failed",e?.stack||e);return fail("Image upload failed. Please try a smaller image.",500);}
