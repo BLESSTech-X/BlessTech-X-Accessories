@@ -79,7 +79,7 @@ async function readTable(db, table, query) {
 
   if (table === "partner_content") {
     const limit = Math.min(1000, Math.max(1, Number(new URLSearchParams(query).get("limit") || 500)));
-    return all(db, `SELECT * FROM (
+    const currentSql = `SELECT * FROM (
       SELECT i.id,i.advertiser_id,a.business_name,a.owner_name,a.email,
         i.title AS content_title, i.item_type AS content_kind,i.image_url AS content_image_url,
         CASE WHEN i.moderation_status='suspended' THEN 'suspended' WHEN i.published=1 THEN 'published' ELSE 'not published' END AS content_status,
@@ -96,7 +96,32 @@ async function readTable(db, table, query) {
         CASE WHEN pg.moderation_status='suspended' THEN 'suspended' WHEN pg.published=1 THEN 'published' ELSE 'not published' END AS content_status,
         pg.updated_at,'pages' AS content_table
       FROM partner_pages pg JOIN advertisers a ON a.id=pg.advertiser_id
-    ) ORDER BY updated_at DESC LIMIT ${limit}`);
+    ) ORDER BY updated_at DESC LIMIT ${limit}`;
+    try { return await all(db, currentSql); }
+    catch (error) {
+      if (!/no such column: (?:i|p|pg)\\.moderation_status|no such column: moderation_status/i.test(String(error?.message||error))) throw error;
+      const compatibleSql = `SELECT * FROM (
+        SELECT i.id,i.advertiser_id,a.business_name,a.owner_name,a.email,i.title AS content_title,
+          i.item_type AS content_kind,i.image_url AS content_image_url,
+          CASE WHEN i.published=1 THEN 'published' ELSE 'not published' END AS content_status,
+          i.updated_at,'catalogue' AS content_table
+        FROM partner_catalog_items i JOIN advertisers a ON a.id=i.advertiser_id
+        UNION ALL
+        SELECT p.id,p.advertiser_id,a.business_name,a.owner_name,a.email,p.title AS content_title,
+          'story' AS content_kind,p.cover_image_url AS content_image_url,
+          CASE WHEN p.status='published' THEN 'published' ELSE 'draft' END AS content_status,
+          p.updated_at,'stories' AS content_table
+        FROM partner_posts p JOIN advertisers a ON a.id=p.advertiser_id
+        UNION ALL
+        SELECT pg.id,pg.advertiser_id,a.business_name,a.owner_name,a.email,pg.title AS content_title,
+          'page' AS content_kind,NULL AS content_image_url,
+          CASE WHEN pg.published=1 THEN 'published' ELSE 'not published' END AS content_status,
+          pg.updated_at,'pages' AS content_table
+        FROM partner_pages pg JOIN advertisers a ON a.id=pg.advertiser_id
+      ) ORDER BY updated_at DESC LIMIT ${limit}`;
+      console.warn("Partner admin content moderation columns are not yet deployed; returning compatible content status.",String(error).slice(0,180));
+      return all(db, compatibleSql);
+    }
   }
   const q = parseQuery(query);
   if (table === "tier_config") {
