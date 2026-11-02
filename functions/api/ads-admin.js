@@ -28,7 +28,7 @@ function rowsOf(result) {
 }
 
 function parseQuery(raw) {
-  if (raw.length > 2500 || /[\\r\\n;]/.test(raw)) throw new Error("Invalid query.");
+  if (raw.length > 2500 || /[\r\n;]/.test(raw)) throw new Error("Invalid query.");
   const params = new URLSearchParams(raw);
   const out = { id: null, email: null, order: null, limit: null };
   for (const [key, value] of params.entries()) {
@@ -40,7 +40,7 @@ function parseQuery(raw) {
       out.id = id;
     } else if (key === "email" && value.startsWith("eq.")) {
       const email = decodeURIComponent(value.slice(3)).trim().toLowerCase();
-      if (email.length > 254 || !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)) throw new Error("Invalid email.");
+      if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Invalid email.");
       out.email = email;
     } else if (key === "order") {
       const m = /^(created_at|joined_at|rank)(?:\\.(asc|desc))?$/i.exec(value);
