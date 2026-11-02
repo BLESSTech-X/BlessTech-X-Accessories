@@ -2387,7 +2387,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Keep the main interstitials in the carousel placement, but let the
     // timed popup rotate through every approved, date-valid advertiser.
     var popupRows = rows.slice();
-    var carouselRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel'; });
+    var carouselRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel' || ad.placement === 'both'; });
     var ordered = weightedShuffle(carouselRows);
     if (ordered.length) {
       var slot1 = ordered;
@@ -2401,16 +2401,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function attachAdvertiserProfiles(rows) {
-    if (!Array.isArray(rows) || !rows.length) return Promise.resolve(rows);
-    var ids = Array.from(new Set(rows.map(function (ad) { return ad.advertiser_id; }).filter(Boolean)));
-    if (!ids.length) return Promise.resolve(rows);
-    return sbGet('advertiser_profiles?select=advertiser_id,slug&advertiser_id=in.(' + ids.join(',') + ')')
-      .then(function (profiles) {
-        var slugByAdvertiser = {};
-        (Array.isArray(profiles) ? profiles : []).forEach(function (p) { if (p.advertiser_id && p.slug) slugByAdvertiser[p.advertiser_id] = p.slug; });
-        rows.forEach(function (ad) { ad.profile_slug = slugByAdvertiser[ad.advertiser_id] || ''; });
-        return rows;
-      }).catch(function () { return rows; });
+    return Promise.resolve(Array.isArray(rows) ? rows : []);
   }
   fetchAds().then(attachAdvertiserProfiles).then(boot).catch(function () { /* silent */ });
 })();
