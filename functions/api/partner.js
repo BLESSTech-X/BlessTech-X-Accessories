@@ -124,7 +124,7 @@ if(existingSlug&&existingSlug.id!==id)slug=slug.slice(0,42)+"-"+crypto.randomUUI
 const status=body.status==="published"?"published":"draft";
 const ctaLabel=cleanText(body.cta_label,32);
 const ctaUrl=cleanText(body.cta_url,1000);
-if(ctaUrl && !/^#[a-z][a-z0-9_-]*$/i.test(ctaUrl) && !/^\\/(?!\\/)[a-z0-9/_?=&%#.-]*$/i.test(ctaUrl) && !/^https?:\\/\\//i.test(ctaUrl))return fail("Use a full http/https link or a section link such as #contact.");
+if(ctaUrl){let valid=ctaUrl.startsWith("#")&&/^#[a-z][a-z0-9_-]*$/i.test(ctaUrl);if(!valid&&ctaUrl.startsWith("/")&&!ctaUrl.startsWith("//")&&!ctaUrl.includes("\\"))valid=true;if(!valid){try{const parsed=new URL(ctaUrl);valid=parsed.protocol==="https:"||parsed.protocol==="http:";}catch{valid=false;}}if(!valid)return fail("Use a full http/https link or a section link such as #contact.");}
 try{
 await db.prepare(`INSERT INTO partner_posts(id,advertiser_id,title,slug,excerpt,body,cover_image_url,post_type,cta_label,cta_url,status,published_at,updated_at)
 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,slug=excluded.slug,excerpt=excluded.excerpt,body=excluded.body,cover_image_url=excluded.cover_image_url,post_type=excluded.post_type,cta_label=excluded.cta_label,cta_url=excluded.cta_url,status=excluded.status,published_at=excluded.published_at,updated_at=excluded.updated_at
