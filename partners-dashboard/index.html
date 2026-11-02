@@ -505,7 +505,7 @@
       <a href="/" class="brand">
         <span class="brand-icon">📱</span>
         <div>
-          PhoneYa2 <span>Ads</span>
+          PhoneYa2 <span>Partners</span>
           <small>Partners Dashboard</small>
         </div>
       </a>
@@ -521,13 +521,13 @@
 
   <div class="tabs" role="tablist" aria-label="PhoneYa2 Partners workspace navigation">
       <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
-      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> My Ads <span class="count" id="tab-count-ads">0</span></button>
-      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Ad</button>
-      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Stats</button>
-      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> My Profile</button>
+      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> Campaigns <span class="count" id="tab-count-ads">0</span></button>
+      <button class="tab" data-tab="create" type="button"><i class="fa-solid fa-plus"></i> Create Campaign</button>
+      <button class="tab" data-tab="stats" type="button"><i class="fa-solid fa-chart-line"></i> Performance</button>
+      <button class="tab" data-tab="profile" type="button"><i class="fa-solid fa-store"></i> Business Profile</button>
       <button class="tab" data-tab="account" type="button"><i class="fa-solid fa-user"></i> Account</button>
       <button class="tab" data-tab="share" type="button"><i class="fa-solid fa-share-nodes"></i> Share</button>
-      <button class="tab tab-create-cta" data-tab="create" type="button"><i class="fa-solid fa-circle-plus"></i> Create Ad</button>
+      <button class="tab tab-create-cta" data-tab="create" type="button"><i class="fa-solid fa-circle-plus"></i> Create Campaign</button>
     </div>
 
 <div class="wrap" style="padding-top:20px;padding-bottom:60px;">
@@ -602,7 +602,7 @@
     </div>
 
     <div class="stat-grid">
-      <div class="stat"><div class="stat-lbl">Active Ads</div><div class="stat-val accent" id="stat-active">0</div></div>
+      <div class="stat"><div class="stat-lbl">Live Campaigns</div><div class="stat-val accent" id="stat-active">0</div></div>
       <div class="stat"><div class="stat-lbl">Impressions</div><div class="stat-val" id="stat-impressions">0</div></div>
       <div class="stat"><div class="stat-lbl">Clicks</div><div class="stat-val" id="stat-clicks">0</div></div>
       <div class="stat"><div class="stat-lbl">CTR</div><div class="stat-val" id="stat-ctr">—</div></div>
@@ -1561,7 +1561,7 @@
     // Only show if user has 0-2 approved ads
     var copy, title;
     if (approved === 0) {
-      title = 'Publish your first ad and start measuring attention on PhoneYa2';
+      title = 'Launch your first campaign and start measuring attention on PhoneYa2';
       copy = 'Ads appear on the homepage carousel where shoppers browse every day. Once approved, your business is shown alongside established PhoneYa2 sellers.';
     } else if (approved === 1) {
       title = 'One live ad. Businesses with 3+ get ~2.4× more impressions';
@@ -1578,7 +1578,7 @@
           '<div class="opp-text">' + esc(copy) + '</div>' +
           '<div class="opp-actions">' +
             '<button type="button" class="btn btn-primary btn-sm" onclick="AdsUI.switchTab(\'create\')">' +
-              '<i class="fa-solid fa-plus"></i> Create another ad' +
+              '<i class="fa-solid fa-plus"></i> Create another campaign' +
             '</button>' +
             '<button type="button" class="btn btn-ghost btn-sm" onclick="AdsUI.openUpgrade()">' +
               'See plans' +
@@ -1679,7 +1679,7 @@
     }else{
       actionHtml='<button type="button" class="btn btn-primary" onclick="AdsUI.switchTab(\'create\')"><i class="fa-solid fa-plus"></i> '+esc(primaryLabel)+'</button>';
     }
-    actionHtml+='<a class="btn btn-secondary" href="/advertise/" target="_blank" rel="noopener"><i class="fa-solid fa-chart-line"></i> View ad options</a>';
+    actionHtml+='<a class="btn btn-secondary" href="/partners/" target="_blank" rel="noopener"><i class="fa-solid fa-chart-line"></i> Explore partner options</a>';
     $('growth-coach-actions').innerHTML=actionHtml;
     if(!box.getAttribute('data-growth-bound')){
       box.setAttribute('data-growth-bound','1');
@@ -1822,7 +1822,7 @@
       container.innerHTML =
         '<div class="empty"><div class="e-icon">📣</div><h3>No ads yet</h3>' +
         '<p>Create your first ad to start reaching Zambian customers on PhoneYa2.</p>' +
-        '<button type="button" class="btn btn-primary btn-lg" onclick="AdsUI.switchTab(\'create\')"><i class="fa-solid fa-plus"></i> Create Ad</button>' +
+        '<button type="button" class="btn btn-primary btn-lg" onclick="AdsUI.switchTab(\'create\')"><i class="fa-solid fa-plus"></i> Create Campaign</button>' +
         '</div>';
       return;
     }
