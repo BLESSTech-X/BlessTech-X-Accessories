@@ -33,5 +33,5 @@ export async function onRequestGet({params,env,request}){
  env.DB.prepare("INSERT INTO partner_site_events(id,advertiser_id,event_type,visitor_hash,source) VALUES(?,?, 'page_view',?,?)").bind(crypto.randomUUID(),advertiser.id,visitor,source)
  ]).catch(e=>console.error("Partner profile analytics failed",String(e).slice(0,180)));
  const html=renderPartnerSite({slug,advertiser,site:site||{},items:items.results||[],posts:site?.show_posts===0?[]:(posts.results||[])});
- return new Response(html,{status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=0, s-maxage=30, must-revalidate","x-content-type-options":"nosniff"}});
+ return new Response(html,{status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=0, s-maxage=5, must-revalidate","x-content-type-options":"nosniff"}});
 }
