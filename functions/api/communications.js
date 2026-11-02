@@ -42,8 +42,14 @@ export async function onRequest(context) {
     const [stats, activity, subscribers, automations] = await Promise.all([
       statsResponse.json(), activityResponse.json(), subscriberResponse.json(), automationResponse.json()
     ]);
+    let phoneActivity=[];
+    if(env.DB){
+      const phoneRows=await env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all();
+      phoneActivity=phoneRows.results||[];
+    }
     return json({
       success: true,
+      phone_activity: phoneActivity,
       stats: stats || {},
       activity: Array.isArray(activity) ? activity : [],
       subscriber_summary: {
