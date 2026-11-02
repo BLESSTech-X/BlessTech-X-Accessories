@@ -1,0 +1,8 @@
+-- Expand PhoneYa2 partner package benefits beyond ad rotation.
+-- The capabilities listed here map to existing Partner Studio tools:
+-- website builder, catalogue, posts, campaign management, enquiry inbox and reporting.
+UPDATE partner_packages SET benefits_json='{"website":"professional","catalogue":"full","publishing":"full","analytics":"essential","branding":"standard","promotion":"directory","leads":"inbox","campaigns":"standard","verification":"none","support":"standard"}' WHERE package_key='free';
+UPDATE partner_packages SET benefits_json='{"website":"professional","catalogue":"full","publishing":"full","analytics":"essential","branding":"expanded","promotion":"boosted","leads":"tracking","campaigns":"reporting","verification":"none","support":"standard"}' WHERE package_key='starter';
+UPDATE partner_packages SET benefits_json='{"website":"advanced","catalogue":"full","publishing":"full","analytics":"advanced","branding":"custom","promotion":"priority","leads":"tracking","campaigns":"insights","verification":"eligible","support":"enhanced"}' WHERE package_key='standard';
+UPDATE partner_packages SET benefits_json='{"website":"advanced","catalogue":"full","publishing":"full","analytics":"advanced","branding":"custom","promotion":"premium","leads":"tracking","campaigns":"insights","verification":"eligible","support":"priority"}' WHERE package_key='business';
+UPDATE partner_packages SET benefits_json='{"website":"premium","catalogue":"full","publishing":"full","analytics":"premium","branding":"full","promotion":"maximum","leads":"tracking","campaigns":"insights","verification":"priority","support":"priority"}' WHERE package_key='premium';
