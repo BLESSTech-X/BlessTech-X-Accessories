@@ -44,7 +44,7 @@ if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
 if(action==="profile.save"){
 const business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40),tagline=cleanText(body.tagline,180),about=cleanText(body.about,1200),contactPhone=cleanText(body.contact_phone,40),whatsapp=cleanText(body.contact_whatsapp,40),contactEmail=cleanText(body.contact_email,254).toLowerCase(),logo=cleanText(body.logo_url,1000);
 if(!business||!owner||phone.replace(/\\D/g,"").length<9)return fail("Enter your business name, owner name and a valid phone number.");
-if(contactEmail&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(contactEmail))return fail("Enter a valid public contact email.");
+const emailParts=contactEmail.split("@");if(contactEmail&&(emailParts.length!==2||!emailParts[0]||!emailParts[1].includes(".")||emailParts[1].startsWith(".")||emailParts[1].endsWith(".")))return fail("Enter a valid public contact email.");
 await db.prepare("UPDATE advertisers SET business_name=?,owner_name=?,phone=?,logo_url=? WHERE id=?").bind(business,owner,phone,logo,partner.advertiser_id).run();
 await db.prepare("UPDATE advertiser_profiles SET tagline=?,about=?,contact_phone=?,contact_whatsapp=?,contact_email=? WHERE advertiser_id=?").bind(tagline,about,contactPhone||phone,whatsapp||contactPhone||phone,contactEmail,partner.advertiser_id).run();
 return json({ok:true,message:"Business profile updated."});
