@@ -304,24 +304,37 @@ const siteNav=document.getElementById("site-nav");
 function closeSiteMenu(){
   if(!siteNav||!siteMenu)return;
   siteNav.classList.remove("open");
+  siteNav.style.display="none";
+  siteNav.style.visibility="hidden";
   siteMenu.setAttribute("aria-expanded","false");
   siteMenu.setAttribute("aria-label","Open website menu");
 }
+function openSiteMenu(){
+  if(!siteNav||!siteMenu)return;
+  siteNav.classList.add("open");
+  siteNav.style.display="flex";
+  siteNav.style.visibility="visible";
+  siteNav.style.position="absolute";
+  siteNav.style.zIndex="99999";
+  siteMenu.setAttribute("aria-expanded","true");
+  siteMenu.setAttribute("aria-label","Close website menu");
+}
 function toggleSiteMenu(){
   if(!siteNav||!siteMenu)return;
-  const open=!siteNav.classList.contains("open");
-  siteNav.classList.toggle("open",open);
-  siteMenu.setAttribute("aria-expanded",String(open));
-  siteMenu.setAttribute("aria-label",open?"Close website menu":"Open website menu");
+  if(siteMenu.getAttribute("aria-expanded")==="true")closeSiteMenu();
+  else openSiteMenu();
 }
-document.addEventListener("click",event=>{
-  const target=event.target instanceof Element?event.target:null;
-  const trigger=target?.closest("#site-menu");
-  if(trigger){event.preventDefault();event.stopPropagation();toggleSiteMenu();return;}
-  if(!target?.closest(".top-menu-wrap"))closeSiteMenu();
-},true);
-document.addEventListener("keydown",event=>{if(event.key==="Escape")closeSiteMenu();});
-document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",closeSiteMenu));
+if(siteMenu&&siteNav){
+  siteMenu.addEventListener("click",function(event){event.preventDefault();event.stopPropagation();toggleSiteMenu();});
+  siteMenu.addEventListener("keydown",function(event){if(event.key==="Enter"||event.key===" "){event.preventDefault();toggleSiteMenu();}});
+  document.addEventListener("click",function(event){
+    const target=event.target instanceof Element?event.target:null;
+    if(target&&!target.closest(".top-menu-wrap"))closeSiteMenu();
+  });
+  document.addEventListener("keydown",function(event){if(event.key==="Escape")closeSiteMenu();});
+  siteNav.querySelectorAll("a").forEach(function(link){link.addEventListener("click",closeSiteMenu);});
+  closeSiteMenu();
+}
 loadPartnerAds();
 document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
