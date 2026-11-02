@@ -132,17 +132,16 @@ return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});
 }
 if(request.method!=="POST")return fail("Method not allowed.",405);
 if((request.headers.get("content-type")||"").includes("multipart/form-data")){
-if(!env.PARTNER_MEDIA)return fail("Image storage is not connected yet. Please contact PhoneYa2 support.",503);
 const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
 try{
 const form=await request.formData(),file=form.get("file");
 if(!file||typeof file.arrayBuffer!=="function")return fail("Choose an image to upload.");
 if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type))return fail("Upload a JPG, PNG, WEBP or GIF image.");
-if(file.size>5*1024*1024)return fail("Images must be 5 MB or smaller.");
-const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"})[file.type],id=crypto.randomUUID(),key=partner.advertiser_id+"/"+id+"."+ext;
-await env.PARTNER_MEDIA.put(key,file.stream(),{httpMetadata:{contentType:file.type,cacheControl:"public, max-age=31536000, immutable"},customMetadata:{advertiser_id:partner.advertiser_id}});
-const url=new URL("/media/partner/"+id,request.url).href;
-await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,key,url,"image",cleanText(file.name,180),file.size).run();
+if(file.size>1250000)return fail("For reliable free storage, images must be 1.25 MB or smaller. Please resize the image and try again.");
+const bytes=new Uint8Array(await file.arrayBuffer());let binary="";
+for(let offset=0;offset<bytes.length;offset+=0x8000)binary+=String.fromCharCode(...bytes.subarray(offset,offset+0x8000));
+const encoded="data:"+file.type+";base64,"+btoa(binary),id=crypto.randomUUID(),url=new URL("/media/partner/"+id,request.url).href;
+await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,encoded,url,"image",cleanText(file.name,180),file.size).run();
 return json({ok:true,url,id});
 }catch(e){console.error("Partner media upload failed",e?.stack||e);return fail("Image upload failed. Please try a smaller image.",500);}
 }
