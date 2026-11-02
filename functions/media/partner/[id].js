@@ -3,8 +3,11 @@ export async function onRequestGet({params,env}) {
   const id=String(params.id||"");
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("Not found.",{status:404});
   const asset=await env.DB.prepare("SELECT object_key,file_name FROM partner_media_assets WHERE id=? LIMIT 1").bind(id).first();
-  if(!asset || !String(asset.object_key||"").startsWith("data:image/"))return new Response("Not found.",{status:404});
-  const match=String(asset.object_key).match(/^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
+  if(!asset)return new Response("Not found.",{status:404});
+  // New records prefix the data URI with the unique upload ID; legacy records contain the data URI alone.
+  const stored=String(asset.object_key||"");
+  const dataUri=stored.startsWith("data:image/")?stored:stored.startsWith(id+"|")?stored.slice(id.length+1):"";
+  const match=dataUri.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
   if(!match)return new Response("Invalid image data.",{status:415});
   const binary=atob(match[2]),bytes=new Uint8Array(binary.length);
   for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
