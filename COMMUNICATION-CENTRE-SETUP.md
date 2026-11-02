@@ -1,35 +1,36 @@
-# PhoneYa2 Smart Communication Centre — current production implementation
+# PhoneYa2 Smart Communication Centre — Cloudflare D1
 
-The communication system is committed to \`main\`. It uses Brevo for outbound email and transactional SMS. Formspree remains in place for incoming order/newsletter form alerts. Resend is not used by the current communication functions.
+The current implementation stores communication data in Cloudflare D1. Supabase is not required or used by these communication APIs. Cloudflare Pages Functions connect D1 to Brevo (outbound email/SMS) and Formspree (inbound form alerts).
 
 ## Connected audiences
 
-- **Newsletter marketing:** only subscribers with status \`subscribed\` after double opt-in. Pending, unsubscribed and bounced contacts are excluded.
-- **Registered partners:** all active/approved partners, including free partners, can receive operational Partner Studio updates even if they never joined the newsletter. These are account/platform notices, not marketing-consent bypasses.
-- **Ordering customers:** order confirmation and every order-status change are sent as transactional email and SMS when the relevant provider channel is configured. A purchase does not subscribe the customer to marketing.
-- **Activity:** email events are visible in the Email activity log; SMS and partner notification attempts appear in the SMS and partner notification log.
+- Newsletter marketing: confirmed D1 subscribers only.
+- Registered partners: active/approved D1 partner records, including free partners, receive operational Partner Studio updates.
+- Ordering customers: transactional order confirmation and order-status notifications; buying does not subscribe anyone to marketing.
+- Activity: email and phone-channel attempts are recorded in D1 and shown in the Communication Centre.
 
 ## Required setup
 
-1. Run the latest complete \`supabase/communication-centre.sql\` in Supabase SQL Editor.
-2. Run D1 migrations \`0010_communication_activity.sql\` and \`0011_partner_package_benefits.sql\` against the PhoneYa2 D1 database.
-3. Configure Cloudflare Pages Production variables/secrets:
-   - \`BREVO_API_KEY\` (secret)
-   - \`BREVO_FROM_EMAIL\` (verified sender)
-   - \`BREVO_FROM_NAME\` (optional; defaults to PhoneYa2 Accessories)
-   - \`BREVO_SMS_SENDER\` (approved Zambia sender ID; defaults to PhoneYa2)
-   - Keep \`ORDER_NOTIFY_EMAIL\`, Supabase secrets and the D1 binding.
-4. Purchase Brevo SMS credits and register/approve the sender ID for Zambia.
-5. Redeploy Cloudflare Pages after the variables and secrets are configured.
+1. Ensure the Pages D1 binding is named \`DB\` and points to the production PhoneYa2 database.
+2. Apply D1 migrations \`0010_communication_activity.sql\`, \`0011_partner_package_benefits.sql\`, and \`0012_unified_communications.sql\` in order if not already applied.
+3. Configure Pages secrets/variables: \`BREVO_API_KEY\`, \`BREVO_FROM_EMAIL\`, optional \`BREVO_FROM_NAME\`, approved \`BREVO_SMS_SENDER\`, and \`PRODUCT_ANNOUNCEMENT_SECRET\`. Keep the existing admin/authentication and \`ORDER_NOTIFY_EMAIL\` settings.
+4. Purchase Brevo SMS credits and obtain sender-ID approval for Zambia.
+5. Redeploy Pages after configuration.
+
+Do not configure Supabase secrets for this communication system.
 
 ## Admin workflow
 
-- \`/admin/campaigns.html\`: select confirmed newsletter subscribers for marketing or all registered partners for operational partner updates. Review the content, save a draft, and explicitly send. Sends process in batches of 20.
-- \`/admin/communications.html\`: inspect email attempts and the SMS/partner notification log.
-- \`/admin/orders.html\`: update order status; the customer is notified by email and SMS when configured.
+- \`/admin/campaigns.html\`: create and send newsletter or partner campaigns in batches of 20.
+- \`/admin/communications.html\`: inspect email/SMS attempts, subscriber totals and automation settings.
+- \`/admin/orders.html\`: update order status and trigger transactional customer notifications.
 
-## Safe testing
+## Important audience safeguards
 
-Use only contact details you control for initial tests. First confirm newsletter double opt-in and unsubscribe. Then place a test order using your own email and Zambian mobile number. Change its status and check both delivery channels. Finally send one partner update to a test partner and inspect both activity logs.
+Newsletter promotions require confirmed opt-in. Partner updates are operational service notices, not newsletter promotions. Order notifications are transactional. No order or partner registration silently opts someone into marketing.
 
-Brevo acceptance is not proof of inbox/handset delivery. Confirm delivery using Brevo's logs and delivery events. Never put API keys or service-role keys in browser code, GitHub, or chat.
+## Testing
+
+Use only contact details you control for initial tests. Verify newsletter confirmation and unsubscribe, then place a test order, change its status, and send a partner update. Check D1 activity logs and Brevo delivery logs. A provider-accepted response is not proof of final delivery.
+
+Existing subscribers held only in an external/old database are not automatically copied into D1. Import them only from an authorized export, preserving their original consent and unsubscribe status.
