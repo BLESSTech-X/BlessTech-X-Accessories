@@ -1,10 +1,7 @@
 # Canonical PhoneYa2 Partner Network routes
 /partners /partners/index.html 200
-/partners/ /partners/index.html 200
 /partners-dashboard /partners-dashboard/index.html 200
-/partners-dashboard/ /partners-dashboard/index.html 200
 /partners-admin /partners-admin/index.html 200
-/partners-admin/ /partners-admin/index.html 200
 
 # Legacy links now resolve to the current Partner Network
 /advertise /partners/ 301
