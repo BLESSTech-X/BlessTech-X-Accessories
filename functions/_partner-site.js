@@ -116,7 +116,7 @@ a{color:inherit;text-decoration:none}
 .logo{width:44px;height:44px;flex:0 0 44px;border-radius:13px;background:${primary};color:white;display:grid;place-items:center;overflow:hidden;box-shadow:0 4px 12px #142b4a18}
 .logo img{width:100%;height:100%;object-fit:contain;padding:3px}
 .top small{display:none}
-.top-menu-wrap{position:relative;margin-left:auto;z-index:100}.site-nav{z-index:1000;pointer-events:auto}
+.top-menu-wrap{position:relative;margin-left:auto;z-index:100}.top-menu-wrap>summary{list-style:none}.top-menu-wrap>summary::-webkit-details-marker{display:none}.top-menu-wrap[open]>.site-nav{display:flex}.site-nav{z-index:1000;pointer-events:auto}
 .top-link{font-weight:750;color:#63748a;font-size:13px}
 .site-nav{display:none;position:absolute;right:0;top:calc(100% + 13px);width:min(280px,calc(100vw - 32px));margin:0;padding:9px;background:#fff;border:1px solid #e4eaf1;border-radius:15px;box-shadow:0 18px 48px #132b4a20;flex-direction:column;align-items:stretch;gap:3px}
 .site-nav.open{display:flex}
@@ -210,7 +210,7 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 <div class="site">
-<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><div class="top-menu-wrap"><button class="menu-button" id="site-menu" type="button" aria-label="Open website menu" aria-expanded="false" aria-controls="site-nav"><span>☰</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></div></header>
+<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><details class="top-menu-wrap"><summary class="menu-button" aria-label="Open website menu"><span class="menu-icon" aria-hidden="true">☰</span><span>Menu</span></summary><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></details></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 <section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
@@ -225,32 +225,7 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
-(function(){
- const button=document.getElementById("site-menu");
- const menu=document.getElementById("site-nav");
- if(!button||!menu)return;
- const setOpen=open=>{
-   button.setAttribute("aria-expanded",open?"true":"false");
-   button.setAttribute("aria-label",open?"Close website menu":"Open website menu");
-   menu.classList.toggle("open",open);
-   menu.hidden=!open;
- };
- menu.hidden=true;
- button.addEventListener("click",event=>{
-   event.preventDefault();
-   event.stopPropagation();
-   setOpen(button.getAttribute("aria-expanded")!=="true");
- });
- menu.addEventListener("click",event=>{
-   if(event.target.closest("a"))setOpen(false);
- });
- document.addEventListener("click",event=>{
-   if(!event.target.closest(".top-menu-wrap"))setOpen(false);
- });
- document.addEventListener("keydown",event=>{
-   if(event.key==="Escape")setOpen(false);
- });
-})();
+// The website menu uses native <details>/<summary> so it opens without JavaScript.
 
 function appendPartnerAdMedia(container,ad){
   const url=String(ad.media_url||"");
