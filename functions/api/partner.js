@@ -28,13 +28,15 @@ JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
 AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`).bind(tokenHash,new Date().toISOString()).first();}
-async function workspace(db,partner){const [items,posts,enquiries,subscription,ads]=await Promise.all([
+async function workspace(db,partner){const [items,posts,enquiries,subscription,ads,impressions,clicks]=await Promise.all([
 db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? ORDER BY sort_order,created_at DESC LIMIT 500").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
 db.prepare("SELECT id,customer_name,customer_email,customer_phone,message,source,status,created_at,catalog_item_id FROM partner_enquiries WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_subscriptions WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
-db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all()
-]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,ads:ads.results||[]};}
+db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all(),
+db.prepare("SELECT COUNT(*) AS total FROM ad_impressions WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first(),
+db.prepare("SELECT COUNT(*) AS total FROM ad_clicks WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first()
+]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
