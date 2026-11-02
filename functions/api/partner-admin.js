@@ -82,18 +82,18 @@ async function readTable(db, table, query) {
     return all(db, `SELECT * FROM (
       SELECT i.id,i.advertiser_id,a.business_name,a.owner_name,a.email,
         i.title AS content_title, i.item_type AS content_kind,
-        CASE WHEN i.moderation_status='approved' AND i.published=1 THEN 'published' ELSE 'hidden' END AS content_status,
+        CASE WHEN i.moderation_status='suspended' THEN 'suspended' WHEN i.published=1 THEN 'published' ELSE 'not published' END AS content_status,
         i.updated_at,'catalogue' AS content_table
       FROM partner_catalog_items i JOIN advertisers a ON a.id=i.advertiser_id
       UNION ALL
       SELECT p.id,p.advertiser_id,a.business_name,a.owner_name,a.email,
-        p.title AS content_title,'story' AS content_kind,CASE WHEN p.moderation_status='approved' AND p.status='published' THEN 'published' ELSE 'hidden' END AS content_status,
+        p.title AS content_title,'story' AS content_kind,CASE WHEN p.moderation_status='suspended' THEN 'suspended' WHEN p.status='published' THEN 'published' ELSE 'draft' END AS content_status,
         p.updated_at,'stories' AS content_table
       FROM partner_posts p JOIN advertisers a ON a.id=p.advertiser_id
       UNION ALL
       SELECT pg.id,pg.advertiser_id,a.business_name,a.owner_name,a.email,
         pg.title AS content_title,'page' AS content_kind,
-        CASE WHEN pg.moderation_status='approved' AND pg.published=1 THEN 'published' ELSE 'hidden' END AS content_status,
+        CASE WHEN pg.moderation_status='suspended' THEN 'suspended' WHEN pg.published=1 THEN 'published' ELSE 'not published' END AS content_status,
         pg.updated_at,'pages' AS content_table
       FROM partner_pages pg JOIN advertisers a ON a.id=pg.advertiser_id
     ) ORDER BY updated_at DESC LIMIT ${limit}`);
