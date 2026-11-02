@@ -17,6 +17,19 @@ function safeUrl(value) {
   }
 }
 
+function safeActionUrl(value) {
+  const candidate = String(value || "").trim();
+  if (/^#[a-z][a-z0-9_-]*$/i.test(candidate)) return candidate;
+  if (/^\\/(?!\\/)[a-z0-9/_?=&%#.-]*$/i.test(candidate)) return candidate;
+  try {
+    const parsed = new URL(candidate);
+    return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : "";
+  } catch { return ""; }
+}
+function cleanPostLabel(value) {
+  return String(value || "").replace(/[<>]/g, "").trim().slice(0, 32);
+}
+
 function money(item) {
   if (item.price_label) return esc(item.price_label);
   if (item.price_minor == null) return "Contact for price";
@@ -77,14 +90,32 @@ export function renderPartnerSite(data) {
       </section>`
     : "";
 
+  const postMeta = {
+    offer: { label: "SPECIAL OFFER", icon: "✦", action: "Claim this offer", tone: "offer" },
+    event: { label: "UPCOMING EVENT", icon: "✦", action: "View event details", tone: "event" },
+    update: { label: "BUSINESS UPDATE", icon: "↗", action: "Read more", tone: "update" }
+  };
   const postsHtml = posts.length
     ? `<section class="section" id="updates">
-        <div class="section-head"><div><small>FROM THE BUSINESS</small><h2>News &amp; updates</h2></div></div>
+        <div class="section-head"><div><small>WHAT'S HAPPENING</small><h2>Stories, offers &amp; announcements</h2></div><span>${posts.length} updates</span></div>
         <div class="posts">${posts.map((post) => {
+          const type = String(post.post_type || "update").toLowerCase();
+          const meta = postMeta[type] || { label: type.replace(/[_-]/g, " ").toUpperCase(), icon: "✦", action: "Discover more", tone: "update" };
           const cover = safeUrl(post.cover_image_url);
-          return `<article class="post">${cover ? `<img src="${esc(cover)}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : ""}
-            <div><small>${esc(post.post_type || "UPDATE")}</small><h3>${esc(post.title)}</h3>
-            <p>${esc(post.excerpt || String(post.body || "").slice(0, 180))}</p></div>
+          const action = safeActionUrl(post.cta_url) || "#contact";
+          const actionLabel = cleanPostLabel(post.cta_label) || meta.action;
+          const external = /^https?:\\/\\//i.test(action);
+          const body = post.excerpt || String(post.body || "").slice(0, 220);
+          return `<article class="post post--${esc(meta.tone)}">
+            <div class="post-art">${cover ? `<img src="${esc(cover)}" alt="${esc(post.title)}" loading="lazy" decoding="async" onerror="this.style.display='none'">` : `<span class="post-art-icon">${meta.icon}</span>`}
+              <span class="post-type-pill">${esc(meta.label)}</span>
+            </div>
+            <div class="post-copy">
+              <div class="post-kicker"><span>${meta.icon} ${esc(meta.label)}</span></div>
+              <h3>${esc(post.title)}</h3>
+              <p>${esc(body)}</p>
+              <a class="post-cta" href="${esc(action)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${esc(actionLabel)} <span aria-hidden="true">↗</span></a>
+            </div>
           </article>`;
         }).join("")}</div>
       </section>`
@@ -154,6 +185,37 @@ a{color:inherit;text-decoration:none}
 .product-bottom b{font-size:14px}
 .product-bottom a{color:${primary};font-weight:850;font-size:12px}
 .posts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.posts{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
+.post{position:relative;border:0;border-radius:22px;overflow:hidden;box-shadow:0 14px 36px #14233b12;transition:transform .22s ease,box-shadow .22s ease}
+.post:hover{transform:translateY(-5px);box-shadow:0 20px 44px #14233b1c}
+.post-art{height:218px;position:relative;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#dceeff,#edf4ff)}
+.post-art img{width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:contain;padding:14px;background:transparent}
+.post-art-icon{font-size:70px;font-weight:900;color:#fff;text-shadow:0 8px 25px #14233b35}
+.post-type-pill{position:absolute;top:15px;left:15px;border-radius:999px;padding:7px 11px;background:#fff;color:#233a57;font-size:9px;font-weight:950;letter-spacing:1px;box-shadow:0 5px 16px #14233b18}
+.post-copy{padding:20px;display:flex;flex-direction:column;flex:1}
+.post-kicker{font-size:10px;font-weight:900;letter-spacing:1px;margin-bottom:7px;color:#5c718c}
+.post h3{font-size:20px;line-height:1.2;letter-spacing:-.45px;margin:0 0 9px;color:#172b48}
+.post p{font-size:13px;line-height:1.7;color:#65758c;margin:0 0 19px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.post-cta{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border-radius:12px;background:#173f73;color:#fff;font-size:12px;font-weight:900;box-shadow:0 7px 16px #173f7328}
+.post-cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.post--offer{background:linear-gradient(150deg,#fff7e8,#fff 62%);border:1px solid #ffdfae}
+.post--offer .post-art{background:linear-gradient(130deg,#ff9d38,#f24c52 58%,#c92d72)}
+.post--offer .post-type-pill{color:#b94721}
+.post--offer .post-kicker{color:#d65a2e}
+.post--offer .post-cta{background:linear-gradient(100deg,#f05b2c,#e52f57);box-shadow:0 8px 18px #e94a4935}
+.post--event{background:linear-gradient(150deg,#f0edff,#fff 65%);border:1px solid #dcd4ff}
+.post--event .post-art{background:linear-gradient(130deg,#4f46e5,#8b5cf6 58%,#d16bdc)}
+.post--event .post-type-pill{color:#5541c7}
+.post--event .post-kicker{color:#6653d4}
+.post--event .post-cta{background:linear-gradient(100deg,#5145d8,#8b5cf6);box-shadow:0 8px 18px #6c56df35}
+.post--update{background:linear-gradient(150deg,#e9fbf8,#fff 65%);border:1px solid #ccefe8}
+.post--update .post-art{background:linear-gradient(130deg,#087f8c,#18a999 58%,#69c6a9)}
+.post--update .post-type-pill{color:#087f8c}
+.post--update .post-kicker{color:#0b8c83}
+.post--update .post-cta{background:linear-gradient(100deg,#087f8c,#16a394);box-shadow:0 8px 18px #0b938735}
+@media(max-width:900px){.posts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.posts{grid-template-columns:1fr;gap:14px}.post-art{height:205px}.post-copy{padding:17px}.post h3{font-size:18px}}
+
 .post img{width:100%;height:190px;object-fit:cover}
 .post div{padding:16px}
 .about{margin-top:45px;background:white;border:1px solid #e7ebf1;border-radius:18px;padding:24px}
