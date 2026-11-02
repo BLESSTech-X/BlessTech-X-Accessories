@@ -99,7 +99,7 @@ async function readTable(db, table, query) {
     ) ORDER BY updated_at DESC LIMIT ${limit}`;
     try { return await all(db, currentSql); }
     catch (error) {
-      if (!/no such column: (?:i|p|pg)\\.moderation_status|no such column: moderation_status/i.test(String(error?.message||error))) throw error;
+      if (!/no such column: (?:i|p|pg)\.moderation_status|no such column: moderation_status/i.test(String(error?.message||error))) throw error;
       const compatibleSql = `SELECT * FROM (
         SELECT i.id,i.advertiser_id,a.business_name,a.owner_name,a.email,i.title AS content_title,
           i.item_type AS content_kind,i.image_url AS content_image_url,
