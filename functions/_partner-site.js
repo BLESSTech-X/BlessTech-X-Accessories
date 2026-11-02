@@ -210,7 +210,7 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 <div class="site">
-<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><div class="top-menu-wrap"><button class="menu-button" id="site-menu" type="button" aria-label="Open website menu" aria-expanded="false" aria-controls="site-nav"><span>☰</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></div></header>
+<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><div class="top-menu-wrap"><button class="menu-button" id="site-menu" type="button" onclick="togglePartnerSiteMenu(event)" aria-label="Open website menu" aria-expanded="false" aria-controls="site-nav"><span>☰</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></div></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 <section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
@@ -225,6 +225,27 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
+function togglePartnerSiteMenu(event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ var button=document.getElementById("site-menu"),menu=document.getElementById("site-nav");
+ if(!button||!menu)return;
+ var opening=button.getAttribute("aria-expanded")!=="true";
+ button.setAttribute("aria-expanded",opening?"true":"false");
+ button.setAttribute("aria-label",opening?"Close website menu":"Open website menu");
+ menu.classList.toggle("open",opening);
+ menu.style.setProperty("display",opening?"flex":"none","important");
+ menu.style.setProperty("visibility",opening?"visible":"hidden","important");
+ menu.style.setProperty("opacity",opening?"1":"0","important");
+ menu.style.setProperty("pointer-events",opening?"auto":"none","important");
+ menu.style.position="absolute";menu.style.zIndex="100000";
+}
+document.addEventListener("click",function(event){
+ var button=document.getElementById("site-menu"),menu=document.getElementById("site-nav");
+ if(!button||!menu||event.target.closest("#site-menu")||event.target.closest("#site-nav"))return;
+ button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Open website menu");
+ menu.classList.remove("open");menu.style.setProperty("display","none","important");menu.style.setProperty("visibility","hidden","important");menu.style.setProperty("pointer-events","none","important");
+});
+document.addEventListener("keydown",function(event){if(event.key!=="Escape")return;var button=document.getElementById("site-menu"),menu=document.getElementById("site-nav");if(button&&menu){button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Open website menu");menu.classList.remove("open");menu.style.setProperty("display","none","important");menu.style.setProperty("visibility","hidden","important");menu.style.setProperty("pointer-events","none","important");}});
 
 function appendPartnerAdMedia(container,ad){
   const url=String(ad.media_url||"");
@@ -299,42 +320,6 @@ function showPartnerAdPopup(ad){
 document.getElementById("partner-ad-popup-close").addEventListener("click",()=>{document.getElementById("partner-ad-popup").hidden=true;});
 document.getElementById("partner-ad-popup").addEventListener("click",event=>{if(event.target.id==="partner-ad-popup")event.currentTarget.hidden=true;});
 
-const siteMenu=document.getElementById("site-menu");
-const siteNav=document.getElementById("site-nav");
-function closeSiteMenu(){
-  if(!siteNav||!siteMenu)return;
-  siteNav.classList.remove("open");
-  siteNav.style.display="none";
-  siteNav.style.visibility="hidden";
-  siteMenu.setAttribute("aria-expanded","false");
-  siteMenu.setAttribute("aria-label","Open website menu");
-}
-function openSiteMenu(){
-  if(!siteNav||!siteMenu)return;
-  siteNav.classList.add("open");
-  siteNav.style.display="flex";
-  siteNav.style.visibility="visible";
-  siteNav.style.position="absolute";
-  siteNav.style.zIndex="99999";
-  siteMenu.setAttribute("aria-expanded","true");
-  siteMenu.setAttribute("aria-label","Close website menu");
-}
-function toggleSiteMenu(){
-  if(!siteNav||!siteMenu)return;
-  if(siteMenu.getAttribute("aria-expanded")==="true")closeSiteMenu();
-  else openSiteMenu();
-}
-if(siteMenu&&siteNav){
-  siteMenu.addEventListener("click",function(event){event.preventDefault();event.stopPropagation();toggleSiteMenu();});
-  siteMenu.addEventListener("keydown",function(event){if(event.key==="Enter"||event.key===" "){event.preventDefault();toggleSiteMenu();}});
-  document.addEventListener("click",function(event){
-    const target=event.target instanceof Element?event.target:null;
-    if(target&&!target.closest(".top-menu-wrap"))closeSiteMenu();
-  });
-  document.addEventListener("keydown",function(event){if(event.key==="Escape")closeSiteMenu();});
-  siteNav.querySelectorAll("a").forEach(function(link){link.addEventListener("click",closeSiteMenu);});
-  closeSiteMenu();
-}
 loadPartnerAds();
 document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
