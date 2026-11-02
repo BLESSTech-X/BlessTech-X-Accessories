@@ -1148,14 +1148,14 @@ export async function onRequestGet(context) {
 
   const adsHtml = ads.length
     ? `<section class="ads-section">
-        <h2>Their Ads on PhoneYa2</h2>
+        <h2>Featured on PhoneYa2</h2>
         <p class="sub">${ads.length} live ad${ads.length !== 1 ? 's' : ''} by ${esc(bizName)}</p>
         <div class="ads-grid">${ads.map(renderAdCard).join('')}</div>
       </section>`
     : `<section class="ads-section">
-        <h2>Their Ads on PhoneYa2</h2>
-        <p class="sub">No live ads right now</p>
-        <div class="no-ads">This business has no approved ads at the moment. Check back soon.</div>
+        <h2>Featured on PhoneYa2</h2>
+        <p class="sub">No featured promotions right now</p>
+        <div class="no-ads">No featured promotions are available from this business right now.</div>
       </section>`;
 
   // Cross-promotion: other businesses on PhoneYa2
@@ -1192,7 +1192,7 @@ export async function onRequestGet(context) {
         <a class="brand-link" href="/">
           <span class="brand-mark">📱</span>
           <div class="brand-text">
-            <b>PhoneYa2 <span>Ads</span></b>
+            <b>PhoneYa2 <span>Partners</span></b>
             <small>Zambian Businesses</small>
           </div>
         </a>
@@ -1222,10 +1222,10 @@ export async function onRequestGet(context) {
 
       <div class="advertise-strip">
         <div>
-          <h3>Want a profile like this for your business?</h3>
-          <p>Promote your business to people browsing PhoneYa2. Enhanced visibility and branding options start at K20+.</p>
+          <h3>Want a business website like this?</h3>
+          <p>Create a professional business presence on PhoneYa2. Showcase your products and services, publish updates and connect with customers.</p>
         </div>
-        <a href="/advertise/">Advertise Your Business Here <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="/partners/">Become a PhoneYa2 Partner <i class="fa-solid fa-arrow-right"></i></a>
       </div>
     </div>
 
