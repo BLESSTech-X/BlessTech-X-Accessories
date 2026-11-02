@@ -140,8 +140,9 @@ if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type))retu
 
 const bytes=new Uint8Array(await file.arrayBuffer());let binary="";
 for(let offset=0;offset<bytes.length;offset+=0x8000)binary+=String.fromCharCode(...bytes.subarray(offset,offset+0x8000));
-const encoded="data:"+file.type+";base64,"+btoa(binary),id=crypto.randomUUID(),url=new URL("/media/partner/"+id,request.url).href;
-await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,encoded,url,"image",cleanText(file.name,180),file.size).run();
+const encoded="data:"+file.type+";base64,"+btoa(binary),id=crypto.randomUUID(),storageKey=id+"|"+encoded,url=new URL("/media/partner/"+id,request.url).href;
+// object_key is UNIQUE: prefix the payload with this upload UUID so identical image files can be uploaded more than once.
+await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,storageKey,url,"image",cleanText(file.name,180),file.size).run();
 return json({ok:true,url,id});
 }catch(e){console.error("Partner media upload failed",e?.stack||e);const detail=String(e?.message||"Storage operation failed").slice(0,220);return fail("The image reached PhoneYa2, but storage failed: "+detail,500);}
 }
