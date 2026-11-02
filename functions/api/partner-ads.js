@@ -1,5 +1,5 @@
 const HEADERS={"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"};
-function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:HEADERS});}
+function json(data,status=200,extra={}){return new Response(JSON.stringify(data),{status,headers:{...HEADERS,...extra}});}
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 function clean(v,n=300){return String(v??"").trim().slice(0,n);}
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return request.method==="GET"||request.headers.get("sec-fetch-site")==="same-origin";try{return new URL(origin).host===new URL(request.url).host}catch{return false}}
@@ -13,7 +13,7 @@ export async function onRequest({request,env}){
   FROM ads ad JOIN advertisers adv ON adv.id=ad.advertiser_id LEFT JOIN advertiser_profiles p ON p.advertiser_id=adv.id
   WHERE ad.status='approved' AND adv.status IN ('active','approved') AND (ad.start_date IS NULL OR ad.start_date<=?) AND (ad.end_date IS NULL OR ad.end_date>=?)
   ORDER BY ad.created_at DESC LIMIT 100`).bind(now,now).all();
-  return json({ok:true,ads:rows.results||[]},{headers:{"cache-control":"public, max-age=60, s-maxage=180"}});
+  return json({ok:true,ads:rows.results||[]},200,{"cache-control":"public, max-age=60, s-maxage=180"});
  }
  if(request.method!=="POST")return json({ok:false,error:"Method not allowed."},405);
  let body={};try{body=await request.json()}catch{return json({ok:false,error:"Invalid request."},400)}
