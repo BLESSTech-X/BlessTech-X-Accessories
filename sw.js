@@ -1,6 +1,6 @@
 // ─── PhoneYa2 Service Worker ─────────────────────────────────────────────────
 // Version: bump this number any time you want to force a cache refresh
-const VERSION   = 'phoneya2-v21';
+const VERSION   = 'phoneya2-v22';
 const CACHE     = VERSION;
 // Navigation documents are reused for five minutes, then refreshed from the network.
 const PAGE_TTL_MS = 5 * 60 * 1000;
@@ -90,7 +90,8 @@ self.addEventListener('fetch', event => {
   if (request.mode === 'navigate') {
     const path = url.pathname.toLowerCase();
     const sensitive = path === '/checkout.html' || path === '/cart.html' ||
-      path === '/account.html' || path.startsWith('/admin') || path.startsWith('/api/');
+      path === '/account.html' || path.startsWith('/admin') || path.startsWith('/api/') ||
+      path.startsWith('/partners-dashboard') || path.startsWith('/partners/') || path.startsWith('/b/');
     if (sensitive) {
       event.respondWith(fetch(request).catch(async () => {
         const cache = await caches.open(CACHE);
