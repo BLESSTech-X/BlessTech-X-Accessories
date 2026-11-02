@@ -236,7 +236,7 @@
     if (!fields.business.value.trim()) { setError('business', true); ok = false; } else setError('business', false);
     if (!isPhone(fields.phone.value))   { setError('phone', true);    ok = false; } else setError('phone', false);
     if (!isEmail(fields.email.value))   { setError('email', true);    ok = false; } else setError('email', false);
-    if (fields.password.value.length < 8) { setError('password', true); ok = false; } else setError('password', false);
+    if (fields.password.value.length < 10) { setError('password', true); ok = false; } else setError('password', false);
     if (fields.password.value !== fields.confirm.value) { setError('confirm', true); ok = false; } else setError('confirm', false);
     if (!fields.terms.checked) { setError('terms', true); ok = false; } else setError('terms', false);
 
@@ -287,7 +287,8 @@
     var originalHTML = submitBtn.innerHTML;
     submitBtn.innerHTML = '<span class="py2-spinner"></span> Creating account…';
 
-    P.auth.signup(payload)
+    fetch('/api/partner', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'signup', email: payload.email, password: payload.password, business_name: payload.business_name, owner_name: payload.owner_name, phone: payload.phone }) })
+      .then(function (response) { return response.text().then(function (text) { var data; try { data = JSON.parse(text); } catch (e) { throw new Error('The partner registration service returned an unexpected response. Please refresh and try again.'); } if (!response.ok || data.ok === false) throw new Error(data.error || ('Registration failed (' + response.status + ').')); return data; }); })
       .then(function (result) {
         // Success — show success view then redirect
         signupView.style.display  = 'none';
@@ -307,7 +308,7 @@
         if (/already registered|already exists|user already/i.test(msg)) {
           msg = 'An account with this email already exists. Try signing in instead.';
         } else if (/password/i.test(msg) && /weak|short/i.test(msg)) {
-          msg = 'Password is too weak. Use at least 8 characters.';
+          msg = 'Password is too short. Use at least 10 characters.';
         } else if (/invalid.*email/i.test(msg)) {
           msg = 'That email address looks invalid. Please check and try again.';
         }
@@ -317,12 +318,7 @@
   });
 
   // ── If already signed in, offer a fast path ────────────────────────────
-  var existing = P.auth.getSession();
-  if (existing && existing.user) {
-    // Prefill email for convenience
-    if (existing.user.email) fields.email.value = existing.user.email;
-    P.toast('You are already signed in', 'info');
-  }
+  fetch('/api/partner', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json().catch(function () { return {}; }); }).then(function (data) { if (data.authenticated) { window.location.replace('/partners-dashboard/'); return; } });
 })();
 </script>
 
