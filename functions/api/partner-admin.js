@@ -82,18 +82,18 @@ async function readTable(db, table, query) {
     return all(db, `SELECT * FROM (
       SELECT i.id,i.advertiser_id,a.business_name,a.owner_name,a.email,
         i.title AS content_title, i.item_type AS content_kind,
-        CASE WHEN i.published=1 THEN 'published' ELSE 'hidden' END AS content_status,
+        CASE WHEN i.moderation_status='approved' AND i.published=1 THEN 'published' ELSE 'hidden' END AS content_status,
         i.updated_at,'catalogue' AS content_table
       FROM partner_catalog_items i JOIN advertisers a ON a.id=i.advertiser_id
       UNION ALL
       SELECT p.id,p.advertiser_id,a.business_name,a.owner_name,a.email,
-        p.title AS content_title,'story' AS content_kind,CASE WHEN p.status='published' THEN 'published' ELSE 'hidden' END AS content_status,
+        p.title AS content_title,'story' AS content_kind,CASE WHEN p.moderation_status='approved' AND p.status='published' THEN 'published' ELSE 'hidden' END AS content_status,
         p.updated_at,'stories' AS content_table
       FROM partner_posts p JOIN advertisers a ON a.id=p.advertiser_id
       UNION ALL
       SELECT pg.id,pg.advertiser_id,a.business_name,a.owner_name,a.email,
         pg.title AS content_title,'page' AS content_kind,
-        CASE WHEN pg.published=1 THEN 'published' ELSE 'hidden' END AS content_status,
+        CASE WHEN pg.moderation_status='approved' AND pg.published=1 THEN 'published' ELSE 'hidden' END AS content_status,
         pg.updated_at,'pages' AS content_table
       FROM partner_pages pg JOIN advertisers a ON a.id=pg.advertiser_id
     ) ORDER BY updated_at DESC LIMIT ${limit}`);
@@ -163,7 +163,7 @@ async function writeTable(db, body) {
     const id = String(body.id || "");
     const kind = String(body.content_table || "");
     const operation = String(body.operation || "");
-    if (!UUID.test(id) || !["catalogue","stories","pages"].includes(kind) || !["hide","delete"].includes(operation)) {
+    if (!UUID.test(id) || !["catalogue","stories","pages"].includes(kind) || !["hide","restore","delete"].includes(operation)) {
       throw new Error("Invalid partner content moderation request.");
     }
     const target = kind === "catalogue" ? "partner_catalog_items" : kind === "stories" ? "partner_posts" : "partner_pages";
@@ -172,10 +172,18 @@ async function writeTable(db, body) {
       if (!result.meta || result.meta.changes === 0) throw new Error("Content not found.");
       return { ok: true, operation };
     }
-    if (kind === "stories") {
-      await db.prepare("UPDATE partner_posts SET status='archived',updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").bind(id).run();
+    if (operation === "hide") {
+      if (kind === "stories") {
+        await db.prepare("UPDATE partner_posts SET moderation_status='suspended',status='archived',updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").bind(id).run();
+      } else {
+        await db.prepare(`UPDATE ${target} SET moderation_status='suspended',published=0,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?`).bind(id).run();
+      }
     } else {
-      await db.prepare(`UPDATE ${target} SET published=0,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?`).bind(id).run();
+      if (kind === "stories") {
+        await db.prepare("UPDATE partner_posts SET moderation_status='approved',status='published',published_at=COALESCE(published_at,strftime('%Y-%m-%dT%H:%M:%fZ','now')),updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").bind(id).run();
+      } else {
+        await db.prepare(`UPDATE ${target} SET moderation_status='approved',published=1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?`).bind(id).run();
+      }
     }
     return { ok: true, operation };
   }
