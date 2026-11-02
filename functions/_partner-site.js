@@ -36,17 +36,26 @@ function money(item) {
   return "K" + (Number(item.price_minor) / 100).toFixed(2);
 }
 
-function renderItem(item, primary) {
+function renderItem(item, primary, phone, whatsapp) {
   const image = safeUrl(item.image_url);
+  const isService = item.item_type === "service";
+  const intent = isService ? "enquire about" : "buy";
+  const message = encodeURIComponent(`Hello, I'm interested in ${intent}: ${item.title}${item.price_label || item.price_minor != null ? " (" + (item.price_label || money(item)) + ")" : ""}. Please share more details.`);
+  const actions = [
+    whatsapp ? `<a class="item-action item-action--whatsapp" href="https://wa.me/${esc(whatsapp)}?text=${message}" target="_blank" rel="noopener noreferrer">${isService ? "Enquire on WhatsApp" : "Buy via WhatsApp"} <span aria-hidden="true">↗</span></a>` : "",
+    phone ? `<a class="item-action item-action--call" href="tel:${esc(phone)}">${isService ? "Call to enquire" : "Call to order"}</a>` : ""
+  ].filter(Boolean);
+  if (!actions.length) actions.push(`<a class="item-action item-action--enquire" href="#contact" data-item="${esc(item.title)}">${isService ? "Send an enquiry" : "Enquire to buy"} ↗</a>`);
   return `<article class="product">
     ${image
       ? `<img class="product-image" src="${esc(image)}" alt="${esc(item.title)}" loading="lazy" decoding="async" onerror="this.style.display='none'">`
       : '<div class="product-placeholder">PY2</div>'}
     <div class="product-body">
-      <small>${esc(item.item_type === "service" ? "SERVICE" : item.category || "PRODUCT")}</small>
+      <small>${esc(isService ? "SERVICE" : item.category || "PRODUCT")}</small>
       <h3>${esc(item.title)}</h3>
       ${item.summary ? `<p>${esc(item.summary)}</p>` : ""}
-      <div class="product-bottom"><b>${money(item)}</b><a href="#contact">Enquire ↗</a></div>
+      <div class="product-bottom"><b>${money(item)}</b><span>${isService ? "Service" : "Available to order"}</span></div>
+      <div class="item-actions">${actions.join("")}</div>
     </div>
   </article>`;
 }
@@ -73,11 +82,16 @@ export function renderPartnerSite(data) {
     .map(([key, value]) => `<a href="${esc(safeUrl(value))}" target="_blank" rel="noopener">${esc(key.charAt(0).toUpperCase() + key.slice(1))}</a>`)
     .join("");
 
-  const whatsapp = String(socials.whatsapp || business.phone || "").replace(/\D/g, "");
-  const contact = (whatsapp
-    ? `<a class="btn primary whatsapp-btn" href="https://wa.me/${esc(whatsapp)}" target="_blank" rel="noopener" style="background:#25D366!important;color:#111!important;border:1px solid #1eae52!important;text-decoration:none">WhatsApp us ↗</a>`
-    : "") + (business.phone
-      ? `<a class="btn secondary" href="tel:${esc(business.phone)}">Call business</a>`
+  const whatsappRaw = String(socials.whatsapp || business.contact_whatsapp || business.phone || "").trim();
+  const whatsapp = whatsappRaw.replace(/\D/g, "");
+  const phoneRaw = String(business.contact_phone || business.phone || "").trim();
+  const phone = phoneRaw.replace(/[^\d+]/g, "");
+  const validWhatsapp = whatsapp.length >= 9 && whatsapp.length <= 15 ? whatsapp : "";
+  const validPhone = phone.replace(/\D/g, "").length >= 9 ? phone : "";
+  const contact = (validWhatsapp
+    ? `<a class="btn primary whatsapp-btn" href="https://wa.me/${esc(validWhatsapp)}" target="_blank" rel="noopener noreferrer">WhatsApp us ↗</a>`
+    : "") + (validPhone
+      ? `<a class="btn secondary" href="tel:${esc(validPhone)}">Call business</a>`
       : "");
 
   const products = items.filter((item) => item.item_type === "product");
@@ -86,7 +100,7 @@ export function renderPartnerSite(data) {
   const catalogue = (list, heading, eyebrow) => list.length
     ? `<section class="section" id="${heading.toLowerCase()}">
         <div class="section-head"><div><small>${esc(eyebrow)}</small><h2>${esc(heading)}</h2></div><span>${list.length} listed</span></div>
-        <div class="products">${list.map((item) => renderItem(item, primary)).join("")}</div>
+        <div class="products">${list.map((item) => renderItem(item, primary, validPhone, validWhatsapp)).join("")}</div>
       </section>`
     : "";
 
@@ -182,6 +196,14 @@ a{color:inherit;text-decoration:none}
 .product h3,.post h3{margin:5px 0;font-size:17px}
 .product p,.post p{color:#748197;font-size:13px;margin:5px 0 12px}
 .product-bottom{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #edf0f4;padding-top:12px;margin-top:12px}
+.product-bottom span{font-size:11px;color:#8491a2;font-weight:700}
+.item-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.item-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:850;flex:1 1 130px;text-align:center;transition:transform .18s ease,filter .18s ease}
+.item-action:hover{transform:translateY(-1px);filter:brightness(.97)}
+.item-action--whatsapp{background:#25D366;color:#102719;box-shadow:0 5px 13px #25d36630}
+.item-action--call{background:#173f73;color:#fff}
+.item-action--enquire{background:${primary};color:#fff}
+
 .product-bottom b{font-size:14px}
 .product-bottom a{color:${primary};font-weight:850;font-size:12px}
 .posts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
