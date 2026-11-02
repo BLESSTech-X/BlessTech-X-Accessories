@@ -16,8 +16,9 @@ async function admin(request,env) {
   return session ? { email: session.email } : null;
 }
 async function activity(env,r) {
+  const isPartnerAudience = r.audience === "partners";
   const response=await db(env,"/rest/v1/email_activity",{method:"POST",headers:{prefer:"return=minimal"},body:JSON.stringify({
-    event_type:"marketing_campaign",source:"manual",trigger_source:"admin_campaign_send",recipient_email:r.email||"",recipient_name:r.name||"",
+    event_type:isPartnerAudience?"partner_service_update":"marketing_campaign",source:"manual",trigger_source:isPartnerAudience?"admin_partner_update":"admin_campaign_send",recipient_email:r.email||"",recipient_name:r.name||"",
     subject:r.subject,status:r.ok?"sent":"failed",provider:"brevo",provider_message_id:r.messageId||"",error_message:r.error||"",
     campaign_id:r.campaignId,retry_count:0,sent_at:r.ok?new Date().toISOString():null,metadata:{campaign_name:r.campaignName,audience:r.audience||"subscribed"}
   })});
