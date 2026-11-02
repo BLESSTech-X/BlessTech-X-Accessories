@@ -7,14 +7,15 @@ const JSON_HEADERS = {
 
 const TABLES = new Set([
   "tier_config", "ads", "advertisers", "advertiser_profiles",
-  "ad_reports", "ad_moderation_log", "ad_impressions", "ad_clicks", "partner_content", "profiles"
+  "ad_reports", "ad_moderation_log", "ad_impressions", "ad_clicks", "partner_content", "partner_subscriptions", "profiles"
 ]);
 
 const WRITABLE = {
   advertisers: new Set(["status", "tier", "tier_started_at", "tier_expires_at"]),
   ads: new Set(["status", "rejection_reason"]),
   advertiser_profiles: new Set(["verified"]),
-  ad_reports: new Set(["resolved"])
+  ad_reports: new Set(["resolved"]),
+  partner_subscriptions: new Set(["status", "package_key", "amount_minor", "currency", "starts_at", "current_period_start", "current_period_end"])
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -124,6 +125,16 @@ async function readTable(db, table, query) {
     }
   }
   const q = parseQuery(query);
+  if (table === "partner_subscriptions") {
+    const limit = q.limit || 1000;
+    return all(db, `SELECT ps.*,pp.display_name AS package_name,pp.monthly_price_minor AS package_price_minor,
+      a.business_name,a.owner_name,a.email,a.phone
+      FROM partner_subscriptions ps
+      JOIN advertisers a ON a.id=ps.advertiser_id
+      LEFT JOIN partner_packages pp ON pp.package_key=ps.package_key
+      ORDER BY CASE ps.status WHEN 'pending_payment' THEN 0 ELSE 1 END, ps.created_at DESC
+      LIMIT ${limit}`);
+  }
   if (table === "tier_config") {
     return all(db, "SELECT tier,rank,weight,ad_limit FROM tier_config ORDER BY rank ASC");
   }
@@ -216,6 +227,36 @@ async function writeTable(db, body) {
     throw new Error("Invalid advertising update.");
   }
 
+  if (table === "partner_subscriptions" && action === "activate") {
+    const q = parseQuery(String(body.query || ""));
+    if (!q.id) throw new Error("A valid package request is required.");
+    const row = await db.prepare("SELECT id,advertiser_id,package_key,amount_minor,currency,status FROM partner_subscriptions WHERE id=?").bind(q.id).first();
+    if (!row) throw new Error("Package request not found.");
+    if (!["pending_payment","active"].includes(row.status)) throw new Error("This package request cannot be activated.");
+    const packageRow = await db.prepare("SELECT package_key,monthly_price_minor FROM partner_packages WHERE package_key=? AND active=1").bind(row.package_key).first();
+    if (!packageRow) throw new Error("The requested package is no longer available.");
+    const now = new Date().toISOString();
+    const start = now;
+    const end = new Date(Date.now()+30*86400000).toISOString();
+    const amount = Number(body.amount_minor ?? row.amount_minor ?? packageRow.monthly_price_minor ?? 0);
+    if (!Number.isInteger(amount) || amount < 0) throw new Error("Enter a valid confirmed payment amount.");
+    await db.batch([
+      db.prepare("UPDATE partner_subscriptions SET status='expired',updated_at=? WHERE advertiser_id=? AND status='active'").bind(now,row.advertiser_id),
+      db.prepare("UPDATE partner_subscriptions SET status='active',amount_minor=?,currency=?,starts_at=?,current_period_start=?,current_period_end=?,updated_at=? WHERE id=?").bind(amount,String(body.currency||row.currency||"ZMW").slice(0,8),start,start,end,now,row.id),
+      db.prepare("UPDATE advertisers SET tier=? WHERE id=?").bind(row.package_key,row.advertiser_id),
+      db.prepare("UPDATE ads SET weight=(SELECT advertising_weight FROM partner_packages WHERE package_key=?) WHERE advertiser_id=? AND status IN ('pending','approved')").bind(row.package_key,row.advertiser_id)
+    ]);
+    const note=String(body.admin_note||"Offline payment confirmed by PhoneYa2 admin").slice(0,1000);
+    await db.prepare("INSERT INTO partner_payment_submissions(id,subscription_id,advertiser_id,amount_minor,currency,payment_method,provider_reference,status,admin_note,reviewed_at,reviewed_by) VALUES(?,?,?,?,?,'offline','CONFIRMED-OFFLINE','confirmed',?,?,?)").bind(crypto.randomUUID(),row.id,row.advertiser_id,amount,String(body.currency||row.currency||"ZMW").slice(0,8),note,now,"admin").run();
+    return all(db,"SELECT * FROM partner_subscriptions WHERE id=?",[row.id]);
+  }
+  if (table === "partner_subscriptions" && action === "reject") {
+    const q = parseQuery(String(body.query || ""));
+    if (!q.id) throw new Error("A valid package request is required.");
+    const result = await db.prepare("UPDATE partner_subscriptions SET status='cancelled',updated_at=? WHERE id=? AND status='pending_payment'").bind(new Date().toISOString(),q.id).run();
+    if (!result.meta || result.meta.changes===0) throw new Error("Pending package request not found.");
+    return all(db,"SELECT * FROM partner_subscriptions WHERE id=?",[q.id]);
+  }
   if (action === "insert-log" && table === "ad_moderation_log") {
     const allowed = new Set(["ad_id", "action", "reason", "notes", "performed_by"]);
     if (Object.keys(values).some(k => !allowed.has(k)) || !String(values.action || "").trim()) {
