@@ -210,7 +210,7 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 <div class="site">
-<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><div class="top-menu-wrap"><button class="menu-button" id="site-menu" type="button" onclick="togglePartnerSiteMenu(event)" aria-label="Open website menu" aria-expanded="false" aria-controls="site-nav"><span>☰</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></div></header>
+<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><div class="top-menu-wrap"><button class="menu-button" id="site-menu" type="button" aria-label="Open website menu" aria-expanded="false" aria-controls="site-nav"><span>☰</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></div></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 <section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
@@ -225,27 +225,32 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
-function togglePartnerSiteMenu(event){
- if(event){event.preventDefault();event.stopPropagation();}
- var button=document.getElementById("site-menu"),menu=document.getElementById("site-nav");
+(function(){
+ const button=document.getElementById("site-menu");
+ const menu=document.getElementById("site-nav");
  if(!button||!menu)return;
- var opening=button.getAttribute("aria-expanded")!=="true";
- button.setAttribute("aria-expanded",opening?"true":"false");
- button.setAttribute("aria-label",opening?"Close website menu":"Open website menu");
- menu.classList.toggle("open",opening);
- menu.style.setProperty("display",opening?"flex":"none","important");
- menu.style.setProperty("visibility",opening?"visible":"hidden","important");
- menu.style.setProperty("opacity",opening?"1":"0","important");
- menu.style.setProperty("pointer-events",opening?"auto":"none","important");
- menu.style.position="absolute";menu.style.zIndex="100000";
-}
-document.addEventListener("click",function(event){
- var button=document.getElementById("site-menu"),menu=document.getElementById("site-nav");
- if(!button||!menu||event.target.closest("#site-menu")||event.target.closest("#site-nav"))return;
- button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Open website menu");
- menu.classList.remove("open");menu.style.setProperty("display","none","important");menu.style.setProperty("visibility","hidden","important");menu.style.setProperty("pointer-events","none","important");
-});
-document.addEventListener("keydown",function(event){if(event.key!=="Escape")return;var button=document.getElementById("site-menu"),menu=document.getElementById("site-nav");if(button&&menu){button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Open website menu");menu.classList.remove("open");menu.style.setProperty("display","none","important");menu.style.setProperty("visibility","hidden","important");menu.style.setProperty("pointer-events","none","important");}});
+ const setOpen=open=>{
+   button.setAttribute("aria-expanded",open?"true":"false");
+   button.setAttribute("aria-label",open?"Close website menu":"Open website menu");
+   menu.classList.toggle("open",open);
+   menu.hidden=!open;
+ };
+ menu.hidden=true;
+ button.addEventListener("click",event=>{
+   event.preventDefault();
+   event.stopPropagation();
+   setOpen(button.getAttribute("aria-expanded")!=="true");
+ });
+ menu.addEventListener("click",event=>{
+   if(event.target.closest("a"))setOpen(false);
+ });
+ document.addEventListener("click",event=>{
+   if(!event.target.closest(".top-menu-wrap"))setOpen(false);
+ });
+ document.addEventListener("keydown",event=>{
+   if(event.key==="Escape")setOpen(false);
+ });
+})();
 
 function appendPartnerAdMedia(container,ad){
   const url=String(ad.media_url||"");
