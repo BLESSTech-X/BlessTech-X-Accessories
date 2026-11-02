@@ -1,68 +1,55 @@
-# PhoneYa2 order system — production setup
+# PhoneYa2 order system — Cloudflare D1 setup
 
-This change adds the checkout page, server-side order API, database transaction function, and admin order screen. The existing product-page buttons intentionally remain on Google Forms until production configuration is complete, so customers are not sent to a checkout that cannot yet submit.
+PhoneYa2 order storage and order management use Cloudflare Pages Functions with the D1 database binding named \`DB\`. This setup does not require Supabase.
 
-## 1. Install the database transaction function
+## 1. D1 database
 
-For a fresh setup, in Supabase Dashboard → SQL Editor, run `supabase/order-system.sql`.
+Ensure the production PhoneYa2 Pages project has a D1 binding named \`DB\` pointing to the production PhoneYa2 database.
 
-For the existing PhoneYa2 production database, run `supabase/order-note-migration.sql` in Supabase SQL Editor once before using the optional customer order-note field. This adds the note column and safely updates the transaction function. The `orders` and `order_items` tables must already exist.
+For a fresh D1 database, apply the existing migrations in order, beginning with:
 
-The function inserts the order and every item in a single database transaction. It is executable only by `service_role`; never call it from browser code with a secret key.
+- \`d1/migrations/0001_orders.sql\` — creates \`orders\`, \`order_items\` and the D1 \`email_activity\` log.
 
-## 2. Add Cloudflare Pages production secrets and variables
+Apply any later order-related migrations in numeric order as applicable to the current database. Do not run the old Supabase SQL files for this D1 implementation.
 
-Cloudflare Dashboard → Workers & Pages → PhoneYa2 Pages project → Settings → Variables and Secrets. Add these for the **Production** environment, then redeploy.
+## 2. Cloudflare Pages configuration
 
-| Name | Type | Value |
+Cloudflare Dashboard → Workers & Pages → PhoneYa2 Pages project → Settings → Variables and Secrets. Configure the existing administrator/authentication settings and the following production values where used:
+
+| Name | Type | Purpose |
 | --- | --- | --- |
-| `SUPABASE_URL` | Variable | The project's Supabase URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Secret | The server-only Supabase service-role/secret key |
-| `SUPABASE_ANON_KEY` | Variable | The project's public publishable/anon key |
-| `ADMIN_EMAIL` | Variable | The exact email address of the one authorized admin account |
-| `ORDER_NOTIFY_EMAIL` | Variable | `singbless89@gmail.com` |
-| `TELEGRAM_BOT_TOKEN` | Secret | Token for your private PhoneYa2 Telegram bot (instructions below) |
-| `TELEGRAM_CHAT_ID` | Variable | Your Telegram chat ID for receiving order alerts |
-| `BREVO_API_KEY` | Secret | API key from Brevo |
-| `BREVO_FROM_EMAIL` | Variable | Sender address on a domain verified in Brevo, e.g. `PhoneYa2 Orders <orders@your-verified-domain>` |
+| \`ADMIN_EMAIL\` | Variable | Authorized administrator email |
+| \`ORDER_NOTIFY_EMAIL\` | Variable | Store owner order alerts |
+| \`BREVO_API_KEY\` | Secret | Outbound transactional email and SMS API |
+| \`BREVO_FROM_EMAIL\` | Variable | Verified Brevo sender |
+| \`BREVO_FROM_NAME\` | Variable | Optional sender display name |
+| \`BREVO_SMS_SENDER\` | Variable | Approved sender ID for Zambia |
+| \`NTFY_TOPIC\` | Secret | Optional private order-alert topic, if using ntfy |
 
-**Never put `SUPABASE_SERVICE_ROLE_KEY` or `BREVO_API_KEY` in HTML, JavaScript shipped to the browser, GitHub, or a public config file.** Use Cloudflare's encrypted Secrets field for these two values.
+Keep the current Cloudflare admin/session secrets already configured for the Command Centre. Do not add Supabase variables for the D1 order system. Never expose provider keys in browser code, GitHub or public configuration.
 
-## 3. Create the admin login
+## 3. Order notifications
 
-In Supabase Dashboard → Authentication → Users, create/invite the account whose email exactly matches `ADMIN_EMAIL`. The admin page uses Supabase email/password sign-in, then the server checks the verified user identity and allowlisted email on every admin API request. Do not use a shared weak password.
+Brevo sends customer order confirmation and order-status email. If SMS credentials and sender approval are configured, transactional SMS is also sent. The D1 \`email_activity\` and \`communication_activity\` tables record notification attempts.
 
-## 4. Phone app alerts with Telegram
+An API acceptance from Brevo is not proof of final inbox or handset delivery. Confirm delivery in Brevo's logs.
 
-PhoneYa2 can send order alerts to Telegram and email independently. If either route fails, the other can still deliver the alert. Telegram is optional until both values below are configured.
+## 4. Test before switching storefront buttons
 
-1. In Telegram, open the verified **@BotFather** account and send `/newbot`. Follow the prompts and copy the bot token.
-2. Open the new bot's chat and press **Start**.
-3. To get your chat ID, send a message to your new bot, then open `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates` in a browser, replacing the placeholder with your token. Find `message` → `chat` → `id`. Keep the token private and do not share screenshots containing it.
-4. In Cloudflare Pages → Settings → Variables and Secrets → **Production**, add `TELEGRAM_BOT_TOKEN` as a **Secret** and `TELEGRAM_CHAT_ID` as a **Variable**. Redeploy.
-5. Open `/admin/orders.html` and press the notification test button. Confirm both a Telegram message and a test email arrive.
+After confirming the D1 binding, migrations and provider configuration:
 
-If `getUpdates` returns no messages, send another message to the bot and refresh the page. Never publish the bot token in GitHub or browser-side code.
-
-## 5. Email configuration
-
-Brevo must have a verified sender email/domain and a valid API key. Transactional SMS also requires SMS credits and an approved Zambia sender ID. If email is not configured, the order endpoint can still save orders but returns `notification_sent: false`; do not switch the storefront to the new checkout until notification delivery is configured and tested.
-
-## 6. Test before switching storefront buttons
-
-After setting secrets and redeploying:
-1. Open `/checkout.html`, add at least two different products, and submit a clearly labelled internal test order.
-2. Confirm one row appears in `orders`, with the expected matching rows in `order_items`, and the order total equals the sum of item totals.
-3. Confirm the owner order alert reaches `ORDER_NOTIFY_EMAIL`, and the customer receives the order confirmation by email and (if SMS is configured) SMS. Test at least one later status change as well.
-4. Open `/admin/orders.html`, sign in with the allowlisted account, and confirm the order is visible and status updates work.
-5. Verify an unauthenticated request to `/api/orders?admin=1` is rejected.
-6. Only after all checks pass, update the three existing storefront pages to send order buttons to `/checkout.html`.
+1. Open \`/checkout.html\`, add at least two different products, and submit a clearly labelled internal test order.
+2. Confirm one row appears in D1 \`orders\`, with matching rows in \`order_items\`, and that the order total is correct.
+3. Confirm the owner order alert reaches \`ORDER_NOTIFY_EMAIL\` and the customer receives the order confirmation by email and, if configured, SMS.
+4. Open \`/admin/orders.html\`, sign in with the authorized administrator account, and confirm the order is visible and status updates work.
+5. Verify an unauthenticated request to \`/api/orders?admin=1\` is rejected.
+6. Only after all checks pass, point the storefront order buttons to \`/checkout.html\`.
 
 ## Routes
 
-- Customer checkout: `/checkout.html`
-- Order API: `/api/orders`
-- Private admin screen: `/admin/orders.html`
-- Admin API: `/api/orders?admin=1`
+- Customer checkout: \`/checkout.html\`
+- Order API: \`/api/orders\`
+- Private admin screen: \`/admin/orders.html\`
+- Admin API: \`/api/orders?admin=1\`
 
-The checkout does not collect payment. New orders start in `pending`; the store must confirm the order and arrange delivery/payment with the customer.
+The checkout does not collect payment. New orders start in \`pending\`; the store confirms the order and arranges payment/delivery with the customer.
