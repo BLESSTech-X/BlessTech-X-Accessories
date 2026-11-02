@@ -20,7 +20,7 @@ function sessionCookie(token){return COOKIE+"="+token+"; Path=/; Max-Age="+(SESS
 function clearCookie(){return COOKIE+"=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax";}
 async function createSession(db,accountId){const raw=b64url(crypto.getRandomValues(new Uint8Array(32)));const tokenHash=b64url(await digest(raw));const id=crypto.randomUUID();const expires=new Date(Date.now()+SESSION_DAYS*86400000).toISOString();await db.prepare("INSERT INTO partner_sessions(id,account_id,token_hash,expires_at) VALUES(?,?,?,?)").bind(id,accountId,tokenHash,expires).run();return raw;}
 async function currentPartner(request,env){const raw=cookieValue(request);if(!raw)return null;const tokenHash=b64url(await digest(raw));return await env.DB.prepare(`SELECT a.id AS account_id,a.email AS account_email,a.status AS account_status,
-adv.id AS advertiser_id,adv.business_name,adv.owner_name,adv.phone,adv.email,adv.tier,adv.status AS advertiser_status,
+adv.id AS advertiser_id,adv.business_name,adv.owner_name,adv.phone,adv.email,adv.logo_url,adv.tier,adv.status AS advertiser_status,
 p.id AS profile_id,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,
 s.id AS site_id,s.site_title,s.site_description,s.hero_title,s.hero_subtitle,s.hero_image_url,s.logo_url,s.primary_color AS site_primary_color,s.accent_color AS site_accent_color,s.font_pair,s.template_key,s.show_catalogue,s.show_services,s.show_posts,s.published,s.seo_title,s.seo_description,s.social_links_json AS site_social_links_json
 FROM partner_sessions ps JOIN advertiser_accounts a ON a.id=ps.account_id
@@ -32,15 +32,23 @@ async function workspace(db,partner){const [items,posts,enquiries,subscription,a
 db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? ORDER BY sort_order,created_at DESC LIMIT 500").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
 db.prepare("SELECT id,customer_name,customer_email,customer_phone,message,source,status,created_at,catalog_item_id FROM partner_enquiries WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
-db.prepare("SELECT * FROM partner_subscriptions WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT ps.*,pp.display_name AS package_name,pp.benefits_json,pp.monthly_price_minor AS package_price_minor,pp.advertising_weight FROM partner_subscriptions ps LEFT JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
 db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_impressions WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_clicks WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first()
-]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
+]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
 if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
+if(action==="profile.save"){
+const business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40),tagline=cleanText(body.tagline,180),about=cleanText(body.about,1200),contactPhone=cleanText(body.contact_phone,40),whatsapp=cleanText(body.contact_whatsapp,40),contactEmail=cleanText(body.contact_email,254).toLowerCase(),logo=cleanText(body.logo_url,1000);
+if(!business||!owner||phone.replace(/\\D/g,"").length<9)return fail("Enter your business name, owner name and a valid phone number.");
+if(contactEmail&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(contactEmail))return fail("Enter a valid public contact email.");
+await db.prepare("UPDATE advertisers SET business_name=?,owner_name=?,phone=?,logo_url=? WHERE id=?").bind(business,owner,phone,logo,partner.advertiser_id).run();
+await db.prepare("UPDATE advertiser_profiles SET tagline=?,about=?,contact_phone=?,contact_whatsapp=?,contact_email=? WHERE advertiser_id=?").bind(tagline,about,contactPhone||phone,whatsapp||contactPhone||phone,contactEmail,partner.advertiser_id).run();
+return json({ok:true,message:"Business profile updated."});
+}
 if(action==="site.publish"){
 const ready=await db.prepare("SELECT site_title,hero_title FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
 if(!ready||!String(ready.site_title||"").trim()||!String(ready.hero_title||"").trim())return fail("Add your website title and hero headline before publishing.");
@@ -122,6 +130,21 @@ const partner=await currentPartner(request,env);if(!partner)return json({ok:fals
 return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});
 }
 if(request.method!=="POST")return fail("Method not allowed.",405);
+if((request.headers.get("content-type")||"").includes("multipart/form-data")){
+if(!env.PARTNER_MEDIA)return fail("Image storage is not connected yet. Please contact PhoneYa2 support.",503);
+const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
+try{
+const form=await request.formData(),file=form.get("file");
+if(!file||typeof file.arrayBuffer!=="function")return fail("Choose an image to upload.");
+if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type))return fail("Upload a JPG, PNG, WEBP or GIF image.");
+if(file.size>5*1024*1024)return fail("Images must be 5 MB or smaller.");
+const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"})[file.type],id=crypto.randomUUID(),key=partner.advertiser_id+"/"+id+"."+ext;
+await env.PARTNER_MEDIA.put(key,file.stream(),{httpMetadata:{contentType:file.type,cacheControl:"public, max-age=31536000, immutable"},customMetadata:{advertiser_id:partner.advertiser_id}});
+const url="/media/partner/"+id;
+await env.DB.prepare("INSERT INTO partner_media_assets(id,advertiser_id,object_key,public_url,media_type,file_name,file_size) VALUES(?,?,?,?,?,?,?)").bind(id,partner.advertiser_id,key,url,"image",cleanText(file.name,180),file.size).run();
+return json({ok:true,url,id});
+}catch(e){console.error("Partner media upload failed",e?.stack||e);return fail("Image upload failed. Please try a smaller image.",500);}
+}
 let body={};try{body=await request.json();}catch{return fail("Invalid JSON request.");}
 const action=String(body.action||"");
 if(action==="signup"){
