@@ -5,7 +5,8 @@
     "/product.html",
     "/blog-post.html",
     "/b/*",
-    "/ad/*"
+    "/ad/*",
+    "/media/partner/*"
   ],
   "exclude": []
 }
