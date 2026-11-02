@@ -125,7 +125,7 @@ a{color:inherit;text-decoration:none}
 .hero p{max-width:600px;color:#e2eaf3;font-size:16px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 .btn{display:inline-flex;padding:11px 16px;border-radius:10px;font-weight:800;font-size:13px}
-.primary{background:${primary};color:white}
+.primary{background:${primary};color:white}.contact .btn.primary{background:#22b65b;color:#111!important;border:1px solid #169447;box-shadow:0 7px 18px #22b65b30}.contact .btn.primary:hover{background:#1da34f;color:#111!important}
 .secondary{background:#ffffff20;border:1px solid #ffffff55;color:white}
 .section{padding:50px 0 5px}
 .section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:17px}
@@ -181,7 +181,8 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 </div>
 <script>
 document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});
-document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));\ndocument.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
+document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));
+document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const button = form.querySelector("button");
