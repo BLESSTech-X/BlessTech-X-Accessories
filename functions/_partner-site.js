@@ -214,6 +214,29 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 </div>
 <script>
 
+function appendPartnerAdMedia(container,ad){
+  const url=String(ad.media_url||"");
+  if(!url)return;
+  if(ad.media_type!=="video"){
+    const image=document.createElement("img");image.src=url;image.alt=ad.title||"Sponsored campaign";image.loading="lazy";image.onerror=()=>image.remove();container.appendChild(image);return;
+  }
+  let provider=ad.video_provider||"";
+  if(!provider){if(/youtube\.com|youtu\.be/i.test(url))provider="youtube";else if(/vimeo\.com/i.test(url))provider="vimeo";else if(/tiktok\.com/i.test(url))provider="tiktok";else provider="mp4";}
+  if(provider==="youtube"){
+    const match=url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+    if(match){const frame=document.createElement("iframe");frame.src="https://www.youtube.com/embed/"+match[1]+"?autoplay=1&mute=1&loop=1&playlist="+match[1]+"&controls=0&playsinline=1";frame.allow="autoplay; encrypted-media";frame.allowFullscreen=true;frame.title=ad.title||"Sponsored video";container.appendChild(frame);}
+    return;
+  }
+  if(provider==="vimeo"){
+    const match=url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if(match){const frame=document.createElement("iframe");frame.src="https://player.vimeo.com/video/"+match[1]+"?autoplay=1&muted=1&loop=1&background=1";frame.allow="autoplay";frame.allowFullscreen=true;frame.title=ad.title||"Sponsored video";container.appendChild(frame);}
+    return;
+  }
+  if(provider==="tiktok"){
+    const fallback=document.createElement("div");fallback.textContent="TikTok video";fallback.style.cssText="color:#fff;background:linear-gradient(135deg,#111,#fe2c55);width:100%;height:100%;display:grid;place-items:center;font-weight:800";container.appendChild(fallback);return;
+  }
+  const video=document.createElement("video");video.src=url;video.muted=true;video.autoplay=true;video.loop=true;video.playsInline=true;container.appendChild(video);
+}
 async function loadPartnerAds(){
   const section=document.getElementById("partner-sponsored"),list=document.getElementById("partner-sponsored-list");
   if(!section||!list)return;
@@ -226,14 +249,7 @@ async function loadPartnerAds(){
       const card=document.createElement("article");card.className="sponsored-card";
       const media=document.createElement("div");media.className="sponsored-media";
       const tag=document.createElement("span");tag.className="sponsored-label";tag.textContent="Sponsored";media.appendChild(tag);
-      const url=String(ad.media_url||"");
-      if(url){
-        if(ad.media_type==="video"&&!/youtube\.com|youtu\.be|vimeo\.com|tiktok\.com/i.test(url)){
-          const video=document.createElement("video");video.src=url;video.muted=true;video.autoplay=true;video.loop=true;video.playsInline=true;media.appendChild(video);
-        }else{
-          const img=document.createElement("img");img.src=url;img.alt=ad.title||"Sponsored campaign";img.loading="lazy";img.onerror=()=>{img.remove();};media.appendChild(img);
-        }
-      }
+      appendPartnerAdMedia(media,ad);
       const copy=document.createElement("div");copy.className="sponsored-copy";
       const business=document.createElement("div");business.className="sponsored-business";business.textContent=ad.business_name||(ad.advertisers&&ad.advertisers.business_name)||"Zambian business";
       const title=document.createElement("h3");title.textContent=ad.title||"Featured offer";
@@ -259,11 +275,7 @@ function showPartnerAdPopup(ad){
   overlay.dataset.opened="1";sessionStorage.setItem("py2_partner_popup_seen","1");
   const media=document.createElement("div");media.className="sponsored-media";
   const tag=document.createElement("span");tag.className="sponsored-label";tag.textContent="Sponsored";media.appendChild(tag);
-  if(ad.media_url&&ad.media_type!=="video"){
-    const img=document.createElement("img");img.src=ad.media_url;img.alt=ad.title||"Sponsored campaign";media.appendChild(img);
-  }else if(ad.media_url){
-    const video=document.createElement("video");video.src=ad.media_url;video.muted=true;video.autoplay=true;video.loop=true;video.playsInline=true;media.appendChild(video);
-  }
+  appendPartnerAdMedia(media,ad);
   const copy=document.createElement("div");copy.className="sponsored-copy";
   const business=document.createElement("div");business.className="sponsored-business";business.textContent=ad.business_name||(ad.advertisers&&ad.advertisers.business_name)||"Zambian business";
   const title=document.createElement("h3");title.textContent=ad.title||"Featured offer";
