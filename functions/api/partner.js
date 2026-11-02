@@ -122,10 +122,13 @@ let slug=slugify(body.slug||title);
 const existingSlug=await db.prepare("SELECT id FROM partner_posts WHERE advertiser_id=? AND slug=? COLLATE NOCASE LIMIT 1").bind(partner.advertiser_id,slug).first();
 if(existingSlug&&existingSlug.id!==id)slug=slug.slice(0,42)+"-"+crypto.randomUUID().slice(0,5).toLowerCase();
 const status=body.status==="published"?"published":"draft";
+const ctaLabel=cleanText(body.cta_label,32);
+const ctaUrl=cleanText(body.cta_url,1000);
+if(ctaUrl && !/^#[a-z][a-z0-9_-]*$/i.test(ctaUrl) && !/^\\/(?!\\/)[a-z0-9/_?=&%#.-]*$/i.test(ctaUrl) && !/^https?:\\/\\//i.test(ctaUrl))return fail("Use a full http/https link or a section link such as #contact.");
 try{
-await db.prepare(`INSERT INTO partner_posts(id,advertiser_id,title,slug,excerpt,body,cover_image_url,post_type,status,published_at,updated_at)
-VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,slug=excluded.slug,excerpt=excluded.excerpt,body=excluded.body,cover_image_url=excluded.cover_image_url,post_type=excluded.post_type,status=excluded.status,published_at=excluded.published_at,updated_at=excluded.updated_at
-WHERE partner_posts.advertiser_id=excluded.advertiser_id`).bind(id,partner.advertiser_id,title,slug,cleanText(body.excerpt,300),cleanText(body.body,20000),cleanText(body.cover_image_url,1000),cleanText(body.post_type,40)||"update",status,status==="published"?now:null,now).run();
+await db.prepare(`INSERT INTO partner_posts(id,advertiser_id,title,slug,excerpt,body,cover_image_url,post_type,cta_label,cta_url,status,published_at,updated_at)
+VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,slug=excluded.slug,excerpt=excluded.excerpt,body=excluded.body,cover_image_url=excluded.cover_image_url,post_type=excluded.post_type,cta_label=excluded.cta_label,cta_url=excluded.cta_url,status=excluded.status,published_at=excluded.published_at,updated_at=excluded.updated_at
+WHERE partner_posts.advertiser_id=excluded.advertiser_id`).bind(id,partner.advertiser_id,title,slug,cleanText(body.excerpt,300),cleanText(body.body,20000),cleanText(body.cover_image_url,1000),cleanText(body.post_type,40)||"update",ctaLabel,ctaUrl,status,status==="published"?now:null,now).run();
 }catch(error){
 console.error("Partner post save failed:",String(error?.stack||error).slice(0,1000));
 return fail("Your post could not be saved. Please check the details and try again. If it continues, contact PhoneYa2 support.",500);
