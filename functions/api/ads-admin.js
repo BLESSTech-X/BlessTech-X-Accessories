@@ -43,7 +43,7 @@ function parseQuery(raw) {
       if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Invalid email.");
       out.email = email;
     } else if (key === "order") {
-      const m = /^(created_at|joined_at|rank)(?:\\.(asc|desc))?$/i.exec(value);
+      const m = /^(created_at|joined_at|rank)(?:\.(asc|desc))?$/i.exec(value);
       if (!m) throw new Error("Invalid sort.");
       out.order = { column: m[1], direction: (m[2] || "asc").toUpperCase() };
     } else if (key === "limit") {
