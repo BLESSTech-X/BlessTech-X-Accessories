@@ -108,9 +108,9 @@ export function renderPartnerSite(data) {
 ${heroImage ? `<meta property="og:image" content="${esc(heroImage)}">` : ""}
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
+body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
 a{color:inherit;text-decoration:none}
-.site{max-width:1240px;margin:auto;padding:0 22px;position:relative}.template-studio .site{max-width:1320px}.template-hospitality .site{max-width:1100px}.template-storefront .products{grid-template-columns:repeat(4,minmax(0,1fr))}.template-studio .hero{min-height:520px;text-align:center;justify-content:center}.template-studio .hero-content{margin:auto}.template-hospitality .hero{min-height:460px;border-radius:4px}.template-professional .hero{min-height:340px;border-radius:12px}
+.site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}.template-studio .site{max-width:1320px}.template-hospitality .site{max-width:1100px}.template-storefront .products{grid-template-columns:repeat(4,minmax(0,1fr))}.template-studio .hero{min-height:520px;text-align:center;justify-content:center}.template-studio .hero-content{margin:auto}.template-hospitality .hero{min-height:460px;border-radius:4px}.template-professional .hero{min-height:340px;border-radius:12px}
 .top{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e7ebf1;position:sticky;top:0;z-index:8;background:#ffffffeb;backdrop-filter:blur(16px);padding:0 18px;margin:0 -18px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:19px}
 .logo{width:42px;height:42px;border-radius:13px;background:${primary};color:white;display:grid;place-items:center;overflow:hidden}
