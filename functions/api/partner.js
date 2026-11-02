@@ -28,12 +28,13 @@ JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
 AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`).bind(tokenHash,new Date().toISOString()).first();}
-async function workspace(db,partner){const [items,posts,enquiries,subscription]=await Promise.all([
+async function workspace(db,partner){const [items,posts,enquiries,subscription,ads]=await Promise.all([
 db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? ORDER BY sort_order,created_at DESC LIMIT 500").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
 db.prepare("SELECT id,customer_name,customer_email,customer_phone,message,source,status,created_at,catalog_item_id FROM partner_enquiries WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
-db.prepare("SELECT * FROM partner_subscriptions WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 1").bind(partner.advertiser_id).first()
-]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription};}
+db.prepare("SELECT * FROM partner_subscriptions WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all()
+]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,ads:ads.results||[]};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
@@ -53,6 +54,45 @@ const fields={site_title:cleanText(body.site_title,100),site_description:cleanTe
 await db.prepare(`UPDATE partner_site_settings SET site_title=?,site_description=?,hero_title=?,hero_subtitle=?,hero_image_url=?,logo_url=?,primary_color=?,accent_color=?,font_pair=?,template_key=?,seo_title=?,seo_description=?,social_links_json=?,updated_at=? WHERE advertiser_id=?`).bind(fields.site_title,fields.site_description,fields.hero_title,fields.hero_subtitle,fields.hero_image_url,fields.logo_url,fields.primary_color,fields.accent_color,fields.font_pair,fields.template_key,fields.seo_title,fields.seo_description,fields.social_links_json,now,partner.advertiser_id).run();
 await db.prepare("UPDATE advertiser_profiles SET primary_color=?,accent_color=?,cover_image_url=?,social_links_json=?,tagline=?,about=?,updated_at=? WHERE advertiser_id=?").bind(fields.primary_color,fields.accent_color,fields.hero_image_url,fields.social_links_json,fields.hero_subtitle,fields.site_description,now,partner.advertiser_id).run();
 return json({ok:true,message:"Website settings saved."});
+}
+if(action==="campaign.save"){
+const id=UUID.test(String(body.id||""))?body.id:crypto.randomUUID();
+const title=cleanText(body.title,120),description=cleanText(body.description,1000),mediaUrl=cleanText(body.media_url,1000),destinationUrl=cleanText(body.destination_url,1000);
+if(!title)return fail("Add a campaign title.");
+if(!destinationUrl)return fail("Add the destination customers should visit.");
+const mediaType=body.media_type==="video"?"video":"image";
+const destinationType=["website","whatsapp","facebook","instagram","tiktok","youtube"].includes(body.destination_type)?body.destination_type:"website";
+const placement=["carousel","popup","both"].includes(body.placement)?body.placement:"carousel";
+const validUrl=value=>{try{const u=new URL(value);return ["https:","http:"].includes(u.protocol)}catch{return false}};
+if(!validUrl(destinationUrl))return fail("Enter a valid destination URL.");
+if(mediaUrl&&!validUrl(mediaUrl))return fail("Enter a valid image or video URL.");
+if(mediaType==="video"&&!mediaUrl)return fail("Add a video URL.");
+const start=body.start_date?new Date(body.start_date).toISOString():now;
+const end=body.end_date?new Date(body.end_date).toISOString():null;
+if(end&&Date.parse(end)<=Date.parse(start))return fail("Campaign end date must be after its start date.");
+let slug;
+if(body.id&&UUID.test(String(body.id))){const existing=await db.prepare("SELECT id,slug,status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first();if(!existing)return fail("Campaign not found.",404);slug=existing.slug;}
+else{slug=slugify(title);for(let n=0;n<8;n++){const exists=await db.prepare("SELECT id FROM ads WHERE slug=? COLLATE NOCASE").bind(slug).first();if(!exists)break;slug=slugify(title)+"-"+crypto.randomUUID().slice(0,5).toLowerCase();}}
+const existing=body.id?await db.prepare("SELECT status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first():null;
+const status=existing&&existing.status==="approved"?"pending":(existing?existing.status:"pending");
+const tier=await db.prepare("SELECT a.tier,t.rotation_weight FROM advertisers a LEFT JOIN ad_tiers t ON t.tier=a.tier WHERE a.id=?").bind(partner.advertiser_id).first();
+const weight=Number(tier?.rotation_weight||1);
+await db.prepare(`INSERT INTO ads(id,advertiser_id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,updated_at)
+VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,description=excluded.description,media_url=excluded.media_url,media_type=excluded.media_type,video_provider=excluded.video_provider,destination_type=excluded.destination_type,destination_url=excluded.destination_url,status=excluded.status,placement=excluded.placement,weight=excluded.weight,start_date=excluded.start_date,end_date=excluded.end_date,updated_at=excluded.updated_at
+WHERE ads.advertiser_id=excluded.advertiser_id`).bind(id,partner.advertiser_id,slug,title,description,mediaUrl,mediaType,cleanText(body.video_provider,30),destinationType,destinationUrl,status,placement,weight,start,end,now).run();
+return json({ok:true,id,status,message:status==="pending"?"Campaign submitted for review.":"Campaign saved."});
+}
+if(action==="campaign.pause"||action==="campaign.resume"){
+const id=String(body.id||"");if(!UUID.test(id))return fail("Invalid campaign.");
+const row=await db.prepare("SELECT status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first();if(!row)return fail("Campaign not found.",404);
+if(action==="campaign.pause"){await db.prepare("UPDATE ads SET status='paused',updated_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();}
+else{await db.prepare("UPDATE ads SET status='pending',updated_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();}
+return json({ok:true,message:action==="campaign.pause"?"Campaign paused. It will no longer be shown.":"Campaign resubmitted for review."});
+}
+if(action==="campaign.delete"){
+const id=String(body.id||"");if(!UUID.test(id))return fail("Invalid campaign.");
+await db.prepare("DELETE FROM ads WHERE id=? AND advertiser_id=? AND status IN ('pending','rejected','paused')").bind(id,partner.advertiser_id).run();
+return json({ok:true});
 }
 if(action==="catalog.save"){
 const id=UUID.test(String(body.id||""))?body.id:crypto.randomUUID();const type=body.item_type==="service"?"service":"product";const title=cleanText(body.title,120);if(!title)return fail("Add a product or service name.");const slug=slugify(body.slug||title);const price=body.price_minor===null||body.price_minor===""?null:Number(body.price_minor);if(price!==null&&(!Number.isSafeInteger(price)||price<0))return fail("Enter a valid price in ngwee.");const availability=["available","out_of_stock","limited","on_request"].includes(body.availability)?body.availability:"available";
