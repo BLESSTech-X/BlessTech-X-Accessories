@@ -400,25 +400,18 @@ async function sendCustomerOrderConfirmation(env, order, customer, items) {
     "</div></div>";
   return await sendBrevoEmail(env,customer.email,"We received your PhoneYa2 order " + order.order_number,html);}
 
-async function sendDeliveredOrderEmail(env, order) {
-  const apiKey = env.BREVO_API_KEY;
-  const from = env.BREVO_FROM_EMAIL;
-  const email = cleanText(order.customer_email, 254).toLowerCase();
-  if (!apiKey || !from) return { ok: false, error: "Brevo API key or sender is not configured." };
-  if (!email) return { ok: false, error: "Customer email is missing." };
-  const orderNumber = cleanText(order.order_number, 80);
-  const name = cleanText(order.customer_name, 120) || "there";
-  const feedbackUrl = "https://wa.me/260979603741?text=" + encodeURIComponent(
-    "Hi PhoneYa2, my order " + orderNumber + " has been delivered. I'd like to share honest feedback about my experience."
-  );
-  const html = "<div style=\"font-family:Arial,sans-serif;color:#18202b;max-width:620px;margin:auto;line-height:1.6\">" +
-    "<div style=\"background:#151827;color:#fff;padding:22px;border-radius:14px 14px 0 0\"><div style=\"font-size:12px;letter-spacing:2px;color:#ff8b45;font-weight:bold\">PHONEYA2 ACCESSORIES</div><h1 style=\"font-size:24px;margin:8px 0 0\">Your order has been delivered</h1></div>" +
-    "<div style=\"padding:22px;border:1px solid #e7eaf0;border-top:0;border-radius:0 0 14px 14px\">" +
-    "<p>Hello " + escapeHtml(name) + ",</p><p>Our records show that your PhoneYa2 order <strong>" + escapeHtml(orderNumber) + "</strong> has been marked as delivered. Thank you for shopping with us.</p>" +
-    "<p>We'd appreciate your honest feedback about the product and delivery experience. Your feedback helps us improve; sharing it is completely optional.</p>" +
-    "<p style=\"margin:24px 0\"><a href=\"" + escapeHtml(feedbackUrl) + "\" style=\"display:inline-block;background:#128c7e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:bold\">Share feedback on WhatsApp</a></p>" +
-    "<p>If you have not received your order, please contact us so we can investigate.</p><p>Thank you,<br><strong>PhoneYa2 Team</strong></p></div></div>";
-  return await sendBrevoEmail(env,email,"PhoneYa2 order " + orderNumber + " — delivery update",html);}
+async function sendOrderStatusEmail(env,order){
+  const email=cleanText(order.customer_email,254).toLowerCase();
+  if(!email)return{ok:false,error:"Customer email is missing."};
+  const status=String(order.status||"").toLowerCase();
+  const labels={confirmed:"confirmed",processing:"being prepared",shipped:"on its way",delivered:"delivered",cancelled:"cancelled"};
+  const label=labels[status]||status;
+  const orderNumber=cleanText(order.order_number,80);
+  const name=cleanText(order.customer_name,120)||"there";
+  const feedback=status==="delivered"?"<p>We'd appreciate your honest feedback about the product and delivery experience. Sharing feedback is completely optional.</p><p><a href='https://wa.me/260979603741?text="+encodeURIComponent("Hi PhoneYa2, my order "+orderNumber+" has been delivered. I'd like to share feedback.")+"' style='display:inline-block;background:#128c7e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:bold'>Share feedback on WhatsApp</a></p>":"";
+  const html="<div style='font-family:Arial,sans-serif;color:#18202b;max-width:620px;margin:auto;line-height:1.6'><div style='background:#151827;color:#fff;padding:22px;border-radius:14px 14px 0 0'><div style='font-size:12px;letter-spacing:2px;color:#ff8b45;font-weight:bold'>PHONEYA2 ACCESSORIES</div><h1 style='font-size:24px;margin:8px 0 0'>Your order update</h1></div><div style='padding:22px;border:1px solid #e7eaf0;border-top:0;border-radius:0 0 14px 14px'><p>Hello "+escapeHtml(name)+",</p><p>Your PhoneYa2 order <strong>"+escapeHtml(orderNumber)+"</strong> is now <strong>"+escapeHtml(label)+"</strong>.</p><p>We'll keep you informed if anything else changes. If you need help, contact the PhoneYa2 team.</p>"+feedback+"<p>Thank you,<br><strong>PhoneYa2 Team</strong></p></div></div>";
+  return await sendBrevoEmail(env,email,"PhoneYa2 order "+orderNumber+" — "+label+" update",html);
+}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -636,23 +629,25 @@ export async function onRequest(context) {
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
       if (!updatedOrder) return json({ error: "Order not found." }, 404);
-      let deliveryEmailSent = false;
-      if (status === "delivered" && currentRow.status !== "delivered") {
-        const deliveryEmail = await sendDeliveredOrderEmail(env, updatedOrder);
-        deliveryEmailSent = deliveryEmail.ok;
-        const deliverySms=await sendBrevoSms(env,updatedOrder.customer_phone,"PhoneYa2: Your order "+(updatedOrder.order_number||"")+" has been marked as delivered. If you have not received it, please contact us.","phoneya2_delivery_update");
-        await logCommunicationActivity(env,{recipient:normalizeZambiaPhone(updatedOrder.customer_phone),name:updatedOrder.customer_name,channel:"sms",eventType:"delivery_update",status:deliverySms.ok?"sent":deliverySms.skipped?"skipped":"failed",messageId:deliverySms.messageId,error:deliverySms.error});
+      let statusEmailSent = false, statusSmsSent = false;
+      if (currentRow.status !== status) {
+        const statusEmail = await sendOrderStatusEmail(env, updatedOrder);
+        statusEmailSent = statusEmail.ok;
+        const statusLabel = String(status||"").replace(/_/g," ");
+        const statusSms = await sendBrevoSms(env,updatedOrder.customer_phone,"PhoneYa2: Your order "+(updatedOrder.order_number||"")+" status is now "+statusLabel+". Contact us if you need help.","phoneya2_order_status");
+        statusSmsSent = statusSms.ok;
+        await logCommunicationActivity(env,{recipient:normalizeZambiaPhone(updatedOrder.customer_phone),name:updatedOrder.customer_name,channel:"sms",eventType:"order_status_update",status:statusSms.ok?"sent":statusSms.skipped?"skipped":"failed",messageId:statusSms.messageId,error:statusSms.error});
         await logEmailActivity(env, {
-          eventType: "delivery_update", source: "automatic", triggerSource: "order_marked_delivered",
+          eventType: "order_status_update", source: "automatic", triggerSource: "order_status_changed",
           recipientEmail: updatedOrder.customer_email || "", recipientName: updatedOrder.customer_name || "",
-          subject: "PhoneYa2 order " + (updatedOrder.order_number || "") + " — delivery update",
-          status: deliveryEmail.ok ? "sent" : "failed",
-          providerMessageId: deliveryEmail.providerMessageId || "", error: deliveryEmail.error || "",
-          orderNumber: updatedOrder.order_number || "", metadata: { orderStatus: "delivered" }
+          subject: "PhoneYa2 order " + (updatedOrder.order_number || "") + " — " + statusLabel + " update",
+          status: statusEmail.ok ? "sent" : "failed",
+          provider: "brevo", providerMessageId: statusEmail.providerMessageId || "", error: statusEmail.error || "",
+          orderNumber: updatedOrder.order_number || "", metadata: { orderStatus: status }
         });
-        if (!deliveryEmail.ok) console.error("PhoneYa2 delivery email failed for", updatedOrder.order_number, deliveryEmail.error);
+        if (!statusEmail.ok) console.error("PhoneYa2 order status email failed for", updatedOrder.order_number, statusEmail.error);
       }
-      return json({ success: true, order: updatedOrder, delivery_email_sent: deliveryEmailSent });
+      return json({ success: true, order: updatedOrder, status_email_sent: statusEmailSent, status_sms_sent: statusSmsSent });
     } catch (error) {
       console.error("PhoneYa2 admin order action failed:", String(error));
       return json({ error: "Could not complete the request. Please try again." }, 503);
