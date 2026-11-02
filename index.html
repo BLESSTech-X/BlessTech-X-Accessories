@@ -3848,7 +3848,7 @@ card.innerHTML =
     // Keep the main interstitials in the carousel placement, but let the
     // timed popup rotate through every approved, date-valid advertiser.
     var popupRows = rows.slice();
-    var carouselRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel'; });
+    var carouselRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel' || ad.placement === 'both'; });
     var ordered = frontloadByTier(carouselRows, weightedShuffle, 3);
     if (ordered.length) {
       var slot1 = ordered;
