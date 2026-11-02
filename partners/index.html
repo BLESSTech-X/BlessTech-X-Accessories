@@ -251,12 +251,10 @@ body.py2-page{min-height:100vh;background:radial-gradient(circle at 12% 12%,#e4e
 (function () {
   'use strict';
 
-  var P = window.py2Ads;
-  if (!P) {
-    // ads-config.js?v=20261030-unified-session3 failed to load — page is not usable.
-    document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;">' +
-      '<h2>Configuration missing</h2><p>ads-config.js?v=20261030-unified-session3 did not load. Please contact support.</p></div>';
-    return;
+  function notify(message, kind) {
+    var el = document.getElementById('py2-error-banner');
+    if (kind === 'error') { errorText.textContent = message; errorBox.style.display = 'flex'; }
+    else if (kind === 'success') { errorText.textContent = message; errorBox.style.display = 'flex'; }
   }
 
   var form      = document.getElementById('py2-signup-form');
@@ -331,7 +329,7 @@ body.py2-page{min-height:100vh;background:radial-gradient(circle at 12% 12%,#e4e
     hideError();
 
     if (!validateAll()) {
-      P.toast('Please fix the highlighted fields', 'error');
+      notify('Please fix the highlighted fields', 'error');
       return;
     }
 
@@ -356,7 +354,7 @@ body.py2-page{min-height:100vh;background:radial-gradient(circle at 12% 12%,#e4e
         // Success — show success view then redirect
         signupView.style.display  = 'none';
         successView.style.display = 'block';
-        P.toast('Account created!', 'success');
+        notify('Your partner account has been created. Opening your workspace…', 'success');
         setTimeout(function () {
           window.location.href = '/partners-dashboard/';
         }, 1500);
