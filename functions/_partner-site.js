@@ -19,8 +19,8 @@ function safeUrl(value) {
 
 function safeActionUrl(value) {
   const candidate = String(value || "").trim();
-  if (candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\")) return candidate;
-  if (candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\")) return candidate;
+  if (/^#[a-z][a-z0-9_-]*$/i.test(candidate)) return candidate;
+  if (candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\\\")) return candidate;
   try {
     const parsed = new URL(candidate);
     return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : "";
