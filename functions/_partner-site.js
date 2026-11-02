@@ -180,7 +180,8 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
-document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});\ndocument.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));\ndocument.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
+document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});
+document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));\ndocument.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const button = form.querySelector("button");
