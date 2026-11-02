@@ -188,6 +188,10 @@ async function writeTable(db, body) {
   params.push(q.id);
   const result = await db.prepare(`UPDATE ${table} SET ${assignments} WHERE id = ?`).bind(...params).run();
   if (!result.meta || result.meta.changes === 0) throw new Error("Record not found or unchanged.");
+  if (table === "advertisers" && values.tier) {
+    const tier = await db.prepare("SELECT rotation_weight FROM ad_tiers WHERE tier=?").bind(String(values.tier)).first();
+    await db.prepare("UPDATE ads SET weight=? WHERE advertiser_id=? AND status IN ('pending','approved')").bind(Number(tier?.rotation_weight||1),q.id).run();
+  }
   return all(db, `SELECT * FROM ${table} WHERE id = ?`, [q.id]);
 }
 
