@@ -61,7 +61,7 @@ async function sendOne(env,campaign,recipient) {
     const response=await fetch("https://api.brevo.com/v3/smtp/email",{method:"POST",headers:{"api-key":key,"content-type":"application/json","accept":"application/json"},body:JSON.stringify({
       sender:{name:env.BREVO_FROM_NAME||"PhoneYa2 Accessories",email:fromEmail},
       to:[{email:recipient.email,name:recipient.full_name||""}],
-      subject:campaign.subject,htmlContent:html,textContent:campaign.body_text+"\\n\\nPhoneYa2 Accessories"
+      subject:campaign.subject,htmlContent:html,textContent:campaign.body_text+"\\n\\nPhoneYa2 Accessories",headers:isPartner?{}:{"List-Unsubscribe":"<"+unsubscribe+">"}
     })});
     const result=await response.json().catch(()=>({}));
     return response.ok?{ok:true,messageId:result.messageId||""}:{ok:false,error:"Brevo HTTP "+response.status+": "+String(result.message||result.code||"").slice(0,220)};
