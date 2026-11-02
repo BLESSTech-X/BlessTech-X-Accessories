@@ -3847,7 +3847,7 @@ card.innerHTML =
     if (!Array.isArray(rows) || !rows.length) return;
     // Keep the main interstitials in the carousel placement, but let the
     // timed popup rotate through every approved, date-valid advertiser.
-    var popupRows = rows.slice();
+    var popupRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'popup' || ad.placement === 'both'; });
     var carouselRows = rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel' || ad.placement === 'both'; });
     var ordered = frontloadByTier(carouselRows, weightedShuffle, 3);
     if (ordered.length) {
