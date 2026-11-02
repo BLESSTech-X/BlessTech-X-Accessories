@@ -184,15 +184,15 @@ export async function onRequest(context) {
     try { body = await request.json(); } catch { return json({ error: "Enter the email address used for your PhoneYa2 orders." }, 400); }
     const email = String(body.email || "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return json({ error: "Enter a valid order email address." }, 400);
-    const apiKey = env.RESEND_API_KEY;
-    const from = env.RESEND_FROM;
-    if (!recoverySecret || !apiKey || !from) return json({ error: "Email order recovery is temporarily unavailable. Please try again shortly." }, 503);
+    const apiKey = env.BREVO_API_KEY;
+    const from = env.BREVO_FROM_EMAIL;
+    if (!recoverySecret || !apiKey || !from) return json({ error: "Email order recovery is temporarily unavailable. Check Brevo configuration and try again shortly." }, 503);
     try {
       const payload = base64url(new TextEncoder().encode(JSON.stringify({ email, exp: Date.now() + 15 * 60 * 1000 })));
       const signature = await signRecoveryPayload(payload, recoverySecret);
       const link = new URL("/account.html?restore=" + encodeURIComponent(payload + "." + signature), request.url).toString();
       const html = "<div style=\"font-family:Arial,sans-serif;color:#172033;max-width:560px;margin:auto;padding:24px\"><h2 style=\"color:#128c4b\">Restore your PhoneYa2 orders</h2><p>Someone requested access to the order history associated with this email address.</p><p>Tap below to securely restore your orders. This link expires in 15 minutes and does not require a password.</p><p style=\"margin:26px 0\"><a href=\"" + link.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + "\" style=\"display:inline-block;padding:13px 20px;background:#159447;color:white;text-decoration:none;border-radius:9px;font-weight:bold\">Restore my orders</a></p><p>If you did not request this, ignore this email.</p><p>PhoneYa2 Team</p></div>";
-      const sent = await fetch("https://api.resend.com/emails", { method: "POST", headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" }, body: JSON.stringify({ from, to: [email], subject: "Restore your PhoneYa2 order history", html }) });
+      const sent = await fetch("https://api.brevo.com/v3/smtp/email", { method: "POST", headers: { "api-key": apiKey, "content-type": "application/json" }, body: JSON.stringify({ sender: { name: env.BREVO_FROM_NAME || "PhoneYa2 Accessories", email: from }, to: [{ email }], subject: "Restore your PhoneYa2 order history", htmlContent: html }) });
       if (!sent.ok) {
         console.error("PhoneYa2 recovery email failed:", sent.status, (await sent.text()).slice(0, 240));
         return json({ error: "We could not send the recovery email right now. Please try again shortly." }, 502);
