@@ -111,12 +111,22 @@ ${heroImage ? `<meta property="og:image" content="${esc(heroImage)}">` : ""}
 body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
 a{color:inherit;text-decoration:none}
 .site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}.template-studio .site{max-width:1320px}.template-hospitality .site{max-width:1100px}.template-storefront .products{grid-template-columns:repeat(4,minmax(0,1fr))}.template-studio .hero{min-height:520px;text-align:center;justify-content:center}.template-studio .hero-content{margin:auto}.template-hospitality .hero{min-height:460px;border-radius:4px}.template-professional .hero{min-height:340px;border-radius:12px}
-.top{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e7ebf1;position:sticky;top:0;z-index:8;background:#ffffffeb;backdrop-filter:blur(16px);padding:0 18px;margin:0 -18px}
-.brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:19px}
-.logo{width:42px;height:42px;border-radius:13px;background:${primary};color:white;display:grid;place-items:center;overflow:hidden}
-.logo img{width:100%;height:100%;object-fit:cover}
-.top small{display:block;color:#8190a3;font-size:10px;letter-spacing:1.2px;text-transform:uppercase}
-.top-link{font-weight:750;color:#63748a;font-size:13px}.site-nav{display:flex;align-items:center;gap:18px;margin-left:auto;margin-right:20px}.site-nav a{font-size:12px;font-weight:800;color:#65758a}.site-nav a:hover{color:${primary}}.site-nav .nav-cta{background:${primary};color:#fff;padding:9px 13px;border-radius:9px}.menu-button{display:none;border:0;background:#edf1f6;border-radius:9px;padding:8px 11px;font-weight:900}
+.top{height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #e7ebf1;position:sticky;top:0;z-index:20;background:#fffffff2;backdrop-filter:blur(18px);padding:0 20px;margin:0 -18px;box-shadow:0 5px 22px #142b4a08}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;font-weight:850;font-size:19px;letter-spacing:-.35px;color:#172b48}
+.logo{width:44px;height:44px;flex:0 0 44px;border-radius:13px;background:${primary};color:white;display:grid;place-items:center;overflow:hidden;box-shadow:0 4px 12px #142b4a18}
+.logo img{width:100%;height:100%;object-fit:contain;padding:3px}
+.top small{display:none}
+.top-menu-wrap{position:relative;margin-left:auto}
+.top-link{font-weight:750;color:#63748a;font-size:13px}
+.site-nav{display:none;position:absolute;right:0;top:calc(100% + 13px);width:min(280px,calc(100vw - 32px));margin:0;padding:9px;background:#fff;border:1px solid #e4eaf1;border-radius:15px;box-shadow:0 18px 48px #132b4a20;flex-direction:column;align-items:stretch;gap:3px}
+.site-nav.open{display:flex}
+.site-nav a{display:flex;align-items:center;min-height:42px;padding:10px 12px;border-radius:9px;font-size:13px;font-weight:750;color:#31445b}
+.site-nav a:hover{background:#f1f5fa;color:${primary}}
+.site-nav .nav-cta{background:${primary};color:#fff;margin-top:4px}
+.site-nav .nav-cta:hover{filter:brightness(.96);color:#fff}
+.menu-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:46px;height:44px;border:1px solid #dfe6ef;background:#f7f9fc;color:#172b48;border-radius:12px;padding:0 13px;font-size:13px;font-weight:850;cursor:pointer;box-shadow:0 2px 7px #142b4a08}
+.menu-button:hover,.menu-button[aria-expanded="true"]{background:#edf3fa;border-color:#c5d3e3}
+.menu-button:focus-visible{outline:3px solid #8bbcf0;outline-offset:2px}
 .hero{margin:22px 0 0;min-height:440px;border-radius:24px;overflow:hidden;position:relative;display:flex;align-items:end;background:linear-gradient(110deg,${accent} 0%,#142b48 100%);color:white}
 .hero:before{content:"";position:absolute;inset:0;background:${heroImage ? `linear-gradient(90deg,rgba(9,24,43,.88),rgba(9,24,43,.18)),url("${heroImage}") center/cover` : "radial-gradient(circle at 85% 20%,rgba(255,255,255,.2),transparent 30%)"}}
 .hero-content{position:relative;z-index:1;padding:clamp(26px,6vw,65px);max-width:760px}
@@ -198,7 +208,7 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 <div class="site">
-<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}<small>Partner business on PhoneYa2</small></div></div><nav id="site-nav" class="site-nav"><a href="#products">Products</a><a href="#services">Services</a><a href="#updates">Updates</a><a href="#about">About</a><a class="nav-cta" href="#contact">Contact</a></nav><button class="menu-button" id="site-menu" aria-label="Open website menu">☰</button><a class="top-link" href="/">Shop PhoneYa2 ↗</a></header>
+<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><div class="top-menu-wrap"><button class="menu-button" id="site-menu" type="button" aria-label="Open website menu" aria-expanded="false" aria-controls="site-nav"><span>☰</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></div></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 <section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
@@ -287,9 +297,14 @@ function showPartnerAdPopup(ad){
 document.getElementById("partner-ad-popup-close").addEventListener("click",()=>{document.getElementById("partner-ad-popup").hidden=true;});
 document.getElementById("partner-ad-popup").addEventListener("click",event=>{if(event.target.id==="partner-ad-popup")event.currentTarget.hidden=true;});
 
-document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});
+const siteMenu=document.getElementById("site-menu");
+const siteNav=document.getElementById("site-nav");
+function closeSiteMenu(){siteNav.classList.remove("open");siteMenu.setAttribute("aria-expanded","false");siteMenu.setAttribute("aria-label","Open website menu")}
+siteMenu.addEventListener("click",function(){const open=siteNav.classList.toggle("open");siteMenu.setAttribute("aria-expanded",String(open));siteMenu.setAttribute("aria-label",open?"Close website menu":"Open website menu")});
+document.addEventListener("click",event=>{if(!event.target.closest(".top-menu-wrap"))closeSiteMenu()});
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeSiteMenu()});
 loadPartnerAds();
-document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));
+document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",closeSiteMenu));
 document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
   const form = event.currentTarget;
