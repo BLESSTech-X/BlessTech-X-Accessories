@@ -1,3 +1,4 @@
+import { renderPartnerSite } from "../_partner-site.js";
 /* ═══════════════════════════════════════════════════════════════════════════
    Cloudflare Pages Function — GET /b/:slug
    ────────────────────────────────────────────────────────────────────────
@@ -1003,12 +1004,40 @@ ${bodyHtml}
 
 // ── Main handler ──────────────────────────────────────────────────────────
 export async function onRequestGet(context) {
-  const { params, request } = context;
+  const { params, request, env } = context;
   const slug = params && params.slug;
   const previewMode = new URL(request.url).searchParams.has('preview');
 
   if (!slug || typeof slug !== 'string') {
     return notFoundPage('');
+  }
+
+  // Prefer the new D1-powered Partner website when it has been explicitly published.
+  // Unpublished/new D1 sites do not affect the existing Supabase mini-sites.
+  if (env && env.DB) {
+    try {
+      const site = await env.DB.prepare(`SELECT s.*, p.slug, a.id AS advertiser_id,
+        a.business_name, a.phone, a.logo_url, a.status AS advertiser_status
+        FROM partner_site_settings s
+        JOIN advertisers a ON a.id = s.advertiser_id
+        JOIN advertiser_profiles p ON p.advertiser_id = a.id
+        WHERE p.slug = ? COLLATE NOCASE AND s.published = 1
+          AND a.status IN ('active','approved') LIMIT 1`).bind(slug).first();
+      if (site) {
+        const [itemsResult, postsResult] = await Promise.all([
+          env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 ORDER BY featured DESC,sort_order,created_at DESC LIMIT 100").bind(site.advertiser_id).all(),
+          env.DB.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 30").bind(site.advertiser_id).all()
+        ]);
+        const referer = request.headers.get("referer") || "";
+        const source = /whatsapp|wa\.me/i.test(referer) ? "whatsapp" : /facebook|fb\.com/i.test(referer) ? "facebook" : /instagram/i.test(referer) ? "instagram" : "direct";
+        env.DB.prepare("INSERT INTO partner_site_events(id,advertiser_id,event_type,source) VALUES(?,?, 'page_view', ?)")
+          .bind(crypto.randomUUID(), site.advertiser_id, source).run().catch(() => {});
+        const html = renderPartnerSite({ site, advertiser: site, slug, items: itemsResult.results || [], posts: postsResult.results || [] });
+        return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60, s-maxage=300" } });
+      }
+    } catch (e) {
+      // Keep the established public profile renderer available during the D1 rollout.
+    }
   }
 
   // Fetch profile
