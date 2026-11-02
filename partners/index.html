@@ -21,6 +21,34 @@
 <link rel="stylesheet" href="/phoneya2-premium-layer.css?v=20261020-sales2">
   <link rel="stylesheet" href="/phoneya2-performance.css?v=20261030-white-canvas1">
   <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-image-polish2">
+<style id="py2-partner-auth-premium">
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+:root{--py2-auth-ink:#172033;--py2-auth-orange:#ff641b}
+body.py2-page{background:#f4f6fa}
+.py2-topbar{position:relative;z-index:3;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);box-shadow:0 1px 18px rgba(16,24,40,.07)}
+.py2-auth-wrap.py2-advertise-layout{max-width:1240px;margin:34px auto 54px;padding:0 24px;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(420px,.96fr);gap:0;align-items:stretch;min-height:760px;border-radius:28px;overflow:hidden;background:#fff;box-shadow:0 24px 80px rgba(16,24,40,.13)}
+.py2-advertise-hero{position:relative!important;isolation:isolate;overflow:hidden;padding:clamp(36px,5vw,68px)!important;display:flex;flex-direction:column;justify-content:center;color:#fff!important;background:linear-gradient(145deg,rgba(7,18,38,.91),rgba(8,35,57,.70) 55%,rgba(255,96,0,.34)),url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1800&q=85') center/cover no-repeat!important}
+.py2-advertise-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.16),transparent 34%),linear-gradient(0deg,rgba(4,12,25,.25),transparent 55%)}
+.py2-advertise-hero h2,.py2-advertise-hero .py2-hero-kicker,.py2-advertise-hero .py2-hero-copy,.py2-advertise-hero strong{color:#fff!important}
+.py2-advertise-hero .py2-hero-copy{max-width:480px;line-height:1.75}
+.py2-advertise-hero .py2-hero-benefit{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:14px;padding:13px;margin:9px 0}
+.py2-advertise-hero .py2-benefit-icon{background:rgba(255,255,255,.16);color:#fff}
+.py2-hero-bottom{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.py2-auth-card{width:100%;max-width:none!important;padding:clamp(28px,4vw,54px)!important;border-radius:0!important;box-shadow:none!important;background:#fff!important}
+.py2-advertise-form-heading h1{font:800 clamp(28px,3vw,36px)/1.15 Manrope, sans-serif;letter-spacing:-1.2px;color:#172033}
+.py2-advertise-form-heading p,.py2-auth-brand p{color:#667085;line-height:1.65}
+.py2-auth-brand{display:none}
+.py2-notice{border-radius:12px!important;background:#f5f8fc!important;border:1px solid #e7edf5!important;color:#475467!important}
+.py2-field{margin-bottom:17px}
+.py2-label{font-weight:700!important;color:#344054!important;font-size:13px!important}
+.py2-input{min-height:50px!important;border:1px solid #d9e0ea!important;border-radius:11px!important;background:#fbfcfe!important;padding:12px 14px!important;font-size:15px!important;transition:border-color .2s,box-shadow .2s}
+.py2-input:focus{outline:none!important;border-color:#ff7a36!important;box-shadow:0 0 0 4px rgba(255,100,27,.12)!important;background:#fff!important}
+.py2-btn-primary{min-height:54px!important;border-radius:12px!important;font-weight:800!important;box-shadow:0 9px 20px rgba(255,100,27,.2)}
+.py2-auth-alt{padding-top:18px;border-top:1px solid #edf0f4;margin-top:22px!important;color:#667085}
+.py2-auth-alt a{font-weight:800!important}
+@media(max-width:900px){.py2-auth-wrap.py2-advertise-layout{grid-template-columns:1fr;max-width:680px;min-height:0;margin:22px auto 40px}.py2-advertise-hero{min-height:390px;padding:34px!important}.py2-auth-card{padding:30px 26px!important}}
+@media(max-width:560px){.py2-topbar-nav a:first-child{display:none}.py2-auth-wrap.py2-advertise-layout{margin:12px 10px 28px;padding:0;border-radius:20px}.py2-advertise-hero{min-height:330px;padding:26px 22px!important}.py2-hero-bottom{gap:8px}.py2-auth-card{padding:26px 20px!important}.py2-advertise-form-heading h1{font-size:28px}}
+</style>
 </head>
 <body class="py2-page">
 
@@ -126,9 +154,9 @@
         <div class="py2-field">
           <label class="py2-label" for="f-password">Password <span class="req">*</span></label>
           <input class="py2-input" type="password" id="f-password" name="password"
-                 placeholder="At least 8 characters" required minlength="8"
+                 placeholder="At least 10 characters" required minlength="10"
                  autocomplete="new-password">
-          <div class="py2-error" id="err-password">Password must be at least 8 characters.</div>
+          <div class="py2-error" id="err-password">Password must be at least 10 characters.</div>
         </div>
 
         <!-- Confirm password -->
