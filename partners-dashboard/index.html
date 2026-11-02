@@ -178,7 +178,18 @@ body.dark .builder-group,body.dark .builder-preview-panel{background:var(--panel
 #campaign-list .row{align-items:center}
 #posts .thumb,#items .thumb{width:58px;height:58px;object-fit:cover;border-radius:10px;flex:0 0 58px}
 #posts .row,#items .row{align-items:center}
-</style></head><body>
+/* Sign-in header refinement */
+.auth{min-height:100svh;position:relative;overflow:hidden}
+.auth-head{height:76px;padding:0 clamp(18px,4vw,56px);background:linear-gradient(90deg,rgba(9,29,53,.26),rgba(9,29,53,.08));border-bottom:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px)}
+.auth-head .brand{font-size:25px;letter-spacing:-1px;text-shadow:0 2px 12px #071b35a8}
+.auth-head .btn.secondary{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.48);color:#fff;box-shadow:none;padding:10px 15px}
+.authhero{padding-top:115px;padding-bottom:58px}
+.authhero h1{max-width:650px;margin:18px 0 14px;text-shadow:0 3px 22px #061a32a8}
+.authhero p{max-width:520px;text-shadow:0 2px 12px #061a32a8}
+.authpanel{padding:105px clamp(22px,5vw,64px) 40px}
+.authcard{max-width:430px;padding:clamp(22px,3vw,34px);border:1px solid #e8edf3;border-radius:22px;box-shadow:0 22px 70px rgba(16,43,78,.10);background:#fff}
+.authcard>.brand{display:none}
+@media(max-width:760px){.auth-head{height:66px}.authhero{padding-top:105px;min-height:300px}.authpanel{padding:28px 18px 36px}.authcard{padding:22px;border-radius:18px}}</style></head><body>
 <div id="signin" class="auth"><header class="auth-head"><a class="brand" href="/" style="color:white">PhoneYa<span>2</span></a><div class="auth-menu-wrap"><button class="btn secondary small" id="signin-menu-toggle">☰ Menu</button><div class="auth-menu" id="signin-menu"><a href="/">PhoneYa2 home ↗</a><a href="/partners/">Register as a partner ↗</a><a href="/partners-admin/">Partner network admin ↗</a></div></div></header><section class="authhero"><div><div class="brand" style="color:white">PhoneYa<span>2</span> <small style="font:700 11px 'DM Sans';color:#dce8f5">PARTNER STUDIO</small></div><div class="eyebrow" style="margin-top:55px;color:#ffb185">YOUR BUSINESS COMMAND SPACE</div><h1>Everything your business needs to grow.</h1><p>Manage your storefront, catalogue, updates, promotions and customer enquiries from one clear workspace.</p></div></section><section class="authpanel"><div class="authcard"><div class="brand">PhoneYa<span>2</span></div><div class="eyebrow" style="margin-top:28px">WELCOME BACK</div><h2>Sign in to Partner Studio</h2><p class="muted">Use your partner account email and password.</p><div id="auth-error" class="alert hidden"></div><form id="login-form"><div class="field"><label>Email address</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="login-btn" class="btn block">Sign in securely →</button></form><p class="muted" style="font-size:12px;text-align:center;margin-top:18px">New partner? <a href="/partners/index.html" style="color:#e85b20;font-weight:900">Create an account</a></p></div></section></div>
 <div id="app" class="hidden"><header class="top partner-top"><div class="brand">PhoneYa<span>2</span> <small style="font:700 10px 'DM Sans';color:#7b8a9c">PARTNER STUDIO</small></div><nav id="header-nav" class="header-nav" aria-label="Partner workspace navigation"></nav><div class="right"><span id="account-email" class="email muted"></span><div class="top-menu-wrap"><button type="button" id="account-menu-toggle" class="btn secondary small top-menu-toggle" aria-label="Account menu">☰</button><div class="top-menu" id="account-menu"><a href="/" target="_blank">PhoneYa2 home ↗</a><a href="/partners/">Partner support ↗</a><button type="button" id="logout" class="danger">Sign out ↗</button></div></div></div></header>
 <div class="floating-tools" aria-label="Accessibility and appearance controls">
@@ -252,36 +263,8 @@ async function campaignAction(action,id){try{await api(action,{id});await refres
 function renderEnquiries(){const el=$('enquiries-list');if(!data.enquiries.length){el.innerHTML='<div class="empty">Customer enquiries from your published website appear here.</div>';return}el.innerHTML='<div class="tablewrap"><table><thead><tr><th>Customer</th><th>Contact</th><th>Message</th><th>Status</th><th>Received</th></tr></thead><tbody>'+data.enquiries.map(x=>'<tr><td><b>'+esc(x.customer_name)+'</b></td><td>'+esc(x.customer_phone||x.customer_email||'—')+'</td><td>'+esc(x.message)+'</td><td><select data-enquiry="'+x.id+'">'+['new','contacted','qualified','won','closed'].map(s=>'<option '+(s===x.status?'selected':'')+'>'+s+'</option>').join('')+'</select></td><td>'+new Date(x.created_at).toLocaleDateString()+'</td></tr>').join('')+'</tbody></table></div>';el.querySelectorAll('[data-enquiry]').forEach(s=>s.onchange=async()=>{try{await api('enquiry.status',{id:s.dataset.enquiry,status:s.value});await refresh();toast('Enquiry updated.')}catch(e){toast(e.message)}})}
 function renderRecent(){const a=[...data.enquiries.slice(0,3).map(x=>({t:x.customer_name||'Enquiry',d:x.message,date:x.created_at})),...data.posts.slice(0,2).map(x=>({t:x.title,d:x.status,date:x.updated_at||x.created_at}))].sort((x,y)=>new Date(y.date)-new Date(x.date)).slice(0,5);$('recent').innerHTML=a.length?a.map(x=>'<div class="row"><div class="info"><b>'+esc(x.t)+'</b><small>'+esc(x.d||'')+'</small></div><small>'+new Date(x.date).toLocaleDateString()+'</small></div>').join(''):'<div class="empty">Your latest activity will appear here.</div>'}
 async function preparePartnerImage(file){
-const maxOriginal=5*1024*1024, maxStored=1200000;
 if(!file||!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type))throw Error('Choose a JPG, PNG, WebP or GIF image.');
-if(file.size>maxOriginal)throw Error('This image is larger than 5 MB. Please choose an image under 5 MB.');
-if(!('createImageBitmap'in window))throw Error('Your browser cannot optimise this image. Please use an updated Chrome, Edge or Firefox browser.');
-let bitmap;
-try{bitmap=await createImageBitmap(file)}catch{throw Error('This image could not be opened for optimisation. Please save it as JPG or PNG and try again.')}
-try{
-let longest=Math.max(bitmap.width,bitmap.height);
-if(!longest)throw Error('This image has invalid dimensions.');
-let scale=Math.min(1,1400/longest);
-for(let pass=0;pass<12;pass++){
- const canvas=document.createElement('canvas');
- canvas.width=Math.max(1,Math.round(bitmap.width*scale));
- canvas.height=Math.max(1,Math.round(bitmap.height*scale));
- const ctx=canvas.getContext('2d');
- if(!ctx)throw Error('Image processing is unavailable. Please reload and try again.');
- ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
- for(const quality of [.82,.72,.62,.52,.42,.32]){
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));
-  if(blob&&blob.size>0&&blob.size<=maxStored){
-   const safeName=(file.name||'partner-image').replace(/\.[^.]+$/,'')+'.webp';
-   return new File([blob],safeName,{type:'image/webp',lastModified:Date.now()});
-  }
- }
- scale*=.78;
- if(Math.max(canvas.width,canvas.height)<=420)break;
-}
-throw Error('This image could not be compressed enough. Try cropping it or choosing a simpler image.');
-}finally{bitmap.close?.()}
+return file;
 }
 function verifyImageUrl(url){return new Promise((resolve,reject)=>{const img=new Image();const timeout=setTimeout(()=>{img.src='';reject(Error('Image verification timed out. Please retry.'))},12000);img.onload=()=>{clearTimeout(timeout);if(img.naturalWidth>0)resolve(true);else reject(Error('The uploaded image is empty.'))};img.onerror=()=>{clearTimeout(timeout);reject(Error('The uploaded image could not be opened. Please try again.'))};img.src=url})}
 async function uploadImage(file,target){if(!file)return;const field=$(target),picker=document.querySelector('[data-image-target="'+target+'"]');if(!String(file.type||'').startsWith('image/')){toast('⚠️ Please choose an image file.');return}field.disabled=true;if(picker)picker.disabled=true;previewLocalImage(file,target);toast('🖼️ Preparing your image…');try{const prepared=await preparePartnerImage(file);const fd=new FormData();fd.append('file',prepared);const r=await fetch(API,{method:'POST',credentials:'same-origin',body:fd});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw Error(j.error||'Image upload failed');if(!j.url)throw Error('The server did not return an image address. Please retry.');await verifyImageUrl(j.url);field.value=j.url;field.dispatchEvent(new Event('input',{bubbles:true}));updateWebsitePreview();updatePublishImagePreview();if(target==='profile-logo-url')bindImagePreview('profile-logo-preview',null,j.url);if(imagePreviewUrls[target]){URL.revokeObjectURL(imagePreviewUrls[target]);delete imagePreviewUrls[target]}toast('✅ Image uploaded and verified. Save changes to publish it.')}catch(e){toast('⚠️ '+e.message+' Your previous saved image has not been changed.')}finally{field.disabled=false;if(picker)picker.disabled=false}}
