@@ -76,6 +76,7 @@ let slug;
 if(body.id&&UUID.test(String(body.id))){const existing=await db.prepare("SELECT id,slug,status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first();if(!existing)return fail("Campaign not found.",404);slug=existing.slug;}
 else{slug=slugify(title);for(let n=0;n<8;n++){const exists=await db.prepare("SELECT id FROM ads WHERE slug=? COLLATE NOCASE").bind(slug).first();if(!exists)break;slug=slugify(title)+"-"+crypto.randomUUID().slice(0,5).toLowerCase();}}
 const existing=body.id?await db.prepare("SELECT status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first():null;
+if(existing?.status==="banned")return fail("This campaign has been removed by PhoneYa2 moderation. Contact support if you believe this is an error.",403);
 const status=existing&&existing.status==="approved"?"pending":(existing?existing.status:"pending");
 const tier=await db.prepare("SELECT a.tier,t.rotation_weight,t.ad_limit FROM advertisers a LEFT JOIN ad_tiers t ON t.tier=a.tier WHERE a.id=?").bind(partner.advertiser_id).first();
 if(!existing){const active=await db.prepare("SELECT COUNT(*) AS n FROM ads WHERE advertiser_id=? AND status IN ('pending','approved')").bind(partner.advertiser_id).first();const limit=Number(tier?.ad_limit||3);if(Number(active?.n||0)>=limit)return fail("Your "+(tier?.tier||"Partner")+" package allows "+limit+" active campaigns. Pause or remove an existing campaign, or contact PhoneYa2 to upgrade.");}
@@ -87,9 +88,9 @@ return json({ok:true,id,status,message:status==="pending"?"Campaign submitted fo
 }
 if(action==="campaign.pause"||action==="campaign.resume"){
 const id=String(body.id||"");if(!UUID.test(id))return fail("Invalid campaign.");
-const row=await db.prepare("SELECT status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first();if(!row)return fail("Campaign not found.",404);
+const row=await db.prepare("SELECT status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first();if(!row)return fail("Campaign not found.",404);if(row.status==="banned")return fail("This campaign has been removed by PhoneYa2 moderation.",403);
 if(action==="campaign.pause"){await db.prepare("UPDATE ads SET status='paused',updated_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();}
-else{await db.prepare("UPDATE ads SET status='pending',updated_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();}
+else{await db.prepare("UPDATE ads SET status='pending',rejection_reason='',updated_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();}
 return json({ok:true,message:action==="campaign.pause"?"Campaign paused. It will no longer be shown.":"Campaign resubmitted for review."});
 }
 if(action==="campaign.delete"){
