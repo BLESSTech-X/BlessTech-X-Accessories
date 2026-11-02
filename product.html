@@ -2038,10 +2038,6 @@ document.addEventListener('DOMContentLoaded', function() {
 (function () {
   'use strict';
 
-  var SUPABASE_URL = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.url)
-    || 'https://signnapmkdctdcfpnsiu.supabase.co';
-  var SUPABASE_KEY = (window.PY2_ADS_CONFIG && window.PY2_ADS_CONFIG.key)
-    || 'sb_publishable_BwOe5fD2oK-hz1LtPNmslw_9EaBZNUD';
 
   var ROTATE_MS = 6000;
   var POPUP_DELAY_MS = 22000;
@@ -2120,30 +2116,23 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) { return 'direct'; }
   }
 
-  function sbGet(path) {
-    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Accept': 'application/json' }
-    }).then(function (r) { if (!r.ok) throw new Error('Supabase GET ' + r.status); return r.json(); });
+  function sbGet() {
+    return fetch('/api/partner-ads', { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('Campaign feed unavailable');
+      return r.json();
+    }).then(function (data) { return data.ads || []; });
   }
   function sbPost(path, body) {
-    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
-      method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(body)
-    });
+    var action = path === 'ad_impressions' ? 'impression' : path === 'ad_clicks' ? 'click' : 'report';
+    return fetch('/api/partner-ads', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(Object.assign({}, body, { action: action }))
+    }).then(function (r) { if (!r.ok) throw new Error('Campaign tracking failed'); return r; });
   }
-
   function fetchAds() {
-    var now = new Date().toISOString();
-    var qs =
-      'ads?select=id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,weight,status,placement,start_date,end_date,advertiser_id,advertisers(business_name,logo_url,tier)' +
-      '&status=eq.approved' +
-
-      '&start_date=lte.' + encodeURIComponent(now) +
-      '&or=(end_date.is.null,end_date.gt.' + encodeURIComponent(now) + ')' +
-      '&order=created_at.desc' +
-      '&limit=100';
-    return sbGet(qs);
+    return sbGet().then(function (rows) {
+      return rows.filter(function (ad) { return !ad.placement || ad.placement === 'carousel' || ad.placement === 'both'; }).slice(0, 9);
+    });
   }
 
   function weightedShuffle(list) {
