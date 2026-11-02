@@ -62,7 +62,7 @@ export function renderPartnerSite(data) {
 
   const whatsapp = String(socials.whatsapp || business.phone || "").replace(/\D/g, "");
   const contact = (whatsapp
-    ? `<a class="btn primary" href="https://wa.me/${esc(whatsapp)}" target="_blank" rel="noopener">WhatsApp us ↗</a>`
+    ? `<a class="btn primary whatsapp-btn" href="https://wa.me/${esc(whatsapp)}" target="_blank" rel="noopener" style="background:#25D366!important;color:#111!important;border:1px solid #1eae52!important;text-decoration:none">WhatsApp us ↗</a>`
     : "") + (business.phone
       ? `<a class="btn secondary" href="tel:${esc(business.phone)}">Call business</a>`
       : "");
@@ -125,7 +125,7 @@ a{color:inherit;text-decoration:none}
 .hero p{max-width:600px;color:#e2eaf3;font-size:16px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 .btn{display:inline-flex;padding:11px 16px;border-radius:10px;font-weight:800;font-size:13px}
-.primary{background:${primary};color:white}.contact .btn.primary{background:#22b65b;color:#111!important;border:1px solid #169447;box-shadow:0 7px 18px #22b65b30}.contact .btn.primary:hover{background:#1da34f;color:#111!important}
+.primary{background:${primary};color:white}.contact .btn.primary,.contact .whatsapp-btn,.whatsapp-btn{background:#25D366!important;background-color:#25D366!important;color:#111!important;-webkit-text-fill-color:#111!important;border:1px solid #1eae52!important;box-shadow:0 7px 18px #25D36635;text-decoration:none!important}.contact .btn.primary:hover,.contact .whatsapp-btn:hover,.whatsapp-btn:hover{background:#20bd5a!important;background-color:#20bd5a!important;color:#111!important;-webkit-text-fill-color:#111!important}
 .secondary{background:#ffffff20;border:1px solid #ffffff55;color:white}
 .section{padding:50px 0 5px}
 .section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:17px}
