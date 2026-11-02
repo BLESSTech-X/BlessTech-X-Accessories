@@ -23,6 +23,30 @@ async function activity(env,r) {
   })});
   if(!response.ok) console.error("Campaign activity logging failed:",response.status,(await response.text()).slice(0,180));
 }
+function normalizeZambiaPhone(value){
+  let digits=String(value||"").replace(/\D/g,"");
+  if(digits.startsWith("0"))digits="260"+digits.slice(1);
+  return digits.startsWith("260")?digits:"";
+}
+async function logPhoneActivity(env,record){
+  if(!env.DB)return;
+  try{await env.DB.prepare("INSERT INTO communication_activity(id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message) VALUES(?,?,?,?,?,?,?,?,?,?)")
+    .bind(crypto.randomUUID(),record.campaignId||"",record.phone||"",record.name||"","sms","partner_campaign",record.status||"failed","brevo",record.messageId||"",String(record.error||"").slice(0,500)).run();}
+  catch(e){console.error("Partner SMS activity log failed:",String(e).slice(0,180));}
+}
+async function sendPartnerSms(env,campaign,partner){
+  const key=env.BREVO_API_KEY,sender=String(env.BREVO_SMS_SENDER||"PhoneYa2").trim();
+  const recipient=normalizeZambiaPhone(partner.phone);
+  if(!key||!recipient)return{ok:false,skipped:true,error:!key?"Brevo SMS is not configured.":"Partner phone is not a valid Zambian mobile number."};
+  if(!/^[A-Za-z0-9]{1,11}$/.test(sender))return{ok:false,skipped:true,error:"BREVO_SMS_SENDER must be an approved sender ID of up to 11 letters or numbers."};
+  try{
+    const response=await fetch("https://api.brevo.com/v3/transactionalSMS/send",{method:"POST",headers:{"api-key":key,"content-type":"application/json","accept":"application/json"},body:JSON.stringify({
+      sender,recipient,content:(campaign.subject+": "+campaign.body_text).slice(0,450),type:"transactional",tag:"phoneya2_partner_update"
+    })});
+    const result=await response.json().catch(()=>({}));
+    return response.ok?{ok:true,messageId:String(result.messageId||"")}:{ok:false,error:"Brevo SMS HTTP "+response.status+": "+String(result.message||result.code||"").slice(0,180)};
+  }catch(e){return{ok:false,error:String(e).slice(0,180)};}
+}
 async function sendOne(env,campaign,recipient) {
   const key=env.BREVO_API_KEY, fromEmail=env.BREVO_FROM_EMAIL;
   if(!key||!fromEmail) return {ok:false,error:"Brevo is not configured. Add BREVO_API_KEY and BREVO_FROM_EMAIL in Cloudflare Pages secrets."};
@@ -78,8 +102,8 @@ export async function onRequest(context) {
       let audienceList=[];
       if(campaign.audience==="partners"){
         if(!env.DB)return json({error:"Partner audience is unavailable because the D1 database is not connected."},503);
-        const partnerRows=await env.DB.prepare("SELECT email,owner_name AS full_name,business_name FROM advertisers WHERE status IN ('active','approved') AND TRIM(email)<>'' ORDER BY created_at ASC LIMIT 1000").all();
-        audienceList=(partnerRows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner"})).filter(p=>p.email);
+        const partnerRows=await env.DB.prepare("SELECT email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND TRIM(email)<>'' ORDER BY created_at ASC LIMIT 1000").all();
+        audienceList=(partnerRows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email);
       }else{
         const subR=await db(env,"/rest/v1/customer_subscribers?select=id,email,full_name,confirmation_token&status=eq.subscribed&order=created_at.asc&limit=1000");
         if(!subR.ok) return json({error:"Could not load opted-in subscribers."},503);
@@ -98,7 +122,14 @@ export async function onRequest(context) {
       for(const s of batch) {
         const result=await sendOne(env,campaign,s);
         await activity(env,{...result,email:s.email,name:s.full_name,subject:campaign.subject,campaignId:id,campaignName:campaign.name,audience:campaign.audience});
-        if(result.ok) sent++; else {failed++; if(errors.length<3) errors.push(result.error);}
+        let smsResult={ok:false,skipped:true,error:"SMS is only used for partner account updates."};
+        if(campaign.audience==="partners"){
+          const smsPhone=normalizeZambiaPhone(s.phone);
+          const previous=smsPhone?await env.DB.prepare("SELECT id FROM communication_activity WHERE campaign_id=? AND recipient=? AND channel='sms' AND status IN ('sent','delivered') LIMIT 1").bind(id,smsPhone).first():null;
+          smsResult=previous?{ok:true,skipped:true,messageId:"already-sent"}:await sendPartnerSms(env,campaign,s);
+          await logPhoneActivity(env,{campaignId:id,phone:smsPhone,name:s.full_name,status:smsResult.ok?"sent":smsResult.skipped?"skipped":"failed",messageId:smsResult.messageId,error:smsResult.error});
+        }
+        if(result.ok||smsResult.ok) sent++; else {failed++; if(errors.length<3) errors.push(result.error||smsResult.error||"Delivery failed.");}
       }
       const stillRemaining=recipients.length-batch.length;
       const status=stillRemaining===0?(failed===0?"sent":"failed"):"sending";
