@@ -2,9 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "phoneya2",
   "compatibility_date": "2026-10-06",
-  "observability": { "enabled": true },
-  "assets": {
-    "directory": "."
+  "observability": {
+    "enabled": true
   },
   "d1_databases": [
     {
@@ -12,5 +11,6 @@
       "database_name": "phoneya2-core",
       "database_id": "68c3c9fb-27bd-4e31-a7d5-533aab22727b"
     }
-  ]
+  ],
+  "pages_build_output_dir": "."
 }
