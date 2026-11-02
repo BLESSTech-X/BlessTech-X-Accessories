@@ -28,18 +28,32 @@ JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
 AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`).bind(tokenHash,new Date().toISOString()).first();}
-async function workspace(db,partner){const [items,posts,enquiries,subscription,ads,impressions,clicks]=await Promise.all([
+async function workspace(db,partner){const [items,posts,enquiries,subscription,packageRequest,ads,impressions,clicks]=await Promise.all([
 db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? ORDER BY sort_order,created_at DESC LIMIT 500").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
 db.prepare("SELECT id,customer_name,customer_email,customer_phone,message,source,status,created_at,catalog_item_id FROM partner_enquiries WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
-db.prepare("SELECT ps.*,pp.display_name AS package_name,pp.benefits_json,pp.monthly_price_minor AS package_price_minor,pp.advertising_weight FROM partner_subscriptions ps LEFT JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT ps.*,pp.display_name AS package_name,pp.benefits_json,pp.monthly_price_minor AS package_price_minor,pp.advertising_weight FROM partner_subscriptions ps LEFT JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? AND ps.status='active' ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT ps.*,pp.display_name AS package_name,pp.monthly_price_minor AS package_price_minor FROM partner_subscriptions ps LEFT JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? AND ps.status='pending_payment' ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first(),
 db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_impressions WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_clicks WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first()
-]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order,advertising_weight FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
+]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,packageRequest,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order,advertising_weight FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
+if(action==="package.request"){
+const packageKey=cleanText(body.package_key,32);
+if(!/^(starter|standard|business|premium)$/.test(packageKey))return fail("Choose a valid paid package.");
+const plan=await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency FROM partner_packages WHERE package_key=? AND active=1").bind(packageKey).first();
+if(!plan)return fail("This package is not currently available.");
+const pending=await db.prepare("SELECT id FROM partner_subscriptions WHERE advertiser_id=? AND status='pending_payment' LIMIT 1").bind(partner.advertiser_id).first();
+if(pending)return fail("You already have a package request awaiting PhoneYa2 follow-up. We will contact you shortly.");
+const active=await db.prepare("SELECT package_key FROM partner_subscriptions WHERE advertiser_id=? AND status='active' ORDER BY created_at DESC LIMIT 1").bind(partner.advertiser_id).first();
+if(active?.package_key===packageKey)return fail("This package is already active on your account.");
+const id=crypto.randomUUID();
+await db.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,currency,amount_minor,billing_cycle) VALUES(?,?,?,'pending_payment',?,?,'monthly')").bind(id,partner.advertiser_id,packageKey,plan.currency||"ZMW",Number(plan.monthly_price_minor||0)).run();
+return json({ok:true,id,message:"Package request sent. PhoneYa2 will contact you to confirm the package and arrange payment outside the website."},201);
+}
 if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
 if(action==="profile.save"){
 const business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40),tagline=cleanText(body.tagline,180),about=cleanText(body.about,1200),contactPhone=cleanText(body.contact_phone,40),whatsapp=cleanText(body.contact_whatsapp,40),contactEmail=cleanText(body.contact_email,254).toLowerCase(),logo=cleanText(body.logo_url,1000);
