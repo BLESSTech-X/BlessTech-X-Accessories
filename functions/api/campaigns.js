@@ -104,7 +104,7 @@ export async function onRequest(context) {
       if(campaign.audience==="partners"){
         if(!env.DB)return json({error:"Partner audience is unavailable because the D1 database is not connected."},503);
         const partnerRows=await env.DB.prepare("SELECT email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(email)<>'' OR TRIM(phone)<>'') ORDER BY created_at ASC LIMIT 1000").all();
-        audienceList=(partnerRows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email);
+        audienceList=(partnerRows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email||p.phone);
       }else{
         const subR=await db(env,"/rest/v1/customer_subscribers?select=id,email,full_name,confirmation_token&status=eq.subscribed&order=created_at.asc&limit=1000");
         if(!subR.ok) return json({error:"Could not load opted-in subscribers."},503);
