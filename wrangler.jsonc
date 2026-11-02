@@ -9,7 +9,8 @@
     {
       "binding": "DB",
       "database_name": "phoneya2-core",
-      "database_id": "68c3c9fb-27bd-4e31-a7d5-533aab22727b"
+      "database_id": "68c3c9fb-27bd-4e31-a7d5-533aab22727b",
+      "migrations_dir": "d1/migrations"
     }
   ],
   "pages_build_output_dir": "."
