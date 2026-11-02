@@ -161,6 +161,30 @@ a{color:inherit;text-decoration:none}
 .socials a{padding:7px 11px;background:#eef2f7;border-radius:20px;font-size:11px;font-weight:800}
 .footer{padding:20px 0 32px;display:flex;justify-content:space-between;color:#8995a5;font-size:11px}
 .footer b{color:#52647c}
+
+/* Partner mini-site media and sponsored placements */
+.product-image,.post img{display:block;width:100%;height:auto;max-height:340px;aspect-ratio:4/3;object-fit:contain;background:#f1f4f8;padding:8px}
+.product-image{aspect-ratio:1/1;max-height:300px}
+.post img{aspect-ratio:16/9;max-height:320px}
+.product,.post{display:flex;flex-direction:column;min-width:0}
+.product-body,.post>div{flex:1}
+.post p{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.product p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.product-bottom{margin-top:auto}
+.sponsored-section{margin-top:12px;padding:34px 0 8px}
+.sponsored-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.sponsored-card{overflow:hidden;background:#fff;border:1px solid #e5eaf1;border-radius:16px;box-shadow:0 9px 26px #14233b0a;min-width:0}
+.sponsored-media{height:210px;position:relative;background:#eef2f7;overflow:hidden;display:grid;place-items:center}
+.sponsored-media img,.sponsored-media video,.sponsored-media iframe{width:100%;height:100%;object-fit:contain;border:0}
+.sponsored-label{position:absolute;z-index:2;top:10px;left:10px;background:#142f50ef;color:#fff;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
+.sponsored-copy{padding:15px}
+.sponsored-business{font-size:10px;color:#8491a2;font-weight:850;letter-spacing:1px;text-transform:uppercase}
+.sponsored-copy h3{font-size:17px;margin:5px 0}
+.sponsored-copy p{font-size:13px;color:#748197;line-height:1.6;margin:6px 0 13px}
+.sponsored-cta{display:flex;justify-content:space-between;align-items:center;color:#fff;background:#173f73;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:850}
+.sponsored-section[hidden]{display:none}
+@media(max-width:760px){.sponsored-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sponsored-media{height:155px}.sponsored-copy{padding:12px}.sponsored-copy h3{font-size:14px}}
+@media(max-width:420px){.sponsored-grid{grid-template-columns:1fr}.sponsored-media{height:210px}}
 @media(max-width:760px){.site{padding:0 13px}.site-nav{display:none;position:absolute;top:64px;left:0;right:0;margin:0;padding:14px;background:white;border-bottom:1px solid #e7ebf1;box-shadow:0 10px 22px #132b4a15;flex-direction:column;align-items:stretch;gap:12px}.site-nav.open{display:flex}.menu-button{display:inline-flex;margin-left:auto;margin-right:9px}.top-link{font-size:11px}.top{margin:0 -13px;padding:0 10px}.template-storefront .products{grid-template-columns:repeat(2,minmax(0,1fr))}.template-studio .hero{min-height:390px}.top{height:65px}.hero{min-height:360px;border-radius:17px}.hero h1{font-size:38px}.hero p{font-size:14px}.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-image,.product-placeholder{height:155px}.product-body{padding:12px}.product h3{font-size:14px}.posts{grid-template-columns:1fr}.contact{grid-template-columns:1fr;margin:35px 0 20px}.section{padding-top:34px}.section-head h2{font-size:23px}.footer{display:block}.footer span{display:block;margin-top:5px}}
 @media(max-width:400px){.products{grid-template-columns:1fr}.product-image,.product-placeholder{height:210px}}
 </style>
@@ -169,6 +193,7 @@ a{color:inherit;text-decoration:none}
 <div class="site">
 <header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}<small>Partner business on PhoneYa2</small></div></div><nav id="site-nav" class="site-nav"><a href="#products">Products</a><a href="#services">Services</a><a href="#updates">Updates</a><a href="#about">About</a><a class="nav-cta" href="#contact">Contact</a></nav><button class="menu-button" id="site-menu" aria-label="Open website menu">☰</button><a class="top-link" href="/">Shop PhoneYa2 ↗</a></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
+<section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
 ${catalogue(services, "Services", "WHAT WE DO")}
 ${postsHtml}
@@ -180,7 +205,43 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
+
+async function loadPartnerAds(){
+  const section=document.getElementById("partner-sponsored"),list=document.getElementById("partner-sponsored-list");
+  if(!section||!list)return;
+  try{
+    const response=await fetch("/api/partner-ads",{cache:"no-store",credentials:"same-origin"});
+    if(!response.ok)return;
+    const payload=await response.json();
+    const ads=(payload.ads||[]).filter(ad=>!ad.placement||ad.placement==="carousel"||ad.placement==="both").slice(0,6);
+    if(!ads.length)return;
+    section.hidden=false;
+    for(const ad of ads){
+      const card=document.createElement("article");card.className="sponsored-card";
+      const media=document.createElement("div");media.className="sponsored-media";
+      const tag=document.createElement("span");tag.className="sponsored-label";tag.textContent="Sponsored";media.appendChild(tag);
+      const url=String(ad.media_url||"");
+      if(url){
+        if(ad.media_type==="video"){
+          const video=document.createElement("video");video.src=url;video.muted=true;video.autoplay=true;video.loop=true;video.playsInline=true;media.appendChild(video);
+        }else{
+          const img=document.createElement("img");img.src=url;img.alt=ad.title||"Sponsored campaign";img.loading="lazy";img.onerror=()=>{img.remove();};media.appendChild(img);
+        }
+      }
+      const copy=document.createElement("div");copy.className="sponsored-copy";
+      const business=document.createElement("div");business.className="sponsored-business";business.textContent=ad.business_name||(ad.advertisers&&ad.advertisers.business_name)||"Zambian business";
+      const title=document.createElement("h3");title.textContent=ad.title||"Featured offer";
+      const desc=document.createElement("p");desc.textContent=ad.description||"Discover this business on PhoneYa2.";
+      const link=document.createElement("a");link.className="sponsored-cta";link.href=ad.profile_slug?"/b/"+encodeURIComponent(ad.profile_slug):"/ad/"+encodeURIComponent(ad.slug||"");link.innerHTML="<span>View business profile</span><span>↗</span>";
+      link.addEventListener("click",()=>{fetch("/api/partner-ads",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"click",ad_id:ad.id,placement:"carousel",source:"other"})}).catch(()=>{});});
+      copy.append(business,title,desc,link);card.append(media,copy);list.appendChild(card);
+      fetch("/api/partner-ads",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"impression",ad_id:ad.id,placement:"carousel",source:"other"})}).catch(()=>{});
+    }
+  }catch(error){console.warn("Partner sponsored campaigns unavailable",error);}
+}
+
 document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});
+loadPartnerAds();
 document.querySelectorAll("#site-nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("site-nav").classList.remove("open")));
 document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
