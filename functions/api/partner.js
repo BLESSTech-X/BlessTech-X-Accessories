@@ -137,7 +137,7 @@ try{
 const form=await request.formData(),file=form.get("file");
 if(!file||typeof file.arrayBuffer!=="function")return fail("Choose an image to upload.");
 if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type))return fail("Upload a JPG, PNG, WEBP or GIF image.");
-if(file.size>1250000)return fail("The prepared image exceeds the storage limit. Please upload a JPG or PNG image so it can be optimised automatically.");
+if(file.size>950000)return fail("The image is still too large after optimisation. Please choose another JPG or PNG image.");
 const bytes=new Uint8Array(await file.arrayBuffer());let binary="";
 for(let offset=0;offset<bytes.length;offset+=0x8000)binary+=String.fromCharCode(...bytes.subarray(offset,offset+0x8000));
 const encoded="data:"+file.type+";base64,"+btoa(binary),id=crypto.randomUUID(),url=new URL("/media/partner/"+id,request.url).href;
