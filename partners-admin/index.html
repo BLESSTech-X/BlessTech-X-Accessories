@@ -822,7 +822,7 @@
   <div class="auth-card">
     <div class="auth-logo">🛡️</div>
     <h1>Admin sign in</h1>
-    <p class="sub">Sign in with an admin account to manage ads.</p>
+    <p class="sub">Sign in with your authorised admin account to manage partners, plans and promotional campaigns.</p>
 
     <div id="signin-error" class="notice notice-danger" style="display:none;">
       <i class="fa-solid fa-circle-exclamation"></i>
@@ -848,7 +848,7 @@
       <div>You're signed in, but this account isn't an admin.</div>
     </div>
     <a href="/partners-dashboard/" class="btn btn-primary btn-lg btn-block" style="margin-bottom:8px;">
-      <i class="fa-solid fa-arrow-right"></i> Go to my dashboard
+      <i class="fa-solid fa-arrow-right"></i> Go to Partner Workspace
     </a>
     <button class="btn btn-secondary btn-lg btn-block" id="denied-signout">
       <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
@@ -868,7 +868,7 @@
       <a href="/" class="brand">
         <span class="brand-icon">📱</span>
         <div>
-          PhoneYa2 <span>Ads</span>
+          PhoneYa2 <span>Partners</span>
           <small>Partners Admin Dashboard</small>
         </div>
       </a>
@@ -885,11 +885,11 @@
 
   <div class="tabs" role="tablist" aria-label="Partner administration sections">
       <button class="tab on" data-tab="dashboard" type="button"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
-      <button class="tab" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Queue <span class="count" id="tab-count-queue">0</span></button>
-      <button class="tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Advertisers</button>
-      <button class="tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Plans</button>
-      <button class="tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Expiring <span class="count" id="tab-count-expiring">0</span></button>
-      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> All Ads</button>
+      <button class="tab" data-tab="queue" type="button"><i class="fa-solid fa-inbox"></i> Review Queue <span class="count" id="tab-count-queue">0</span></button>
+      <button class="tab" data-tab="advertisers" type="button"><i class="fa-solid fa-building"></i> Partners</button>
+      <button class="tab" data-tab="plans" type="button"><i class="fa-solid fa-crown"></i> Partner Plans</button>
+      <button class="tab" data-tab="expiring" type="button"><i class="fa-solid fa-hourglass-end"></i> Renewals <span class="count" id="tab-count-expiring">0</span></button>
+      <button class="tab" data-tab="ads" type="button"><i class="fa-solid fa-rectangle-ad"></i> Campaigns</button>
       <button class="tab" data-tab="reports" type="button"><i class="fa-solid fa-flag"></i> Reports <span class="count" id="tab-count-reports">0</span></button>
       <button class="tab" data-tab="log" type="button"><i class="fa-solid fa-clipboard-list"></i> Log</button>
       <button class="tab" data-tab="analytics" type="button"><i class="fa-solid fa-chart-line"></i> Analytics</button>
@@ -909,12 +909,12 @@
 
     <section class="panel on admin-overview" data-panel="dashboard">
       <div class="admin-welcome"><div class="admin-welcome-copy">
-        <span class="admin-eyebrow"><i class="fa-solid fa-shield-halved"></i> PHONEYA2 ADVERTISING NETWORK</span>
+        <span class="admin-eyebrow"><i class="fa-solid fa-shield-halved"></i> PHONEYA2 PARTNER NETWORK</span>
         <h2>Welcome to Partners Admin</h2>
         <p>Review campaigns, protect customers, support partners, and keep the PhoneYa2 network performing well. Start with the live numbers, then jump directly to the area that needs attention.</p>
         <div class="admin-welcome-actions">
-          <button class="btn btn-primary" type="button" data-admin-jump="queue"><i class="fa-solid fa-inbox"></i> Review pending ads <span id="welcome-pending-count" class="welcome-count">0</span></button>
-          <button class="btn btn-secondary" type="button" data-admin-jump="advertisers"><i class="fa-solid fa-building"></i> Manage advertisers</button>
+          <button class="btn btn-primary" type="button" data-admin-jump="queue"><i class="fa-solid fa-inbox"></i> Review pending campaigns <span id="welcome-pending-count" class="welcome-count">0</span></button>
+          <button class="btn btn-secondary" type="button" data-admin-jump="advertisers"><i class="fa-solid fa-building"></i> Manage partners</button>
           <button class="btn btn-ghost" type="button" data-admin-jump="analytics"><i class="fa-solid fa-chart-line"></i> View performance</button>
         </div></div>
         <div class="admin-welcome-art" aria-hidden="true"><div class="admin-art-window"><div class="admin-art-top"><i></i><i></i><i></i><span>ADS CONTROL</span></div><div class="admin-art-hero"><b>Reach.</b><b>Trust.</b><b>Results.</b></div><div class="admin-art-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="admin-art-footer"><span></span><span></span></div></div></div>
@@ -922,19 +922,19 @@
       <div class="admin-overview-heading"><div><h2>Network at a glance</h2><p>Live totals from the advertising records loaded in this dashboard.</p></div><span class="admin-live-indicator"><i></i> Data loaded from admin records</span></div>
       <div class="stats-grid">
       <div class="stat"><div class="stat-lbl">Pending</div><div class="stat-val accent" id="stat-pending">0</div></div>
-      <div class="stat"><div class="stat-lbl">Live Ads</div><div class="stat-val" id="stat-live">0</div></div>
+      <div class="stat"><div class="stat-lbl">Live Campaigns</div><div class="stat-val" id="stat-live">0</div></div>
       <div class="stat"><div class="stat-lbl">Partners</div><div class="stat-val" id="stat-advertisers">0</div></div>
       <div class="stat"><div class="stat-lbl">Reports</div><div class="stat-val red" id="stat-reports">0</div></div>
       <div class="stat"><div class="stat-lbl">Expiring</div><div class="stat-val amber" id="stat-expiring">0</div></div>
       <div class="stat"><div class="stat-lbl">Paid</div><div class="stat-val green" id="stat-paid">0</div></div>
     </div>
       <div class="admin-shortcuts">
-        <button type="button" class="admin-shortcut" data-admin-jump="queue"><span class="admin-shortcut-icon orange"><i class="fa-solid fa-inbox"></i></span><span><strong>Moderation queue</strong><small>Approve, reject, or pause submitted ads.</small></span><i class="fa-solid fa-arrow-right"></i></button>
-        <button type="button" class="admin-shortcut" data-admin-jump="ads"><span class="admin-shortcut-icon blue"><i class="fa-solid fa-rectangle-ad"></i></span><span><strong>All advertisements</strong><small>Search campaigns and inspect their status.</small></span><i class="fa-solid fa-arrow-right"></i></button>
+        <button type="button" class="admin-shortcut" data-admin-jump="queue"><span class="admin-shortcut-icon orange"><i class="fa-solid fa-inbox"></i></span><span><strong>Moderation queue</strong><small>Approve, reject or pause submitted campaigns.</small></span><i class="fa-solid fa-arrow-right"></i></button>
+        <button type="button" class="admin-shortcut" data-admin-jump="ads"><span class="admin-shortcut-icon blue"><i class="fa-solid fa-rectangle-ad"></i></span><span><strong>All campaigns</strong><small>Search campaigns and inspect their status.</small></span><i class="fa-solid fa-arrow-right"></i></button>
         <button type="button" class="admin-shortcut" data-admin-jump="expiring"><span class="admin-shortcut-icon amber"><i class="fa-solid fa-hourglass-end"></i></span><span><strong>Plans needing attention</strong><small>Follow up on paid plans nearing expiry.</small></span><i class="fa-solid fa-arrow-right"></i></button>
         <button type="button" class="admin-shortcut" data-admin-jump="reports"><span class="admin-shortcut-icon red"><i class="fa-solid fa-flag"></i></span><span><strong>Customer reports</strong><small>Investigate flagged ads and resolve reports.</small></span><i class="fa-solid fa-arrow-right"></i></button>
       </div>
-      <div class="admin-overview-foot"><i class="fa-solid fa-circle-info"></i><span>Operational tip: review pending ads and open reports first. Use Analytics to identify campaigns that earn clicks, then help advertisers improve weak-performing ads.</span></div>
+      <div class="admin-overview-foot"><i class="fa-solid fa-circle-info"></i><span>Operational tip: review pending ads and open reports first. Use Analytics to identify campaigns that earn clicks, then help partners improve campaign performance.</span></div>
     </section>
 
 
