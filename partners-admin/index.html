@@ -847,7 +847,7 @@
       <i class="fa-solid fa-triangle-exclamation"></i>
       <div>You're signed in, but this account isn't an admin.</div>
     </div>
-    <a href="/advertiser/" class="btn btn-primary btn-lg btn-block" style="margin-bottom:8px;">
+    <a href="/partners-dashboard/" class="btn btn-primary btn-lg btn-block" style="margin-bottom:8px;">
       <i class="fa-solid fa-arrow-right"></i> Go to my dashboard
     </a>
     <button class="btn btn-secondary btn-lg btn-block" id="denied-signout">
@@ -874,7 +874,7 @@
       </a>
       <nav class="topbar-nav">
         <a href="/" target="_blank">Shop</a>
-        <a href="/advertiser/">Dashboard</a>
+        <a href="/partners-dashboard/">Dashboard</a>
         <span id="topbar-admin"></span>
         <button type="button" id="btn-signout">
           <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
@@ -900,7 +900,7 @@
     <div class="dash-head">
       <div>
         <h1>Partners Admin</h1>
-        <p>Review submissions, manage advertisers, keep the network clean.</p>
+        <p>Review submissions, manage partners, keep the network clean.</p>
       </div>
       <button type="button" class="btn btn-secondary" id="btn-refresh" style="width:100%;">
         <i class="fa-solid fa-rotate"></i> Refresh
@@ -911,7 +911,7 @@
       <div class="admin-welcome"><div class="admin-welcome-copy">
         <span class="admin-eyebrow"><i class="fa-solid fa-shield-halved"></i> PHONEYA2 ADVERTISING NETWORK</span>
         <h2>Welcome to Partners Admin</h2>
-        <p>Review campaigns, protect customers, support advertisers, and keep the advertising network performing well. Start with the live numbers, then jump directly to the area that needs attention.</p>
+        <p>Review campaigns, protect customers, support partners, and keep the PhoneYa2 network performing well. Start with the live numbers, then jump directly to the area that needs attention.</p>
         <div class="admin-welcome-actions">
           <button class="btn btn-primary" type="button" data-admin-jump="queue"><i class="fa-solid fa-inbox"></i> Review pending ads <span id="welcome-pending-count" class="welcome-count">0</span></button>
           <button class="btn btn-secondary" type="button" data-admin-jump="advertisers"><i class="fa-solid fa-building"></i> Manage advertisers</button>
@@ -923,7 +923,7 @@
       <div class="stats-grid">
       <div class="stat"><div class="stat-lbl">Pending</div><div class="stat-val accent" id="stat-pending">0</div></div>
       <div class="stat"><div class="stat-lbl">Live Ads</div><div class="stat-val" id="stat-live">0</div></div>
-      <div class="stat"><div class="stat-lbl">Advertisers</div><div class="stat-val" id="stat-advertisers">0</div></div>
+      <div class="stat"><div class="stat-lbl">Partners</div><div class="stat-val" id="stat-advertisers">0</div></div>
       <div class="stat"><div class="stat-lbl">Reports</div><div class="stat-val red" id="stat-reports">0</div></div>
       <div class="stat"><div class="stat-lbl">Expiring</div><div class="stat-val amber" id="stat-expiring">0</div></div>
       <div class="stat"><div class="stat-lbl">Paid</div><div class="stat-val green" id="stat-paid">0</div></div>
@@ -947,7 +947,7 @@
     <section class="panel" data-panel="advertisers">
       <div class="card">
         <div class="card-head">
-          <h2>All Advertisers</h2>
+          <h2>All Partners</h2>
         </div>
         <div class="card-body" style="padding:12px;">
           <input class="input" type="text" id="adv-search" placeholder="Search by name or email…" style="margin-bottom:0;">
@@ -1033,7 +1033,7 @@
         <div class="card-body" id="an-top-ads"></div>
       </div>
       <div class="card">
-        <div class="card-head"><h2>📈 Advertiser Traffic</h2></div>
+        <div class="card-head"><h2>📈 Partner Traffic</h2></div>
         <div class="card-body" id="an-sources"></div>
       </div>
     </section>
@@ -1093,7 +1093,7 @@
       </div>
       <div class="field">
         <label class="lbl" for="reject-detail">Details <span class="req">*</span></label>
-        <textarea class="textarea" id="reject-detail" placeholder="Explain to the advertiser what needs to change."></textarea>
+        <textarea class="textarea" id="reject-detail" placeholder="Explain to the partner what needs to change."></textarea>
       </div>
       <div class="field">
         <label class="lbl" for="reject-note">Internal note (optional)</label>
@@ -1118,7 +1118,7 @@
     <div class="modal-body">
       <div class="notice notice-danger">
         <i class="fa-solid fa-ban"></i>
-        <div>Banning permanently hides the ad. The advertiser can no longer edit it. Use for policy violations that warrant removal.</div>
+        <div>Banning permanently hides the ad. The partner can no longer edit it. Use for policy violations that warrant removal.</div>
       </div>
       <div class="field">
         <label class="lbl" for="ban-reason">Reason <span class="req">*</span></label>
@@ -1582,7 +1582,7 @@
     });
     var body = $('advertisers-body');
     if (!list.length) {
-      body.innerHTML = '<div class="empty" style="padding:40px 20px;"><div class="e-icon">🔍</div><h3>No advertisers</h3></div>';
+      body.innerHTML = '<div class="empty" style="padding:40px 20px;"><div class="e-icon">🔍</div><h3>No partners</h3></div>';
       return;
     }
     var counts = {};
@@ -1660,18 +1660,18 @@
         var nextStatus = btn.getAttribute('data-next-status');
         if (!adv || !nextStatus) return;
         var verb = nextStatus === 'suspended' ? 'suspend' : 'reactivate';
-        if (!window.confirm('Are you sure you want to ' + verb + ' advertising access for ' + (adv.business_name || 'this advertiser') + '?')) return;
+        if (!window.confirm('Are you sure you want to ' + verb + ' partner access for ' + (adv.business_name || 'this advertiser') + '?')) return;
         btn.disabled = true;
         P.db.update('advertisers', 'id=eq.' + encodeURIComponent(adv.id), { status: nextStatus }, session.access_token)
           .then(function () {
             return logAction(null, nextStatus === 'suspended' ? 'suspend_advertiser' : 'reactivate_advertiser', null, (adv.business_name || '') + ' (' + (adv.email || '') + ')');
           })
           .then(function () {
-            toast(nextStatus === 'suspended' ? 'Advertiser suspended' : 'Advertiser reactivated', 'success');
+            toast(nextStatus === 'suspended' ? 'Partner suspended' : 'Partner reactivated', 'success');
             return reloadAll();
           })
           .then(renderAll)
-          .catch(function (err) { toast(err.message || 'Could not update advertiser', 'error'); })
+          .catch(function (err) { toast(err.message || 'Could not update partner', 'error'); })
           .finally(function () { btn.disabled = false; });
       });
     });
@@ -1679,7 +1679,7 @@
 
   function renderPlans() {
     if (!advertisers.length) {
-      $('plans-body').innerHTML = '<div class="empty"><div class="e-icon">👥</div><h3>No advertisers yet</h3></div>';
+      $('plans-body').innerHTML = '<div class="empty"><div class="e-icon">👥</div><h3>No partners yet</h3></div>';
       return;
     }
     var sorted = advertisers.slice().sort(function (a, b) {
@@ -1829,7 +1829,7 @@
     $('ads-body').innerHTML =
       '<div class="data-table-wrap" style="padding:0 14px 14px;">' +
       '<table class="data-table"><thead><tr>' +
-      '<th>Ad</th><th>Advertiser</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
+      '<th>Ad</th><th>Partner</th><th>Status</th><th>Weight</th><th>Impr</th><th>Clicks</th><th></th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 
     $('ads-body').querySelectorAll('[data-act]').forEach(function (btn) {
