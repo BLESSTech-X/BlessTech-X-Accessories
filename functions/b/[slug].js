@@ -15,7 +15,7 @@ export async function onRequestGet({params,env,request}){
    [site,items,posts]=await Promise.all([
      sitePromise,
      env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND moderation_status='approved' AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
-     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
+     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,cta_label,cta_url,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
    ]);
  } catch(error) {
    const message=String(error?.message||error);
@@ -24,7 +24,7 @@ export async function onRequestGet({params,env,request}){
    [site,items,posts]=await Promise.all([
      sitePromise,
      env.DB.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(advertiser.id).all(),
-     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
+     env.DB.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,cta_label,cta_url,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(advertiser.id).all()
    ]);
  }
  const visitor=await visitorHash(request),source=request.headers.get("referer")?"referral":"direct",now=new Date().toISOString();
