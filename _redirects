@@ -1,7 +1,16 @@
-# Canonical partner entry points — explicitly serve the standalone Pages apps
+# Canonical PhoneYa2 Partner Network routes
+/partners /partners/index.html 200
+/partners/ /partners/index.html 200
 /partners-dashboard /partners-dashboard/index.html 200
 /partners-dashboard/ /partners-dashboard/index.html 200
 /partners-admin /partners-admin/index.html 200
 /partners-admin/ /partners-admin/index.html 200
 
+# Legacy links now resolve to the current Partner Network
+/advertise /partners/ 301
+/advertise/ /partners/ 301
+/advertiser /partners-dashboard/ 301
+/advertiser/ /partners-dashboard/ 301
+/ads-admin /partners-admin/ 301
+/ads-admin/ /partners-admin/ 301
 /guides.html /blog.html 301
