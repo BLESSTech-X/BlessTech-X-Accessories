@@ -136,7 +136,7 @@ stage="signup rate limit";
 if(!await rateLimit(request,env))return fail("Too many attempts. Wait 15 minutes before trying again.",429);
 stage="input validation";
 const email=cleanText(body.email,254).toLowerCase(),password=String(body.password||""),business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40);
-if(!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email))return fail("Enter a valid email address.");
+const emailParts=email.split("@");if(emailParts.length!==2||!emailParts[0]||!emailParts[1]||!emailParts[1].includes(".")||emailParts[1].startsWith(".")||emailParts[1].endsWith("."))return fail("Enter a valid email address.");
 if(password.length<10||password.length>128)return fail("Use a password between 10 and 128 characters.");
 if(!business||phone.replace(/\D/g,"").length<9)return fail("Business name and a valid phone number are required.");
 stage="checking account email";
