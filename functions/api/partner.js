@@ -68,7 +68,7 @@ if(!validUrl(destinationUrl))return fail("Enter a valid destination URL.");
 if(mediaUrl&&!validUrl(mediaUrl))return fail("Enter a valid image or video URL.");
 if(mediaType==="video"&&!mediaUrl)return fail("Add a video URL.");
 const start=body.start_date?new Date(body.start_date).toISOString():now;
-const end=body.end_date?new Date(body.end_date).toISOString():null;
+const end=body.end_date?(String(body.end_date).length===10?new Date(body.end_date+"T23:59:59.999Z").toISOString():new Date(body.end_date).toISOString()):null;
 if(end&&Date.parse(end)<=Date.parse(start))return fail("Campaign end date must be after its start date.");
 let slug;
 if(body.id&&UUID.test(String(body.id))){const existing=await db.prepare("SELECT id,slug,status FROM ads WHERE id=? AND advertiser_id=?").bind(id,partner.advertiser_id).first();if(!existing)return fail("Campaign not found.",404);slug=existing.slug;}
