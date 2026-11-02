@@ -125,6 +125,12 @@ if(request.method!=="POST")return fail("Method not allowed.",405);
 let body={};try{body=await request.json();}catch{return fail("Invalid JSON request.");}
 const action=String(body.action||"");
 if(action==="signup"){
+// Fail clearly before signup if the Partner Network migrations have not been applied.
+const requiredTables=["advertiser_accounts","advertisers","advertiser_profiles","partner_site_settings","partner_subscriptions","partner_sessions","partner_auth_attempts"];
+const tableRows=await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ("+requiredTables.map(()=>"?").join(",")+")").bind(...requiredTables).all();
+const present=new Set((tableRows.results||[]).map(row=>row.name));
+const missing=requiredTables.filter(name=>!present.has(name));
+if(missing.length)return fail("PhoneYa2 Partner Network database setup is incomplete. Missing tables: "+missing.join(", ")+". Run: npx wrangler d1 migrations apply phoneya2-core --remote",503);
 if(!await rateLimit(request,env))return fail("Too many attempts. Try again later.",429);
 const email=cleanText(body.email,254).toLowerCase(),password=String(body.password||""),business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40);
 if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return fail("Enter a valid email address.");
@@ -141,7 +147,7 @@ env.DB.prepare("INSERT INTO partner_site_settings(id,advertiser_id,site_title,si
 env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,?)").bind(subscriptionId,advertiserId,stamp,stamp,new Date(Date.now()+30*86400000).toISOString())
 ]);
 const token=await createSession(env.DB,accountId);return json({ok:true,authenticated:true,slug,message:"Your workspace is ready. It remains private until account verification and public publishing are enabled."},201,{"set-cookie":sessionCookie(token)});
-}catch(e){return fail("We could not create the account. Check the details and try again.",409);}
+}catch(e){console.error("PhoneYa2 partner signup database failure:",e?.stack||e);return fail("Account creation failed because the database rejected a signup operation. The technical error has been recorded in Cloudflare logs. Please retry shortly or contact support with the time of this attempt.",500);}
 }
 if(action==="login"){
 if(!await rateLimit(request,env))return fail("Too many attempts. Try again later.",429);
