@@ -1739,3 +1739,19 @@ body.py2-management-open{overflow:hidden!important}
   #workspace-modal .workspace-modal-note{padding:6px 10px!important;font-size:9px!important}
 }
 @media(prefers-reduced-motion:reduce){#workspace-modal .workspace-modal-card{animation:none!important}}
+
+
+/* 2026-11-02: one refined Command Centre header; keep workspace navigation inside it. */
+#cc-main-header{min-height:68px;padding:10px clamp(16px,3vw,30px)!important;gap:18px!important;background:#fff!important;color:#172033!important;border-bottom:1px solid #e8edf4!important;box-shadow:0 3px 14px rgba(23,32,51,.045)!important;display:flex!important;align-items:center!important}
+#cc-main-header .brand{display:flex!important;align-items:center!important;gap:12px!important;flex:0 0 auto!important;color:#172033!important;text-decoration:none!important;min-width:0}
+#cc-main-header .cc-brand-logo{display:block!important;width:112px!important;height:42px!important;max-width:24vw!important;object-fit:contain!important;object-position:left center!important}
+#cc-main-header .cc-brand-divider{height:27px;width:1px;background:#e1e6ee;display:block!important}
+#cc-main-header .cc-brand-title{font-size:14px!important;font-weight:800!important;letter-spacing:-.2px!important;color:#27364d!important;white-space:nowrap}
+#cc-main-header .top-right{color:#748096!important;flex:0 0 auto!important}
+#cc-main-header .cc-live-status{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:850;letter-spacing:.7px;color:#47735f}
+#cc-main-header .live-dot{margin:0!important}
+#cc-main-header #workspace-nav{position:static!important;top:auto!important;z-index:auto!important;flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;overflow-x:auto!important}
+#cc-main-header #workspace-nav .workspace-tab{padding:8px 10px!important;font-size:11px!important}
+#cc-main-header #cc-menu-toggle{flex:0 0 auto!important}
+@media(max-width:900px){#cc-main-header{flex-wrap:wrap!important;gap:8px!important}#cc-main-header #workspace-nav{order:3;flex:1 1 100%!important;width:100%!important}#cc-main-header .top-right{margin-left:auto}}
+@media(max-width:520px){#cc-main-header{min-height:60px;padding:9px 12px!important}#cc-main-header .cc-brand-logo{width:88px!important;height:34px!important}#cc-main-header .cc-brand-title{font-size:12px!important}#cc-main-header .top-right .live-text{display:none!important}}
