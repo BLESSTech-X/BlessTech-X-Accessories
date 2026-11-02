@@ -23,10 +23,10 @@ Cloudflare Dashboard → Workers & Pages → PhoneYa2 Pages project → Settings
 | `ORDER_NOTIFY_EMAIL` | Variable | `singbless89@gmail.com` |
 | `TELEGRAM_BOT_TOKEN` | Secret | Token for your private PhoneYa2 Telegram bot (instructions below) |
 | `TELEGRAM_CHAT_ID` | Variable | Your Telegram chat ID for receiving order alerts |
-| `RESEND_API_KEY` | Secret | API key from Resend |
-| `RESEND_FROM` | Variable | Sender address on a domain verified in Resend, e.g. `PhoneYa2 Orders <orders@your-verified-domain>` |
+| `BREVO_API_KEY` | Secret | API key from Brevo |
+| `BREVO_FROM_EMAIL` | Variable | Sender address on a domain verified in Brevo, e.g. `PhoneYa2 Orders <orders@your-verified-domain>` |
 
-**Never put `SUPABASE_SERVICE_ROLE_KEY` or `RESEND_API_KEY` in HTML, JavaScript shipped to the browser, GitHub, or a public config file.** Use Cloudflare's encrypted Secrets field for these two values.
+**Never put `SUPABASE_SERVICE_ROLE_KEY` or `BREVO_API_KEY` in HTML, JavaScript shipped to the browser, GitHub, or a public config file.** Use Cloudflare's encrypted Secrets field for these two values.
 
 ## 3. Create the admin login
 
@@ -46,14 +46,14 @@ If `getUpdates` returns no messages, send another message to the bot and refresh
 
 ## 5. Email configuration
 
-Resend must have a verified sender domain and a valid API key. If email is not configured, the order endpoint can still save orders but returns `notification_sent: false`; do not switch the storefront to the new checkout until notification delivery is configured and tested.
+Brevo must have a verified sender email/domain and a valid API key. Transactional SMS also requires SMS credits and an approved Zambia sender ID. If email is not configured, the order endpoint can still save orders but returns `notification_sent: false`; do not switch the storefront to the new checkout until notification delivery is configured and tested.
 
 ## 6. Test before switching storefront buttons
 
 After setting secrets and redeploying:
 1. Open `/checkout.html`, add at least two different products, and submit a clearly labelled internal test order.
 2. Confirm one row appears in `orders`, with the expected matching rows in `order_items`, and the order total equals the sum of item totals.
-3. Confirm the order email reaches `singbless89@gmail.com`.
+3. Confirm the owner order alert reaches `ORDER_NOTIFY_EMAIL`, and the customer receives the order confirmation by email and (if SMS is configured) SMS. Test at least one later status change as well.
 4. Open `/admin/orders.html`, sign in with the allowlisted account, and confirm the order is visible and status updates work.
 5. Verify an unauthenticated request to `/api/orders?admin=1` is rejected.
 6. Only after all checks pass, update the three existing storefront pages to send order buttons to `/checkout.html`.
