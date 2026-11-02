@@ -202,7 +202,7 @@ async function logEmailActivity(env, record) {
         crypto.randomUUID(), record.eventType || "transactional", record.source || "automatic",
         record.triggerSource || "", String(record.recipientEmail || "").slice(0,254),
         String(record.recipientName || "").slice(0,120), String(record.subject || "").slice(0,300),
-        record.status || "failed", record.provider || "resend", record.providerMessageId || "",
+        record.status || "failed", record.provider || "brevo", record.providerMessageId || "",
         String(record.error || "").slice(0,1000), record.orderNumber || "", record.productSlug || "",
         record.status === "sent" ? new Date().toISOString() : null,
         JSON.stringify(record.metadata || {})
@@ -286,11 +286,46 @@ async function sendOrderTelegram(env, order, customer = {}, items = []) {
     return { ok: false, reason: "Could not reach Telegram API: " + String(error).slice(0, 120) };
   }
 }
+
+async function sendBrevoEmail(env,to,subject,html){
+  const key=env.BREVO_API_KEY,fromEmail=env.BREVO_FROM_EMAIL;
+  if(!key||!fromEmail)return{ok:false,error:"Brevo email is not configured. Add BREVO_API_KEY and BREVO_FROM_EMAIL in Cloudflare Pages secrets."};
+  try{
+    const response=await fetch("https://api.brevo.com/v3/smtp/email",{method:"POST",headers:{"api-key":key,"content-type":"application/json","accept":"application/json"},body:JSON.stringify({
+      sender:{name:env.BREVO_FROM_NAME||"PhoneYa2 Accessories",email:fromEmail},
+      to:[{email:to}],subject,htmlContent:html
+    })});
+    const result=await response.json().catch(()=>({}));
+    return response.ok?{ok:true,providerMessageId:result.messageId||""}:{ok:false,error:"Brevo returned HTTP "+response.status+": "+String(result.message||result.code||"").slice(0,240)};
+  }catch(error){return{ok:false,error:String(error).slice(0,240)};}
+}
+function normalizeZambiaPhone(value){
+  let digits=String(value||"").replace(/\D/g,"");
+  if(digits.startsWith("0"))digits="260"+digits.slice(1);
+  return digits.startsWith("260")?digits:"";
+}
+async function sendBrevoSms(env,phone,content,tag){
+  const key=env.BREVO_API_KEY,sender=String(env.BREVO_SMS_SENDER||"PhoneYa2").trim(),recipient=normalizeZambiaPhone(phone);
+  if(!key||!recipient)return{ok:false,skipped:true,error:!key?"Brevo SMS is not configured.":"Phone number is not a valid Zambian mobile number."};
+  if(!/^[A-Za-z0-9]{1,11}$/.test(sender))return{ok:false,skipped:true,error:"BREVO_SMS_SENDER must be an approved sender ID of up to 11 letters or numbers."};
+  try{
+    const response=await fetch("https://api.brevo.com/v3/transactionalSMS/send",{method:"POST",headers:{"api-key":key,"content-type":"application/json","accept":"application/json"},body:JSON.stringify({sender,recipient,content:String(content||"").slice(0,450),type:"transactional",tag:tag||"phoneya2_order_update"})});
+    const result=await response.json().catch(()=>({}));
+    return response.ok?{ok:true,messageId:String(result.messageId||"")}:{ok:false,error:"Brevo SMS returned HTTP "+response.status+": "+String(result.message||result.code||"").slice(0,180)};
+  }catch(error){return{ok:false,error:String(error).slice(0,180)};}
+}
+async function logCommunicationActivity(env,record){
+  if(!env.DB)return;
+  try{await env.DB.prepare("INSERT INTO communication_activity(id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message) VALUES(?,?,?,?,?,?,?,?,?,?)")
+    .bind(crypto.randomUUID(),record.campaignId||"",record.recipient||"",record.name||"",record.channel||"sms",record.eventType||"order_notification",record.status||"failed","brevo",record.messageId||"",String(record.error||"").slice(0,500)).run();}
+  catch(error){console.error("PhoneYa2 communication activity log failed:",String(error).slice(0,180));}
+}
+
 async function sendOrderEmail(env, order, customer, items) {
-  const apiKey = env.RESEND_API_KEY;
-  const from = env.RESEND_FROM;
+  const apiKey = env.BREVO_API_KEY;
+  const from = env.BREVO_FROM_EMAIL;
   const to = env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com";
-  if (!apiKey || !from) return { ok: false, error: "Resend API key or sender is not configured." };
+  if (!apiKey || !from) return { ok: false, error: "Brevo API key or sender is not configured." };
   const rows = items.map(item =>
     "<tr><td style=\"padding:8px;border-bottom:1px solid #eee\">" + escapeHtml(item.product_name) +
     "</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:center\">" + item.quantity +
@@ -306,20 +341,7 @@ async function sendOrderEmail(env, order, customer, items) {
     "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th align=\"left\">Product</th><th>Qty</th><th align=\"right\">Line total</th></tr></thead><tbody>" + rows + "</tbody></table>" +
     "<h3 style=\"text-align:right\">Total: ZMW " + Number(order.total_amount).toFixed(2) + "</h3>" +
     "<p>Status: Pending</p></div>";
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-      body: JSON.stringify({ from, to: [to], subject: "New PhoneYa2 order " + order.order_number, html })
-    });
-    const result = await response.json().catch(() => ({}));
-    return response.ok
-      ? { ok: true, providerMessageId: result.id || "" }
-      : { ok: false, error: "Resend returned HTTP " + response.status + ": " + String(result.message || result.name || "").slice(0, 240) };
-  } catch (error) {
-    return { ok: false, error: String(error).slice(0, 240) };
-  }
-}
+  return await sendBrevoEmail(env,const to = env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com";,"New PhoneYa2 order " + order.order_number,html);}
 async function sendOrderFormspree(env, order, customer = {}, items = []) {
   const endpoint = "https://formspree.io/f/mdeabqwq";
   const itemSummary = items.slice(0, 30).map(item =>
@@ -356,9 +378,9 @@ async function sendOrderFormspree(env, order, customer = {}, items = []) {
 }
 
 async function sendCustomerOrderConfirmation(env, order, customer, items) {
-  const apiKey = env.RESEND_API_KEY;
-  const from = env.RESEND_FROM;
-  if (!apiKey || !from) return { ok: false, error: "Resend API key or sender is not configured." };
+  const apiKey = env.BREVO_API_KEY;
+  const from = env.BREVO_FROM_EMAIL;
+  if (!apiKey || !from) return { ok: false, error: "Brevo API key or sender is not configured." };
   if (!customer.email) return { ok: false, error: "Customer email is missing." };
   const rows = items.map(item =>
     "<tr><td style=\"padding:10px;border-bottom:1px solid #e9edf3\">" + escapeHtml(item.product_name) +
@@ -376,26 +398,13 @@ async function sendCustomerOrderConfirmation(env, order, customer, items) {
     (customer.note ? "<p><strong>Your note:</strong><br>" + escapeHtml(customer.note).replace(/\n/g, "<br>") + "</p>" : "") +
     "<p>If you need help, reply to this email or contact PhoneYa2 using the contact details on our website.</p><p>Thank you,<br><strong>PhoneYa2 Team</strong></p>" +
     "</div></div>";
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-      body: JSON.stringify({ from, to: [customer.email], subject: "We received your PhoneYa2 order " + order.order_number, html })
-    });
-    const result = await response.json().catch(() => ({}));
-    return response.ok
-      ? { ok: true, providerMessageId: result.id || "" }
-      : { ok: false, error: "Resend returned HTTP " + response.status + ": " + String(result.message || result.name || "").slice(0, 240) };
-  } catch (error) {
-    return { ok: false, error: String(error).slice(0, 240) };
-  }
-}
+  return await sendBrevoEmail(env,customer.email,"We received your PhoneYa2 order " + order.order_number,html);}
 
 async function sendDeliveredOrderEmail(env, order) {
-  const apiKey = env.RESEND_API_KEY;
-  const from = env.RESEND_FROM;
+  const apiKey = env.BREVO_API_KEY;
+  const from = env.BREVO_FROM_EMAIL;
   const email = cleanText(order.customer_email, 254).toLowerCase();
-  if (!apiKey || !from) return { ok: false, error: "Resend API key or sender is not configured." };
+  if (!apiKey || !from) return { ok: false, error: "Brevo API key or sender is not configured." };
   if (!email) return { ok: false, error: "Customer email is missing." };
   const orderNumber = cleanText(order.order_number, 80);
   const name = cleanText(order.customer_name, 120) || "there";
@@ -409,20 +418,7 @@ async function sendDeliveredOrderEmail(env, order) {
     "<p>We'd appreciate your honest feedback about the product and delivery experience. Your feedback helps us improve; sharing it is completely optional.</p>" +
     "<p style=\"margin:24px 0\"><a href=\"" + escapeHtml(feedbackUrl) + "\" style=\"display:inline-block;background:#128c7e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:bold\">Share feedback on WhatsApp</a></p>" +
     "<p>If you have not received your order, please contact us so we can investigate.</p><p>Thank you,<br><strong>PhoneYa2 Team</strong></p></div></div>";
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-      body: JSON.stringify({ from, to: [email], subject: "PhoneYa2 order " + orderNumber + " — delivery update", html })
-    });
-    const result = await response.json().catch(() => ({}));
-    return response.ok
-      ? { ok: true, providerMessageId: result.id || "" }
-      : { ok: false, error: "Resend returned HTTP " + response.status + ": " + String(result.message || result.name || "").slice(0, 240) };
-  } catch (error) {
-    return { ok: false, error: String(error).slice(0, 240) };
-  }
-}
+  return await sendBrevoEmail(env,email,"PhoneYa2 order " + orderNumber + " — delivery update,html);}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -521,11 +517,11 @@ export async function onRequest(context) {
         recipientEmail: env.ORDER_NOTIFY_EMAIL || "singbless89@gmail.com", recipientName: "PhoneYa2 store owner",
         subject: "New PhoneYa2 order " + order.order_number,
         status: emailSent || formspreeResult.ok ? "sent" : "failed",
-        provider: emailSent && formspreeResult.ok ? "resend+formspree" : formspreeResult.ok ? "formspree" : "resend",
+        provider: emailSent && formspreeResult.ok ? "brevo+formspree" : formspreeResult.ok ? "formspree" : "brevo",
         providerMessageId: ownerEmailResult.providerMessageId || "",
         error: [ownerEmailResult.error, formspreeResult.error].filter(Boolean).join(" | "),
         orderNumber: order.order_number,
-        metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length, resendSent: emailSent, formspreeSent: formspreeResult.ok }
+        metadata: { orderTotal: Number(order.total_amount || 0), itemCount: items.length, brevoSent: emailSent, formspreeSent: formspreeResult.ok }
       });
 
       let customerEmailResult = { ok: false, error: "Customer confirmation was not attempted." };
