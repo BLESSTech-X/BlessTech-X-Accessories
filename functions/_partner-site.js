@@ -183,6 +183,13 @@ a{color:inherit;text-decoration:none}
 .sponsored-copy p{font-size:13px;color:#748197;line-height:1.6;margin:6px 0 13px}
 .sponsored-cta{display:flex;justify-content:space-between;align-items:center;color:#fff;background:#173f73;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:850}
 .sponsored-section[hidden]{display:none}
+
+.partner-ad-popup{position:fixed;inset:0;z-index:99;background:#081a30b8;display:grid;place-items:center;padding:18px}
+.partner-ad-popup[hidden]{display:none}
+.partner-ad-popup-card{position:relative;width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 25px 90px #0005}
+.partner-ad-popup-close{position:absolute;right:12px;top:12px;z-index:3;width:36px;height:36px;border:0;border-radius:50%;background:#102b4e;color:#fff;font-size:20px;cursor:pointer}
+.partner-ad-popup .sponsored-media{height:260px}
+@media(max-width:600px){.partner-ad-popup .sponsored-media{height:190px}}
 @media(max-width:760px){.sponsored-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sponsored-media{height:155px}.sponsored-copy{padding:12px}.sponsored-copy h3{font-size:14px}}
 @media(max-width:420px){.sponsored-grid{grid-template-columns:1fr}.sponsored-media{height:210px}}
 @media(max-width:760px){.site{padding:0 13px}.site-nav{display:none;position:absolute;top:64px;left:0;right:0;margin:0;padding:14px;background:white;border-bottom:1px solid #e7ebf1;box-shadow:0 10px 22px #132b4a15;flex-direction:column;align-items:stretch;gap:12px}.site-nav.open{display:flex}.menu-button{display:inline-flex;margin-left:auto;margin-right:9px}.top-link{font-size:11px}.top{margin:0 -13px;padding:0 10px}.template-storefront .products{grid-template-columns:repeat(2,minmax(0,1fr))}.template-studio .hero{min-height:390px}.top{height:65px}.hero{min-height:360px;border-radius:17px}.hero h1{font-size:38px}.hero p{font-size:14px}.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-image,.product-placeholder{height:155px}.product-body{padding:12px}.product h3{font-size:14px}.posts{grid-template-columns:1fr}.contact{grid-template-columns:1fr;margin:35px 0 20px}.section{padding-top:34px}.section-head h2{font-size:23px}.footer{display:block}.footer span{display:block;margin-top:5px}}
@@ -202,6 +209,7 @@ ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(bus
 <div><small class="eyebrow">LET&#39;S CONNECT</small><h2>How can we help you?</h2><p>Send an enquiry and ${esc(businessName)} will be able to follow up with you.</p>${contact}<div class="socials">${socialHtml}</div></div>
 <form id="partner-enquiry"><input name="name" required maxlength="100" placeholder="Your name"><input name="phone" maxlength="40" placeholder="Phone number"><input name="email" type="email" maxlength="254" placeholder="Email address"><textarea name="message" required maxlength="2000" placeholder="How can we help?"></textarea><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px"><button type="submit">Send enquiry →</button><small id="enquiry-result" aria-live="polite"></small></form>
 </section>
+<div class="partner-ad-popup" id="partner-ad-popup" hidden role="dialog" aria-modal="true" aria-label="Sponsored advertisement"><div class="partner-ad-popup-card"><button class="partner-ad-popup-close" id="partner-ad-popup-close" aria-label="Close advertisement">×</button><div id="partner-ad-popup-content"></div></div></div>
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
@@ -212,17 +220,15 @@ async function loadPartnerAds(){
   try{
     const response=await fetch("/api/partner-ads",{cache:"no-store",credentials:"same-origin"});
     if(!response.ok)return;
-    const payload=await response.json();
-    const ads=(payload.ads||[]).filter(ad=>!ad.placement||ad.placement==="carousel"||ad.placement==="both").slice(0,6);
-    if(!ads.length)return;
-    section.hidden=false;
-    for(const ad of ads){
+    const payload=await response.json(),allAds=payload.ads||[];
+    const carouselAds=allAds.filter(ad=>!ad.placement||ad.placement==="carousel"||ad.placement==="both").slice(0,6);
+    for(const ad of carouselAds){
       const card=document.createElement("article");card.className="sponsored-card";
       const media=document.createElement("div");media.className="sponsored-media";
       const tag=document.createElement("span");tag.className="sponsored-label";tag.textContent="Sponsored";media.appendChild(tag);
       const url=String(ad.media_url||"");
       if(url){
-        if(ad.media_type==="video"){
+        if(ad.media_type==="video"&&!/youtube\.com|youtu\.be|vimeo\.com|tiktok\.com/i.test(url)){
           const video=document.createElement("video");video.src=url;video.muted=true;video.autoplay=true;video.loop=true;video.playsInline=true;media.appendChild(video);
         }else{
           const img=document.createElement("img");img.src=url;img.alt=ad.title||"Sponsored campaign";img.loading="lazy";img.onerror=()=>{img.remove();};media.appendChild(img);
@@ -233,12 +239,41 @@ async function loadPartnerAds(){
       const title=document.createElement("h3");title.textContent=ad.title||"Featured offer";
       const desc=document.createElement("p");desc.textContent=ad.description||"Discover this business on PhoneYa2.";
       const link=document.createElement("a");link.className="sponsored-cta";link.href=ad.profile_slug?"/b/"+encodeURIComponent(ad.profile_slug):"/ad/"+encodeURIComponent(ad.slug||"");link.innerHTML="<span>View business profile</span><span>↗</span>";
-      link.addEventListener("click",()=>{fetch("/api/partner-ads",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"click",ad_id:ad.id,placement:"carousel",source:"other"})}).catch(()=>{});});
+      link.addEventListener("click",()=>trackPartnerAd(ad.id,"click","carousel"));
       copy.append(business,title,desc,link);card.append(media,copy);list.appendChild(card);
-      fetch("/api/partner-ads",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"impression",ad_id:ad.id,placement:"carousel",source:"other"})}).catch(()=>{});
+      trackPartnerAd(ad.id,"impression","carousel");
+    }
+    if(carouselAds.length)section.hidden=false;
+    const popupAds=allAds.filter(ad=>ad.placement==="popup"||ad.placement==="both");
+    if(popupAds.length&&!sessionStorage.getItem("py2_partner_popup_seen")){
+      window.setTimeout(()=>showPartnerAdPopup(popupAds[0]),22000);
     }
   }catch(error){console.warn("Partner sponsored campaigns unavailable",error);}
 }
+function trackPartnerAd(id,action,placement){
+  fetch("/api/partner-ads",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action,ad_id:id,placement,source:"other"})}).catch(()=>{});
+}
+function showPartnerAdPopup(ad){
+  const overlay=document.getElementById("partner-ad-popup"),content=document.getElementById("partner-ad-popup-content");
+  if(!overlay||!content||overlay.dataset.opened==="1")return;
+  overlay.dataset.opened="1";sessionStorage.setItem("py2_partner_popup_seen","1");
+  const media=document.createElement("div");media.className="sponsored-media";
+  const tag=document.createElement("span");tag.className="sponsored-label";tag.textContent="Sponsored";media.appendChild(tag);
+  if(ad.media_url&&ad.media_type!=="video"){
+    const img=document.createElement("img");img.src=ad.media_url;img.alt=ad.title||"Sponsored campaign";media.appendChild(img);
+  }else if(ad.media_url){
+    const video=document.createElement("video");video.src=ad.media_url;video.muted=true;video.autoplay=true;video.loop=true;video.playsInline=true;media.appendChild(video);
+  }
+  const copy=document.createElement("div");copy.className="sponsored-copy";
+  const business=document.createElement("div");business.className="sponsored-business";business.textContent=ad.business_name||(ad.advertisers&&ad.advertisers.business_name)||"Zambian business";
+  const title=document.createElement("h3");title.textContent=ad.title||"Featured offer";
+  const desc=document.createElement("p");desc.textContent=ad.description||"Discover this business on PhoneYa2.";
+  const link=document.createElement("a");link.className="sponsored-cta";link.href=ad.profile_slug?"/b/"+encodeURIComponent(ad.profile_slug):"/ad/"+encodeURIComponent(ad.slug||"");link.innerHTML="<span>View business profile</span><span>↗</span>";
+  link.addEventListener("click",()=>trackPartnerAd(ad.id,"click","popup"));
+  copy.append(business,title,desc,link);content.replaceChildren(media,copy);overlay.hidden=false;trackPartnerAd(ad.id,"impression","popup");
+}
+document.getElementById("partner-ad-popup-close").addEventListener("click",()=>{document.getElementById("partner-ad-popup").hidden=true;});
+document.getElementById("partner-ad-popup").addEventListener("click",event=>{if(event.target.id==="partner-ad-popup")event.currentTarget.hidden=true;});
 
 document.getElementById("site-menu").addEventListener("click",function(){document.getElementById("site-nav").classList.toggle("open")});
 loadPartnerAds();
