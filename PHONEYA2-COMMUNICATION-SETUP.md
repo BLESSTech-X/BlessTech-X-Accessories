@@ -1,49 +1,51 @@
-# PhoneYa2 unified communication setup
+# PhoneYa2 Communication Centre — Cloudflare D1 setup
 
-The communication flow uses Brevo for outbound email and transactional SMS. Formspree remains in place for incoming order/newsletter form alerts. No Resend configuration is required by the updated communication functions.
+PhoneYa2 communications use **Cloudflare D1** for all subscriber, campaign, automation, product-announcement and activity records. Cloudflare Pages Functions provide the APIs. Brevo sends outbound email/SMS. Formspree remains for incoming form alerts. Supabase is not part of this communication setup.
 
-## Cloudflare Pages environment variables
+## 1. Apply D1 migrations
 
-Add these under the PhoneYa2 Pages project settings for Production (and Preview only if you want preview sends):
+Open the Cloudflare dashboard, select the D1 database bound to the PhoneYa2 Pages project, and execute these migrations in order if they have not already been applied:
 
-- \`BREVO_API_KEY\` — secret; create an API key in Brevo.
-- \`BREVO_FROM_EMAIL\` — verified sender email address in Brevo.
-- \`BREVO_FROM_NAME\` — optional sender name; defaults to \`PhoneYa2 Accessories\`.
-- \`BREVO_SMS_SENDER\` — approved alphanumeric sender ID (maximum 11 letters/numbers); defaults to \`PhoneYa2\`.
-- Keep \`ORDER_NOTIFY_EMAIL\` for the store owner's order alert.
-- Keep existing Supabase and D1 bindings/secrets.
+1. \`d1/migrations/0010_communication_activity.sql\`
+2. \`d1/migrations/0011_partner_package_benefits.sql\`
+3. \`d1/migrations/0012_unified_communications.sql\`
 
-Verify the sender/domain in Brevo before sending. Buy SMS credits and register/approve the sender ID for Zambia in Brevo before expecting SMS delivery.
+Migration 0012 creates the D1 newsletter subscriber list, campaign records, automation settings and product-announcement queue. It also extends the existing D1 email activity log. It does not delete existing order, partner or activity data.
 
-## Database updates
+## 2. Cloudflare Pages configuration
 
-1. In Supabase SQL Editor, run the latest complete \`supabase/communication-centre.sql\` from this repository. It extends campaigns with the partner audience and service-message classification.
-2. In the Cloudflare D1 database attached to PhoneYa2 Pages, run:
-   - \`d1/migrations/0010_communication_activity.sql\`
-   - \`d1/migrations/0011_partner_package_benefits.sql\`
+Confirm the Pages project has the D1 binding named \`DB\` pointing to the correct production database. Configure:
 
-These are additive updates. Do not drop existing order, partner, campaign or activity tables.
+- \`BREVO_API_KEY\` — secret.
+- \`BREVO_FROM_EMAIL\` — verified sender email.
+- \`BREVO_FROM_NAME\` — optional; defaults to PhoneYa2 Accessories.
+- \`BREVO_SMS_SENDER\` — approved Zambia sender ID, up to 11 alphanumeric characters.
+- \`PRODUCT_ANNOUNCEMENT_SECRET\` — secret used by the product-publish integration.
+- Keep \`ORDER_NOTIFY_EMAIL\` and existing admin/authentication secrets.
 
-## Audience rules
+Do not add Supabase variables for this communication system. Never expose API keys in browser code or commit them to GitHub.
 
-- Newsletter marketing campaigns: only contacts whose newsletter status is \`subscribed\` (confirmed opt-in). Unsubscribed, pending and bounced contacts are excluded.
-- Partner updates: all active/approved registered partners, including free partners, are targeted from the D1 partner records. These are operational Partner Studio/account updates, not a way to bypass marketing consent.
-- Customer notifications: customers receive transactional order confirmation and order-status updates after they place an order. Newsletter signup is not required.
-- SMS is used for transactional order updates and partner service notices. Phone numbers are normalized to Zambia's +260 country code; unsupported/invalid numbers are skipped and logged.
+Buy Brevo SMS credits and obtain approval for the sender ID before expecting SMS delivery in Zambia.
 
-## Admin workflow
+## 3. Audience rules
 
-- Open \`/admin/campaigns.html\` from the Command Centre.
-- Select either confirmed newsletter subscribers or registered partners.
-- Save as draft, review the audience, then explicitly send. Batches process up to 20 recipients and can be resumed.
-- Open \`/admin/communications.html\` to inspect email activity and the SMS/partner notification log.
+- **Newsletter marketing:** only contacts with D1 subscriber status \`subscribed\`, after double opt-in. Pending, unsubscribed and bounced contacts are excluded.
+- **Partners:** active/approved partner records in D1, including free partners, receive operational account updates. A partner does not need newsletter consent for relevant service notices.
+- **Customers:** order confirmations and order-status messages are transactional. Placing an order does not subscribe a customer to marketing.
+- **Product announcements:** only confirmed newsletter subscribers receive these promotional emails. The automation is disabled by default until deliberately enabled in D1.
 
-## Safe test
+## 4. Admin workflow
 
-1. Configure the Brevo sender and API key, then send a test newsletter confirmation to an email address you control.
-2. Place a test order using an email and Zambian mobile number you control. Verify the customer email/SMS confirmation.
-3. Change that test order's status in the admin order dashboard and verify the status email/SMS.
-4. Create a partner update for one test partner first. Verify email and SMS, then inspect the Communication Centre logs.
-5. Only use newsletter marketing sends with contacts who explicitly confirmed their subscription.
+- \`/admin/campaigns.html\`: create drafts for confirmed newsletter subscribers or registered partners, then explicitly send in batches of up to 20.
+- \`/admin/communications.html\`: inspect D1 email activity, SMS activity, subscriber totals and automation settings.
+- \`/admin/orders.html\`: order-status changes trigger customer notifications through the configured Brevo channels.
 
-A Brevo API acceptance is not proof of inbox delivery. Use Brevo delivery events and its logs to confirm final delivery.
+## 5. Safe verification
+
+1. Subscribe using an email address you control and confirm the email. Check that its D1 status becomes \`subscribed\`.
+2. Unsubscribe using the email link and confirm it is excluded from future marketing sends.
+3. Place a test order using your own email and Zambian mobile number; test a later status change.
+4. Create a partner update and test with a partner account you control.
+5. Check both activity logs in the Communication Centre.
+
+Brevo accepting a request does not prove inbox or handset delivery. Confirm delivery in Brevo's logs.
