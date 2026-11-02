@@ -114,6 +114,17 @@ CREATE TABLE IF NOT EXISTS public.email_campaigns (
   last_error TEXT NOT NULL DEFAULT '',
   completed_at TIMESTAMPTZ
 );
+ALTER TABLE public.email_campaigns DROP CONSTRAINT IF EXISTS email_campaigns_audience_check;
+ALTER TABLE public.email_campaigns ADD CONSTRAINT email_campaigns_audience_check CHECK (audience IN ('subscribed','partners'));
+ALTER TABLE public.email_campaigns ADD COLUMN IF NOT EXISTS message_type TEXT NOT NULL DEFAULT 'marketing';
+ALTER TABLE public.email_campaigns DROP CONSTRAINT IF EXISTS email_campaigns_message_type_check;
+ALTER TABLE public.email_campaigns ADD CONSTRAINT email_campaigns_message_type_check CHECK (message_type IN ('marketing','service'));
+ALTER TABLE public.email_campaigns DROP CONSTRAINT IF EXISTS email_campaigns_audience_type_check;
+ALTER TABLE public.email_campaigns ADD CONSTRAINT email_campaigns_audience_type_check CHECK (
+  (audience='subscribed' AND message_type='marketing') OR
+  (audience='partners' AND message_type='service')
+);
+ALTER TABLE public.email_activity ALTER COLUMN provider SET DEFAULT 'brevo';
 CREATE INDEX IF NOT EXISTS email_campaigns_created_at_idx ON public.email_campaigns (created_at DESC);
 ALTER TABLE public.email_campaigns ENABLE ROW LEVEL SECURITY;
 -- No browser access; the server uses the service-role key after administrator authentication.
