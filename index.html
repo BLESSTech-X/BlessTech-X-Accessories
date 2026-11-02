@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <link rel="canonical" href="https://phoneya2.pages.dev/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap">
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVNT6SQCS2"></script>
 <script>
@@ -32,9 +36,9 @@
 <link rel="apple-touch-icon" sizes="144x144" href="/icon-512x512.jpg">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/ads-shared.css?v=20261017-popup-comfort1">
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
 :root{
   --dark:#0a0a14;--text:#1a1a2e;--muted:#6b7280;--light:#f5f5f5;--white:#fff;--border:#e8e8e8;
   --green:#25d366;--green-dark:#128c7e;
@@ -945,12 +949,14 @@ iframe[src*="tawk.to"]{bottom:20px !important;}
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icon-512x512.jpg">
 
-<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "y3vs9g67cu");
+<script>
+window.addEventListener("load", function () {
+  var loadClarity = function () {
+    (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","y3vs9g67cu");
+  };
+  if ("requestIdleCallback" in window) requestIdleCallback(loadClarity,{timeout:5000});
+  else setTimeout(loadClarity,2500);
+},{once:true});
 </script>
   
 
@@ -2272,12 +2278,6 @@ body .hero-slide .hero-slide-title span {
 </nav>
 
 <script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on('init', u => {
-    if (!u) window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-  });
-}
-
 const WA         = '260979603741';
 
 function orderUrl(p, qty) {
@@ -3910,12 +3910,20 @@ card.innerHTML =
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6a2c122c6dd5c81c3273637b/1jqu2dvv6';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
+  var started=false;
+  function loadTawk(){
+    if(started)return; started=true;
+    var s=document.createElement("script");
+    s.async=true;
+    s.src='https://embed.tawk.to/6a2c122c6dd5c81c3273637b/1jqu2dvv6';
+    s.charset='UTF-8';
+    s.setAttribute('crossorigin','*');
+    document.head.appendChild(s);
+  }
+  window.addEventListener('load',function(){
+    if('requestIdleCallback' in window) requestIdleCallback(loadTawk,{timeout:7000});
+    else setTimeout(loadTawk,3500);
+  },{once:true});
 })();
 </script>
 <!--End of Tawk.to Script-->
@@ -3928,7 +3936,7 @@ s0.parentNode.insertBefore(s1,s0);
 <script src="/site-header.js?v=20261015-center3" defer></script>
 <script src="/smart-guide.js?v=20261017-context-help7" defer></script><script src="/interest-popups.js?v=20261029-product-picks-more-pages1" defer></script>
 
-<script src="/water-experience.js?v=20261030-retired1"></script>
+
   <script src="/home-endless-products.js?v=20261026-offer-render-fix1"></script><script src="/scroll-to-top.js?v=20261017-compact1"></script>
   <script src="/phoneya2-performance.js?v=20261021-scroll-boost1" defer></script>
   <script src="/pwa-install.js?v=20261026-native-pwa1" defer></script>
