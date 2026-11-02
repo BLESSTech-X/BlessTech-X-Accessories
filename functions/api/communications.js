@@ -45,15 +45,17 @@ export async function onRequest(context) {
     let phoneActivity=[],d1Activity=[],d1Stats={};
     if(env.DB){
       try{
-        const [phoneRows,emailRows,counts]=await Promise.all([
-          env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all(),
+        const [emailRows,counts]=await Promise.all([
           env.DB.prepare("SELECT id,created_at,sent_at,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,related_order_number,related_product_slug,campaign_id,retry_count,metadata_json FROM email_activity ORDER BY created_at DESC LIMIT 250").all(),
           env.DB.prepare("SELECT COUNT(*) AS total,SUM(CASE WHEN source='automatic' THEN 1 ELSE 0 END) AS automatic,SUM(CASE WHEN source='manual' THEN 1 ELSE 0 END) AS manual,SUM(CASE WHEN status='sent' THEN 1 ELSE 0 END) AS sent,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,SUM(CASE WHEN created_at>=datetime('now','-30 days') THEN 1 ELSE 0 END) AS last_30_days,SUM(CASE WHEN status='failed' AND created_at>=datetime('now','-30 days') THEN 1 ELSE 0 END) AS failed_last_30_days FROM email_activity").first()
         ]);
-        phoneActivity=phoneRows.results||[];
         d1Activity=(emailRows.results||[]).map(row=>{let metadata={};try{metadata=JSON.parse(row.metadata_json||"{}")}catch{}return {...row,metadata};});
         d1Stats=counts||{};
-      }catch(error){console.warn("PhoneYa2 D1 communication activity is not fully ready:",String(error).slice(0,180));}
+      }catch(error){console.warn("PhoneYa2 D1 email activity is not ready:",String(error).slice(0,160));}
+      try{
+        const phoneRows=await env.DB.prepare("SELECT id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message,created_at FROM communication_activity ORDER BY created_at DESC LIMIT 250").all();
+        phoneActivity=phoneRows.results||[];
+      }catch(error){console.warn("PhoneYa2 phone activity table is not ready yet:",String(error).slice(0,160));}
     }
     const combinedActivity=[...(Array.isArray(activity)?activity:[]),...d1Activity].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,250);
     const combinedStats={};
