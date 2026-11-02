@@ -125,20 +125,30 @@ if(request.method!=="POST")return fail("Method not allowed.",405);
 let body={};try{body=await request.json();}catch{return fail("Invalid JSON request.");}
 const action=String(body.action||"");
 if(action==="signup"){
-// Fail clearly before signup if the Partner Network migrations have not been applied.
+let stage="database preflight";
+try{
 const requiredTables=["advertiser_accounts","advertisers","advertiser_profiles","partner_site_settings","partner_subscriptions","partner_sessions","partner_auth_attempts"];
 const tableRows=await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ("+requiredTables.map(()=>"?").join(",")+")").bind(...requiredTables).all();
 const present=new Set((tableRows.results||[]).map(row=>row.name));
 const missing=requiredTables.filter(name=>!present.has(name));
-if(missing.length)return fail("PhoneYa2 Partner Network database setup is incomplete. Missing tables: "+missing.join(", ")+". Run: npx wrangler d1 migrations apply phoneya2-core --remote",503);
-if(!await rateLimit(request,env))return fail("Too many attempts. Try again later.",429);
+if(missing.length)return fail("PhoneYa2 Partner Network setup is incomplete. Missing tables: "+missing.join(", ")+". Apply the existing migrations before retrying.",503);
+stage="signup rate limit";
+if(!await rateLimit(request,env))return fail("Too many attempts. Wait 15 minutes before trying again.",429);
+stage="input validation";
 const email=cleanText(body.email,254).toLowerCase(),password=String(body.password||""),business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40);
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return fail("Enter a valid email address.");
+if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return fail("Enter a valid email address.");
 if(password.length<10||password.length>128)return fail("Use a password between 10 and 128 characters.");
-if(!business||phone.replace(/\D/g,"").length<9)return fail("Business name and a valid phone number are required.");
-const existing=await env.DB.prepare("SELECT id FROM advertiser_accounts WHERE email=? COLLATE NOCASE").bind(email).first();if(existing)return fail("An account with this email already exists. Sign in instead.",409);
-const accountId=crypto.randomUUID(),advertiserId=crypto.randomUUID(),profileId=crypto.randomUUID(),siteId=crypto.randomUUID(),subscriptionId=crypto.randomUUID();const slug=await uniqueSlug(env.DB,business);const pass=await newPasswordRecord(password);const stamp=new Date().toISOString();
-try{
+if(!business||phone.replace(/\\D/g,"").length<9)return fail("Business name and a valid phone number are required.");
+stage="checking account email";
+const existing=await env.DB.prepare("SELECT id FROM advertiser_accounts WHERE email=? COLLATE NOCASE").bind(email).first();
+if(existing)return fail("An account with this email already exists. Sign in instead.",409);
+stage="creating business address";
+const accountId=crypto.randomUUID(),advertiserId=crypto.randomUUID(),profileId=crypto.randomUUID(),siteId=crypto.randomUUID(),subscriptionId=crypto.randomUUID();
+const slug=await uniqueSlug(env.DB,business);
+stage="securing password";
+const pass=await newPasswordRecord(password);
+const stamp=new Date().toISOString();
+stage="saving partner account and workspace";
 await env.DB.batch([
 env.DB.prepare("INSERT INTO advertiser_accounts(id,email,password_hash,status) VALUES(?,?,?,'active')").bind(accountId,email,JSON.stringify({scheme:"pbkdf2-sha256",iterations:PBKDF2_ITERATIONS,salt:pass.salt,hash:pass.hash})),
 env.DB.prepare("INSERT INTO advertisers(id,account_id,business_name,owner_name,phone,email,tier,status) VALUES(?,?,?,?,?,?,'free','active')").bind(advertiserId,accountId,business,owner,phone,email),
@@ -146,8 +156,13 @@ env.DB.prepare("INSERT INTO advertiser_profiles(id,advertiser_id,slug,contact_ph
 env.DB.prepare("INSERT INTO partner_site_settings(id,advertiser_id,site_title,site_description,hero_title,hero_subtitle,published) VALUES(?,?,?,?,?,?,?)").bind(siteId,advertiserId,business,"Welcome to "+business,business,"Discover what we offer",0),
 env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,?)").bind(subscriptionId,advertiserId,stamp,stamp,new Date(Date.now()+30*86400000).toISOString())
 ]);
-const token=await createSession(env.DB,accountId);return json({ok:true,authenticated:true,slug,message:"Your workspace is ready. It remains private until account verification and public publishing are enabled."},201,{"set-cookie":sessionCookie(token)});
-}catch(e){console.error("PhoneYa2 partner signup database failure:",e?.stack||e);return fail("Account creation failed because the database rejected a signup operation. The technical error has been recorded in Cloudflare logs. Please retry shortly or contact support with the time of this attempt.",500);}
+stage="creating secure sign-in session";
+const token=await createSession(env.DB,accountId);
+return json({ok:true,authenticated:true,slug,message:"Your workspace is ready. It remains private until account verification and public publishing are enabled."},201,{"set-cookie":sessionCookie(token)});
+}catch(e){
+console.error("PhoneYa2 partner signup failure at ["+stage+"]:",e?.stack||e);
+return fail("Account creation failed during: "+stage+". The exact technical details have been recorded in Cloudflare logs. Please retry once the latest site update is live.",500);
+}
 }
 if(action==="login"){
 if(!await rateLimit(request,env))return fail("Too many attempts. Try again later.",429);
