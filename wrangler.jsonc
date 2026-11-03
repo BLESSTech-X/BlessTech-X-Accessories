@@ -5,6 +5,14 @@
   "observability": {
     "enabled": true
   },
+  "vars": {
+    "GA4_PROPERTY_ID": "557586525",
+    "BREVO_FROM_EMAIL": "singbless89@gmail.com",
+    "BREVO_FROM_NAME": "PhoneYa2",
+    "PHONEYA2_GITHUB_OWNER": "BLESSTech-X",
+    "PHONEYA2_GITHUB_REPO": "BlessTech-X-Accessories",
+    "PHONEYA2_GITHUB_BRANCH": "main"
+  },
   "d1_databases": [
     {
       "binding": "DB",
