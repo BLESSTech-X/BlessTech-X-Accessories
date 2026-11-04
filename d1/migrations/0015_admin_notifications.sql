@@ -17,3 +17,11 @@ CREATE TABLE IF NOT EXISTS admin_notifications (
 CREATE INDEX IF NOT EXISTS idx_admin_notifications_created ON admin_notifications(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_admin_notifications_unread ON admin_notifications(is_read,category,created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_admin_notifications_category ON admin_notifications(category,created_at DESC);
+
+-- Current stock snapshots prevent repeated low-stock alerts on every refresh.
+CREATE TABLE IF NOT EXISTS admin_inventory_snapshots (
+  product_slug TEXT PRIMARY KEY,
+  product_title TEXT NOT NULL DEFAULT '',
+  stock INTEGER NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
