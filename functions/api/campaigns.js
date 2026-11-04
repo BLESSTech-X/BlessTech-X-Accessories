@@ -9,6 +9,14 @@ async function emailLog(env,campaign,recipient,result){
  .bind(crypto.randomUUID(),campaign.audience==="partners"?"partner_service_update":"marketing_campaign","manual",campaign.audience==="partners"?"admin_partner_update":"admin_campaign_send",recipient.email||"",recipient.full_name||"",campaign.subject,result.ok?"sent":"failed","brevo",result.messageId||"",String(result.error||"").slice(0,1000),campaign.id,result.ok?new Date().toISOString():null,JSON.stringify({campaign_name:campaign.name,audience:campaign.audience})).run();}
  catch(e){console.error("D1 campaign email activity logging failed:",String(e).slice(0,180));}
 }
+async function partnerDeliveryNotification(env,campaign,recipient,emailResult,smsResult){
+ if(campaign.audience!=="partners"||!recipient.advertiser_id||!(emailResult?.ok||smsResult?.ok))return;
+ try{
+  const channel=emailResult?.ok&&smsResult?.ok?"email and SMS":emailResult?.ok?"email":"SMS";
+  await env.DB.prepare("INSERT OR IGNORE INTO partner_notifications(id,advertiser_id,event_key,category,kind,title,message,priority,destination,action_label) VALUES(?,?,?,?,?,?,?,?,?,?)")
+   .bind(crypto.randomUUID(),recipient.advertiser_id,"partner-campaign:"+campaign.id,"communications","event","New PhoneYa2 partner update","PhoneYa2 successfully sent you a partner update by "+channel+". Open the message in your email or phone for the full details.","normal","notifications","View notifications").run();
+ }catch(error){console.error("Partner delivery notification could not be saved:",String(error?.message||error).slice(0,180));}
+}
 async function phoneLog(env,campaign,recipient,result){
  try{await env.DB.prepare("INSERT INTO communication_activity(id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message) VALUES(?,?,?,?,?,?,?,?,?,?)")
  .bind(crypto.randomUUID(),campaign.id,normalizeZambiaPhone(recipient.phone),recipient.full_name||"","sms","partner_service_update",result.ok?"sent":result.skipped?"skipped":"failed","brevo",result.messageId||"",String(result.error||"").slice(0,500)).run();}
@@ -56,7 +64,7 @@ export async function onRequest({request,env}){
    const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();if(!campaign)return json({error:"Campaign not found."},404);if(campaign.status==="sent")return json({error:"This campaign is already complete."},409);
    let recipients=[];
    if(campaign.audience==="partners"){
-    const rows=await env.DB.prepare("SELECT email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'') ORDER BY created_at ASC LIMIT 1000").all();
+    const rows=await env.DB.prepare("SELECT id AS advertiser_id,email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'') ORDER BY created_at ASC LIMIT 1000").all();
     recipients=(rows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email||p.phone);
    }else{
     const rows=await env.DB.prepare("SELECT email,full_name,confirmation_token FROM customer_subscribers WHERE status='subscribed' ORDER BY created_at ASC LIMIT 1000").all();
@@ -76,7 +84,7 @@ export async function onRequest({request,env}){
     let emailResult={ok:false,skipped:true,error:"No email address."};if(r.email&&!sentSet.has(r.email)){emailResult=await sendEmail(env,campaign,r);await emailLog(env,campaign,r,emailResult);}
     let smsResult={ok:false,skipped:true,error:"SMS is only used for partner service updates."};
     if(campaign.audience==="partners"&&r.phone){const phone=normalizeZambiaPhone(r.phone);if(phone&&!phoneSet.has(phone)){smsResult=await sendSms(env,campaign,r);await phoneLog(env,campaign,r,smsResult);}}
-    if(emailResult.ok||smsResult.ok)sent++;else{failed++;if(errors.length<3)errors.push(emailResult.error||smsResult.error||"Delivery failed.");}
+    if(emailResult.ok||smsResult.ok){sent++;await partnerDeliveryNotification(env,campaign,r,emailResult,smsResult);}else{failed++;if(errors.length<3)errors.push(emailResult.error||smsResult.error||"Delivery failed.");}
    }
    const remaining=recipients.length-batch.length,done=remaining===0,status=done?(failed?"failed":"sent"):"sending";
    const completedAt=new Date().toISOString();
