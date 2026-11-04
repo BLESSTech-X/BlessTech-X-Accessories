@@ -11,7 +11,7 @@ Open the Cloudflare dashboard, select the D1 database bound to the PhoneYa2 Page
 3. \`d1/migrations/0014_unified_communications.sql\`
 4. \`d1/migrations/0015_admin_notifications.sql\`
 
-Migration 0014 creates the D1 newsletter subscriber list, campaign records, automation settings and product-announcement queue. Migration 0015 adds persistent Command Centre notifications, read/unread state, stock snapshots and published-content snapshots. It does not delete existing order, partner or activity data.
+Migration 0014 creates the D1 newsletter subscriber list, campaign records, automation settings and product-announcement queue. Migration 0015 adds persistent Command Centre notifications, read/unread state, stock snapshots and published-content snapshots. Migration 0016 adds partner-scoped notifications, event deduplication, onboarding guidance state and content baselines. Partner campaign notifications are created only after Brevo reports a successful partner email or SMS send. These migrations do not delete existing order, partner or activity data.
 
 ## 2. Cloudflare Pages configuration
 
