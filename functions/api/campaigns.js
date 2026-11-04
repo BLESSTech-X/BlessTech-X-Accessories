@@ -69,7 +69,7 @@ export async function onRequest({request,env}){
    const sentSet=new Set((sentEmails.results||[]).map(x=>String(x.recipient_email||"").toLowerCase()));
    const phoneSet=new Set((sentPhones.results||[]).map(x=>String(x.recipient||"")));
    recipients=recipients.filter(r=>(r.email&&!sentSet.has(r.email))||(campaign.audience==="partners"&&normalizeZambiaPhone(r.phone)&&!phoneSet.has(normalizeZambiaPhone(r.phone))));
-   if(!recipients.length){await env.DB.prepare("UPDATE email_campaigns SET status='sent',completed_at=?,updated_at=?,last_error='' WHERE id=?").bind(new Date().toISOString(),new Date().toISOString(),id).run();return json({success:true,done:true,message:"Campaign complete. No remaining recipients in this audience.",processed:0,remaining:0});}
+   if(!recipients.length){const completedAt=new Date().toISOString();await env.DB.prepare("UPDATE email_campaigns SET status='sent',completed_at=?,updated_at=?,last_error='' WHERE id=?").bind(completedAt,completedAt,id).run();try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"campaign-completed:"+id+":sent","communications","campaign_sent","Campaign completed",campaign.name+" finished. No remaining recipients were waiting to be processed.","normal","/admin/communications.html",id,campaign.name).run();}catch(e){console.error("Campaign notification failed:",String(e).slice(0,180));}return json({success:true,done:true,message:"Campaign complete. No remaining recipients in this audience.",processed:0,remaining:0});}
    await env.DB.prepare("UPDATE email_campaigns SET status='sending',updated_at=?,total_recipients=? WHERE id=?").bind(new Date().toISOString(),sentSet.size+phoneSet.size+recipients.length,id).run();
    const batch=recipients.slice(0,20);let sent=0,failed=0;const errors=[];
    for(const r of batch){
@@ -79,7 +79,9 @@ export async function onRequest({request,env}){
     if(emailResult.ok||smsResult.ok)sent++;else{failed++;if(errors.length<3)errors.push(emailResult.error||smsResult.error||"Delivery failed.");}
    }
    const remaining=recipients.length-batch.length,done=remaining===0,status=done?(failed?"failed":"sent"):"sending";
-   await env.DB.prepare("UPDATE email_campaigns SET status=?,updated_at=?,sent_count=sent_count+?,failed_count=failed_count+?,completed_at=?,last_error=? WHERE id=?").bind(status,new Date().toISOString(),sent,failed,done?new Date().toISOString():null,errors.join(" | "),id).run();
+   const completedAt=new Date().toISOString();
+   await env.DB.prepare("UPDATE email_campaigns SET status=?,updated_at=?,sent_count=sent_count+?,failed_count=failed_count+?,completed_at=?,last_error=? WHERE id=?").bind(status,completedAt,sent,failed,done?completedAt:null,errors.join(" | "),id).run();
+   if(done){try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"campaign-completed:"+id+":"+status,"communications",status==="failed"?"campaign_failed":"campaign_sent",status==="failed"?"Campaign needs attention":"Campaign completed",campaign.name+" finished. "+sent+" delivery successes and "+failed+" failed attempts.",status==="failed"?"high":"normal","/admin/communications.html",id,campaign.name).run();}catch(e){console.error("Campaign notification failed:",String(e).slice(0,180));}}
    return json({success:true,done,processed:batch.length,sent,failed,remaining,errors,message:done?"Campaign batch completed.":"Batch processed. Select Send/Resume again to continue."});
   }
   return json({error:"Unsupported action."},400);
