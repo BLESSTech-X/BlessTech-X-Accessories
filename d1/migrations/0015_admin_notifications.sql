@@ -25,3 +25,12 @@ CREATE TABLE IF NOT EXISTS admin_inventory_snapshots (
   stock INTEGER NOT NULL,
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
+
+-- Published content snapshots prevent old catalogue and blog entries being replayed as new alerts.
+CREATE TABLE IF NOT EXISTS admin_content_snapshots (
+  source_type TEXT NOT NULL CHECK(source_type IN ('products','blog')),
+  content_slug TEXT NOT NULL,
+  content_title TEXT NOT NULL DEFAULT '',
+  detected_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+  PRIMARY KEY(source_type,content_slug)
+);
