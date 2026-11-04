@@ -8,7 +8,7 @@ export async function onRequest({request,env}){
  if(!sameOrigin(request))return json({ok:false,error:"Cross-origin request blocked."},403);
  if(!env.DB)return json({ok:false,error:"Partner enquiries are temporarily unavailable."},503);
  let body={};try{body=await request.json();}catch{return json({ok:false,error:"Invalid request."},400);}
- if(clean(body.website,200))return json({ok:true});
+ if(clean(body.website,200))return json({ok:false,error:"We could not verify this submission. Please reload the page and try again."},400);
  const slug=clean(body.slug,80).toLowerCase();const name=clean(body.name,100),phone=clean(body.phone,40),email=clean(body.email,254),message=clean(body.message,2000);
  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||!name||!message||(!phone&&!email))return json({ok:false,error:"Please provide your name, a phone number or email, and a message."},400);
  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return json({ok:false,error:"Enter a valid email address."},400);
@@ -26,6 +26,8 @@ export async function onRequest({request,env}){
  const id=crypto.randomUUID();
  try{
   await env.DB.prepare("INSERT INTO partner_enquiries(id,advertiser_id,customer_name,customer_email,customer_phone,message,source,status) VALUES(?,?,?,?,?,?,'website','new')").bind(id,site.advertiser_id,name,email,phone,message).run();
+  const saved=await env.DB.prepare("SELECT id FROM partner_enquiries WHERE id=? AND advertiser_id=?").bind(id,site.advertiser_id).first();
+  if(!saved)throw new Error("Enquiry insert could not be verified.");
  }catch(error){
   console.error("Partner enquiry could not be saved:",error?.stack||error);
   return json({ok:false,error:"Your message could not be saved just now. Please try again or contact the business directly."},500);
