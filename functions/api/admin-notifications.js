@@ -5,11 +5,43 @@ async function admin(request,env){
  if(!sameOrigin(request))return false;
  return !!(await getAdminSession(request,env));
 }
+async function syncPublishedContent(request,env){
+ try{
+  const origin=new URL(request.url).origin;
+  const [productIndexRes,catalogRes,blogRes]=await Promise.all([
+   fetch(new URL("/content/products/index.json",origin),{headers:{"cache-control":"no-cache"}}),
+   fetch(new URL("/content/products/catalog.json",origin),{headers:{"cache-control":"no-cache"}}),
+   fetch(new URL("/content/blog/index.json",origin),{headers:{"cache-control":"no-cache"}})
+  ]);
+  const productSlugs=productIndexRes.ok?await productIndexRes.json():[];
+  const catalog=catalogRes.ok?await catalogRes.json():[];
+  const blogPosts=blogRes.ok?await blogRes.json():[];
+  const sources=[
+   {type:"products",items:Array.isArray(productSlugs)?productSlugs.map(slug=>{const p=Array.isArray(catalog)?catalog.find(x=>x.slug===slug):null;return{slug:String(slug),title:String(p?.title||slug),category:"products",event:"product_published",destination:"/admin/#/collections/products",label:"New product published",message:"A new product, "+String(p?.title||slug)+", is now in the published catalogue."};}):[]},
+   {type:"blog",items:Array.isArray(blogPosts)?blogPosts.map(post=>({slug:String(post.slug||""),title:String(post.title||post.slug||"Blog post"),category:"blog",event:"blog_published",destination:"/admin/#/collections/blog_posts",label:"New blog post published",message:"A new PhoneYa2 blog post, "+String(post.title||post.slug||"Blog post")+", is now published."})).filter(post=>post.slug):[]}
+  ];
+  for(const source of sources){
+   if(!source.items.length)continue;
+   const baseline=await env.DB.prepare("SELECT COUNT(*) AS total FROM admin_content_snapshots WHERE source_type=?").bind(source.type).first();
+   const isBaseline=Number(baseline?.total||0)===0;
+   const statements=[];
+   for(const item of source.items){
+    const existing=await env.DB.prepare("SELECT content_slug FROM admin_content_snapshots WHERE source_type=? AND content_slug=?").bind(source.type,item.slug).first();
+    if(!existing&&!isBaseline){
+     statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"published:"+source.type+":"+item.slug,item.category,item.event,item.label,item.message,"normal",item.destination,item.slug,item.title));
+    }
+    if(!existing)statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_content_snapshots(source_type,content_slug,content_title) VALUES(?,?,?)").bind(source.type,item.slug,item.title));
+   }
+   if(statements.length)await env.DB.batch(statements);
+  }
+ }catch(error){console.warn("Published content notification sync skipped:",String(error).slice(0,220));}
+}
 export async function onRequest({request,env}){
  if(!await admin(request,env))return json({error:"Administrator sign-in required."},401);
  if(!env.DB)return json({error:"Cloudflare D1 database binding DB is not configured."},503);
  if(request.method==="GET"){
   try{
+   await syncPublishedContent(request,env);
    const url=new URL(request.url),limit=Math.min(200,Math.max(1,Number(url.searchParams.get("limit"))||100));
    const [rows,counts]=await Promise.all([
     env.DB.prepare("SELECT id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,created_at,is_read,read_at FROM admin_notifications ORDER BY created_at DESC LIMIT ?").bind(limit).all(),
