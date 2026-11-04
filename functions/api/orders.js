@@ -162,6 +162,13 @@ async function createD1Order(env, customer, items) {
     );
   }
   await env.DB.batch(statements);
+  // Notifications are secondary to order persistence: a notification failure must never undo a confirmed order.
+  try {
+    await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications (id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES (?,?,?,?,?,?,?,?,?,?)")
+      .bind(crypto.randomUUID(),"order:"+id,"orders","new_order","New order received","Order "+orderNumber+" is awaiting review. Total: ZMW "+minorToMoney(totalMinor).toFixed(2)+".","high","/admin/orders.html",id,orderNumber).run();
+  } catch (error) {
+    console.error("PhoneYa2 order notification could not be recorded:",String(error).slice(0,220));
+  }
   return { id, order_number: orderNumber, total_amount: minorToMoney(totalMinor), currency: "ZMW", item_count: items.length };
 }
 async function readD1Orders(env, options = {}) {
@@ -197,9 +204,10 @@ async function readD1Orders(env, options = {}) {
 async function logEmailActivity(env, record) {
   try {
     if (!env.DB) throw new Error("D1 database binding DB is not configured.");
+    const activityId = crypto.randomUUID();
     await env.DB.prepare("INSERT INTO email_activity (id,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,related_order_number,related_product_slug,retry_count,sent_at,metadata_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)")
       .bind(
-        crypto.randomUUID(), record.eventType || "transactional", record.source || "automatic",
+        activityId, record.eventType || "transactional", record.source || "automatic",
         record.triggerSource || "", String(record.recipientEmail || "").slice(0,254),
         String(record.recipientName || "").slice(0,120), String(record.subject || "").slice(0,300),
         record.status || "failed", record.provider || "brevo", record.providerMessageId || "",
@@ -207,6 +215,15 @@ async function logEmailActivity(env, record) {
         record.status === "sent" ? new Date().toISOString() : null,
         JSON.stringify(record.metadata || {})
       ).run();
+    if (record.status === "failed") {
+      try {
+        const eventKey="email-failure:"+activityId;
+        await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications (id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES (?,?,?,?,?,?,?,?,?,?)")
+          .bind(crypto.randomUUID(),eventKey,"communications","email_failed","Email delivery failed",String(record.subject||"An email could not be delivered.")+(record.error?" — "+String(record.error).slice(0,220):""),"high","/admin/communications.html",activityId,String(record.subject||"Email").slice(0,120)).run();
+      } catch (notificationError) {
+        console.error("PhoneYa2 email notification could not be recorded:",String(notificationError).slice(0,220));
+      }
+    }
     return true;
   } catch (error) {
     console.error("PhoneYa2 D1 email activity logging failed:", String(error).slice(0,240));
