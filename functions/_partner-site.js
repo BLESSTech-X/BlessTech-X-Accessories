@@ -112,7 +112,7 @@ export function renderPartnerSite(data) {
   const postsHtml = posts.length
     ? `<section class="section" id="updates">
         <div class="section-head"><div><small>WHAT'S HAPPENING</small><h2>Stories, offers &amp; announcements</h2></div><span>${posts.length} updates</span></div>
-        <div class="posts">${posts.map((post) => {
+        <div class="posts layout-${design.postLayout} card-${design.postCardStyle}">${posts.map((post) => {
           const type = String(post.post_type || "update").toLowerCase();
           const meta = postMeta[type] || { label: type.replace(/[_-]/g, " ").toUpperCase(), icon: "✦", action: "Discover more", tone: "update" };
           const cover = safeUrl(post.cover_image_url);
@@ -138,6 +138,20 @@ export function renderPartnerSite(data) {
   const title = site.seo_title || site.site_title || businessName;
   const description = site.seo_description || site.site_description || `Discover ${businessName} on PhoneYa2.`;
   const canonicalSlug = encodeURIComponent(data.slug || "");
+  const design = {
+    pageBackground: ["soft","plain","gradient","image"].includes(site.page_background) ? site.page_background : "soft",
+    headerStyle: ["clean","solid","glass","centered"].includes(site.header_style) ? site.header_style : "clean",
+    postLayout: ["cards","feed","masonry"].includes(site.post_layout) ? site.post_layout : "cards",
+    postImageFit: ["cover","contain"].includes(site.post_image_fit) ? site.post_image_fit : "cover",
+    postCardStyle: ["elevated","minimal","outlined"].includes(site.post_card_style) ? site.post_card_style : "elevated",
+    buttonStyle: ["rounded","pill","square"].includes(site.button_style) ? site.button_style : "rounded",
+    contentWidth: ["wide","standard","compact"].includes(site.content_width) ? site.content_width : "wide"
+  };
+  const announcementText = String(site.announcement_text || "").trim();
+  const announcementHref = safeActionUrl(site.announcement_link) || "#contact";
+  const announcementHtml = site.show_announcement && announcementText
+    ? `<a class="announcement" href="${esc(announcementHref)}">${esc(announcementText)} <span>↗</span></a>`
+    : "";
 
   return `<!doctype html>
 <html lang="en">
@@ -155,7 +169,19 @@ ${heroImage ? `<meta property="og:image" content="${esc(heroImage)}">` : ""}
 *{box-sizing:border-box}
 body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
 a{color:inherit;text-decoration:none}
-.site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}.template-studio .site{max-width:1320px}.template-hospitality .site{max-width:1100px}.template-storefront .products{grid-template-columns:repeat(4,minmax(0,1fr))}.template-studio .hero{min-height:520px;text-align:center;justify-content:center}.template-studio .hero-content{margin:auto}.template-hospitality .hero{min-height:460px;border-radius:4px}.template-professional .hero{min-height:340px;border-radius:12px}
+.site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}
+.site.width-standard{max-width:1080px}.site.width-compact{max-width:900px}
+body.page-plain{background:#fff}body.page-gradient{background:linear-gradient(135deg,#f4f8ff,#fff4ec 55%,#f3f7fc)}body.page-image:before{background:linear-gradient(rgba(246,248,251,.90),rgba(246,248,251,.94)),url("${heroImage}") center/cover fixed}
+.top.header-solid{background:${accent};border-color:transparent}.top.header-solid .brand{color:#fff}.top.header-glass{background:#ffffffbd;backdrop-filter:blur(24px);border:1px solid #ffffffa8;border-radius:0 0 18px 18px}.top.header-centered{justify-content:center}.top.header-centered .top-menu-wrap{position:absolute;right:20px}
+.announcement{display:flex;justify-content:center;align-items:center;gap:12px;padding:10px 18px;margin:0 -18px;background:${primary};color:#fff;font-size:12px;font-weight:850;text-align:center}.announcement span{font-size:16px}
+.posts.layout-feed{grid-template-columns:1fr;max-width:860px;margin:auto}.posts.layout-feed .post{display:grid;grid-template-columns:minmax(220px,.8fr) 1.2fr;min-height:260px}.posts.layout-feed .post-art{height:100%;min-height:260px}
+.posts.layout-masonry{columns:3;display:block;column-gap:18px}.posts.layout-masonry .post{display:inline-block;width:100%;margin:0 0 18px;break-inside:avoid}
+.posts.card-minimal .post{box-shadow:none;border:1px solid #e5eaf1;border-radius:14px}.posts.card-outlined .post{box-shadow:none;border:2px solid ${primary};border-radius:12px}
+.posts.card-minimal .post-copy{padding:16px}.posts.card-outlined .post-copy{padding:18px}
+.post-art img{object-fit:${design.postImageFit}!important}
+.button-pill .btn,.button-pill .post-cta,.button-pill .item-action{border-radius:999px}.button-square .btn,.button-square .post-cta,.button-square .item-action{border-radius:4px}
+body.page-image:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(246,248,251,.9),rgba(246,248,251,.95)),url("${heroImage}") center/cover fixed}
+.template-studio .site{max-width:1320px}.template-hospitality .site{max-width:1100px}.template-storefront .products{grid-template-columns:repeat(4,minmax(0,1fr))}.template-studio .hero{min-height:520px;text-align:center;justify-content:center}.template-studio .hero-content{margin:auto}.template-hospitality .hero{min-height:460px;border-radius:4px}.template-professional .hero{min-height:340px;border-radius:12px}
 .top{height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #e7ebf1;position:sticky;top:0;z-index:20;background:#fffffff2;backdrop-filter:blur(18px);padding:0 20px;margin:0 -18px;box-shadow:0 5px 22px #142b4a08}
 .brand{display:flex;align-items:center;gap:12px;min-width:0;font-weight:850;font-size:19px;letter-spacing:-.35px;color:#172b48}
 .logo{width:44px;height:44px;flex:0 0 44px;border-radius:13px;background:${primary};color:white;display:grid;place-items:center;overflow:hidden;box-shadow:0 4px 12px #142b4a18}
@@ -303,7 +329,7 @@ ${catalogue(services, "Services", "WHAT WE DO")}
 ${postsHtml}
 ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(businessName)}</h2><p>${esc(site.site_description)}</p></section>` : ""}
 <section class="contact" id="contact">
-<div><small class="eyebrow">LET&#39;S CONNECT</small><h2>How can we help you?</h2><p>Send an enquiry and ${esc(businessName)} will be able to follow up with you.</p>${contact}<div class="socials">${socialHtml}</div></div>
+<div><small class="eyebrow">LET&#39;S CONNECT</small><h2>How can we help you?</h2><p>Send an enquiry and ${esc(businessName)} will be able to follow up with you.</p>${contact}<div class="socials">${site.show_social_links===0?"":socialHtml}</div></div>
 <form id="partner-enquiry"><input name="name" required maxlength="100" placeholder="Your name"><input name="phone" maxlength="40" placeholder="Phone number"><input name="email" type="email" maxlength="254" placeholder="Email address"><textarea name="message" required maxlength="2000" placeholder="How can we help?"></textarea><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px"><button type="submit">Send enquiry →</button><small id="enquiry-result" aria-live="polite"></small></form>
 </section>
 <div class="partner-ad-popup" id="partner-ad-popup" hidden role="dialog" aria-modal="true" aria-label="Sponsored advertisement"><div class="partner-ad-popup-card"><button class="partner-ad-popup-close" id="partner-ad-popup-close" aria-label="Close advertisement">×</button><div id="partner-ad-popup-content"></div></div></div>
