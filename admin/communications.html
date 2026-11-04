@@ -39,11 +39,12 @@ th{background:#f3f5f9}
 .foot{padding-top:13px}
 @media(max-width:1000px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.heading h1{font-size:24px}}
+.nav a.nav-primary{background:#ff6500;border-color:#ff6500;color:#fff;box-shadow:0 4px 12px #ff65002b}.nav a:hover{background:#fff;color:#101827;border-color:#fff}.nav a.nav-primary:hover{background:#e95800;color:#fff;border-color:#e95800}@media(max-width:560px){header{flex-wrap:wrap}.nav{width:100%}.nav a{flex:1;text-align:center}}
 </style>
 <link rel="stylesheet" href="/admin/shared-admin.css?v=20261102-workspace2">
 </head>
 <body>
-<header><a class="brand" href="/admin/command-center.html">PhoneYa2 <span>Communication Centre</span></a><nav class="nav"><a href="/admin/orders.html">Orders</a><a href="/admin/campaigns.html">Email Campaigns</a><a href="/admin/command-center.html">Command Centre</a><a href="/">Storefront</a></nav></header>
+<header><a class="brand" href="/admin/command-center.html">PhoneYa2 <span>Communication Centre</span></a><nav class="nav"><a href="/admin/orders.html">Orders</a><a class="nav-primary" href="/admin/campaigns.html">✉ Open Email Campaigns →</a><a href="/admin/command-center.html">Command Centre</a><a href="/">Storefront</a></nav></header>
 <main>
 <section id="login" class="panel login"><h1>Administrator sign-in</h1><p class="muted">Sign in with the authorized PhoneYa2 admin account to view customer communication records.</p><div id="login-message" role="status"></div><p>Sign in once through the <a href="/admin/command-center.html" style="color:#ff6500;font-weight:800">PhoneYa2 Command Centre</a>, then return here.</p></section>
 <section id="dashboard" class="hidden">
