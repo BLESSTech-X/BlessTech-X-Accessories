@@ -652,7 +652,8 @@ function renderCommandCentreExtensions(){
   const customerRows=[];const seenCustomers=new Set();
   orders.slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))).forEach(o=>{const key=String(o.customer_email||o.customer_phone||o.customer_name||'').trim().toLowerCase();if(!key||seenCustomers.has(key)||customerRows.length>=6)return;seenCustomers.add(key);customerRows.push(o);});
   const stockUnits=products.reduce((n,p)=>n+Math.max(0,Number(p.stock)||0),0);
-  const productViews=(ga4ReportData?.pages||[]).map(page=>{const path=String(page.path||'');const product=products.find(p=>path.toLowerCase().includes(String(p.slug||'').toLowerCase()));return product?{title:product.title,path,views:Number(page.views||0)}:null;}).filter(Boolean).sort((a,b)=>b.views-a.views).slice(0,5);
+  const eventProductViews=(ga4ReportData?.top_products||[]).filter(p=>Number(p.views||0)>0).map(p=>({title:String(p.name||'Product'),path:'GA4 view_item events',views:Number(p.views||0)}));
+  const productViews=eventProductViews.length?eventProductViews.slice(0,5):(ga4ReportData?.pages||[]).map(page=>{const path=String(page.path||'');const product=products.find(p=>path.toLowerCase().includes(String(p.slug||'').toLowerCase()));return product?{title:product.title,path,views:Number(page.views||0)}:null;}).filter(Boolean).sort((a,b)=>b.views-a.views).slice(0,5);
   const topPages=(ga4ReportData?.pages||[]).slice(0,5);
   const orderTarget=30,orderProgress=Math.min(100,monthOrders.length/orderTarget*100),ordersLeft=Math.max(0,orderTarget-monthOrders.length);
   const metric=(label,value,note)=>'<article class="stat"><div class="stat-top"><span>'+label+'</span><span class="icon">↗</span></div><strong>'+value+'</strong><small>'+note+'</small></article>';
