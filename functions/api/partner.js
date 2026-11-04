@@ -1,5 +1,5 @@
 const HEADERS = { "content-type":"application/json; charset=utf-8", "cache-control":"no-store" };
-const COOKIE = "__Host-py2_partner";
+const COOKIE = "py2_partner_session";
 const SESSION_DAYS = 30;
 const PBKDF2_ITERATIONS = 100000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
