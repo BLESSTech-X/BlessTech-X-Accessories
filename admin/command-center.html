@@ -572,41 +572,142 @@ function detectNewOrders(){const current=new Set(orders.map(o=>String(o.id||o.or
 function renderSystemOverview(){
  const overview=$('view-overview');if(!overview)return;
  let panel=$('cc-system-overview');
- if(!panel){panel=document.createElement('section');panel.id='cc-system-overview';panel.className='panel section';panel.setAttribute('aria-label','PhoneYa2 system overview');overview.append(panel);}
- const h=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
- const valid=orders.filter(o=>o.status!=='cancelled'),recent=orders.filter(o=>withinDays(o,30));
- const totalValue=valid.reduce((n,o)=>n+Number(o.total_amount||0),0),stockUnits=products.reduce((n,p)=>n+Math.max(0,Number(p.stock)||0),0);
- const low=products.filter(p=>p.stock!==null&&p.stock<=3).length,out=products.filter(p=>Number(p.stock)===0).length;
- const topProducts=(ga4ReportData?.top_products||[]).filter(x=>Number(x.views||0)>0).slice(0,5);
- const customerMap=new Map();orders.slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))).forEach(o=>{const key=String(o.customer_email||o.customer_phone||'').toLowerCase();if(key&&!customerMap.has(key))customerMap.set(key,o);});
- const customers=[...customerMap.values()].slice(0,6);
- const metric=(label,value,detail)=>'<article class="stat"><span>'+label+'</span><strong>'+value+'</strong><small>'+detail+'</small></article>';
- panel.innerHTML='<div class="section-head"><div><h2>PhoneYa2 System Overview</h2><p>Business-wide performance, communication, product demand and operations</p></div><button class="btn" id="cc-system-refresh">Refresh overview</button></div>'+
- '<div class="stats cc-overview-metrics">'+metric('Total partners','—','Registered accounts')+metric('Active partners','—','Active / approved')+metric('Campaign emails sent','—','Recorded campaign sends')+metric('Recorded sales value',money(totalValue),'Non-cancelled order value · not verified cash')+'</div>'+
- '<div class="ga4-chart-grid cc-overview-grid"><section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>PARTNER NETWORK</span><h3>Partner activity</h3></div><a href="/partners-admin/index.html" target="_blank" rel="noopener">Manage partners ↗</a></div><div id="cc-partner-stats" class="ga4-insights"><p>Loading partner totals…</p></div></section>'+
- '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>EMAIL COMMUNICATION</span><h3>Campaign performance</h3></div><a href="/admin/communications.html">Communication Centre ↗</a></div><div id="cc-campaign-stats" class="ga4-insights"><p>Loading email totals…</p></div><div class="growth-links"><a class="primary" href="/admin/campaigns.html">＋ Create / send another campaign</a></div></section></div>'+
- '<div class="ga4-chart-grid cc-overview-grid"><section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>PRODUCT INTEREST</span><h3>Most-viewed products</h3></div><small>GA4 item views</small></div><div class="ga4-page-bars">'+(topProducts.length?topProducts.map(p=>'<div class="ga4-page-row"><div><strong>'+h(p.name)+'</strong><small>Product view_item events</small></div><b>'+Number(p.views).toLocaleString()+'</b></div>').join(''):'<p class="muted">Product view data will appear when GA4 records view_item events.</p>')+'</div></section>'+
- '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>GROWTH TARGET</span><h3>30-day order goal</h3></div></div><div class="growth-number">'+recent.length+' / 30</div><div class="growth-track"><div class="growth-fill" style="width:'+Math.min(100,recent.length/30*100)+'%"></div></div><p class="muted">'+Math.max(0,30-recent.length)+' more orders to reach the monthly target.</p><div class="cc-operation-grid"><div><strong>'+Number(ga4Summary?.active_users||0).toLocaleString()+'</strong><small>Active users</small></div><div><strong>'+Number(ga4Summary?.sessions||0).toLocaleString()+'</strong><small>Sessions</small></div><div><strong>'+Number(ga4Summary?.page_views||0).toLocaleString()+'</strong><small>Page views</small></div></div><div class="growth-links"><a href="/admin/command-center.html#growth">Growth insights ↗</a></div></section></div>'+
- '<div class="ga4-chart-grid cc-overview-grid"><section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>OPERATIONS</span><h3>Order activity & stock</h3></div><a href="/admin/orders.html">Order desk ↗</a></div><div class="cc-operation-grid"><div><strong>'+orders.length+'</strong><small>Total orders</small></div><div><strong>'+recent.filter(o=>o.status==='pending').length+'</strong><small>Pending · 30d</small></div><div><strong>'+orders.filter(o=>o.status==='delivered').length+'</strong><small>Delivered</small></div><div><strong>'+products.length+'</strong><small>Products</small></div><div><strong>'+stockUnits.toLocaleString()+'</strong><small>Stock units</small></div><div><strong>'+low+' / '+out+'</strong><small>Low / out of stock</small></div></div></section>'+
- '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>CUSTOMER CONTACTS</span><h3>Recent customers</h3></div><small>Tap to contact</small></div><div class="cc-customer-list">'+(customers.length?customers.map(o=>'<div class="cc-customer-row"><div><strong>'+h(o.customer_name||'Customer')+'</strong><small>'+h(o.customer_email||o.customer_phone||'No contact details')+'</small></div><div class="cc-customer-actions">'+(o.customer_phone?'<a href="https://wa.me/'+h(String(o.customer_phone).replace(/\D/g,''))+'" target="_blank" rel="noopener">WhatsApp</a><a href="tel:'+h(o.customer_phone)+'">Call</a>':'')+(o.customer_email?'<a href="mailto:'+h(o.customer_email)+'">Email</a>':'')+'</div></div>').join(''):'<p class="muted">Customer contact details appear here as orders arrive.</p>')+'</div></section></div>'+
- '<p class="cc-footnote">Sales value is based on recorded non-cancelled orders, not verified payments or profit. Partner and campaign totals load from their live D1 reporting endpoints.</p>';
- const refresh=panel.querySelector('#cc-system-refresh');if(refresh)refresh.onclick=loadSystemSignals;
+ if(!panel){panel=document.createElement('section');panel.id='cc-system-overview';panel.className='panel section';panel.setAttribute('aria-label','PhoneYa2 business intelligence overview');overview.append(panel);}
+ const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const fmt=n=>Number(n||0).toLocaleString();
+ const valid=orders.filter(o=>o.status!=='cancelled');
+ const monthOrders=orders.filter(o=>withinDays(o,30));
+ const monthValid=monthOrders.filter(o=>o.status!=='cancelled');
+ const pending=monthOrders.filter(o=>o.status==='pending').length;
+ const confirmed=monthOrders.filter(o=>o.status==='confirmed').length;
+ const processing=monthOrders.filter(o=>o.status==='processing').length;
+ const shipped=monthOrders.filter(o=>o.status==='shipped').length;
+ const delivered=monthOrders.filter(o=>o.status==='delivered').length;
+ const cancelled=monthOrders.filter(o=>o.status==='cancelled').length;
+ const monthValue=monthValid.reduce((n,o)=>n+Number(o.total_amount||0),0);
+ const allValue=valid.reduce((n,o)=>n+Number(o.total_amount||0),0);
+ const deliveredValue=monthOrders.filter(o=>o.status==='delivered').reduce((n,o)=>n+Number(o.total_amount||0),0);
+ const aov=monthValid.length?monthValue/monthValid.length:0;
+ const cancelRate=monthOrders.length?cancelled/monthOrders.length*100:0;
+ const stockUnits=products.reduce((n,p)=>n+Math.max(0,Number(p.stock)||0),0);
+ const lowProducts=products.filter(p=>p.stock!==null&&p.stock!==undefined&&Number(p.stock)>0&&Number(p.stock)<=3);
+ const outProducts=products.filter(p=>Number(p.stock)===0);
+ const customerMap=new Map();
+ orders.slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))).forEach(o=>{
+  const key=String(o.customer_email||o.customer_phone||o.customer_name||'').trim().toLowerCase();
+  if(key&&!customerMap.has(key))customerMap.set(key,{order:o,count:0});
+  if(key)customerMap.get(key).count++;
+ });
+ const customers=[...customerMap.values()];
+ const repeatCustomers=customers.filter(c=>c.count>1).length;
+ const topCustomers=customers.slice(0,7);
+ const itemDemand=new Map();
+ orders.forEach(o=>(o.order_items||[]).forEach(item=>{
+  const key=String(item.product_slug||item.product_name||'').toLowerCase();
+  if(!key)return;
+  const old=itemDemand.get(key)||{name:item.product_name||item.product_slug,units:0,orders:0};
+  old.units+=Number(item.quantity||0);old.orders++;
+  itemDemand.set(key,old);
+ }));
+ const bestSellers=[...itemDemand.values()].sort((a,b)=>b.units-a.units).slice(0,5);
+ const gaProducts=(ga4ReportData?.top_products||[]).filter(p=>Number(p.views||0)>0).map(p=>({name:String(p.name||'Product'),views:Number(p.views||0),source:'GA4 item views'}));
+ const pageProducts=(ga4ReportData?.pages||[]).map(page=>{
+  const path=String(page.path||'');
+  const product=products.find(p=>p.slug&&path.toLowerCase().includes(String(p.slug).toLowerCase()));
+  return product?{name:product.title||product.slug,views:Number(page.views||0),source:'Product page views'}:null;
+ }).filter(Boolean).sort((a,b)=>b.views-a.views);
+ const topProducts=(gaProducts.length?gaProducts:pageProducts).slice(0,5);
+ const topPages=(ga4ReportData?.pages||[]).slice(0,5);
+ const activeUsers=Number(ga4Summary?.active_users||0),sessions=Number(ga4Summary?.sessions||0),pageViews=Number(ga4Summary?.page_views||0);
+ const target=30,progress=Math.min(100,monthOrders.length/target*100),left=Math.max(0,target-monthOrders.length);
+ const metric=(label,value,note)=>'<article class="stat"><div class="stat-top"><span>'+label+'</span><span class="icon">↗</span></div><strong>'+value+'</strong><small>'+note+'</small></article>';
+ const panelCard=(eyebrow,title,body,link)=>'<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>'+eyebrow+'</span><h3>'+title+'</h3></div>'+(link||'')+'</div>'+body+'</section>';
+ const rows=(items,empty)=>items.length?items.join(''): '<p class="muted">'+empty+'</p>';
+ const pageRows=topPages.map(p=>'<div class="ga4-page-row"><div><strong>'+esc(p.path)+'</strong><small>Website page views</small></div><b>'+fmt(p.views)+'</b></div>');
+ const productRows=topProducts.map(p=>'<div class="ga4-page-row"><div><strong>'+esc(p.name)+'</strong><small>'+esc(p.source)+'</small></div><b>'+fmt(p.views)+'</b></div>');
+ const sellerRows=bestSellers.map(p=>'<div class="ga4-page-row"><div><strong>'+esc(p.name)+'</strong><small>Units in loaded order history</small></div><b>'+fmt(p.units)+'</b></div>');
+ const customerRows=topCustomers.map(c=>{
+  const o=c.order,phone=String(o.customer_phone||''),digits=phone.replace(/\D/g,'');
+  const wa=digits?(digits.startsWith('0')?'260'+digits.slice(1):digits):'';
+  return '<div class="cc-customer-row"><div><strong>'+esc(o.customer_name||'Customer')+'</strong><small>'+esc(o.customer_email||phone||'No contact details')+' · '+c.count+' order'+(c.count===1?'':'s')+'</small></div><div class="cc-customer-actions">'+(wa?'<a href="https://wa.me/'+esc(wa)+'" target="_blank" rel="noopener">WhatsApp</a><a href="tel:'+esc(phone)+'">Call</a>':'')+(o.customer_email?'<a href="mailto:'+esc(o.customer_email)+'">Email</a>':'')+'</div></div>';
+ });
+ const orderStages=[
+  ['Pending',pending],['Confirmed',confirmed],['Processing',processing],['Shipped',shipped],['Delivered',delivered],['Cancelled',cancelled]
+ ];
+ const stageRows=orderStages.map(([label,value])=>'<div class="ga4-page-row"><div><strong>'+label+'</strong></div><b>'+fmt(value)+'</b></div>');
+ const insightList=[];
+ if(pending)insightList.push('<li><strong>Follow up '+fmt(pending)+' pending order'+(pending===1?'':'s')+'.</strong> These are the most immediate sales conversations to resolve.</li>');
+ if(outProducts.length)insightList.push('<li><strong>Restock '+fmt(outProducts.length)+' out-of-stock product'+(outProducts.length===1?'':'s')+'.</strong> Check demand before spending on replenishment.</li>');
+ if(lowProducts.length)insightList.push('<li><strong>Review '+fmt(lowProducts.length)+' low-stock product'+(lowProducts.length===1?'':'s')+'.</strong> Prioritise items with recent orders.</li>');
+ if(cancelRate>=25&&monthOrders.length>=4)insightList.push('<li><strong>Investigate cancellations.</strong> '+cancelRate.toFixed(1)+'% of the last 30 days’ orders are cancelled; review customer follow-up and delivery issues.</li>');
+ if(Number(ga4Summary?.active_users||0)>0&&monthOrders.length<target)insightList.push('<li><strong>Close the traffic-to-order gap.</strong> You have '+fmt(activeUsers)+' active users in the current GA4 report and '+left+' orders remaining to the 30-day target.</li>');
+ if(!insightList.length)insightList.push('<li><strong>Keep monitoring.</strong> As more order, stock and traffic activity is recorded, actionable signals will appear here.</li>');
+ panel.innerHTML=
+ '<div class="section-head"><div><span class="eyebrow">BUSINESS-WIDE SNAPSHOT</span><h2>PhoneYa2 Business Overview</h2><p>One place to understand sales, customers, stock, partners, marketing and growth.</p></div><button class="btn" id="cc-system-refresh">Refresh overview</button></div>'+
+ '<div class="stats cc-overview-metrics">'+metric('Partners','—','Registered partner accounts')+metric('Campaign emails sent','—','Recorded campaign sends')+metric('Orders · last 30 days',fmt(monthOrders.length),'Target: '+target+' orders')+metric('Order value · last 30 days',money(monthValue),'Non-cancelled orders · not cash collected')+'</div>'+
+ '<div class="ga4-chart-grid cc-overview-grid">'+
+ panelCard('SALES PERFORMANCE','Sales at a glance','<div class="cc-operation-grid"><div><strong>'+fmt(monthOrders.length)+'</strong><small>Orders · 30 days</small></div><div><strong>'+fmt(pending)+'</strong><small>Pending</small></div><div><strong>'+fmt(delivered)+'</strong><small>Delivered · 30d</small></div><div><strong>'+money(aov)+'</strong><small>Average order value</small></div><div><strong>'+cancelRate.toFixed(1)+'%</strong><small>Cancellation rate</small></div><div><strong>'+money(allValue)+'</strong><small>Non-cancelled order value · all loaded orders</small></div></div><div class="growth-links"><a href="/admin/orders.html">Open Order Desk ↗</a></div>','<small>LAST 30 DAYS</small>')+
+ panelCard('TARGET TRACKER','Monthly order target','<div class="growth-number">'+fmt(monthOrders.length)+' / '+target+'</div><div class="growth-track"><div class="growth-fill" style="width:'+progress.toFixed(1)+'%"></div></div><p class="muted">'+fmt(left)+' more order'+(left===1?'':'s')+' to reach the target.</p><div class="cc-operation-grid"><div><strong>'+progress.toFixed(0)+'%</strong><small>Target progress</small></div><div><strong>'+fmt(monthValid.length)+'</strong><small>Non-cancelled orders</small></div><div><strong>'+money(deliveredValue)+'</strong><small>Delivered order value · not reconciled cash</small></div></div>','')+
+ '</div>'+
+ '<div class="ga4-chart-grid cc-overview-grid">'+
+ panelCard('PARTNER NETWORK','Partner activity','<div id="cc-partner-stats" class="ga4-insights"><p class="muted">Loading partner totals…</p></div><div id="cc-partner-subscription-stats" class="cc-operation-grid"></div><div class="growth-links"><a href="/partners-admin/index.html" target="_blank" rel="noopener">Manage Partner Network ↗</a></div>','')+
+ panelCard('CAMPAIGN COMMUNICATION','Email performance','<div id="cc-campaign-stats" class="ga4-insights"><p class="muted">Loading campaign totals…</p></div><div id="cc-email-delivery-stats" class="cc-operation-grid"></div><div class="growth-links"><a class="primary" href="/admin/campaigns.html">＋ Create / send another campaign</a><a href="/admin/communications.html">Communication Centre ↗</a></div>','')+
+ '</div>'+
+ '<div class="ga4-chart-grid cc-overview-grid">'+
+ panelCard('PRODUCT INTEREST','Most-viewed products',rows(productRows,'Product view data is not available yet. GA4 item views or matching product-page views will appear here.'),'<small>GA4</small>')+
+ panelCard('PRODUCT SALES','Best-selling products',rows(sellerRows,'No product sales found in the loaded order history.'),'<small>ORDER ITEMS</small>')+
+ '</div>'+
+ '<div class="ga4-chart-grid cc-overview-grid">'+
+ panelCard('CUSTOMER INTELLIGENCE','Customer activity','<div class="cc-operation-grid"><div><strong>'+fmt(customers.length)+'</strong><small>Unique customers in loaded orders</small></div><div><strong>'+fmt(repeatCustomers)+'</strong><small>Repeat customers in loaded orders</small></div><div><strong>'+fmt(orders.length)+'</strong><small>Orders loaded for this view</small></div></div><div class="cc-customer-list">'+rows(customerRows,'Customer details will appear here as orders are recorded.')+'</div>','<small>CONTACT SHORTCUTS</small>')+
+ panelCard('INVENTORY HEALTH','Stock at a glance','<div class="cc-operation-grid"><div><strong>'+fmt(products.length)+'</strong><small>Catalogue products</small></div><div><strong>'+fmt(stockUnits)+'</strong><small>Units in stock</small></div><div><strong>'+fmt(lowProducts.length)+'</strong><small>Low stock · 1–3</small></div><div><strong>'+fmt(outProducts.length)+'</strong><small>Out of stock</small></div></div><div class="growth-links"><a href="/admin/command-center.html">Open Stock section ↗</a></div>','')+
+ '</div>'+
+ '<div class="ga4-chart-grid cc-overview-grid">'+
+ panelCard('ORDER OPERATIONS','Order pipeline',rows(stageRows,''),'<small>LAST 30 DAYS</small>')+
+ panelCard('WEBSITE REACH','Traffic & popular pages','<div class="cc-operation-grid"><div><strong>'+fmt(activeUsers)+'</strong><small>Active users · GA4 report</small></div><div><strong>'+fmt(sessions)+'</strong><small>Sessions</small></div><div><strong>'+fmt(pageViews)+'</strong><small>Page views</small></div></div><div class="ga4-page-bars">'+rows(pageRows,'Page-level analytics are not available yet.')+'</div><p class="muted">Orders per page view is not a verified ecommerce conversion rate; use the Analytics section for the full GA4 report.</p>','<small>GA4</small>')+
+ '</div>'+
+ '<div class="ga4-chart-grid cc-overview-grid">'+
+ panelCard('FINANCIAL CONTROL','What the current records can confirm','<div class="cc-operation-grid"><div><strong>'+money(monthValue)+'</strong><small>Non-cancelled order value · 30d</small></div><div><strong>'+money(deliveredValue)+'</strong><small>Delivered order value · 30d</small></div><div><strong>'+money(allValue)+'</strong><small>Non-cancelled order value · loaded history</small></div></div><p class="muted">Cash received, outstanding balances, product costs, expenses and net profit are not reconciled in the current order records. These figures are order values, not confirmed receipts or profit.</p><div class="growth-links"><a href="/admin/command-center.html">Open Money section ↗</a></div>','')+
+ panelCard('GROWTH SIGNALS','What needs attention now','<ul class="cc-overview-insights">'+insightList.join('')+'</ul><div class="growth-links"><a href="/admin/command-center.html">Open Growth Insights ↗</a></div>','')+
+ '</div>'+
+ '<p class="cc-footnote">Data sources: Cloudflare D1 orders, product catalogue, partner records, campaign and communication records, and GA4. Customer and product-sales summaries are based on the orders loaded by the Order API. Missing integrations are shown as unavailable rather than estimated.</p>';
+ const refresh=panel.querySelector('#cc-system-refresh');
+ if(refresh)refresh.onclick=loadSystemSignals;
  loadSystemSignals();
  async function loadSystemSignals(){
   if(refresh)refresh.disabled=true;
-  const results=await Promise.allSettled([api('/api/partner-admin?table=advertisers&query=limit=1000'),api('/api/campaigns'),api('/api/communications?admin=1')]);
-  const partners=results[0].status==='fulfilled'&&Array.isArray(results[0].value)?results[0].value:[];
-  const campaigns=results[1].status==='fulfilled'?results[1].value:null;
-  const comm=results[2].status==='fulfilled'?results[2].value:null;
-  const active=partners.filter(p=>['active','approved'].includes(String(p.status||'').toLowerCase())).length;
-  const sent=(campaigns?.campaigns||[]).reduce((n,x)=>n+Number(x.sent_count||0),0);
+  const results=await Promise.allSettled([
+   api('/api/partner-admin?table=advertisers&query=order=joined_at.desc&limit=1000'),
+   api('/api/partner-admin?table=partner_subscriptions&query=limit=1000'),
+   api('/api/campaigns'),
+   api('/api/communications?admin=1')
+  ]);
+  const partnerRows=results[0].status==='fulfilled'&&Array.isArray(results[0].value)?results[0].value:null;
+  const subscriptionRows=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:null;
+  const campaignData=results[2].status==='fulfilled'?results[2].value:null;
+  const commData=results[3].status==='fulfilled'?results[3].value:null;
+  const active=partnerRows?partnerRows.filter(p=>['active','approved'].includes(String(p.status||'').toLowerCase())).length:0;
+  const pendingPartners=partnerRows?partnerRows.filter(p=>String(p.status||'').toLowerCase()==='pending').length:0;
+  const suspended=partnerRows?partnerRows.filter(p=>String(p.status||'').toLowerCase()==='suspended').length:0;
+  const sentCampaigns=(campaignData?.campaigns||[]).reduce((n,c)=>n+Number(c.sent_count||0),0);
+  const campaignCount=(campaignData?.campaigns||[]).length;
+  const commStats=commData?.stats||{};
   const metricNodes=panel.querySelectorAll('.cc-overview-metrics .stat strong');
-  if(metricNodes[0])metricNodes[0].textContent=results[0].status==='fulfilled'?partners.length.toLocaleString():'—';
-  if(metricNodes[1])metricNodes[1].textContent=results[0].status==='fulfilled'?active.toLocaleString():'—';
-  if(metricNodes[2])metricNodes[2].textContent=results[1].status==='fulfilled'?sent.toLocaleString():'—';
-  const ph=panel.querySelector('#cc-partner-stats'),ch=panel.querySelector('#cc-campaign-stats');
-  if(ph)ph.innerHTML=results[0].status==='fulfilled'?'<div class="ga4-insight-card"><span class="ga4-insight-label">REGISTERED</span><strong>'+partners.length+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">ACTIVE</span><strong>'+active+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">SUSPENDED</span><strong>'+partners.filter(p=>String(p.status||'').toLowerCase()==='suspended').length+'</strong></div>':'<p class="muted">Partner totals unavailable — check Partner Network permissions.</p>';
-  if(ch)ch.innerHTML=results[1].status==='fulfilled'?'<div class="ga4-insight-card"><span class="ga4-insight-label">CAMPAIGN SENDS</span><strong>'+sent.toLocaleString()+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">CAMPAIGNS</span><strong>'+(campaigns?.campaigns||[]).length+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">EMAIL EVENTS</span><strong>'+Number(comm?.stats?.sent||0).toLocaleString()+'</strong></div>':'<p class="muted">Campaign data unavailable — open Email Campaigns to check.</p>';
+  if(metricNodes[0])metricNodes[0].textContent=partnerRows?fmt(partnerRows.length):'—';
+  if(metricNodes[1])metricNodes[1].textContent=results[2].status==='fulfilled'?fmt(sentCampaigns):'—';
+  const partnerHost=panel.querySelector('#cc-partner-stats');
+  if(partnerHost)partnerHost.innerHTML=partnerRows?'<div class="ga4-insight-card"><span class="ga4-insight-label">REGISTERED</span><strong>'+fmt(partnerRows.length)+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">ACTIVE</span><strong>'+fmt(active)+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">PENDING</span><strong>'+fmt(pendingPartners)+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">SUSPENDED</span><strong>'+fmt(suspended)+'</strong></div>':'<p class="muted">Partner data unavailable. Check Partner Network access.</p>';
+  const subHost=panel.querySelector('#cc-partner-subscription-stats');
+  if(subHost){
+   if(subscriptionRows){
+    const pendingPay=subscriptionRows.filter(x=>String(x.status||'').toLowerCase()==='pending_payment').length;
+    const activeSubs=subscriptionRows.filter(x=>['active','approved'].includes(String(x.status||'').toLowerCase())).length;
+    subHost.innerHTML='<div><strong>'+fmt(subscriptionRows.length)+'</strong><small>Package records</small></div><div><strong>'+fmt(activeSubs)+'</strong><small>Active subscriptions</small></div><div><strong>'+fmt(pendingPay)+'</strong><small>Awaiting payment review</small></div>';
+   }else subHost.innerHTML='<div><strong>—</strong><small>Package data unavailable</small></div>';
+  }
+  const campaignHost=panel.querySelector('#cc-campaign-stats');
+  if(campaignHost)campaignHost.innerHTML=results[2].status==='fulfilled'?'<div class="ga4-insight-card"><span class="ga4-insight-label">EMAIL SENDS</span><strong>'+fmt(sentCampaigns)+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">CAMPAIGNS</span><strong>'+fmt(campaignCount)+'</strong></div><div class="ga4-insight-card"><span class="ga4-insight-label">OPTED-IN SUBSCRIBERS</span><strong>'+fmt(campaignData?.subscribers?.subscribed||0)+'</strong></div>':'<p class="muted">Campaign data unavailable. Open Email Campaigns to investigate.</p>';
+  const emailHost=panel.querySelector('#cc-email-delivery-stats');
+  if(emailHost)emailHost.innerHTML=commData?'<div><strong>'+fmt(commStats.sent)+'</strong><small>Sent / delivered email events</small></div><div><strong>'+fmt(commStats.delivered)+'</strong><small>Confirmed delivered</small></div><div><strong>'+fmt(commStats.failed)+'</strong><small>Failed attempts</small></div><div><strong>'+fmt(commStats.last_30_days)+'</strong><small>Email attempts · 30d</small></div>':'<div><strong>—</strong><small>Email activity unavailable</small></div>';
   if(refresh)refresh.disabled=false;
  }
 }
