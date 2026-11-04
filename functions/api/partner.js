@@ -22,7 +22,7 @@ async function createSession(db,accountId){const raw=b64url(crypto.getRandomValu
 async function currentPartner(request,env){const raw=cookieValue(request);if(!raw)return null;const tokenHash=b64url(await digest(raw));return await env.DB.prepare(`SELECT a.id AS account_id,a.email AS account_email,a.status AS account_status,
 adv.id AS advertiser_id,adv.business_name,adv.owner_name,adv.phone,adv.email,adv.logo_url,adv.tier,adv.status AS advertiser_status,
 p.id AS profile_id,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,
-s.id AS site_id,s.site_title,s.site_description,s.hero_title,s.hero_subtitle,s.hero_image_url,s.logo_url,s.primary_color AS site_primary_color,s.accent_color AS site_accent_color,s.font_pair,s.template_key,s.show_catalogue,s.show_services,s.show_posts,s.published,s.seo_title,s.seo_description,s.social_links_json AS site_social_links_json,s.page_background,s.header_style,s.post_layout,s.post_image_fit,s.post_card_style,s.button_style,s.content_width,s.announcement_text,s.announcement_link,s.show_announcement,s.show_social_links,s.show_contact_bar
+s.id AS site_id,s.site_title,s.site_description,s.hero_title,s.hero_subtitle,s.hero_image_url,s.logo_url,s.primary_color AS site_primary_color,s.accent_color AS site_accent_color,s.font_pair,s.template_key,s.show_catalogue,s.show_services,s.show_posts,s.published,s.seo_title,s.seo_description,s.social_links_json AS site_social_links_json,s.page_background,s.header_style,s.post_layout,s.post_image_fit,s.post_card_style,s.button_style,s.content_width,s.announcement_text,s.announcement_link,s.show_announcement,s.show_social_links,s.show_contact_bar,s.hero_height,s.menu_style
 FROM partner_sessions ps JOIN advertiser_accounts a ON a.id=ps.account_id
 JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p.advertiser_id=adv.id
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
@@ -78,7 +78,7 @@ const activePackage=await db.prepare("SELECT ps.package_key,pp.benefits_json FRO
 let benefits={};try{benefits=JSON.parse(activePackage?.benefits_json||'{}')}catch{}
 const designLevel=benefits.design||"basic";
 const designRank={basic:0,expanded:1,advanced:2,premium:3,full:4};
-const currentDesign=await db.prepare("SELECT page_background,header_style,post_layout,post_image_fit,post_card_style,button_style,content_width,show_announcement FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first()||{};
+const currentDesign=await db.prepare("SELECT page_background,header_style,post_layout,post_image_fit,post_card_style,button_style,content_width,show_announcement,hero_height,menu_style FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first()||{};
 const requestedRank=(value,levels)=>levels.indexOf(value);
 const requested={
 page_background:cleanText(body.page_background,20),
@@ -87,7 +87,9 @@ post_layout:cleanText(body.post_layout,20),
 post_image_fit:cleanText(body.post_image_fit,20),
 post_card_style:cleanText(body.post_card_style,20),
 button_style:cleanText(body.button_style,20),
-content_width:cleanText(body.content_width,20)
+content_width:cleanText(body.content_width,20),
+hero_height:cleanText(body.hero_height,20),
+menu_style:cleanText(body.menu_style,20)
 };
 const choices={
 page_background:["soft","plain","gradient","image"],
@@ -96,7 +98,9 @@ post_layout:["cards","feed","masonry"],
 post_image_fit:["cover","contain"],
 post_card_style:["elevated","minimal","outlined"],
 button_style:["rounded","pill","square"],
-content_width:["wide","standard","compact"]
+content_width:["wide","standard","compact"],
+hero_height:["compact","standard","tall","cinematic"],
+menu_style:["standard","floating","overlay"]
 };
 const minimum={
 page_background:{plain:0,soft:0,gradient:1,image:3},
@@ -105,7 +109,9 @@ post_layout:{cards:0,feed:1,masonry:3},
 post_image_fit:{cover:0,contain:1},
 post_card_style:{elevated:0,minimal:1,outlined:2},
 button_style:{rounded:0,pill:1,square:2},
-content_width:{wide:0,standard:1,compact:2}
+content_width:{wide:0,standard:1,compact:2},
+hero_height:{compact:0,standard:0,tall:1,cinematic:4},
+menu_style:{standard:0,floating:2,overlay:4}
 };
 for(const [key,allowed] of Object.entries(choices)){
 const value=requested[key]||allowed[0];
@@ -118,8 +124,8 @@ const announcement=cleanText(body.announcement_text,140);
 const announcementLink=cleanText(body.announcement_link,1000);
 if(announcementLink){let valid=announcementLink.startsWith("/")&&!announcementLink.startsWith("//");if(!valid){try{const u=new URL(announcementLink);valid=["http:","https:"].includes(u.protocol)}catch{valid=false}}if(!valid)return fail("Use a valid website link for the announcement.");}
 if(body.show_announcement&&designRank[designLevel]<1&&Number(currentDesign.show_announcement||0)!==1)return fail("The announcement bar is available from the Starter package. Upgrade to unlock it.");
-const fields={site_title:cleanText(body.site_title,100),site_description:cleanText(body.site_description,500),hero_title:cleanText(body.hero_title,140),hero_subtitle:cleanText(body.hero_subtitle,300),hero_image_url:cleanText(body.hero_image_url,1000),logo_url:cleanText(body.logo_url,1000),primary_color:/^#[0-9a-f]{6}$/i.test(body.primary_color||"")?body.primary_color:"#ff6000",accent_color:/^#[0-9a-f]{6}$/i.test(body.accent_color||"")?body.accent_color:"#173f73",font_pair:["modern","editorial","classic"].includes(body.font_pair)?body.font_pair:"modern",template_key:["signature","storefront","studio","hospitality","professional"].includes(body.template_key)?body.template_key:"signature",seo_title:cleanText(body.seo_title,120),seo_description:cleanText(body.seo_description,300),social_links_json:JSON.stringify(body.social_links&&typeof body.social_links==="object"?body.social_links:{}),...requested,announcement_text:announcement,announcement_link:announcementLink,show_announcement:body.show_announcement?1:0,show_social_links:body.show_social_links===false?0:1,show_contact_bar:body.show_contact_bar===false?0:1,show_catalogue:body.show_catalogue===false?0:1,show_services:body.show_services===false?0:1,show_posts:body.show_posts===false?0:1};
-await db.prepare(`UPDATE partner_site_settings SET site_title=?,site_description=?,hero_title=?,hero_subtitle=?,hero_image_url=?,logo_url=?,primary_color=?,accent_color=?,font_pair=?,template_key=?,seo_title=?,seo_description=?,social_links_json=?,page_background=?,header_style=?,post_layout=?,post_image_fit=?,post_card_style=?,button_style=?,content_width=?,announcement_text=?,announcement_link=?,show_announcement=?,show_social_links=?,show_contact_bar=?,show_catalogue=?,show_services=?,show_posts=?,updated_at=? WHERE advertiser_id=?`).bind(fields.site_title,fields.site_description,fields.hero_title,fields.hero_subtitle,fields.hero_image_url,fields.logo_url,fields.primary_color,fields.accent_color,fields.font_pair,fields.template_key,fields.seo_title,fields.seo_description,fields.social_links_json,fields.page_background,fields.header_style,fields.post_layout,fields.post_image_fit,fields.post_card_style,fields.button_style,fields.content_width,fields.announcement_text,fields.announcement_link,fields.show_announcement,fields.show_social_links,fields.show_contact_bar,fields.show_catalogue,fields.show_services,fields.show_posts,now,partner.advertiser_id).run();
+const fields={site_title:cleanText(body.site_title,100),site_description:cleanText(body.site_description,500),hero_title:cleanText(body.hero_title,140),hero_subtitle:cleanText(body.hero_subtitle,300),hero_image_url:cleanText(body.hero_image_url,1000),logo_url:cleanText(body.logo_url,1000),primary_color:/^#[0-9a-f]{6}$/i.test(body.primary_color||"")?body.primary_color:"#ff6000",accent_color:/^#[0-9a-f]{6}$/i.test(body.accent_color||"")?body.accent_color:"#173f73",font_pair:["modern","editorial","classic"].includes(body.font_pair)?body.font_pair:"modern",template_key:["signature","storefront","studio","hospitality","professional"].includes(body.template_key)?body.template_key:"signature",seo_title:cleanText(body.seo_title,120),seo_description:cleanText(body.seo_description,300),social_links_json:JSON.stringify(body.social_links&&typeof body.social_links==="object"?body.social_links:{}),...requested,announcement_text:announcement,announcement_link:announcementLink,show_announcement:body.show_announcement?1:0,show_social_links:body.show_social_links===false?0:1,show_contact_bar:body.show_contact_bar===false?0:1,show_catalogue:body.show_catalogue===false?0:1,show_services:body.show_services===false?0:1,show_posts:body.show_posts===false?0:1,hero_height:requested.hero_height||'standard',menu_style:requested.menu_style||'standard'};
+await db.prepare(`UPDATE partner_site_settings SET site_title=?,site_description=?,hero_title=?,hero_subtitle=?,hero_image_url=?,logo_url=?,primary_color=?,accent_color=?,font_pair=?,template_key=?,seo_title=?,seo_description=?,social_links_json=?,page_background=?,header_style=?,post_layout=?,post_image_fit=?,post_card_style=?,button_style=?,content_width=?,announcement_text=?,announcement_link=?,show_announcement=?,show_social_links=?,show_contact_bar=?,show_catalogue=?,show_services=?,show_posts=?,hero_height=?,menu_style=?,updated_at=? WHERE advertiser_id=?`).bind(fields.site_title,fields.site_description,fields.hero_title,fields.hero_subtitle,fields.hero_image_url,fields.logo_url,fields.primary_color,fields.accent_color,fields.font_pair,fields.template_key,fields.seo_title,fields.seo_description,fields.social_links_json,fields.page_background,fields.header_style,fields.post_layout,fields.post_image_fit,fields.post_card_style,fields.button_style,fields.content_width,fields.announcement_text,fields.announcement_link,fields.show_announcement,fields.show_social_links,fields.show_contact_bar,fields.show_catalogue,fields.show_services,fields.show_posts,fields.hero_height,fields.menu_style,now,partner.advertiser_id).run();
 await db.prepare("UPDATE advertiser_profiles SET primary_color=?,accent_color=?,cover_image_url=?,social_links_json=?,tagline=?,about=?,updated_at=? WHERE advertiser_id=?").bind(fields.primary_color,fields.accent_color,fields.hero_image_url,fields.social_links_json,fields.hero_subtitle,fields.site_description,now,partner.advertiser_id).run();
 return json({ok:true,message:"Website design settings saved.",designLevel});
 }
