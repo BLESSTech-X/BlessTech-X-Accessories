@@ -3,11 +3,11 @@ const COOKIE = "__Host-py2_partner";
 const SESSION_DAYS = 30;
 const PBKDF2_ITERATIONS = 100000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-function json(data,status=200,extra={}){return new Response(JSON.stringify(data),{status,headers:{...HEADERS,...extra}});}
+function json(data,status=200,extra={}){const headers=new Headers(HEADERS);for(const [key,value] of Object.entries(extra)){if(key.toLowerCase()==="set-cookie"&&Array.isArray(value)){for(const cookie of value)headers.append("set-cookie",cookie);}else headers.set(key,value);}return new Response(JSON.stringify(data),{status,headers});}
 function fail(message,status=400){return json({ok:false,error:message},status);}
 function b64url(bytes){let s="";for(const b of bytes)s+=String.fromCharCode(b);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function unb64url(s){const v=String(s||"").replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(v+"=".repeat((4-v.length%4)%4)),c=>c.charCodeAt(0));}
-function cookieValue(request){const jar=(request.headers.get("cookie")||"").split(";").map(x=>x.trim());for(const name of [COOKIE,"py2_partner_session"]){const item=jar.find(x=>x.startsWith(name+"="));if(item)return item.slice(name.length+1);}return "";}
+function cookieValues(request){const jar=(request.headers.get("cookie")||"").split(";").map(x=>x.trim()),values=[];for(const name of [COOKIE,"py2_partner_session"]){const item=jar.find(x=>x.startsWith(name+"="));if(item){const value=item.slice(name.length+1);if(value&&!values.includes(value))values.push(value);}}return values;}function cookieValue(request){return cookieValues(request)[0]||"";}
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return request.method==="GET"||request.headers.get("sec-fetch-site")==="same-origin";try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
 async function digest(value){return new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value)));}
 async function passwordHash(password,salt){if(!crypto?.subtle)throw new Error("Web Crypto is unavailable in this Worker runtime.");const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveBits"]);const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new Uint8Array(salt),iterations:PBKDF2_ITERATIONS,hash:"SHA-256"},key,256);return b64url(new Uint8Array(bits));}
@@ -16,10 +16,10 @@ async function verifyPassword(password,salt,expected){try{const actual=await pas
 async function rateLimit(request,env){const ip=request.headers.get("cf-connecting-ip")||"unknown";const hash=b64url(await digest(ip));const now=Math.floor(Date.now()/1000);await env.DB.prepare("DELETE FROM partner_auth_attempts WHERE attempted_at < ?").bind(now-3600).run();const row=await env.DB.prepare("SELECT COUNT(*) AS n FROM partner_auth_attempts WHERE ip_hash=? AND attempted_at>?").bind(hash,now-900).first();if(Number(row?.n||0)>=12)return false;await env.DB.prepare("INSERT INTO partner_auth_attempts(ip_hash,attempted_at) VALUES(?,?)").bind(hash,now).run();return true;}
 function slugify(value){return String(value||"business").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48)||"business";}
 async function uniqueSlug(db,name){const base=slugify(name);let slug=base;for(let i=0;i<8;i++){const row=await db.prepare("SELECT id FROM advertiser_profiles WHERE slug=? COLLATE NOCASE").bind(slug).first();if(!row)return slug;slug=base+"-"+crypto.randomUUID().slice(0,5).toLowerCase();}throw new Error("Could not create a unique business website address.");}
-function sessionCookie(token){return COOKIE+"="+token+"; Path=/; Max-Age="+(SESSION_DAYS*86400)+"; HttpOnly; Secure; SameSite=Lax";}
-function clearCookie(){return COOKIE+"=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax";}
+function sessionCookies(token){const age=SESSION_DAYS*86400;return [COOKIE+"="+token+"; Path=/; Max-Age="+age+"; HttpOnly; Secure; SameSite=Lax","py2_partner_session="+token+"; Path=/; Max-Age="+age+"; HttpOnly; Secure; SameSite=Lax"];}
+function clearCookies(){return [COOKIE+"=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax","py2_partner_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax"];}
 async function createSession(db,accountId){const raw=b64url(crypto.getRandomValues(new Uint8Array(32)));const tokenHash=b64url(await digest(raw));const id=crypto.randomUUID();const expires=new Date(Date.now()+SESSION_DAYS*86400000).toISOString();await db.prepare("INSERT INTO partner_sessions(id,account_id,token_hash,expires_at) VALUES(?,?,?,?)").bind(id,accountId,tokenHash,expires).run();return raw;}
-async function currentPartner(request,env){const raw=cookieValue(request);if(!raw)return null;const tokenHash=b64url(await digest(raw));return await env.DB.prepare(`SELECT a.id AS account_id,a.email AS account_email,a.status AS account_status,
+async function currentPartner(request,env){const tokens=cookieValues(request);if(!tokens.length)return null;const lookup=env.DB.prepare(`SELECT a.id AS account_id,a.email AS account_email,a.status AS account_status,
 adv.id AS advertiser_id,adv.business_name,adv.owner_name,adv.phone,adv.email,adv.logo_url,adv.tier,adv.status AS advertiser_status,
 p.id AS profile_id,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,
 s.id AS site_id,s.site_title,s.site_description,s.hero_title,s.hero_subtitle,s.hero_image_url,s.logo_url,s.primary_color AS site_primary_color,s.accent_color AS site_accent_color,s.font_pair,s.template_key,s.show_catalogue,s.show_services,s.show_posts,s.published,s.seo_title,s.seo_description,s.social_links_json AS site_social_links_json,s.page_background,s.header_style,s.post_layout,s.post_image_fit,s.post_card_style,s.button_style,s.content_width,s.announcement_text,s.announcement_link,s.show_announcement,s.show_social_links,s.show_contact_bar,s.hero_height,s.menu_style
@@ -27,7 +27,7 @@ FROM partner_sessions ps JOIN advertiser_accounts a ON a.id=ps.account_id
 JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p.advertiser_id=adv.id
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
-AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`).bind(tokenHash,new Date().toISOString()).first();}
+AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`);for(const raw of tokens){const partner=await lookup.bind(b64url(await digest(raw)),new Date().toISOString()).first();if(partner)return partner;}return null;}
 async function workspace(db,partner){const [items,posts,enquiries,subscription,packageRequest,ads,impressions,clicks]=await Promise.all([
 db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? ORDER BY sort_order,created_at DESC LIMIT 500").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
@@ -262,7 +262,7 @@ env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,s
 ]);
 stage="creating secure sign-in session";
 const token=await createSession(env.DB,accountId);
-return json({ok:true,authenticated:true,slug,message:"Your workspace is ready. It remains private until account verification and public publishing are enabled."},201,{"set-cookie":sessionCookie(token)});
+return json({ok:true,authenticated:true,slug,message:"Your workspace is ready. It remains private until account verification and public publishing are enabled."},201,{"set-cookie":sessionCookies(token)});
 }catch(e){
 console.error("PhoneYa2 partner signup failure at ["+stage+"]:",e?.stack||e);
 return fail("Account creation failed during: "+stage+". The exact technical details have been recorded in Cloudflare logs. Please retry once the latest site update is live.",500);
@@ -276,7 +276,7 @@ const valid=!!account&&account.status==="active"&&stored.scheme==="pbkdf2-sha256
 if(!valid)return fail("Email or password is incorrect.",401);
 const token=await createSession(env.DB,account.id);return json({ok:true,authenticated:true},200,{"set-cookie":sessionCookie(token)});
 }
-if(action==="logout"){const raw=cookieValue(request);if(raw){const hash=b64url(await digest(raw));await env.DB.prepare("UPDATE partner_sessions SET revoked_at=? WHERE token_hash=?").bind(new Date().toISOString(),hash).run();}return json({ok:true,authenticated:false},200,{"set-cookie":clearCookie()});}
+if(action==="logout"){const raw=cookieValue(request);if(raw){const hash=b64url(await digest(raw));await env.DB.prepare("UPDATE partner_sessions SET revoked_at=? WHERE token_hash=?").bind(new Date().toISOString(),hash).run();}return json({ok:true,authenticated:false},200,{"set-cookie":clearCookies()});}
 const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
 return handleAction(request,env,partner,body);
 }
