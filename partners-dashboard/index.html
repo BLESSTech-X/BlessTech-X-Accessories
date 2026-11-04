@@ -292,6 +292,42 @@ body.dark #mobile-nav.bottom-nav .nav.active{background:#50382e!important;color:
  #mobile-nav.bottom-nav .nav em{font-size:10px!important}
  .layout{padding-bottom:96px!important}
 }
+
+/* Header-attached section navigation with four primary bottom actions */
+#header-nav,.partner-top .header-nav{display:flex!important;flex:1 1 auto!important;min-width:0!important;align-items:center!important;justify-content:center!important;gap:3px!important;margin:0 12px!important;overflow-x:auto!important;scrollbar-width:thin!important}
+#header-nav .nav{display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:6px!important;width:auto!important;margin:0!important;padding:9px 10px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#52647b!important;white-space:nowrap!important;font-size:12px!important}
+#header-nav .nav span{font-size:15px!important}
+#header-nav .nav em{font-style:normal!important}
+#header-nav .nav.active{background:#fff0e8!important;color:#c94b12!important}
+.partner-top{height:auto!important;min-height:66px!important;gap:8px!important}
+.partner-top .brand{flex:none!important;white-space:nowrap!important}
+.partner-top .right{flex:none!important}
+#mobile-nav.bottom-nav{display:flex!important;position:fixed!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:10px!important;top:auto!important;z-index:9999!important;width:min(560px,calc(100vw - 28px))!important;min-height:62px!important;padding:6px!important;gap:4px!important;align-items:stretch!important;justify-content:space-around!important;background:#fff!important;border:1px solid #d9e2ec!important;border-radius:16px!important;box-shadow:0 10px 34px #102b4e30!important}
+#mobile-nav.bottom-nav .nav{display:flex!important;flex:1 1 0!important;min-width:0!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;margin:0!important;padding:6px 3px!important;border:0!important;border-radius:11px!important;background:transparent!important;color:#34445a!important;text-align:center!important;font-size:10px!important;font-weight:800!important;white-space:nowrap!important}
+#mobile-nav.bottom-nav .nav span{font-size:18px!important;line-height:1!important}
+#mobile-nav.bottom-nav .nav em{display:block!important;font-style:normal!important;font-size:10px!important;color:inherit!important}
+#mobile-nav.bottom-nav .nav.active{background:#fff0e8!important;color:#c94b12!important}
+body.dark #mobile-nav.bottom-nav{background:#252a31!important;border-color:#46515e!important}
+body.dark #mobile-nav.bottom-nav .nav{color:#e5eaf0!important}
+body.dark #mobile-nav.bottom-nav .nav.active{background:#50382e!important;color:#ffc09c!important}
+.layout{padding-bottom:100px!important}
+@media(max-width:900px){
+ .partner-top{display:flex!important;flex-wrap:wrap!important;justify-content:space-between!important;padding:8px 12px!important}
+ .partner-top .brand{order:1!important}
+ .partner-top .right{order:2!important;margin-left:auto!important}
+ #header-nav,.partner-top .header-nav{order:3!important;flex:1 0 100%!important;width:100%!important;justify-content:flex-start!important;margin:0!important;padding:2px 0 5px!important}
+ #header-nav .nav{padding:8px 10px!important}
+ .top.partner-top{height:auto!important;min-height:unset!important}
+ .layout{grid-template-columns:1fr!important;padding-bottom:100px!important}
+ .side{display:none!important}
+}
+@media(max-width:760px){
+ .partner-top .brand small{display:inline!important}
+ .partner-top .brand{font-size:19px!important}
+ #header-nav,.partner-top .header-nav{display:flex!important;overflow-x:auto!important}
+ #header-nav .nav{font-size:11px!important}
+ #mobile-nav.bottom-nav{left:8px!important;right:8px!important;transform:none!important;width:auto!important;bottom:8px!important}
+}
 </style></head><body>
 <div id="signin" class="auth"><header class="auth-head"><a class="brand" href="/" style="color:white">PhoneYa<span>2</span></a><div class="auth-menu-wrap"><button class="btn secondary small" id="signin-menu-toggle">☰ Menu</button><div class="auth-menu" id="signin-menu"><a href="/community/">PhoneYa2 Community ↗</a><a href="/blog.html">PhoneYa2 Blog ↗</a><a href="/">PhoneYa2 home ↗</a><a href="/partners/">Register as a partner ↗</a><a href="/partners-admin/">Partner network admin ↗</a></div></div></header><section class="authhero"><div><div class="eyebrow" style="margin-top:76px;color:#ffb185">PHONEYA2 PARTNER NETWORK</div><h1>Everything your business needs to grow.</h1><p>Manage your storefront, catalogue, updates, promotions and customer enquiries from one clear workspace.</p></div></section><section class="authpanel"><div class="authcard"><div class="brand">PhoneYa<span>2</span></div><div class="eyebrow" style="margin-top:28px">WELCOME BACK</div><h2>Sign in to Partner Studio</h2><p class="muted">Use your partner account email and password.</p><div id="auth-error" class="alert hidden"></div><form id="login-form"><div class="field"><label>Email address</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="login-btn" class="btn block">Sign in securely →</button></form><p class="muted" style="font-size:12px;text-align:center;margin-top:18px">New partner? <a href="/partners/index.html" style="color:#e85b20;font-weight:900">Create an account</a></p></div></section></div>
 <div id="app" class="hidden"><div id="workspace-load-error" class="alert hidden" role="status" style="margin:12px auto;max-width:900px"><button class="btn small" type="button" onclick="location.reload()">Retry</button></div><header class="top partner-top"><div class="brand">PhoneYa<span>2</span> <small style="font:700 10px 'DM Sans';color:#7b8a9c">PARTNER STUDIO</small></div><nav id="header-nav" class="header-nav" aria-label="Partner workspace navigation"></nav><div class="right"><span id="account-email" class="email muted"></span><div class="top-menu-wrap"><button type="button" id="account-menu-toggle" class="btn secondary small top-menu-toggle" aria-label="Account menu">☰</button><div class="top-menu" id="account-menu"><a href="/" target="_blank">PhoneYa2 home ↗</a><a href="/partners/">Partner support ↗</a><button type="button" id="logout" class="danger">Sign out ↗</button></div></div></div></header>
@@ -384,7 +420,7 @@ async function api(action,body={}){const r=await fetch(API,{method:body.method||
 async function refresh(){const r=await fetch(API,{credentials:'same-origin',cache:'no-store'}),j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw Error(j.error||'Please sign in');data=j;render()}
 function validSection(id){return tabs.some(([key])=>key===id)?id:'overview'}
 function go(id,options={}){active=validSection(id);tabs.forEach(([k])=>$(k).classList.toggle('active',k===active));document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===active));$('app').classList.remove('menu-open');nav();try{sessionStorage.setItem('phoneya2-partner-section',active)}catch{}if(!options.fromHistory&&!options.restore){try{history.pushState(null,'','#'+active)}catch{}}if(options.restore){let y=0;try{y=Number(sessionStorage.getItem('phoneya2-partner-scroll')||0)}catch{}scrollTo({top:Number.isFinite(y)?y:0,behavior:'auto'})}else if(options.scroll!==false){scrollTo({top:0,behavior:'smooth'})}}
-function nav(){const h=tabs.map(([id,ic,n])=>'<button class="nav '+(id===active?'active':'')+'" data-nav="'+id+'"><span>'+ic+'</span> '+n+'</button>').join('');const community='<a class="nav community-nav" href="/community/" title="PhoneYa2 Community"><span>◉</span><em>Community</em></a>';$('side-nav').innerHTML=h+community;$('header-nav').innerHTML=tabs.map(([id,ic,n])=>'<button class="nav '+(id===active?'active':'')+'" data-nav="'+id+'" title="'+n+'"><span>'+ic+'</span><em>'+n+'</em></button>').join('')+community;$('mobile-nav').innerHTML=tabs.map(([id,ic,n])=>'<button type="button" class="nav '+(id===active?'active':'')+'" data-nav="'+id+'"><span>'+ic+'</span><em>'+n+'</em></button>').join('')+community;document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{if(b.dataset.publishKind){val('publish-kind',b.dataset.publishKind);updatePublishForm()}go(b.dataset.go)})}
+function nav(){const h=tabs.map(([id,ic,n])=>'<button class="nav '+(id===active?'active':'')+'" data-nav="'+id+'"><span>'+ic+'</span> '+n+'</button>').join('');const community='<a class="nav community-nav" href="/community/" title="PhoneYa2 Community"><span>◉</span><em>Community</em></a>';$('side-nav').innerHTML=h+community;$('header-nav').innerHTML=tabs.map(([id,ic,n])=>'<button class="nav '+(id===active?'active':'')+'" data-nav="'+id+'" title="'+n+'"><span>'+ic+'</span><em>'+n+'</em></button>').join('')+community;$('mobile-nav').innerHTML=tabs.filter(([id])=>['overview','composer','enquiries','catalogue'].includes(id)).map(([id,ic,n])=>'<button type="button" class="nav '+(id===active?'active':'')+'" data-nav="'+id+'"><span>'+ic+'</span><em>'+(id==='overview'?'Home':id==='composer'?'Create':id==='enquiries'?'Inbox':'Shop')+'</em></button>').join('');document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{if(b.dataset.publishKind){val('publish-kind',b.dataset.publishKind);updatePublishForm()}go(b.dataset.go)})}
 function val(id,v){$(id).value=v??''}const publicUrl=()=>data?.partner?.slug?location.origin+'/b/'+data.partner.slug:'#';
 function applyDesignEntitlements(){
 const rank={free:0,starter:1,standard:2,business:3,premium:4};
