@@ -1,6 +1,7 @@
 export async function onRequestGet({ env }) {
   if (!env.DB) return Response.json({ ok: false, error: "Community database is not configured." }, { status: 503 });
   try {
+    const now = new Date().toISOString();
     const result = await env.DB.prepare(`
       SELECT p.id, p.title, p.slug, p.excerpt, p.body, p.cover_image_url,
              p.post_type, p.published_at,
@@ -24,7 +25,39 @@ export async function onRequestGet({ env }) {
                COALESCE(p.published_at, p.created_at) DESC
       LIMIT 60
     `).all();
-    return Response.json({ ok: true, posts: result.results || [] }, {
+    const ads = await env.DB.prepare(`
+      SELECT ad.id, ad.slug, ad.title, ad.description, ad.media_url,
+             ad.media_type, ad.destination_type, ad.destination_url,
+             ad.weight, ad.placement, ad.start_date, ad.end_date,
+             ad.created_at AS published_at, a.business_name, a.logo_url,
+             a.tier, pr.slug AS business_slug
+      FROM ads AS ad
+      JOIN advertisers AS a ON a.id = ad.advertiser_id
+      LEFT JOIN advertiser_profiles AS pr ON pr.advertiser_id = a.id
+      WHERE ad.status = 'approved'
+        AND a.status IN ('active', 'approved')
+        AND (ad.start_date IS NULL OR ad.start_date <= ?)
+        AND (ad.end_date IS NULL OR ad.end_date >= ?)
+      ORDER BY ad.weight DESC, ad.created_at DESC
+      LIMIT 30
+    `).bind(now, now).all();
+
+    const sponsored = (ads.results || []).map(ad => ({
+      ...ad,
+      is_paid_ad: true,
+      post_type: 'sponsored',
+      excerpt: ad.description || '',
+      cover_image_url: ad.media_url || '',
+      is_featured: 1
+    }));
+    const posts = (result.results || []).map(post => ({ ...post, is_paid_ad: false }));
+    const combined = [...posts, ...sponsored].sort((a, b) => {
+      const featured = Number(b.is_featured || 0) - Number(a.is_featured || 0);
+      if (featured) return featured;
+      return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
+    }).slice(0, 80);
+
+    return Response.json({ ok: true, posts: combined }, {
       headers: { "cache-control": "public, max-age=30, s-maxage=60" }
     });
   } catch (error) {
