@@ -118,6 +118,30 @@
 #py2-partner-admin-frame{display:block;width:100%;height:1700px;border:0;border-top:1px solid var(--line);background:#f5f7fb}
 @media(max-width:600px){.py2-partner-head{padding:16px}.py2-partner-shortcuts{padding:0 16px 13px}#py2-partner-admin-frame{height:1900px}}
 </style>
+<style>
+#cc-system-overview{margin:0 0 16px;padding:20px;border-radius:17px;background:linear-gradient(135deg,#101827,#1b2b48);color:#fff;border:1px solid #263a5c;box-shadow:0 14px 34px #10182716}
+#cc-system-overview .cc-sys-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+#cc-system-overview h2{font-size:19px;margin:0 0 4px;color:#fff}
+#cc-system-overview p{margin:0;color:#c4ccda;font-size:11px}
+#cc-system-overview .cc-sys-updated{font-size:10px;color:#c4ccda}
+#cc-system-overview .cc-sys-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+#cc-system-overview .cc-sys-metric{min-width:0;border:1px solid #ffffff20;background:#ffffff0c;border-radius:12px;padding:13px}
+#cc-system-overview .cc-sys-metric small{display:block;color:#c4ccda;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+#cc-system-overview .cc-sys-metric strong{display:block;color:#fff;font-size:25px;letter-spacing:-.7px;margin:5px 0 2px;overflow-wrap:anywhere}
+#cc-system-overview .cc-sys-metric span{display:block;color:#c4ccda;font-size:10px}
+#cc-system-overview .cc-sys-lower{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;margin-top:13px}
+#cc-system-overview .cc-sys-box{border:1px solid #ffffff20;background:#ffffff0c;border-radius:12px;padding:14px;min-width:0}
+#cc-system-overview .cc-sys-box h3{margin:0 0 12px;font-size:12px;color:#fff}
+#cc-system-overview .cc-sys-barrow{display:grid;grid-template-columns:92px minmax(0,1fr) 32px;align-items:center;gap:8px;margin:9px 0;font-size:10px;color:#dbe3f0}
+#cc-system-overview .cc-sys-track{height:8px;background:#ffffff1b;border-radius:99px;overflow:hidden}
+#cc-system-overview .cc-sys-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ff7a2f,#ffc15b)}
+#cc-system-overview .cc-sys-links{display:flex;flex-wrap:wrap;gap:7px}
+#cc-system-overview .cc-sys-links a,#cc-system-overview .cc-sys-links button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:8px 10px;border-radius:8px;border:1px solid #ffffff30;background:#ffffff12;color:#fff;font-size:10px;font-weight:850;text-decoration:none;cursor:pointer}
+#cc-system-overview .cc-sys-links a.primary{background:#ff6500;border-color:#ff6500}
+#cc-system-overview .cc-sys-note{margin-top:10px!important;color:#bdc9dc!important;font-size:10px!important}
+@media(max-width:800px){#cc-system-overview .cc-sys-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#cc-system-overview .cc-sys-lower{grid-template-columns:1fr}}
+@media(max-width:420px){#cc-system-overview{padding:14px}#cc-system-overview .cc-sys-metric strong{font-size:21px}#cc-system-overview .cc-sys-barrow{grid-template-columns:75px minmax(0,1fr) 26px}}
+</style>
 </head>
 <body>
 <div id="lab-intro" class="lab-intro" role="dialog" aria-modal="true" aria-label="PhoneYa2 system startup"><div class="lab-core"><div class="lab-kicker">PHONEYA2 // OPERATIONS INTELLIGENCE</div><h2>Command Centre Online</h2><p id="lab-copy">Connecting the live business signals. Preparing your operations view.</p><div class="lab-readout"><div><strong id="lab-orders">—</strong><span>ORDERS</span></div><div><strong id="lab-pending">—</strong><span>NEED ACTION</span></div><div><strong id="lab-visitors">—</strong><span>VISITORS · 30D</span></div></div><div class="lab-progress"><span id="lab-progress-fill"></span></div><div id="lab-status" class="lab-status">INITIALIZING SECURE WORKSPACE</div><button type="button" id="lab-skip" class="lab-skip">Enter dashboard →</button></div></div>
@@ -590,6 +614,40 @@ function renderCommandCentreExtensions(){
  const renderExperiments=()=>{const host=$('growth-experiment-list');if(!host)return;host.replaceChildren();let list=[];try{list=JSON.parse(localStorage.getItem(key)||'[]');}catch{}if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='No experiments saved on this device yet.';host.append(p);return;}list.forEach((x,i)=>{const row=document.createElement('div');row.className='priority-item';const dot=document.createElement('span');dot.className='priority-dot';dot.textContent='🧪';const body=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small'),remove=document.createElement('button');title.textContent=x.name;detail.textContent=x.hypothesis+' · Baseline: '+(x.baseline??'not set')+' · Target: '+(x.target??'not set')+' · Result: '+(x.result??'not recorded')+' · Measure: '+x.measure+' · Started '+new Date(x.created).toLocaleDateString();const record=document.createElement('button');record.type='button';record.className='btn';record.textContent='Record result';record.addEventListener('click',()=>{const value=prompt('Enter the measured result for '+x.measure+':');if(value===null||value.trim()===''||!Number.isFinite(Number(value)))return;list[i].result=Number(value);list[i].updated=new Date().toISOString();localStorage.setItem(key,JSON.stringify(list));renderExperiments();});remove.type='button';remove.className='btn';remove.textContent='Remove';remove.addEventListener('click',()=>{list.splice(i,1);localStorage.setItem(key,JSON.stringify(list));renderExperiments();});body.append(title,detail,record,remove);row.append(dot,body);host.append(row);});};
  const form=$('growth-experiment-form');form.addEventListener('submit',e=>{e.preventDefault();let list=[];try{list=JSON.parse(localStorage.getItem(key)||'[]');}catch{}list.unshift({name:$('experiment-name').value.trim(),hypothesis:$('experiment-hypothesis').value.trim(),measure:$('experiment-measure').value,baseline:$('experiment-baseline').value===''?null:Number($('experiment-baseline').value),target:$('experiment-target').value===''?null:Number($('experiment-target').value),created:new Date().toISOString()});localStorage.setItem(key,JSON.stringify(list.slice(0,30)));form.reset();renderExperiments();});
  renderExperiments();
+ // System-wide snapshot: live figures only, with clear labels for disconnected data.
+ const overview=document.getElementById('view-overview');
+ if(overview){
+  let systemPanel=document.getElementById('cc-system-overview');
+  if(!systemPanel){systemPanel=document.createElement('section');systemPanel.id='cc-system-overview';systemPanel.setAttribute('aria-label','PhoneYa2 system overview');const statsNode=overview.querySelector('.stats');if(statsNode)statsNode.insertAdjacentElement('afterend',systemPanel);else overview.prepend(systemPanel);}
+  const customers=new Set(orders.map(o=>String(o.customer_email||o.email||o.customer_phone||o.phone||'').trim().toLowerCase()).filter(Boolean)).size;
+  const stockUnits=products.reduce((n,p)=>n+Math.max(0,Number(p.stock)||0),0);
+  const delivered=orders.filter(o=>o.status==='delivered').length;
+  const pendingCount=orders.filter(o=>o.status==='pending').length;
+  const cancelledCount=orders.filter(o=>o.status==='cancelled').length;
+  const traffic=Number(ga4Summary?.sessions||0),visitors=Number(ga4Summary?.active_users||0),viewsCount=Number(ga4Summary?.page_views||0);
+  const conversion=viewsCount?(recent.length/viewsCount*100):null;
+  const healthTotal=document.querySelectorAll('#health-grid .health-item').length;
+  const healthBad=document.querySelectorAll('#health-grid .health-item .health-symbol.warn').length;
+  const healthGood=Math.max(0,healthTotal-healthBad);
+  const bars=[['Orders',orders.length],['Delivered',delivered],['Pending',pendingCount],['Cancelled',cancelledCount]];
+  const maxBar=Math.max(1,...bars.map(x=>x[1]));
+  const barHtml=bars.map(x=>'<div class="cc-sys-barrow"><span>'+x[0]+'</span><div class="cc-sys-track"><i style="width:'+(x[1]/maxBar*100)+'%"></i></div><b>'+x[1]+'</b></div>').join('');
+  const metric=(label,value,detail)=>'<div class="cc-sys-metric"><small>'+label+'</small><strong>'+value+'</strong><span>'+detail+'</span></div>';
+  systemPanel.innerHTML='<div class="cc-sys-head"><div><h2>PhoneYa2 · System Snapshot</h2><p>One view of store performance, traffic, customers, stock and platform operations.</p></div><span class="cc-sys-updated">Updated '+new Date().toLocaleTimeString()+'</span></div>'+
+   '<div class="cc-sys-grid">'+
+   metric('Total orders',orders.length.toLocaleString(),'All recorded orders')+
+   metric('Order value',money(orderValue),'Non-cancelled · not verified cash')+
+   metric('Catalogue',products.length.toLocaleString(),'Products in loaded catalogue')+
+   metric('Stock units',stockUnits.toLocaleString(),'Units across products with stock data')+
+   metric('Customers',customers.toLocaleString(),'Unique recorded email / phone')+
+   metric('Website visitors',ga4Summary?visitors.toLocaleString():'—',ga4Summary?'GA4 active users · report period':'GA4 not connected')+
+   metric('Website sessions',ga4Summary?traffic.toLocaleString():'—',ga4Summary?'GA4 sessions · report period':'GA4 not connected')+
+   metric('Conversion signal',conversion===null?'—':conversion.toFixed(2)+'%',conversion===null?'Needs GA4 page views':'30-day orders ÷ GA4 page views')+
+   '</div><div class="cc-sys-lower"><div class="cc-sys-box"><h3>Order activity · all recorded</h3>'+barHtml+'<p class="cc-sys-note">'+pendingCount+' need follow-up · '+low.length+' low-stock · '+out.length+' out of stock · '+(orders.length?(cancelledCount/orders.length*100).toFixed(1):'0.0')+'% cancellation rate.</p></div>'+
+   '<div class="cc-sys-box"><h3>System coverage & quick actions</h3><div class="cc-sys-links"><button type="button" data-sys-tab="orders">Review orders ↗</button><button type="button" data-sys-tab="inventory">Manage stock ↗</button><button type="button" data-sys-tab="analytics">Traffic analytics ↗</button><button type="button" data-sys-tab="network">Partner Network ↗</button><button type="button" data-sys-tab="health">Website health ↗</button><a href="/admin/communications.html">Communications ↗</a><a href="/admin/campaigns.html">Email campaigns ↗</a><a href="/admin/" target="_blank" rel="noopener">Product CMS ↗</a><a href="/admin/orders.html">Order Desk ↗</a></div>'+
+   '<p class="cc-sys-note">Website checks: '+(healthTotal?healthGood+'/'+healthTotal+' passing · '+healthBad+' need attention':'not checked yet')+'. Agent sales, partner billing, email delivery totals and advertising revenue are not yet synced into this snapshot; open their source workspaces for verified details.</p></div></div>';
+  systemPanel.querySelectorAll('[data-sys-tab]').forEach(b=>b.addEventListener('click',()=>activateWorkspaceTab(b.dataset.sysTab,true)));
+ }
 }
 function setupResourceFinder(){
  const host=$('view-resources');if(!host||host.dataset.resourceReady)return;host.dataset.resourceReady='1';
