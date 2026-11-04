@@ -15,6 +15,7 @@ const boot=()=>{
   window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
  };
  tab.addEventListener('click',activate);
+ document.querySelectorAll('[data-open-partner-workspace]').forEach(link=>link.addEventListener('click',e=>{e.preventDefault();activate();}));
  window.addEventListener('message',e=>{
   if(e.origin!==location.origin||e.source!==document.getElementById('py2-partner-admin-frame')?.contentWindow)return;
   if(e.data?.type==='py2-partner-admin-height'&&Number.isFinite(e.data.height)){
