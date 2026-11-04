@@ -274,7 +274,7 @@ const email=cleanText(body.email,254).toLowerCase(),password=String(body.passwor
 let stored={};try{stored=JSON.parse(account?.password_hash||"{}");}catch{}
 const valid=!!account&&account.status==="active"&&stored.scheme==="pbkdf2-sha256"&&await verifyPassword(password,stored.salt,stored.hash);
 if(!valid)return fail("Email or password is incorrect.",401);
-const token=await createSession(env.DB,account.id);return json({ok:true,authenticated:true},200,{"set-cookie":sessionCookie(token)});
+const token=await createSession(env.DB,account.id);return json({ok:true,authenticated:true},200,{"set-cookie":sessionCookies(token)});
 }
 if(action==="logout"){const raw=cookieValue(request);if(raw){const hash=b64url(await digest(raw));await env.DB.prepare("UPDATE partner_sessions SET revoked_at=? WHERE token_hash=?").bind(new Date().toISOString(),hash).run();}return json({ok:true,authenticated:false},200,{"set-cookie":clearCookies()});}
 const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
