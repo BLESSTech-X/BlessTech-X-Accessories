@@ -27,6 +27,7 @@
 .workspace-tab{flex:0 0 auto;border:1px solid transparent;border-radius:9px;background:transparent;color:#5d6578;padding:10px 13px;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s,transform .2s,border-color .2s}
 .workspace-tab:hover{background:#fff;transform:translateY(-1px)}.workspace-tab[aria-selected="true"]{background:#101322;color:#fff;border-color:#101322;box-shadow:0 5px 14px #10132220}
 .workspace-view{animation:workspaceIn .28s ease both;min-width:0}.workspace-view[hidden]{display:none!important}.workspace-view>.panel,.workspace-view>.growth-grid,.workspace-view>.grid2{margin-bottom:16px}
+#view-overview{min-width:0;height:auto;max-height:none;overflow:visible}#view-overview>#cc-system-overview{display:block!important;visibility:visible!important;position:relative;inset:auto;width:100%;height:auto;max-height:none;overflow:visible;opacity:1;transform:none;clip:auto;content-visibility:visible}
 @keyframes workspaceIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .stat,.module,.health-item,.growth-card,.section{transition:box-shadow .25s,border-color .25s,transform .25s}.stat:hover,.growth-card:hover,.section:hover{border-color:#dce3f0;box-shadow:0 10px 28px #1c25400c}
 .status-fill,.growth-fill{transition:width .8s cubic-bezier(.2,.75,.2,1);position:relative;overflow:hidden}.status-fill:after,.growth-fill:after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);transform:translateX(-100%);animation:barShimmer 2.8s ease-in-out infinite}
@@ -207,6 +208,7 @@
     </div>
     <article class="bi-insight"><div class="bi-insight-icon">!</div><div><strong>Business insight · what needs attention</strong><p id="bi-insight-text">Calculating customer concentration, average order value and catalogue health…</p></div><a href="/admin/orders.html">Review orders ↗</a></article>
   </section>
+  <section id="cc-system-overview" class="panel section" aria-label="PhoneYa2 business intelligence overview"></section>
   <div class="stats">
     <article class="panel stat"><div class="stat-top"><span>Total orders</span><span class="icon">▤</span></div><strong id="stat-orders">—</strong><small id="orders-sub">Orders recorded</small></article>
     <article class="panel stat"><div class="stat-top"><span>Order value</span><span class="icon">ZK</span></div><strong id="stat-sales">—</strong><small>Excludes cancelled orders; not cash collected</small></article>
@@ -573,6 +575,7 @@ function renderSystemOverviewContent(){
  const overview=$('view-overview');if(!overview)return;
  let panel=$('cc-system-overview');
  if(!panel){panel=document.createElement('section');panel.id='cc-system-overview';panel.className='panel section';panel.setAttribute('aria-label','PhoneYa2 business intelligence overview');}
+ panel.hidden=false;panel.removeAttribute('hidden');panel.classList.remove('hidden');panel.style.setProperty('display','block','important');panel.style.setProperty('visibility','visible','important');
  // Put the expanded business intelligence immediately after the existing
  // Business Snapshot so it is visible without searching through other modules.
  const snapshot=overview.querySelector('#bi-dashboard');
