@@ -42,6 +42,9 @@ await addPartnerNotification(db,aid,{event_key:"enquiry:"+e.id,category:"enquiri
 if(packageRequest){
 await addPartnerNotification(db,aid,{event_key:"package-request:"+packageRequest.id,category:"packages",kind:"event",title:"Package request received",message:"Your "+(packageRequest.package_name||"new package")+" request is awaiting PhoneYa2 payment confirmation.",priority:"normal",destination:"packages",action_label:"View request"});
 }
+const periodEnd=subscription?.current_period_end||subscription?.ends_at||"";
+if(periodEnd){const expiry=new Date(periodEnd),remaining=expiry.getTime()-Date.now();if(Number.isFinite(expiry.getTime())&&remaining>0&&remaining<=7*86400000)await addPartnerNotification(db,aid,{event_key:"package-expiry:"+periodEnd,category:"packages",kind:"event",title:"Your package period is ending soon",message:"Your current package period ends on "+expiry.toLocaleDateString("en-GB")+". Contact PhoneYa2 if you would like to renew or discuss your options.",priority:"high",destination:"packages",action_label:"View package"});}
+
 const currentPackage=String(subscription?.package_key||"free");
 const packageState=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key='active-package'").bind(aid).first();
 if(!packageState){
@@ -96,6 +99,8 @@ const guidance=[
 {key:"guide-website",show:!partner.published&&siteReady,title:"Your website is ready to publish",message:"Your website has its title and headline. Review the preview, then publish it when you're ready.",destination:"website",action:"Review website"},
 {key:"guide-product",show:items.length===0,title:"Add your first product or service",message:"Build your online catalogue so visitors can discover what you sell. Add a clear photo, useful description and price.",destination:"catalogue",action:"Add a product"},
 {key:"guide-post",show:posts.length===0,title:"Create your first business post",message:"Share an update, offer or event to give visitors a reason to return to your website.",destination:"composer",action:"Create a post"},
+{key:"guide-product-photo",show:items.some(x=>!String(x.image_url||"").trim()),title:"Improve your catalogue photos",message:"Some catalogue items do not have a product image yet. Clear, well-lit photos help customers understand what you offer.",destination:"catalogue",action:"Add product photos"},
+{key:"guide-draft-post",show:posts.some(x=>x.status==="draft"),title:"Finish and publish your draft",message:"You have a saved draft. Review its text and image, then publish it when it is ready for visitors.",destination:"composer",action:"Review draft"},
 {key:"guide-enquiries",show:enquiries.length>0&&enquiries.every(x=>x.status!=="new"),title:"Keep your customer leads moving",message:"Update enquiry statuses as you follow up. This helps you keep track of every potential customer.",destination:"enquiries",action:"Open inbox"},
 {key:"guide-upgrade",show:currentPackage==="free"&&items.length>=3&&posts.some(x=>x.status==="published")&&(!!partner.published),title:"Explore a package upgrade",message:"Your business website and catalogue are active. Compare paid packages to see whether higher campaign priority, richer design options and expanded reporting fit your next growth stage.",destination:"packages",action:"Compare packages"}
 ];
