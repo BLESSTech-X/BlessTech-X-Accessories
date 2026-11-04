@@ -88,11 +88,11 @@ export function renderPartnerSite(data) {
   const phone = phoneRaw.replace(/[^\d+]/g, "");
   const validWhatsapp = whatsapp.length >= 9 && whatsapp.length <= 15 ? whatsapp : "";
   const validPhone = phone.replace(/\D/g, "").length >= 9 ? phone : "";
-  const contact = (validWhatsapp
+  const contact = site.show_contact_bar===0 ? "" : ((validWhatsapp
     ? `<a class="btn primary whatsapp-btn" href="https://wa.me/${esc(validWhatsapp)}" target="_blank" rel="noopener noreferrer">WhatsApp us ↗</a>`
     : "") + (validPhone
       ? `<a class="btn secondary" href="tel:${esc(validPhone)}">Call business</a>`
-      : "");
+      : ""));
 
   const products = items.filter((item) => item.item_type === "product");
   const services = items.filter((item) => item.item_type === "service");
@@ -319,9 +319,10 @@ body.page-image:before{content:"";position:fixed;inset:0;z-index:0;pointer-event
 @media(max-width:760px){.site-nav{display:none;position:absolute;top:calc(100% + 13px);left:auto;right:0;width:min(280px,calc(100vw - 32px));margin:0;padding:9px;background:#fff;border:1px solid #e4eaf1;border-radius:15px;box-shadow:0 18px 48px #132b4a20;flex-direction:column;align-items:stretch;gap:3px}.site-nav.open{display:flex}.menu-button{display:inline-flex;margin-left:0;margin-right:0}.top-link{display:none}.top{height:66px;padding:0 12px;margin:0 -13px}}
 </style>
 </head>
-<body>
-<div class="site">
-<header class="top"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><details class="top-menu-wrap"><summary class="menu-button" aria-label="Open website menu"><span class="menu-icon" aria-hidden="true">☰</span><span>Menu</span></summary><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></details></header>
+<body class="page-${design.pageBackground} button-${design.buttonStyle}">
+<div class="site width-${design.contentWidth}">
+${announcementHtml}
+<header class="top header-${design.headerStyle}"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><details class="top-menu-wrap"><summary class="menu-button" aria-label="Open website menu"><span class="menu-icon" aria-hidden="true">☰</span><span>Menu</span></summary><nav id="site-nav" class="site-nav" aria-label="Business website menu"><a href="#products">🛍️ Products</a><a href="#services">🧰 Services</a><a href="#updates">📰 Updates</a><a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></details></header>
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 <section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
