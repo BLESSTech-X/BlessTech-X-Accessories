@@ -28,6 +28,58 @@ JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
 AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`);for(const raw of tokens){const partner=await lookup.bind(b64url(await digest(raw)),new Date().toISOString()).first();if(partner)return partner;}return null;}
+async function addPartnerNotification(db,advertiserId,item){
+const key=String(item.event_key||"").slice(0,220);
+if(!key)return;
+await db.prepare("INSERT OR IGNORE INTO partner_notifications(id,advertiser_id,event_key,category,kind,title,message,priority,destination,action_label,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
+.bind(crypto.randomUUID(),advertiserId,key,item.category||"guidance",item.kind||"event",String(item.title||"Update").slice(0,180),String(item.message||"").slice(0,1200),item.priority||"normal",String(item.destination||"overview").slice(0,120),String(item.action_label||"Open").slice(0,50),new Date().toISOString()).run();
+}
+async function syncPartnerNotifications(db,partner,items,posts,enquiries,subscription,packageRequest,ads){
+const aid=partner.advertiser_id;
+for(const e of enquiries.filter(x=>x.status==="new")){
+await addPartnerNotification(db,aid,{event_key:"enquiry:"+e.id,category:"enquiries",kind:"event",title:"New customer enquiry",message:(e.customer_name||"A customer")+" sent a message through your business website.",priority:"high",destination:"enquiries",action_label:"Open inbox"});
+}
+if(packageRequest){
+await addPartnerNotification(db,aid,{event_key:"package-request:"+packageRequest.id,category:"packages",kind:"event",title:"Package request received",message:"Your "+(packageRequest.package_name||"new package")+" request is awaiting PhoneYa2 payment confirmation.",priority:"normal",destination:"packages",action_label:"View request"});
+}
+const currentPackage=String(subscription?.package_key||"free");
+const packageState=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key='active-package'").bind(aid).first();
+if(!packageState){
+await db.prepare("INSERT OR IGNORE INTO partner_notification_state(advertiser_id,state_key,state_value) VALUES(?,'active-package',?)").bind(aid,currentPackage).run();
+}else if(packageState.state_value!==currentPackage){
+await addPartnerNotification(db,aid,{event_key:"package-active:"+currentPackage+":"+String(subscription?.id||""),category:"packages",kind:"event",title:"Your package is now active",message:"Your Partner Studio package is now "+(subscription?.package_name||currentPackage)+". Explore the included benefits and tools.",priority:"high",destination:"packages",action_label:"View benefits"});
+await db.prepare("UPDATE partner_notification_state SET state_value=?,updated_at=? WHERE advertiser_id=? AND state_key='active-package'").bind(currentPackage,new Date().toISOString(),aid).run();
+}
+const baselines=[["catalogue",items.map(x=>({id:x.id,title:x.title,destination:"catalogue",category:"shop",label:"New catalogue item"}))],["posts",posts.filter(x=>x.status==="published").map(x=>({id:x.id,title:x.title,destination:"composer",category:"website",label:"New post published"}))]];
+for(const [type,records] of baselines){
+const stateKey="baseline:"+type;
+const baseline=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key=?").bind(aid,stateKey).first();
+if(!baseline){
+await db.batch([
+...records.map(x=>db.prepare("INSERT OR IGNORE INTO partner_notification_seen(advertiser_id,entity_type,entity_id) VALUES(?,?,?)").bind(aid,type,String(x.id))),
+db.prepare("INSERT OR IGNORE INTO partner_notification_state(advertiser_id,state_key,state_value) VALUES(?,?, '1')").bind(aid,stateKey)
+]);
+continue;
+}
+for(const x of records){
+const seen=await db.prepare("SELECT entity_id FROM partner_notification_seen WHERE advertiser_id=? AND entity_type=? AND entity_id=?").bind(aid,type,String(x.id)).first();
+if(seen)continue;
+await addPartnerNotification(db,aid,{event_key:type+":"+x.id,category:x.category,kind:"event",title:x.label,message:(x.title||"Your content")+" is now available in your Partner Studio.",priority:"normal",destination:x.destination,action_label:type==="catalogue"?"View shop":"View post"});
+await db.prepare("INSERT OR IGNORE INTO partner_notification_seen(advertiser_id,entity_type,entity_id) VALUES(?,?,?)").bind(aid,type,String(x.id)).run();
+}
+}
+const profileReady=!!(String(partner.business_name||"").trim()&&String(partner.owner_name||"").trim()&&String(partner.phone||"").trim()&&String(partner.tagline||"").trim()&&String(partner.about||"").trim());
+const siteReady=!!(String(partner.site_title||"").trim()&&String(partner.hero_title||"").trim());
+const guidance=[
+{key:"guide-profile",show:!profileReady,title:"Complete your business profile",message:"Add a clear business description, tagline and contact details to help customers understand and trust your business.",destination:"profile",action:"Complete profile"},
+{key:"guide-website",show:!partner.published&&siteReady,title:"Your website is ready to publish",message:"Your website has its title and headline. Review the preview, then publish it when you're ready.",destination:"website",action:"Review website"},
+{key:"guide-product",show:items.length===0,title:"Add your first product or service",message:"Build your online catalogue so visitors can discover what you sell. Add a clear photo, useful description and price.",destination:"catalogue",action:"Add a product"},
+{key:"guide-post",show:posts.length===0,title:"Create your first business post",message:"Share an update, offer or event to give visitors a reason to return to your website.",destination:"composer",action:"Create a post"},
+{key:"guide-enquiries",show:enquiries.length>0&&enquiries.every(x=>x.status!=="new"),title:"Keep your customer leads moving",message:"Update enquiry statuses as you follow up. This helps you keep track of every potential customer.",destination:"enquiries",action:"Open inbox"},
+{key:"guide-upgrade",show:currentPackage==="free"&&items.length>=3&&posts.some(x=>x.status==="published")&&(!!partner.published),title:"Explore a package upgrade",message:"Your business website and catalogue are active. Compare paid packages to see whether higher campaign priority, richer design options and expanded reporting fit your next growth stage.",destination:"packages",action:"Compare packages"}
+];
+for(const g of guidance)if(g.show)await addPartnerNotification(db,aid,{event_key:g.key,category:"guidance",kind:"guidance",title:g.title,message:g.message,priority:"low",destination:g.destination,action_label:g.action});
+}
 async function workspace(db,partner){const [items,posts,enquiries,subscription,packageRequest,ads,impressions,clicks]=await Promise.all([
 db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? ORDER BY sort_order,created_at DESC LIMIT 500").bind(partner.advertiser_id).all(),
 db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
@@ -37,7 +89,7 @@ db.prepare("SELECT ps.*,pp.display_name AS package_name,pp.monthly_price_minor A
 db.prepare("SELECT id,slug,title,description,media_url,media_type,video_provider,destination_type,destination_url,status,placement,weight,start_date,end_date,rejection_reason,created_at,updated_at FROM ads WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_impressions WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first(),
 db.prepare("SELECT COUNT(*) AS total FROM ad_clicks WHERE ad_id IN (SELECT id FROM ads WHERE advertiser_id=?)").bind(partner.advertiser_id).first()
-]);return {partner,items:items.results||[],posts:posts.results||[],enquiries:enquiries.results||[],subscription,packageRequest,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order,advertising_weight FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:ads.results||[],campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
+]);const itemRows=items.results||[],postRows=posts.results||[],enquiryRows=enquiries.results||[],adRows=ads.results||[];await syncPartnerNotifications(db,partner,itemRows,postRows,enquiryRows,subscription,packageRequest,adRows);const notifications=await db.prepare("SELECT id,event_key,category,kind,title,message,priority,destination,action_label,created_at,is_read,read_at,dismissed_at,completed_at FROM partner_notifications WHERE advertiser_id=? AND dismissed_at IS NULL ORDER BY is_read ASC,created_at DESC LIMIT 150").bind(partner.advertiser_id).all();const notificationCounts=await db.prepare("SELECT COUNT(*) AS unread FROM partner_notifications WHERE advertiser_id=? AND is_read=0 AND dismissed_at IS NULL").bind(partner.advertiser_id).first();return {partner,items:itemRows,posts:postRows,enquiries:enquiryRows,subscription,packageRequest,packages:(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order,advertising_weight FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[],ads:adRows,notifications:notifications.results||[],notificationUnread:Number(notificationCounts?.unread||0),campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
@@ -55,6 +107,16 @@ await db.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key
 return json({ok:true,id,message:"Package request sent. PhoneYa2 will contact you to confirm the package and arrange payment outside the website."},201);
 }
 if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
+if(action==="notification.read"||action==="notification.dismiss"||action==="notification.complete"){
+const id=String(body.id||"");if(!UUID.test(id))return fail("Invalid notification.");
+const column=action==="notification.read"?"is_read=1,read_at=?":action==="notification.dismiss"?"dismissed_at=?":"completed_at=?";
+const stamp=now;const result=await db.prepare("UPDATE partner_notifications SET "+column+" WHERE id=? AND advertiser_id=?").bind(stamp,id,partner.advertiser_id).run();
+if(!result.meta||!result.meta.changes)return fail("Notification not found.",404);
+return json({ok:true});
+}
+if(action==="notification.read-all"){
+await db.prepare("UPDATE partner_notifications SET is_read=1,read_at=? WHERE advertiser_id=? AND is_read=0 AND dismissed_at IS NULL").bind(now,partner.advertiser_id).run();return json({ok:true});
+}
 if(action==="profile.save"){
 const business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40),tagline=cleanText(body.tagline,180),about=cleanText(body.about,1200),contactPhone=cleanText(body.contact_phone,40),whatsapp=cleanText(body.contact_whatsapp,40),contactEmail=cleanText(body.contact_email,254).toLowerCase(),logo=cleanText(body.logo_url,1000);
 if(!business||!owner||phone.replace(/\D/g,"").length<9)return fail("Enter your business name, owner name and a valid phone number.");
