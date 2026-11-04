@@ -802,72 +802,7 @@ function renderCommandCentreExtensions(){
  const renderExperiments=()=>{const host=$('growth-experiment-list');if(!host)return;host.replaceChildren();let list=[];try{list=JSON.parse(localStorage.getItem(key)||'[]');}catch{}if(!list.length){const p=document.createElement('p');p.className='muted';p.textContent='No experiments saved on this device yet.';host.append(p);return;}list.forEach((x,i)=>{const row=document.createElement('div');row.className='priority-item';const dot=document.createElement('span');dot.className='priority-dot';dot.textContent='🧪';const body=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small'),remove=document.createElement('button');title.textContent=x.name;detail.textContent=x.hypothesis+' · Baseline: '+(x.baseline??'not set')+' · Target: '+(x.target??'not set')+' · Result: '+(x.result??'not recorded')+' · Measure: '+x.measure+' · Started '+new Date(x.created).toLocaleDateString();const record=document.createElement('button');record.type='button';record.className='btn';record.textContent='Record result';record.addEventListener('click',()=>{const value=prompt('Enter the measured result for '+x.measure+':');if(value===null||value.trim()===''||!Number.isFinite(Number(value)))return;list[i].result=Number(value);list[i].updated=new Date().toISOString();localStorage.setItem(key,JSON.stringify(list));renderExperiments();});remove.type='button';remove.className='btn';remove.textContent='Remove';remove.addEventListener('click',()=>{list.splice(i,1);localStorage.setItem(key,JSON.stringify(list));renderExperiments();});body.append(title,detail,record,remove);row.append(dot,body);host.append(row);});};
  const form=$('growth-experiment-form');form.addEventListener('submit',e=>{e.preventDefault();let list=[];try{list=JSON.parse(localStorage.getItem(key)||'[]');}catch{}list.unshift({name:$('experiment-name').value.trim(),hypothesis:$('experiment-hypothesis').value.trim(),measure:$('experiment-measure').value,baseline:$('experiment-baseline').value===''?null:Number($('experiment-baseline').value),target:$('experiment-target').value===''?null:Number($('experiment-target').value),created:new Date().toISOString()});localStorage.setItem(key,JSON.stringify(list.slice(0,30)));form.reset();renderExperiments();});
  renderExperiments();
- // System overview: keep the original Analytics panel untouched and place this summary immediately below it.
- const overview=document.getElementById('view-overview');
- if(overview){
-  let systemPanel=document.getElementById('cc-system-overview');
-  if(!systemPanel){systemPanel=document.createElement('section');systemPanel.id='cc-system-overview';systemPanel.className='panel section';systemPanel.setAttribute('aria-label','PhoneYa2 system overview');const analyticsNode=overview.querySelector('#analytics-live-panel');if(analyticsNode)analyticsNode.insertAdjacentElement('afterend',systemPanel);else overview.append(systemPanel);}
-  const h=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const allValue=valid.reduce((sum,o)=>sum+Number(o.total_amount||0),0);
-  const monthOrders=orders.filter(o=>withinDays(o,30)),monthPending=monthOrders.filter(o=>o.status==='pending').length;
-  const customerRows=[];const seenCustomers=new Set();
-  orders.slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))).forEach(o=>{const key=String(o.customer_email||o.customer_phone||o.customer_name||'').trim().toLowerCase();if(!key||seenCustomers.has(key)||customerRows.length>=6)return;seenCustomers.add(key);customerRows.push(o);});
-  const stockUnits=products.reduce((n,p)=>n+Math.max(0,Number(p.stock)||0),0);
-  const eventProductViews=(ga4ReportData?.top_products||[]).filter(p=>Number(p.views||0)>0).map(p=>({title:String(p.name||'Product'),path:'GA4 view_item events',views:Number(p.views||0)}));
-  const productViews=eventProductViews.length?eventProductViews.slice(0,5):(ga4ReportData?.pages||[]).map(page=>{const path=String(page.path||'');const product=products.find(p=>path.toLowerCase().includes(String(p.slug||'').toLowerCase()));return product?{title:product.title,path,views:Number(page.views||0)}:null;}).filter(Boolean).sort((a,b)=>b.views-a.views).slice(0,5);
-  const topPages=(ga4ReportData?.pages||[]).slice(0,5);
-  const orderTarget=30,orderProgress=Math.min(100,monthOrders.length/orderTarget*100),ordersLeft=Math.max(0,orderTarget-monthOrders.length);
-  const metric=(label,value,note)=>'<article class="stat"><div class="stat-top"><span>'+label+'</span><span class="icon">↗</span></div><strong>'+value+'</strong><small>'+note+'</small></article>';
-  systemPanel.innerHTML='<div class="section-head"><div><span class="eyebrow">BUSINESS-WIDE SNAPSHOT</span><h2>PhoneYa2 System Overview</h2><p>Partners, campaign communication, product interest, sales, operations and growth.</p></div><button type="button" class="btn" id="cc-system-refresh">Refresh overview</button></div>'+
-   '<div class="stats cc-overview-metrics">'+
-   metric('Total partners','—','Loading partner accounts')+
-   metric('Active partners','—','Approved / active accounts')+
-   metric('Campaign emails sent','—','Campaign delivery records')+
-   metric('Recorded sales value',money(allValue),'Non-cancelled order value · not verified cash')+
-   '</div>'+
-   '<div class="ga4-chart-grid cc-overview-grid">'+
-    '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>PARTNER NETWORK</span><h3>Partner activity</h3></div><a href="/partners-admin/index.html" target="_blank" rel="noopener">Manage partners ↗</a></div><div id="cc-partner-stats" class="ga4-insights"><div class="ga4-insight-card"><strong>Loading…</strong><small>Partner account totals</small></div></div></section>'+
-    '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>EMAIL COMMUNICATION</span><h3>Campaign performance</h3></div><a href="/admin/communications.html">Communication Centre ↗</a></div><div id="cc-campaign-stats" class="ga4-insights"><div class="ga4-insight-card"><strong>Loading…</strong><small>Email activity</small></div></div><div class="growth-links"><a class="primary" href="/admin/campaigns.html">＋ Create / send another campaign</a></div></section>'+
-   '</div>'+
-   '<div class="ga4-chart-grid cc-overview-grid">'+
-    '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>PRODUCT INTEREST</span><h3>Most-viewed products</h3></div><small>GA4 page views</small></div><div id="cc-top-products" class="ga4-page-bars">'+(productViews.length?productViews.map(p=>'<div class="ga4-page-row"><div><strong>'+h(p.title)+'</strong><small>'+h(p.path)+'</small></div><b>'+p.views.toLocaleString()+'</b></div>').join(''):topPages.map(p=>'<div class="ga4-page-row"><div><strong>'+h(p.path)+'</strong><small>Top viewed page · product match unavailable</small></div><b>'+Number(p.views||0).toLocaleString()+'</b></div>').join('')||'<p class="muted">Connect GA4 to view product interest.</p>')+'</div><p class="muted cc-footnote">Product-level ranking is matched against catalogue slugs. Pages without a matching product are not labelled as product views.</p></section>'+
-    '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>GROWTH TARGET</span><h3>30-day order goal</h3></div><small>Current target</small></div><div class="growth-number">'+monthOrders.length+' / '+orderTarget+'</div><div class="growth-track"><div class="growth-fill" style="width:'+orderProgress+'%"></div></div><p class="muted">'+(ordersLeft?ordersLeft+' more orders to reach the target. Aim for one completed order per day.':'Target reached — maintain quality and repeat sales.')+'</p><div class="cc-operation-grid"><div><strong>'+(ga4Summary?Number(ga4Summary.active_users||0).toLocaleString():'—')+'</strong><small>Active users · GA4</small></div><div><strong>'+(ga4Summary?Number(ga4Summary.sessions||0).toLocaleString():'—')+'</strong><small>Sessions · GA4</small></div><div><strong>'+(ga4Summary?Number(ga4Summary.page_views||0).toLocaleString():'—')+'</strong><small>Page views · GA4</small></div></div><div class="growth-links"><button type="button" data-cc-tab="growth">Open growth insights ↗</button><a href="/admin/orders.html">Review orders ↗</a></div></section>'+
-   '</div>'+
-   '<div class="ga4-chart-grid cc-overview-grid">'+
-    '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>OPERATIONS</span><h3>Order activity & stock</h3></div><a href="/admin/orders.html">Order desk ↗</a></div><div class="cc-operation-grid"><div><strong>'+orders.length.toLocaleString()+'</strong><small>Total orders</small></div><div><strong>'+monthPending.toLocaleString()+'</strong><small>New / pending · 30d</small></div><div><strong>'+orders.filter(o=>o.status==='delivered').length.toLocaleString()+'</strong><small>Delivered</small></div><div><strong>'+products.length.toLocaleString()+'</strong><small>Products</small></div><div><strong>'+stockUnits.toLocaleString()+'</strong><small>Stock units</small></div><div><strong>'+low.length.toLocaleString()+' / '+out.length.toLocaleString()+'</strong><small>Low stock / out</small></div></div><div class="growth-links"><a href="/admin/">Update products & stock ↗</a><a href="/admin/command-center.html#inventory">Full inventory ↗</a></div></section>'+
-    '<section class="ga4-chart-card"><div class="ga4-chart-heading"><div><span>CUSTOMER CONTACTS</span><h3>Recent customers</h3></div><small>Press to contact</small></div><div class="cc-customer-list">'+(customerRows.length?customerRows.map(o=>'<div class="cc-customer-row"><div><strong>'+h(o.customer_name||'Customer')+'</strong><small>'+h(o.customer_email||o.customer_phone||'No contact details')+'</small></div><div class="cc-customer-actions">'+(o.customer_phone?'<a href="https://wa.me/'+h(String(o.customer_phone).replace(/\D/g,''))+'" target="_blank" rel="noopener">WhatsApp</a><a href="tel:'+h(o.customer_phone)+'">Call</a>':'')+(o.customer_email?'<a href="mailto:'+h(o.customer_email)+'">Email</a>':'')+'</div></div>').join(''):'<p class="muted">Customer contacts will appear when orders are recorded.</p>')+'</div></section>'+
-   '</div>'+
-   '<p class="cc-footnote">Revenue note: the current order records do not contain verified payment receipts. “Recorded sales value” is the value of non-cancelled orders, not confirmed cash collected or profit. Campaign totals are taken from PhoneYa2 campaign and email activity records.</p>';
-  const refreshBtn=systemPanel.querySelector('#cc-system-refresh');if(refreshBtn)refreshBtn.onclick=()=>loadSystemOverviewSignals();
-  systemPanel.querySelectorAll('[data-cc-tab]').forEach(b=>b.addEventListener('click',()=>activateWorkspaceTab(b.dataset.ccTab,true)));
-  loadSystemOverviewSignals();
-  async function loadSystemOverviewSignals(){
-   const partnerHost=systemPanel.querySelector('#cc-partner-stats'),campaignHost=systemPanel.querySelector('#cc-campaign-stats');
-   if(refreshBtn)refreshBtn.disabled=true;
-   const results=await Promise.allSettled([
-    api('/api/partner-admin?table=advertisers&query=order=joined_at.desc&limit=1000'),
-    api('/api/campaigns'),
-    api('/api/communications?admin=1')
-   ]);
-   let partnerRows=[],campaignData=null,commData=null;
-   if(results[0].status==='fulfilled'&&Array.isArray(results[0].value))partnerRows=results[0].value;
-   if(results[1].status==='fulfilled')campaignData=results[1].value;
-   if(results[2].status==='fulfilled')commData=results[2].value;
-   const active=partnerRows.filter(p=>['active','approved'].includes(String(p.status||'').toLowerCase())).length;
-   const totalSent=(campaignData?.campaigns||[]).reduce((sum,x)=>sum+Number(x.sent_count||0),0);
-   const campaignCount=(campaignData?.campaigns||[]).length;
-   const drafts=(campaignData?.campaigns||[]).filter(x=>['draft','sending','failed'].includes(String(x.status||'').toLowerCase())).length;
-   const totalMetric=systemPanel.querySelector('.cc-overview-metrics .stat:nth-child(1) strong');
-   const activeMetric=systemPanel.querySelector('.cc-overview-metrics .stat:nth-child(2) strong');
-   const emailMetric=systemPanel.querySelector('.cc-overview-metrics .stat:nth-child(3) strong');
-   if(totalMetric)totalMetric.textContent=results[0].status==='fulfilled'?partnerRows.length.toLocaleString():'—';
-   if(activeMetric)activeMetric.textContent=results[0].status==='fulfilled'?active.toLocaleString():'—';
-   if(emailMetric)emailMetric.textContent=results[1].status==='fulfilled'?totalSent.toLocaleString():'—';
-   if(partnerHost)partnerHost.innerHTML=results[0].status==='fulfilled'?'<div class="ga4-insight-card"><span class="ga4-insight-label">TOTAL PARTNERS</span><strong>'+partnerRows.length.toLocaleString()+'</strong><small>All registered partner accounts</small></div><div class="ga4-insight-card"><span class="ga4-insight-label">ACTIVE PARTNERS</span><strong>'+active.toLocaleString()+'</strong><small>Active or approved accounts</small></div><div class="ga4-insight-card"><span class="ga4-insight-label">SUSPENDED</span><strong>'+partnerRows.filter(p=>String(p.status||'').toLowerCase()==='suspended').length.toLocaleString()+'</strong><small>Accounts currently suspended</small></div>':'<p class="muted">Partner account data unavailable. Open Partner Network Control to inspect the connection.</p>';
-   if(campaignHost)campaignHost.innerHTML=results[1].status==='fulfilled'?'<div class="ga4-insight-card"><span class="ga4-insight-label">EMAILS SENT</span><strong>'+totalSent.toLocaleString()+'</strong><small>Campaign email sends recorded</small></div><div class="ga4-insight-card"><span class="ga4-insight-label">CAMPAIGNS</span><strong>'+campaignCount.toLocaleString()+'</strong><small>'+drafts+' draft / active / failed campaigns</small></div><div class="ga4-insight-card"><span class="ga4-insight-label">EMAIL ACTIVITY</span><strong>'+Number(commData?.stats?.sent||0).toLocaleString()+'</strong><small>All transactional + campaign accepted sends</small></div>':'<p class="muted">Campaign reporting unavailable. Open Email Campaigns to check current status.</p>';
-   if(refreshBtn)refreshBtn.disabled=false;
-  }
- }
+ 
 }
 function setupResourceFinder(){
  const host=$('view-resources');if(!host||host.dataset.resourceReady)return;host.dataset.resourceReady='1';
