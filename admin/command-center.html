@@ -107,6 +107,17 @@
 </style>
 <link rel="stylesheet" href="/admin/command-center-extreme.css?v=20261031-nav-restored2">
 <link rel="stylesheet" href="/admin/shared-admin.css?v=20261102-compactmenu1">
+<style>
+.py2-partner-workspace{padding:0!important;overflow:hidden}
+.py2-partner-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;padding:22px 22px 14px}
+.py2-partner-head h2{margin:5px 0;font-size:22px}
+.py2-partner-head p{margin:0;color:var(--muted);font-size:12px}
+.py2-partner-kicker{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--orange)}
+.py2-partner-shortcuts{display:flex;gap:7px;flex-wrap:wrap;padding:0 22px 15px}
+.py2-partner-shortcuts span{border:1px solid #e6eaf1;background:#f8faff;border-radius:8px;padding:7px 10px;font-size:10px;font-weight:800;color:#566176}
+#py2-partner-admin-frame{display:block;width:100%;height:1700px;border:0;border-top:1px solid var(--line);background:#f5f7fb}
+@media(max-width:600px){.py2-partner-head{padding:16px}.py2-partner-shortcuts{padding:0 16px 13px}#py2-partner-admin-frame{height:1900px}}
+</style>
 </head>
 <body>
 <div id="lab-intro" class="lab-intro" role="dialog" aria-modal="true" aria-label="PhoneYa2 system startup"><div class="lab-core"><div class="lab-kicker">PHONEYA2 // OPERATIONS INTELLIGENCE</div><h2>Command Centre Online</h2><p id="lab-copy">Connecting the live business signals. Preparing your operations view.</p><div class="lab-readout"><div><strong id="lab-orders">—</strong><span>ORDERS</span></div><div><strong id="lab-pending">—</strong><span>NEED ACTION</span></div><div><strong id="lab-visitors">—</strong><span>VISITORS · 30D</span></div></div><div class="lab-progress"><span id="lab-progress-fill"></span></div><div id="lab-status" class="lab-status">INITIALIZING SECURE WORKSPACE</div><button type="button" id="lab-skip" class="lab-skip">Enter dashboard →</button></div></div>
@@ -679,5 +690,6 @@ const themeButton=$('cc-theme-toggle');if(themeButton){themeButton.setAttribute(
   <script src="/admin/customer-studio.js?v=20261030-customer1" defer></script>
   <script src="/password-visibility.js" defer></script>
 <script src="/admin/shared-admin.js?v=20261102-headerfix1" defer></script>
+<script src="/admin/partner-network-embed.js?v=20261104-integrated1" defer></script>
 </body>
 </html>
