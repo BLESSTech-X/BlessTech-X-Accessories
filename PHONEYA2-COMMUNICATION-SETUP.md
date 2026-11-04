@@ -10,7 +10,7 @@ Open the Cloudflare dashboard, select the D1 database bound to the PhoneYa2 Page
 2. \`d1/migrations/0011_partner_package_benefits.sql\`
 3. \`d1/migrations/0012_unified_communications.sql\`
 
-Migration 0012 creates the D1 newsletter subscriber list, campaign records, automation settings and product-announcement queue. It also extends the existing D1 email activity log. It does not delete existing order, partner or activity data.
+Migration 0012 creates the D1 newsletter subscriber list, campaign records, automation settings and product-announcement queue. Migration 0015 adds persistent Command Centre notifications, read/unread state, stock snapshots and published-content snapshots. It does not delete existing order, partner or activity data.
 
 ## 2. Cloudflare Pages configuration
 
