@@ -145,7 +145,9 @@ export function renderPartnerSite(data) {
     postImageFit: ["cover","contain"].includes(site.post_image_fit) ? site.post_image_fit : "cover",
     postCardStyle: ["elevated","minimal","outlined"].includes(site.post_card_style) ? site.post_card_style : "elevated",
     buttonStyle: ["rounded","pill","square"].includes(site.button_style) ? site.button_style : "rounded",
-    contentWidth: ["wide","standard","compact"].includes(site.content_width) ? site.content_width : "wide"
+    contentWidth: ["wide","standard","compact"].includes(site.content_width) ? site.content_width : "wide",
+    heroHeight: ["compact","standard","tall","cinematic"].includes(site.hero_height) ? site.hero_height : "standard",
+    menuStyle: ["standard","floating","overlay"].includes(site.menu_style) ? site.menu_style : "standard"
   };
   const announcementText = String(site.announcement_text || "").trim();
   const announcementHref = safeActionUrl(site.announcement_link) || "#contact";
@@ -171,6 +173,12 @@ body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-s
 a{color:inherit;text-decoration:none}
 .site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}
 .site.width-standard{max-width:1080px}.site.width-compact{max-width:900px}
+.hero-height-compact .hero{min-height:300px}.hero-height-tall .hero{min-height:560px}.hero-height-cinematic .hero{min-height:680px;border-radius:28px}
+.menu-floating .site-nav{border-radius:20px;box-shadow:0 24px 65px #132b4a30;padding:13px}
+.menu-overlay .site-nav{position:fixed;top:88px;right:22px;left:22px;width:auto;max-height:calc(100vh - 110px);overflow:auto;border-radius:22px;padding:18px;box-shadow:0 24px 70px #132b4a38}
+.menu-overlay .site-nav a{min-height:52px;font-size:15px;padding:13px 16px}
+@media(max-width:700px){.hero-height-cinematic .hero{min-height:590px}.menu-overlay .site-nav{top:76px;left:10px;right:10px}}
+
 body.page-plain{background:#fff}body.page-gradient{background:linear-gradient(135deg,#f4f8ff,#fff4ec 55%,#f3f7fc)}body.page-image:before{background:linear-gradient(rgba(246,248,251,.90),rgba(246,248,251,.94)),url("${heroImage}") center/cover fixed}
 .top.header-solid{background:${accent};border-color:transparent}.top.header-solid .brand{color:#fff}.top.header-glass{background:#ffffffbd;backdrop-filter:blur(24px);border:1px solid #ffffffa8;border-radius:0 0 18px 18px}.top.header-centered{justify-content:center}.top.header-centered .top-menu-wrap{position:absolute;right:20px}
 .announcement{display:flex;justify-content:center;align-items:center;gap:12px;padding:10px 18px;margin:0 -18px;background:${primary};color:#fff;font-size:12px;font-weight:850;text-align:center}.announcement span{font-size:16px}
@@ -319,7 +327,7 @@ body.page-image:before{content:"";position:fixed;inset:0;z-index:0;pointer-event
 @media(max-width:760px){.site-nav{display:none;position:absolute;top:calc(100% + 13px);left:auto;right:0;width:min(280px,calc(100vw - 32px));margin:0;padding:9px;background:#fff;border:1px solid #e4eaf1;border-radius:15px;box-shadow:0 18px 48px #132b4a20;flex-direction:column;align-items:stretch;gap:3px}.site-nav.open{display:flex}.menu-button{display:inline-flex;margin-left:0;margin-right:0}.top-link{display:none}.top{height:66px;padding:0 12px;margin:0 -13px}}
 </style>
 </head>
-<body class="page-${design.pageBackground} button-${design.buttonStyle}">
+<body class="page-${design.pageBackground} button-${design.buttonStyle} hero-height-${design.heroHeight} menu-${design.menuStyle}">
 <div class="site width-${design.contentWidth}">
 ${announcementHtml}
 <header class="top header-${design.headerStyle}"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><details class="top-menu-wrap"><summary class="menu-button" aria-label="Open website menu"><span class="menu-icon" aria-hidden="true">☰</span><span>Menu</span></summary><nav id="site-nav" class="site-nav" aria-label="Business website menu">${site.show_catalogue===0?"":'<a href="#products">🛍️ Products</a>'}${site.show_services===0?"":'<a href="#services">🧰 Services</a>'}${site.show_posts===0?"":'<a href="#updates">📰 Updates</a>'}<a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></details></header>
