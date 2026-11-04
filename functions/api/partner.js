@@ -51,6 +51,27 @@ await addPartnerNotification(db,aid,{event_key:"package-active:"+currentPackage+
 await db.prepare("UPDATE partner_notification_state SET state_value=?,updated_at=? WHERE advertiser_id=? AND state_key='active-package'").bind(currentPackage,new Date().toISOString(),aid).run();
 }
 const baselines=[["catalogue",items.map(x=>({id:x.id,title:x.title,destination:"catalogue",category:"shop",label:"New catalogue item"}))],["posts",posts.filter(x=>x.status==="published").map(x=>({id:x.id,title:x.title,destination:"composer",category:"website",label:"New post published"}))]];
+const adBaseline=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key='baseline:ads'").bind(aid).first();
+if(!adBaseline){
+await db.batch([...ads.map(x=>db.prepare("INSERT OR IGNORE INTO partner_notification_seen(advertiser_id,entity_type,entity_id) VALUES(?,?,?)").bind(aid,"ad-status",String(x.id)+":"+String(x.status||""))),db.prepare("INSERT OR IGNORE INTO partner_notification_state(advertiser_id,state_key,state_value) VALUES(?,'baseline:ads','1')").bind(aid)]);
+}else{
+for(const ad of ads){
+const status=String(ad.status||"");if(!["approved","rejected"].includes(status))continue;
+const seen=await db.prepare("SELECT entity_id FROM partner_notification_seen WHERE advertiser_id=? AND entity_type='ad-status' AND entity_id=?").bind(aid,String(ad.id)+":"+status).first();
+if(seen)continue;
+await addPartnerNotification(db,aid,{event_key:"ad-status:"+ad.id+":"+status,category:"communications",kind:"event",title:status==="approved"?"Your campaign was approved":"Your campaign needs attention",message:status==="approved"?"Your PhoneYa2 campaign has been approved and can now run according to its schedule.":("Your campaign was not approved. "+String(ad.rejection_reason||"Open your campaign to review the feedback and make changes.")),priority:status==="rejected"?"high":"normal",destination:"composer",action_label:"Review campaign"});
+await db.prepare("INSERT OR IGNORE INTO partner_notification_seen(advertiser_id,entity_type,entity_id) VALUES(?,'ad-status',?)").bind(aid,String(ad.id)+":"+status).run();
+}
+}
+const publishedState=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key='website-published'").bind(aid).first();
+const published=partner.published?"1":"0";
+if(!publishedState)await db.prepare("INSERT OR IGNORE INTO partner_notification_state(advertiser_id,state_key,state_value) VALUES(?,'website-published',?)").bind(aid,published).run();
+else if(publishedState.state_value!=="1"&&published==="1"){
+await addPartnerNotification(db,aid,{event_key:"website-published:"+new Date().toISOString().slice(0,10),category:"website",kind:"event",title:"Your business website is live",message:"Your public business website is now published. Share its link with customers and keep your catalogue and contact details up to date.",priority:"high",destination:"website",action_label:"View website"});
+await db.prepare("UPDATE partner_notification_state SET state_value='1',updated_at=? WHERE advertiser_id=? AND state_key='website-published'").bind(new Date().toISOString(),aid).run();
+}else if(publishedState.state_value!==published){
+await db.prepare("UPDATE partner_notification_state SET state_value=?,updated_at=? WHERE advertiser_id=? AND state_key='website-published'").bind(published,new Date().toISOString(),aid).run();
+}
 for(const [type,records] of baselines){
 const stateKey="baseline:"+type;
 const baseline=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key=?").bind(aid,stateKey).first();
@@ -109,8 +130,7 @@ return json({ok:true,id,message:"Package request sent. PhoneYa2 will contact you
 if(action==="workspace")return json({ok:true,...await workspace(db,partner)});
 if(action==="notification.read"||action==="notification.dismiss"||action==="notification.complete"){
 const id=String(body.id||"");if(!UUID.test(id))return fail("Invalid notification.");
-const column=action==="notification.read"?"is_read=1,read_at=?":action==="notification.dismiss"?"dismissed_at=?":"completed_at=?";
-const stamp=now;const result=await db.prepare("UPDATE partner_notifications SET "+column+" WHERE id=? AND advertiser_id=?").bind(stamp,id,partner.advertiser_id).run();
+let result;if(action==="notification.read")result=await db.prepare("UPDATE partner_notifications SET is_read=1,read_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();else if(action==="notification.dismiss")result=await db.prepare("UPDATE partner_notifications SET dismissed_at=? WHERE id=? AND advertiser_id=?").bind(now,id,partner.advertiser_id).run();else result=await db.prepare("UPDATE partner_notifications SET completed_at=?,is_read=1,read_at=? WHERE id=? AND advertiser_id=?").bind(now,now,id,partner.advertiser_id).run();
 if(!result.meta||!result.meta.changes)return fail("Notification not found.",404);
 return json({ok:true});
 }
