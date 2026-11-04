@@ -21,7 +21,13 @@ export async function onRequest({request,env}){
   recent=Number(count?.n||0);
  }catch(error){console.error("Partner enquiry rate-limit check unavailable:",error?.message||error);}
  if(recent>=8)return json({ok:false,error:"Too many enquiries from this connection. Please try again later."},429);
- const site=await env.DB.prepare("SELECT a.id AS advertiser_id FROM advertiser_profiles p JOIN advertisers a ON a.id=p.advertiser_id JOIN partner_site_settings s ON s.advertiser_id=a.id WHERE p.slug=? COLLATE NOCASE AND s.published=1 AND a.status IN ('active','approved') LIMIT 1").bind(slug).first();
+ let site;
+ try{
+  site=await env.DB.prepare("SELECT a.id AS advertiser_id FROM advertiser_profiles p JOIN advertisers a ON a.id=p.advertiser_id JOIN partner_site_settings s ON s.advertiser_id=a.id WHERE p.slug=? COLLATE NOCASE AND s.published=1 AND a.status IN ('active','approved') LIMIT 1").bind(slug).first();
+ }catch(error){
+  console.error("Partner enquiry website lookup failed:",error?.stack||error);
+  return json({ok:false,error:"We could not verify this business website right now. Please try again shortly."},503);
+ }
  if(!site)return json({ok:false,error:"This business website is not accepting enquiries yet."},404);
  const id=crypto.randomUUID();
  try{
