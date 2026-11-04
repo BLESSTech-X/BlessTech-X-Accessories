@@ -42,7 +42,7 @@ body{padding-bottom:88px}
 @media(max-width:900px){.top{align-items:flex-start}.toplinks{width:100%;margin:0;overflow-x:auto;flex-wrap:nowrap;padding:2px 0 3px}.toplinks a{font-size:11px;padding:8px 10px}.toplinks::-webkit-scrollbar{height:3px}}
 @media(max-width:680px){.top{padding:8px 12px;gap:5px}.top .brand{font-size:20px}.toplinks{gap:3px}.toplinks a{font-size:10px;padding:8px 9px}.composer{padding:13px!important}.composer-heading h2{font-size:15px}.compose-prompt{gap:7px;padding:8px}.compose-prompt>b{padding:8px;font-size:10px}.compose-actions{grid-template-columns:1fr!important}.compose-actions>a{padding:8px 10px!important}.compose-action-icon{width:29px;height:29px}.composer-foot{align-items:flex-start;flex-direction:column}}
 </style></head><body>
-<header class="top"><a class="brand" href="/" aria-label="PhoneYa2 home">PhoneYa<span>2</span><small>COMMUNITY</small></a><nav class="toplinks" aria-label="PhoneYa2 main navigation"><a href="/">Home</a><a href="/shop.html">Shop</a><a class="current" href="/community/" aria-current="page">Community</a><a href="/blog.html">Blog</a><a href="/partners/">Become a Partner</a><a href="/partners-dashboard/">Partner Studio</a></nav></header>
+<header class="top"><a class="brand" href="/" aria-label="PhoneYa2 home"><img src="/logo-wide.png" alt="PhoneYa2" width="174" height="42"><span class="brand-context">COMMUNITY</span></a><div class="community-menu-wrap"><button class="community-menu-button" id="community-menu-button" type="button" aria-expanded="false" aria-controls="community-menu"><span>Menu</span><i aria-hidden="true"><b></b><b></b><b></b></i></button><nav class="community-menu" id="community-menu" aria-label="PhoneYa2 navigation" hidden><a href="/">Home</a><a href="/shop.html">Shop</a><a class="current" href="/community/" aria-current="page">Community <span>YOU ARE HERE</span></a><a href="/blog.html">Blog</a><a href="/partners/">Become a Partner</a><a href="/partners-dashboard/">Partner Studio</a></nav></div></header>
 <main class="shell">
 <aside class="left"><section class="community-brand"><div class="eyebrow" style="color:#ffc29f">PHONEYA2 COMMUNITY</div><h1>Where Zambian businesses connect.</h1><p>Discover local businesses, their latest updates, offers and ideas — all in one place.</p></section><nav class="card side"><a class="active" href="/community/">🌐 <span>Community feed</span></a><a href="/blog.html">📰 <span>PhoneYa2 Blog</span></a><a href="/partners/">＋ <span>Join as a business</span></a><a href="/partners-dashboard/">▦ <span>Partner Studio</span></a><a href="/shop.html">🛍 <span>PhoneYa2 Shop</span></a></nav><div class="footer">A PhoneYa2 space for discovery, business visibility and useful stories.</div></aside>
 <section class="center"><section class="composer fb-composer" aria-label="Create a post"><div class="fb-compose-row"><div class="fb-compose-avatar">PY</div><a class="fb-compose-input" href="/partners-dashboard/?create=update#composer">What would you like to share?</a></div><div class="fb-compose-divider"></div><div class="fb-compose-actions"><a href="/partners-dashboard/?create=update#composer"><span class="fb-green">▣</span> Post</a><a href="/partners-dashboard/?create=update&media=photo#composer"><span class="fb-photo">▧</span> Photo</a><a href="/partners-dashboard/?create=update&media=video#composer"><span class="fb-video">▶</span> Video</a><a href="/partners-dashboard/?create=ad#composer"><span class="fb-ad">↗</span> Ad</a><a href="/partners-dashboard/?create=offer#composer"><span class="fb-offer">％</span> Offer</a></div></section>
@@ -63,6 +63,10 @@ load();
 <a href="/shop.html"><span>🛍️</span><b>Shop</b></a>
 <a href="/partners/"><span>＋</span><b>Partner</b></a>
 </nav>
+
+<script>
+(()=>{const button=document.getElementById('community-menu-button'),menu=document.getElementById('community-menu');if(!button||!menu)return;const close=()=>{menu.hidden=true;button.setAttribute('aria-expanded','false')};button.addEventListener('click',()=>{const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));menu.hidden=!open});document.addEventListener('click',event=>{if(!event.target.closest('.community-menu-wrap'))close()});document.addEventListener('keydown',event=>{if(event.key==='Escape'){close();button.focus()}});menu.addEventListener('click',event=>{if(event.target.closest('a'))close()})})();
+</script>
 </body></html>
 <style>
 /* Compact Facebook-style community composer */
@@ -79,3 +83,18 @@ load();
 .fb-green{color:#31a36a}.fb-photo{color:#36a46c}.fb-video{color:#e34b59}.fb-ad{color:#1877f2}.fb-offer{color:#e0a12b}
 @media(max-width:560px){.fb-composer{padding:11px!important}.fb-compose-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.fb-compose-actions a{font-size:11px}.fb-compose-input{font-size:12px;padding:11px 13px}}
 </style>
+
+/* Premium PhoneYa2 header: brand mark plus one purposeful menu control */
+.top{height:72px;min-height:72px;flex-wrap:nowrap;gap:18px;padding:0 max(20px,calc((100vw - 1280px)/2));background:rgba(255,255,255,.97);border-bottom:1px solid #e5ebf2;box-shadow:0 3px 18px rgba(16,43,78,.055);backdrop-filter:blur(14px)}
+.top .brand{display:flex;align-items:center;gap:11px;min-width:0;text-decoration:none}
+.top .brand img{display:block;width:174px;height:42px;object-fit:contain;object-position:left center}
+.top .brand-context{font-size:9px;letter-spacing:1.5px;font-weight:950;color:#718096;background:#f1f5f9;border:1px solid #e5ebf2;border-radius:6px;padding:6px 8px}
+.community-menu-wrap{position:relative;margin-left:auto;flex:none}
+.community-menu-button{display:flex;align-items:center;gap:13px;padding:10px 14px;border:1px solid #dce5ef;border-radius:11px;background:#fff;color:#102b4e;font-size:13px;font-weight:900;box-shadow:0 2px 8px rgba(16,43,78,.05);transition:background .18s,border-color .18s,box-shadow .18s}
+.community-menu-button:hover,.community-menu-button[aria-expanded=true]{background:#f4f8fc;border-color:#aebfd1;box-shadow:0 5px 16px rgba(16,43,78,.1)}
+.community-menu-button i{display:grid;gap:4px;width:17px}.community-menu-button i b{height:2px;width:17px;background:#102b4e;border-radius:3px;display:block;transition:transform .18s,opacity .18s}
+.community-menu-button[aria-expanded=true] i b:first-child{transform:translateY(6px) rotate(45deg)}.community-menu-button[aria-expanded=true] i b:nth-child(2){opacity:0}.community-menu-button[aria-expanded=true] i b:last-child{transform:translateY(-6px) rotate(-45deg)}
+.community-menu{position:absolute;right:0;top:calc(100% + 12px);width:260px;padding:8px;background:#fff;border:1px solid #e2e9f1;border-radius:15px;box-shadow:0 18px 48px rgba(16,43,78,.18);z-index:50;display:grid;gap:3px;animation:communityMenuIn .16s ease-out}
+.community-menu[hidden]{display:none}.community-menu a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border-radius:9px;color:#34465d;font-size:13px;font-weight:800}.community-menu a:hover{background:#f1f6fb;color:#174d7a}.community-menu a.current{background:#fff1e9;color:#d64e13}.community-menu a span{font-size:8px;letter-spacing:.6px;font-weight:950;color:#d64e13}
+@keyframes communityMenuIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:680px){.top{height:62px;min-height:62px;padding:0 13px;gap:8px}.top .brand img{width:145px;height:36px}.top .brand-context{font-size:8px;padding:5px 6px}.community-menu-button{padding:9px 11px;font-size:12px}.community-menu{width:min(280px,calc(100vw - 26px));top:calc(100% + 9px)}}
