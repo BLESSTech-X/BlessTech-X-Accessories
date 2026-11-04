@@ -9,11 +9,43 @@
 .py2-bottom-nav a.active,.py2-bottom-nav a:hover{background:#fff0e8;color:#cf4c13}
 body{padding-bottom:88px}
 @media(max-width:680px){.py2-bottom-nav{left:8px;right:8px;transform:none;width:auto;bottom:8px;padding:5px;gap:3px}.py2-bottom-nav a{padding:7px 3px}}
+
+/* Community hub navigation and partner publishing composer */
+.top{height:auto;min-height:68px;flex-wrap:wrap;gap:8px 22px;padding:10px max(18px,calc((100vw - 1280px)/2));}
+.top .brand{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.top .brand small{font-size:9px;letter-spacing:1.3px;color:#718096;background:#f1f5f9;padding:5px 7px;border-radius:6px}
+.toplinks{margin-left:auto;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.toplinks a{color:#34465d;padding:10px 11px;border-radius:9px;white-space:nowrap}
+.toplinks a:hover,.toplinks a.current{background:#eef4fb;color:#174d7a}
+.toplinks a.current{font-weight:950}
+.toplinks a.join{background:#ff641f;color:#fff}
+.composer{padding:18px!important}
+.composer-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.composer-heading h2{font-size:17px;margin:4px 0;color:#172b45}
+.composer-heading p{margin:0;color:#687990;font-size:12px;line-height:1.5}
+.composer-mark{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#102b4e,#2877b8);color:#fff;font-weight:950;font-size:13px;flex:none;box-shadow:0 5px 14px #102b4e22}
+.composer-mark span{color:#ff9a55}
+.compose-prompt{display:flex;align-items:center;gap:11px;width:100%;border:1px solid #e0e7ef;border-radius:13px;background:#f6f8fb;padding:10px 12px;color:#56677c!important;text-align:left;font-size:12px;font-weight:700;transition:.18s}
+.compose-prompt:hover{border-color:#a9c4df;background:#f0f6fc}
+.compose-avatar{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#e4effb;color:#14558b;font-size:20px;flex:none}
+.compose-prompt>b{margin-left:auto;background:#ff641f;color:#fff;padding:9px 12px;border-radius:9px;font-size:11px;white-space:nowrap}
+.compose-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;border:0!important;padding:0!important;margin:12px 0 0!important}
+.compose-actions>a{display:flex;align-items:center;gap:9px;text-align:left;background:#f8fafc!important;border:1px solid #e8edf3;border-radius:11px;padding:10px!important;color:#31465e!important;min-width:0}
+.compose-actions>a:hover{background:#f0f6fc!important;border-color:#c9d8e8}
+.compose-actions>a b,.compose-actions>a small{display:block}
+.compose-actions>a b{font-size:11px;color:#253b55}
+.compose-actions>a small{font-size:9px;color:#718096;font-weight:550;margin-top:3px}
+.compose-action-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:16px;flex:none}
+.compose-action-icon.photo{background:#e8f3ff;color:#1769aa}.compose-action-icon.offer{background:#fff1e5;color:#d85a12}.compose-action-icon.update{background:#e9f8ef;color:#16804b}
+.composer-foot{display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid #edf1f5;margin-top:12px;padding-top:10px;color:#7b8796;font-size:10px}
+.composer-foot a{font-weight:850;color:#c84b12;white-space:nowrap}
+@media(max-width:900px){.top{align-items:flex-start}.toplinks{width:100%;margin:0;overflow-x:auto;flex-wrap:nowrap;padding:2px 0 3px}.toplinks a{font-size:11px;padding:8px 10px}.toplinks::-webkit-scrollbar{height:3px}}
+@media(max-width:680px){.top{padding:8px 12px;gap:5px}.top .brand{font-size:20px}.toplinks{gap:3px}.toplinks a{font-size:10px;padding:8px 9px}.composer{padding:13px!important}.composer-heading h2{font-size:15px}.compose-prompt{gap:7px;padding:8px}.compose-prompt>b{padding:8px;font-size:10px}.compose-actions{grid-template-columns:1fr!important}.compose-actions>a{padding:8px 10px!important}.compose-action-icon{width:29px;height:29px}.composer-foot{align-items:flex-start;flex-direction:column}}
 </style></head><body>
-<header class="top"><a class="brand" href="/">PhoneYa<span>2</span> <small style="font-size:10px;letter-spacing:1px;color:#718096">COMMUNITY</small></a><nav class="toplinks"><a href="/blog.html">PhoneYa2 Blog</a><a href="/shop.html">Shop</a><a class="join" href="/partners/">Join the community ↗</a></nav></header>
+<header class="top"><a class="brand" href="/" aria-label="PhoneYa2 home">PhoneYa<span>2</span><small>COMMUNITY</small></a><nav class="toplinks" aria-label="PhoneYa2 main navigation"><a href="/">Home</a><a href="/shop.html">Shop</a><a class="current" href="/community/" aria-current="page">Community</a><a href="/blog.html">Blog</a><a href="/partners/">Become a Partner</a><a href="/partners-dashboard/">Partner Studio</a></nav></header>
 <main class="shell">
 <aside class="left"><section class="community-brand"><div class="eyebrow" style="color:#ffc29f">PHONEYA2 COMMUNITY</div><h1>Where Zambian businesses connect.</h1><p>Discover local businesses, their latest updates, offers and ideas — all in one place.</p></section><nav class="card side"><a class="active" href="/community/">🌐 <span>Community feed</span></a><a href="/blog.html">📰 <span>PhoneYa2 Blog</span></a><a href="/partners/">＋ <span>Join as a business</span></a><a href="/partners-dashboard/">▦ <span>Partner Studio</span></a><a href="/shop.html">🛍 <span>PhoneYa2 Shop</span></a></nav><div class="footer">A PhoneYa2 space for discovery, business visibility and useful stories.</div></aside>
-<section class="center"><div class="composer"><div class="compose-top"><div class="avatar">P</div><a class="compose-prompt" href="/partners-dashboard/">Share an update with the community…</a></div><div class="compose-actions"><a href="/partners-dashboard/">▧ Photo / video</a><a href="/partners-dashboard/">✦ Offer</a><a href="/partners-dashboard/">▤ Business update</a><a href="/partners-dashboard/">＋ Create a post</a></div></div>
+<section class="center"><section class="composer" aria-label="Create a community post"><div class="composer-heading"><div><span class="eyebrow">YOUR BUSINESS, YOUR COMMUNITY</span><h2>Have something worth sharing?</h2><p>Publish a photo, special offer or business update for people exploring PhoneYa2.</p></div><span class="composer-mark">PY<span>2</span></span></div><a class="compose-prompt" href="/partners-dashboard/#composer"><span class="compose-avatar">＋</span><span>Share an update with the community…</span><b>Create post ↗</b></a><div class="compose-actions"><a href="/partners-dashboard/#composer"><span class="compose-action-icon photo">▧</span><span><b>Photo / video</b><small>Showcase your work</small></span></a><a href="/partners-dashboard/#composer"><span class="compose-action-icon offer">✦</span><span><b>Offer</b><small>Promote a special deal</small></span></a><a href="/partners-dashboard/#composer"><span class="compose-action-icon update">▤</span><span><b>Business update</b><small>Share company news</small></span></a></div><div class="composer-foot"><span>Posting is available to PhoneYa2 partners.</span><a href="/partners/">Become a partner →</a></div></section>
 <div class="feed-head"><h2>Community feed</h2><span id="feed-count">Latest business posts</span></div><div id="feed" class="loading">Loading posts from PhoneYa2 businesses…</div></section>
 <aside class="right"><section class="card"><h3>Explore PhoneYa2</h3><div class="discover"><div class="avatar">🛍</div><div><b>Shop accessories</b><small>Discover products for everyday use</small></div></div><div class="discover"><div class="avatar">✍</div><div><b>PhoneYa2 Blog</b><small>Buying guides, tech tips and stories</small></div></div><div class="discover"><div class="avatar">🏪</div><div><b>Business directory</b><small>Meet businesses in the network</small></div></div></section><section class="blog-feature"><div class="eyebrow">FROM THE EDITORS</div><h3>Ideas that keep Zambia connected.</h3><p>Explore PhoneYa2 articles, practical buying guides, product discoveries and business stories.</p><a href="/blog.html">Explore the PhoneYa2 Blog ↗</a></section><section class="card"><h3>Grow your business here</h3><p style="font-size:12px;color:#718096;line-height:1.6">Create a business profile, publish updates and connect with people discovering businesses on PhoneYa2.</p><a class="join" style="display:inline-block;padding:10px 12px;border-radius:8px;color:white;font-size:11px;font-weight:850" href="/partners/">Become a partner ↗</a></section></aside>
 </main>
