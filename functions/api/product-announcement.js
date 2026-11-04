@@ -17,7 +17,7 @@ async function send(env,j,s){
 }
 export async function onRequest({request,env}){
  if(request.method!=="POST")return json({error:"Method not allowed."},405);
- const expected=String(env.PRODUCT_ANNOUNCEMENT_SECRET||""),auth=(request.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
+ const expected=String(env.PHONEYA2_PRODUCT_ANNOUNCEMENT_SECRET||env.PRODUCT_ANNOUNCEMENT_SECRET||""),auth=(request.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
  if(!eq(auth,expected))return json({error:"Unauthorized."},401);
  if(!env.DB)return json({error:"Cloudflare D1 database is not configured."},503);
  try{
