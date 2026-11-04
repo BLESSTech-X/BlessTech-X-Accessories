@@ -358,7 +358,7 @@ body[data-cc-theme="dark"]{background:#0a1020;color:#edf2fb}#dashboard[data-cc-t
 'use strict';
 const $=id=>document.getElementById(id);
 const ADMIN_EMAIL='singbless89@gmail.com';
-let client=null,session=null,orders=[],products=[],ga4Summary=null,ga4ReportData=null,notificationRows=[],notificationFilter='all',notificationUnread=0,notificationCounts={};
+let client=null,session=null,orders=[],products=[],ga4Summary=null,ga4ReportData=null,notificationRows=[],notificationFilter='all',notificationUnread=0,notificationCounts={},lastInventoryCheck=0;
 const statusNames=['pending','confirmed','processing','shipped','delivered','cancelled'];
 const money=n=>'ZMW '+Number(n||0).toLocaleString('en-ZM',{minimumFractionDigits:2,maximumFractionDigits:2});
 function message(target,text,type){const el=$(target);el.textContent=text||'';el.className=text?'message '+(type||''):'';}
@@ -478,7 +478,7 @@ async function loadInventory(){
  const host=$('inventory-grid');host.replaceChildren();try{
   const indexRes=await fetch('/content/products/index.json',{cache:'no-store'});if(!indexRes.ok)throw new Error('Catalogue index unavailable');const slugs=await indexRes.json();if(!Array.isArray(slugs))throw new Error('Catalogue index format is not recognised');
   const records=[];for(let i=0;i<slugs.length;i+=8){const batch=slugs.slice(i,i+8);const found=await Promise.all(batch.map(async slug=>{try{const res=await fetch('/content/products/'+encodeURIComponent(slug)+'.md',{cache:'no-store'});if(!res.ok)return null;const text=await res.text(),front=text.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);if(!front)return null;const getValue=key=>{const line=front[1].split(/\r?\n/).find(x=>x.startsWith(key+':'));return line?line.slice(key.length+1).trim().replace(/^["']|["']$/g,''):'';};const stock=Number(getValue('stock')),price=Number(getValue('price'));return {slug,title:getValue('title')||slug,stock:Number.isFinite(stock)?Math.max(0,stock):null,price:Number.isFinite(price)?Math.max(0,price):null};}catch{return null;}}));records.push(...found.filter(Boolean));}
-  products=records;renderGrowthPulse();renderExecutiveDashboard();$('stat-products').textContent=slugs.length.toLocaleString();$('products-sub').textContent=records.length+' product files readable';
+  products=records;lastInventoryCheck=Date.now();try{await api('/api/admin-notifications',{method:'POST',body:JSON.stringify({action:'stock_snapshot',products:records.filter(p=>p.stock!==null).map(p=>({slug:p.slug,title:p.title,stock:p.stock}))})});await loadAdminNotifications();}catch(error){console.warn('Stock notification snapshot unavailable:',error.message);}renderGrowthPulse();renderExecutiveDashboard();$('stat-products').textContent=slugs.length.toLocaleString();$('products-sub').textContent=records.length+' product files readable';
   const known=records.filter(p=>p.stock!==null),low=known.filter(p=>p.stock<=3),out=known.filter(p=>p.stock===0),units=known.reduce((s,p)=>s+p.stock,0),retail=known.reduce((s,p)=>s+p.stock*(p.price||0),0);
   $('stat-low-stock').textContent=low.length.toLocaleString();$('stock-sub').textContent=out.length+' out of stock · '+known.length+' stock values found';
   const lowPositive=known.filter(p=>p.stock>0&&p.stock<=3),healthy=known.filter(p=>p.stock>3),stockCoverage=records.length?Math.round(known.length/records.length*100):0;
@@ -895,7 +895,7 @@ function setupResourceFinder(){
 }
 function openWorkspaceModal(title,url){const modal=$('workspace-modal'),frame=$('workspace-modal-frame');$('workspace-modal-title').textContent=title;$('workspace-modal-subtitle').textContent='Loaded inside the PhoneYa2 Command Centre';$('workspace-modal-newtab').href=url;frame.src=url;modal.classList.add('open');document.body.style.overflow='hidden';$('workspace-modal-close').focus();}
 function closeWorkspaceModal(){const modal=$('workspace-modal');modal.classList.remove('open');$('workspace-modal-frame').src='about:blank';document.body.style.overflow='';}
-function startQuietRefresh(){if(silentRefreshTimer)clearInterval(silentRefreshTimer);silentRefreshTimer=setInterval(()=>{if(session&&!document.hidden)refreshData({silent:true});},60000);}
+function startQuietRefresh(){if(silentRefreshTimer)clearInterval(silentRefreshTimer);silentRefreshTimer=setInterval(()=>{if(session&&!document.hidden){refreshData({silent:true});if(Date.now()-lastInventoryCheck>300000)loadInventory();}},60000);}
 
 function activateWorkspaceTab(id,scroll){
  document.querySelectorAll('#workspace-nav [role="tab"]').forEach(b=>{const active=b.id==='tab-'+id;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
