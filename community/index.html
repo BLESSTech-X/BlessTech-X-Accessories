@@ -40,20 +40,24 @@
 /* Real PhoneYa2 logo and restored mobile bottom navigation */
 .brand-mark{padding:0!important;background:#fff!important;overflow:hidden;border:1px solid #e7edf4;box-shadow:0 3px 10px #102b4e12!important}
 .brand-mark img{display:block;width:100%;height:100%;object-fit:contain;border-radius:inherit}
-.community-bottom-nav{display:none}
+.community-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;align-items:center;justify-content:center;gap:clamp(12px,4vw,58px);min-height:66px;padding:7px 16px;background:#fff;border-top:1px solid #e3e9f0;box-shadow:0 -5px 20px #102b4e0c}
+.community-bottom-nav a{min-width:92px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;padding:10px 15px;border-radius:10px;color:#68798c;font-size:12px}
+.community-bottom-nav a span{font-size:19px;line-height:1.1}
+.community-bottom-nav a b{font-size:11px;font-weight:850}
+.community-bottom-nav a.active{color:#1877f2;background:#edf4ff}
+.page-grid{margin-bottom:92px}
 @media(max-width:700px){
-  .community-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;grid-template-columns:repeat(4,1fr);height:calc(62px + env(safe-area-inset-bottom));padding:5px 8px env(safe-area-inset-bottom);background:#fff;border-top:1px solid #e3e9f0;box-shadow:0 -5px 20px #102b4e0c}
-  .community-bottom-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#68798c;font-size:10px;border-radius:9px}
-  .community-bottom-nav a span{font-size:20px;line-height:1.1}
-  .community-bottom-nav a b{font-size:10px;font-weight:800}
-  .community-bottom-nav a.active{color:#1877f2;background:#edf4ff}
+  .community-bottom-nav{justify-content:space-around;gap:0;min-height:calc(62px + env(safe-area-inset-bottom));padding:5px 8px env(safe-area-inset-bottom)}
+  .community-bottom-nav a{min-width:0;flex:1;flex-direction:column;gap:2px;padding:7px 2px}
+  .community-bottom-nav a span{font-size:20px}
+  .community-bottom-nav a b{font-size:10px}
   .page-grid{margin-bottom:calc(82px + env(safe-area-inset-bottom))}
 }
 </style>
 </head>
 <body>
 <header class="topbar"><div class="top-inner">
-  <a class="brand-area" href="/" aria-label="PhoneYa2 home"><span class="brand-mark"><img src="https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg" alt="PhoneYa2 logo" onerror="this.onerror=null;this.src='/icon-512x512.jpg';this.onerror=()=>{this.src='/icon-512x512.png'}"></span><span class="brand-wordmark"><strong>Phone<span>Ya2</span></strong><small>SMART CHOICES. BETTER CONNECTED.</small></span></a>
+  <a class="brand-area" href="/" aria-label="PhoneYa2 home"><span class="brand-mark"><img src="/icon-512x512.jpg" alt="PhoneYa2 logo" onerror="this.onerror=null;this.src='/icon-512x512.png'"></span><span class="brand-wordmark"><strong>Phone<span>Ya2</span></strong><small>SMART CHOICES. BETTER CONNECTED.</small></span></a>
   <div class="community-menu-wrap"><button class="community-menu-button" id="community-menu-toggle" type="button" aria-expanded="false" aria-controls="community-menu"><span>Menu</span><span class="community-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
     <nav class="community-menu" id="community-menu" aria-label="PhoneYa2 navigation" hidden><a href="/">Home</a><a href="/shop.html">Shop</a><a href="/community/" aria-current="page">Community</a><a href="/blog.html">Blog</a><a href="/partners/">Become a Partner</a><a href="/partners-dashboard/">Partner Studio</a></nav>
   </div>
