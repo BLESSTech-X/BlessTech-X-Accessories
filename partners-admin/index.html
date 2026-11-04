@@ -109,4 +109,21 @@ if(localStorage.getItem('py2-admin-theme')==='dark')document.body.classList.add(
 $('login-form').onsubmit=async e=>{e.preventDefault();const b=$('login-btn'),er=$('login-error');er.classList.add('hidden');b.disabled=true;b.textContent='Signing in…';try{const d=await api('/api/auth',{method:'POST',body:JSON.stringify({email:$('admin-email').value,password:$('admin-password').value})});$('login').classList.add('hidden');$('app').classList.remove('hidden');$('admin-user').textContent=d.email;await load()}catch(x){er.textContent=x.message;er.classList.remove('hidden')}finally{b.disabled=false;b.textContent='Sign in securely →'}};
 $('logout').onclick=async()=>{await api('/api/auth',{method:'POST',body:JSON.stringify({action:'logout'})}).catch(()=>{});location.reload()};$('account-menu-toggle').onclick=e=>{e.stopPropagation();$('account-menu').classList.toggle('open')};document.addEventListener('click',e=>{if(!e.target.closest('.top-menu-wrap'))$('account-menu').classList.remove('open')});$('login-menu-toggle').onclick=()=> $('login-menu').classList.toggle('open');document.addEventListener('click',e=>{if(!e.target.closest('.auth-menu-wrap'))$('login-menu').classList.remove('open')});check();
 })();
-</script></body></html>
+</script><style>
+body.py2-partner-embedded .hero{display:none!important}
+body.py2-partner-embedded #app{padding-top:12px}
+body.py2-partner-embedded .top{position:relative;top:auto}
+body.py2-partner-embedded .view{scroll-margin-top:80px}
+body.py2-partner-embedded .floating-tools{display:none}
+</style>
+<script>
+(()=>{if(new URLSearchParams(location.search).get('embed')!=='command-centre')return;
+document.body.classList.add('py2-partner-embedded');
+const send=()=>{const h=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);try{parent.postMessage({type:'py2-partner-admin-height',height:h},location.origin)}catch(_){}};
+if('ResizeObserver'in window)new ResizeObserver(send).observe(document.body);
+window.addEventListener('load',send);window.addEventListener('resize',send);
+new MutationObserver(send).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+setInterval(send,1500);send();
+})();
+</script>
+</body></html>
