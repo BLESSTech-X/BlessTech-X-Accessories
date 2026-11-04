@@ -432,26 +432,39 @@ document.querySelectorAll(".item-action--enquire").forEach(link => {
 document.getElementById("partner-enquiry").addEventListener("submit", async function(event) {
   event.preventDefault();
   const form = event.currentTarget;
-  const button = form.querySelector("button");
+  const button = form.querySelector('button[type="submit"]') || form.querySelector("button");
   const output = document.getElementById("enquiry-result");
+  const setResult = (message, success) => {
+    output.textContent = message;
+    output.dataset.state = success ? "success" : "error";
+    output.setAttribute("role", success ? "status" : "alert");
+    output.setAttribute("aria-live", "polite");
+  };
   button.disabled = true;
-  output.textContent = "Sending…";
+  button.dataset.originalLabel = button.dataset.originalLabel || button.textContent;
+  button.textContent = "Sending…";
+  setResult("Sending your enquiry securely…", true);
   try {
     const body = Object.fromEntries(new FormData(form).entries());
     body.slug = ${JSON.stringify(data.slug || "")};
     const response = await fetch("/api/partner-enquiry", {
       method: "POST",
       headers: { "content-type": "application/json", "accept": "application/json" },
+      cache: "no-store",
       body: JSON.stringify(body)
     });
-    const result = await response.json();
-    if (!response.ok || !result.ok) throw new Error(result.error || "Could not send enquiry.");
+    const raw = await response.text();
+    let result;
+    try { result = JSON.parse(raw); }
+    catch { throw new Error("PhoneYa2 could not confirm delivery. Please try again or contact the business directly."); }
+    if (!response.ok || !result.ok) throw new Error(result.error || "Your enquiry was not sent. Please try again.");
     form.reset();
-    output.textContent = "Thank you. Your enquiry has been sent.";
+    setResult("✓ Sent successfully. Your enquiry has been saved and delivered to this business's Partner Studio inbox.", true);
   } catch (error) {
-    output.textContent = error.message;
+    setResult("✕ Not sent. " + (error.message || "Please try again."), false);
   } finally {
     button.disabled = false;
+    button.textContent = button.dataset.originalLabel || "Send enquiry →";
   }
 });
 </script>
