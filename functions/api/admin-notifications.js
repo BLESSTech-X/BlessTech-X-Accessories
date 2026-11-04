@@ -21,9 +21,8 @@ async function syncPublishedContent(request,env){
    {type:"blog",items:Array.isArray(blogPosts)?blogPosts.map(post=>({slug:String(post.slug||""),title:String(post.title||post.slug||"Blog post"),category:"blog",event:"blog_published",destination:"/admin/#/collections/blog_posts",label:"New blog post published",message:"A new PhoneYa2 blog post, "+String(post.title||post.slug||"Blog post")+", is now published."})).filter(post=>post.slug):[]}
   ];
   for(const source of sources){
-   if(!source.items.length)continue;
-   const baseline=await env.DB.prepare("SELECT COUNT(*) AS total FROM admin_content_snapshots WHERE source_type=?").bind(source.type).first();
-   const isBaseline=Number(baseline?.total||0)===0;
+   const baseline=await env.DB.prepare("SELECT content_slug FROM admin_content_snapshots WHERE source_type=? AND content_slug='__baseline__'").bind(source.type).first();
+   const isBaseline=!baseline;
    const statements=[];
    for(const item of source.items){
     const existing=await env.DB.prepare("SELECT content_slug FROM admin_content_snapshots WHERE source_type=? AND content_slug=?").bind(source.type,item.slug).first();
@@ -32,6 +31,7 @@ async function syncPublishedContent(request,env){
     }
     if(!existing)statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_content_snapshots(source_type,content_slug,content_title) VALUES(?,?,?)").bind(source.type,item.slug,item.title));
    }
+   if(isBaseline)statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_content_snapshots(source_type,content_slug,content_title) VALUES(?,'__baseline__','Initial content baseline')").bind(source.type));
    if(statements.length)await env.DB.batch(statements);
   }
  }catch(error){console.warn("Published content notification sync skipped:",String(error).slice(0,220));}
