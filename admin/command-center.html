@@ -180,7 +180,7 @@
 #cc-system-overview .cc-overview-metrics>.stat:nth-child(1){border-top:3px solid #3478f6}#cc-system-overview .cc-overview-metrics>.stat:nth-child(2){border-top:3px solid #8267e8}#cc-system-overview .cc-overview-metrics>.stat:nth-child(3){border-top:3px solid #13a89e}#cc-system-overview .cc-overview-metrics>.stat:nth-child(4){border-top:3px solid #ff6500}
 #cc-system-overview .cc-overview-grid>.ga4-chart-card{position:relative;overflow:hidden}#cc-system-overview .cc-overview-grid>.ga4-chart-card:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#3478f6,#8267e8,#13a89e,#ff8a35)}
 @keyframes ccRise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
-#dashboard[data-cc-theme="dark"]{--ink:#edf2fb;--muted:#a5b0c4;--line:#303b52;--bg:#0a1020;color:var(--ink)}
+body[data-cc-theme="dark"]{background:#0a1020;color:#edf2fb}#dashboard[data-cc-theme="dark"]{--ink:#edf2fb;--muted:#a5b0c4;--line:#303b52;--bg:#0a1020;color:var(--ink)}#dashboard[data-cc-theme="dark"] .intro h1{color:#f3f6fc}#dashboard[data-cc-theme="dark"] .intro p{color:#a8b5ca}
 #dashboard[data-cc-theme="dark"] .workspace-nav{background:rgba(15,23,42,.95);border-color:#2a3650;box-shadow:0 10px 26px #0006}
 #dashboard[data-cc-theme="dark"] .workspace-tab{color:#b8c4d8}#dashboard[data-cc-theme="dark"] .workspace-tab:hover{background:#202c43}
 #dashboard[data-cc-theme="dark"] .workspace-tab[aria-selected="true"]{background:linear-gradient(120deg,#ff6500,#e84e18);border-color:#ff7837;color:#fff}
@@ -943,12 +943,12 @@ renderSystemOverview();
 
 $('full-voice-briefing').addEventListener('click',()=>speakFullBriefing());$('stop-voice-briefing').addEventListener('click',()=>stopVoiceBriefing());$('refresh').addEventListener('click',refreshData);
 const dashboard=$('dashboard');
-const applyTheme=mode=>{dashboard.dataset.ccTheme=mode;localStorage.setItem('phoneya2_cc_theme',mode);const b=$('cc-float-theme');if(b){b.setAttribute('aria-label',mode==='dark'?'Switch to light mode':'Switch to dark mode');b.title=mode==='dark'?'Switch to light appearance':'Switch to dark appearance';b.querySelector('.cc-float-icon').textContent=mode==='dark'?'☀':'◐';b.querySelector('.cc-float-label').textContent=mode==='dark'?'Light':'Dark';}};
+const applyTheme=mode=>{dashboard.dataset.ccTheme=mode;document.body.dataset.ccTheme=mode;localStorage.setItem('phoneya2_cc_theme',mode);const b=$('cc-float-theme');if(b){b.setAttribute('aria-label',mode==='dark'?'Switch to light mode':'Switch to dark mode');b.title=mode==='dark'?'Switch to light appearance':'Switch to dark appearance';b.querySelector('.cc-float-icon').textContent=mode==='dark'?'☀':'◐';b.querySelector('.cc-float-label').textContent=mode==='dark'?'Light':'Dark';}};
 applyTheme(localStorage.getItem('phoneya2_cc_theme')||'light');
 $('cc-float-theme').addEventListener('click',()=>applyTheme(dashboard.dataset.ccTheme==='dark'?'light':'dark'));
 const focusButton=$('cc-float-focus');
 focusButton.addEventListener('click',()=>{const active=dashboard.classList.toggle('cc-focus-mode');focusButton.setAttribute('aria-pressed',String(active));focusButton.setAttribute('aria-label',active?'Turn focus mode off':'Turn focus mode on');focusButton.querySelector('.cc-float-label').textContent=active?'Exit':'Focus';});
-const voiceButton=$('cc-float-voice');
+const voiceButton=$('cc-float-voice');voiceButton.setAttribute('aria-pressed',String(voiceBriefingEnabled));
 voiceButton.addEventListener('click',()=>{const next=!voiceBriefingEnabled;setVoiceBriefing(next);voiceButton.setAttribute('aria-pressed',String(next));});
 $('cc-float-read').addEventListener('click',()=>speakShortBriefing());
 $('cc-float-refresh').addEventListener('click',()=>{const b=$('cc-float-refresh');b.classList.add('is-spinning');Promise.resolve(refreshData()).finally(()=>setTimeout(()=>b.classList.remove('is-spinning'),750));});
