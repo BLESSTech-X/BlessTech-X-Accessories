@@ -4,9 +4,14 @@ function json(data,status=200){return new Response(JSON.stringify(data),{status,
 function html(body,status=200){return new Response("<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>PhoneYa2 Email Preferences</title><body style='font:16px/1.6 system-ui;background:#f4f6fa;color:#151827;padding:24px'><main style='max-width:560px;margin:8vh auto;background:white;padding:28px;border-radius:16px'><h1>PhoneYa2 Accessories</h1>"+body+"<p><a href='"+SITE+"' style='color:#d95700'>Return to PhoneYa2</a></p></main></body></html>",{status,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store"}});}
 function escape(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 async function log(env,email,subject,status,error="",messageId=""){
- try{await env.DB.prepare("INSERT INTO email_activity(id,event_type,source,trigger_source,recipient_email,subject,status,provider,provider_message_id,error_message,sent_at,metadata_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)")
- .bind(crypto.randomUUID(),"subscription_confirmation","automatic","newsletter_signup",email,subject,status,"brevo",messageId,String(error||"").slice(0,1000),status==="sent"?new Date().toISOString():null,"{}").run();}
- catch(e){console.error("D1 subscription email log failed:",String(e).slice(0,180));}
+ try{
+  const activityId=crypto.randomUUID();
+  await env.DB.prepare("INSERT INTO email_activity(id,event_type,source,trigger_source,recipient_email,subject,status,provider,provider_message_id,error_message,sent_at,metadata_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)")
+   .bind(activityId,"subscription_confirmation","automatic","newsletter_signup",email,subject,status,"brevo",messageId,String(error||"").slice(0,1000),status==="sent"?new Date().toISOString():null,"{}").run();
+  if(status==="failed"){
+   try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"email-failure:"+activityId,"communications","email_failed","Newsletter confirmation email failed",String(error||"The subscription confirmation email could not be delivered.").slice(0,300),"high","/admin/communications.html",activityId,subject).run();}catch(notificationError){console.error("Newsletter email notification failed:",String(notificationError).slice(0,180));}
+  }
+ }catch(e){console.error("D1 subscription email log failed:",String(e).slice(0,180));}
 }
 async function sendConfirmation(env,email,name,token){
  if(!env.BREVO_API_KEY||!env.BREVO_FROM_EMAIL)return{ok:false,error:"Brevo email service is not configured."};
