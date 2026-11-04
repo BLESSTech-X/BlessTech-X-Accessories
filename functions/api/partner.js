@@ -1,5 +1,5 @@
 const HEADERS = { "content-type":"application/json; charset=utf-8", "cache-control":"no-store" };
-const COOKIE = "py2_partner_session";
+const COOKIE = "__Host-py2_partner";
 const SESSION_DAYS = 30;
 const PBKDF2_ITERATIONS = 100000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -7,7 +7,7 @@ function json(data,status=200,extra={}){return new Response(JSON.stringify(data)
 function fail(message,status=400){return json({ok:false,error:message},status);}
 function b64url(bytes){let s="";for(const b of bytes)s+=String.fromCharCode(b);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function unb64url(s){const v=String(s||"").replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(v+"=".repeat((4-v.length%4)%4)),c=>c.charCodeAt(0));}
-function cookieValue(request){for(const p of (request.headers.get("cookie")||"").split(";")){const x=p.trim();if(x.startsWith(COOKIE+"="))return x.slice(COOKIE.length+1);}return "";}
+function cookieValue(request){const jar=(request.headers.get("cookie")||"").split(";").map(x=>x.trim());for(const name of [COOKIE,"py2_partner_session"]){const item=jar.find(x=>x.startsWith(name+"="));if(item)return item.slice(name.length+1);}return "";}
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return request.method==="GET"||request.headers.get("sec-fetch-site")==="same-origin";try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
 async function digest(value){return new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value)));}
 async function passwordHash(password,salt){if(!crypto?.subtle)throw new Error("Web Crypto is unavailable in this Worker runtime.");const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveBits"]);const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new Uint8Array(salt),iterations:PBKDF2_ITERATIONS,hash:"SHA-256"},key,256);return b64url(new Uint8Array(bits));}
