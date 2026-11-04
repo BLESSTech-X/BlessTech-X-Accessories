@@ -28,7 +28,9 @@ export async function onRequest({request,env}){
    const row=await env.DB.prepare("SELECT id,status FROM customer_subscribers WHERE confirmation_token=? LIMIT 1").bind(token).first();
    if(!row)return html("<h2>Link not found</h2><p>This link may have expired or already been used. If you are already subscribed, no action is needed.</p>",404);
    if(row.status==="unsubscribed")return html("<h2>Subscription is inactive</h2><p>You previously unsubscribed. Please use the newsletter page to opt in again.</p>");
-   await env.DB.prepare("UPDATE customer_subscribers SET status='subscribed',consented_at=?,updated_at=? WHERE id=?").bind(new Date().toISOString(),new Date().toISOString(),row.id).run();
+   const confirmedAt=new Date().toISOString();
+   await env.DB.prepare("UPDATE customer_subscribers SET status='subscribed',consented_at=?,updated_at=? WHERE id=?").bind(confirmedAt,confirmedAt,row.id).run();
+   try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"newsletter-confirmed:"+row.id,"newsletter","subscriber_confirmed","Newsletter subscriber confirmed","A new contact has confirmed their PhoneYa2 email subscription.","normal","/admin/campaigns.html",row.id,"Confirmed subscriber").run();}catch(e){console.error("Newsletter confirmation notification failed:",String(e).slice(0,180));}
    return html("<h2>You're subscribed!</h2><p>Your email address is confirmed. You'll receive PhoneYa2 updates and product news. You can unsubscribe at any time using the link in our emails.</p>");
   }
   if(request.method==="GET"&&action==="unsubscribe"){
@@ -56,6 +58,7 @@ export async function onRequest({request,env}){
   const id=existing?.id||crypto.randomUUID(),token=crypto.randomUUID(),now=new Date().toISOString();
   await env.DB.prepare("INSERT INTO customer_subscribers(id,email,full_name,status,consent_source,preferences_json,confirmation_token,confirmation_sent_at,created_at,updated_at) VALUES(?,?,?,'pending',?,'{\"new_arrivals\":true,\"offers\":true,\"tips\":true}',?,?,?,?) ON CONFLICT(email) DO UPDATE SET full_name=excluded.full_name,status='pending',consent_source=excluded.consent_source,confirmation_token=excluded.confirmation_token,confirmation_sent_at=excluded.confirmation_sent_at,unsubscribed_at=NULL,updated_at=excluded.updated_at")
    .bind(id,email,name,source,token,now,now,now).run();
+  try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"newsletter-signup:"+id+":"+now,"newsletter","subscriber_signup","New newsletter signup",name?name+" ("+email+") has signed up. Confirmation is still pending.":email+" has signed up. Confirmation is still pending.","normal","/admin/campaigns.html",id,email).run();}catch(e){console.error("Newsletter signup notification failed:",String(e).slice(0,180));}
   await sendNewsletterOwnerAlert(email,name,source,"pending confirmation");
   const result=await sendConfirmation(env,email,name,token);await log(env,email,"Confirm your PhoneYa2 email updates",result.ok?"sent":"failed",result.error||"",result.id||"");
   if(!result.ok)return json({success:true,message:"Your details were saved, but the confirmation email could not be sent. Please try again later."},202);
