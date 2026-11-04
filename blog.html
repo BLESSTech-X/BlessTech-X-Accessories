@@ -25,7 +25,14 @@
 <link rel="stylesheet" href="/phoneya2-conversion-design.css?v=20261021-vivid-blog-brand2">
   <link rel="stylesheet" href="/phoneya2-performance.css?v=20261030-white-canvas1">
   <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-image-polish2">
-</head><body class="py2-blog-page py2-blog-redesigned">
+<style>
+.py2-bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:9999;width:min(560px,calc(100vw - 28px));display:flex;gap:5px;padding:7px;background:#fff;border:1px solid #dce4ed;border-radius:16px;box-shadow:0 10px 34px rgba(16,43,78,.2)}
+.py2-bottom-nav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px 4px;border-radius:11px;color:#52647b;font-size:10px;font-weight:850;text-decoration:none}
+.py2-bottom-nav a span{font-size:18px;line-height:1}.py2-bottom-nav a b{font-size:10px}
+.py2-bottom-nav a.active,.py2-bottom-nav a:hover{background:#fff0e8;color:#cf4c13}
+body{padding-bottom:90px}
+@media(max-width:680px){.py2-bottom-nav{left:8px;right:8px;transform:none;width:auto;bottom:8px;padding:5px;gap:3px}.py2-bottom-nav a{padding:7px 3px}}
+</style></head><body class="py2-blog-page py2-blog-redesigned">
 
 
 <div class="top-header">
@@ -105,4 +112,11 @@
   <script src="/phoneya2-performance.js?v=20261021-scroll-boost1" defer></script>
 <script src="/navigation-boost.js?v=20261026-instant-nav1" defer></script>
   <script src="/seasonal-experience.js?v=20261030-per-season-images1" defer></script>
+
+<nav class="py2-bottom-nav" aria-label="Quick navigation">
+<a href="/" ><span>⌂</span><b>Home</b></a>
+<a href="/shop.html"><span>🛍️</span><b>Shop</b></a>
+<a href="/community/"><span>🌐</span><b>Community</b></a>
+<a href="/blog.html" class="active"><span>📰</span><b>Blog</b></a>
+</nav>
 </body></html>
