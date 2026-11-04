@@ -446,6 +446,11 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
   setResult("Sending your enquiry securely…", true);
   try {
     const body = Object.fromEntries(new FormData(form).entries());
+    if (!String(body.phone || "").trim() && !String(body.email || "").trim()) {
+      setResult("Please enter either a phone number or an email address so the business can contact you.", false);
+      form.querySelector('input[name="phone"]').focus();
+      return;
+    }
     body.slug = ${JSON.stringify(data.slug || "")};
     const response = await fetch("/api/partner-enquiry", {
       method: "POST",
