@@ -65,7 +65,7 @@ export async function onRequest({request,env}){
    let recipients=[];
    if(campaign.audience==="partners"){
     const rows=await env.DB.prepare("SELECT id AS advertiser_id,email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'') ORDER BY created_at ASC LIMIT 1000").all();
-    recipients=(rows.results||[]).map(p=>({email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email||p.phone);
+    recipients=(rows.results||[]).map(p=>({advertiser_id:p.advertiser_id,email:String(p.email||"").trim().toLowerCase(),full_name:p.full_name||p.business_name||"Partner",phone:p.phone||""})).filter(p=>p.email||p.phone);
    }else{
     const rows=await env.DB.prepare("SELECT email,full_name,confirmation_token FROM customer_subscribers WHERE status='subscribed' ORDER BY created_at ASC LIMIT 1000").all();
     recipients=(rows.results||[]).map(s=>({...s,email:String(s.email||"").trim().toLowerCase()}));
