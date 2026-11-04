@@ -362,6 +362,32 @@ body.dark #app #package-banner .package-price{
 body:not(.dark) #app #package-banner button{
   background:#ff641f!important;color:#ffffff!important;border:1px solid rgba(255,255,255,.18)!important;
 }
+
+/* Partner Studio: keep the full labelled section navigation in the header */
+#header-nav,.partner-top #header-nav,.partner-top .header-nav{
+ display:flex!important;visibility:visible!important;opacity:1!important;
+ order:3!important;flex:1 0 100%!important;align-items:center!important;
+ gap:6px!important;overflow-x:auto!important;overflow-y:hidden!important;
+ padding:7px 0 5px!important;border-top:1px solid var(--l,#dce3ec)!important;
+}
+#header-nav .nav,#header-nav .nav em{
+ display:inline-flex!important;visibility:visible!important;opacity:1!important;
+}
+#header-nav .nav{
+ flex:0 0 auto!important;align-items:center!important;justify-content:center!important;
+ gap:7px!important;width:auto!important;min-width:max-content!important;
+ padding:9px 12px!important;border-radius:9px!important;white-space:nowrap!important;
+ font-size:12px!important;font-weight:850!important;line-height:1.2!important;
+}
+#header-nav .nav span{display:inline-block!important;font-size:15px!important;line-height:1!important}
+#header-nav .nav em{font-style:normal!important;font-size:12px!important}
+#header-nav .nav.active{background:#fff0e8!important;color:#c7470d!important}
+@media(max-width:760px){
+ .partner-top{height:auto!important;min-height:0!important;flex-wrap:wrap!important}
+ #header-nav{width:100%!important;max-width:100%!important}
+ #header-nav .nav{padding:8px 10px!important;font-size:11px!important}
+ #header-nav .nav em{font-size:11px!important}
+}
 </style></head><body>
 <div id="signin" class="auth"><header class="auth-head"><a class="brand" href="/" style="color:white">PhoneYa<span>2</span></a><div class="auth-menu-wrap"><button class="btn secondary small" id="signin-menu-toggle">☰ Menu</button><div class="auth-menu" id="signin-menu"><a href="/community/">PhoneYa2 Community ↗</a><a href="/blog.html">PhoneYa2 Blog ↗</a><a href="/">PhoneYa2 home ↗</a><a href="/partners/">Register as a partner ↗</a><a href="/partners-admin/">Partner network admin ↗</a></div></div></header><section class="authhero"><div><div class="eyebrow" style="margin-top:76px;color:#ffb185">PHONEYA2 PARTNER NETWORK</div><h1>Everything your business needs to grow.</h1><p>Manage your storefront, catalogue, updates, promotions and customer enquiries from one clear workspace.</p></div></section><section class="authpanel"><div class="authcard"><div class="brand">PhoneYa<span>2</span></div><div class="eyebrow" style="margin-top:28px">WELCOME BACK</div><h2>Sign in to Partner Studio</h2><p class="muted">Use your partner account email and password.</p><div id="auth-error" class="alert hidden"></div><form id="login-form"><div class="field"><label>Email address</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="login-btn" class="btn block">Sign in securely →</button></form><p class="muted" style="font-size:12px;text-align:center;margin-top:18px">New partner? <a href="/partners/index.html" style="color:#e85b20;font-weight:900">Create an account</a></p></div></section></div>
 <div id="app" class="hidden"><div id="workspace-load-error" class="alert hidden" role="status" style="margin:12px auto;max-width:900px"><button class="btn small" type="button" onclick="location.reload()">Retry</button></div><header class="top partner-top"><div class="brand">PhoneYa<span>2</span> <small style="font:700 10px 'DM Sans';color:#7b8a9c">PARTNER STUDIO</small></div><nav id="header-nav" class="header-nav" aria-label="Partner workspace navigation"></nav><div class="right"><span id="account-email" class="email muted"></span><div class="top-menu-wrap"><button type="button" id="account-menu-toggle" class="btn secondary small top-menu-toggle" aria-label="Account menu">☰</button><div class="top-menu" id="account-menu"><a href="/" target="_blank">PhoneYa2 home ↗</a><a href="/partners/">Partner support ↗</a><button type="button" id="logout" class="danger">Sign out ↗</button></div></div></div></header>
