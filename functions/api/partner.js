@@ -13,7 +13,7 @@ async function digest(value){return new Uint8Array(await crypto.subtle.digest("S
 async function passwordHash(password,salt){if(!crypto?.subtle)throw new Error("Web Crypto is unavailable in this Worker runtime.");const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveBits"]);const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new Uint8Array(salt),iterations:PBKDF2_ITERATIONS,hash:"SHA-256"},key,256);return b64url(new Uint8Array(bits));}
 async function newPasswordRecord(password){const salt=crypto.getRandomValues(new Uint8Array(16));const hash=await passwordHash(password,salt);if(!hash||hash.length!==43)throw new Error("Password derivation returned an invalid hash.");return {salt:b64url(salt),hash};}
 async function verifyPassword(password,salt,expected){try{const actual=await passwordHash(password,unb64url(salt));const a=unb64url(actual),b=unb64url(expected);if(a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a[i]^b[i];return diff===0;}catch{return false;}}
-async function rateLimit(request,env){const ip=request.headers.get("cf-connecting-ip")||"unknown";const hash=b64url(await digest(ip));const now=Math.floor(Date.now()/1000);await env.DB.prepare("DELETE FROM partner_auth_attempts WHERE attempted_at < ?").bind(now-3600).run();const row=await env.DB.prepare("SELECT COUNT(*) AS n FROM partner_auth_attempts WHERE ip_hash=? AND attempted_at>?").bind(hash,now-900).first();if(Number(row?.n||0)>=12)return false;await env.DB.prepare("INSERT INTO partner_auth_attempts(ip_hash,attempted_at) VALUES(?,?)").bind(hash,now).run();return true;}
+async function rateLimit(request,env,scope="login"){const ip=request.headers.get("cf-connecting-ip")||"unknown";const hash=b64url(await digest(scope+":"+ip));const now=Math.floor(Date.now()/1000);await env.DB.prepare("DELETE FROM partner_auth_attempts WHERE attempted_at < ?").bind(now-3600).run();const row=await env.DB.prepare("SELECT COUNT(*) AS n FROM partner_auth_attempts WHERE ip_hash=? AND attempted_at>?").bind(hash,now-900).first();if(Number(row?.n||0)>=12)return false;await env.DB.prepare("INSERT INTO partner_auth_attempts(ip_hash,attempted_at) VALUES(?,?)").bind(hash,now).run();return true;}
 function slugify(value){return String(value||"business").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48)||"business";}
 async function uniqueSlug(db,name){const base=slugify(name);let slug=base;for(let i=0;i<8;i++){const row=await db.prepare("SELECT id FROM advertiser_profiles WHERE slug=? COLLATE NOCASE").bind(slug).first();if(!row)return slug;slug=base+"-"+crypto.randomUUID().slice(0,5).toLowerCase();}throw new Error("Could not create a unique business website address.");}
 function sessionCookies(token){const age=SESSION_DAYS*86400;return [COOKIE+"="+token+"; Path=/; Max-Age="+age+"; HttpOnly; Secure; SameSite=Lax","py2_partner_session="+token+"; Path=/; Max-Age="+age+"; HttpOnly; Secure; SameSite=Lax"];}
@@ -237,7 +237,7 @@ const present=new Set((tableRows.results||[]).map(row=>row.name));
 const missing=requiredTables.filter(name=>!present.has(name));
 if(missing.length)return fail("PhoneYa2 Partner Network setup is incomplete. Missing tables: "+missing.join(", ")+". Apply the existing migrations before retrying.",503);
 stage="signup rate limit";
-if(!await rateLimit(request,env))return fail("Too many attempts. Wait 15 minutes before trying again.",429);
+if(!await rateLimit(request,env,"signup"))return fail("Too many sign-up attempts. Wait 15 minutes before trying again.",429);
 stage="input validation";
 const email=cleanText(body.email,254).toLowerCase(),password=String(body.password||""),business=cleanText(body.business_name,100),owner=cleanText(body.owner_name,100),phone=cleanText(body.phone,40);
 const emailParts=email.split("@");if(emailParts.length!==2||!emailParts[0]||!emailParts[1]||!emailParts[1].includes(".")||emailParts[1].startsWith(".")||emailParts[1].endsWith("."))return fail("Enter a valid email address.");
@@ -269,12 +269,12 @@ return fail("Account creation failed during: "+stage+". The exact technical deta
 }
 }
 if(action==="login"){
-if(!await rateLimit(request,env))return fail("Too many attempts. Try again later.",429);
+if(!await rateLimit(request,env,"login"))return fail("Too many sign-in attempts. Please wait 15 minutes before trying again.",429);
 const email=cleanText(body.email,254).toLowerCase(),password=String(body.password||"");const account=await env.DB.prepare("SELECT * FROM advertiser_accounts WHERE email=? COLLATE NOCASE LIMIT 1").bind(email).first();
 let stored={};try{stored=JSON.parse(account?.password_hash||"{}");}catch{}
 const valid=!!account&&account.status==="active"&&stored.scheme==="pbkdf2-sha256"&&await verifyPassword(password,stored.salt,stored.hash);
 if(!valid)return fail("Email or password is incorrect.",401);
-const token=await createSession(env.DB,account.id);return json({ok:true,authenticated:true},200,{"set-cookie":sessionCookies(token)});
+const token=await createSession(env.DB,account.id);const ip=request.headers.get("cf-connecting-ip")||"unknown";const loginHash=b64url(await digest("login:"+ip));await env.DB.prepare("DELETE FROM partner_auth_attempts WHERE ip_hash=?").bind(loginHash).run();return json({ok:true,authenticated:true},200,{"set-cookie":sessionCookies(token)});
 }
 if(action==="logout"){const raw=cookieValue(request);if(raw){const hash=b64url(await digest(raw));await env.DB.prepare("UPDATE partner_sessions SET revoked_at=? WHERE token_hash=?").bind(new Date().toISOString(),hash).run();}return json({ok:true,authenticated:false},200,{"set-cookie":clearCookies()});}
 const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
