@@ -281,7 +281,7 @@ function val(id,v){$(id).value=v??''}const publicUrl=()=>data?.partner?.slug?loc
 function applyDesignEntitlements(){
 const rank={free:0,starter:1,standard:2,business:3,premium:4};
 const level=rank[data.subscription?.package_key||'free']??0;
-document.querySelectorAll('.design-studio-group select option[data-min]').forEach(option=>{const locked=level<Number(option.dataset.min);option.disabled=locked;option.textContent=option.textContent.replace(/ · Upgrade required$/,'')+(locked?' · Upgrade required':'');});
+document.querySelectorAll('.design-studio-group select option[data-min]').forEach(option=>{const locked=level<Number(option.dataset.min);option.disabled=locked;const packageNames={1:'Starter',2:'Growth',3:'Business',4:'Premium'};option.textContent=option.textContent.replace(/ · Upgrade to .+$/,'')+(locked?' · Upgrade to '+(packageNames[Number(option.dataset.min)]||'higher package'):'');});
 document.querySelectorAll('.design-lock').forEach(el=>{const select=$(el.parentElement.querySelector('select')?.id||'');const locked=select&&Array.from(select.options).some(o=>o.dataset.min&&level<Number(o.dataset.min));el.textContent=locked?' · Some options locked':'';});
 const note=$('design-upgrade-note');if(note){const next=level<1?'Starter':level<2?'Growth':level<3?'Business':level<4?'Premium':'';note.querySelector('b').textContent=next?'🔒 Upgrade to '+next+' for more design freedom':'✨ You have unlocked all design controls';note.querySelector('span').textContent=next?'Locked choices are labelled with the package required. Your current settings remain available.':'All mini-site appearance controls are available on your current package.';}
 }
@@ -290,6 +290,7 @@ function render(){const p=data.partner||{};$('account-email').textContent=p.acco
 function renderPackages(){
 const plans=data.packages||[],current=data.subscription?.package_key||'free',pending=data.packageRequest;
 const labels={
+design:{basic:'Essential design settings',expanded:'Expanded colours, image and layout controls',advanced:'Advanced layouts and styling controls',premium:'Premium mini-site design options',full:'Full design customisation and premium layouts'},
 website:{professional:'Professional mini-website builder',advanced:'Advanced website layout options',premium:'Premium website experience'},
 promotion:{directory:'Standard shared campaign visibility',boosted:'Enhanced campaign visibility',priority:'Priority campaign visibility',premium:'Premium campaign exposure',maximum:'Highest campaign exposure tier'},
 analytics:{essential:'Campaign impressions, clicks and enquiry totals',advanced:'Expanded campaign performance reporting',premium:'Premium campaign performance insights'},
@@ -311,7 +312,7 @@ const common=[
 $('plans').innerHTML=plans.map(x=>{
 let b={};try{b=JSON.parse(x.benefits_json||'{}')}catch{};
 const price=Number(x.monthly_price_minor||0)/100;
-const features=[...common,feature('website',b.website),feature('analytics',b.analytics),feature('branding',b.branding),feature('promotion',b.promotion),rotation[x.package_key],feature('leads',b.leads),feature('campaigns',b.campaigns),feature('verification',b.verification),feature('support',b.support)].filter(Boolean);
+const features=[...common,feature('website',b.website),feature('design',b.design),feature('analytics',b.analytics),feature('branding',b.branding),feature('promotion',b.promotion),rotation[x.package_key],feature('leads',b.leads),feature('campaigns',b.campaigns),feature('verification',b.verification),feature('support',b.support)].filter(Boolean);
 const isCurrent=x.package_key===current,isPending=pending?.package_key===x.package_key;
 const action=isCurrent?'<button class="btn secondary small" disabled>Current package</button>':isPending?'<button class="btn secondary small" disabled>Request sent · awaiting call</button>':'<button class="btn small" data-request-package="'+esc(x.package_key)+'">Request this package →</button>';
 return '<article class="plan-card '+(isCurrent?'current':'')+'"><span class="badge '+(isCurrent?'approved':'')+'">'+(isCurrent?'CURRENT PACKAGE':isPending?'REQUEST PENDING':'PACKAGE OPTION')+'</span><h3>'+esc(x.display_name)+'</h3><div class="price">'+(price===0?'Free':'K'+price.toLocaleString())+'<small style="font-size:10px;color:var(--muted)"> / month</small></div><p class="muted" style="font-size:12px;margin:8px 0">A practical business toolkit — not just ad rotation.</p><ul>'+features.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+action+'</article>';
