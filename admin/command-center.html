@@ -572,7 +572,14 @@ function detectNewOrders(){const current=new Set(orders.map(o=>String(o.id||o.or
 function renderSystemOverviewContent(){
  const overview=$('view-overview');if(!overview)return;
  let panel=$('cc-system-overview');
- if(!panel){panel=document.createElement('section');panel.id='cc-system-overview';panel.className='panel section';panel.setAttribute('aria-label','PhoneYa2 business intelligence overview');overview.append(panel);}
+ if(!panel){panel=document.createElement('section');panel.id='cc-system-overview';panel.className='panel section';panel.setAttribute('aria-label','PhoneYa2 business intelligence overview');}
+ // Keep business intelligence directly beneath the existing Overview KPI cards.
+ // Appending at the end placed it after every other Overview module.
+ const summaryBlocks=[...overview.children].filter(node=>node.matches('.stats, .growth-card, .growth-grid'));
+ const lastSummary=summaryBlocks[summaryBlocks.length-1];
+ if(lastSummary){lastSummary.insertAdjacentElement('afterend',panel);}
+ else if(panel.parentElement!==overview){overview.prepend(panel);}
+
  const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  const fmt=n=>Number(n||0).toLocaleString();
  const valid=orders.filter(o=>o.status!=='cancelled');
