@@ -104,6 +104,18 @@ export function renderPartnerSite(data) {
       </section>`
     : "";
 
+  const design = {
+    pageBackground: ["soft","plain","gradient","image"].includes(site.page_background) ? site.page_background : "soft",
+    headerStyle: ["clean","solid","glass","centered"].includes(site.header_style) ? site.header_style : "clean",
+    postLayout: ["cards","feed","masonry"].includes(site.post_layout) ? site.post_layout : "cards",
+    postImageFit: ["cover","contain"].includes(site.post_image_fit) ? site.post_image_fit : "cover",
+    postCardStyle: ["elevated","minimal","outlined"].includes(site.post_card_style) ? site.post_card_style : "elevated",
+    buttonStyle: ["rounded","pill","square"].includes(site.button_style) ? site.button_style : "rounded",
+    contentWidth: ["wide","standard","compact"].includes(site.content_width) ? site.content_width : "wide",
+    heroHeight: ["compact","standard","tall","cinematic"].includes(site.hero_height) ? site.hero_height : "standard",
+    menuStyle: ["standard","floating","overlay"].includes(site.menu_style) ? site.menu_style : "standard"
+  };
+
   const postMeta = {
     offer: { label: "SPECIAL OFFER", icon: "✦", action: "Claim this offer", tone: "offer" },
     event: { label: "UPCOMING EVENT", icon: "✦", action: "View event details", tone: "event" },
@@ -138,17 +150,7 @@ export function renderPartnerSite(data) {
   const title = site.seo_title || site.site_title || businessName;
   const description = site.seo_description || site.site_description || `Discover ${businessName} on PhoneYa2.`;
   const canonicalSlug = encodeURIComponent(data.slug || "");
-  const design = {
-    pageBackground: ["soft","plain","gradient","image"].includes(site.page_background) ? site.page_background : "soft",
-    headerStyle: ["clean","solid","glass","centered"].includes(site.header_style) ? site.header_style : "clean",
-    postLayout: ["cards","feed","masonry"].includes(site.post_layout) ? site.post_layout : "cards",
-    postImageFit: ["cover","contain"].includes(site.post_image_fit) ? site.post_image_fit : "cover",
-    postCardStyle: ["elevated","minimal","outlined"].includes(site.post_card_style) ? site.post_card_style : "elevated",
-    buttonStyle: ["rounded","pill","square"].includes(site.button_style) ? site.button_style : "rounded",
-    contentWidth: ["wide","standard","compact"].includes(site.content_width) ? site.content_width : "wide",
-    heroHeight: ["compact","standard","tall","cinematic"].includes(site.hero_height) ? site.hero_height : "standard",
-    menuStyle: ["standard","floating","overlay"].includes(site.menu_style) ? site.menu_style : "standard"
-  };
+
   const announcementText = String(site.announcement_text || "").trim();
   const announcementHref = safeActionUrl(site.announcement_link) || "#contact";
   const announcementHtml = site.show_announcement && announcementText
