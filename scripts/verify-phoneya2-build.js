@@ -202,4 +202,43 @@ try {
   fail('Notification scheduler configuration is missing or unreadable: ' + error.message);
 }
 
+const schedulerWorkerPath = path.join(root, 'workers', 'notification-scheduler', 'index.js');
+try {
+  const worker = fs.readFileSync(schedulerWorkerPath, 'utf8');
+  for (const [label, pattern] of [
+    ['D1-backed scheduled automation', /if\\(!env\\.DB\\)throw new Error/],
+    ['published-content change detection', /async function syncPublished/],
+    ['automatic campaign and work preparation', /async function prepareWork/],
+    ['product and blog newsletter generation', /prepareCampaign\\(db,"product"|prepareCampaign\\(db,"blog"/],
+    ['scheduled work preparation cycle', /await prepareWork\\(env\\.DB,products,posts\\)/],
+    ['failure reporting', /automation cycle failed/]
+  ]) if (!pattern.test(worker)) fail('Scheduled automation worker is missing ' + label + '.');
+  const workerConfig = fs.readFileSync(path.join(root, 'workers', 'notification-scheduler', 'wrangler.toml'), 'utf8');
+  if (!workerConfig.includes('binding = "DB"') || !workerConfig.includes('database_name = "phoneya2-core"')) {
+    fail('Notification scheduler is not connected to the PhoneYa2 D1 database.');
+  }
+  pass('Scheduled worker monitors published content and prepares deduplicated campaigns and work in D1.');
+} catch (error) {
+  fail('Scheduled Command Centre automation could not be validated: ' + error.message);
+}
+
+try {
+  const workQueue = fs.readFileSync(path.join(root, 'admin', 'work-queue.js'), 'utf8');
+  for (const [label, pattern] of [
+    ['image-backed popup alerts', /work-popup-image/],
+    ['searchable prepared-work list', /work-search/],
+    ['category filters', /work-filter/],
+    ['owner approval action', /data-work-action="approve"/],
+    ['completion and ignore actions', /data-work-action="complete"|data-work-action="ignore"/],
+    ['deduplicated staggered popups', /detectNewWork[\\s\\S]*popupQueue/]
+  ]) if (!pattern.test(workQueue)) fail('Prepared-work interface is missing ' + label + '.');
+  const api = fs.readFileSync(path.join(root, 'functions', 'api', 'admin-work-queue.js'), 'utf8');
+  if (!/approve:"approved"/.test(api) || !/campaignId\\?"A newsletter draft has been created/.test(api)) {
+    fail('Prepared-work API is missing approval handling or truthful campaign status.');
+  }
+  pass('Prepared-work interface includes image alerts, search, filters and owner-controlled task actions.');
+} catch (error) {
+  fail('Prepared-work interaction validation failed: ' + error.message);
+}
+
 if (!process.exitCode) console.log('PhoneYa2 repository integrity checks passed.');
