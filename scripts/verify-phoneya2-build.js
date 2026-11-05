@@ -110,6 +110,54 @@ try {
   fail('Store notification D1 migration is missing or unreadable: ' + error.message);
 }
 
+const workQueueMigrationPath = path.join(root, 'd1', 'migrations', '0024_command_centre_work_queue.sql');
+try {
+  const migration = fs.readFileSync(workQueueMigrationPath, 'utf8');
+  for (const required of [
+    'ALTER TABLE admin_notifications ADD COLUMN image_url',
+    'ALTER TABLE email_campaigns ADD COLUMN source_key',
+    'ALTER TABLE email_campaigns ADD COLUMN hero_image_url',
+    'ALTER TABLE email_campaigns ADD COLUMN archived_at',
+    'CREATE TABLE IF NOT EXISTS admin_work_items'
+  ]) {
+    if (!migration.includes(required)) fail('Command Centre work-queue migration is missing: ' + required);
+  }
+  pass('Command Centre work-queue migration includes thumbnails, prepared campaigns and persistent tasks.');
+} catch (error) {
+  fail('Command Centre work-queue migration is missing or unreadable: ' + error.message);
+}
+
+const workQueueApiPath = path.join(root, 'functions', 'api', 'admin-work-queue.js');
+try {
+  const api = fs.readFileSync(workQueueApiPath, 'utf8');
+  for (const [label, pattern] of [
+    ['product newsletter draft preparation', /prepareProductCampaign/],
+    ['article newsletter draft preparation', /prepareBlogCampaign/],
+    ['campaign draft deduplication', /source_key/],
+    ['owner ignore action', /action==="ignore"/]
+  ]) {
+    if (!pattern.test(api)) fail('Command Centre work queue is missing ' + label + '.');
+  }
+  pass('Prepared-work API supports product/article drafts and owner review actions.');
+} catch (error) {
+  fail('Command Centre work-queue API is missing or unreadable: ' + error.message);
+}
+
+const commandCentrePath = path.join(root, 'admin', 'command-center.html');
+const storefrontNotificationsPath = path.join(root, 'store-notifications.js');
+try {
+  const commandCentre = fs.readFileSync(commandCentrePath, 'utf8');
+  const storefrontNotifications = fs.readFileSync(storefrontNotificationsPath, 'utf8');
+  if (!commandCentre.includes('/admin/work-queue.js')) fail('Command Centre does not load its prepared-work interface.');
+  if (!commandCentre.includes('notification-thumb')) fail('Command Centre notification thumbnails are missing.');
+  if (!storefrontNotifications.includes('py2-notify-thumb') || !storefrontNotifications.includes('py2-notify-popup-image')) {
+    fail('Storefront notification thumbnails or popup images are missing.');
+  }
+  pass('Command Centre and storefront notification image interfaces are wired.');
+} catch (error) {
+  fail('Notification/work-queue interface validation failed: ' + error.message);
+}
+
 const schedulerPath = path.join(root, 'workers', 'notification-scheduler', 'wrangler.toml');
 try {
   const scheduler = fs.readFileSync(schedulerPath, 'utf8');
