@@ -51,6 +51,15 @@
     }, 2400);
   }
 
+
+  function syncRemoteCart(){
+    try {
+      const items=read(); if(!items.length)return;
+      let visitor=localStorage.getItem("py2_store_visitor_v1");
+      if(!/^[a-f0-9-]{20,80}$/i.test(visitor||"")){visitor=crypto.randomUUID();localStorage.setItem("py2_store_visitor_v1",visitor);}
+      fetch("/api/store-notifications",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"cart",visitor_id:visitor,items:items.map(([slug,quantity])=>({slug,quantity}))})}).catch(()=>{});
+    } catch (_) {}
+  }
   function add(slug, quantity, stock, title) {
     if (typeof slug !== "string" || !/^[a-z0-9][a-z0-9-]{0,100}$/.test(slug)) {
       toast("Sorry, we couldn't add that product.");
@@ -83,7 +92,7 @@
 
   window.PhoneYa2Cart = { add, count, refresh, read };
   window.addEventListener("storage", refresh);
-  window.addEventListener("phoneya2:cart-updated", refresh);
+  window.addEventListener("phoneya2:cart-updated", () => { refresh(); syncRemoteCart(); });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", refresh);
   else refresh();
 })();
