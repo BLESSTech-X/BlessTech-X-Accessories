@@ -208,6 +208,9 @@ try {
   for (const [label, pattern] of [
     ['D1-backed scheduled automation', /if\(!env\.DB\)throw new Error/],
     ['published-content change detection', /async function syncPublished/],
+    ['new-order detection', /async function syncOrders/],
+    ['ageing pending-order alerts', /order-stale:/],
+    ['low-stock and out-of-stock detection', /async function syncInventory[\s\S]*?stock-out:[\s\S]*?stock-low:/],
     ['automatic campaign and work preparation', /async function prepareWork/],
     ['product and blog newsletter generation', /prepareCampaign\(db,"product"|prepareCampaign\(db,"blog"/],
     ['scheduled work preparation cycle', /await prepareWork\(env\.DB,products,posts\)/],
