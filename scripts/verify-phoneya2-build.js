@@ -153,7 +153,19 @@ try {
   if (!storefrontNotifications.includes('py2-notify-thumb') || !storefrontNotifications.includes('py2-notify-popup-image')) {
     fail('Storefront notification thumbnails or popup images are missing.');
   }
-  pass('Command Centre and storefront notification image interfaces are wired.');
+  for (const [label, pattern] of [
+    ['category-based notification filters', /data-filter="products".*data-filter="updates".*data-filter="offers".*data-filter="blog".*data-filter="community".*data-filter="discounts"/s],
+    ['staggered notification queue', /queueNewNotifications[\s\S]*popupQueue/],
+    ['optional notification sound control', /py2-notify-sound/]
+  ]) if (!pattern.test(storefrontNotifications)) fail('Storefront notification interface is missing ' + label + '.');
+  const workQueue = fs.readFileSync(path.join(root, 'admin', 'work-queue.js'), 'utf8');
+  for (const [label, pattern] of [
+    ['clear empty-queue message', /Nothing needs your attention right now/],
+    ['live new-work popups', /showWorkPopup/],
+    ['periodic work-queue refresh', /45000/],
+    ['optional work alert sound', /work-sound/]
+  ]) if (!pattern.test(workQueue)) fail('Command Centre work queue is missing ' + label + '.');
+  pass('Command Centre and storefront notification image, filter, popup and sound interfaces are wired.');
 } catch (error) {
   fail('Notification/work-queue interface validation failed: ' + error.message);
 }
