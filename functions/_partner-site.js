@@ -162,6 +162,20 @@ export function renderPartnerSite(data) {
     ? `<a class="announcement" href="${esc(announcementHref)}">${esc(announcementText)} <span>↗</span></a>`
     : "";
 
+
+  if(data.builder&&String(data.builder.published_html||"").trim()){
+    const slots={
+      catalogue:catalogue(products,"Products","OUR CATALOGUE"),
+      services:catalogue(services,"Services","WHAT WE DO"),
+      posts:postsHtml,
+      social:socialEmbedHtml,
+      enquiry:"<section class=\"section\" id=\"contact\"><h2>Contact "+esc(businessName)+"</h2><p>Send a message directly to this business.</p><form id=\"partner-enquiry\"><input name=\"name\" required maxlength=\"100\" placeholder=\"Your name\"><input name=\"phone\" maxlength=\"40\" placeholder=\"Phone number\"><input name=\"email\" type=\"email\" maxlength=\"254\" placeholder=\"Email address\"><textarea name=\"message\" required maxlength=\"2000\" placeholder=\"How can we help?\"></textarea><input name=\"company_site\" tabindex=\"-1\" autocomplete=\"new-password\" aria-hidden=\"true\" style=\"position:absolute;left:-9999px\"><button type=\"submit\">Send enquiry →</button><small id=\"enquiry-result\" aria-live=\"polite\"></small></form></section>"
+    };
+    let builderBody=String(data.builder.published_html);
+    builderBody=builderBody.replace(/<([a-z0-9]+)\b([^>]*data-phoneya2-component=["'](catalogue|services|posts|social|enquiry)["'][^>]*)>[\s\S]*?<\/\1>/gi,(_all,_tag,_attrs,key)=>slots[key]||"");
+    const builderCss=String(data.builder.published_css||"").replace(/[<>]/g,"");
+    return "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>"+esc(title)+"</title><meta name=\"description\" content=\""+esc(description)+"\"><link rel=\"canonical\" href=\""+SITE_URL+"/b/"+canonicalSlug+"\"><meta property=\"og:title\" content=\""+esc(title)+"\"><meta property=\"og:description\" content=\""+esc(description)+"\">"+(share.image||heroImage?"<meta property=\"og:image\" content=\""+esc(share.image||heroImage)+"\">":"")+"<style>body{margin:0;font-family:Inter,system-ui,sans-serif;color:#172b48;background:#f6f8fb}img,video{max-width:100%;height:auto}input,textarea,button{font:inherit}#partner-enquiry{display:grid;gap:10px;max-width:620px}#partner-enquiry input,#partner-enquiry textarea{padding:12px;border:1px solid #d9e2ec;border-radius:9px}#partner-enquiry button{padding:13px;background:#ff641f;color:#fff;border:0;border-radius:9px;font-weight:800;cursor:pointer}.py2-builder-brand{padding:10px 5%;font-size:11px;color:#6b7788;background:#f7f9fc;border-bottom:1px solid #e7edf4}.py2-builder-brand strong{color:#173f73}.py2-builder-footer{padding:22px 5%;font-size:11px;color:#758398;text-align:center;border-top:1px solid #e7edf4}"+builderCss+"</style></head><body><div class=\"py2-builder-brand\"><strong>"+esc(businessName)+"</strong> · Business website</div>"+builderBody+"<footer class=\"py2-builder-footer\">Powered by PhoneYa2 Partner Network · Smart CHOICES. Better CONNECTED</footer><script src=\"/partner-message.js?v=20261105-1\" defer></script></body></html>";
+  }
   return `<!doctype html>
 <html lang="en">
 <head>
