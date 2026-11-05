@@ -4,3 +4,8 @@ compatibility_date = "2026-11-05"
 
 [triggers]
 crons = ["*/15 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "phoneya2-core"
+database_id = "68c3c9fb-27bd-4e31-a7d5-533aab22727b"
