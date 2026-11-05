@@ -12,10 +12,12 @@ async function addTask(db,item){
  .bind(uuid(),item.source_key,item.category||"operations",clean(item.title,180),clean(item.message,600),safeImage(item.image_url),clean(item.destination||"/admin/command-center.html",500),clean(item.action_url||"/admin/communications.html",500),item.priority||"normal",clean(item.related_id,120)).run();
 }
 async function prepareProductCampaign(db,product){
- const automation=await db.prepare("SELECT enabled FROM communication_automations WHERE automation_key='new_product_announcement'").first();
- if(!Number(automation?.enabled))return null;
  const slug=clean(product.slug,120);if(!slug)return null;
  const sourceKey="auto-new-product:"+slug;
+ const existing=await db.prepare("SELECT id FROM email_campaigns WHERE source_key=?").bind(sourceKey).first();
+ if(existing?.id)return existing.id;
+ const automation=await db.prepare("SELECT enabled FROM communication_automations WHERE automation_key='new_product_announcement'").first();
+ if(!Number(automation?.enabled))return null;
  const title=clean(product.title||slug,160),price=Number(product.price);
  const priceLine=Number.isFinite(price)&&price>0?"\nPrice: ZMW "+price.toFixed(2):"";
  const image=safeImage(product.image);
@@ -29,10 +31,12 @@ async function prepareProductCampaign(db,product){
  return campaign?.id||null;
 }
 async function prepareBlogCampaign(db,post){
- const automation=await db.prepare("SELECT enabled FROM communication_automations WHERE automation_key='new_blog_announcement'").first();
- if(!Number(automation?.enabled))return null;
  const slug=clean(post.slug,120);if(!slug)return null;
  const sourceKey="auto-new-blog:"+slug,title=clean(post.title||slug,160),image=safeImage(post.image||post.featured_image||post.cover_image);
+ const existing=await db.prepare("SELECT id FROM email_campaigns WHERE source_key=?").bind(sourceKey).first();
+ if(existing?.id)return existing.id;
+ const automation=await db.prepare("SELECT enabled FROM communication_automations WHERE automation_key='new_blog_announcement'").first();
+ if(!Number(automation?.enabled))return null;
  const excerpt=clean(post.excerpt||"A new PhoneYa2 guide is ready. Read the latest tips and product guidance.",700);
  const body=title+"\n\n"+excerpt+"\n\nRead the full guide: https://phoneya2.pages.dev/blog-post.html?slug="+encodeURIComponent(slug)+"\n\nSmart CHOICES. Better CONNECTED 💙";
  const id=uuid();
@@ -58,13 +62,13 @@ async function syncWork(db,request){
   const event=await db.prepare("SELECT id FROM admin_notifications WHERE event_key=?").bind("published:products:"+slug).first();
   if(!event)continue;
   const campaignId=await prepareProductCampaign(db,{...p,slug});
-  await addTask(db,{source_key:"product-published:"+slug,category:"products",title:"Review new-product email: "+(p.title||slug),message:"A product is live and a newsletter email draft has been prepared. Check the product details and approve it before sending.",image_url:p.image,destination:"/admin/#/collections/products",action_url:campaignId?"/admin/campaigns.html?campaign="+encodeURIComponent(campaignId):"/admin/campaigns.html",priority:"high",related_id:campaignId||slug});
+  await addTask(db,{source_key:"product-published:"+slug,category:"products",title:"New product published: "+(p.title||slug),message:campaignId?"A newsletter draft has been created and saved for your review. Check its image, wording and audience before sending.":"The product is published, but no email draft exists. Enable the product-announcement automation or create a campaign manually.",image_url:p.image,destination:"/admin/#/collections/products",action_url:campaignId?"/admin/campaigns.html?campaign="+encodeURIComponent(campaignId):"/admin/campaigns.html",priority:"high",related_id:campaignId||slug});
  }
  for(const post of (Array.isArray(blog)?blog:[]).filter(x=>x&&x.publish===true&&x.slug)){
   const slug=clean(post.slug,120),event=await db.prepare("SELECT id FROM admin_notifications WHERE event_key=?").bind("published:blog:"+slug).first();
   if(!event)continue;
   const campaignId=await prepareBlogCampaign(db,post);
-  await addTask(db,{source_key:"blog-published:"+slug,category:"blog",title:"Review article newsletter: "+(post.title||slug),message:"A new guide is published and a newsletter draft has been prepared. Review the wording and image before sending.",image_url:post.image||post.featured_image||post.cover_image,destination:"/admin/#/collections/blog_posts",action_url:campaignId?"/admin/campaigns.html?campaign="+encodeURIComponent(campaignId):"/admin/campaigns.html",priority:"normal",related_id:campaignId||slug});
+  await addTask(db,{source_key:"blog-published:"+slug,category:"blog",title:"New article published: "+(post.title||slug),message:campaignId?"A newsletter draft has been created and saved for your review. Check its image, wording and audience before sending.":"The article is published, but no newsletter draft exists. Enable the article-announcement automation or create a campaign manually.",image_url:post.image||post.featured_image||post.cover_image,destination:"/admin/#/collections/blog_posts",action_url:campaignId?"/admin/campaigns.html?campaign="+encodeURIComponent(campaignId):"/admin/campaigns.html",priority:"normal",related_id:campaignId||slug});
  }
  const notifications=await db.prepare("SELECT id,event_key,category,title,message,image_url,destination,priority,related_id FROM admin_notifications WHERE is_read=0 AND event_key NOT LIKE 'published:products:%' AND event_key NOT LIKE 'published:blog:%' ORDER BY created_at DESC LIMIT 100").all();
  for(const n of notifications.results||[]){
