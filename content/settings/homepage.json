@@ -4,5 +4,8 @@
   "hero_sub": "Browse cases, chargers, cables, earphones and more. Check product availability and delivery options before ordering.",
   "show_discounted_products": true,
   "max_discounted_promotions": 6,
-  "hero_promotions": []
-}
+  "hero_promotions": [],
+  "promotion_active": false,
+  "promotion_start": "",
+  "promotion_end": ""
+}\n
