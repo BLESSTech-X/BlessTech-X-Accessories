@@ -47,6 +47,24 @@ try {
   fail('Product catalogue validation failed: ' + error.message);
 }
 
+
+const homepagePath = path.join(root, 'index.html');
+try {
+  const homepage = fs.readFileSync(homepagePath, 'utf8');
+  if (!/const productCount = items\.length;/.test(homepage)) {
+    fail('Homepage Products metric must count published catalogue listings.');
+  }
+  if (!/const inStockProducts = items\.filter\(product => \{[\s\S]*?Number\(product\.stock\);[\s\S]*?quantity > 0;[\s\S]*?\}\)\.length;/.test(homepage)) {
+    fail('Homepage In stock metric must count catalogue listings with positive stock only.');
+  }
+  if (/const productCount = items\.reduce\(\(total, product\) => total \+ unitQuantity/.test(homepage)) {
+    fail('Homepage Products metric must not sum stock quantities.');
+  }
+  pass('Homepage Products and In stock metrics use separate, real catalogue listing counts.');
+} catch (error) {
+  fail('Homepage catalogue analytics could not be validated: ' + error.message);
+}
+
 let xml;
 try { xml = fs.readFileSync(sitemapPath, 'utf8'); }
 catch { fail('sitemap.xml is missing. Run node generate-sitemap.js first.'); process.exit(); }
