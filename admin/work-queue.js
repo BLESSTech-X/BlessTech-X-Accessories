@@ -16,11 +16,12 @@ function ensureWorkAudio(){if(workAudio)return;const A=window.AudioContext||wind
 function workDing(){if(!workSound||!workAudio)return;try{const c=workAudio,o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.setValueAtTime(740,c.currentTime);o.frequency.exponentialRampToValueAtTime(1110,c.currentTime+.12);g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.1,c.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.34);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.35);}catch{}}
 function showWorkPopup(item){
  if(document.querySelector(".work-alert-popup"))return;
- const box=document.createElement("aside");box.className="work-alert-popup";box.setAttribute("role","status");box.setAttribute("aria-live","polite");
+ const box=document.createElement("aside");box.dataset.workId=String(item.id);box.className="work-alert-popup";box.setAttribute("role","status");box.setAttribute("aria-live","polite");
  const copy=document.createElement("div"),tag=document.createElement("small"),title=document.createElement("strong"),message=document.createElement("p"),actions=document.createElement("div"),open=document.createElement("a"),close=document.createElement("button");
  tag.textContent="NEW JOB · "+String(item.category||"OPERATIONS").toUpperCase();title.textContent=item.title||"New work needs attention";message.textContent=item.message||"A new prepared task is waiting in the Command Centre.";
  open.href=item.action_url||item.destination||"/admin/communications.html";open.textContent="Review job →";close.type="button";close.textContent="×";close.setAttribute("aria-label","Dismiss alert");
  actions.append(open);copy.append(tag,title,message,actions);box.append(copy,close);document.body.append(box);workDing();
+ try{knownItems[String(item.id)]=1;knownItems=Object.fromEntries(Object.entries(knownItems).slice(-300));localStorage.setItem(KNOWN_KEY,JSON.stringify(knownItems));}catch{}
  close.addEventListener("click",()=>{box.remove();setTimeout(processWorkPopups,450);});
  popupTimer=setTimeout(()=>{box.remove();setTimeout(processWorkPopups,450);},8500);
 }
@@ -28,8 +29,8 @@ function processWorkPopups(){if(!popupQueue.length||document.querySelector(".wor
 function detectNewWork(items){
  const ids=items.map(x=>String(x.id));
  if(!baselineReady){ids.forEach(id=>knownItems[id]=1);baselineReady=true;try{localStorage.setItem(KNOWN_KEY,JSON.stringify(knownItems));}catch{}return;}
- const fresh=items.filter(x=>x&&x.id&&!knownItems[String(x.id)]);
- ids.forEach(id=>knownItems[id]=1);knownItems=Object.fromEntries(Object.entries(knownItems).slice(-300));try{localStorage.setItem(KNOWN_KEY,JSON.stringify(knownItems));}catch{}
+ const queued=new Set(popupQueue.map(x=>String(x.id)));const active=document.querySelector(".work-alert-popup")?.dataset.workId;if(active)queued.add(active);
+ const fresh=items.filter(x=>x&&x.id&&!knownItems[String(x.id)]&&!queued.has(String(x.id)));
  fresh.forEach(x=>popupQueue.push(x));processWorkPopups();
 }
 async function load(host,detect=true){
