@@ -219,10 +219,10 @@ if(!advertiser||!site)return fail("Your existing business website could not be l
 let socialEmbeds=[];try{const result=await db.prepare("SELECT id,platform,url,title,caption,created_at FROM partner_social_embeds WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all();socialEmbeds=result.results||[];}catch(error){console.warn("Social embeds unavailable while importing existing website.");}
 let sourceHtml=renderPartnerSite({slug:advertiser.slug,advertiser,site,items:items.results||[],posts:posts.results||[],socialEmbeds,share:{}});
 const replaceLiveSection=(id,key,label)=>{
-const opening=new RegExp("<section\\b(?=[^>]*\\bid=[\\"']"+id+"[\\"'])[^>]*>","i");
+const opening=new RegExp('<section\\b(?=[^>]*\\bid="'+id+'")[^>]*>','i');
 const match=opening.exec(sourceHtml);if(!match)return;
-const tags=/<\\/?section\\b[^>]*>/gi;tags.lastIndex=match.index+match[0].length;let depth=1,tag;
-while((tag=tags.exec(sourceHtml))&&depth){if(/^<\\//.test(tag[0]))depth--;else if(!/\\/\\s*>$/.test(tag[0]))depth++;}
+const tags=/<\/?section\b[^>]*>/gi;tags.lastIndex=match.index+match[0].length;let depth=1,tag;
+while((tag=tags.exec(sourceHtml))&&depth){if(/^<\//.test(tag[0]))depth--;else if(!/\/\s*>$/.test(tag[0]))depth++;}
 if(depth===0){const slot='<section class="py2-live-slot" data-phoneya2-component="'+key+'"><div><small>LIVE PHONEYA2 CONTENT</small><h2>'+label+'</h2><p>This section stays connected to your PhoneYa2 '+label.toLowerCase()+'.</p></div></section>';sourceHtml=sourceHtml.slice(0,match.index)+slot+sourceHtml.slice(tags.lastIndex);}
 };
 replaceLiveSection("products","catalogue","Live product catalogue");
