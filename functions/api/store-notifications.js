@@ -21,6 +21,7 @@ async function syncProducts(db,origin){
   if(prior&&state){
    if(Number.isFinite(Number(prior.price_minor))&&priceMinor<Number(prior.price_minor))await insertNotification(db,{key:"product-price-drop:"+slug+":"+priceMinor,category:"price-drops",title:"Price drop: "+(p.title||slug),message:"The price has dropped to ZMW "+price.toFixed(2)+". Take another look while this price is available.",destination:"/product.html?id="+encodeURIComponent(slug),metadata:{slug,price}});
    if(Number(prior.stock)<=0&&units>0)await insertNotification(db,{key:"product-restock:"+slug+":"+units+":"+new Date().toISOString().slice(0,10),category:"restocks",title:"Back in stock: "+(p.title||slug),message:"This product is available again. View the current price and stock.",destination:"/product.html?id="+encodeURIComponent(slug),metadata:{slug,stock:units}});
+   if(Number(prior.stock)>3&&units>0&&units<=3)await insertNotification(db,{key:"product-low-stock:"+slug+":"+units,category:"low-stock",title:"Limited availability: "+(p.title||slug),message:"Only "+units+" unit"+(units===1?"":"s")+" currently show as available. Check the product details before ordering.",destination:"/product.html?id="+encodeURIComponent(slug),metadata:{slug,stock:units}});
   }else if(!prior&&state)await insertNotification(db,{key:"new-product:"+slug,category:"products",title:"New in the PhoneYa2 shop: "+(p.title||slug),message:"A new product has been added to the catalogue. Explore the details and current availability.",destination:"/product.html?id="+encodeURIComponent(slug),metadata:{slug}});
   if(!prior||Number(prior.price_minor)!==priceMinor||Number(prior.stock)!==units)statements.push(db.prepare("INSERT INTO store_notification_snapshots(source_type,source_id,price_minor,stock,content_hash,checked_at) VALUES('products',?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now')) ON CONFLICT(source_type,source_id) DO UPDATE SET price_minor=excluded.price_minor,stock=excluded.stock,checked_at=excluded.checked_at").bind(slug,priceMinor,units,""));
  }
@@ -36,13 +37,32 @@ async function syncOffers(db,now){
   if(!state)batch.push(db.prepare("INSERT OR IGNORE INTO store_notification_state(source_type) VALUES('offers')"));if(batch.length)await db.batch(batch);
  }catch(e){console.warn("Store offer sync skipped",String(e).slice(0,180));}
 }
+async function syncEditorial(db,origin){
+ const [blog,seasonal]=await Promise.all([readJson(new URL("/content/blog/index.json",origin).href),readJson(new URL("/content/settings/seasonal-campaigns.json",origin).href)]);
+ if(Array.isArray(blog)){
+  const state=await db.prepare("SELECT source_type FROM store_notification_state WHERE source_type='blog'").first();
+  const knownRows=await db.prepare("SELECT source_id FROM store_notification_snapshots WHERE source_type='blog'").all(),known=new Set((knownRows.results||[]).map(x=>x.source_id)),batch=[];
+  for(const post of blog.filter(x=>x&&x.publish===true&&x.slug)){
+   const slug=clean(post.slug,120);if(!slug)continue;
+   if(state&&!known.has(slug))await insertNotification(db,{key:"new-blog-post:"+slug,category:"stories",title:"New PhoneYa2 guide: "+(post.title||slug),message:clean(post.excerpt||"A new PhoneYa2 article is ready. Discover useful tips and product guidance.",420),destination:"/blog-post.html?slug="+encodeURIComponent(slug)});
+   if(!known.has(slug))batch.push(db.prepare("INSERT OR IGNORE INTO store_notification_snapshots(source_type,source_id) VALUES('blog',?)").bind(slug));
+  }
+  if(!state)batch.push(db.prepare("INSERT OR IGNORE INTO store_notification_state(source_type) VALUES('blog')"));
+  if(batch.length)await db.batch(batch);
+ }
+ if(seasonal&&seasonal.enabled===true){
+  const day=new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Lusaka",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+  const active=!seasonal.scheduled||(seasonal.start&&seasonal.end&&day>=String(seasonal.start).slice(0,10)&&day<=String(seasonal.end).slice(0,10));
+  if(active){const theme=clean(seasonal.theme||"campaign",60),start=clean(seasonal.start||"always",20),end=clean(seasonal.end||"ongoing",20);await insertNotification(db,{key:"seasonal-campaign:"+theme+":"+start+":"+end,category:"seasonal",title:clean(seasonal.bannerTitle||"A PhoneYa2 seasonal campaign",180),message:clean(seasonal.bannerMessage||"Explore the latest PhoneYa2 seasonal collection and offers.",420),destination:destination(seasonal.bannerUrl||"/shop.html"),priority:"high"});}
+ }
+}
 async function syncCommunity(db){
  try{const r=await db.prepare("SELECT event_key,category,title,message,destination FROM community_notifications ORDER BY created_at DESC LIMIT 30").all();const statements=(r.results||[]).map(n=>db.prepare("INSERT OR IGNORE INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json) VALUES(?,?,?,?,?,?,?,?,?)").bind(uuid(),"community-mirror:"+n.event_key,"community","event",clean(n.title,180),clean(n.message,420),destination(n.destination,"/community/"),"normal","{}"));if(statements.length)await db.batch(statements);}catch(e){/* Community migration may not yet be applied. */}
 }
 async function listNotifications(db,limit){const r=await db.prepare("SELECT id,event_key,category,kind,title,message,destination,priority,metadata_json,created_at,expires_at FROM store_notifications WHERE expires_at IS NULL OR expires_at>strftime('%Y-%m-%dT%H:%M:%fZ','now') ORDER BY created_at DESC LIMIT ?").bind(limit).all();return(r.results||[]).map(n=>({...n,metadata:(()=>{try{return JSON.parse(n.metadata_json||"{}")}catch{return {}}})()}));}
 export async function onRequestGet({request,env}){
  if(!env.DB)return json({ok:false,error:"Store notifications are temporarily unavailable."},503);
- try{const origin=new URL(request.url).origin,now=new Date().toISOString();await syncProducts(env.DB,origin);await syncOffers(env.DB,now);await syncCommunity(env.DB);const limit=Math.min(100,Math.max(1,Number(new URL(request.url).searchParams.get("limit"))||80));return json({ok:true,notifications:await listNotifications(env.DB,limit),generated_at:now});}
+ try{const origin=new URL(request.url).origin,now=new Date().toISOString();await syncProducts(env.DB,origin);await syncOffers(env.DB,now);await syncEditorial(env.DB,origin);await syncCommunity(env.DB);const limit=Math.min(100,Math.max(1,Number(new URL(request.url).searchParams.get("limit"))||80));return json({ok:true,notifications:await listNotifications(env.DB,limit),generated_at:now});}
  catch(e){console.error("Store notification sync failed",e?.stack||e);return json({ok:false,error:"Could not load store notifications."},503);}
 }
 export async function onRequestPost({request,env}){
