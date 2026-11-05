@@ -27,10 +27,12 @@ async function syncPublished(db,type,items){
 }
 async function prepareCampaign(db,kind,item){
  const automationKey=kind==="product"?"new_product_announcement":"new_blog_announcement";
- const automation=await db.prepare("SELECT enabled FROM communication_automations WHERE automation_key=?").bind(automationKey).first();
- if(!Number(automation?.enabled))return null;
  const slug=clean(item.slug,120);if(!slug)return null;
  const sourceKey="auto-new-"+kind+":"+slug;
+ const existing=await db.prepare("SELECT id FROM email_campaigns WHERE source_key=?").bind(sourceKey).first();
+ if(existing?.id)return existing.id;
+ const automation=await db.prepare("SELECT enabled FROM communication_automations WHERE automation_key=?").bind(automationKey).first();
+ if(!Number(automation?.enabled))return null;
  const title=clean(item.title||slug,160),image=safeImage(item.image_url||"");
  let subject,body,price=Number(item.price);
  if(kind==="product"){
