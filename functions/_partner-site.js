@@ -140,7 +140,7 @@ export function renderPartnerSite(data) {
               <div class="post-kicker"><span>${meta.icon} ${esc(meta.label)}</span></div>
               <h3>${esc(post.title)}</h3>
               <p>${esc(body)}</p>
-              <a class="post-cta" href="${esc(action)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${esc(actionLabel)} <span aria-hidden="true">↗</span></a>
+              <div class="post-actions"><a class="post-cta" href="${esc(action)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${esc(actionLabel)} <span aria-hidden="true">↗</span></a><button type="button" class="post-message-cta" data-message-business="${esc(data.slug||"")}" data-business-name="${esc(businessName)}" data-message-source="Business website post: ${esc(post.title||businessName)}">✉ Message this business</button></div>
             </div>
           </article>`;
         }).join("")}</div>
@@ -171,6 +171,7 @@ export function renderPartnerSite(data) {
 ${heroImage ? `<meta property="og:image" content="${esc(heroImage)}">` : ""}
 <style>
 *{box-sizing:border-box}
+.post-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}.post-actions .post-cta{margin:0}.post-message-cta{border:1px solid #d7e2ee;border-radius:10px;padding:11px 14px;background:#fff;color:#173f73;font-weight:850;font-size:12px;cursor:pointer}.post-message-cta:hover{background:#eef5ff;border-color:#a9c5e5}
 body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
 a{color:inherit;text-decoration:none}
 .site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}
@@ -476,6 +477,7 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
   }
 });
 </script>
+<script src="/partner-message.js?v=20261105-1" defer></script>
 </body>
 </html>`;
 }
