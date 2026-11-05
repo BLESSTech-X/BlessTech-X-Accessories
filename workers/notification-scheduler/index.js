@@ -18,7 +18,7 @@ async function syncPublished(db,type,items){
    const destination=type==="products"?"/admin/#/collections/products":"/admin/#/collections/blog_posts";
    const message=type==="products"?"A new product, "+title+", is now in the published catalogue.":"A new PhoneYa2 blog post, "+title+", is now published.";
    await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
-    .bind(id(),"published:"+type+":"+slug,category,event,title===" "? "New content published":(type==="products"?"New product published":"New blog post published"),message,"normal",destination,slug,title,image).run();
+    .bind(id(),"published:"+type+":"+slug,category,event,type==="products"?"New product published":"New blog post published",message,"normal",destination,slug,title,image).run();
   }
   await db.prepare("INSERT OR IGNORE INTO admin_content_snapshots(source_type,content_slug,content_title) VALUES(?,?,?)").bind(type,slug,title).run();
   if(image)await db.prepare("UPDATE admin_notifications SET image_url=? WHERE event_key=? AND (image_url='' OR image_url IS NULL)").bind(image,"published:"+type+":"+slug).run();
@@ -129,5 +129,5 @@ async function runSync(env){
 }
 export default {
  async scheduled(controller,env,ctx){ctx.waitUntil(runSync(env).then(result=>console.log("PhoneYa2 automation cycle completed:",JSON.stringify(result))).catch(error=>console.error("PhoneYa2 automation cycle failed:",String(error?.stack||error).slice(0,500))));},
- async fetch(request,env){try{const result=await runSync(env);return new Response(JSON.stringify(result),{headers:jsonHeaders});}catch(error){return new Response(JSON.stringify({ok:false,error:"Automation cycle failed.",detail:String(error).slice(0,300)}),{status:503,headers:jsonHeaders});}}
+ async fetch(){return new Response("PhoneYa2 scheduled automation worker is active.",{headers:jsonHeaders});}
 };
