@@ -75,6 +75,9 @@ async function syncInventory(db,products){
    if(before>0&&stock===0){
     await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
      .bind(id(),"stock-out:"+slug+":"+stock+":"+new Date().toISOString(),"inventory","out_of_stock",clean(product.title||slug,150)+" is out of stock","Stock has reached zero. Review the listing, check supplier availability and prepare a replenishment decision.","high","/admin/#/collections/products",slug,clean(product.title||slug,150),safeImage(product.image||product.image_url)).run();
+   }else if(before===0&&stock>0){
+    await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
+     .bind(id(),"stock-restocked:"+slug+":"+stock+":"+new Date().toISOString(),"inventory","back_in_stock",clean(product.title||slug,150)+" is back in stock","Stock has increased from zero to "+stock+" units. Verify the quantity and consider featuring the product again.","normal","/admin/#/collections/products",slug,clean(product.title||slug,150),safeImage(product.image||product.image_url)).run();
    }else if(before>3&&stock>0&&stock<=3){
     await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
      .bind(id(),"stock-low:"+slug+":"+stock+":"+new Date().toISOString(),"inventory","low_stock",clean(product.title||slug,150)+" is running low","Only "+stock+" unit"+(stock===1?"":"s")+" remain. Verify the physical count and review replenishment before promoting this product.","high","/admin/#/collections/products",slug,clean(product.title||slug,150),safeImage(product.image||product.image_url)).run();
