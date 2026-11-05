@@ -3,10 +3,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const files = ['index.html', 'shop.html', 'product.html', 'blog.html', 'agents/py2-360.html'];
-const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js'];
+const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js', 'cart.js', 'store-notifications.js', 'seasonal-experience.js'];
 let checked = 0;
 for (const file of files) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
@@ -38,4 +39,27 @@ for (const file of externalScripts) {
     process.exitCode = 1;
   }
 }
-if (!process.exitCode) console.log('PASS: Parsed ' + checked + ' inline and external JavaScript blocks across storefront, blog and agent desk.');
+function collectJavaScript(directory) {
+  if (!fs.existsSync(directory)) return [];
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const full = path.join(directory, entry.name);
+    return entry.isDirectory() ? collectJavaScript(full) : (entry.isFile() && entry.name.endsWith('.js') ? [full] : []);
+  });
+}
+const moduleFiles = [
+  ...collectJavaScript(path.join(root, 'functions')),
+  ...collectJavaScript(path.join(root, 'workers'))
+];
+for (const file of moduleFiles) {
+  const result = spawnSync(process.execPath, ['--check', '--input-type=module'], {
+    input: fs.readFileSync(file, 'utf8'),
+    encoding: 'utf8'
+  });
+  if (result.status !== 0) {
+    console.error('FAIL: JavaScript module syntax error in ' + path.relative(root, file) + ': ' + (result.stderr || result.stdout).trim());
+    process.exitCode = 1;
+  } else {
+    checked++;
+  }
+}
+if (!process.exitCode) console.log('PASS: Parsed ' + checked + ' inline, storefront and server-side JavaScript modules.');
