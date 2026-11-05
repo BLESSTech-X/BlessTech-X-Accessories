@@ -119,6 +119,47 @@ db.prepare("SELECT COUNT(*) AS total FROM ad_clicks WHERE ad_id IN (SELECT id FR
 try{for(const enquiry of enquiryRows.filter(x=>x.status==="new")){await addPartnerNotification(db,partner.advertiser_id,{event_key:"enquiry:"+enquiry.id,category:"enquiries",kind:"event",title:"New customer enquiry",message:(enquiry.customer_name||"A customer")+" sent a message through your business website.",priority:"high",destination:"enquiries",action_label:"Open inbox"});}}catch(error){console.error("Partner enquiry notification sync failed:",error?.stack||error);}
 try{await syncPartnerNotifications(db,partner,itemRows,postRows,enquiryRows,subscription,packageRequest,adRows);}catch(error){console.error("Partner notification event sync failed; existing notifications will still load:",error?.stack||error);}try{const notifications=await db.prepare("SELECT id,event_key,category,kind,title,message,priority,destination,action_label,created_at,is_read,read_at,dismissed_at,completed_at FROM partner_notifications WHERE advertiser_id=? AND dismissed_at IS NULL ORDER BY is_read ASC,created_at DESC").bind(partner.advertiser_id).all();const notificationCounts=await db.prepare("SELECT COUNT(*) AS unread FROM partner_notifications WHERE advertiser_id=? AND is_read=0 AND dismissed_at IS NULL").bind(partner.advertiser_id).first();notificationRows=notifications.results||[];notificationUnread=Number(notificationCounts?.unread||0);}catch(error){console.error("Partner notification read failed; core workspace will continue:",error?.stack||error);}const packages=(await db.prepare("SELECT package_key,display_name,monthly_price_minor,currency,benefits_json,sort_order,advertising_weight FROM partner_packages WHERE active=1 ORDER BY sort_order").all()).results||[];return {partner,items:itemRows,posts:postRows,enquiries:enquiryRows,socialLinks:socialLinkRows,subscription,packageRequest,packages,ads:adRows,notifications:notificationRows,notificationUnread,campaignStats:{impressions:Number(impressions?.total||0),clicks:Number(clicks?.total||0)}};}
 function cleanText(v,max=2000){return String(v??"").trim().slice(0,max);}
+
+function builderSafeUrl(value,kind="href"){
+ const raw=String(value||"").trim();if(!raw)return "";
+ if(kind==="href"&&/^(#|mailto:|tel:)/i.test(raw))return raw;
+ if(/^\/media\/partner\/[a-zA-Z0-9_./-]+$/.test(raw))return raw;
+ if(/^data:image\/(?:png|jpeg|webp|gif);base64,[a-zA-Z0-9+/=]+$/i.test(raw)&&kind!=="href")return raw;
+ try{const u=new URL(raw);return ["https:","http:"].includes(u.protocol)&&!u.username&&!u.password?u.href:""}catch{return ""}
+}
+function builderEscapeAttr(value){return String(value).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function sanitizeBuilderHtml(input){
+ let html=String(input||"").slice(0,700000).replace(/<!--[\s\S]*?-->/g,"");
+ html=html.replace(/<(script|style|iframe|object|embed|form|input|textarea|select|option|meta|link|base|template|svg|math|noscript)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,"").replace(/<(script|style|iframe|object|embed|form|input|textarea|select|option|meta|link|base|template|svg|math|noscript)\b[^>]*\/?\s*>/gi,"");
+ const allowed=new Set("main section div article header footer nav aside figure figcaption picture source img video h1 h2 h3 h4 h5 h6 p span b strong em i small blockquote ul ol li a button br hr".split(" "));
+ const attrs=new Set("class id title alt role href src poster target rel width height loading decoding style colspan".split(" "));
+ return html.replace(/<\/?([a-zA-Z0-9-]+)([^>]*)>/g,(tag,name,raw)=>{
+  const t=name.toLowerCase();if(!allowed.has(t))return "";
+  const closing=tag.startsWith("</");if(closing)return ["img","source","br","hr"].includes(t)?"":"</"+t+">";
+  const out=[];
+  raw.replace(/([a-zA-Z_:][a-zA-Z0-9:_.-]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g,(_,key,a,b,c)=>{
+   const k=key.toLowerCase(),v=a??b??c??"";
+   if(k.startsWith("on")||k==="srcdoc"||k==="formaction"||k==="xmlns")return;
+   if(attrs.has(k)){
+    if(["href","src","poster"].includes(k)){const safe=builderSafeUrl(v,k==="href"?"href":"src");if(safe)out.push(k+'="'+builderEscapeAttr(safe)+'"');return;}
+    if(k==="target"){if(v==="_blank")out.push('target="_blank"');return;}
+    if(k==="rel"){out.push('rel="noopener noreferrer"');return;}
+    if(k==="style"){let s=v.replace(/url\s*\([^)]*\)/gi,"").replace(/expression\s*\([^)]*\)/gi,"").replace(/@import|behavior\s*:|-moz-binding|javascript\s*:/gi,"").replace(/[<>\\]/g,"");if(s.length<3000)out.push('style="'+builderEscapeAttr(s)+'"');return;}
+    out.push(k+'="'+builderEscapeAttr(v.slice(0,1000))+'"');return;
+   }
+   if(/^aria-[a-z-]+$/.test(k)||/^data-(?:phoneya2-component|message-business|business-name|message-source|message-item-title|message-item-image|message-item-price)$/.test(k))out.push(k+'="'+builderEscapeAttr(v.slice(0,1000))+'"');
+  });
+  if(t==="a"&&out.some(x=>x.startsWith('target="_blank"'))&&!out.some(x=>x.startsWith("rel=")))out.push('rel="noopener noreferrer"');
+  return "<"+t+(out.length?" "+out.join(" "):"")+(["img","source","br","hr"].includes(t)?" />":">");
+ });
+}
+function sanitizeBuilderCss(input){
+ let css=String(input||"").slice(0,350000).replace(/\/\*[\s\S]*?\*\//g,"");
+ css=css.replace(/@import[^;]*;?/gi,"").replace(/@(?:font-face|supports|media|keyframes)[^{]*\{[^{}]*\}/gi,"");
+ css=css.replace(/url\s*\(([^)]*)\)/gi,(_,raw)=>{const u=builderSafeUrl(String(raw).trim().replace(/^['"]|['"]$/g,""),"src");return u?'url("'+u.replace(/["\\]/g,"")+'")':"none";});
+ return css.replace(/expression\s*\([^)]*\)|behavior\s*:|-moz-binding|javascript\s*:/gi,"").replace(/[<>]/g,"");
+}
+
 async function handleAction(request,env,partner,body){
 const db=env.DB,now=new Date().toISOString(),action=String(body.action||"");
 if(action==="package.request"){
