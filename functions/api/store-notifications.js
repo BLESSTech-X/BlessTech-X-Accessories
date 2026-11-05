@@ -5,7 +5,15 @@ const uuid=()=>crypto.randomUUID();
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return true;try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
 function destination(value,fallback="/shop.html"){const raw=String(value||"").trim();if(!raw||raw.startsWith("//"))return fallback;try{const u=new URL(raw,"https://phoneya2.pages.dev");if(!["https:","http:"].includes(u.protocol))return fallback;return u.origin==="https://phoneya2.pages.dev"?u.pathname+u.search+u.hash:u.href;}catch{return fallback;}}
 async function readJson(url){try{const r=await fetch(url,{headers:{"cache-control":"no-cache"}});return r.ok?await r.json():null;}catch{return null;}}
-async function insertNotification(db,event){await db.prepare("INSERT OR IGNORE INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(uuid(),event.key,event.category,"event",clean(event.title,180),clean(event.message,420),destination(event.destination),event.priority||"normal",JSON.stringify(event.metadata||{}),event.expiresAt||null).run();}
+async function insertNotification(db,event){
+ const metadata=JSON.stringify(event.metadata||{});
+ await db.prepare("INSERT INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(event_key) DO UPDATE SET category=excluded.category,kind=excluded.kind,title=CASE WHEN excluded.title<>'' THEN excluded.title ELSE store_notifications.title END,message=CASE WHEN excluded.message<>'' THEN excluded.message ELSE store_notifications.message END,destination=CASE WHEN excluded.destination<>'' THEN excluded.destination ELSE store_notifications.destination END,priority=excluded.priority,metadata_json=CASE WHEN json_valid(store_notifications.metadata_json) THEN json_patch(store_notifications.metadata_json,excluded.metadata_json) ELSE excluded.metadata_json END,expires_at=COALESCE(excluded.expires_at,store_notifications.expires_at)")
+ .bind(uuid(),event.key,event.category,"event",clean(event.title,180),clean(event.message,420),destination(event.destination),event.priority||"normal",metadata,event.expiresAt||null).run();
+}
+async function refreshExistingNotification(db,event){
+ await db.prepare("UPDATE store_notifications SET category=?,title=CASE WHEN ?<>'' THEN ? ELSE title END,message=CASE WHEN ?<>'' THEN ? ELSE message END,destination=CASE WHEN ?<>'' THEN ? ELSE destination END,metadata_json=CASE WHEN json_valid(metadata_json) THEN json_patch(metadata_json,?) ELSE ? END WHERE event_key=?")
+ .bind(event.category,clean(event.title,180),clean(event.title,180),clean(event.message,420),clean(event.message,420),destination(event.destination),destination(event.destination),JSON.stringify(event.metadata||{}),JSON.stringify(event.metadata||{}),event.key).run();
+}
 async function syncProducts(db,origin){
  const [slugs,catalog]=await Promise.all([readJson(new URL("/content/products/index.json",origin).href),readJson(new URL("/content/products/catalog.json",origin).href)]);
  if(!Array.isArray(slugs)||!Array.isArray(catalog))return;
@@ -44,7 +52,9 @@ async function syncEditorial(db,origin){
   const knownRows=await db.prepare("SELECT source_id FROM store_notification_snapshots WHERE source_type='blog'").all(),known=new Set((knownRows.results||[]).map(x=>x.source_id)),batch=[];
   for(const post of blog.filter(x=>x&&x.publish===true&&x.slug)){
    const slug=clean(post.slug,120);if(!slug)continue;
-   if(state&&!known.has(slug))await insertNotification(db,{key:"new-blog-post:"+slug,category:"stories",title:"New PhoneYa2 guide: "+(post.title||slug),message:clean(post.excerpt||"A new PhoneYa2 article is ready. Discover useful tips and product guidance.",420),destination:"/blog-post.html?slug="+encodeURIComponent(slug),metadata:{slug,image:clean(post.image||"",500)}});
+   const editorialEvent={key:"new-blog-post:"+slug,category:"stories",title:"New PhoneYa2 guide: "+(post.title||slug),message:clean(post.excerpt||"A new PhoneYa2 article is ready. Discover useful tips and product guidance.",420),destination:"/blog-post.html?slug="+encodeURIComponent(slug),metadata:{slug,image:clean(post.image||post.featured_image||post.cover_image||"",500)}};
+   if(state&&!known.has(slug))await insertNotification(db,editorialEvent);
+   else if(state&&known.has(slug))await refreshExistingNotification(db,editorialEvent);
    if(!known.has(slug))batch.push(db.prepare("INSERT OR IGNORE INTO store_notification_snapshots(source_type,source_id) VALUES('blog',?)").bind(slug));
   }
   if(!state)batch.push(db.prepare("INSERT OR IGNORE INTO store_notification_state(source_type) VALUES('blog')"));
@@ -52,12 +62,23 @@ async function syncEditorial(db,origin){
  }
  if(seasonal&&seasonal.enabled===true){
   const day=new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Lusaka",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
-  const active=!seasonal.scheduled||(seasonal.start&&seasonal.end&&day>=String(seasonal.start).slice(0,10)&&day<=String(seasonal.end).slice(0,10));
-  if(active){const theme=clean(seasonal.theme||"campaign",60),start=clean(seasonal.start||"always",20),end=clean(seasonal.end||"ongoing",20);await insertNotification(db,{key:"seasonal-campaign:"+theme+":"+start+":"+end,category:"seasonal",title:clean(seasonal.bannerTitle||"A PhoneYa2 seasonal campaign",180),message:clean(seasonal.bannerMessage||"Explore the latest PhoneYa2 seasonal collection and offers.",420),destination:destination(seasonal.bannerUrl||"/shop.html"),priority:"high"});}
+  const start=clean(seasonal.start||"",20).slice(0,10),end=clean(seasonal.end||"",20).slice(0,10);
+  const hasValidWindow=/^\\d{4}-\\d{2}-\\d{2}$/.test(start)&&/^\\d{4}-\\d{2}-\\d{2}$/.test(end)&&start<=end;
+  const active=seasonal.scheduled===true?(hasValidWindow&&day>=start&&day<=end):true;
+  if(active){
+   const theme=clean(seasonal.theme||"campaign",60),windowStart=start||"immediate",windowEnd=end||"ongoing";
+   const expiresAt=hasValidWindow?new Date(windowEnd+"T22:00:00.000Z").toISOString():null;
+   await insertNotification(db,{key:"seasonal-campaign:"+theme+":"+windowStart+":"+windowEnd,category:"seasonal",title:clean(seasonal.bannerTitle||"A PhoneYa2 seasonal campaign",180),message:clean(seasonal.bannerMessage||"Explore the latest PhoneYa2 seasonal collection and offers.",420),destination:destination(seasonal.bannerUrl||"/shop.html"),priority:"high",expiresAt,metadata:{theme,start:windowStart,end:windowEnd,image:clean(seasonal.bannerImage||"",500)}});
+  }
  }
 }
 async function syncCommunity(db){
- try{const r=await db.prepare("SELECT event_key,category,title,message,destination FROM community_notifications ORDER BY created_at DESC LIMIT 30").all();const statements=(r.results||[]).map(n=>db.prepare("INSERT OR IGNORE INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json) VALUES(?,?,?,?,?,?,?,?,?)").bind(uuid(),"community-mirror:"+n.event_key,"community","event",clean(n.title,180),clean(n.message,420),destination(n.destination,"/community/"),"normal","{}"));if(statements.length)await db.batch(statements);}catch(e){/* Community migration may not yet be applied. */}
+ try{
+  const r=await db.prepare("SELECT event_key,category,title,message,destination FROM community_notifications ORDER BY created_at DESC LIMIT 30").all();
+  const statements=(r.results||[]).map(n=>db.prepare("INSERT INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(event_key) DO UPDATE SET title=CASE WHEN excluded.title<>'' THEN excluded.title ELSE store_notifications.title END,message=CASE WHEN excluded.message<>'' THEN excluded.message ELSE store_notifications.message END,destination=excluded.destination,category='community'")
+   .bind(uuid(),"community-mirror:"+n.event_key,"community","event",clean(n.title,180),clean(n.message,420),destination(n.destination,"/community/"),"normal","{}"));
+  if(statements.length)await db.batch(statements);
+ }catch(e){/* Community migration may not yet be applied. */}
 }
 async function listNotifications(db,limit){const r=await db.prepare("SELECT id,event_key,category,kind,title,message,destination,priority,metadata_json,created_at,expires_at FROM store_notifications WHERE expires_at IS NULL OR expires_at>strftime('%Y-%m-%dT%H:%M:%fZ','now') ORDER BY created_at DESC LIMIT ?").bind(limit).all();return(r.results||[]).map(n=>({...n,metadata:(()=>{try{return JSON.parse(n.metadata_json||"{}")}catch{return {}}})()}));}
 export async function onRequestGet({request,env}){
