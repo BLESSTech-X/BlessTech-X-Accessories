@@ -138,7 +138,7 @@
   const seen=popupSeen(),now=Date.now(),last=Number(localStorage.getItem(POPUP_COOLDOWN_KEY)||0);
   if(last&&now-last<8*60*1000)return;
   const allowed=new Set(["products","stories","blog","price-drops","restocks","low-stock","offers"]);
-  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
+  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!isDismissed(n)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
   if(!candidates.length)return;
   const chosen=candidates.slice().sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))[0];
   markPopupSeen(chosen.id);try{localStorage.setItem(POPUP_COOLDOWN_KEY,String(now));}catch{}
