@@ -3313,13 +3313,18 @@ async function init() {
 
   // Derive homepage statistics from the same live catalogue powering the shop.
   function renderLiveCatalogueStats(items) {
-    // Both figures are calculated from the published CMS catalogue:
-    // Products counts listings; In stock counts only listings with a positive stock quantity.
-    const productCount = items.length;
-    const inStockProducts = items.filter(product => {
+    // Products includes every recorded physical unit, plus one catalogue unit
+    // for each sold-out listing so those products remain represented in the total.
+    // In stock includes only physical units with a positive stock quantity.
+    const stockQuantity = product => {
       const quantity = Number(product.stock);
-      return Number.isFinite(quantity) && quantity > 0;
-    }).length;
+      return Number.isFinite(quantity) && quantity > 0 ? Math.floor(quantity) : 0;
+    };
+    const productCount = items.reduce((total, product) => {
+      const quantity = stockQuantity(product);
+      return total + (quantity > 0 ? quantity : 1);
+    }, 0);
+    const inStockProducts = items.reduce((total, product) => total + stockQuantity(product), 0);
     const categories = new Set(items.map(p => String(p.category || '').trim()).filter(Boolean));
     const lowestPrice = items.reduce((min, product) => {
       const stock = Number(product.stock);
