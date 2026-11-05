@@ -4,7 +4,6 @@
  if(window.__py2StoreNotificationsV2)return;
  window.__py2StoreNotificationsV2=true;
  const READ_KEY="py2_store_notification_read_v2";
- const DISMISSED_KEY="py2_store_notification_dismissed_v1";
  const POPUP_SEEN_KEY="py2_store_notification_popup_seen_v2";
  const POPUP_COOLDOWN_KEY="py2_store_notification_popup_last_v2";
  const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -14,9 +13,6 @@
  function readState(){try{return JSON.parse(localStorage.getItem(READ_KEY)||"{}")||{};}catch{return {};}}
  function saveRead(id){if(!id)return;const x=readState();x[id]=Date.now();try{localStorage.setItem(READ_KEY,JSON.stringify(x));}catch{}}
  function isRead(n){return Boolean(readState()[n.id]);}
- function dismissedState(){try{return JSON.parse(localStorage.getItem(DISMISSED_KEY)||"{}")||{};}catch{return {};}}
- function isDismissed(n){return Boolean(dismissedState()[n.id]);}
- function dismissNotification(id){if(!id)return;const saved=dismissedState();saved[id]=Date.now();const entries=Object.entries(saved).sort((a,b)=>b[1]-a[1]).slice(0,500);try{localStorage.setItem(DISMISSED_KEY,JSON.stringify(Object.fromEntries(entries)));}catch{}render();}
  function popupSeen(){try{return JSON.parse(localStorage.getItem(POPUP_SEEN_KEY)||"{}")||{};}catch{return {};}}
  function markPopupSeen(id){if(!id)return;const x=popupSeen();x[id]=Date.now();const entries=Object.entries(x).sort((a,b)=>b[1]-a[1]).slice(0,160);try{localStorage.setItem(POPUP_SEEN_KEY,JSON.stringify(Object.fromEntries(entries)));}catch{}}
  const state={items:[],filter:"all",open:false,popupTimer:null};
@@ -48,17 +44,18 @@
   .py2-notify-head{padding:17px 18px 12px;border-bottom:1px solid #edf0f4;display:flex;justify-content:space-between;gap:10px;align-items:center}
   .py2-notify-head h3{margin:0;font:800 17px/1.2 Syne,system-ui,sans-serif;color:#172033}
   .py2-notify-head p{margin:4px 0 0;font:12px/1.4 system-ui;color:#778195}
-  .py2-notify-mark{border:0;background:transparent;color:#e65c13;font:700 11px system-ui;cursor:pointer;padding:7px}
+  .py2-notify-head-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .py2-notify-mark{border:0;background:transparent;color:#d97706;font:700 11px system-ui;cursor:pointer;padding:7px}
+  .py2-notify-panel-close{width:30px;height:30px;display:grid;place-items:center;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;color:#475569;font:21px/1 system-ui;cursor:pointer}
+  .py2-notify-panel-close:hover{background:#e9eef5;color:#111827;border-color:#cbd5e1}
+  .py2-notify-panel-close:focus-visible{outline:2px solid #f97316;outline-offset:2px}
   .py2-notify-tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #edf0f4}
   .py2-notify-tabs button{border:1px solid transparent;background:#f5f6f8;color:#667085;border-radius:99px;padding:7px 12px;font:700 11px system-ui;cursor:pointer}
   .py2-notify-tabs button[aria-pressed=true]{background:#fff1e8;border-color:#ffd6bd;color:#c94b00}
   .py2-notify-list{overflow:auto;overscroll-behavior:contain}
-  .py2-notify-row{display:flex;align-items:stretch;border-bottom:1px solid #f0f2f5;background:#fff}
-  .py2-notify-row:hover{background:#fff9f5}
-  .py2-notify-item{display:flex;gap:11px;padding:13px 8px 13px 16px;border:0;flex:1;min-width:0;text-decoration:none;color:inherit}
-  .py2-notify-remove{align-self:flex-start;flex:0 0 28px;width:28px;height:28px;margin:10px 10px 0 0;border:0;border-radius:8px;background:#f3f4f6;color:#7b8493;font:20px/1 system-ui;cursor:pointer;display:grid;place-items:center}
-  .py2-notify-remove:hover{background:#ffe9dc;color:#c94b00}
-  .py2-notify-remove:focus-visible{outline:2px solid #ff6500;outline-offset:2px}
+  .py2-notify-row{display:block;border-bottom:1px solid #edf0f4;background:#fff}
+  .py2-notify-row:hover{background:#f8fafc}
+  .py2-notify-item{display:flex;gap:11px;width:100%;box-sizing:border-box;padding:13px 16px;border:0;min-width:0;text-decoration:none;color:inherit}
   .py2-notify-item:hover{background:#fff9f5}
   .py2-notify-item.is-unread{background:#fffaf6}
   .py2-notify-dot{width:9px;height:9px;border-radius:50%;background:#e63946;flex:0 0 9px;margin-top:6px;box-shadow:0 0 8px #e6394655}.py2-notify-thumb{width:46px;height:46px;flex:0 0 46px;object-fit:cover;border-radius:9px;background:#f2f4f7;border:1px solid #edf0f4}
@@ -88,7 +85,7 @@
  function label(v){return categoryLabel[v]||"PhoneYa2 update";}
  function render(){
   const panel=$(".py2-notify-panel");if(!panel)return;
-  const badge=$(".py2-notify-count"),visibleItems=state.items.filter(n=>!isDismissed(n)),count=visibleItems.filter(n=>!isRead(n)).length;
+  const badge=$(".py2-notify-count"),visibleItems=state.items,count=visibleItems.filter(n=>!isRead(n)).length;
   badge.textContent=count>99?"99+":String(count);badge.hidden=!count;
   const list=visibleItems.filter(n=>state.filter==="all"||(state.filter==="unread"&&!isRead(n))||(state.filter==="read"&&isRead(n))),host=$(".py2-notify-list");
   host.replaceChildren();
@@ -107,8 +104,7 @@
    const cat=document.createElement("span");cat.className="py2-notify-tag";cat.textContent=label(n.category);
    const time=document.createElement("span");time.textContent=ago(n.created_at);
    meta.append(cat,time);c.append(t,m,meta);const thumbUrl=validImage(n.metadata?.image);let thumb=null;if(thumbUrl){thumb=document.createElement("img");thumb.className="py2-notify-thumb";thumb.src=thumbUrl;thumb.alt="";thumb.loading="lazy";thumb.onerror=()=>thumb.remove();}a.append(thumb||dot,c);
-   const remove=document.createElement("button");remove.type="button";remove.className="py2-notify-remove";remove.textContent="×";remove.setAttribute("aria-label","Remove "+safe(n.title,100));remove.title="Remove notification";remove.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();dismissNotification(n.id);});
-   row.append(a,remove);host.append(row);
+   row.append(a);host.append(row);
   });
   $$(".py2-notify-tabs button",panel).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.filter===state.filter)));
  }
@@ -138,7 +134,7 @@
   const seen=popupSeen(),now=Date.now(),last=Number(localStorage.getItem(POPUP_COOLDOWN_KEY)||0);
   if(last&&now-last<8*60*1000)return;
   const allowed=new Set(["products","stories","blog","price-drops","restocks","low-stock","offers"]);
-  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!isDismissed(n)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
+  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
   if(!candidates.length)return;
   const chosen=candidates.slice().sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))[0];
   markPopupSeen(chosen.id);try{localStorage.setItem(POPUP_COOLDOWN_KEY,String(now));}catch{}
@@ -149,11 +145,12 @@
   const header=$(".top-header-inner");if(!header||$(".py2-notify-wrap"))return;
   styles();
   const w=document.createElement("div");w.className="py2-notify-wrap";
-  w.innerHTML='<button class="py2-notify-bell" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="py2-notify-panel"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="py2-notify-count" hidden>0</span></button><section class="py2-notify-panel" id="py2-notify-panel" aria-label="PhoneYa2 notifications"><header class="py2-notify-head"><div><h3>Notifications</h3><p>Useful updates from PhoneYa2</p></div><button class="py2-notify-mark" type="button">Mark all read</button></header><nav class="py2-notify-tabs" aria-label="Notification filters"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="unread" aria-pressed="false">Unread</button><button type="button" data-filter="read" aria-pressed="false">Read</button></nav><div class="py2-notify-list" aria-live="polite"><div class="py2-notify-empty">Loading updates…</div></div><footer class="py2-notify-foot">Your read status is saved on this browser. Select any update to open its destination.</footer></section>';
+  w.innerHTML='<button class="py2-notify-bell" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="py2-notify-panel"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="py2-notify-count" hidden>0</span></button><section class="py2-notify-panel" id="py2-notify-panel" aria-label="PhoneYa2 notifications"><header class="py2-notify-head"><div><h3>Notifications</h3><p>Useful updates from PhoneYa2</p></div><div class="py2-notify-head-actions"><button class="py2-notify-mark" type="button">Mark all read</button><button class="py2-notify-panel-close" type="button" aria-label="Close notifications" title="Close">×</button></div></header><nav class="py2-notify-tabs" aria-label="Notification filters"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="unread" aria-pressed="false">Unread</button><button type="button" data-filter="read" aria-pressed="false">Read</button></nav><div class="py2-notify-list" aria-live="polite"><div class="py2-notify-empty">Loading updates…</div></div><footer class="py2-notify-foot">Your read status is saved on this browser. Select any update to open its destination.</footer></section>';
   const cart=$(".header-cart-cta",header);if(cart)header.insertBefore(w,cart);else header.append(w);
   const bell=$(".py2-notify-bell",w),panel=$(".py2-notify-panel",w);
   bell.addEventListener("click",()=>{state.open=!state.open;panel.classList.toggle("is-open",state.open);bell.setAttribute("aria-expanded",String(state.open));if(state.open)load(false);});
   $(".py2-notify-mark",panel).addEventListener("click",()=>{state.items.forEach(n=>saveRead(n.id));render();});
+  $(".py2-notify-panel-close",panel).addEventListener("click",()=>{state.open=false;panel.classList.remove("is-open");bell.setAttribute("aria-expanded","false");bell.focus();});
   $$(".py2-notify-tabs button",panel).forEach(b=>b.addEventListener("click",()=>{state.filter=b.dataset.filter;render();}));
   document.addEventListener("click",e=>{if(state.open&&!w.contains(e.target)){state.open=false;panel.classList.remove("is-open");bell.setAttribute("aria-expanded","false");}});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(state.open){state.open=false;panel.classList.remove("is-open");bell.setAttribute("aria-expanded","false");bell.focus();}closePopup();}});

@@ -253,3 +253,30 @@ body{color:var(--py2-ink);background:#f7f9fc}
   display:block!important;color:rgba(255,255,255,.86)!important;
   font-size:8px!important;line-height:1.3!important;margin-top:5px!important;
 }
+
+
+/* PhoneYa2 homepage analytics — restrained, premium business palette */
+#py2-mini-insights{
+  background:linear-gradient(135deg,#111827 0%,#1f2937 58%,#172033 100%)!important;
+  border:1px solid #344154!important;
+  box-shadow:0 12px 30px rgba(15,23,42,.16),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+#py2-mini-insights .py2-mini-insights-heading{color:#f8fafc!important}
+#py2-mini-insights .py2-mini-insights-heading>i{color:#f97316!important}
+#py2-mini-insights .py2-mini-live{color:#cbd5e1!important}
+#py2-mini-insights .py2-mini-live i{background:#22c55e!important;box-shadow:0 0 0 3px rgba(34,197,94,.14)!important}
+#py2-mini-insights .py2-mini-metric{
+  background:rgba(255,255,255,.055)!important;
+  border:1px solid rgba(203,213,225,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#py2-mini-insights .py2-mini-metric:hover{
+  transform:translateY(-2px)!important;
+  background:rgba(255,255,255,.085)!important;
+  box-shadow:0 8px 18px rgba(0,0,0,.16)!important;
+}
+#py2-mini-insights .py2-mini-metric>i{color:#fb923c!important}
+#py2-mini-insights .py2-mini-metric strong{color:#fff!important}
+#py2-mini-insights .py2-mini-metric span{color:#cbd5e1!important}
+#py2-mini-insights .py2-mini-metric:nth-child(n){background:rgba(255,255,255,.055)!important;border-color:rgba(203,213,225,.16)!important}
+#py2-mini-insights .py2-mini-insights-note{color:#aeb9c8!important}
