@@ -27,7 +27,7 @@ async function sendEmail(env,campaign,r){
  if(!env.BREVO_API_KEY||!env.BREVO_FROM_EMAIL)return{ok:false,error:"Brevo email is not configured."};
  const isPartner=campaign.audience==="partners",unsub=SITE+"/api/subscribe?action=unsubscribe&token="+encodeURIComponent(r.confirmation_token||"");
  const footer=isPartner?"<p style='font-size:12px;color:#687386'>This is an operational PhoneYa2 partner account update. Visit <a href='"+SITE+"/partners-dashboard/'>Partner Studio</a>.</p>":"<p style='font-size:12px;color:#687386'>You receive this because you confirmed PhoneYa2 email updates. <a href='"+esc(unsub)+"'>Unsubscribe</a>.</p>";
- const html="<div style='font-family:Arial,sans-serif;color:#18202b;max-width:640px;margin:auto;line-height:1.6'><div style='background:#151827;color:#fff;padding:20px'><b style='color:#ff8b45'>PHONEYA2 ACCESSORIES</b></div><div style='padding:22px;border:1px solid #e7eaf0'><h1 style='font-size:23px'>"+esc(campaign.subject)+"</h1><p>Hello "+esc(r.full_name||"there")+",</p><div style='white-space:pre-wrap'>"+esc(campaign.body_text)+"</div><p style='margin-top:26px'>PhoneYa2 Team</p>"+footer+"</div></div>";
+ const html="<div style='font-family:Arial,sans-serif;color:#18202b;max-width:640px;margin:auto;line-height:1.6'><div style='background:#151827;color:#fff;padding:20px'><b style='color:#ff8b45'>PHONEYA2 ACCESSORIES</b></div><div style='padding:22px;border:1px solid #e7eaf0'><h1 style='font-size:23px'>"+esc(campaign.subject)+"</h1><p>Hello "+esc(r.full_name||"there")+",</p><div style='white-space:pre-wrap'>"+esc(campaign.body_text)+"</div>"+(campaign.hero_image_url?"<img src='"+esc(campaign.hero_image_url)+"' alt='' style='display:block;width:100%;height:auto;border-radius:12px;margin:16px 0'>":"")+"</div><p style='margin-top:26px'>PhoneYa2 Team</p>"+footer+"</div></div>";
  try{const response=await fetch("https://api.brevo.com/v3/smtp/email",{method:"POST",headers:{"api-key":env.BREVO_API_KEY,"content-type":"application/json","accept":"application/json"},body:JSON.stringify({sender:{name:env.BREVO_FROM_NAME||"PhoneYa2 Accessories",email:env.BREVO_FROM_EMAIL},to:[{email:r.email,name:r.full_name||""}],subject:campaign.subject,htmlContent:html,textContent:campaign.body_text+"\n\nPhoneYa2 Accessories",headers:isPartner?{}:{"List-Unsubscribe":"<"+unsub+">"}})});const d=await response.json().catch(()=>({}));return response.ok?{ok:true,messageId:d.messageId||""}:{ok:false,error:"Brevo HTTP "+response.status+": "+String(d.message||d.code||"").slice(0,200)};}
  catch(e){return{ok:false,error:String(e).slice(0,200)};}
 }
@@ -44,7 +44,7 @@ export async function onRequest({request,env}){
  try{
   if(request.method==="GET"){
    const [campaignRows,subs,partners]=await Promise.all([
-    env.DB.prepare("SELECT * FROM email_campaigns ORDER BY created_at DESC LIMIT 100").all(),
+    env.DB.prepare("SELECT * FROM email_campaigns WHERE archived_at IS NULL ORDER BY created_at DESC LIMIT 100").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM customer_subscribers GROUP BY status").all(),
     env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'')").first()
    ]);

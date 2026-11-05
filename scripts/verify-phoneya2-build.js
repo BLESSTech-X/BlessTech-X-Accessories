@@ -61,4 +61,114 @@ if (!/^<\?xml version="1\.0" encoding="UTF-8"\?>\s*<urlset xmlns="http:\/\/www\.
   pass('Sitemap envelope and URL list checked (' + urls.length + ' unique URLs).');
 }
 
+const seasonalPath = path.join(root, 'content', 'settings', 'seasonal-campaigns.json');
+try {
+  const seasonal = JSON.parse(fs.readFileSync(seasonalPath, 'utf8'));
+  if (seasonal.enabled && seasonal.scheduled) {
+    const validDay = value => typeof value === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+      Number.isFinite(Date.parse(value + 'T00:00:00.000Z')) &&
+      new Date(value + 'T00:00:00.000Z').toISOString().slice(0, 10) === value;
+    if (!validDay(seasonal.start) || !validDay(seasonal.end) || seasonal.start > seasonal.end) {
+      fail('Enabled scheduled seasonal campaign has an invalid date window.');
+    } else {
+      pass('Seasonal campaign schedule is valid (' + seasonal.start + ' to ' + seasonal.end + ').');
+    }
+  } else {
+    pass('Seasonal campaign configuration parses.');
+  }
+} catch (error) {
+  fail('Seasonal campaign configuration is invalid: ' + error.message);
+}
+
+const notificationApiPath = path.join(root, 'functions', 'api', 'store-notifications.js');
+try {
+  const api = fs.readFileSync(notificationApiPath, 'utf8');
+  for (const [label, pattern] of [
+    ['idempotent notification upsert', /ON CONFLICT\(event_key\) DO UPDATE/],
+    ['metadata merge protection', /json_valid\(store_notifications\.metadata_json\)/],
+    ['scheduled campaign date validation', /seasonal\.scheduled===true/],
+    ['campaign expiry', /expires_at/]
+  ]) {
+    if (!pattern.test(api)) fail('Store notification API is missing ' + label + '.');
+  }
+  pass('Store notification persistence and schedule safeguards are present.');
+} catch (error) {
+  fail('Store notification API could not be validated: ' + error.message);
+}
+
+const migrationPath = path.join(root, 'd1', 'migrations', '0023_store_notification_engine.sql');
+try {
+  const migration = fs.readFileSync(migrationPath, 'utf8');
+  for (const table of ['store_notifications', 'store_notification_snapshots', 'store_notification_state', 'store_visitor_events', 'store_cart_sessions']) {
+    if (!migration.includes('CREATE TABLE IF NOT EXISTS ' + table)) {
+      fail('Store notification migration is missing table ' + table + '.');
+    }
+  }
+  pass('Store notification D1 migration includes all required tables.');
+} catch (error) {
+  fail('Store notification D1 migration is missing or unreadable: ' + error.message);
+}
+
+const workQueueMigrationPath = path.join(root, 'd1', 'migrations', '0024_command_centre_work_queue.sql');
+try {
+  const migration = fs.readFileSync(workQueueMigrationPath, 'utf8');
+  for (const required of [
+    'ALTER TABLE admin_notifications ADD COLUMN image_url',
+    'ALTER TABLE email_campaigns ADD COLUMN source_key',
+    'ALTER TABLE email_campaigns ADD COLUMN hero_image_url',
+    'ALTER TABLE email_campaigns ADD COLUMN archived_at',
+    'CREATE TABLE IF NOT EXISTS admin_work_items'
+  ]) {
+    if (!migration.includes(required)) fail('Command Centre work-queue migration is missing: ' + required);
+  }
+  pass('Command Centre work-queue migration includes thumbnails, prepared campaigns and persistent tasks.');
+} catch (error) {
+  fail('Command Centre work-queue migration is missing or unreadable: ' + error.message);
+}
+
+const workQueueApiPath = path.join(root, 'functions', 'api', 'admin-work-queue.js');
+try {
+  const api = fs.readFileSync(workQueueApiPath, 'utf8');
+  for (const [label, pattern] of [
+    ['product newsletter draft preparation', /prepareProductCampaign/],
+    ['article newsletter draft preparation', /prepareBlogCampaign/],
+    ['campaign draft deduplication', /source_key/],
+    ['owner ignore action', /action==="ignore"/]
+  ]) {
+    if (!pattern.test(api)) fail('Command Centre work queue is missing ' + label + '.');
+  }
+  pass('Prepared-work API supports product/article drafts and owner review actions.');
+} catch (error) {
+  fail('Command Centre work-queue API is missing or unreadable: ' + error.message);
+}
+
+const commandCentrePath = path.join(root, 'admin', 'command-center.html');
+const storefrontNotificationsPath = path.join(root, 'store-notifications.js');
+try {
+  const commandCentre = fs.readFileSync(commandCentrePath, 'utf8');
+  const storefrontNotifications = fs.readFileSync(storefrontNotificationsPath, 'utf8');
+  if (!commandCentre.includes('/admin/work-queue.js')) fail('Command Centre does not load its prepared-work interface.');
+  if (!commandCentre.includes('notification-thumb')) fail('Command Centre notification thumbnails are missing.');
+  if (!storefrontNotifications.includes('py2-notify-thumb') || !storefrontNotifications.includes('py2-notify-popup-image')) {
+    fail('Storefront notification thumbnails or popup images are missing.');
+  }
+  pass('Command Centre and storefront notification image interfaces are wired.');
+} catch (error) {
+  fail('Notification/work-queue interface validation failed: ' + error.message);
+}
+
+const schedulerPath = path.join(root, 'workers', 'notification-scheduler', 'wrangler.toml');
+try {
+  const scheduler = fs.readFileSync(schedulerPath, 'utf8');
+  if (!scheduler.includes('name = "phoneya2-notification-scheduler"') ||
+      !scheduler.includes('crons = ["*/15 * * * *"]')) {
+    fail('Notification scheduler worker is missing its expected 15-minute cron configuration.');
+  } else {
+    pass('Notification scheduler configuration is present.');
+  }
+} catch (error) {
+  fail('Notification scheduler configuration is missing or unreadable: ' + error.message);
+}
+
 if (!process.exitCode) console.log('PhoneYa2 repository integrity checks passed.');

@@ -51,7 +51,7 @@
   .py2-notify-item{display:flex;gap:11px;padding:13px 16px;border-bottom:1px solid #f0f2f5;text-decoration:none;color:inherit}
   .py2-notify-item:hover{background:#fff9f5}
   .py2-notify-item.is-unread{background:#fffaf6}
-  .py2-notify-dot{width:9px;height:9px;border-radius:50%;background:#e63946;flex:0 0 9px;margin-top:6px;box-shadow:0 0 8px #e6394655}
+  .py2-notify-dot{width:9px;height:9px;border-radius:50%;background:#e63946;flex:0 0 9px;margin-top:6px;box-shadow:0 0 8px #e6394655}.py2-notify-thumb{width:46px;height:46px;flex:0 0 46px;object-fit:cover;border-radius:9px;background:#f2f4f7;border:1px solid #edf0f4}
   .py2-notify-item.is-read .py2-notify-dot{background:#d5d9e0;box-shadow:none}
   .py2-notify-copy{min-width:0;flex:1}
   .py2-notify-title{display:block;font:750 13px/1.4 system-ui;color:#172033;overflow-wrap:anywhere}
@@ -95,7 +95,7 @@
    const meta=document.createElement("span");meta.className="py2-notify-meta";
    const cat=document.createElement("span");cat.className="py2-notify-tag";cat.textContent=label(n.category);
    const time=document.createElement("span");time.textContent=ago(n.created_at);
-   meta.append(cat,time);c.append(t,m,meta);a.append(dot,c);host.append(a);
+   meta.append(cat,time);c.append(t,m,meta);const imagePath=String(n.metadata?.image||"").trim();let thumb=null;if(imagePath.startsWith("/")&&!imagePath.startsWith("//")||/^https:\/\//i.test(imagePath)){thumb=document.createElement("img");thumb.className="py2-notify-thumb";thumb.src=imagePath;thumb.alt="";thumb.loading="lazy";thumb.onerror=()=>thumb.remove();}a.append(thumb||dot,c);host.append(a);
   });
   $$(".py2-notify-tabs button",panel).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.filter===state.filter)));
  }
