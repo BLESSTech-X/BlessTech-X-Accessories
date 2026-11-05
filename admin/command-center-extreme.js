@@ -272,6 +272,13 @@
   function setupBottomNavigation(){
     if($('#cc-bottom-navigation'))return;
     const workspace=$('#workspace-nav');if(!workspace)return;
+    if(!$('#tab-overview')){
+      if(workspace.dataset.bottomNavWatching!=='1'){
+        workspace.dataset.bottomNavWatching='1';
+        new MutationObserver(()=>{if($('#tab-overview'))setupBottomNavigation();}).observe(workspace,{childList:true,subtree:true});
+      }
+      return;
+    }
     const definitions=[['overview','⌂','Home'],['actions','⚡','Actions'],['orders','▤','Orders'],['analytics','▥','Analytics']];
     const nav=document.createElement('nav');nav.id='cc-bottom-navigation';nav.className='cc-bottom-navigation';nav.setAttribute('aria-label','Main Command Centre navigation');
     definitions.forEach(([id,icon,label])=>{const source=$('#tab-'+id);if(!source)return;const button=document.createElement('button');button.type='button';button.className='cc-bottom-tab';button.dataset.target=id;button.innerHTML='<span class="cc-bottom-icon" aria-hidden="true">'+icon+'</span><span>'+label+'</span>';button.addEventListener('click',()=>source.click());nav.append(button);});
