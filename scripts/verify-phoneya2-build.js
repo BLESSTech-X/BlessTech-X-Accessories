@@ -97,4 +97,30 @@ try {
   fail('Store notification API could not be validated: ' + error.message);
 }
 
+const migrationPath = path.join(root, 'd1', 'migrations', '0023_store_notification_engine.sql');
+try {
+  const migration = fs.readFileSync(migrationPath, 'utf8');
+  for (const table of ['store_notifications', 'store_notification_snapshots', 'store_notification_state', 'store_visitor_events', 'store_cart_sessions']) {
+    if (!new RegExp('CREATE TABLE IF NOT EXISTS\\\\s+' + table + '\\\\b', 'i').test(migration)) {
+      fail('Store notification migration is missing table ' + table + '.');
+    }
+  }
+  pass('Store notification D1 migration includes all required tables.');
+} catch (error) {
+  fail('Store notification D1 migration is missing or unreadable: ' + error.message);
+}
+
+const schedulerPath = path.join(root, 'workers', 'notification-scheduler', 'wrangler.toml');
+try {
+  const scheduler = fs.readFileSync(schedulerPath, 'utf8');
+  if (!/name\\s*=\\s*["']phoneya2-notification-scheduler["']/.test(scheduler) ||
+      !/crons\\s*=\\s*\\[["']\\*\\/15 \\* \\* \\* \\*["']\\]/.test(scheduler)) {
+    fail('Notification scheduler worker is missing its expected 15-minute cron configuration.');
+  } else {
+    pass('Notification scheduler configuration is present.');
+  }
+} catch (error) {
+  fail('Notification scheduler configuration is missing or unreadable: ' + error.message);
+}
+
 if (!process.exitCode) console.log('PhoneYa2 repository integrity checks passed.');
