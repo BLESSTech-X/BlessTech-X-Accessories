@@ -23,7 +23,7 @@ if (process.exitCode) process.exit();
 let slugs;
 try {
   slugs = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-  if (!Array.isArray(slugs) || slugs.some(s => typeof s !== 'string' || !/^[^\s/\\?#]{1,150}$/u.test(s))) {
+  if (!Array.isArray(slugs) || slugs.some(s => typeof s !== 'string' || !/^[^\s/\?#]{1,150}$/u.test(s))) {
     throw new Error('Product index must be an array of valid product slugs.');
   }
   if (new Set(slugs).size !== slugs.length) throw new Error('Product index contains duplicate slugs.');
@@ -206,11 +206,11 @@ const schedulerWorkerPath = path.join(root, 'workers', 'notification-scheduler',
 try {
   const worker = fs.readFileSync(schedulerWorkerPath, 'utf8');
   for (const [label, pattern] of [
-    ['D1-backed scheduled automation', /if\\(!env\\.DB\\)throw new Error/],
+    ['D1-backed scheduled automation', /if\(!env\.DB\)throw new Error/],
     ['published-content change detection', /async function syncPublished/],
     ['automatic campaign and work preparation', /async function prepareWork/],
-    ['product and blog newsletter generation', /prepareCampaign\\(db,"product"|prepareCampaign\\(db,"blog"/],
-    ['scheduled work preparation cycle', /await prepareWork\\(env\\.DB,products,posts\\)/],
+    ['product and blog newsletter generation', /prepareCampaign\(db,"product"|prepareCampaign\(db,"blog"/],
+    ['scheduled work preparation cycle', /await prepareWork\(env\.DB,products,posts\)/],
     ['failure reporting', /automation cycle failed/]
   ]) if (!pattern.test(worker)) fail('Scheduled automation worker is missing ' + label + '.');
   const workerConfig = fs.readFileSync(path.join(root, 'workers', 'notification-scheduler', 'wrangler.toml'), 'utf8');
@@ -230,10 +230,10 @@ try {
     ['category filters', /work-filter/],
     ['owner approval action', /data-work-action="approve"/],
     ['completion and ignore actions', /data-work-action="complete"|data-work-action="ignore"/],
-    ['deduplicated staggered popups', /detectNewWork[\\s\\S]*popupQueue/]
+    ['deduplicated staggered popups', /detectNewWork[\s\S]*popupQueue/]
   ]) if (!pattern.test(workQueue)) fail('Prepared-work interface is missing ' + label + '.');
   const api = fs.readFileSync(path.join(root, 'functions', 'api', 'admin-work-queue.js'), 'utf8');
-  if (!/approve:"approved"/.test(api) || !/campaignId\\?"A newsletter draft has been created/.test(api)) {
+  if (!/approve:"approved"/.test(api) || !/campaignId\?"A newsletter draft has been created/.test(api)) {
     fail('Prepared-work API is missing approval handling or truthful campaign status.');
   }
   pass('Prepared-work interface includes image alerts, search, filters and owner-controlled task actions.');
