@@ -164,6 +164,20 @@ if(action==="site.unpublish"){
 await db.prepare("UPDATE partner_site_settings SET published=0,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
 return json({ok:true,message:"Your business website is now private."});
 }
+if(action==="builder.load"){
+const row=await db.prepare("SELECT project_json,draft_html,draft_css,updated_at FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
+let project={};try{project=JSON.parse(row?.project_json||"{}")}catch{}
+return json({ok:true,project,html:row?.draft_html||"",css:row?.draft_css||"",updated_at:row?.updated_at||null});
+}
+if(action==="builder.save"){
+let project={};try{project=typeof body.project==="string"?JSON.parse(body.project):body.project||{}}catch{return fail("The visual design could not be read. Please retry saving.");}
+if(!project||typeof project!=="object"||Array.isArray(project))return fail("Invalid visual project.");
+const projectJson=JSON.stringify(project),html=String(body.html||""),css=String(body.css||"");
+if(projectJson.length>1200000||html.length>700000||css.length>350000)return fail("This design is too large to save. Reduce large images or duplicated sections and try again.",413);
+if(!projectJson||projectJson==="{}")return fail("Add at least one section before saving.");
+await db.prepare("INSERT INTO partner_site_builder(advertiser_id,project_json,draft_html,draft_css,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(advertiser_id) DO UPDATE SET project_json=excluded.project_json,draft_html=excluded.draft_html,draft_css=excluded.draft_css,updated_at=excluded.updated_at").bind(partner.advertiser_id,projectJson,html,css,now).run();
+return json({ok:true,message:"Visual builder draft saved.",updated_at:now});
+}
 if(action==="site.save"){
 const activePackage=await db.prepare("SELECT ps.package_key,pp.benefits_json FROM partner_subscriptions ps JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? AND ps.status='active' ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first();
 let benefits={};try{benefits=JSON.parse(activePackage?.benefits_json||'{}')}catch{}
