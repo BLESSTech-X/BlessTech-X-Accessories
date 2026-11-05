@@ -101,7 +101,7 @@ const migrationPath = path.join(root, 'd1', 'migrations', '0023_store_notificati
 try {
   const migration = fs.readFileSync(migrationPath, 'utf8');
   for (const table of ['store_notifications', 'store_notification_snapshots', 'store_notification_state', 'store_visitor_events', 'store_cart_sessions']) {
-    if (!new RegExp('CREATE TABLE IF NOT EXISTS\\\\s+' + table + '\\\\b', 'i').test(migration)) {
+    if (!migration.includes('CREATE TABLE IF NOT EXISTS ' + table)) {
       fail('Store notification migration is missing table ' + table + '.');
     }
   }
@@ -113,8 +113,8 @@ try {
 const schedulerPath = path.join(root, 'workers', 'notification-scheduler', 'wrangler.toml');
 try {
   const scheduler = fs.readFileSync(schedulerPath, 'utf8');
-  if (!/name\\s*=\\s*["']phoneya2-notification-scheduler["']/.test(scheduler) ||
-      !/crons\\s*=\\s*\\[["']\\*\\/15 \\* \\* \\* \\*["']\\]/.test(scheduler)) {
+  if (!scheduler.includes('name = "phoneya2-notification-scheduler"') ||
+      !scheduler.includes('crons = ["*/15 * * * *"]')) {
     fail('Notification scheduler worker is missing its expected 15-minute cron configuration.');
   } else {
     pass('Notification scheduler configuration is present.');
