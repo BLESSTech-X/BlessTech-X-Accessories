@@ -66,7 +66,7 @@ try {
   const seasonal = JSON.parse(fs.readFileSync(seasonalPath, 'utf8'));
   if (seasonal.enabled && seasonal.scheduled) {
     const validDay = value => typeof value === 'string' &&
-      /^\\d{4}-\\d{2}-\\d{2}$/.test(value) &&
+      /^\d{4}-\d{2}-\d{2}$/.test(value) &&
       Number.isFinite(Date.parse(value + 'T00:00:00.000Z')) &&
       new Date(value + 'T00:00:00.000Z').toISOString().slice(0, 10) === value;
     if (!validDay(seasonal.start) || !validDay(seasonal.end) || seasonal.start > seasonal.end) {
@@ -85,9 +85,9 @@ const notificationApiPath = path.join(root, 'functions', 'api', 'store-notificat
 try {
   const api = fs.readFileSync(notificationApiPath, 'utf8');
   for (const [label, pattern] of [
-    ['idempotent notification upsert', /ON CONFLICT\\(event_key\\) DO UPDATE/],
-    ['metadata merge protection', /json_valid\\(store_notifications\\.metadata_json\\)/],
-    ['scheduled campaign date validation', /seasonal\\.scheduled===true/],
+    ['idempotent notification upsert', /ON CONFLICT\(event_key\) DO UPDATE/],
+    ['metadata merge protection', /json_valid\(store_notifications\.metadata_json\)/],
+    ['scheduled campaign date validation', /seasonal\.scheduled===true/],
     ['campaign expiry', /expires_at/]
   ]) {
     if (!pattern.test(api)) fail('Store notification API is missing ' + label + '.');
