@@ -143,6 +143,9 @@ collections:
           - { label: "Hero line 1", name: "hero_line1", widget: "string", hint: "Keep this short; it appears in the main homepage heading." }
           - { label: "Hero line 2", name: "hero_line2", widget: "string", hint: "Second line of the main homepage heading." }
           - { label: "Hero subtitle", name: "hero_sub", widget: "text" }
+          - { label: "Promotion active", name: "promotion_active", widget: "boolean", default: false, required: false, hint: "Enable the real campaign countdown only while a dated promotion is running." }
+          - { label: "Promotion start", name: "promotion_start", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", required: false, hint: "The countdown remains hidden before this date and time." }
+          - { label: "Promotion end", name: "promotion_end", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", required: false, hint: "The countdown automatically hides at this exact date and time." }
           - { label: "Automatically show discounted products as Special Offers", name: "show_discounted_products", widget: "boolean", default: true, required: false, hint: "When enabled, in-stock products with an Original Price higher than Price are added to the homepage hero carousel as Special Offers." }
           - { label: "Maximum automatic Special Offer slides", name: "max_discounted_promotions", widget: "number", min: 0, max: 12, default: 6, required: false, hint: "Choose how many discounted products can be added automatically. Set to 0 to turn off automatic sale slides." }
           - label: "Additional Homepage Hero Promotions"
