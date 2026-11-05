@@ -8,7 +8,7 @@ export async function onRequest({request,env}){
  if(!sameOrigin(request))return json({ok:false,error:"Cross-origin request blocked."},403);
  if(!env.DB)return json({ok:false,error:"Partner enquiries are temporarily unavailable."},503);
  let body={};try{body=await request.json();}catch{return json({ok:false,error:"Invalid request."},400);}
- if(clean(body.website,200))return json({ok:false,error:"We could not verify this submission. Please reload the page and try again."},400);
+ if(clean(body.website,200)||clean(body.company_site,200))return json({ok:false,error:"We could not verify this submission. Please reload the page and try again."},400);
  const slug=clean(body.slug,80).toLowerCase();const name=clean(body.name,100),phone=clean(body.phone,40),email=clean(body.email,254),message=clean(body.message,2000);
  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||!name||!message||(!phone&&!email))return json({ok:false,error:"Please provide your name, a phone number or email, and a message."},400);
  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return json({ok:false,error:"Enter a valid email address."},400);
