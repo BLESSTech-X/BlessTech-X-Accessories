@@ -20,7 +20,7 @@
  try{state.knownInitialized=localStorage.getItem(KNOWN_KEY)!==null;state.soundEnabled=localStorage.getItem(SOUND_KEY)==="1";}catch{}
  function groupOf(category){if(category==="products")return"products";if(category==="offers")return"offers";if(["blog","stories"].includes(category))return"blog";if(category==="community")return"community";if(["price-drops","restocks","low-stock"].includes(category))return"discounts";if(["seasonal","system","businesses"].includes(category))return"updates";return"other";}
  function playDing(){if(!state.soundEnabled||!state.audioContext)return;try{const ctx=state.audioContext,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.setValueAtTime(880,ctx.currentTime);osc.frequency.exponentialRampToValueAtTime(1320,ctx.currentTime+.11);gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+.018);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.34);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.35);}catch{}}
- const categoryLabel={products:"New product",offers:"Partner offer","price-drops":"Price drop",restocks:"Back in stock","low-stock":"Limited availability",community:"Community",businesses:"Partner update",blog:"New story",stories:"New story",seasonal:"Seasonal update",system:"PhoneYa2 update"};
+ const categoryLabel={products:"Products",offers:"Offers","price-drops":"Discounts",restocks:"Discounts","low-stock":"Discounts",community:"Community",businesses:"Updates",blog:"Blog",stories:"Blog",seasonal:"Updates",system:"Updates"};
  const categoryIcon={products:"🛍️",offers:"🤝","price-drops":"🏷️",restocks:"↗","low-stock":"⏳",stories:"📖",blog:"📖",community:"💬",seasonal:"✨",system:"🔔"};
  function validImage(value){const raw=String(value||"").trim();if(!raw||raw.startsWith("//")||/^data:|^javascript:/i.test(raw))return "";try{const u=new URL(raw,location.origin);if(!["https:","http:"].includes(u.protocol)||u.username||u.password)return "";if(u.origin!==location.origin&&u.protocol!=="https:")return "";return u.href;}catch{return "";}}
  function validDestination(value){
@@ -179,7 +179,7 @@
  function init(){
   build();if(!$(".py2-notify-wrap"))return;
   load(true);
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden)load(false);});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)load(true);});
   setInterval(()=>{if(!document.hidden)load(true);},60000);
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
