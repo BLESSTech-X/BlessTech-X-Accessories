@@ -66,6 +66,7 @@ export function renderPartnerSite(data) {
   const items = data.items || [];
   const posts = data.posts || [];
   const socialEmbeds = data.socialEmbeds || [];
+  const canonicalSlug = encodeURIComponent(data.slug || "");
   const primary = /^#[0-9a-f]{6}$/i.test(site.primary_color || "") ? site.primary_color : "#ff6000";
   const accent = /^#[0-9a-f]{6}$/i.test(site.accent_color || "") ? site.accent_color : "#173f73";
   const businessName = business.business_name || "PhoneYa2 Partner";
@@ -153,7 +154,6 @@ export function renderPartnerSite(data) {
   const share = data.share || {};
   const title = share.title || defaultTitle;
   const description = share.description || defaultDescription;
-  const canonicalSlug = encodeURIComponent(data.slug || "");
 
   const announcementText = String(site.announcement_text || "").trim();
   const announcementHref = safeActionUrl(site.announcement_link) || "#contact";
