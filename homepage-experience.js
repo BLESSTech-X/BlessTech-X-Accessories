@@ -28,7 +28,7 @@
 
   // Clean escaped line-break markers if any CMS/product text reaches the page
   // without being decoded. This only touches rendered text/labels, never scripts.
-  const cleanEscapedBreaks=value=>String(value||'').replace(/\\\\r\\\\n|\\\\n|\\\\r/g,' ').replace(/[ \\t]{2,}/g,' ').trim();
+  const cleanEscapedBreaks=value=>String(value||'').replace(/\\r\\n|\\n|\\r/g,' ').replace(/[ \t]{2,}/g,' ').trim();
   const cleanRenderedText=root=>{
     if(!root)return;
     const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
@@ -37,12 +37,12 @@
     nodes.forEach(node=>{
       const parent=node.parentElement;
       if(!parent||parent.closest('script,style,textarea,pre,code'))return;
-      if(/\\\\[nr]/.test(node.nodeValue||''))node.nodeValue=cleanEscapedBreaks(node.nodeValue);
+      if(/\\[nr]/.test(node.nodeValue||''))node.nodeValue=cleanEscapedBreaks(node.nodeValue);
     });
     if(root.querySelectorAll)root.querySelectorAll('[title],[aria-label],[alt]').forEach(el=>{
       ['title','aria-label','alt'].forEach(attr=>{
         const value=el.getAttribute(attr);
-        if(value&&/\\\\[nr]/.test(value))el.setAttribute(attr,cleanEscapedBreaks(value));
+        if(value&&/\\[nr]/.test(value))el.setAttribute(attr,cleanEscapedBreaks(value));
       });
     });
   };
@@ -56,7 +56,7 @@
         record.addedNodes&&record.addedNodes.forEach(node=>{
           if(node.nodeType===Node.TEXT_NODE){
             const parent=node.parentElement;
-            if(parent&&!parent.closest('script,style,textarea,pre,code')&&/\\\\[nr]/.test(node.nodeValue||''))node.nodeValue=cleanEscapedBreaks(node.nodeValue);
+            if(parent&&!parent.closest('script,style,textarea,pre,code')&&/\\[nr]/.test(node.nodeValue||''))node.nodeValue=cleanEscapedBreaks(node.nodeValue);
           }else if(node.nodeType===Node.ELEMENT_NODE)cleanRenderedText(node);
         });
       });
