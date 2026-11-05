@@ -1792,7 +1792,7 @@ body .hero-slide .hero-slide-title span {
   <link rel="stylesheet" href="/phoneya2-performance.css?v=20261030-white-canvas1">
   <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-image-polish2">
 <link rel="stylesheet" href="/storefront-canvas.css?v=20261030-white-canvas2">
-</head>
+  <link rel="stylesheet" href="/premium-homepage.css?v=20261105-1">\n</head>
 <body class="py2-show-floating-top">
 
 <!-- SHARED PHONEYA2 HEADER -->
@@ -2814,41 +2814,33 @@ function renderCsGrid(cat) {
   });
 }
 
-(function startCountdown() {
-  const now = new Date();
-  const end = new Date(now); end.setHours(23,59,59,999);
-  function update() {
-    const diff = end - new Date();
-    if (diff <= 0) { end.setDate(end.getDate()+1); return; }
-    const h=Math.floor(diff/3600000);
-    const m=Math.floor((diff%3600000)/60000);
-    const s=Math.floor((diff%60000)/1000);
-    const pad=n=>String(n).padStart(2,'0');
-    ['cd-h','cd-m','cd-s'].forEach((id,i)=>{
-      const el=document.getElementById(id); if(!el) return;
-      const val=pad([h,m,s][i]);
-      if(el.textContent!==val){el.textContent=val;el.style.animation='none';requestAnimationFrame(()=>el.style.animation='');}
-    });
-  }
-  update(); setInterval(update,1000);
-})();
-
-(function startHeroOfferCountdown() {
+function updatePromotionCountdown(settings) {
+  const heroWrap = document.querySelector('.hero-offer-countdown-wrap');
+  const flashTimer = document.getElementById('countdown');
+  const flashBadge = document.querySelector('#flash-section .flash-badge');
+  const start = Date.parse(settings && settings.promotion_start || '');
+  const end = Date.parse(settings && settings.promotion_end || '');
+  const active = !!(settings && settings.promotion_active === true && Number.isFinite(start) && Number.isFinite(end) && end > start && Date.now() >= start && Date.now() < end);
+  [heroWrap, flashTimer, flashBadge].forEach(el => { if (el) el.hidden = !active; });
+  const heroLabel = document.querySelector('.hero-offer-countdown-caption');
+  if (heroLabel && active) heroLabel.textContent = 'OFFER ENDS IN';
+  if (!active) return;
   const pad = n => String(n).padStart(2, '0');
-  function updateOfferClock() {
-    const now = new Date();
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999);
-    const secondsLeft = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
-    const values = [Math.floor(secondsLeft / 3600), Math.floor((secondsLeft % 3600) / 60), secondsLeft % 60];
-    ['offer-cd-h', 'offer-cd-m', 'offer-cd-s'].forEach((id, i) => {
+  const update = () => {
+    const seconds = Math.max(0, Math.floor((end - Date.now()) / 1000));
+    const values = [Math.floor(seconds / 3600), Math.floor((seconds % 3600) / 60), seconds % 60];
+    ['offer-cd-h','offer-cd-m','offer-cd-s','cd-h','cd-m','cd-s'].forEach((id, i) => {
       const el = document.getElementById(id);
-      if (el) el.textContent = pad(values[i]);
+      if (el) el.textContent = pad(values[i % 3]);
     });
-  }
-  updateOfferClock();
-  setInterval(updateOfferClock, 1000);
-})();
+    if (seconds <= 0) {
+      [heroWrap, flashTimer, flashBadge].forEach(el => { if (el) el.hidden = true; });
+      window.clearInterval(timer);
+    }
+  };
+  update();
+  const timer = window.setInterval(update, 1000);
+}
 
 function initHero() {
   const slidesEl = document.getElementById('hero-slides');
@@ -3248,6 +3240,7 @@ async function loadSettings() {
 
 async function init() {
   const homepageSettings = await loadSettings();
+  updatePromotionCountdown(homepageSettings);
 
   let products = [];
   try {
@@ -3890,7 +3883,7 @@ var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 </script>
 <!--End of Tawk.to Script-->
 
-<script src="/cart.js" defer></script>
+<script src="/cart.js" defer></script>\n  <script src="/homepage-experience.js?v=20261105-1" defer></script>
 
 
   <script src="/blog-comment-success.js?v=20261029-shared-success2" defer></script><script src="/blog-widgets.js?v=20261029-shared-success1" defer></script>
