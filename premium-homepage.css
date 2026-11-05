@@ -157,3 +157,46 @@ body{color:var(--py2-ink);background:#f7f9fc}
  #py2-mini-insights .py2-mini-metric strong{font-size:16px!important}
  #py2-mini-insights .py2-mini-metric span{font-size:9px!important}
 }
+
+
+/* Compact analytics strip: useful context without pushing shopping below the fold. */
+#py2-mini-insights{
+  margin:10px 0 0!important;
+  padding:8px 10px 7px!important;
+  border-radius:11px!important;
+  box-shadow:0 5px 16px rgba(7,27,58,.14)!important;
+}
+#py2-mini-insights .py2-mini-insights-heading{
+  display:flex!important;align-items:center!important;gap:7px!important;
+  margin:0 0 6px!important;font-size:9px!important;line-height:1.2!important;
+}
+#py2-mini-insights .py2-mini-insights-heading>i{font-size:11px!important}
+#py2-mini-insights .py2-mini-live{margin-left:auto!important;font-size:8px!important}
+#py2-mini-insights .py2-mini-insights-grid{
+  display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+#py2-mini-insights .py2-mini-metric{
+  display:grid!important;grid-template-columns:17px minmax(0,1fr)!important;
+  align-items:center!important;column-gap:5px!important;
+  min-height:43px!important;padding:5px 6px!important;border-radius:8px!important;
+  box-shadow:none!important;
+}
+#py2-mini-insights .py2-mini-metric:hover{transform:translateY(-1px)!important;box-shadow:0 4px 9px rgba(1,13,33,.15)!important}
+#py2-mini-insights .py2-mini-metric>i{
+  grid-row:1 / span 2!important;font-size:12px!important;
+}
+#py2-mini-insights .py2-mini-metric strong{font-size:14px!important;line-height:1!important}
+#py2-mini-insights .py2-mini-metric span{font-size:8px!important;line-height:1.1!important}
+#py2-mini-insights .py2-mini-insights-note{display:none!important}
+@media(max-width:900px){
+  #py2-mini-insights .py2-mini-insights-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:480px){
+  #py2-mini-insights{margin-top:8px!important;padding:7px!important}
+  #py2-mini-insights .py2-mini-insights-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important}
+  #py2-mini-insights .py2-mini-metric{grid-template-columns:1fr!important;min-height:43px!important;padding:5px 3px!important;text-align:center!important;gap:2px!important}
+  #py2-mini-insights .py2-mini-metric>i{display:none!important}
+  #py2-mini-insights .py2-mini-metric strong{font-size:12px!important}
+  #py2-mini-insights .py2-mini-metric span{grid-column:1!important;font-size:7px!important}
+}
