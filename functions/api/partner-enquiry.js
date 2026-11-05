@@ -42,7 +42,7 @@ export async function onRequest({request,env}){
  // Notification failure must never undo or misreport a successfully saved enquiry.
  try{
   await env.DB.prepare("INSERT OR IGNORE INTO partner_notifications(id,advertiser_id,event_key,category,kind,title,message,priority,destination,action_label,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
-   .bind(crypto.randomUUID(),site.advertiser_id,"enquiry:"+id,"enquiries","event","New customer enquiry",name+" sent a message through your business website. Contact: "+(phone||email),"high","enquiries","Open inbox",new Date().toISOString()).run();
+   .bind(crypto.randomUUID(),site.advertiser_id,"enquiry:"+id,"enquiries","event","New customer enquiry",name+" sent a message via "+source+". Contact: "+(phone||email),"high","enquiries","Open inbox",new Date().toISOString()).run();
  }catch(error){console.error("Partner enquiry notification could not be created:",error?.stack||error);}
  // Record the rate-limit attempt after the lead is safely persisted.
  await env.DB.prepare("INSERT INTO partner_enquiry_attempts(ip_hash,attempted_at) VALUES(?,?)").bind(ip,now).run().catch(error=>console.error("Partner enquiry rate-limit log unavailable:",error?.message||error));
