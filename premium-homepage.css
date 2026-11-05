@@ -280,3 +280,31 @@ body{color:var(--py2-ink);background:#f7f9fc}
 #py2-mini-insights .py2-mini-metric span{color:#cbd5e1!important}
 #py2-mini-insights .py2-mini-metric:nth-child(n){background:rgba(255,255,255,.055)!important;border-color:rgba(203,213,225,.16)!important}
 #py2-mini-insights .py2-mini-insights-note{color:#aeb9c8!important}
+
+
+/* PhoneYa2 analytics refresh: clean white surfaces with confident brand blue. */
+#py2-mini-insights{
+  background:linear-gradient(135deg,#ffffff 0%,#f3f8ff 100%)!important;
+  border:1px solid #d7e5f5!important;
+  box-shadow:0 8px 24px rgba(17,65,115,.08)!important;
+}
+#py2-mini-insights .py2-mini-insights-heading{color:#12345a!important}
+#py2-mini-insights .py2-mini-insights-heading>i{color:#1674d1!important}
+#py2-mini-insights .py2-mini-live{color:#26734d!important}
+#py2-mini-insights .py2-mini-live i{background:#20a464!important;box-shadow:0 0 0 3px rgba(32,164,100,.12)!important}
+#py2-mini-insights .py2-mini-metric,
+#py2-mini-insights .py2-mini-metric:nth-child(n){
+  background:#fff!important;
+  border:1px solid #e0eaf5!important;
+  box-shadow:0 2px 7px rgba(18,52,90,.045)!important;
+}
+#py2-mini-insights .py2-mini-metric:hover{
+  transform:translateY(-2px)!important;
+  background:#f8fbff!important;
+  border-color:#b9d4f2!important;
+  box-shadow:0 7px 16px rgba(22,116,209,.10)!important;
+}
+#py2-mini-insights .py2-mini-metric>i{color:#1674d1!important}
+#py2-mini-insights .py2-mini-metric strong{color:#102b49!important}
+#py2-mini-insights .py2-mini-metric span{color:#64748b!important}
+#py2-mini-insights .py2-mini-insights-note{color:#64748b!important}
