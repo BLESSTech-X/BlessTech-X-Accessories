@@ -222,7 +222,7 @@ const replaceLiveSection=(id,key,label)=>{
 const opening=new RegExp('<section\\b(?=[^>]*\\bid="'+id+'")[^>]*>','i');
 const match=opening.exec(sourceHtml);if(!match)return;
 const tags=/<\/?section\b[^>]*>/gi;tags.lastIndex=match.index+match[0].length;let depth=1,tag;
-while((tag=tags.exec(sourceHtml))&&depth){if(/^<\//.test(tag[0]))depth--;else if(!/\/\s*>$/.test(tag[0]))depth++;}
+while(depth>0&&(tag=tags.exec(sourceHtml))){if(/^<\//.test(tag[0]))depth--;else if(!/\/\s*>$/.test(tag[0]))depth++;}
 if(depth===0){const slot='<section class="py2-live-slot" data-phoneya2-component="'+key+'"><div><small>LIVE PHONEYA2 CONTENT</small><h2>'+label+'</h2><p>This section stays connected to your PhoneYa2 '+label.toLowerCase()+'.</p></div></section>';sourceHtml=sourceHtml.slice(0,match.index)+slot+sourceHtml.slice(tags.lastIndex);}
 };
 replaceLiveSection("products","catalogue","Live product catalogue");
