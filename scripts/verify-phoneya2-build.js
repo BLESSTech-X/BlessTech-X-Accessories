@@ -156,7 +156,7 @@ try {
   for (const [label, pattern] of [
     ['category-based notification filters', /data-filter="products".*data-filter="updates".*data-filter="offers".*data-filter="blog".*data-filter="community".*data-filter="discounts"/s],
     ['staggered notification queue', /queueNewNotifications[\s\S]*popupQueue/],
-    ['notification filters remain above the scrollable list', /py2-notify-tabs\\{position:relative;z-index:3;flex:0 0 auto[\\s\\S]*?py2-notify-list\\{position:relative;z-index:1;flex:1 1 auto;min-height:0/]
+    ['notification filters remain above the scrollable list', /py2-notify-tabs\{position:relative;z-index:3;flex:0 0 auto[\s\S]*?py2-notify-list\{position:relative;z-index:1;flex:1 1 auto;min-height:0/]
   ]) if (!pattern.test(storefrontNotifications)) fail('Storefront notification interface is missing ' + label + '.');
   if (storefrontNotifications.includes('py2-notify-sound') || storefrontNotifications.includes('Sound off')) fail('Storefront notification sound control should be removed.');
   const workQueue = fs.readFileSync(path.join(root, 'admin', 'work-queue.js'), 'utf8');
