@@ -3,6 +3,7 @@
 ALTER TABLE admin_notifications ADD COLUMN image_url TEXT NOT NULL DEFAULT '';
 ALTER TABLE email_campaigns ADD COLUMN source_key TEXT NOT NULL DEFAULT '';
 ALTER TABLE email_campaigns ADD COLUMN hero_image_url TEXT NOT NULL DEFAULT '';
+ALTER TABLE email_campaigns ADD COLUMN archived_at TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_email_campaigns_source_key
  ON email_campaigns(source_key) WHERE source_key<>'';
 
