@@ -206,9 +206,9 @@ await db.prepare("UPDATE partner_site_settings SET published=0,updated_at=? WHER
 return json({ok:true,message:"Your business website is now private."});
 }
 if(action==="builder.load"){
-const row=await db.prepare("SELECT project_json,draft_html,draft_css,updated_at FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
+const row=await db.prepare("SELECT project_json,draft_html,draft_css,published_html,published_css,builder_published,updated_at FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
 let project={};try{project=JSON.parse(row?.project_json||"{}")}catch{}
-return json({ok:true,project,html:row?.draft_html||"",css:row?.draft_css||"",updated_at:row?.updated_at||null});
+return json({ok:true,project,html:row?.draft_html||"",css:row?.draft_css||"",published:!!row?.builder_published,updated_at:row?.updated_at||null});
 }
 if(action==="builder.save"){
 let project={};try{project=typeof body.project==="string"?JSON.parse(body.project):body.project||{}}catch{return fail("The visual design could not be read. Please retry saving.");}
@@ -219,6 +219,23 @@ if(!projectJson||projectJson==="{}")return fail("Add at least one section before
 await db.prepare("INSERT INTO partner_site_builder(advertiser_id,project_json,draft_html,draft_css,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(advertiser_id) DO UPDATE SET project_json=excluded.project_json,draft_html=excluded.draft_html,draft_css=excluded.draft_css,updated_at=excluded.updated_at").bind(partner.advertiser_id,projectJson,html,css,now).run();
 return json({ok:true,message:"Visual builder draft saved.",updated_at:now});
 }
+
+if(action==="builder.publish"){
+const row=await db.prepare("SELECT draft_html,draft_css FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
+if(!row||!String(row.draft_html||"").trim())return fail("Save your visual design before publishing it.");
+const safeHtml=sanitizeBuilderHtml(row.draft_html),safeCss=sanitizeBuilderCss(row.draft_css||"");
+if(!safeHtml.trim())return fail("The design contains no publishable content.");
+const ready=await db.prepare("SELECT site_title,hero_title FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
+if(!ready)return fail("Your partner website settings could not be found.");
+await db.prepare("UPDATE partner_site_builder SET published_html=?,published_css=?,builder_published=1,updated_at=? WHERE advertiser_id=?").bind(safeHtml,safeCss,now,partner.advertiser_id).run();
+await db.prepare("UPDATE partner_site_settings SET published=1,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
+return json({ok:true,message:"Your visual website is now published.",published:true});
+}
+if(action==="builder.use_standard"){
+await db.prepare("UPDATE partner_site_builder SET builder_published=0,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
+return json({ok:true,message:"Your existing website editor is now controlling the public website.",published:false});
+}
+
 if(action==="site.save"){
 const activePackage=await db.prepare("SELECT ps.package_key,pp.benefits_json FROM partner_subscriptions ps JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? AND ps.status='active' ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first();
 let benefits={};try{benefits=JSON.parse(activePackage?.benefits_json||'{}')}catch{}
