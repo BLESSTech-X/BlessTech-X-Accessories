@@ -53,8 +53,8 @@ async function load(forceLive=false){
 status('Loading your existing website…');const data=await api('builder.load');
 const oldBlankStarter=/Make your next great choice here|Introduce your business, explain what makes it special/i.test(data.html||'');
 const useSaved=!forceLive&&hasSavedProject(data.project)&&!oldBlankStarter;
-if(useSaved){init(data.project);status(data.published?'Visual builder controls the published website':'Saved visual draft loaded');}
-else{init(null);importLiveWebsite(data.source_html);dirty=false;status('Your existing website loaded · ready to edit');}
+if(useSaved){if(!editor)init(data.project);else editor.loadProjectData(data.project);status(data.published?'Visual builder controls the published website':'Saved visual draft loaded');}
+else{if(!editor)init(null);importLiveWebsite(data.source_html);dirty=false;status('Your existing website loaded · ready to edit');}
 lastSaved=data.updated_at;
 }
 async function save(){if(!editor||saving)return;saving=true;$('save').disabled=true;status('Saving…');try{const result=await api('builder.save',{project:editor.getProjectData(),html:editor.getHtml(),css:editor.getCss()});dirty=false;lastSaved=result.updated_at;status('All changes saved');toast('Your visual design draft is saved in PhoneYa2.')}catch(error){status('Save failed');toast(error.message)}finally{saving=false;$('save').disabled=false}}
