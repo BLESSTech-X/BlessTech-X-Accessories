@@ -61,4 +61,40 @@ if (!/^<\?xml version="1\.0" encoding="UTF-8"\?>\s*<urlset xmlns="http:\/\/www\.
   pass('Sitemap envelope and URL list checked (' + urls.length + ' unique URLs).');
 }
 
+const seasonalPath = path.join(root, 'content', 'settings', 'seasonal-campaigns.json');
+try {
+  const seasonal = JSON.parse(fs.readFileSync(seasonalPath, 'utf8'));
+  if (seasonal.enabled && seasonal.scheduled) {
+    const validDay = value => typeof value === 'string' &&
+      /^\\d{4}-\\d{2}-\\d{2}$/.test(value) &&
+      Number.isFinite(Date.parse(value + 'T00:00:00.000Z')) &&
+      new Date(value + 'T00:00:00.000Z').toISOString().slice(0, 10) === value;
+    if (!validDay(seasonal.start) || !validDay(seasonal.end) || seasonal.start > seasonal.end) {
+      fail('Enabled scheduled seasonal campaign has an invalid date window.');
+    } else {
+      pass('Seasonal campaign schedule is valid (' + seasonal.start + ' to ' + seasonal.end + ').');
+    }
+  } else {
+    pass('Seasonal campaign configuration parses.');
+  }
+} catch (error) {
+  fail('Seasonal campaign configuration is invalid: ' + error.message);
+}
+
+const notificationApiPath = path.join(root, 'functions', 'api', 'store-notifications.js');
+try {
+  const api = fs.readFileSync(notificationApiPath, 'utf8');
+  for (const [label, pattern] of [
+    ['idempotent notification upsert', /ON CONFLICT\\(event_key\\) DO UPDATE/],
+    ['metadata merge protection', /json_valid\\(store_notifications\\.metadata_json\\)/],
+    ['scheduled campaign date validation', /seasonal\\.scheduled===true/],
+    ['campaign expiry', /expires_at/]
+  ]) {
+    if (!pattern.test(api)) fail('Store notification API is missing ' + label + '.');
+  }
+  pass('Store notification persistence and schedule safeguards are present.');
+} catch (error) {
+  fail('Store notification API could not be validated: ' + error.message);
+}
+
 if (!process.exitCode) console.log('PhoneYa2 repository integrity checks passed.');
