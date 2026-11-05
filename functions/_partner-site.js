@@ -356,14 +356,14 @@ function appendPartnerAdMedia(container,ad){
     const image=document.createElement("img");image.src=url;image.alt=ad.title||"Sponsored campaign";image.loading="lazy";image.onerror=()=>image.remove();container.appendChild(image);return;
   }
   let provider=ad.video_provider||"";
-  if(!provider){if(/youtube\.com|youtu\.be/i.test(url))provider="youtube";else if(/vimeo\.com/i.test(url))provider="vimeo";else if(/tiktok\.com/i.test(url))provider="tiktok";else provider="mp4";}
+  if(!provider){if(/youtube\\.com|youtu\\.be/i.test(url))provider="youtube";else if(/vimeo\\.com/i.test(url))provider="vimeo";else if(/tiktok\\.com/i.test(url))provider="tiktok";else provider="mp4";}
   if(provider==="youtube"){
-    const match=url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+    const match=url.match(/(?:youtu\\.be\\/|v=|\\/embed\\/|\\/shorts\\/)([A-Za-z0-9_-]{11})/);
     if(match){const frame=document.createElement("iframe");frame.src="https://www.youtube.com/embed/"+match[1]+"?autoplay=1&mute=1&loop=1&playlist="+match[1]+"&controls=0&playsinline=1";frame.allow="autoplay; encrypted-media";frame.allowFullscreen=true;frame.title=ad.title||"Sponsored video";container.appendChild(frame);}
     return;
   }
   if(provider==="vimeo"){
-    const match=url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    const match=url.match(/vimeo\\.com\\/(?:video\\/)?(\\d+)/);
     if(match){const frame=document.createElement("iframe");frame.src="https://player.vimeo.com/video/"+match[1]+"?autoplay=1&muted=1&loop=1&background=1";frame.allow="autoplay";frame.allowFullscreen=true;frame.title=ad.title||"Sponsored video";container.appendChild(frame);}
     return;
   }
