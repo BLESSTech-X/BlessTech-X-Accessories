@@ -341,7 +341,7 @@ ${postsHtml}
 ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(businessName)}</h2><p>${esc(site.site_description)}</p></section>` : ""}
 <section class="contact" id="contact">
 <div><small class="eyebrow">LET&#39;S CONNECT</small><h2>How can we help you?</h2><p>Send an enquiry and ${esc(businessName)} will be able to follow up with you.</p>${contact}<div class="socials">${site.show_social_links===0?"":socialHtml}</div></div>
-<form id="partner-enquiry"><input name="name" required maxlength="100" placeholder="Your name"><input name="phone" maxlength="40" placeholder="Phone number"><input name="email" type="email" maxlength="254" placeholder="Email address"><textarea name="message" required maxlength="2000" placeholder="How can we help?"></textarea><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px"><button type="submit">Send enquiry →</button><small id="enquiry-result" aria-live="polite"></small></form>
+<form id="partner-enquiry"><input name="name" required maxlength="100" placeholder="Your name"><input name="phone" maxlength="40" placeholder="Phone number"><input name="email" type="email" maxlength="254" placeholder="Email address"><textarea name="message" required maxlength="2000" placeholder="How can we help?"></textarea><input name="company_site" tabindex="-1" autocomplete="new-password" aria-hidden="true" style="position:absolute;left:-9999px"><button type="submit">Send enquiry →</button><small id="enquiry-result" aria-live="polite"></small></form>
 </section>
 <div class="partner-ad-popup" id="partner-ad-popup" hidden role="dialog" aria-modal="true" aria-label="Sponsored advertisement"><div class="partner-ad-popup-card"><button class="partner-ad-popup-close" id="partner-ad-popup-close" aria-label="Close advertisement">×</button><div id="partner-ad-popup-content"></div></div></div>
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
@@ -435,6 +435,7 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
   const button = form.querySelector('button[type="submit"]') || form.querySelector("button");
   const output = document.getElementById("enquiry-result");
   const setResult = (message, success) => {
+    if (!output) return;
     output.textContent = message;
     output.dataset.state = success ? "success" : "error";
     output.setAttribute("role", success ? "status" : "alert");
@@ -451,10 +452,11 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
       form.querySelector('input[name="phone"]').focus();
       return;
     }
-    body.slug = ${JSON.stringify(data.slug || "")};
+    body.slug = ${JSON.stringify(data.slug || "")} || decodeURIComponent((window.location.pathname.match(/^\\/b\\/([^/]+)/i) || [])[1] || "");
     const response = await fetch("/api/partner-enquiry", {
       method: "POST",
       headers: { "content-type": "application/json", "accept": "application/json" },
+      credentials: "same-origin",
       cache: "no-store",
       body: JSON.stringify(body)
     });
@@ -466,6 +468,7 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
     form.reset();
     setResult("✓ Sent successfully. Your enquiry has been saved and delivered to this business's Partner Studio inbox.", true);
   } catch (error) {
+    console.error("Partner enquiry submission failed:", error);
     setResult("✕ Not sent. " + (error.message || "Please try again."), false);
   } finally {
     button.disabled = false;
