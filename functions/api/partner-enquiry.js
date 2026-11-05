@@ -9,7 +9,7 @@ export async function onRequest({request,env}){
  if(!env.DB)return json({ok:false,error:"Partner enquiries are temporarily unavailable."},503);
  let body={};try{body=await request.json();}catch{return json({ok:false,error:"Invalid request."},400);}
  if(clean(body.website,200)||clean(body.company_site,200))return json({ok:false,error:"We could not verify this submission. Please reload the page and try again."},400);
- const slug=clean(body.slug,80).toLowerCase();const name=clean(body.name,100),phone=clean(body.phone,40),email=clean(body.email,254),message=clean(body.message,2000);
+ const slug=clean(body.slug,80).toLowerCase();const name=clean(body.name,100),phone=clean(body.phone,40),email=clean(body.email,254),message=clean(body.message,2000),source=clean(body.source,100)||"Business website";
  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||!name||!message||(!phone&&!email))return json({ok:false,error:"Please provide your name, a phone number or email, and a message."},400);
  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return json({ok:false,error:"Enter a valid email address."},400);
  const ip=await ipHash(request),now=Math.floor(Date.now()/1000);
@@ -31,7 +31,7 @@ export async function onRequest({request,env}){
  if(!site)return json({ok:false,error:"This business website is not accepting enquiries yet."},404);
  const id=crypto.randomUUID();
  try{
-  await env.DB.prepare("INSERT INTO partner_enquiries(id,advertiser_id,customer_name,customer_email,customer_phone,message,source,status) VALUES(?,?,?,?,?,?,'website','new')").bind(id,site.advertiser_id,name,email,phone,message).run();
+  await env.DB.prepare("INSERT INTO partner_enquiries(id,advertiser_id,customer_name,customer_email,customer_phone,message,source,status) VALUES(?,?,?,?,?,?,?,'new')").bind(id,site.advertiser_id,name,email,phone,message,source).run();
   const saved=await env.DB.prepare("SELECT id FROM partner_enquiries WHERE id=? AND advertiser_id=?").bind(id,site.advertiser_id).first();
   if(!saved)throw new Error("Enquiry insert could not be verified.");
  }catch(error){
