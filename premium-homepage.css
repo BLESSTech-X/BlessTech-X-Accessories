@@ -1,0 +1,104 @@
+/* PhoneYa2 premium retail storefront layer — visual enhancement only.
+   Existing catalogue, cart, checkout, navigation and CMS remain the source of truth. */
+:root{
+  --py2-navy:#071b3a;
+  --py2-blue:#0b2c59;
+  --py2-blue-soft:#eaf2ff;
+  --py2-ink:#101c31;
+  --py2-line:#e4eaf2;
+  --py2-shadow:0 18px 48px rgba(7,27,58,.09);
+}
+body{color:var(--py2-ink);background:#f7f9fc}
+.top-header{background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom-color:var(--py2-line);box-shadow:0 6px 24px rgba(7,27,58,.06)}
+.logo-brand-name span{color:#1768c5}
+.search-box{border-color:#c8d8ef;box-shadow:0 3px 12px rgba(7,27,58,.035)}
+.search-box:focus-within{border-color:#1768c5;box-shadow:0 0 0 4px rgba(23,104,197,.10)}
+.search-box button{background:var(--py2-blue)}
+.search-box button:hover{background:#164a85}
+.dnav-link:hover,.dnav-link.active{background:var(--py2-blue-soft);color:var(--py2-blue)}
+.dnav-order{background:#e63946;box-shadow:0 7px 18px rgba(230,57,70,.18)}
+.cat-nav{background:#fff;border-bottom-color:var(--py2-line)}
+.cat-nav-item:hover,.cat-nav-item.active{color:#1768c5;border-bottom-color:#1768c5;background:#f2f7ff}
+.main-wrap{max-width:1360px;padding:22px 22px}
+.phoneya2-home-intro{max-width:1360px;margin:18px auto 0;border:1px solid var(--py2-line);border-radius:18px;background:linear-gradient(120deg,#071b3a,#0b2c59 62%,#1455a0);color:#fff;box-shadow:var(--py2-shadow);padding:22px 26px}
+.phoneya2-intro-copy h2,.phoneya2-intro-copy p,.phoneya2-intro-note{color:#fff}
+.phoneya2-intro-eyebrow{color:#a9d0ff}
+.phoneya2-intro-note{opacity:.78}
+.py2-mini-insights{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:13px}
+.py2-mini-insights-heading,.py2-mini-metric span,.py2-mini-insights-note{color:rgba(255,255,255,.78)}
+.py2-mini-metric strong{color:#fff}
+.py2-mini-metric{border-color:rgba(255,255,255,.13)}
+.py2-mini-metric>i{color:#9ecbff}
+.py2-partner-cta{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);color:#fff}
+.hero-zone{grid-template-columns:minmax(0,1fr) 300px;gap:16px;margin-bottom:22px}
+.hero-banner{min-height:410px;border:0;border-radius:20px;box-shadow:0 22px 54px rgba(7,27,58,.22)}
+.hero-slide-overlay{background:linear-gradient(90deg,rgba(4,17,39,.94) 0%,rgba(4,17,39,.78) 48%,rgba(4,17,39,.22) 100%)}
+.hero-slide-content{padding:42px 54px}
+.hero-slide-tag{background:rgba(23,104,197,.25);border-color:rgba(145,195,255,.42);color:#c6e1ff}
+.hero-slide-title{font-size:clamp(2rem,4vw,3.25rem);max-width:640px}
+.hero-slide-title span{-webkit-text-fill-color:#8ec5ff;background:none}
+.hsp-val{color:#ffdc7c}
+.btn-hero-shop{background:#e63946;box-shadow:0 9px 24px rgba(230,57,70,.22)}
+.btn-hero-shop:hover{background:#c92535}
+.btn-hero-wa{background:#25d366;color:#07351c;border-color:#25d366}
+.hero-side{gap:14px}
+.side-card,.section-card,.cat-showcase,.howto-section,.testimonials-section{border:1px solid var(--py2-line);border-radius:16px;box-shadow:0 8px 28px rgba(7,27,58,.045);overflow:hidden}
+.side-card-hdr,.section-hdr{padding:16px 19px;border-bottom-color:var(--py2-line)}
+.side-card-hdr h4,.section-hdr h2{color:var(--py2-navy)}
+.section-card{margin:0 0 20px;background:#fff}
+.section-hdr{background:linear-gradient(180deg,#fff,#fbfcff)}
+.view-all-link{color:#1768c5}
+.flash-badge,.deal-badge,.new-badge{border-radius:999px}
+.promo-banners{gap:16px;margin:22px 0}
+.promo-banner{min-height:190px;border-radius:17px;overflow:hidden;box-shadow:0 12px 30px rgba(7,27,58,.12)}
+.promo-banner-bg{transform:scale(1.01);transition:transform .55s ease}
+.promo-banner:hover .promo-banner-bg{transform:scale(1.07)}
+.promo-banner-overlay{opacity:.78}
+.promo-banner-content{padding:22px}
+.promo-banner-content h3{font-size:clamp(19px,2vw,25px)}
+.cat-showcase{background:#fff;margin:22px 0}
+.cat-showcase-side{background:linear-gradient(165deg,#071b3a,#104783);color:#fff}
+.cat-showcase-side h2,.cat-showcase-side .cs-cat-name{color:#fff}
+.cs-cat-item.active,.cs-cat-item:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.2)}
+.pcard,.pcard-featured,.side-prod{border-color:var(--py2-line)}
+.pcard{border-radius:14px;overflow:hidden;box-shadow:0 5px 18px rgba(7,27,58,.055);transition:transform .2s ease,box-shadow .2s ease}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(7,27,58,.12)}
+.pcard-img{background:#f2f5fa}
+.pcard-img img{mix-blend-mode:multiply}
+.pcard-price,.pcard-name{color:var(--py2-navy)}
+.py2-add-cart{background:#ff8a00!important;color:#211000!important}
+.btn-order,.pc-wa{background:#e63946!important;color:#fff!important}
+.trust-row{border:1px solid var(--py2-line);border-radius:14px;background:#fff;padding:14px 18px}
+.trust-item{border-color:var(--py2-line)}
+.howto-section,.testimonials-section{background:#fff;margin:22px 0}
+.testi-card{border:1px solid var(--py2-line);border-radius:14px;background:#fff}
+.why-row{gap:14px;margin:22px 0}
+.why-card-mini{border:1px solid var(--py2-line);border-radius:14px;background:#fff;padding:20px}
+.join-cta{border-radius:18px;background:linear-gradient(115deg,#071b3a,#0b2c59 62%,#1768c5);box-shadow:var(--py2-shadow)}
+.join-cta h2,.join-cta p{color:#fff}
+.join-cta-btn{background:#25d366;color:#07351c}
+.py2-endless-products{max-width:1360px;margin:28px auto;padding:22px;border:1px solid var(--py2-line);border-radius:18px;background:#fff;box-shadow:var(--py2-shadow)}
+.py2-endless-heading h2{color:var(--py2-navy)}
+.mob-nav-panel{border-radius:0 18px 18px 0}
+@media(max-width:900px){
+ .main-wrap{padding:14px}
+ .hero-zone{grid-template-columns:1fr}
+ .hero-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero-banner{min-height:370px}
+}
+@media(max-width:600px){
+ .phoneya2-home-intro{margin:10px 10px 0;padding:17px;border-radius:14px}
+ .main-wrap{padding:10px}
+ .hero-banner{min-height:330px;border-radius:15px}
+ .hero-slide-content{padding:66px 25px 34px}
+ .hero-side{grid-template-columns:1fr}
+ .side-card{min-height:130px}
+ .promo-banners{grid-template-columns:1fr;gap:11px}
+ .promo-banner{min-height:155px}
+ .section-card,.cat-showcase,.howto-section,.testimonials-section{border-radius:13px}
+ .py2-endless-products{margin:16px 10px;padding:14px;border-radius:14px}
+ .why-row{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ .pcard,.promo-banner-bg{transition:none!important}
+}
