@@ -36,6 +36,9 @@ export async function onRequestGet({params,env,request}){
  env.DB.prepare("INSERT INTO advertiser_profile_views(id,advertiser_id,visitor_hash,source) VALUES(?,?,?,?)").bind(crypto.randomUUID(),advertiser.id,visitor,source),
  env.DB.prepare("INSERT INTO partner_site_events(id,advertiser_id,event_type,visitor_hash,source) VALUES(?,?, 'page_view',?,?)").bind(crypto.randomUUID(),advertiser.id,visitor,source)
  ]).catch(e=>console.error("Partner profile analytics failed",String(e).slice(0,180)));
- const html=renderPartnerSite({slug,advertiser,site:site||{},items:items.results||[],posts:site?.show_posts===0?[]:(posts.results||[])});
+ const visibleItems=items.results||[],visiblePosts=site?.show_posts===0?[]:(posts.results||[]);
+ const shareToken=new URL(request.url).searchParams.get("share")||"";let share={};
+ if(shareToken.startsWith("post:")){const shareSlug=shareToken.slice(5).slice(0,100);const post=visiblePosts.find(x=>x.slug===shareSlug);if(post)share={title:post.title||advertiser.business_name,description:String(post.excerpt||post.body||advertiser.business_name).slice(0,280),image:post.cover_image_url||site?.hero_image_url||advertiser.logo_url||"",url:new URL(request.url).href};}
+ const html=renderPartnerSite({slug,advertiser,site:site||{},items:visibleItems,posts:visiblePosts,share});
  return new Response(html,{status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=0, s-maxage=5, must-revalidate","x-content-type-options":"nosniff"}});
 }
