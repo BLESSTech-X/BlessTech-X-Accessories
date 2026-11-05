@@ -226,7 +226,8 @@ if(action==="site.preview"){
  try{const result=await db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(partner.advertiser_id).all();posts=result.results||[];}
  catch(error){if(!/no such column: .*moderation_status/i.test(String(error?.message||error)))throw error;const result=await db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(partner.advertiser_id).all();posts=result.results||[];}
  try{const result=await db.prepare("SELECT id,platform,url,title,caption,created_at FROM partner_social_embeds WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all();socialEmbeds=result.results||[];}catch(error){if(!/no such table/i.test(String(error?.message||error)))throw error;}
- const html=renderPartnerSite({slug:advertiser.slug,advertiser,site,items,posts,socialEmbeds,share:{}});
+ const previewBase=new URL("/b/"+encodeURIComponent(advertiser.slug)+"/",request.url).href;
+ const html=renderPartnerSite({slug:advertiser.slug,advertiser,site,items,posts,socialEmbeds,share:{}}).replace("<head>","<head><base href=\""+previewBase+"\">");
  return json({ok:true,html});
 }
 if(action==="site.save"){
