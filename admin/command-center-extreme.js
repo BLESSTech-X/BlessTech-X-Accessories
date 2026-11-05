@@ -241,8 +241,47 @@
     apply();new MutationObserver(apply).observe(nav,{childList:true,subtree:true});
   }
 
+  (function installNavigationStyles(){
+    if($('#cc-navigation-styles'))return;const style=document.createElement('style');style.id='cc-navigation-styles';style.textContent=`
+      .cc-float-tools-grouped{display:flex!important;flex-direction:column-reverse!important;align-items:flex-end!important;gap:9px!important}
+      .cc-float-tools-grouped .cc-float-tools-toggle{display:flex;align-items:center;gap:9px;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff;font-weight:850;box-shadow:0 12px 32px #10132240;cursor:pointer}
+      .cc-float-tools-toggle-icon{font-size:20px;line-height:1}
+      .cc-float-tools-grouped .cc-float-tool-item{display:flex!important;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px) scale(.92);transition:opacity .2s,transform .2s,visibility .2s;box-shadow:0 8px 22px #10132220}
+      .cc-float-tools-grouped.is-open .cc-float-tool-item{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1)}
+      .cc-bottom-navigation{position:fixed;z-index:9990;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(620px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:7px;background:rgba(16,19,34,.96);border:1px solid #ffffff20;border-radius:18px;box-shadow:0 14px 38px #080d1b45;backdrop-filter:blur(18px)}
+      .cc-bottom-tab{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 3px;border:0;border-radius:12px;background:transparent;color:#b9c3d8;font-size:10px;font-weight:800;cursor:pointer}
+      .cc-bottom-tab.is-active{background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff}
+      .cc-bottom-icon{font-size:19px;line-height:1.1}
+      #dashboard{padding-bottom:96px!important}
+      @media(min-width:900px){.cc-bottom-navigation{width:min(520px,calc(100% - 36px));bottom:16px}.cc-bottom-tab{flex-direction:row;font-size:11px;gap:7px;padding:10px}}
+      @media(prefers-reduced-motion:reduce){.cc-float-tool-item{transition:none!important}}
+    `;document.head.append(style);
+  })();
+  function setupFloatingTools(){
+    const tools=$('.cc-float-tools');if(!tools||tools.dataset.grouped==='1')return;
+    tools.dataset.grouped='1';tools.classList.add('cc-float-tools-grouped');
+    const buttons=[...tools.querySelectorAll('.cc-float-btn')];
+    const toggle=document.createElement('button');toggle.type='button';toggle.id='cc-float-tools-toggle';toggle.className='cc-float-tools-toggle';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open quick tools');toggle.innerHTML='<span class="cc-float-tools-toggle-icon">＋</span><span class="cc-float-tools-toggle-label">Quick tools</span>';
+    tools.prepend(toggle);
+    buttons.forEach((button,index)=>{button.classList.add('cc-float-tool-item');button.style.setProperty('--tool-index',String(index));});
+    const close=()=>{tools.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open quick tools');toggle.querySelector('.cc-float-tools-toggle-icon').textContent='＋';};
+    toggle.addEventListener('click',()=>{const open=tools.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close quick tools':'Open quick tools');toggle.querySelector('.cc-float-tools-toggle-icon').textContent=open?'×':'＋';});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')close();});
+    tools.addEventListener('click',event=>{if(event.target.closest('.cc-float-tool-item'))close();});
+  }
+  function setupBottomNavigation(){
+    if($('#cc-bottom-navigation'))return;
+    const workspace=$('#workspace-nav');if(!workspace)return;
+    const definitions=[['overview','⌂','Home'],['actions','⚡','Actions'],['orders','▤','Orders'],['analytics','▥','Analytics']];
+    const nav=document.createElement('nav');nav.id='cc-bottom-navigation';nav.className='cc-bottom-navigation';nav.setAttribute('aria-label','Main Command Centre navigation');
+    definitions.forEach(([id,icon,label])=>{const source=$('#tab-'+id);if(!source)return;const button=document.createElement('button');button.type='button';button.className='cc-bottom-tab';button.dataset.target=id;button.innerHTML='<span class="cc-bottom-icon" aria-hidden="true">'+icon+'</span><span>'+label+'</span>';button.addEventListener('click',()=>source.click());nav.append(button);});
+    const more=document.createElement('button');more.type='button';more.className='cc-bottom-tab';more.dataset.target='more';more.innerHTML='<span class="cc-bottom-icon" aria-hidden="true">☰</span><span>More</span>';more.addEventListener('click',()=>{const toggle=$('#cc-menu-toggle');if(toggle){if(!document.body.classList.contains('cc-nav-open'))toggle.click();}else workspace.scrollIntoView({behavior:'smooth',block:'start'});});nav.append(more);
+    document.body.append(nav);
+    const sync=()=>{const active=workspace.querySelector('.workspace-tab[aria-selected="true"]')?.id?.replace('tab-','')||'overview';nav.querySelectorAll('.cc-bottom-tab').forEach(button=>button.classList.toggle('is-active',button.dataset.target===active||(button.dataset.target==='more'&&!definitions.some(x=>x[0]===active))));};
+    workspace.addEventListener('click',event=>{if(event.target.closest('.workspace-tab'))setTimeout(sync,0);});new MutationObserver(sync).observe(workspace,{subtree:true,attributes:true,attributeFilter:['aria-selected']});sync();
+  }
   function init() {
-    createPalette(); addQuickActions(); updateRefreshStamp(); watchGuidedNavigation();
+    createPalette(); addQuickActions(); updateRefreshStamp(); watchGuidedNavigation(); setupFloatingTools(); setupBottomNavigation();
     const refresh=$('#refresh'); if(refresh)refresh.addEventListener('click',()=>{state.lastRefresh=new Date();updateRefreshStamp();},{capture:true});
     document.addEventListener('keydown',e=>{
       if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();state.paletteOpen?closePalette():openPalette();}
