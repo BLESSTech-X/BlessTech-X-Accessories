@@ -263,7 +263,7 @@
       @media(max-width:380px){.topbar .cc-header-navigation{grid-template-columns:1fr!important;max-height:55vh!important}}
       /* Quick tools: remove the old white control tray. Keep one compact toggle visible;
          its individual controls unfold above it only when requested. */
-      .cc-float-tools.cc-float-tools-grouped{position:fixed!important;right:16px!important;bottom:16px!important;top:auto!important;left:auto!important;transform:none!important;z-index:10000!important;display:flex!important;flex-direction:column-reverse!important;align-items:flex-end!important;gap:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
+      .cc-float-tools.cc-float-tools-grouped{position:fixed!important;right:18px!important;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 82px)!important;top:auto!important;left:auto!important;transform:none!important;z-index:10000!important;display:flex!important;flex-direction:column-reverse!important;align-items:flex-end!important;gap:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
       .cc-float-tools-grouped .cc-float-tools-toggle{position:relative;z-index:2;display:flex;align-items:center;gap:9px;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff;font-weight:850;box-shadow:0 12px 32px #10132240;cursor:pointer}
       .cc-float-tools-toggle-icon{font-size:20px;line-height:1}
       .cc-float-tools-grouped .cc-float-tool-item{position:absolute!important;right:0!important;bottom:calc(100% + 9px)!important;display:flex!important;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(12px) scale(.94);transition:opacity .2s,transform .2s,visibility .2s;box-shadow:0 8px 22px #10132220}
@@ -273,13 +273,13 @@
       #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item:nth-of-type(4){transform:translateY(-177px)}
       #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item:nth-of-type(5){transform:translateY(-236px)}
       #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item:nth-of-type(6){transform:translateY(-295px)}
-      .cc-bottom-navigation{position:fixed;z-index:9990;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(620px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:7px;background:rgba(16,19,34,.96);border:1px solid #ffffff20;border-radius:18px;box-shadow:0 14px 38px #080d1b45;backdrop-filter:blur(18px)}
+      .cc-bottom-navigation{position:fixed;z-index:9990;left:0;right:0;bottom:0;transform:none;width:auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:7px 12px max(7px,env(safe-area-inset-bottom));background:rgba(16,19,34,.98);border:1px solid #ffffff20;border-left:0;border-right:0;border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -8px 28px #080d1b30;backdrop-filter:blur(18px)}
       .cc-bottom-tab{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 3px;border:0;border-radius:12px;background:transparent;color:#b9c3d8;font-size:10px;font-weight:800;cursor:pointer}
       .cc-bottom-tab.is-active{background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff}
       .cc-bottom-icon{font-size:19px;line-height:1.1}
       #dashboard{padding-bottom:96px!important}
-      @media(max-width:700px){.cc-bottom-navigation{left:12px;right:96px;bottom:max(10px,env(safe-area-inset-bottom));width:auto;transform:none}.cc-float-tools.cc-float-tools-grouped{right:12px!important;bottom:max(10px,env(safe-area-inset-bottom))!important}}
-      @media(min-width:900px){.cc-bottom-navigation{width:min(520px,calc(100% - 36px));bottom:16px}.cc-bottom-tab{flex-direction:row;font-size:11px;gap:7px;padding:10px}.cc-float-tools.cc-float-tools-grouped{right:24px!important;bottom:16px!important}}
+      @media(max-width:700px){.cc-bottom-navigation{left:0;right:0;bottom:0;width:auto;transform:none}.cc-float-tools.cc-float-tools-grouped{right:14px!important;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 82px)!important}}
+      @media(min-width:701px){.cc-bottom-tab{flex-direction:row;font-size:11px;gap:7px;padding:10px}.cc-float-tools.cc-float-tools-grouped{right:22px!important;bottom:calc(16px + 82px)!important}}
       @media(prefers-reduced-motion:reduce){.cc-float-tool-item{transition:none!important}}
     `;document.head.append(style);
   })();
