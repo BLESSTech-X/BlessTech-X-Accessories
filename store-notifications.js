@@ -4,6 +4,7 @@
  if(window.__py2StoreNotificationsV2)return;
  window.__py2StoreNotificationsV2=true;
  const READ_KEY="py2_store_notification_read_v2";
+ const DISMISSED_KEY="py2_store_notification_dismissed_v1";
  const POPUP_SEEN_KEY="py2_store_notification_popup_seen_v2";
  const POPUP_COOLDOWN_KEY="py2_store_notification_popup_last_v2";
  const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -13,11 +14,15 @@
  function readState(){try{return JSON.parse(localStorage.getItem(READ_KEY)||"{}")||{};}catch{return {};}}
  function saveRead(id){if(!id)return;const x=readState();x[id]=Date.now();try{localStorage.setItem(READ_KEY,JSON.stringify(x));}catch{}}
  function isRead(n){return Boolean(readState()[n.id]);}
+ function dismissedState(){try{return JSON.parse(localStorage.getItem(DISMISSED_KEY)||"{}")||{};}catch{return {};}}
+ function isDismissed(n){return Boolean(dismissedState()[n.id]);}
+ function dismissNotification(id){if(!id)return;const saved=dismissedState();saved[id]=Date.now();const entries=Object.entries(saved).sort((a,b)=>b[1]-a[1]).slice(0,500);try{localStorage.setItem(DISMISSED_KEY,JSON.stringify(Object.fromEntries(entries)));}catch{}render();}
  function popupSeen(){try{return JSON.parse(localStorage.getItem(POPUP_SEEN_KEY)||"{}")||{};}catch{return {};}}
  function markPopupSeen(id){if(!id)return;const x=popupSeen();x[id]=Date.now();const entries=Object.entries(x).sort((a,b)=>b[1]-a[1]).slice(0,160);try{localStorage.setItem(POPUP_SEEN_KEY,JSON.stringify(Object.fromEntries(entries)));}catch{}}
  const state={items:[],filter:"all",open:false,popupTimer:null};
  const categoryLabel={products:"New product",offers:"Partner offer","price-drops":"Price drop",restocks:"Back in stock","low-stock":"Limited availability",community:"Community",businesses:"Partner update",blog:"New story",stories:"New story",seasonal:"Seasonal update",system:"PhoneYa2 update"};
  const categoryIcon={products:"🛍️",offers:"🤝","price-drops":"🏷️",restocks:"↗","low-stock":"⏳",stories:"📖",blog:"📖",community:"💬",seasonal:"✨",system:"🔔"};
+ function validImage(value){const raw=String(value||"").trim();if(!raw||raw.startsWith("//")||/^data:|^javascript:/i.test(raw))return "";try{const u=new URL(raw,location.origin);if(!["https:","http:"].includes(u.protocol)||u.username||u.password)return "";if(u.origin!==location.origin&&u.protocol!=="https:")return "";return u.href;}catch{return "";}}
  function validDestination(value){
   const raw=String(value||"").trim();
   if(!raw||raw.startsWith("//"))return null;
@@ -48,7 +53,12 @@
   .py2-notify-tabs button{border:1px solid transparent;background:#f5f6f8;color:#667085;border-radius:99px;padding:7px 12px;font:700 11px system-ui;cursor:pointer}
   .py2-notify-tabs button[aria-pressed=true]{background:#fff1e8;border-color:#ffd6bd;color:#c94b00}
   .py2-notify-list{overflow:auto;overscroll-behavior:contain}
-  .py2-notify-item{display:flex;gap:11px;padding:13px 16px;border-bottom:1px solid #f0f2f5;text-decoration:none;color:inherit}
+  .py2-notify-row{display:flex;align-items:stretch;border-bottom:1px solid #f0f2f5;background:#fff}
+  .py2-notify-row:hover{background:#fff9f5}
+  .py2-notify-item{display:flex;gap:11px;padding:13px 8px 13px 16px;border:0;flex:1;min-width:0;text-decoration:none;color:inherit}
+  .py2-notify-remove{align-self:flex-start;flex:0 0 28px;width:28px;height:28px;margin:10px 10px 0 0;border:0;border-radius:8px;background:#f3f4f6;color:#7b8493;font:20px/1 system-ui;cursor:pointer;display:grid;place-items:center}
+  .py2-notify-remove:hover{background:#ffe9dc;color:#c94b00}
+  .py2-notify-remove:focus-visible{outline:2px solid #ff6500;outline-offset:2px}
   .py2-notify-item:hover{background:#fff9f5}
   .py2-notify-item.is-unread{background:#fffaf6}
   .py2-notify-dot{width:9px;height:9px;border-radius:50%;background:#e63946;flex:0 0 9px;margin-top:6px;box-shadow:0 0 8px #e6394655}.py2-notify-thumb{width:46px;height:46px;flex:0 0 46px;object-fit:cover;border-radius:9px;background:#f2f4f7;border:1px solid #edf0f4}
@@ -78,12 +88,13 @@
  function label(v){return categoryLabel[v]||"PhoneYa2 update";}
  function render(){
   const panel=$(".py2-notify-panel");if(!panel)return;
-  const badge=$(".py2-notify-count"),count=state.items.filter(n=>!isRead(n)).length;
+  const badge=$(".py2-notify-count"),visibleItems=state.items.filter(n=>!isDismissed(n)),count=visibleItems.filter(n=>!isRead(n)).length;
   badge.textContent=count>99?"99+":String(count);badge.hidden=!count;
-  const list=state.items.filter(n=>state.filter==="all"||(state.filter==="unread"&&!isRead(n))||(state.filter==="read"&&isRead(n))),host=$(".py2-notify-list");
+  const list=visibleItems.filter(n=>state.filter==="all"||(state.filter==="unread"&&!isRead(n))||(state.filter==="read"&&isRead(n))),host=$(".py2-notify-list");
   host.replaceChildren();
   if(!list.length){const e=document.createElement("div");e.className="py2-notify-empty";e.textContent=state.filter==="unread"?"You're all caught up. New updates will appear here.":"No notifications yet. We'll let you know when something relevant happens.";host.append(e);}
   list.forEach(n=>{
+   const row=document.createElement("div");row.className="py2-notify-row";
    const target=validDestination(n.destination),a=document.createElement(target?"a":"div");
    a.className="py2-notify-item "+(isRead(n)?"is-read":"is-unread");
    if(target){a.href=target.href;if(!target.internal){a.target="_blank";a.rel="noopener noreferrer";}a.addEventListener("click",()=>saveRead(n.id));}
@@ -95,7 +106,9 @@
    const meta=document.createElement("span");meta.className="py2-notify-meta";
    const cat=document.createElement("span");cat.className="py2-notify-tag";cat.textContent=label(n.category);
    const time=document.createElement("span");time.textContent=ago(n.created_at);
-   meta.append(cat,time);c.append(t,m,meta);const imagePath=String(n.metadata?.image||"").trim();let thumb=null;if(imagePath.startsWith("/")&&!imagePath.startsWith("//")||/^https:\/\//i.test(imagePath)){thumb=document.createElement("img");thumb.className="py2-notify-thumb";thumb.src=imagePath;thumb.alt="";thumb.loading="lazy";thumb.onerror=()=>thumb.remove();}a.append(thumb||dot,c);host.append(a);
+   meta.append(cat,time);c.append(t,m,meta);const thumbUrl=validImage(n.metadata?.image);let thumb=null;if(thumbUrl){thumb=document.createElement("img");thumb.className="py2-notify-thumb";thumb.src=thumbUrl;thumb.alt="";thumb.loading="lazy";thumb.onerror=()=>thumb.remove();}a.append(thumb||dot,c);
+   const remove=document.createElement("button");remove.type="button";remove.className="py2-notify-remove";remove.textContent="×";remove.setAttribute("aria-label","Remove "+safe(n.title,100));remove.title="Remove notification";remove.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();dismissNotification(n.id);});
+   row.append(a,remove);host.append(row);
   });
   $$(".py2-notify-tabs button",panel).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.filter===state.filter)));
  }
@@ -107,7 +120,7 @@
   if(!n||$("#py2-notify-popup"))return;
   const target=validDestination(n.destination);if(!target)return;
   const wrap=document.createElement("aside");wrap.id="py2-notify-popup";wrap.className="py2-notify-popup";wrap.setAttribute("role","status");wrap.setAttribute("aria-live","polite");
-  const icon=document.createElement("span");icon.className="py2-notify-popup-icon";icon.setAttribute("aria-hidden","true");const imagePath=String(n.metadata?.image||"").trim();if(imagePath.startsWith("/")&&!imagePath.startsWith("//")||/^https:\/\//i.test(imagePath)){const image=document.createElement("img");image.className="py2-notify-popup-image";image.src=imagePath;image.alt="";image.loading="lazy";image.onerror=()=>{image.remove();icon.textContent=categoryIcon[n.category]||"🔔";};icon.append(image);}else icon.textContent=categoryIcon[n.category]||"🔔";
+  const icon=document.createElement("span");icon.className="py2-notify-popup-icon";icon.setAttribute("aria-hidden","true");const imagePath=validImage(n.metadata?.image);if(imagePath){const image=document.createElement("img");image.className="py2-notify-popup-image";image.src=imagePath;image.alt="";image.loading="lazy";image.onerror=()=>{image.remove();icon.textContent=categoryIcon[n.category]||"🔔";};icon.append(image);}else icon.textContent=categoryIcon[n.category]||"🔔";
   const copy=document.createElement("div");copy.className="py2-notify-popup-copy";
   const kicker=document.createElement("span");kicker.className="py2-notify-popup-kicker";kicker.textContent=label(n.category);
   const link=document.createElement("a");link.href=target.href;link.className="py2-notify-popup-link";link.style.cssText="display:block;color:inherit;text-decoration:none";
@@ -125,7 +138,7 @@
   const seen=popupSeen(),now=Date.now(),last=Number(localStorage.getItem(POPUP_COOLDOWN_KEY)||0);
   if(last&&now-last<8*60*1000)return;
   const allowed=new Set(["products","stories","blog","price-drops","restocks","low-stock","offers"]);
-  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
+  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!isDismissed(n)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
   if(!candidates.length)return;
   const chosen=candidates.slice().sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))[0];
   markPopupSeen(chosen.id);try{localStorage.setItem(POPUP_COOLDOWN_KEY,String(now));}catch{}
