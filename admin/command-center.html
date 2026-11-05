@@ -1013,7 +1013,7 @@ renderSystemOverview();
 
 $('full-voice-briefing').addEventListener('click',()=>speakFullBriefing());$('stop-voice-briefing').addEventListener('click',()=>stopVoiceBriefing());$('refresh').addEventListener('click',refreshData);
 const dashboard=$('dashboard');
-const applyTheme=mode=>{dashboard.dataset.ccTheme=mode;document.body.dataset.ccTheme=mode;localStorage.setItem('phoneya2_cc_theme',mode);const b=$('cc-float-theme');if(b){b.setAttribute('aria-label',mode==='dark'?'Switch to light mode':'Switch to dark mode');b.title=mode==='dark'?'Switch to light appearance':'Switch to dark appearance';b.querySelector('.cc-float-icon').textContent=mode==='dark'?'☀':'◐';b.querySelector('.cc-float-label').textContent=mode==='dark'?'Light':'Dark';}};
+const applyTheme=mode=>{dashboard.dataset.ccTheme=mode;document.body.dataset.ccTheme=mode;localStorage.setItem('phoneya2_cc_theme',mode);const b=$('cc-float-theme');if(b){b.setAttribute('aria-label',mode==='dark'?'Switch to light mode':'Switch to dark mode');b.title=mode==='dark'?'Switch to light appearance':'Switch to dark appearance';b.querySelector('.cc-float-icon').textContent=mode==='dark'?'☀':'◐';b.querySelector('.cc-float-label').textContent=mode==='dark'?'Light':'Dark';}requestAnimationFrame(()=>{drawChart();drawProductPerformanceChart();renderOrderStatusDonut();if(ga4ReportData)drawTrafficSourceChart(ga4ReportData);});};
 applyTheme(localStorage.getItem('phoneya2_cc_theme')||'light');
 $('cc-float-theme').addEventListener('click',()=>applyTheme(dashboard.dataset.ccTheme==='dark'?'light':'dark'));
 const focusButton=$('cc-float-focus');
