@@ -17,8 +17,8 @@ async function syncPublishedContent(request,env){
   const catalog=catalogRes.ok?await catalogRes.json():[];
   const blogPosts=blogRes.ok?await blogRes.json():[];
   const sources=[
-   {type:"products",items:Array.isArray(productSlugs)?productSlugs.map(slug=>{const p=Array.isArray(catalog)?catalog.find(x=>x.slug===slug):null;return{slug:String(slug),title:String(p?.title||slug),category:"products",event:"product_published",destination:"/admin/#/collections/products",label:"New product published",message:"A new product, "+String(p?.title||slug)+", is now in the published catalogue."};}):[]},
-   {type:"blog",items:Array.isArray(blogPosts)?blogPosts.map(post=>({slug:String(post.slug||""),title:String(post.title||post.slug||"Blog post"),category:"blog",event:"blog_published",destination:"/admin/#/collections/blog_posts",label:"New blog post published",message:"A new PhoneYa2 blog post, "+String(post.title||post.slug||"Blog post")+", is now published."})).filter(post=>post.slug):[]}
+   {type:"products",items:Array.isArray(productSlugs)?productSlugs.map(slug=>{const p=Array.isArray(catalog)?catalog.find(x=>x.slug===slug):null;return{slug:String(slug),title:String(p?.title||slug),image_url:String(p?.image||""),category:"products",event:"product_published",destination:"/admin/#/collections/products",label:"New product published",message:"A new product, "+String(p?.title||slug)+", is now in the published catalogue."};}):[]},
+   {type:"blog",items:Array.isArray(blogPosts)?blogPosts.map(post=>({slug:String(post.slug||""),title:String(post.title||post.slug||"Blog post"),image_url:String(post.image||post.featured_image||post.cover_image||""),category:"blog",event:"blog_published",destination:"/admin/#/collections/blog_posts",label:"New blog post published",message:"A new PhoneYa2 blog post, "+String(post.title||post.slug||"Blog post")+", is now published."})).filter(post=>post.slug):[]}
   ];
   for(const source of sources){
    const baseline=await env.DB.prepare("SELECT content_slug FROM admin_content_snapshots WHERE source_type=? AND content_slug='__baseline__'").bind(source.type).first();
@@ -27,7 +27,7 @@ async function syncPublishedContent(request,env){
    for(const item of source.items){
     const existing=await env.DB.prepare("SELECT content_slug FROM admin_content_snapshots WHERE source_type=? AND content_slug=?").bind(source.type,item.slug).first();
     if(!existing&&!isBaseline){
-     statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"published:"+source.type+":"+item.slug,item.category,item.event,item.label,item.message,"normal",item.destination,item.slug,item.title));
+     statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"published:"+source.type+":"+item.slug,item.category,item.event,item.label,item.message,"normal",item.destination,item.slug,item.title,item.image_url||""));
     }
     if(!existing)statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_content_snapshots(source_type,content_slug,content_title) VALUES(?,?,?)").bind(source.type,item.slug,item.title));
    }
@@ -44,7 +44,7 @@ export async function onRequest({request,env}){
    await syncPublishedContent(request,env);
    const url=new URL(request.url),limit=Math.min(200,Math.max(1,Number(url.searchParams.get("limit"))||100));
    const [rows,counts]=await Promise.all([
-    env.DB.prepare("SELECT id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,created_at,is_read,read_at FROM admin_notifications ORDER BY created_at DESC LIMIT ?").bind(limit).all(),
+    env.DB.prepare("SELECT id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url,created_at,is_read,read_at FROM admin_notifications ORDER BY created_at DESC LIMIT ?").bind(limit).all(),
     env.DB.prepare("SELECT category,COUNT(*) AS total FROM admin_notifications WHERE is_read=0 GROUP BY category").all()
    ]);
    const unread_by_category={};let unread=0;
