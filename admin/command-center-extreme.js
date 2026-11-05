@@ -243,6 +243,24 @@
 
   (function installNavigationStyles(){
     if($('#cc-navigation-styles'))return;const style=document.createElement('style');style.id='cc-navigation-styles';style.textContent=`
+      /* Compact, bounded workspace menu: never expand the header into a full page of tabs. */
+      .topbar{position:sticky!important;z-index:10020!important;overflow:visible!important}
+      .topbar .cc-header-navigation{display:none!important;position:absolute!important;top:calc(100% + 8px)!important;left:auto!important;right:clamp(12px,3vw,38px)!important;width:min(520px,calc(100vw - 24px))!important;max-height:min(58vh,440px)!important;overflow-y:auto!important;overscroll-behavior:contain!important;display:none!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-content:start!important;gap:6px!important;padding:10px!important;margin:0!important;background:rgba(16,19,34,.98)!important;border:1px solid #ffffff20!important;border-radius:16px!important;box-shadow:0 18px 48px #080d1b55!important;backdrop-filter:blur(18px)!important;z-index:10022!important}
+      body.cc-nav-open .topbar .cc-header-navigation{display:grid!important}
+      .topbar .cc-header-navigation .workspace-tab{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:9px!important;min-width:0!important;min-height:42px!important;padding:9px 10px!important;margin:0!important;border:1px solid #ffffff12!important;border-radius:10px!important;background:#ffffff09!important;color:#dbe4f4!important;font-size:11px!important;line-height:1.25!important;white-space:normal!important;text-align:left!important;box-shadow:none!important;transform:none!important}
+      .topbar .cc-header-navigation .workspace-tab:hover{background:#ffffff16!important}
+      .topbar .cc-header-navigation .workspace-tab[aria-selected="true"]{background:linear-gradient(120deg,#ff7418,#e64d16)!important;border-color:#ff974f!important;color:#fff!important}
+      .topbar .cc-header-navigation .cc-header-tab-icon{flex:0 0 18px!important;width:18px!important;text-align:center!important;font-size:15px!important}
+      .topbar .cc-header-navigation .cc-header-tab-label{display:block!important;min-width:0!important;overflow-wrap:anywhere!important}
+      .cc-nav-overlay{display:none!important;position:fixed!important;inset:0!important;z-index:10010!important;width:100%!important;height:100%!important;border:0!important;background:#07102055!important;cursor:default!important}
+      body.cc-nav-open .cc-nav-overlay{display:block!important}
+      #cc-menu-toggle{position:relative!important;z-index:10023!important;flex:0 0 auto!important}
+      @media(max-width:700px){
+        .topbar .cc-header-navigation{right:10px!important;left:10px!important;width:auto!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:min(62vh,430px)!important}
+        .topbar .cc-header-navigation .workspace-tab{min-height:40px!important;padding:8px!important;font-size:10px!important}
+        .topbar{gap:8px!important}
+      }
+      @media(max-width:380px){.topbar .cc-header-navigation{grid-template-columns:1fr!important;max-height:55vh!important}}
       .cc-float-tools-grouped{display:flex!important;flex-direction:column-reverse!important;align-items:flex-end!important;gap:9px!important}
       .cc-float-tools-grouped .cc-float-tools-toggle{display:flex;align-items:center;gap:9px;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff;font-weight:850;box-shadow:0 12px 32px #10132240;cursor:pointer}
       .cc-float-tools-toggle-icon{font-size:20px;line-height:1}
