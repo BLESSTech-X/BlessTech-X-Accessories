@@ -36,7 +36,7 @@ function money(item) {
   return "K" + (Number(item.price_minor) / 100).toFixed(2);
 }
 
-function renderItem(item, primary, phone, whatsapp) {
+function renderItem(item, primary, phone, whatsapp, slug, businessName) {
   const image = safeUrl(item.image_url);
   const isService = item.item_type === "service";
   const intent = isService ? "enquire about" : "buy";
@@ -55,7 +55,7 @@ function renderItem(item, primary, phone, whatsapp) {
       <h3>${esc(item.title)}</h3>
       ${item.summary ? `<p>${esc(item.summary)}</p>` : ""}
       <div class="product-bottom"><b>${money(item)}</b><span>${isService ? "Service" : "Available to order"}</span></div>
-      <div class="item-actions">${actions.join("")}</div>
+      <div class="item-actions">${actions.join("")}<button type="button" class="item-message-cta" data-message-business="${esc(slug||"")}" data-business-name="${esc(businessName||"this business")}" data-message-source="Catalogue ${esc(isService?"service":"product")}: ${esc(item.title)}" data-message-item-id="${esc(item.id||"")}" data-message-item-title="${esc(item.title)}" data-message-item-image="${esc(image)}" data-message-item-price="${esc(item.price_label||money(item))}">✉ Message about this ${isService?"service":"item"}</button></div>
     </div>
   </article>`;
 }
@@ -100,7 +100,7 @@ export function renderPartnerSite(data) {
   const catalogue = (list, heading, eyebrow) => (heading === "Products" ? site.show_catalogue !== 0 : site.show_services !== 0) && list.length
     ? `<section class="section" id="${heading.toLowerCase()}">
         <div class="section-head"><div><small>${esc(eyebrow)}</small><h2>${esc(heading)}</h2></div><span>${list.length} listed</span></div>
-        <div class="products">${list.map((item) => renderItem(item, primary, validPhone, validWhatsapp)).join("")}</div>
+        <div class="products">${list.map((item) => renderItem(item, primary, validPhone, validWhatsapp, data.slug, businessName)).join("")}</div>
       </section>`
     : "";
 
@@ -140,15 +140,18 @@ export function renderPartnerSite(data) {
               <div class="post-kicker"><span>${meta.icon} ${esc(meta.label)}</span></div>
               <h3>${esc(post.title)}</h3>
               <p>${esc(body)}</p>
-              <div class="post-actions"><a class="post-cta" href="${esc(action)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${esc(actionLabel)} <span aria-hidden="true">↗</span></a><button type="button" class="post-message-cta" data-message-business="${esc(data.slug||"")}" data-business-name="${esc(businessName)}" data-message-source="Business website post: ${esc(post.title||businessName)}">✉ Message this business</button></div>
+              <div class="post-actions"><a class="post-cta" href="${esc(action)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${esc(actionLabel)} <span aria-hidden="true">↗</span></a><button type="button" class="post-message-cta" data-message-business="${esc(data.slug||"")}" data-business-name="${esc(businessName)}" data-message-source="Business website post: ${esc(post.title||businessName)}">✉ Message this business</button><button type="button" class="post-message-cta" data-share-post data-share-title="${esc(post.title||businessName)}" data-share-text="${esc(body)}" data-share-url="${SITE_URL}/b/${canonicalSlug}/?share=post%3A${encodeURIComponent(post.slug||"")}" data-share-image="${esc(cover)}">↗ Share</button></div>
             </div>
           </article>`;
         }).join("")}</div>
       </section>`
     : "";
 
-  const title = site.seo_title || site.site_title || businessName;
-  const description = site.seo_description || site.site_description || `Discover ${businessName} on PhoneYa2.`;
+  const defaultTitle = site.seo_title || site.site_title || businessName;
+  const defaultDescription = site.seo_description || site.site_description || `Discover ${businessName} on PhoneYa2.`;
+  const share = data.share || {};
+  const title = share.title || defaultTitle;
+  const description = share.description || defaultDescription;
   const canonicalSlug = encodeURIComponent(data.slug || "");
 
   const announcementText = String(site.announcement_text || "").trim();
@@ -166,12 +169,17 @@ export function renderPartnerSite(data) {
 <meta name="description" content="${esc(description)}">
 <meta name="theme-color" content="${esc(primary)}">
 <link rel="canonical" href="${SITE_URL}/b/${canonicalSlug}">
+<meta property="og:type" content="website">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
-${heroImage ? `<meta property="og:image" content="${esc(heroImage)}">` : ""}
+<meta property="og:url" content="${esc(share.url||`${SITE_URL}/b/${canonicalSlug}/`)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(description)}">
+${share.image || heroImage ? `<meta property="og:image" content="${esc(share.image||heroImage)}"><meta name="twitter:image" content="${esc(share.image||heroImage)}">` : ""}
 <style>
 *{box-sizing:border-box}
-.post-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}.post-actions .post-cta{margin:0}.post-message-cta{border:1px solid #d7e2ee;border-radius:10px;padding:11px 14px;background:#fff;color:#173f73;font-weight:850;font-size:12px;cursor:pointer}.post-message-cta:hover{background:#eef5ff;border-color:#a9c5e5}
+.post-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}.post-actions .post-cta{margin:0}.post-message-cta{border:1px solid #d7e2ee;border-radius:10px;padding:11px 14px;background:#fff;color:#173f73;font-weight:850;font-size:12px;cursor:pointer}.post-message-cta:hover{background:#eef5ff;border-color:#a9c5e5}.item-message-cta{display:inline-flex;align-items:center;justify-content:center;width:100%;margin-top:9px;min-height:40px;border:1px solid #f7b28e;border-radius:10px;padding:9px 12px;background:linear-gradient(110deg,#fff3eb,#fff);color:#b94712;font-size:12px;font-weight:900;cursor:pointer}.item-message-cta:hover{background:#ffe5d5;border-color:#ff8b4c}
 body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
 a{color:inherit;text-decoration:none}
 .site{max-width:1240px;margin:auto;padding:0 22px;position:relative;z-index:1}
