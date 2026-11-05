@@ -52,6 +52,38 @@ async function prepareCampaign(db,kind,item){
  }
  return campaign?.id||null;
 }
+async function syncOrders(db){
+ const recent=await db.prepare("SELECT id,order_number,customer_name,total_amount_minor,created_at FROM orders WHERE created_at>=strftime('%Y-%m-%dT%H:%M:%fZ','now','-2 hours') ORDER BY created_at DESC LIMIT 100").all();
+ for(const order of recent.results||[]){
+  const number=clean(order.order_number||order.id,80),customer=clean(order.customer_name||"A customer",100),amount=(Number(order.total_amount_minor||0)/100).toFixed(2);
+  await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)")
+   .bind(id(),"order-created:"+order.id,"orders","order_created","New order received · "+number,number+" was placed by "+customer+" for ZMW "+amount+". Review payment, stock and fulfilment, then update the customer.","high","/admin/command-center.html",order.id,number).run();
+ }
+ const stale=await db.prepare("SELECT id,order_number,customer_name,created_at FROM orders WHERE status='pending' AND created_at<=strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 hours') ORDER BY created_at ASC LIMIT 100").all();
+ for(const order of stale.results||[]){
+  const number=clean(order.order_number||order.id,80),customer=clean(order.customer_name||"Customer",100);
+  await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)")
+   .bind(id(),"order-stale:"+order.id,"orders","order_stale","Pending order needs follow-up · "+number,"Order "+number+" for "+customer+" has remained pending for more than 24 hours. Check payment and contact the customer if needed.","urgent","/admin/command-center.html",order.id,number).run();
+ }
+}
+async function syncInventory(db,products){
+ for(const product of products){
+  const slug=clean(product.slug,120),stock=Number(product.stock);if(!slug||!Number.isInteger(stock)||stock<0)continue;
+  const previous=await db.prepare("SELECT stock FROM admin_inventory_snapshots WHERE product_slug=?").bind(slug).first();
+  if(previous){
+   const before=Number(previous.stock);
+   if(before>0&&stock===0){
+    await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
+     .bind(id(),"stock-out:"+slug+":"+stock+":"+new Date().toISOString(),"inventory","out_of_stock",clean(product.title||slug,150)+" is out of stock","Stock has reached zero. Review the listing, check supplier availability and prepare a replenishment decision.","high","/admin/#/collections/products",slug,clean(product.title||slug,150),safeImage(product.image||product.image_url)).run();
+   }else if(before>3&&stock>0&&stock<=3){
+    await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
+     .bind(id(),"stock-low:"+slug+":"+stock+":"+new Date().toISOString(),"inventory","low_stock",clean(product.title||slug,150)+" is running low","Only "+stock+" unit"+(stock===1?"":"s")+" remain. Verify the physical count and review replenishment before promoting this product.","high","/admin/#/collections/products",slug,clean(product.title||slug,150),safeImage(product.image||product.image_url)).run();
+   }
+  }
+  await db.prepare("INSERT INTO admin_inventory_snapshots(product_slug,product_title,stock,updated_at) VALUES(?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now')) ON CONFLICT(product_slug) DO UPDATE SET product_title=excluded.product_title,stock=excluded.stock,updated_at=excluded.updated_at")
+   .bind(slug,clean(product.title||slug,180),stock).run();
+ }
+}
 async function prepareWork(db,products,posts){
  const productMap=new Map(products.map(p=>[String(p.slug),p]));
  const blogMap=new Map(posts.map(p=>[String(p.slug),p]));
@@ -90,6 +122,8 @@ async function runSync(env){
  const posts=blog.filter(p=>p&&p.publish===true&&p.slug);
  await syncPublished(env.DB,"products",products.map(p=>({slug:p.slug,title:p.title,image_url:p.image||p.image_url})));
  await syncPublished(env.DB,"blog",posts.map(p=>({slug:p.slug,title:p.title,image_url:p.image||p.featured_image||p.cover_image})));
+ await syncInventory(env.DB,products);
+ await syncOrders(env.DB);
  await prepareWork(env.DB,products,posts);
  return {ok:true,generated_at:new Date().toISOString(),products:products.length,articles:posts.length,store_notifications:storeResult.notifications?.length||0};
 }
