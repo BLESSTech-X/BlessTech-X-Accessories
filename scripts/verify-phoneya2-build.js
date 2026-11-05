@@ -155,7 +155,7 @@ try {
   }
   for (const [label, pattern] of [
     ['category-based notification filters', /data-filter="products".*data-filter="updates".*data-filter="offers".*data-filter="blog".*data-filter="community".*data-filter="discounts"/s],
-    ['staggered notification queue', /queueNewNotifications[\\s\\S]*popupQueue/],
+    ['staggered notification queue', /queueNewNotifications[\s\S]*popupQueue/],
     ['optional notification sound control', /py2-notify-sound/]
   ]) if (!pattern.test(storefrontNotifications)) fail('Storefront notification interface is missing ' + label + '.');
   const workQueue = fs.readFileSync(path.join(root, 'admin', 'work-queue.js'), 'utf8');
