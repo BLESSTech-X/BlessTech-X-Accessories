@@ -65,6 +65,7 @@ export function renderPartnerSite(data) {
   const business = data.advertiser || {};
   const items = data.items || [];
   const posts = data.posts || [];
+  const socialEmbeds = data.socialEmbeds || [];
   const primary = /^#[0-9a-f]{6}$/i.test(site.primary_color || "") ? site.primary_color : "#ff6000";
   const accent = /^#[0-9a-f]{6}$/i.test(site.accent_color || "") ? site.accent_color : "#173f73";
   const businessName = business.business_name || "PhoneYa2 Partner";
@@ -77,10 +78,9 @@ export function renderPartnerSite(data) {
     ? `<img src="${esc(logoUrl)}" alt="${esc(businessName)}" decoding="async" onerror="this.remove()">`
     : `<span>${esc(businessName.charAt(0).toUpperCase())}</span>`;
 
-  const socialHtml = Object.entries(socials)
-    .filter(([key, value]) => ["website", "facebook", "instagram", "tiktok", "youtube"].includes(key) && safeUrl(value))
-    .map(([key, value]) => `<a href="${esc(safeUrl(value))}" target="_blank" rel="noopener">${esc(key.charAt(0).toUpperCase() + key.slice(1))}</a>`)
-    .join("");
+  const socialIcons={website:["Website","#344054",'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>'],facebook:["Facebook","#1877F2",'<path d="M14 21v-8h3l.5-3H14V8c0-1 .4-1.7 1.8-1.7h1.8V3.6c-.4-.1-1.5-.2-2.8-.2-2.8 0-4.6 1.7-4.6 4.8V10H7v3h3.2v8z"/>'],instagram:["Instagram","#D62976",'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>'],tiktok:["TikTok","#111",'<path d="M14 3v11a4 4 0 1 1-3.5-4M14 3c.5 2.7 2 4.2 4.5 4.6"/>'],youtube:["YouTube","#FF0033",'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z" fill="#fff"/>'],x:["X","#111",'<path d="M4 3h4l12 18h-4zM20 3l-7 8M4 21l7-8"/>'],linkedin:["LinkedIn","#0A66C2",'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7m0-10v.1M11 17v-7h3v1c2-2 5-1 5 2v4"/>']};
+  const socialEntries=Object.entries(socials).filter(([key,value])=>socialIcons[key]&&safeUrl(value));
+  const socialBarHtml=site.show_social_links===0||!socialEntries.length?"":`<nav class="social-bar" aria-label="Business social links">${socialEntries.map(([key,value])=>{const [label,color,icon]=socialIcons[key];return `<a href="${esc(safeUrl(value))}" target="_blank" rel="noopener noreferrer" title="${label}" aria-label="${label}" style="--brand:${color}"><svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg><span>${label}</span></a>`}).join("")}</nav>`;
 
   const whatsappRaw = String(socials.whatsapp || business.contact_whatsapp || business.phone || "").trim();
   const whatsapp = whatsappRaw.replace(/\D/g, "");
@@ -147,6 +147,7 @@ export function renderPartnerSite(data) {
       </section>`
     : "";
 
+  const socialEmbedHtml = socialEmbeds.length ? `<section class="section social-content-section" id="social-content"><div class="section-head"><div><small>FOLLOW OUR LATEST CONTENT</small><h2>From our social channels</h2></div><span>${socialEmbeds.length} updates</span></div><div class="social-content-grid">${socialEmbeds.map(item=>{const platform=String(item.platform||"").toLowerCase(),url=safeUrl(item.url),title=esc(item.title||platform.toUpperCase()+" post"),caption=esc(item.caption||"");if(!url)return "";let media="";if(platform==="youtube"){let u;try{u=new URL(url)}catch{}const id=u?(u.hostname.includes("youtu.be")?u.pathname.slice(1):u.searchParams.get("v")||u.pathname.split("/").filter(Boolean).pop()):"";if(id)media=`<div class="social-embed-video"><iframe src="https://www.youtube-nocookie.com/embed/${esc(id)}" title="${title}" loading="lazy" allowfullscreen></iframe></div>`;}else if(platform==="tiktok")media=`<blockquote class="tiktok-embed" cite="${esc(url)}"><section><a href="${esc(url)}" target="_blank" rel="noopener">Watch this TikTok</a></section></blockquote>`;else if(platform==="instagram")media=`<blockquote class="instagram-media" data-instgrm-permalink="${esc(url)}" data-instgrm-version="14"><a href="${esc(url)}" target="_blank" rel="noopener">View Instagram post</a></blockquote>`;else if(platform==="facebook")media=`<div class="social-embed-video"><iframe src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(url)}&show_text=true&width=500" title="${title}" loading="lazy" allowfullscreen></iframe></div>`;else if(platform==="x")media=`<blockquote class="twitter-tweet"><a href="${esc(url)}">View this post on X</a></blockquote>`;else if(platform==="image"||[".png",".jpg",".jpeg",".webp",".gif",".avif"].some(ext=>url.toLowerCase().split("?")[0].endsWith(ext)))media=`<img class="social-embed-image" src="${esc(url)}" alt="${title}" loading="lazy">`;else if(platform==="video"||[".mp4",".webm",".mov"].some(ext=>url.toLowerCase().split("?")[0].endsWith(ext)))media=`<video class="social-embed-direct-video" src="${esc(url)}" controls playsinline preload="metadata"></video>`;else media=`<div class="social-embed-link-preview"><b>${platform.toUpperCase()}</b><p>${caption||"Open the original social post to view it."}</p></div>`;return `<article class="social-embed-card"><div class="social-embed-heading"><b>${platform.toUpperCase()}</b><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open original ↗</a></div>${media}<div class="social-embed-copy">${item.title?'<h3>'+title+'</h3>':""}${caption?'<p>'+caption+'</p>':""}</div></article>`}).join("")}</div></section>`:"";
   const defaultTitle = site.seo_title || site.site_title || businessName;
   const defaultDescription = site.seo_description || site.site_description || `Discover ${businessName} on PhoneYa2.`;
   const share = data.share || {};
@@ -179,6 +180,8 @@ export function renderPartnerSite(data) {
 ${share.image || heroImage ? `<meta property="og:image" content="${esc(share.image||heroImage)}"><meta name="twitter:image" content="${esc(share.image||heroImage)}">` : ""}
 <style>
 *{box-sizing:border-box}
+.social-content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px;align-items:start}.social-embed-card{min-width:0;overflow:hidden;border:1px solid #e4eaf1;border-radius:18px;background:#fff;box-shadow:0 9px 30px #173f730d}.social-embed-heading{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid #edf0f4;color:#526276;font-size:10px}.social-embed-heading a{color:#1769b2;text-decoration:none;font-weight:850}.social-embed-video{position:relative;width:100%;aspect-ratio:16/9;background:#101820}.social-embed-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.social-embed-image{display:block;width:100%;max-height:560px;object-fit:contain;background:#f4f6f9}.social-embed-direct-video{display:block;width:100%;max-height:560px;background:#101820}.social-embed-copy{padding:14px 16px}.social-embed-copy h3{font-size:15px;margin:0 0 5px}.social-embed-copy p{font-size:12px;line-height:1.6;color:#59697b;margin:0}.social-embed-card blockquote{margin:0 auto!important;max-width:100%}.social-embed-link-preview{padding:22px;background:#f5f7fa}.social-embed-link-preview p{font-size:12px;color:#526276}
+
 .post-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}.post-actions .post-cta{margin:0}.post-message-cta{border:1px solid #d7e2ee;border-radius:10px;padding:11px 14px;background:#fff;color:#173f73;font-weight:850;font-size:12px;cursor:pointer}.post-message-cta:hover{background:#eef5ff;border-color:#a9c5e5}.item-message-cta{display:inline-flex;align-items:center;justify-content:center;width:100%;margin-top:9px;min-height:40px;border:1px solid #f7b28e;border-radius:10px;padding:9px 12px;background:linear-gradient(110deg,#fff3eb,#fff);color:#b94712;font-size:12px;font-weight:900;cursor:pointer}.item-message-cta:hover{background:#ffe5d5;border-color:#ff8b4c}
 body{margin:0;background:#f6f8fb;color:#172b48;font:15px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;position:relative}body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;${heroImage ? `background:linear-gradient(rgba(246,248,251,.93),rgba(246,248,251,.97)),url("${heroImage}") center/cover fixed;` : ""}}
 a{color:inherit;text-decoration:none}
@@ -336,23 +339,27 @@ body.page-image:before{content:"";position:fixed;inset:0;z-index:0;pointer-event
 @media(max-width:400px){.products{grid-template-columns:1fr}.product-image,.product-placeholder{height:210px}}
 /* Keep the compact brand + menu header consistent on desktop and mobile */
 @media(max-width:760px){.site-nav{display:none;position:absolute;top:calc(100% + 13px);left:auto;right:0;width:min(280px,calc(100vw - 32px));margin:0;padding:9px;background:#fff;border:1px solid #e4eaf1;border-radius:15px;box-shadow:0 18px 48px #132b4a20;flex-direction:column;align-items:stretch;gap:3px}.site-nav.open{display:flex}.menu-button{display:inline-flex;margin-left:0;margin-right:0}.top-link{display:none}.top{height:66px;padding:0 12px;margin:0 -13px}}
+ .social-bar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:12px 18px;margin:0 -13px 18px;background:#fff;border-bottom:1px solid #e8edf3}.social-bar a{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:7px 13px;border:1px solid #e7ebf1;border-radius:999px;background:#fff;color:#27364a;text-decoration:none;font-size:11px;font-weight:850;transition:.18s}.social-bar a:hover{transform:translateY(-2px);border-color:var(--brand);box-shadow:0 5px 15px #173f7318}.social-bar svg{width:19px;height:19px;fill:none;stroke:var(--brand);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.social-bar a:nth-child(2) svg,.social-bar a:nth-child(5) svg,.social-bar a:nth-child(6) svg,.social-bar a:nth-child(7) svg{fill:var(--brand)}@media(max-width:760px){.social-bar{margin:0 -12px 15px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.social-bar::-webkit-scrollbar{display:none}.social-bar a{flex:0 0 auto}}
 </style>
 </head>
 <body class="page-${design.pageBackground} button-${design.buttonStyle} hero-height-${design.heroHeight} menu-${design.menuStyle}">
 <div class="site width-${design.contentWidth}">
 ${announcementHtml}
 <header class="top header-${design.headerStyle}"><div class="brand"><div class="logo">${logo}</div><div>${esc(businessName)}</div></div><details class="top-menu-wrap"><summary class="menu-button" aria-label="Open website menu"><span class="menu-icon" aria-hidden="true">☰</span><span>Menu</span></summary><nav id="site-nav" class="site-nav" aria-label="Business website menu">${site.show_catalogue===0?"":'<a href="#products">🛍️ Products</a>'}${site.show_services===0?"":'<a href="#services">🧰 Services</a>'}${site.show_posts===0?"":'<a href="#updates">📰 Updates</a>'}<a href="#about">ℹ️ About</a><a class="nav-cta" href="#contact">✉️ Contact</a><a href="/">↗ Shop PhoneYa2</a></nav></details></header>
+${socialBarHtml}
 <section class="hero"><div class="hero-content"><div class="eyebrow">${esc(site.template_key || "BUSINESS")} · PHONEYA2 PARTNER</div><h1>${esc(site.hero_title || businessName)}</h1><p>${esc(site.hero_subtitle || site.site_description || "Discover our products and services.")}</p><div class="actions">${contact}</div></div></section>
 <section class="section sponsored-section" id="partner-sponsored" hidden><div class="section-head"><div><small>PHONEYA2 AD NETWORK</small><h2>Sponsored for you</h2></div><span>Verified campaigns</span></div><div class="sponsored-grid" id="partner-sponsored-list"></div></section>
 ${catalogue(products, "Products", "OUR CATALOGUE")}
 ${catalogue(services, "Services", "WHAT WE DO")}
 ${postsHtml}
+${socialEmbedHtml}
 ${site.site_description ? `<section class="about" id="about"><h2>About ${esc(businessName)}</h2><p>${esc(site.site_description)}</p></section>` : ""}
 <section class="contact" id="contact">
 <div><small class="eyebrow">LET&#39;S CONNECT</small><h2>How can we help you?</h2><p>Send an enquiry and ${esc(businessName)} will be able to follow up with you.</p>${contact}<div class="socials">${site.show_social_links===0?"":socialHtml}</div></div>
 <form id="partner-enquiry"><input name="name" required maxlength="100" placeholder="Your name"><input name="phone" maxlength="40" placeholder="Phone number"><input name="email" type="email" maxlength="254" placeholder="Email address"><textarea name="message" required maxlength="2000" placeholder="How can we help?"></textarea><input name="company_site" tabindex="-1" autocomplete="new-password" aria-hidden="true" style="position:absolute;left:-9999px"><button type="submit">Send enquiry →</button><small id="enquiry-result" aria-live="polite"></small></form>
 </section>
 <div class="partner-ad-popup" id="partner-ad-popup" hidden role="dialog" aria-modal="true" aria-label="Sponsored advertisement"><div class="partner-ad-popup-card"><button class="partner-ad-popup-close" id="partner-ad-popup-close" aria-label="Close advertisement">×</button><div id="partner-ad-popup-content"></div></div></div>
+<script async src="https://www.tiktok.com/embed.js"></script><script async src="https://www.instagram.com/embed.js"></script><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <footer class="footer"><b>PhoneYa2 Partners</b><span>Smart CHOICES. Better CONNECTED · Zambia</span></footer>
 </div>
 <script>
