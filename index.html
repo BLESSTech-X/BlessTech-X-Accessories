@@ -2826,6 +2826,7 @@ function updatePromotionCountdown(settings) {
   if (heroLabel && active) heroLabel.textContent = 'OFFER ENDS IN';
   if (!active) return;
   const pad = n => String(n).padStart(2, '0');
+  let timer = null;
   const update = () => {
     const seconds = Math.max(0, Math.floor((end - Date.now()) / 1000));
     const values = [Math.floor(seconds / 3600), Math.floor((seconds % 3600) / 60), seconds % 60];
@@ -2839,7 +2840,7 @@ function updatePromotionCountdown(settings) {
     }
   };
   update();
-  const timer = window.setInterval(update, 1000);
+  timer = window.setInterval(update, 1000);
 }
 
 function initHero() {
