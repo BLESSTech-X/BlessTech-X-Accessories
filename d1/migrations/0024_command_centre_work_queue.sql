@@ -25,3 +25,6 @@ CREATE INDEX IF NOT EXISTS idx_admin_work_items_status ON admin_work_items(statu
 UPDATE communication_automations SET enabled=1,approval_required=1,
  config_json='{"audience":"subscribers","deduplicate":true,"requires_owner_approval":true}'
  WHERE automation_key='new_product_announcement';
+
+INSERT OR IGNORE INTO communication_automations(automation_key,name,description,enabled,approval_required,config_json)
+ VALUES('new_blog_announcement','New-article newsletter drafts','Prepare newsletter drafts when new PhoneYa2 guides are published.',1,1,'{"audience":"subscribers","deduplicate":true,"requires_owner_approval":true}');
