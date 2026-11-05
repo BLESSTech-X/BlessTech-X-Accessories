@@ -30,10 +30,10 @@ export async function onRequest({request,env}){
  }
  if(!site)return json({ok:false,error:"This business website is not accepting enquiries yet."},404);
  let itemId=null;
- if(catalogItemId){const item=await env.DB.prepare("SELECT id FROM partner_catalog_items WHERE id=? AND advertiser_id=? AND published=1").bind(catalogItemId,site.advertiser_id).first();if(!item)return json({ok:false,error:"The selected item is no longer available. Please refresh the business page."},400);itemId=item.id;}
+ let itemSnapshot=null;if(catalogItemId){itemSnapshot=await env.DB.prepare("SELECT id,title,image_url,price_label,item_type FROM partner_catalog_items WHERE id=? AND advertiser_id=? AND published=1").bind(catalogItemId,site.advertiser_id).first();if(!itemSnapshot)return json({ok:false,error:"The selected item is no longer available. Please refresh the business page."},400);itemId=itemSnapshot.id;}
  const id=crypto.randomUUID();
  try{
-  await env.DB.prepare("INSERT INTO partner_enquiries(id,advertiser_id,catalog_item_id,customer_name,customer_email,customer_phone,message,source,status) VALUES(?,?,?,?,?,?,?,?,'new')").bind(id,site.advertiser_id,itemId,name,email,phone,message,source).run();
+  await env.DB.prepare("INSERT INTO partner_enquiries(id,advertiser_id,catalog_item_id,catalog_item_title,catalog_item_image_url,catalog_item_price_label,catalog_item_type,customer_name,customer_email,customer_phone,message,source,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?, 'new')").bind(id,site.advertiser_id,itemId,itemSnapshot?.title||"",itemSnapshot?.image_url||"",itemSnapshot?.price_label||"",itemSnapshot?.item_type||"",name,email,phone,message,source).run();
   const saved=await env.DB.prepare("SELECT id FROM partner_enquiries WHERE id=? AND advertiser_id=?").bind(id,site.advertiser_id).first();
   if(!saved)throw new Error("Enquiry insert could not be verified.");
  }catch(error){
