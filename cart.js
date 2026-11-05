@@ -52,11 +52,18 @@
   }
 
 
+  function visitorId(){
+    let id=localStorage.getItem("py2_store_visitor_v1");
+    if(!/^[a-f0-9-]{20,80}$/i.test(id||"")){id=crypto.randomUUID();localStorage.setItem("py2_store_visitor_v1",id);}
+    return id;
+  }
+  function trackCartAdd(slug,quantity){
+    try{fetch("/api/store-notifications",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"event",visitor_id:visitorId(),event_type:"cart_add",slug,quantity,event_key:visitorId()+":cart_add:"+slug+":"+Date.now()})}).catch(()=>{});}catch(_){}
+  }
   function syncRemoteCart(){
     try {
       const items=read(); if(!items.length)return;
-      let visitor=localStorage.getItem("py2_store_visitor_v1");
-      if(!/^[a-f0-9-]{20,80}$/i.test(visitor||"")){visitor=crypto.randomUUID();localStorage.setItem("py2_store_visitor_v1",visitor);}
+      const visitor=visitorId();
       fetch("/api/store-notifications",{method:"POST",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({action:"cart",visitor_id:visitor,items:items.map(([slug,quantity])=>({slug,quantity}))})}).catch(()=>{});
     } catch (_) {}
   }
@@ -85,6 +92,7 @@
       return false;
     }
     refresh();
+    trackCartAdd(slug,next);
     window.dispatchEvent(new CustomEvent("phoneya2:cart-updated", { detail: { slug, quantity: next } }));
     toast((title || "Product") + " added to your cart.");
     return true;
