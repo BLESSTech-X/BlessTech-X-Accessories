@@ -200,3 +200,30 @@ body{color:var(--py2-ink);background:#f7f9fc}
   #py2-mini-insights .py2-mini-metric strong{font-size:12px!important}
   #py2-mini-insights .py2-mini-metric span{grid-column:1!important;font-size:7px!important}
 }
+
+
+/* Improve contrast in the introductory strip above the catalogue. */
+.pwa-action-bar.phoneya2-home-intro{
+  background:#071b3a!important;
+  background-image:linear-gradient(115deg,#06152e 0%,#0a2b55 58%,#123f73 100%)!important;
+  color:#fff!important;
+  border:1px solid #214b7b!important;
+}
+.pwa-action-bar.phoneya2-home-intro .phoneya2-intro-copy h2{
+  color:#fff!important;
+  text-shadow:0 2px 8px rgba(0,0,0,.28)!important;
+}
+.pwa-action-bar.phoneya2-home-intro .phoneya2-intro-copy p{
+  color:#e5efff!important;
+  opacity:1!important;
+  font-weight:650!important;
+  text-shadow:0 1px 4px rgba(0,0,0,.3)!important;
+}
+.pwa-action-bar.phoneya2-home-intro .phoneya2-intro-note{
+  color:#c5dcfa!important;
+  opacity:1!important;
+  font-weight:550!important;
+}
+.pwa-action-bar.phoneya2-home-intro .phoneya2-intro-eyebrow{
+  color:#9dccff!important;
+}
