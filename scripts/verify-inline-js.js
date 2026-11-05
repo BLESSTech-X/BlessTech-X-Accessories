@@ -6,8 +6,8 @@ const vm = require('node:vm');
 const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
-const files = ['index.html', 'shop.html', 'product.html', 'blog.html', 'agents/py2-360.html'];
-const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js', 'cart.js', 'store-notifications.js', 'seasonal-experience.js'];
+const files = ['index.html', 'shop.html', 'product.html', 'blog.html', 'agents/py2-360.html', 'admin/command-center.html', 'admin/campaigns.html'];
+const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js', 'cart.js', 'store-notifications.js', 'seasonal-experience.js', 'admin/work-queue.js'];
 let checked = 0;
 for (const file of files) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
