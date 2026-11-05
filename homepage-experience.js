@@ -25,6 +25,46 @@
       if(el){el.setAttribute('data-py2-track-section',id);observer.observe(el);}
     });
   }
+
+  // Clean escaped line-break markers if any CMS/product text reaches the page
+  // without being decoded. This only touches rendered text/labels, never scripts.
+  const cleanEscapedBreaks=value=>String(value||'').replace(/\\\\r\\\\n|\\\\n|\\\\r/g,' ').replace(/[ \\t]{2,}/g,' ').trim();
+  const cleanRenderedText=root=>{
+    if(!root)return;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(node=>{
+      const parent=node.parentElement;
+      if(!parent||parent.closest('script,style,textarea,pre,code'))return;
+      if(/\\\\[nr]/.test(node.nodeValue||''))node.nodeValue=cleanEscapedBreaks(node.nodeValue);
+    });
+    if(root.querySelectorAll)root.querySelectorAll('[title],[aria-label],[alt]').forEach(el=>{
+      ['title','aria-label','alt'].forEach(attr=>{
+        const value=el.getAttribute(attr);
+        if(value&&/\\\\[nr]/.test(value))el.setAttribute(attr,cleanEscapedBreaks(value));
+      });
+    });
+  };
+  cleanRenderedText(document.body);
+  if('MutationObserver'in window){
+    let cleaning=false;
+    const textCleanupObserver=new MutationObserver(records=>{
+      if(cleaning)return;
+      cleaning=true;
+      records.forEach(record=>{
+        record.addedNodes&&record.addedNodes.forEach(node=>{
+          if(node.nodeType===Node.TEXT_NODE){
+            const parent=node.parentElement;
+            if(parent&&!parent.closest('script,style,textarea,pre,code')&&/\\\\[nr]/.test(node.nodeValue||''))node.nodeValue=cleanEscapedBreaks(node.nodeValue);
+          }else if(node.nodeType===Node.ELEMENT_NODE)cleanRenderedText(node);
+        });
+      });
+      cleaning=false;
+    });
+    textCleanupObserver.observe(document.body,{childList:true,subtree:true});
+  }
+
   document.addEventListener('click',event=>{
     const target=event.target.closest('a,button');
     if(!target)return;
