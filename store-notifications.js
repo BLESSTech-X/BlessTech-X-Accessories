@@ -62,7 +62,7 @@
   .py2-notify-foot{padding:11px 16px;background:#fafbfc;border-top:1px solid #edf0f4;font:11px/1.45 system-ui;color:#8a93a2}
   .py2-notify-popup{position:fixed;z-index:10050;top:86px;right:18px;width:min(390px,calc(100vw - 28px));display:grid;grid-template-columns:44px minmax(0,1fr) 28px;gap:12px;align-items:start;padding:15px;background:#fff;border:1px solid #e8eaf0;border-radius:17px;box-shadow:0 18px 55px #10182830;color:#172033;animation:py2NotifyPopupIn .25s ease-out}
   @keyframes py2NotifyPopupIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-  .py2-notify-popup-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#fff0e5,#fff8f2);font-size:22px}
+  .py2-notify-popup-icon{width:52px;height:52px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,#fff0e5,#fff8f2);font-size:22px;overflow:hidden}.py2-notify-popup-image{display:block;width:100%;height:100%;object-fit:cover;background:#f3f4f6}
   .py2-notify-popup-copy{min-width:0}
   .py2-notify-popup-kicker{display:block;margin:1px 0 5px;color:#d6530a;font:800 10px/1.2 system-ui;letter-spacing:.09em;text-transform:uppercase}
   .py2-notify-popup-title{display:block;color:#172033;font:800 14px/1.35 system-ui;overflow-wrap:anywhere}
@@ -107,7 +107,7 @@
   if(!n||$("#py2-notify-popup"))return;
   const target=validDestination(n.destination);if(!target)return;
   const wrap=document.createElement("aside");wrap.id="py2-notify-popup";wrap.className="py2-notify-popup";wrap.setAttribute("role","status");wrap.setAttribute("aria-live","polite");
-  const icon=document.createElement("span");icon.className="py2-notify-popup-icon";icon.setAttribute("aria-hidden","true");icon.textContent=categoryIcon[n.category]||"🔔";
+  const icon=document.createElement("span");icon.className="py2-notify-popup-icon";icon.setAttribute("aria-hidden","true");const imagePath=String(n.metadata?.image||"").trim();if(imagePath.startsWith("/")&&!imagePath.startsWith("//")||/^https:\/\//i.test(imagePath)){const image=document.createElement("img");image.className="py2-notify-popup-image";image.src=imagePath;image.alt="";image.loading="lazy";image.onerror=()=>{image.remove();icon.textContent=categoryIcon[n.category]||"🔔";};icon.append(image);}else icon.textContent=categoryIcon[n.category]||"🔔";
   const copy=document.createElement("div");copy.className="py2-notify-popup-copy";
   const kicker=document.createElement("span");kicker.className="py2-notify-popup-kicker";kicker.textContent=label(n.category);
   const link=document.createElement("a");link.href=target.href;link.className="py2-notify-popup-link";link.style.cssText="display:block;color:inherit;text-decoration:none";
