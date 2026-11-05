@@ -1,3 +1,4 @@
+import { renderPartnerSite } from "../_partner-site.js";
 const HEADERS = { "content-type":"application/json; charset=utf-8", "cache-control":"no-store" };
 const COOKIE = "__Host-py2_partner";
 const SESSION_DAYS = 30;
@@ -207,9 +208,26 @@ await db.prepare("UPDATE partner_site_settings SET published=0,updated_at=? WHER
 return json({ok:true,message:"Your business website is now private."});
 }
 if(action==="builder.load"){
-const row=await db.prepare("SELECT project_json,draft_html,draft_css,published_html,published_css,builder_published,updated_at FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
+const [row,advertiser,site,items,posts]=await Promise.all([
+db.prepare("SELECT project_json,draft_html,draft_css,published_html,published_css,builder_published,updated_at FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT a.id,a.business_name,a.owner_name,a.phone,a.email,a.logo_url,a.tier,a.status,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,p.verified FROM advertiser_profiles p JOIN advertisers a ON a.id=p.advertiser_id WHERE p.advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT * FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
+db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
+db.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(partner.advertiser_id).all()
+]);
+if(!advertiser||!site)return fail("Your existing business website could not be loaded. Complete your website setup first.",404);
+let socialEmbeds=[];try{const result=await db.prepare("SELECT id,platform,url,title,caption,created_at FROM partner_social_embeds WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all();socialEmbeds=result.results||[];}catch(error){console.warn("Social embeds unavailable while importing existing website.");}
+let sourceHtml=renderPartnerSite({slug:advertiser.slug,advertiser,site,items:items.results||[],posts:posts.results||[],socialEmbeds,share:{}});
+const replaceLiveSection=(id,key,label)=>{
+const pattern=new RegExp("<section[^>]*id=[\"']"+id+"[\"'][^>]*>[\\s\\S]*?</section>","i");
+sourceHtml=sourceHtml.replace(pattern,'<section class="py2-live-slot" data-phoneya2-component="'+key+'"><div><small>LIVE PHONEYA2 CONTENT</small><h2>'+label+'</h2><p>This section stays connected to your PhoneYa2 '+label.toLowerCase()+'.</p></div></section>');
+};
+replaceLiveSection("products","catalogue","Live product catalogue");
+replaceLiveSection("services","services","Live services");
+replaceLiveSection("updates","posts","Business posts and updates");
+replaceLiveSection("social-content","social","Social channel content");
 let project={};try{project=JSON.parse(row?.project_json||"{}")}catch{}
-return json({ok:true,project,html:row?.draft_html||"",css:row?.draft_css||"",published:!!row?.builder_published,updated_at:row?.updated_at||null});
+return json({ok:true,project,html:row?.draft_html||"",css:row?.draft_css||"",source_html:sourceHtml,published:!!row?.builder_published,updated_at:row?.updated_at||null});
 }
 if(action==="builder.save"){
 let project={};try{project=typeof body.project==="string"?JSON.parse(body.project):body.project||{}}catch{return fail("The visual design could not be read. Please retry saving.");}
