@@ -15,7 +15,11 @@
  function isRead(n){return Boolean(readState()[n.id]);}
  function popupSeen(){try{return JSON.parse(localStorage.getItem(POPUP_SEEN_KEY)||"{}")||{};}catch{return {};}}
  function markPopupSeen(id){if(!id)return;const x=popupSeen();x[id]=Date.now();const entries=Object.entries(x).sort((a,b)=>b[1]-a[1]).slice(0,160);try{localStorage.setItem(POPUP_SEEN_KEY,JSON.stringify(Object.fromEntries(entries)));}catch{}}
- const state={items:[],filter:"all",open:false,popupTimer:null};
+ const state={items:[],filter:"all",open:false,popupTimer:null,popupQueue:[],knownInitialized:false,soundEnabled:false,audioContext:null};
+ const KNOWN_KEY="py2_store_notification_known_v1",SOUND_KEY="py2_store_notification_sound_v1";
+ try{state.soundEnabled=localStorage.getItem(SOUND_KEY)==="1";}catch{}
+ function groupOf(category){if(category==="products")return"products";if(category==="offers")return"offers";if(["blog","stories"].includes(category))return"blog";if(category==="community")return"community";if(["price-drops","restocks","low-stock"].includes(category))return"discounts";if(["seasonal","system","businesses"].includes(category))return"updates";return"other";}
+ function playDing(){if(!state.soundEnabled||!state.audioContext)return;try{const ctx=state.audioContext,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.setValueAtTime(880,ctx.currentTime);osc.frequency.exponentialRampToValueAtTime(1320,ctx.currentTime+.11);gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+.018);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.34);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.35);}catch{}}
  const categoryLabel={products:"New product",offers:"Partner offer","price-drops":"Price drop",restocks:"Back in stock","low-stock":"Limited availability",community:"Community",businesses:"Partner update",blog:"New story",stories:"New story",seasonal:"Seasonal update",system:"PhoneYa2 update"};
  const categoryIcon={products:"🛍️",offers:"🤝","price-drops":"🏷️",restocks:"↗","low-stock":"⏳",stories:"📖",blog:"📖",community:"💬",seasonal:"✨",system:"🔔"};
  function validImage(value){const raw=String(value||"").trim();if(!raw||raw.startsWith("//")||/^data:|^javascript:/i.test(raw))return "";try{const u=new URL(raw,location.origin);if(!["https:","http:"].includes(u.protocol)||u.username||u.password)return "";if(u.origin!==location.origin&&u.protocol!=="https:")return "";return u.href;}catch{return "";}}
@@ -49,7 +53,7 @@
   .py2-notify-panel-close{width:30px;height:30px;display:grid;place-items:center;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;color:#475569;font:21px/1 system-ui;cursor:pointer}
   .py2-notify-panel-close:hover{background:#e9eef5;color:#111827;border-color:#cbd5e1}
   .py2-notify-panel-close:focus-visible{outline:2px solid #f97316;outline-offset:2px}
-  .py2-notify-tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #edf0f4}
+  .py2-notify-tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #edf0f4;overflow-x:auto;scrollbar-width:thin}.py2-notify-tabs button{white-space:nowrap;flex:0 0 auto}.py2-notify-sound{border:1px solid #e2e8f0;background:#f8fafc;color:#526078;border-radius:8px;padding:6px 8px;font:700 10px system-ui;cursor:pointer}.py2-notify-sound[aria-pressed=true]{background:#eaf8f1;border-color:#b9e8ce;color:#14744d}
   .py2-notify-tabs button{border:1px solid transparent;background:#f5f6f8;color:#667085;border-radius:99px;padding:7px 12px;font:700 11px system-ui;cursor:pointer}
   .py2-notify-tabs button[aria-pressed=true]{background:#fff1e8;border-color:#ffd6bd;color:#c94b00}
   .py2-notify-list{overflow:auto;overscroll-behavior:contain}
@@ -87,9 +91,9 @@
   const panel=$(".py2-notify-panel");if(!panel)return;
   const badge=$(".py2-notify-count"),visibleItems=state.items,count=visibleItems.filter(n=>!isRead(n)).length;
   badge.textContent=count>99?"99+":String(count);badge.hidden=!count;
-  const list=visibleItems.filter(n=>state.filter==="all"||(state.filter==="unread"&&!isRead(n))||(state.filter==="read"&&isRead(n))),host=$(".py2-notify-list");
+  const list=visibleItems.filter(n=>state.filter==="all"||groupOf(n.category)===state.filter),host=$(".py2-notify-list");
   host.replaceChildren();
-  if(!list.length){const e=document.createElement("div");e.className="py2-notify-empty";e.textContent=state.filter==="unread"?"You're all caught up. New updates will appear here.":"No notifications yet. We'll let you know when something relevant happens.";host.append(e);}
+  if(!list.length){const e=document.createElement("div");e.className="py2-notify-empty";e.textContent="No "+(state.filter==="all"?"":state.filter+" ")+"notifications right now. New updates will appear here as they happen.";host.append(e);}
   list.forEach(n=>{
    const row=document.createElement("div");row.className="py2-notify-row";
    const target=validDestination(n.destination),a=document.createElement(target?"a":"div");
@@ -106,9 +110,9 @@
    meta.append(cat,time);c.append(t,m,meta);const thumbUrl=validImage(n.metadata?.image);let thumb=null;if(thumbUrl){thumb=document.createElement("img");thumb.className="py2-notify-thumb";thumb.src=thumbUrl;thumb.alt="";thumb.loading="lazy";thumb.onerror=()=>thumb.remove();}a.append(thumb||dot,c);
    row.append(a);host.append(row);
   });
-  $$(".py2-notify-tabs button",panel).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.filter===state.filter)));
+  $(".py2-notify-tabs button",panel).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.filter===state.filter)));const sound=$(".py2-notify-sound",panel);if(sound){sound.setAttribute("aria-pressed",String(state.soundEnabled));sound.textContent=state.soundEnabled?"🔔 Sound on":"🔕 Sound off";}
  }
- function closePopup(id){const el=$("#py2-notify-popup");if(!el)return;if(id)markPopupSeen(id);el.remove();window.__py2NotificationPopupOpen=false;if(state.popupTimer)clearTimeout(state.popupTimer);state.popupTimer=null;}
+ function closePopup(id){const el=$("#py2-notify-popup");if(!el)return;if(id)markPopupSeen(id);el.remove();window.__py2NotificationPopupOpen=false;if(state.popupTimer)clearTimeout(state.popupTimer);state.popupTimer=null;setTimeout(processPopupQueue,700);}
  function blockedByAnotherPopup(){
   return Boolean(window.__py2SellerModalOpen||window.__py2SellerNoticeOpen||window.__py2ProductPopupOpen||window.__py2BlogSpotlightOpen||window.__py2ContextTipOpen||window.__py2AdPopupOpen||window.__py2NotificationPopupOpen);
  }
@@ -125,31 +129,37 @@
   const message=document.createElement("span");message.className="py2-notify-popup-message";message.textContent=safe(n.message,220);
   const cta=document.createElement("span");cta.className="py2-notify-popup-cta";cta.textContent="View this update →";
   link.append(title,message,cta);link.addEventListener("click",()=>{markPopupSeen(n.id);saveRead(n.id);});
+  playDing();
   const close=document.createElement("button");close.type="button";close.className="py2-notify-popup-close";close.setAttribute("aria-label","Dismiss notification");close.textContent="×";close.addEventListener("click",()=>closePopup(n.id));
   copy.append(kicker,link);wrap.append(icon,copy,close);document.body.append(wrap);
   window.__py2NotificationPopupOpen=true;
-  state.popupTimer=setTimeout(()=>closePopup(n.id),10000);
+  state.popupTimer=setTimeout(()=>{closePopup(n.id);setTimeout(processPopupQueue,900);},7000);
  }
- function maybeShowPopup(items){
-  const seen=popupSeen(),now=Date.now(),last=Number(localStorage.getItem(POPUP_COOLDOWN_KEY)||0);
-  if(last&&now-last<8*60*1000)return;
-  const allowed=new Set(["products","stories","blog","price-drops","restocks","low-stock","offers"]);
-  const candidates=(items||[]).filter(n=>n&&n.id&&allowed.has(n.category)&&!seen[n.id]&&Number.isFinite(Date.parse(n.created_at))&&now-Date.parse(n.created_at)<36*60*60*1000&&now>=Date.parse(n.created_at)-5*60*1000);
-  if(!candidates.length)return;
-  const chosen=candidates.slice().sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))[0];
-  markPopupSeen(chosen.id);try{localStorage.setItem(POPUP_COOLDOWN_KEY,String(now));}catch{}
-  const attempt=()=>{if(blockedByAnotherPopup()){state.popupTimer=setTimeout(attempt,5000);return;}showPopup(chosen);};
-  state.popupTimer=setTimeout(attempt,1200);
+ function processPopupQueue(){
+  if(!state.popupQueue.length||$("#py2-notify-popup"))return;
+  const attempt=()=>{if(blockedByAnotherPopup()){state.popupTimer=setTimeout(attempt,2500);return;}const item=state.popupQueue.shift();if(item)showPopup(item);};
+  state.popupTimer=setTimeout(attempt,650);
+ }
+ function queueNewNotifications(items){
+  const ids=(items||[]).map(n=>String(n.id));let known={};
+  try{known=JSON.parse(localStorage.getItem(KNOWN_KEY)||"{}")||{};}catch{}
+  if(!state.knownInitialized){ids.forEach(id=>known[id]=1);state.knownInitialized=true;try{localStorage.setItem(KNOWN_KEY,JSON.stringify(known));}catch{}return;}
+  const fresh=(items||[]).filter(n=>n&&n.id&&!known[String(n.id)]);
+  ids.forEach(id=>known[id]=1);const trimmed=Object.entries(known).slice(-300);
+  try{localStorage.setItem(KNOWN_KEY,JSON.stringify(Object.fromEntries(trimmed)));}catch{}
+  fresh.sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)).forEach(n=>state.popupQueue.push(n));
+  processPopupQueue();
  }
  function build(){
   const header=$(".top-header-inner");if(!header||$(".py2-notify-wrap"))return;
   styles();
   const w=document.createElement("div");w.className="py2-notify-wrap";
-  w.innerHTML='<button class="py2-notify-bell" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="py2-notify-panel"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="py2-notify-count" hidden>0</span></button><section class="py2-notify-panel" id="py2-notify-panel" aria-label="PhoneYa2 notifications"><header class="py2-notify-head"><div><h3>Notifications</h3><p>Useful updates from PhoneYa2</p></div><div class="py2-notify-head-actions"><button class="py2-notify-mark" type="button">Mark all read</button><button class="py2-notify-panel-close" type="button" aria-label="Close notifications" title="Close">×</button></div></header><nav class="py2-notify-tabs" aria-label="Notification filters"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="unread" aria-pressed="false">Unread</button><button type="button" data-filter="read" aria-pressed="false">Read</button></nav><div class="py2-notify-list" aria-live="polite"><div class="py2-notify-empty">Loading updates…</div></div><footer class="py2-notify-foot">Your read status is saved on this browser. Select any update to open its destination.</footer></section>';
+  w.innerHTML='<button class="py2-notify-bell" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="py2-notify-panel"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="py2-notify-count" hidden>0</span></button><section class="py2-notify-panel" id="py2-notify-panel" aria-label="PhoneYa2 notifications"><header class="py2-notify-head"><div><h3>Notifications</h3><p>Useful updates from PhoneYa2</p></div><div class="py2-notify-head-actions"><button class="py2-notify-sound" type="button" aria-pressed="false" title="Enable a soft notification ding">🔕 Sound off</button><button class="py2-notify-mark" type="button">Mark all read</button><button class="py2-notify-panel-close" type="button" aria-label="Close notifications" title="Close">×</button></div></header><nav class="py2-notify-tabs" aria-label="Notification filters"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="products" aria-pressed="false">Products</button><button type="button" data-filter="updates" aria-pressed="false">Updates</button><button type="button" data-filter="offers" aria-pressed="false">Offers</button><button type="button" data-filter="blog" aria-pressed="false">Blog</button><button type="button" data-filter="community" aria-pressed="false">Community</button><button type="button" data-filter="discounts" aria-pressed="false">Discounts</button><button type="button" data-filter="other" aria-pressed="false">More</button></nav><div class="py2-notify-list" aria-live="polite"><div class="py2-notify-empty">Loading updates…</div></div><footer class="py2-notify-foot">Your read status is saved on this browser. Select any update to open its destination.</footer></section>';
   const cart=$(".header-cart-cta",header);if(cart)header.insertBefore(w,cart);else header.append(w);
   const bell=$(".py2-notify-bell",w),panel=$(".py2-notify-panel",w);
   bell.addEventListener("click",()=>{state.open=!state.open;panel.classList.toggle("is-open",state.open);bell.setAttribute("aria-expanded",String(state.open));if(state.open)load(false);});
   $(".py2-notify-mark",panel).addEventListener("click",()=>{state.items.forEach(n=>saveRead(n.id));render();});
+  $(".py2-notify-sound",panel).addEventListener("click",()=>{state.soundEnabled=!state.soundEnabled;try{localStorage.setItem(SOUND_KEY,state.soundEnabled?"1":"0");}catch{}if(state.soundEnabled){const Audio=window.AudioContext||window.webkitAudioContext;if(Audio){try{state.audioContext=new Audio();if(state.audioContext.state==="suspended")state.audioContext.resume();}catch{}}}render();});
   $(".py2-notify-panel-close",panel).addEventListener("click",()=>{state.open=false;panel.classList.remove("is-open");bell.setAttribute("aria-expanded","false");bell.focus();});
   $$(".py2-notify-tabs button",panel).forEach(b=>b.addEventListener("click",()=>{state.filter=b.dataset.filter;render();}));
   document.addEventListener("click",e=>{if(state.open&&!w.contains(e.target)){state.open=false;panel.classList.remove("is-open");bell.setAttribute("aria-expanded","false");}});
@@ -161,7 +171,7 @@
    if(!r.ok)throw Error("Notification request failed");
    const d=await r.json();if(!d.ok||!Array.isArray(d.notifications))throw Error("Invalid notification response");
    state.items=d.notifications;render();
-   if(allowPopup!==false)maybeShowPopup(state.items);
+   if(allowPopup!==false)queueNewNotifications(state.items);
   }catch{
    const h=$(".py2-notify-list");if(h&&!state.items.length)h.textContent="Updates are temporarily unavailable. Shopping is not affected.";
   }
