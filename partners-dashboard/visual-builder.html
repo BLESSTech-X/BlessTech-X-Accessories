@@ -42,7 +42,7 @@ editor.on('update',()=>{dirty=true;status('Unsaved changes')});
 function importLiveWebsite(sourceHtml){
 if(!sourceHtml)throw new Error('The current website preview was not returned by PhoneYa2.');
 const doc=new DOMParser().parseFromString(sourceHtml,'text/html');
-doc.querySelectorAll('script,iframe,object,embed').forEach(node=>node.remove());
+doc.querySelectorAll('script,iframe,object,embed').forEach(node=>node.remove());doc.querySelectorAll('*').forEach(node=>[...node.attributes].forEach(attr=>{if(/^on/i.test(attr.name))node.removeAttribute(attr.name);}));
 const css=[...doc.querySelectorAll('style')].map(node=>node.textContent||'').join('\\n');
 const body=doc.body?doc.body.innerHTML:'';
 if(!body.trim())throw new Error('The current website did not contain editable page content.');
