@@ -382,3 +382,12 @@ body{color:var(--py2-ink);background:#f7f9fc}
   }
   #py2-mini-insights .py2-mini-metric>i{width:23px!important;height:23px!important;font-size:11px!important}
 }
+
+
+/* Final analytics type scale: compact across desktop and mobile overrides. */
+#py2-mini-insights .py2-mini-metric strong{font-size:10px!important;line-height:1.05!important;letter-spacing:-.15px!important}
+#py2-mini-insights .py2-mini-metric span{font-size:6px!important;line-height:1.1!important;letter-spacing:0!important}
+@media(max-width:480px){
+ #py2-mini-insights .py2-mini-metric strong{font-size:9px!important}
+ #py2-mini-insights .py2-mini-metric span{font-size:6px!important}
+}
