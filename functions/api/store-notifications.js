@@ -1,6 +1,6 @@
 const HEADERS={"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"};
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:HEADERS});
-const clean=(v,n=240)=>String(v??"").replace(/[\\u0000-\\u001f\\u007f]/g," ").trim().slice(0,n);
+const clean=(v,n=240)=>String(v??"").replace(/[\u0000-\u001f\u007f]/g," ").trim().slice(0,n);
 const uuid=()=>crypto.randomUUID();
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return true;try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
 function destination(value,fallback="/shop.html"){const raw=String(value||"").trim();if(!raw||raw.startsWith("//"))return fallback;try{const u=new URL(raw,"https://phoneya2.pages.dev");if(!["https:","http:"].includes(u.protocol))return fallback;return u.origin==="https://phoneya2.pages.dev"?u.pathname+u.search+u.hash:u.href;}catch{return fallback;}}
