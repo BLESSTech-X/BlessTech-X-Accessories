@@ -44,7 +44,7 @@ export async function onRequest({request,env}){
  try{
   if(request.method==="GET"){
    const [campaignRows,subs,partners]=await Promise.all([
-    env.DB.prepare("SELECT * FROM email_campaigns ORDER BY created_at DESC LIMIT 100").all(),
+    env.DB.prepare("SELECT * FROM email_campaigns WHERE archived_at IS NULL ORDER BY created_at DESC LIMIT 100").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM customer_subscribers GROUP BY status").all(),
     env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'')").first()
    ]);
