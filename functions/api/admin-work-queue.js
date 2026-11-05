@@ -82,7 +82,7 @@ export async function onRequest({request,env}){
   if(request.method==="GET"){
    await syncWork(env.DB,request);
    const [rows,counts]=await Promise.all([
-    env.DB.prepare("SELECT * FROM admin_work_items ORDER BY CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,created_at DESC LIMIT 150").all(),
+    env.DB.prepare("SELECT * FROM admin_work_items ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 WHEN 'completed' THEN 2 ELSE 3 END,CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,created_at DESC LIMIT 300").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM admin_work_items GROUP BY status").all()
    ]);
    const summary={pending:0,approved:0,ignored:0,completed:0};for(const r of counts.results||[])summary[r.status]=Number(r.total||0);
