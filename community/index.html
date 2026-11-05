@@ -59,7 +59,7 @@
 /* Community notification centre */
 .community-notification-button{position:relative;width:42px;height:42px;flex:none;border:1px solid #e1e8f0;border-radius:12px;background:#f6f8fb;color:#102b4e;display:grid;place-items:center;font-size:22px;margin-left:auto;box-shadow:0 2px 8px #102b4e08}
 .community-notification-button:hover,.community-notification-button[aria-expanded=true]{background:#edf4ff;border-color:#bfd4ee}
-.community-notification-button>span{font-size:22px;line-height:1}
+.community-notification-button>svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .community-notification-button i{position:absolute;right:-5px;top:-6px;min-width:19px;height:19px;padding:0 5px;border:2px solid #fff;border-radius:20px;background:#e3293d;color:#fff;font:900 10px/15px 'DM Sans',sans-serif;text-align:center;box-shadow:0 0 0 2px #e3293d22,0 0 12px #e3293d55}
 .community-notification-button i[hidden]{display:none}
 .community-notification-panel{position:fixed;z-index:120;top:74px;right:max(18px,calc((100vw - 1400px)/2));width:min(440px,calc(100vw - 28px));max-height:min(720px,calc(100vh - 94px));background:#fff;border:1px solid #dfe7f0;border-radius:18px;box-shadow:0 22px 70px #102b4e2b;display:flex;flex-direction:column;overflow:hidden}
@@ -103,7 +103,7 @@
 <body>
 <header class="topbar"><div class="top-inner">
   <a class="brand-area" href="/" aria-label="PhoneYa2 home"><span class="brand-mark"><img src="/icon-512x512.jpg" alt="PhoneYa2 logo" onerror="this.onerror=null;this.src='/icon-512x512.png'"></span><span class="brand-wordmark"><strong>Phone<span>Ya2</span></strong><small>SMART CHOICES. BETTER CONNECTED.</small></span></a>
-  <button class="community-notification-button" id="community-notification-toggle" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="community-notification-panel"><span aria-hidden="true">♧</span><i id="community-notification-badge" hidden>0</i></button>
+  <button class="community-notification-button" id="community-notification-toggle" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="community-notification-panel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><i id="community-notification-badge" hidden>0</i></button>
   <div class="community-menu-wrap"><button class="community-menu-button" id="community-menu-toggle" type="button" aria-expanded="false" aria-controls="community-menu"><span>Menu</span><span class="community-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
     <nav class="community-menu" id="community-menu" aria-label="PhoneYa2 navigation" hidden><a href="/">Home</a><a href="/shop.html">Shop</a><a href="/community/" aria-current="page">Community</a><a href="/blog.html">Blog</a><a href="/partners/">Become a Partner</a><a href="/partners-dashboard/">Partner Studio</a></nav>
   </div>
