@@ -51,16 +51,16 @@ try {
 const homepagePath = path.join(root, 'index.html');
 try {
   const homepage = fs.readFileSync(homepagePath, 'utf8');
-  if (!/const productCount = items\.length;/.test(homepage)) {
-    fail('Homepage Products metric must count published catalogue listings.');
+  if (!/const productCount = items\.reduce\(\(total, product\) => \{[\s\S]*?quantity > 0 \? quantity : 1;[\s\S]*?\}, 0\);/.test(homepage)) {
+    fail('Homepage Products metric must count physical stock units and one catalogue unit for each sold-out listing.');
   }
-  if (!/const inStockProducts = items\.filter\(product => \{[\s\S]*?Number\(product\.stock\);[\s\S]*?quantity > 0;[\s\S]*?\}\)\.length;/.test(homepage)) {
-    fail('Homepage In stock metric must count catalogue listings with positive stock only.');
+  if (!/const inStockProducts = items\.reduce\(\(total, product\) => total \+ stockQuantity\(product\), 0\);/.test(homepage)) {
+    fail('Homepage In stock metric must sum only actual positive physical stock quantities.');
   }
-  if (/const productCount = items\.reduce\(\(total, product\) => total \+ unitQuantity/.test(homepage)) {
-    fail('Homepage Products metric must not sum stock quantities.');
+  if (/const productCount = items\.length;|const inStockProducts = items\.filter/.test(homepage)) {
+    fail('Homepage product metrics must use unit quantities, not listing counts.');
   }
-  pass('Homepage Products and In stock metrics use separate, real catalogue listing counts.');
+  pass('Homepage Products and In stock metrics count catalogue units and available physical units separately.');
 } catch (error) {
   fail('Homepage catalogue analytics could not be validated: ' + error.message);
 }
