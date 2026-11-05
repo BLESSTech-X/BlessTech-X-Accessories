@@ -55,6 +55,7 @@ async function showLoginBriefing(items){
  setTimeout(()=>{if(box.isConnected)box.remove();},14000);
 }
 
+async function load(section,detect=true){
  if(loading)return;loading=true;section.querySelector(".work-sync").textContent="Checking for prepared work…";
  try{
   const d=await api();allItems=Array.isArray(d.items)?d.items:[];
