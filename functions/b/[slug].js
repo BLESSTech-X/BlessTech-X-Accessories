@@ -31,7 +31,6 @@ export async function onRequestGet({params,env,request}){
    }
  }
  if(!items||!posts)throw new Error("Partner website content could not be loaded after schema compatibility checks.");
- let visualBuilder=null;try{visualBuilder=await env.DB.prepare("SELECT published_html,published_css FROM partner_site_builder WHERE advertiser_id=? AND builder_published=1 LIMIT 1").bind(advertiser.id).first();}catch(error){console.warn("Visual builder migration 0021 is not yet available; serving the existing partner website.",String(error?.message||error).slice(0,160));}
 const visitor=await visitorHash(request),source=request.headers.get("referer")?"referral":"direct",now=new Date().toISOString();
  await env.DB.batch([
  env.DB.prepare("INSERT INTO advertiser_profile_views(id,advertiser_id,visitor_hash,source) VALUES(?,?,?,?)").bind(crypto.randomUUID(),advertiser.id,visitor,source),
@@ -40,6 +39,6 @@ const visitor=await visitorHash(request),source=request.headers.get("referer")?"
  const visibleItems=items.results||[],visiblePosts=site?.show_posts===0?[]:(posts.results||[]);let socialEmbeds={results:[]};try{socialEmbeds=await env.DB.prepare("SELECT id,platform,url,title,caption,created_at FROM partner_social_embeds WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(advertiser.id).all();}catch(error){console.warn("Partner social embeds unavailable until migration 0019 is applied.");}
  const shareToken=new URL(request.url).searchParams.get("share")||"";let share={};
  if(shareToken.startsWith("post:")){const shareSlug=shareToken.slice(5).slice(0,100);const post=visiblePosts.find(x=>x.slug===shareSlug);if(post)share={title:post.title||advertiser.business_name,description:String(post.excerpt||post.body||advertiser.business_name).slice(0,280),image:post.cover_image_url?new URL(post.cover_image_url,request.url).href:(site?.hero_image_url?new URL(site.hero_image_url,request.url).href:advertiser.logo_url||""),url:new URL(request.url).href};}else if(shareToken.startsWith("ad:")){const adSlug=shareToken.slice(3).slice(0,100);const ad=await env.DB.prepare("SELECT title,description,media_url,media_type FROM ads WHERE slug=? AND advertiser_id=? AND status='approved' LIMIT 1").bind(adSlug,advertiser.id).first();if(ad)share={title:ad.title||advertiser.business_name,description:String(ad.description||advertiser.business_name).slice(0,280),image:ad.media_type==="image"&&ad.media_url?new URL(ad.media_url,request.url).href:advertiser.logo_url||"",url:new URL(request.url).href};}
- const html=renderPartnerSite({slug,advertiser,site:site||{},items:visibleItems,posts:visiblePosts,socialEmbeds:socialEmbeds?.results||[],share,builder:visualBuilder});
+ const html=renderPartnerSite({slug,advertiser,site:site||{},items:visibleItems,posts:visiblePosts,socialEmbeds:socialEmbeds?.results||[],share});
  return new Response(html,{status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=0, s-maxage=5, must-revalidate","x-content-type-options":"nosniff"}});
 }
