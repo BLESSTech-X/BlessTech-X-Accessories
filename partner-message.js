@@ -1,0 +1,39 @@
+(function(){
+'use strict';
+var active=null;
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function styles(){
+ if(document.getElementById('py2-partner-message-style'))return;
+ var s=document.createElement('style');s.id='py2-partner-message-style';
+ s.textContent='.py2-message-overlay{position:fixed;inset:0;z-index:12000;display:grid;place-items:center;padding:16px;background:#0b1d32a8;backdrop-filter:blur(5px)}.py2-message-card{width:min(100%,520px);max-height:min(92vh,760px);overflow:auto;border:1px solid #e3eaf2;border-radius:20px;background:#fff;box-shadow:0 28px 90px #06152a55}.py2-message-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:20px 22px;background:linear-gradient(120deg,#102b4e,#1e5a91);color:#fff}.py2-message-head small{font-size:9px;font-weight:900;letter-spacing:1.5px;color:#ffc09d}.py2-message-head h2{margin:5px 0 3px;font-size:22px;line-height:1.2}.py2-message-head p{margin:0;color:#dce8f5;font-size:12px}.py2-message-close{width:36px;height:36px;flex:none;border:1px solid #ffffff44;border-radius:10px;background:#ffffff18;color:#fff;font-size:23px;cursor:pointer}.py2-message-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:20px 22px 22px}.py2-message-field{display:grid;gap:6px}.py2-message-field.full{grid-column:1/-1}.py2-message-field label{font-size:11px;font-weight:900;color:#26384d}.py2-message-field input,.py2-message-field textarea{width:100%;min-width:0;border:1px solid #d5dfeb;border-radius:10px;padding:12px 13px;background:#fbfcfe;color:#15263a;font:inherit;font-size:13px;outline:none}.py2-message-field input:focus,.py2-message-field textarea:focus{border-color:#3987d7;box-shadow:0 0 0 3px #3987d71c;background:#fff}.py2-message-field textarea{min-height:125px;resize:vertical}.py2-message-help{grid-column:1/-1;margin:0;color:#758397;font-size:10px;line-height:1.5}.py2-message-status{grid-column:1/-1;margin:0;color:#64748b;font-size:11px;line-height:1.5}.py2-message-submit{grid-column:1/-1;min-height:46px;border:0;border-radius:11px;background:linear-gradient(100deg,#ff641f,#e94d12);color:#fff;font-weight:950;font-size:13px;cursor:pointer;box-shadow:0 7px 18px #ff641f30}.py2-message-submit:disabled{opacity:.6;cursor:wait}.py2-message-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}.py2-partner-message-row{padding:0 14px 14px}.py2-partner-message-row button{width:100%;min-height:40px;border:1px solid #d6e3f2;border-radius:10px;background:#f2f7fd;color:#174a7e;font-size:11px;font-weight:900;cursor:pointer}.py2-partner-message-row button:hover{background:#e7f1fc}.post-buttons button[data-message-business]{color:#174a7e;background:#eff6ff}.post-buttons button[data-message-business]:hover{background:#dcecff}@media(max-width:520px){.py2-message-overlay{padding:8px;align-items:end}.py2-message-card{max-height:94vh;border-radius:18px 18px 12px 12px}.py2-message-head{padding:16px}.py2-message-form{grid-template-columns:1fr;padding:15px 16px 18px}.py2-message-field.full,.py2-message-help,.py2-message-status,.py2-message-submit{grid-column:1}}';
+ document.head.appendChild(s);
+}
+function close(){if(active){active.remove();active=null;document.removeEventListener('keydown',onKey)}}
+function onKey(e){if(e.key==='Escape')close()}
+function open(button){
+ var slug=String(button.getAttribute('data-message-business')||'').trim(),business=String(button.getAttribute('data-business-name')||'this business').trim(),source=String(button.getAttribute('data-message-source')||'PhoneYa2 post').trim();
+ if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug))return;
+ close();styles();
+ var overlay=document.createElement('div');overlay.className='py2-message-overlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Message '+business);
+ overlay.innerHTML='<section class="py2-message-card"><header class="py2-message-head"><div><small>DIRECT BUSINESS ENQUIRY</small><h2>Message '+esc(business)+'</h2><p>Your message will go straight to this business’s Partner Studio inbox.</p></div><button type="button" class="py2-message-close" aria-label="Close message form">×</button></header><form class="py2-message-form"><div class="py2-message-field"><label for="py2-message-name">Your name</label><input id="py2-message-name" name="name" autocomplete="name" maxlength="100" required placeholder="Full name"></div><div class="py2-message-field"><label for="py2-message-phone">Phone number</label><input id="py2-message-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="+260…"></div><div class="py2-message-field full"><label for="py2-message-email">Email address <span>(optional)</span></label><input id="py2-message-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com"></div><div class="py2-message-field full"><label for="py2-message-body">Your message</label><textarea id="py2-message-body" name="message" maxlength="2000" required placeholder="Tell the business what you would like to know…"></textarea></div><label class="py2-message-honeypot" aria-hidden="true">Leave empty<input name="website" tabindex="-1" autocomplete="off"></label><p class="py2-message-help">Your contact details are shared with the business so they can respond. Please provide a phone number or email address.</p><p class="py2-message-status" role="status" aria-live="polite"></p><button class="py2-message-submit" type="submit">Send message securely →</button></form></section>';
+ document.body.appendChild(overlay);active=overlay;
+ var form=overlay.querySelector('form'),status=overlay.querySelector('.py2-message-status'),submit=overlay.querySelector('button[type=submit]');
+ overlay.querySelector('.py2-message-close').addEventListener('click',close);overlay.addEventListener('click',function(e){if(e.target===overlay)close()});
+ form.addEventListener('submit',async function(e){
+  e.preventDefault();var name=form.elements.name.value.trim(),phone=form.elements.phone.value.trim(),email=form.elements.email.value.trim(),message=form.elements.message.value.trim();
+  if(!name||!message||(!phone&&!email)){status.textContent='Please enter your name, a phone number or an email address, and your message.';return}
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status.textContent='Please enter a valid email address.';return}
+  submit.disabled=true;submit.textContent='Sending your message…';status.textContent='Submitting securely to '+business+'…';
+  try{
+   var response=await fetch('/api/partner-enquiry',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json',accept:'application/json'},body:JSON.stringify({slug:slug,name:name,phone:phone,email:email,message:message,website:form.elements.website.value,source:source})});
+   var result=await response.json().catch(function(){return {}});
+   if(!response.ok||!result.ok)throw Error(result.error||'Your message could not be sent. Please try again.');
+   form.reset();status.textContent='Message sent successfully. '+business+' can now follow up from their Partner Studio inbox.';submit.textContent='Message sent ✓';
+   if(typeof gtag==='function'){try{gtag('event','partner_post_enquiry_submitted',{business_slug:slug,source:source})}catch(e){}}
+   setTimeout(close,2600);
+  }catch(error){status.textContent=error.message||'Could not send your message. Please try again.';submit.disabled=false;submit.textContent='Try sending again →'}
+ });
+ document.addEventListener('keydown',onKey);form.elements.name.focus();
+}
+document.addEventListener('click',function(e){var button=e.target.closest('[data-message-business]');if(button){e.preventDefault();open(button)}});
+})();
