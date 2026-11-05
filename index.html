@@ -1792,7 +1792,69 @@ body .hero-slide .hero-slide-title span {
   <link rel="stylesheet" href="/phoneya2-performance.css?v=20261030-white-canvas1">
   <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-image-polish2">
 <link rel="stylesheet" href="/storefront-canvas.css?v=20261030-white-canvas2">
-  <link rel="stylesheet" href="/premium-homepage.css?v=20261105-1">\n</head>
+  <link rel="stylesheet" href="/premium-homepage.css?v=20261105-1">\n
+<style id="phoneya2-home-watermark-visibility-v2">
+  /* Lift and reveal the logo watermark behind “Shop All Accessories”.
+     This final, page-specific rule intentionally overrides older duplicate
+     intro/logo rules without changing the separate page-wide watermark. */
+  .phoneya2-home-intro{
+    position:relative!important;
+    isolation:isolate!important;
+    overflow:hidden!important;
+  }
+  .phoneya2-home-intro::before{
+    content:""!important;
+    position:absolute!important;
+    z-index:0!important;
+    pointer-events:none!important;
+    width:clamp(280px,38vw,390px)!important;
+    height:clamp(280px,38vw,390px)!important;
+    left:50%!important;
+    top:25%!important;
+    transform:translate(-50%,-50%)!important;
+    border-radius:50%!important;
+    background-image:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg")!important;
+    background-position:center!important;
+    background-size:contain!important;
+    background-repeat:no-repeat!important;
+    filter:blur(.15px) grayscale(.04) saturate(1.08)!important;
+    opacity:.39!important;
+    mix-blend-mode:multiply!important;
+    animation:py2HomeWatermarkLift 10s ease-in-out infinite alternate!important;
+    will-change:transform!important;
+  }
+  .phoneya2-home-intro::after{
+    z-index:1!important;
+    pointer-events:none!important;
+  }
+  .phoneya2-home-intro .phoneya2-intro-copy,
+  .phoneya2-home-intro .pwa-action-buttons,
+  .phoneya2-home-intro #py2-mini-insights{
+    position:relative!important;
+    z-index:2!important;
+  }
+  @keyframes py2HomeWatermarkLift{
+    from{transform:translate(-50%,-51%) scale(.98)}
+    to{transform:translate(-50%,-55%) scale(1.035)}
+  }
+  @media(max-width:600px){
+    .phoneya2-home-intro::before{
+      width:245px!important;
+      height:245px!important;
+      top:23%!important;
+      left:50%!important;
+      opacity:.36!important;
+    }
+  }
+  @media(prefers-reduced-motion:reduce){
+    .phoneya2-home-intro::before{
+      animation:none!important;
+      transform:translate(-50%,-53%)!important;
+    }
+  }
+</style>
+
+</head>
 <body class="py2-show-floating-top">
 
 <!-- SHARED PHONEYA2 HEADER -->
