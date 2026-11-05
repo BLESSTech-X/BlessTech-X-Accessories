@@ -89,8 +89,10 @@ export async function onRequest({request,env}){
    const id=clean(body.id,100),action=clean(body.action,30);
    const status=({ignore:"ignored",complete:"completed",approve:"approved",reopen:"pending"})[action];
    if(!id||!status)return json({error:"Choose a valid work item action."},400);
-   const result=await env.DB.prepare("UPDATE admin_work_items SET status=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").bind(status,id).run();
-   if(!result.meta?.changes)return json({error:"Work item not found."},404);
+   const item=await env.DB.prepare("SELECT related_id FROM admin_work_items WHERE id=?").bind(id).first();
+   if(!item)return json({error:"Work item not found."},404);
+   if(action==="ignore"&&item.related_id)await env.DB.prepare("UPDATE email_campaigns SET archived_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'),updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=? AND status='draft'").bind(item.related_id).run();
+   await env.DB.prepare("UPDATE admin_work_items SET status=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").bind(status,id).run();
    return json({success:true,status});
   }
   return json({error:"Method not allowed."},405);
