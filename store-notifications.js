@@ -120,7 +120,7 @@
  function showPopup(n){
   if(!n||$("#py2-notify-popup"))return;
   const target=validDestination(n.destination);if(!target)return;
-  const wrap=document.createElement("aside");wrap.id="py2-notify-popup";wrap.className="py2-notify-popup";wrap.setAttribute("role","status");wrap.setAttribute("aria-live","polite");
+  const wrap=document.createElement("aside");wrap.id="py2-notify-popup";wrap.dataset.notificationId=String(n.id);wrap.className="py2-notify-popup";wrap.setAttribute("role","status");wrap.setAttribute("aria-live","polite");
   const icon=document.createElement("span");icon.className="py2-notify-popup-icon";icon.setAttribute("aria-hidden","true");const imagePath=validImage(n.metadata?.image);if(imagePath){const image=document.createElement("img");image.className="py2-notify-popup-image";image.src=imagePath;image.alt="";image.loading="lazy";image.onerror=()=>{image.remove();icon.textContent=categoryIcon[n.category]||"🔔";};icon.append(image);}else icon.textContent=categoryIcon[n.category]||"🔔";
   const copy=document.createElement("div");copy.className="py2-notify-popup-copy";
   const kicker=document.createElement("span");kicker.className="py2-notify-popup-kicker";kicker.textContent=label(n.category);
@@ -134,6 +134,7 @@
   const close=document.createElement("button");close.type="button";close.className="py2-notify-popup-close";close.setAttribute("aria-label","Dismiss notification");close.textContent="×";close.addEventListener("click",()=>closePopup(n.id));
   copy.append(kicker,link);wrap.append(icon,copy,close);document.body.append(wrap);
   window.__py2NotificationPopupOpen=true;
+  try{const known=JSON.parse(localStorage.getItem(KNOWN_KEY)||"{}")||{};known[String(n.id)]=1;localStorage.setItem(KNOWN_KEY,JSON.stringify(Object.fromEntries(Object.entries(known).slice(-300))));}catch{}
   state.popupTimer=setTimeout(()=>{closePopup(n.id);setTimeout(processPopupQueue,900);},7000);
  }
  function processPopupQueue(){
@@ -145,8 +146,9 @@
   const ids=(items||[]).map(n=>String(n.id));let known={};
   try{known=JSON.parse(localStorage.getItem(KNOWN_KEY)||"{}")||{};}catch{}
   if(!state.knownInitialized){ids.forEach(id=>known[id]=1);state.knownInitialized=true;try{localStorage.setItem(KNOWN_KEY,JSON.stringify(known));}catch{}return;}
-  const fresh=(items||[]).filter(n=>n&&n.id&&!known[String(n.id)]);
-  ids.forEach(id=>known[id]=1);const trimmed=Object.entries(known).slice(-300);
+  const queued=new Set(state.popupQueue.map(n=>String(n.id)));const active=$("#py2-notify-popup")?.dataset.notificationId;if(active)queued.add(active);
+  const fresh=(items||[]).filter(n=>n&&n.id&&!known[String(n.id)]&&!queued.has(String(n.id)));
+  const trimmed=Object.entries(known).slice(-300);
   try{localStorage.setItem(KNOWN_KEY,JSON.stringify(Object.fromEntries(trimmed)));}catch{}
   fresh.sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)).forEach(n=>state.popupQueue.push(n));
   processPopupQueue();
