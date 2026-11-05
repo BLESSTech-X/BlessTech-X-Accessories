@@ -263,11 +263,11 @@
       @media(max-width:380px){.topbar .cc-header-navigation{grid-template-columns:1fr!important;max-height:55vh!important}}
       /* Quick tools: remove the old white control tray. Keep one compact toggle visible;
          its individual controls unfold above it only when requested. */
-      #dashboard .cc-float-tools.cc-float-tools-grouped{display:flex!important;flex-direction:column-reverse!important;align-items:flex-end!important;gap:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
-      #dashboard .cc-float-tools-grouped .cc-float-tools-toggle{position:relative;z-index:2;display:flex;align-items:center;gap:9px;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff;font-weight:850;box-shadow:0 12px 32px #10132240;cursor:pointer}
+      .cc-float-tools.cc-float-tools-grouped{position:fixed!important;right:16px!important;bottom:16px!important;top:auto!important;left:auto!important;transform:none!important;z-index:10000!important;display:flex!important;flex-direction:column-reverse!important;align-items:flex-end!important;gap:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
+      .cc-float-tools-grouped .cc-float-tools-toggle{position:relative;z-index:2;display:flex;align-items:center;gap:9px;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff;font-weight:850;box-shadow:0 12px 32px #10132240;cursor:pointer}
       .cc-float-tools-toggle-icon{font-size:20px;line-height:1}
-      #dashboard .cc-float-tools-grouped .cc-float-tool-item{position:absolute!important;right:0!important;bottom:calc(100% + 9px)!important;display:flex!important;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(12px) scale(.94);transition:opacity .2s,transform .2s,visibility .2s;box-shadow:0 8px 22px #10132220}
-      #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(calc(var(--tool-index) * -59px)) scale(1)}
+      .cc-float-tools-grouped .cc-float-tool-item{position:absolute!important;right:0!important;bottom:calc(100% + 9px)!important;display:flex!important;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(12px) scale(.94);transition:opacity .2s,transform .2s,visibility .2s;box-shadow:0 8px 22px #10132220}
+      .cc-float-tools-grouped.is-open .cc-float-tool-item{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(calc(var(--tool-index) * -59px)) scale(1)}
       #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item:nth-of-type(2){transform:translateY(-59px)}
       #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item:nth-of-type(3){transform:translateY(-118px)}
       #dashboard .cc-float-tools-grouped.is-open .cc-float-tool-item:nth-of-type(4){transform:translateY(-177px)}
@@ -278,7 +278,8 @@
       .cc-bottom-tab.is-active{background:linear-gradient(135deg,#ff7418,#e64d16);color:#fff}
       .cc-bottom-icon{font-size:19px;line-height:1.1}
       #dashboard{padding-bottom:96px!important}
-      @media(min-width:900px){.cc-bottom-navigation{width:min(520px,calc(100% - 36px));bottom:16px}.cc-bottom-tab{flex-direction:row;font-size:11px;gap:7px;padding:10px}}
+      @media(max-width:700px){.cc-bottom-navigation{left:12px;right:96px;bottom:max(10px,env(safe-area-inset-bottom));width:auto;transform:none}.cc-float-tools.cc-float-tools-grouped{right:12px!important;bottom:max(10px,env(safe-area-inset-bottom))!important}}
+      @media(min-width:900px){.cc-bottom-navigation{width:min(520px,calc(100% - 36px));bottom:16px}.cc-bottom-tab{flex-direction:row;font-size:11px;gap:7px;padding:10px}.cc-float-tools.cc-float-tools-grouped{right:24px!important;bottom:16px!important}}
       @media(prefers-reduced-motion:reduce){.cc-float-tool-item{transition:none!important}}
     `;document.head.append(style);
   })();
@@ -308,8 +309,8 @@
     const nav=document.createElement('nav');nav.id='cc-bottom-navigation';nav.className='cc-bottom-navigation';nav.setAttribute('aria-label','Main Command Centre navigation');
     definitions.forEach(([id,icon,label])=>{const source=$('#tab-'+id);if(!source)return;const button=document.createElement('button');button.type='button';button.className='cc-bottom-tab';button.dataset.target=id;button.innerHTML='<span class="cc-bottom-icon" aria-hidden="true">'+icon+'</span><span>'+label+'</span>';button.addEventListener('click',()=>source.click());nav.append(button);});
     const more=document.createElement('button');more.type='button';more.className='cc-bottom-tab';more.dataset.target='more';more.innerHTML='<span class="cc-bottom-icon" aria-hidden="true">☰</span><span>More</span>';more.addEventListener('click',()=>{const toggle=$('#cc-menu-toggle');if(toggle){if(!document.body.classList.contains('cc-nav-open'))toggle.click();}else workspace.scrollIntoView({behavior:'smooth',block:'start'});});nav.append(more);
-    const quickTools=$('.cc-float-tools');if(quickTools)nav.append(quickTools);
     document.body.append(nav);
+    const quickTools=$('.cc-float-tools');if(quickTools&&quickTools.parentElement!==document.body)document.body.append(quickTools);
     const sync=()=>{const active=workspace.querySelector('.workspace-tab[aria-selected="true"]')?.id?.replace('tab-','')||'overview';nav.querySelectorAll('.cc-bottom-tab').forEach(button=>button.classList.toggle('is-active',button.dataset.target===active||(button.dataset.target==='more'&&!definitions.some(x=>x[0]===active))));};
     workspace.addEventListener('click',event=>{if(event.target.closest('.workspace-tab'))setTimeout(sync,0);});new MutationObserver(sync).observe(workspace,{subtree:true,attributes:true,attributeFilter:['aria-selected']});sync();
   }
