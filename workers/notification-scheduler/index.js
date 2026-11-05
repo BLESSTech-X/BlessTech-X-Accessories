@@ -87,7 +87,7 @@ async function syncInventory(db,products){
 async function prepareWork(db,products,posts){
  const productMap=new Map(products.map(p=>[String(p.slug),p]));
  const blogMap=new Map(posts.map(p=>[String(p.slug),p]));
- const events=await db.prepare("SELECT event_key,category,event_type,title,message,image_url,destination,priority,related_id,related_label FROM admin_notifications WHERE is_read=0 ORDER BY created_at DESC LIMIT 200").all();
+ const events=await db.prepare("SELECT event_key,category,event_type,title,message,image_url,destination,priority,related_id,related_label FROM admin_notifications WHERE is_read=0 OR event_type IN ('product_published','blog_published') ORDER BY created_at DESC LIMIT 200").all();
  for(const event of events.results||[]){
   const product=event.event_type==="product_published"?productMap.get(event.related_id):null;
   const post=event.event_type==="blog_published"?blogMap.get(event.related_id):null;
@@ -129,5 +129,5 @@ async function runSync(env){
 }
 export default {
  async scheduled(controller,env,ctx){ctx.waitUntil(runSync(env).then(result=>console.log("PhoneYa2 automation cycle completed:",JSON.stringify(result))).catch(error=>console.error("PhoneYa2 automation cycle failed:",String(error?.stack||error).slice(0,500))));},
- async fetch(){return new Response("PhoneYa2 scheduled automation worker is active.",{headers:jsonHeaders});}
+ async fetch(){return new Response("PhoneYa2 scheduled automation worker is active.",{headers:{"content-type":"text/plain; charset=utf-8","cache-control":"no-store"}});}
 };
