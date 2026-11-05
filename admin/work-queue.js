@@ -38,5 +38,6 @@ function mount(){
 document.addEventListener("py2-admin-ready",mount);
 const observer=new MutationObserver(()=>{if(document.getElementById("view-actions"))mount();});
 observer.observe(document.documentElement,{childList:true,subtree:true});
+mount();
 setTimeout(()=>observer.disconnect(),15000);
 })();
