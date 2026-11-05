@@ -28,6 +28,8 @@ async function syncPublishedContent(request,env){
     const existing=await env.DB.prepare("SELECT content_slug FROM admin_content_snapshots WHERE source_type=? AND content_slug=?").bind(source.type,item.slug).first();
     if(!existing&&!isBaseline){
      statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"published:"+source.type+":"+item.slug,item.category,item.event,item.label,item.message,"normal",item.destination,item.slug,item.title,item.image_url||""));
+    }else if(existing&&item.image_url){
+     statements.push(env.DB.prepare("UPDATE admin_notifications SET image_url=CASE WHEN ?<>'' THEN ? ELSE image_url END WHERE event_key=?").bind(item.image_url,item.image_url,"published:"+source.type+":"+item.slug));
     }
     if(!existing)statements.push(env.DB.prepare("INSERT OR IGNORE INTO admin_content_snapshots(source_type,content_slug,content_title) VALUES(?,?,?)").bind(source.type,item.slug,item.title));
    }
