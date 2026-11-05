@@ -207,57 +207,28 @@ if(action==="site.unpublish"){
 await db.prepare("UPDATE partner_site_settings SET published=0,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
 return json({ok:true,message:"Your business website is now private."});
 }
-if(action==="builder.load"){
-const [row,advertiser,site,items,posts]=await Promise.all([
-db.prepare("SELECT project_json,draft_html,draft_css,published_html,published_css,builder_published,updated_at FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
-db.prepare("SELECT a.id,a.business_name,a.owner_name,a.phone,a.email,a.logo_url,a.tier,a.status,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,p.verified FROM advertiser_profiles p JOIN advertisers a ON a.id=p.advertiser_id WHERE p.advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
-db.prepare("SELECT * FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
-db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(partner.advertiser_id).all(),
-db.prepare("SELECT title,slug,excerpt,body,cover_image_url,post_type,published_at FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(partner.advertiser_id).all()
-]);
-if(!advertiser||!site)return fail("Your existing business website could not be loaded. Complete your website setup first.",404);
-let socialEmbeds=[];try{const result=await db.prepare("SELECT id,platform,url,title,caption,created_at FROM partner_social_embeds WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all();socialEmbeds=result.results||[];}catch(error){console.warn("Social embeds unavailable while importing existing website.");}
-let sourceHtml=renderPartnerSite({slug:advertiser.slug,advertiser,site,items:items.results||[],posts:posts.results||[],socialEmbeds,share:{}});
-const replaceLiveSection=(id,key,label)=>{
-const opening=new RegExp('<section\\b(?=[^>]*\\bid="'+id+'")[^>]*>','i');
-const match=opening.exec(sourceHtml);if(!match)return;
-const tags=/<\/?section\b[^>]*>/gi;tags.lastIndex=match.index+match[0].length;let depth=1,tag;
-while(depth>0&&(tag=tags.exec(sourceHtml))){if(/^<\//.test(tag[0]))depth--;else if(!/\/\s*>$/.test(tag[0]))depth++;}
-if(depth===0){const slot='<section class="py2-live-slot" data-phoneya2-component="'+key+'"><div><small>LIVE PHONEYA2 CONTENT</small><h2>'+label+'</h2><p>This section stays connected to your PhoneYa2 '+label.toLowerCase()+'.</p></div></section>';sourceHtml=sourceHtml.slice(0,match.index)+slot+sourceHtml.slice(tags.lastIndex);}
-};
-replaceLiveSection("products","catalogue","Live product catalogue");
-replaceLiveSection("services","services","Live services");
-replaceLiveSection("updates","posts","Business posts and updates");
-replaceLiveSection("social-content","social","Social channel content");
-let project={};try{project=JSON.parse(row?.project_json||"{}")}catch{}
-return json({ok:true,project,html:row?.draft_html||"",css:row?.draft_css||"",source_html:sourceHtml,published:!!row?.builder_published,updated_at:row?.updated_at||null});
+if(action.startsWith("builder."))return fail("The visual drag-and-drop builder has been retired. Use the standard website editor in Partner Studio.",410);
+if(action==="site.preview"){
+ const [advertiser,storedSite]=await Promise.all([
+  db.prepare("SELECT a.id,a.business_name,a.owner_name,a.phone,a.email,a.logo_url,a.tier,a.status,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,p.verified FROM advertiser_profiles p JOIN advertisers a ON a.id=p.advertiser_id WHERE p.advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first(),
+  db.prepare("SELECT * FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first()
+ ]);
+ if(!advertiser||!storedSite)return fail("Your website setup could not be loaded for preview.",404);
+ const site={...storedSite};
+ const mapping={site_title:"site_title",site_description:"site_description",hero_title:"hero_title",hero_subtitle:"hero_subtitle",hero_image_url:"hero_image_url",logo_url:"logo_url",primary_color:"primary_color",accent_color:"accent_color",font_pair:"font_pair",template_key:"template_key",seo_title:"seo_title",seo_description:"seo_description",page_background:"page_background",header_style:"header_style",post_layout:"post_layout",post_image_fit:"post_image_fit",post_card_style:"post_card_style",button_style:"button_style",content_width:"content_width",hero_height:"hero_height",menu_style:"menu_style",announcement_text:"announcement_text",announcement_link:"announcement_link"};
+ for(const [input,key] of Object.entries(mapping))if(body[input]!==undefined)site[key]=body[input];
+ if(body.custom_colors&&typeof body.custom_colors==="object")site.custom_colors_json=JSON.stringify(body.custom_colors);
+ if(body.social_links&&typeof body.social_links==="object")site.social_links_json=JSON.stringify(body.social_links);
+ for(const key of ["show_announcement","show_social_links","show_contact_bar","show_catalogue","show_services","show_posts"])if(body[key]!==undefined)site[key]=body[key]?1:0;
+ let items=[],posts=[],socialEmbeds=[];
+ try{const result=await db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' AND moderation_status='approved' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(partner.advertiser_id).all();items=result.results||[];}
+ catch(error){if(!/no such column: .*moderation_status/i.test(String(error?.message||error)))throw error;const result=await db.prepare("SELECT * FROM partner_catalog_items WHERE advertiser_id=? AND published=1 AND availability!='out_of_stock' ORDER BY featured DESC,sort_order,created_at DESC LIMIT 200").bind(partner.advertiser_id).all();items=result.results||[];}
+ try{const result=await db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? AND status='published' AND moderation_status='approved' ORDER BY published_at DESC LIMIT 50").bind(partner.advertiser_id).all();posts=result.results||[];}
+ catch(error){if(!/no such column: .*moderation_status/i.test(String(error?.message||error)))throw error;const result=await db.prepare("SELECT * FROM partner_posts WHERE advertiser_id=? AND status='published' ORDER BY published_at DESC LIMIT 50").bind(partner.advertiser_id).all();posts=result.results||[];}
+ try{const result=await db.prepare("SELECT id,platform,url,title,caption,created_at FROM partner_social_embeds WHERE advertiser_id=? ORDER BY created_at DESC LIMIT 100").bind(partner.advertiser_id).all();socialEmbeds=result.results||[];}catch(error){if(!/no such table/i.test(String(error?.message||error)))throw error;}
+ const html=renderPartnerSite({slug:advertiser.slug,advertiser,site,items,posts,socialEmbeds,share:{}});
+ return json({ok:true,html});
 }
-if(action==="builder.save"){
-let project={};try{project=typeof body.project==="string"?JSON.parse(body.project):body.project||{}}catch{return fail("The visual design could not be read. Please retry saving.");}
-if(!project||typeof project!=="object"||Array.isArray(project))return fail("Invalid visual project.");
-const projectJson=JSON.stringify(project),html=String(body.html||""),css=String(body.css||"");
-if(projectJson.length>1200000||html.length>700000||css.length>350000)return fail("This design is too large to save. Reduce large images or duplicated sections and try again.",413);
-if(!projectJson||projectJson==="{}")return fail("Add at least one section before saving.");
-await db.prepare("INSERT INTO partner_site_builder(advertiser_id,project_json,draft_html,draft_css,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(advertiser_id) DO UPDATE SET project_json=excluded.project_json,draft_html=excluded.draft_html,draft_css=excluded.draft_css,updated_at=excluded.updated_at").bind(partner.advertiser_id,projectJson,html,css,now).run();
-return json({ok:true,message:"Visual builder draft saved.",updated_at:now});
-}
-
-if(action==="builder.publish"){
-const row=await db.prepare("SELECT draft_html,draft_css FROM partner_site_builder WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
-if(!row||!String(row.draft_html||"").trim())return fail("Save your visual design before publishing it.");
-const safeHtml=sanitizeBuilderHtml(row.draft_html),safeCss=sanitizeBuilderCss(row.draft_css||"");
-if(!safeHtml.trim())return fail("The design contains no publishable content.");
-const ready=await db.prepare("SELECT site_title,hero_title FROM partner_site_settings WHERE advertiser_id=? LIMIT 1").bind(partner.advertiser_id).first();
-if(!ready)return fail("Your partner website settings could not be found.");
-await db.prepare("UPDATE partner_site_builder SET published_html=?,published_css=?,builder_published=1,updated_at=? WHERE advertiser_id=?").bind(safeHtml,safeCss,now,partner.advertiser_id).run();
-await db.prepare("UPDATE partner_site_settings SET published=1,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
-return json({ok:true,message:"Your visual website is now published.",published:true});
-}
-if(action==="builder.use_standard"){
-await db.prepare("UPDATE partner_site_builder SET builder_published=0,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();
-return json({ok:true,message:"Your existing website editor is now controlling the public website.",published:false});
-}
-
 if(action==="site.save"){
 const activePackage=await db.prepare("SELECT ps.package_key,pp.benefits_json FROM partner_subscriptions ps JOIN partner_packages pp ON pp.package_key=ps.package_key WHERE ps.advertiser_id=? AND ps.status='active' ORDER BY ps.created_at DESC LIMIT 1").bind(partner.advertiser_id).first();
 let benefits={};try{benefits=JSON.parse(activePackage?.benefits_json||'{}')}catch{}
@@ -312,6 +283,7 @@ if(announcementLink){let valid=announcementLink.startsWith("/")&&!announcementLi
 if(body.show_announcement&&designRank[designLevel]<1&&Number(currentDesign.show_announcement||0)!==1)return fail("The announcement bar is available from the Starter package. Upgrade to unlock it.");
 const fields={site_title:cleanText(body.site_title,100),site_description:cleanText(body.site_description,500),hero_title:cleanText(body.hero_title,140),hero_subtitle:cleanText(body.hero_subtitle,300),hero_image_url:cleanText(body.hero_image_url,1000),logo_url:cleanText(body.logo_url,1000),primary_color:/^#[0-9a-f]{6}$/i.test(body.primary_color||"")?body.primary_color:"#ff6000",accent_color:/^#[0-9a-f]{6}$/i.test(body.accent_color||"")?body.accent_color:"#173f73",font_pair:["modern","editorial","classic"].includes(body.font_pair)?body.font_pair:"modern",template_key:["signature","storefront","studio","hospitality","professional"].includes(body.template_key)?body.template_key:"signature",seo_title:cleanText(body.seo_title,120),seo_description:cleanText(body.seo_description,300),social_links_json:JSON.stringify(body.social_links&&typeof body.social_links==="object"?body.social_links:{}),...requested,announcement_text:announcement,announcement_link:announcementLink,show_announcement:body.show_announcement?1:0,show_social_links:body.show_social_links===false?0:1,show_contact_bar:body.show_contact_bar===false?0:1,show_catalogue:body.show_catalogue===false?0:1,show_services:body.show_services===false?0:1,show_posts:body.show_posts===false?0:1,hero_height:requested.hero_height||'standard',menu_style:requested.menu_style||'standard'};
 await db.prepare(`UPDATE partner_site_settings SET site_title=?,site_description=?,hero_title=?,hero_subtitle=?,hero_image_url=?,logo_url=?,primary_color=?,accent_color=?,font_pair=?,template_key=?,seo_title=?,seo_description=?,social_links_json=?,custom_colors_json=?,page_background=?,header_style=?,post_layout=?,post_image_fit=?,post_card_style=?,button_style=?,content_width=?,announcement_text=?,announcement_link=?,show_announcement=?,show_social_links=?,show_contact_bar=?,show_catalogue=?,show_services=?,show_posts=?,hero_height=?,menu_style=?,updated_at=? WHERE advertiser_id=?`).bind(fields.site_title,fields.site_description,fields.hero_title,fields.hero_subtitle,fields.hero_image_url,fields.logo_url,fields.primary_color,fields.accent_color,fields.font_pair,fields.template_key,fields.seo_title,fields.seo_description,fields.social_links_json,JSON.stringify(customColours),fields.page_background,fields.header_style,fields.post_layout,fields.post_image_fit,fields.post_card_style,fields.button_style,fields.content_width,fields.announcement_text,fields.announcement_link,fields.show_announcement,fields.show_social_links,fields.show_contact_bar,fields.show_catalogue,fields.show_services,fields.show_posts,fields.hero_height,fields.menu_style,now,partner.advertiser_id).run();
+try{await db.prepare("UPDATE partner_site_builder SET builder_published=0,updated_at=? WHERE advertiser_id=?").bind(now,partner.advertiser_id).run();}catch(error){if(!/no such table/i.test(String(error?.message||error)))throw error;}
 await db.prepare("UPDATE advertiser_profiles SET primary_color=?,accent_color=?,cover_image_url=?,social_links_json=?,tagline=?,about=?,updated_at=? WHERE advertiser_id=?").bind(fields.primary_color,fields.accent_color,fields.hero_image_url,fields.social_links_json,fields.hero_subtitle,fields.site_description,now,partner.advertiser_id).run();
 return json({ok:true,message:"Website design settings saved.",designLevel});
 }
