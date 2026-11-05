@@ -133,7 +133,7 @@ function sanitizeBuilderHtml(input){
  let html=String(input||"").slice(0,700000).replace(/<!--[\s\S]*?-->/g,"");
  html=html.replace(/<(script|style|iframe|object|embed|form|input|textarea|select|option|meta|link|base|template|math|noscript)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,"").replace(/<(script|style|iframe|object|embed|form|input|textarea|select|option|meta|link|base|template|math|noscript)\b[^>]*\/?\s*>/gi,"");
  const allowed=new Set("main section div article header footer nav aside figure figcaption picture source img video svg path circle rect line polyline polygon h1 h2 h3 h4 h5 h6 p span b strong em i small blockquote ul ol li a button br hr".split(" "));
- const attrs=new Set("class id title alt role href src poster target rel width height loading decoding style colspan viewBox d cx cy r x y rx ry fill stroke stroke-width stroke-linecap stroke-linejoin".split(" "));
+ const attrs=new Set("class id title alt role href src poster target rel width height loading decoding style colspan viewbox d cx cy r x y rx ry fill stroke stroke-width stroke-linecap stroke-linejoin".split(" "));
  return html.replace(/<\/?([a-zA-Z0-9-]+)([^>]*)>/g,(tag,name,raw)=>{
   const t=name.toLowerCase();if(!allowed.has(t))return "";
   const closing=tag.startsWith("</");if(closing)return ["img","source","br","hr"].includes(t)?"":"</"+t+">";
