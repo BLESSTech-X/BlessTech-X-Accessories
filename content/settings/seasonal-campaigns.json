@@ -1,6 +1,5 @@
 {
   "enabled": true,
-  "start": "2026-11-15",
   "popupUrl": "/shop.html",
   "snow": false,
   "decorations": true,
@@ -11,16 +10,16 @@
   "popupTitle": "Merry Christmas 🎁⛄🎁 .Make someone feel special ",
   "bannerTitle": "The PhoneYa2 Christmas Edit",
   "banner": true,
-  "scheduled": true,
+  "scheduled": false,
   "popupImage": "https://images.unsplash.com/photo-1669130183532-377dd8fd6718?auto=format&fit=crop&fm=jpg&q=85&w=1600",
   "popupMode": "delay",
   "bannerImage": "https://images.unsplash.com/photo-1764519430085-8e84e7fca425?auto=format&fit=crop&fm=jpg&q=85&w=2200",
   "snowIntensity": 9,
   "popupDelay": 5,
   "popupScroll": 50,
-  "end": "2026-12-27",
   "popupMessage": "Discover thoughtful gifts, explore festive offers and shop your favourite phone accessories.",
   "bannerMessage": "Thoughtful Tech gifts. Better-connected moments.",
   "bannerButton": "Explore Christmas Picks",
-  "popupButton": "Shop Christmas Deals"
+  "popupButton": "Shop Christmas Deals",
+  "autoSchedule": true
 }
