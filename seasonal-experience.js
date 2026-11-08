@@ -33,7 +33,7 @@ function automaticSeason(today=localDay()){
 }
 function inSchedule(){return !!(settings.scheduled&&settings.start&&settings.end&&localDay()>=settings.start.slice(0,10)&&localDay()<=settings.end.slice(0,10))}
 function pageCovered(){const p=location.pathname.toLowerCase();if(settings.coverage==='shopping')return p==='/'||/^\/(shop|product|cart|checkout|account)(\.html)?$/.test(p);if(settings.coverage==='content')return /blog|about|contact|policy|newsletter|advertis|agent/.test(p);return true}
-function active(){const campaignLive=settings.autoSchedule!==false?!!automaticSeason()&&settings.enabled!==false:!!settings.enabled&&(!settings.scheduled||inSchedule());return pageCovered()&&(campaignLive||params.has('py2-seasonal-preview'))}
+function active(){const campaignLive=settings.autoSchedule!==false?!!automaticSeason():!!settings.enabled&&(!settings.scheduled||inSchedule());return pageCovered()&&(campaignLive||params.has('py2-seasonal-preview'))}
 function safeImage(value){try{const u=new URL(value,location.origin);return (u.protocol==='https:'||u.origin===location.origin)?u.href:''}catch{return ''}}
 function safeDestination(value){try{const u=new URL(value||'/shop.html',location.origin);return u.origin===location.origin||u.protocol==='https:'?u.href:'/shop.html'}catch{return '/shop.html'}}
 function themeKey(){return String(settings.theme||'default').toLowerCase().replace(/[^a-z0-9-]/g,'-')}
@@ -133,7 +133,7 @@ async function load(){
   settings={...defaults,...published};
   // Automatically select the active season from the Africa/Lusaka calendar.
   const auto=settings.autoSchedule!==false?automaticSeason():null;
-  if(settings.autoSchedule!==false){settings.enabled=!!auto;settings.scheduled=false;if(auto){settings.theme=auto.theme;settings.start=auto.start;settings.end=auto.end;settings.autoSeasonAnchor=auto.anchor;}}
+  if(settings.autoSchedule!==false){settings.enabled=true;settings.scheduled=false;if(auto){settings.theme=auto.theme;settings.start=auto.start;settings.end=auto.end;settings.autoSeasonAnchor=auto.anchor;}}
   // Decap-managed season preset files are the single source for creative content and images.
   const selectedTheme=themeKey();
   try{
