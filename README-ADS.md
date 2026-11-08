@@ -47,7 +47,13 @@ The `ad_tiers` table defines campaign limits and rotation weights:
 
 The Partner API enforces active campaign limits for new campaign submissions and assigns rotation weight from the partner's D1 tier. Administrators can change partner package and access from Partner Network Control. Changing a package recalculates the weight of the partner's pending and approved campaigns.
 
-Package payment collection and automated subscription renewal are not implemented here. Package changes are administrator-managed.
+## Subscription lifecycle and payment confirmation
+
+PhoneYa2 collects partner payments outside the website. An administrator confirms the payment, selects the paid package and paid duration, records the amount and payment reference, and activates the subscription. The system calculates the start and deadline, records the activation in the subscription event ledger, and updates package entitlements.
+
+The subscription dashboard shows active paid partners, deadlines, 7/30-day expiry windows, expired terms, pending payment requests and package distribution. Partners see their package duration and deadline in Partner Studio.
+
+The scheduled lifecycle Worker sends in-app and Brevo email reminders 7, 3 and 1 day(s) before expiry. It expires paid entitlements at the deadline, returns the partner to the free package and keeps their account, website and content intact. Apply migration `0017_partner_subscription_lifecycle.sql` and deploy `workers/partner-lifecycle` as described in [PARTNER-SUBSCRIPTION-LIFECYCLE.md](PARTNER-SUBSCRIPTION-LIFECYCLE.md).
 
 ## Campaign lifecycle and moderation
 
