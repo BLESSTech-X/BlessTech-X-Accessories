@@ -24,7 +24,7 @@ function automaticSeason(today=localDay()){
    ['black-friday',nthWeekday(y,11,5,4)],['christmas',fixed(12,25)]
   ];
   for(const [theme,anchor] of definitions){
-   const start=new Date(anchor.getTime()-7*86400000),end=new Date(anchor.getTime()+7*86400000),startKey=dateKey(start),endKey=dateKey(end);
+   const start=new Date(anchor.getTime()-14*86400000),end=new Date(anchor.getTime()+7*86400000),startKey=dateKey(start),endKey=dateKey(end);
    if(today>=startKey&&today<=endKey)events.push({theme,start:startKey,end:endKey,anchor:dateKey(anchor)});
   }
  }
