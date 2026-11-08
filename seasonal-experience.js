@@ -21,7 +21,7 @@ function automaticSeason(today=localDay()){
    ['mothers-day',nthWeekday(y,5,0,2)],['fathers-day',nthWeekday(y,6,0,3)],
    ['back-to-school',fixed(1,10)],['back-to-school',fixed(5,10)],['back-to-school',fixed(9,10)],
    ['independence',fixed(10,24)],['halloween',fixed(10,31)],
-   ['black-friday',nthWeekday(y,11,5,4)],['summer',fixed(12,1)],['christmas',fixed(12,25)]
+   ['black-friday',nthWeekday(y,11,5,4)],['christmas',fixed(12,25)]
   ];
   for(const [theme,anchor] of definitions){
    const start=new Date(anchor.getTime()-7*86400000),end=new Date(anchor.getTime()+7*86400000),startKey=dateKey(start),endKey=dateKey(end);
