@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS partner_subscription_events (
 );
 CREATE INDEX IF NOT EXISTS idx_partner_subscription_events_owner
   ON partner_subscription_events(advertiser_id, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_partner_subscription_events_unique
+  ON partner_subscription_events(subscription_id, event_type);
 
 CREATE TABLE IF NOT EXISTS partner_subscription_reminders (
   subscription_id TEXT NOT NULL,
