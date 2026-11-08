@@ -21,7 +21,7 @@
   function activate(){nav.querySelectorAll('[role=tab]').forEach(b=>{b.setAttribute('aria-selected',String(b===tab));b.tabIndex=b===tab?0:-1;});host.querySelectorAll('[role=tabpanel]').forEach(p=>p.hidden=p!==panel);panel.hidden=false;tab.scrollIntoView({block:'nearest',behavior:'smooth'});if(!loading)load();}
   tab.addEventListener('click',activate);
   $('ss-save').addEventListener('click',save);$('ss-preview').addEventListener('click',preview);
-  $('ss-active-season').addEventListener('change',e=>{settings.theme=e.target.value;loadSeasonImages(e.target.value);setStatus(LABELS[e.target.value]+' selected. This season's Decap-managed images are loaded; replacements apply only to this season.','info');});
+  $('ss-active-season').addEventListener('change',e=>{settings.theme=e.target.value;loadSeasonImages(e.target.value);setStatus(LABELS[e.target.value]+' selected. This season’s Decap-managed images are loaded; replacements apply only to this season.','info');});
   ['banner','popup'].forEach(slot=>{$('ss-'+slot+'-image-url').addEventListener('input',e=>showImagePreview(slot,e.target.value));$('ss-'+slot+'-image-file').addEventListener('change',e=>uploadImage(slot,e.target.files&&e.target.files[0]));});
   mounted=true;return true;
  }
