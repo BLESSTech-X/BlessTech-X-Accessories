@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "phoneya2-partner-lifecycle",
+  "main": "index.js",
+  "compatibility_date": "2026-10-06",
+  "triggers": { "crons": ["0 * * * *"] },
+  "observability": { "enabled": true },
+  "vars": {
+    "BREVO_FROM_EMAIL": "singbless89@gmail.com",
+    "BREVO_FROM_NAME": "PhoneYa2 Partner Network"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "phoneya2-core",
+      "database_id": "68c3c9fb-27bd-4e31-a7d5-533aab22727b"
+    }
+  ]
+}
