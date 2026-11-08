@@ -34,7 +34,7 @@
  }
  function fill(){
   const s={...DEFAULTS,...settings};
-  const map={autoSchedule:'ss-auto-schedule',banner:'ss-banner',popup:'ss-popup',decorations:'ss-decorations',snow:'ss-snow'};
+  const map={banner:'ss-banner',popup:'ss-popup',decorations:'ss-decorations',snow:'ss-snow'};
   Object.entries(map).forEach(([key,id])=>$(id).checked=!!s[key]);
   $('ss-active-season').value=SEASONS.includes(s.theme)?s.theme:'christmas';$('ss-coverage').value=s.coverage||'all';
   $('ss-start').value=s.start||'';$('ss-end').value=s.end||'';
@@ -60,11 +60,11 @@
  async function uploadImage(slot,file){if(!file)return;if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>5*1024*1024){setStatus('Choose a JPG, PNG, WebP or AVIF image up to 5 MB.','error');return;}const data=new FormData();data.append('file',file);data.append('slot',slot);data.append('theme',$('ss-active-season').value);const input=$('ss-'+slot+'-image-file');input.disabled=true;setStatus('Uploading '+slot+' image…');try{const response=await fetch('/api/seasonal-upload',{method:'POST',credentials:'same-origin',body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Image upload failed.');$('ss-'+slot+'-image-url').value=result.url;settings[slot+'Image']=result.url;imageOverrides[$('ss-active-season').value]={...(imageOverrides[$('ss-active-season').value]||{}),[slot+'Image']:result.url};showImagePreview(slot,result.url);setStatus('Image uploaded. Save campaign settings to publish the new image.','success');}catch(error){setStatus(error.message,'error');}finally{input.disabled=false;input.value='';}}
  function collect(){
   const theme=$('ss-active-season').value;const existing={...(imageOverrides[theme]||{})};['banner','popup'].forEach(slot=>{const key=slot+'Image',value=$('ss-'+slot+'-image-url').value.trim(),base=currentPresetImages[key]||'';if(value===base)delete existing[key];else existing[key]=value;});imageOverrides[theme]=existing;
-  const next={...settings, bannerImage:existing.bannerImage||'',popupImage:existing.popupImage||'',enabled:true,autoSchedule:$('ss-auto-schedule').checked,theme:$('ss-active-season').value,coverage:$('ss-coverage').value,start:$('ss-start').value,end:$('ss-end').value,scheduled:false,banner:$('ss-banner').checked,popup:$('ss-popup').checked,decorations:$('ss-decorations').checked,snow:$('ss-snow').checked,popupMode:$('ss-popup-mode').value,popupDelay:Number($('ss-popup-delay').value||0),popupScroll:Number($('ss-popup-scroll').value||35),snowIntensity:Number($('ss-snow-intensity').value||0)};
+  const next={...settings, bannerImage:existing.bannerImage||'',popupImage:existing.popupImage||'',enabled:true,autoSchedule:true,theme:$('ss-active-season').value,coverage:$('ss-coverage').value,start:$('ss-start').value,end:$('ss-end').value,scheduled:false,banner:$('ss-banner').checked,popup:$('ss-popup').checked,decorations:$('ss-decorations').checked,snow:$('ss-snow').checked,popupMode:$('ss-popup-mode').value,popupDelay:Number($('ss-popup-delay').value||0),popupScroll:Number($('ss-popup-scroll').value||35),snowIntensity:Number($('ss-snow-intensity').value||0)};
   return pickControls(next);
  }
  function preview(){
-  const draft=collect();draft.enabled=true;draft.autoSchedule=false;draft.scheduled=false;
+  const draft=collect();draft.enabled=true;draft.autoSchedule=true;draft.scheduled=false;
   try{localStorage.setItem('phoneya2-seasonal-preview-v3',JSON.stringify(draft));window.open('/?py2-seasonal-preview=1','_blank','noopener');setStatus('Storefront preview opened. Your saved campaign has not been changed.','success');}
   catch(error){setStatus('Could not open preview: '+error.message,'error');}
  }
