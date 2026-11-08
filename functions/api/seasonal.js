@@ -1,6 +1,6 @@
 const JSON_HEADERS={ "content-type":"application/json; charset=utf-8", "cache-control":"no-store" };
 const ADMIN_FALLBACK="singbless89@gmail.com";
-const SETTINGS_FIELDS=["enabled","autoSchedule","theme","decorations","snow","snowIntensity","scheduled","start","end","coverage","popup","popupMode","popupDelay","popupScroll","banner"];
+const SETTINGS_FIELDS=["enabled","theme","decorations","snow","snowIntensity","scheduled","start","end","coverage","popup","popupMode","popupDelay","popupScroll","banner"];
 const OWNER="BLESSTech-X",REPO="BlessTech-X-Accessories",BRANCH="main",SETTINGS_PATH="content/settings/seasonal-campaigns.json";
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 function sameOrigin(request){const origin=request.headers.get("origin");if(!origin)return true;try{return new URL(origin).host===new URL(request.url).host;}catch{return false;}}
@@ -52,6 +52,7 @@ export async function onRequest({request,env}){
   const current=await readFile(config,SETTINGS_PATH);
   const settings={...(current.data||{})};
   for(const key of SETTINGS_FIELDS)if(Object.prototype.hasOwnProperty.call(source,key))settings[key]=source[key];
+  settings.autoSchedule=true;
   await writeFile(config,SETTINGS_PATH,settings,current.sha,"Update PhoneYa2 seasonal campaign controls");
   const presets=body?.presets&&typeof body.presets==="object"&&!Array.isArray(body.presets)?body.presets:{};
   for(const [theme,overrides] of Object.entries(presets)){
