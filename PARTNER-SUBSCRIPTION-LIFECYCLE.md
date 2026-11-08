@@ -22,7 +22,13 @@ Optional: set `PARTNER_LIFECYCLE_SECRET` as a Worker secret if you want to trigg
 
 ## D1 migration
 
-Apply the migration to the production D1 database from the repository root:\n\n```bash\nnpx wrangler d1 migrations apply phoneya2-core --remote\n```\n\nThen deploy the updated Pages site (the existing GitHub-to-Pages deployment) and deploy this Worker. It adds term and payment-reference fields, a subscription event ledger and deduplicated reminder delivery tracking. It does not delete existing partner data.
+Apply the migration to the production D1 database from the repository root:
+
+```bash
+npx wrangler d1 migrations apply phoneya2-core --remote
+```
+
+Then deploy the updated Pages site (the existing GitHub-to-Pages deployment) and deploy this Worker. It adds term and payment-reference fields, a subscription event ledger and deduplicated reminder delivery tracking. It does not delete existing partner data.
 
 ## Lifecycle
 
