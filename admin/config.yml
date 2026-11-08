@@ -325,10 +325,10 @@ collections:
       - { label: "Banner message", name: "bannerMessage", widget: "text" }
       - { label: "Banner button label", name: "bannerButton", widget: "string" }
       - { label: "Banner destination", name: "bannerUrl", widget: "string", default: "/shop.html" }
-      - { label: "Banner image URL", name: "bannerImage", widget: "string", required: false, hint: "Optional direct HTTPS image URL for this season. Leave blank to use the site's standard banner treatment." }
+      - { label: "Banner image", name: "bannerImage", widget: "image", required: false, hint: "Upload or select this season banner artwork." }
       - { label: "Popup heading", name: "popupTitle", widget: "string" }
       - { label: "Popup message", name: "popupMessage", widget: "text" }
       - { label: "Popup button label", name: "popupButton", widget: "string" }
       - { label: "Popup destination", name: "popupUrl", widget: "string", default: "/shop.html" }
-      - { label: "Popup image URL", name: "popupImage", widget: "string", required: false }
+      - { label: "Popup image", name: "popupImage", widget: "image", required: false, hint: "Upload or select this season popup artwork." }
       - { label: "Seasonal decorations", name: "marks", widget: "list", field: { label: "Emoji / decoration", name: "mark", widget: "string" } }
