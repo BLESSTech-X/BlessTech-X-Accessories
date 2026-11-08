@@ -430,7 +430,7 @@ env.DB.prepare("INSERT INTO advertiser_accounts(id,email,password_hash,status) V
 env.DB.prepare("INSERT INTO advertisers(id,account_id,business_name,owner_name,phone,email,tier,status) VALUES(?,?,?,?,?,?,'free','active')").bind(advertiserId,accountId,business,owner,phone,email),
 env.DB.prepare("INSERT INTO advertiser_profiles(id,advertiser_id,slug,contact_phone,contact_whatsapp,contact_email) VALUES(?,?,?,?,?,?)").bind(profileId,advertiserId,slug,phone,phone,email),
 env.DB.prepare("INSERT INTO partner_site_settings(id,advertiser_id,site_title,site_description,hero_title,hero_subtitle,published) VALUES(?,?,?,?,?,?,?)").bind(siteId,advertiserId,business,"Welcome to "+business,business,"Discover what we offer",0),
-env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end,paid_months) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,NULL,0)").bind(subscriptionId,advertiserId,stamp,stamp,null)
+env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end,paid_months) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,NULL,0)").bind(subscriptionId,advertiserId,stamp,stamp)
 ]);
 stage="creating secure sign-in session";
 const token=await createSession(env.DB,accountId);
