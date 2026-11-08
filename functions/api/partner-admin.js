@@ -264,7 +264,7 @@ async function writeTable(db, body) {
     const subscriptionId = isGrant ? crypto.randomUUID() : requestRow.id;
     const statements = [];
     if (current) {
-      statements.push(db.prepare("UPDATE partner_subscriptions SET status='expired',ended_at=?,updated_at=? WHERE id=? AND status='active'").bind(now,now,current.id));
+      statements.push(db.prepare("UPDATE partner_subscriptions SET status='cancelled',ended_at=?,updated_at=? WHERE id=? AND status='active'").bind(now,now,current.id));
     }
     statements.push(db.prepare("UPDATE partner_subscriptions SET status='cancelled',updated_at=? WHERE advertiser_id=? AND status='pending_payment' AND id!=?").bind(now,advertiserId,subscriptionId));
     if (isGrant) {
