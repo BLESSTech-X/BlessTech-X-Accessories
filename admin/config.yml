@@ -273,7 +273,6 @@ collections:
         format: "json"
         description: "PhoneYa2 automatically chooses and schedules each seasonal campaign. Configure shared display behaviour here; edit each season's unique creative content in Seasonal Campaign Content."
         fields:
-          - { label: "Automatic seasonal calendar", name: "autoSchedule", widget: "boolean", default: true, hint: "When enabled, PhoneYa2 automatically selects the appropriate seasonal theme using the Africa/Lusaka calendar. It starts seven days before each season date and ends seven days after. No annual date or season selection is required." }
           - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained seasonal ornaments beside selected page and section headings." }
           - { label: "Snowfall", name: "snow", widget: "boolean", default: false, hint: "Only snowflakes fall. Other decorations remain fixed to headings." }
           - { label: "Snowfall intensity", name: "snowIntensity", widget: "number", min: 5, max: 60, step: 5, default: 24, hint: "Controls the number of snowflakes. Keep it subtle for mobile performance." }
