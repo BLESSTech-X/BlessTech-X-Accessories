@@ -362,7 +362,7 @@ export async function onRequest({ request, env }) {
   } catch (error) {
     const message = String(error && error.message || "");
     console.error("Ads admin D1 request failed", message.slice(0, 240));
-    const clientError = /Invalid|Unsupported|cannot be changed|required|not found/i.test(message);
+    const clientError = /Invalid|Unsupported|cannot be changed|required|not found|Choose|Enter|paid duration|positive amount|no longer awaiting/i.test(message);
     return json({ error: clientError ? message : "The advertising database request failed." }, clientError ? 400 : 503);
   }
 }
