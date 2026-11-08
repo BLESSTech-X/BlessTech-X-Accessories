@@ -266,6 +266,7 @@ async function writeTable(db, body) {
     if (current) {
       statements.push(db.prepare("UPDATE partner_subscriptions SET status='expired',ended_at=?,updated_at=? WHERE id=? AND status='active'").bind(now,now,current.id));
     }
+    statements.push(db.prepare("UPDATE partner_subscriptions SET status='cancelled',updated_at=? WHERE advertiser_id=? AND status='pending_payment' AND id!=?").bind(now,advertiserId,subscriptionId));
     if (isGrant) {
       statements.push(db.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,currency,amount_minor,billing_cycle,starts_at,current_period_start,current_period_end,paid_months,payment_reference,admin_note,activated_by,updated_at) VALUES(?,?,?,'active',?,?,'monthly',?,?,?,?,?,?,?,?)").bind(subscriptionId,advertiserId,packageKey,currency,amount,startsAt,startsAt,endsAt,months,reference,note,"admin",now));
     } else {
