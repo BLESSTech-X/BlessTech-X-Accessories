@@ -29,6 +29,20 @@ JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
 AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`);for(const raw of tokens){const partner=await lookup.bind(b64url(await digest(raw)),new Date().toISOString()).first();if(partner)return partner;}return null;}
+async function expirePartnerSubscriptions(db){
+const now=new Date().toISOString();
+const due=await db.prepare("SELECT ps.id,ps.advertiser_id,ps.package_key,ps.paid_months,ps.amount_minor,ps.currency,ps.current_period_end FROM partner_subscriptions ps WHERE ps.status='active' AND ps.package_key!='free' AND ps.current_period_end IS NOT NULL AND ps.current_period_end<=? LIMIT 250").bind(now).all();
+for(const row of due.results||[]){
+const free=await db.prepare("SELECT advertising_weight FROM partner_packages WHERE package_key='free' AND active=1").first();
+await db.batch([
+db.prepare("UPDATE partner_subscriptions SET status='expired',ended_at=?,updated_at=? WHERE id=? AND status='active'").bind(now,now,row.id),
+db.prepare("UPDATE advertisers SET tier='free' WHERE id=?").bind(row.advertiser_id),
+db.prepare("UPDATE ads SET weight=? WHERE advertiser_id=? AND status IN ('pending','approved')").bind(Number(free?.advertising_weight||1),row.advertiser_id),
+db.prepare("INSERT OR IGNORE INTO partner_subscription_events(id,subscription_id,advertiser_id,event_type,package_key,paid_months,amount_minor,currency,starts_at,ends_at,note,actor,created_at) VALUES(?,?,?,'expired',?,?,?,?,?,?,?,'system',?)").bind(crypto.randomUUID(),row.id,row.advertiser_id,row.package_key,Number(row.paid_months||0),Number(row.amount_minor||0),row.currency||"ZMW",null,row.current_period_end,"Paid access ended at its subscription deadline.",now),
+db.prepare("INSERT OR IGNORE INTO partner_notifications(id,advertiser_id,event_key,category,kind,title,message,priority,destination,action_label,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),row.advertiser_id,"package-expired:"+row.id,"packages","event","Your paid package has ended","Your "+row.package_key+" package ended on "+new Date(row.current_period_end).toLocaleDateString("en-GB")+". Your account is still available on the free Partner package. Renew whenever you are ready.","high","packages","Renew package",now)
+]);
+}
+}
 async function addPartnerNotification(db,advertiserId,item){
 const key=String(item.event_key||"").slice(0,220);
 if(!key)return;
@@ -44,7 +58,7 @@ if(packageRequest){
 await addPartnerNotification(db,aid,{event_key:"package-request:"+packageRequest.id,category:"packages",kind:"event",title:"Package request received",message:"Your "+(packageRequest.package_name||"new package")+" request is awaiting PhoneYa2 payment confirmation.",priority:"normal",destination:"packages",action_label:"View request"});
 }
 const periodEnd=subscription?.current_period_end||subscription?.ends_at||"";
-if(periodEnd){const expiry=new Date(periodEnd),remaining=expiry.getTime()-Date.now();if(Number.isFinite(expiry.getTime())&&remaining>0&&remaining<=7*86400000)await addPartnerNotification(db,aid,{event_key:"package-expiry:"+periodEnd,category:"packages",kind:"event",title:"Your package period is ending soon",message:"Your current package period ends on "+expiry.toLocaleDateString("en-GB")+". Contact PhoneYa2 if you would like to renew or discuss your options.",priority:"high",destination:"packages",action_label:"View package"});}
+if(periodEnd){const expiry=new Date(periodEnd),days=Math.ceil((expiry.getTime()-Date.now())/86400000);for(const n of [7,3,1])if(days===n)await addPartnerNotification(db,aid,{event_key:"package-expiry:"+subscription.id+":"+n,category:"packages",kind:"event",title:n===1?"Your package expires tomorrow":"Your package expires in "+n+" days",message:"Your "+(subscription.package_name||subscription.package_key)+" package ends on "+expiry.toLocaleDateString("en-GB")+". Contact PhoneYa2 to renew and keep your paid features active.",priority:"high",destination:"packages",action_label:"Renew package"});}
 
 const currentPackage=String(subscription?.package_key||"free");
 const packageState=await db.prepare("SELECT state_value FROM partner_notification_state WHERE advertiser_id=? AND state_key='active-package'").bind(aid).first();
@@ -366,11 +380,11 @@ export async function onRequest({request,env}){
 if(!env.DB)return fail("PhoneYa2 D1 is not configured.",503);
 if(!sameOrigin(request))return fail("Cross-origin request blocked.",403);
 if(request.method==="GET"){
-try{const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
+try{await expirePartnerSubscriptions(env.DB);const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
 }
 if(request.method!=="POST")return fail("Method not allowed.",405);
 if((request.headers.get("content-type")||"").includes("multipart/form-data")){
-const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
+try{await expirePartnerSubscriptions(env.DB);}catch(error){console.error("Partner subscription expiry sweep failed:",error?.stack||error);}const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
 try{
 const form=await request.formData(),file=form.get("file");
 if(!file||typeof file.arrayBuffer!=="function")return fail("Choose an image to upload.");
@@ -416,7 +430,7 @@ env.DB.prepare("INSERT INTO advertiser_accounts(id,email,password_hash,status) V
 env.DB.prepare("INSERT INTO advertisers(id,account_id,business_name,owner_name,phone,email,tier,status) VALUES(?,?,?,?,?,?,'free','active')").bind(advertiserId,accountId,business,owner,phone,email),
 env.DB.prepare("INSERT INTO advertiser_profiles(id,advertiser_id,slug,contact_phone,contact_whatsapp,contact_email) VALUES(?,?,?,?,?,?)").bind(profileId,advertiserId,slug,phone,phone,email),
 env.DB.prepare("INSERT INTO partner_site_settings(id,advertiser_id,site_title,site_description,hero_title,hero_subtitle,published) VALUES(?,?,?,?,?,?,?)").bind(siteId,advertiserId,business,"Welcome to "+business,business,"Discover what we offer",0),
-env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,?)").bind(subscriptionId,advertiserId,stamp,stamp,new Date(Date.now()+30*86400000).toISOString())
+env.DB.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,amount_minor,currency,billing_cycle,starts_at,current_period_start,current_period_end,paid_months) VALUES(?,?,'free','active',0,'ZMW','monthly',?,?,NULL,0)").bind(subscriptionId,advertiserId,stamp,stamp,null)
 ]);
 stage="creating secure sign-in session";
 const token=await createSession(env.DB,accountId);
