@@ -59,13 +59,13 @@ async function processExpiries(env) {
   let expired = 0;
   const free = await db.prepare("SELECT advertising_weight FROM partner_packages WHERE package_key='free' AND active=1").first();
   for (const row of due.results || []) {
-    const result = await db.prepare("UPDATE partner_subscriptions SET status='expired',ended_at=?,updated_at=? WHERE id=? AND status='active' AND current_period_end<=?").bind(now,now,row.id,now).run();
-    if (!result.meta || result.meta.changes === 0) continue;
-    await db.batch([
+    const result = await db.batch([
+      db.prepare("UPDATE partner_subscriptions SET status='expired',ended_at=?,updated_at=? WHERE id=? AND status='active' AND current_period_end<=?").bind(now,now,row.id,now),
       db.prepare("UPDATE advertisers SET tier='free' WHERE id=?").bind(row.advertiser_id),
       db.prepare("UPDATE ads SET weight=? WHERE advertiser_id=? AND status IN ('pending','approved')").bind(Number(free?.advertising_weight||1),row.advertiser_id),
       db.prepare("INSERT OR IGNORE INTO partner_subscription_events(id,subscription_id,advertiser_id,event_type,package_key,paid_months,amount_minor,currency,starts_at,ends_at,note,actor,created_at) VALUES(?,?,?,'expired',?,?,?,?,?,?,?,'system',?)").bind(crypto.randomUUID(),row.id,row.advertiser_id,row.package_key,Number(row.paid_months||0),Number(row.amount_minor||0),row.currency||"ZMW",null,row.current_period_end,"Paid access ended automatically at its deadline.",now)
     ]);
+    if (!result[0]?.meta || result[0].meta.changes === 0) continue;
     const date = new Date(row.current_period_end).toLocaleDateString("en-GB",{timeZone:"Africa/Lusaka"});
     const title = "Your paid Partner Network package has ended";
     const message = "Your " + row.package_key + " package ended on " + date + ". Your Partner Studio account remains available on the free Partner package. Renew whenever you are ready.";
