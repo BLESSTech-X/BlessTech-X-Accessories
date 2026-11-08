@@ -29,9 +29,9 @@ JOIN advertisers adv ON adv.account_id=a.id LEFT JOIN advertiser_profiles p ON p
 LEFT JOIN partner_site_settings s ON s.advertiser_id=adv.id
 WHERE ps.token_hash=? AND ps.revoked_at IS NULL AND ps.expires_at>?
 AND a.status='active' AND adv.status NOT IN ('suspended') LIMIT 1`);for(const raw of tokens){const partner=await lookup.bind(b64url(await digest(raw)),new Date().toISOString()).first();if(partner)return partner;}return null;}
-async function expirePartnerSubscriptions(db){
+async function expirePartnerSubscriptions(db,advertiserId){
 const now=new Date().toISOString();
-const due=await db.prepare("SELECT ps.id,ps.advertiser_id,ps.package_key,ps.paid_months,ps.amount_minor,ps.currency,ps.current_period_end FROM partner_subscriptions ps WHERE ps.status='active' AND ps.package_key!='free' AND ps.current_period_end IS NOT NULL AND ps.current_period_end<=? LIMIT 250").bind(now).all();
+const due=await db.prepare("SELECT ps.id,ps.advertiser_id,ps.package_key,ps.paid_months,ps.amount_minor,ps.currency,ps.current_period_end FROM partner_subscriptions ps WHERE ps.status='active' AND ps.package_key!='free' AND ps.current_period_end IS NOT NULL AND ps.current_period_end<=? AND ps.advertiser_id=? LIMIT 50").bind(now,advertiserId).all();
 for(const row of due.results||[]){
 const free=await db.prepare("SELECT advertising_weight FROM partner_packages WHERE package_key='free' AND active=1").first();
 await db.batch([
@@ -380,11 +380,11 @@ export async function onRequest({request,env}){
 if(!env.DB)return fail("PhoneYa2 D1 is not configured.",503);
 if(!sameOrigin(request))return fail("Cross-origin request blocked.",403);
 if(request.method==="GET"){
-try{await expirePartnerSubscriptions(env.DB);const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
+const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);await expirePartnerSubscriptions(env.DB,partner.advertiser_id);return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
 }
 if(request.method!=="POST")return fail("Method not allowed.",405);
 if((request.headers.get("content-type")||"").includes("multipart/form-data")){
-try{await expirePartnerSubscriptions(env.DB);}catch(error){console.error("Partner subscription expiry sweep failed:",error?.stack||error);}const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);
+const partner=await currentPartner(request,env);if(!partner)return fail("Please sign in to your partner account.",401);try{await expirePartnerSubscriptions(env.DB,partner.advertiser_id);}catch(error){console.error("Partner subscription expiry sweep failed:",error?.stack||error);}
 try{
 const form=await request.formData(),file=form.get("file");
 if(!file||typeof file.arrayBuffer!=="function")return fail("Choose an image to upload.");
