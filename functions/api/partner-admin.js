@@ -7,7 +7,7 @@ const JSON_HEADERS = {
 
 const TABLES = new Set([
   "tier_config", "ads", "advertisers", "advertiser_profiles",
-  "ad_reports", "ad_moderation_log", "ad_impressions", "ad_clicks", "partner_content", "partner_subscriptions", "profiles"
+  "ad_reports", "ad_moderation_log", "ad_impressions", "ad_clicks", "partner_content", "partner_subscriptions", "partner_packages", "profiles"
 ]);
 
 const WRITABLE = {
@@ -15,7 +15,7 @@ const WRITABLE = {
   ads: new Set(["status", "rejection_reason"]),
   advertiser_profiles: new Set(["verified"]),
   ad_reports: new Set(["resolved"]),
-  partner_subscriptions: new Set(["status", "package_key", "amount_minor", "currency", "starts_at", "current_period_start", "current_period_end"])
+  partner_subscriptions: new Set(["status", "package_key", "amount_minor", "currency", "starts_at", "current_period_start", "current_period_end", "paid_months", "payment_reference", "admin_note", "activated_by", "ended_at"])
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -125,6 +125,9 @@ async function readTable(db, table, query) {
     }
   }
   const q = parseQuery(query);
+  if (table === "partner_packages") {
+    return all(db, "SELECT package_key,display_name,monthly_price_minor,currency,advertising_weight,active,sort_order FROM partner_packages ORDER BY sort_order");
+  }
   if (table === "partner_subscriptions") {
     const limit = q.limit || 1000;
     return all(db, `SELECT ps.*,pp.display_name AS package_name,pp.monthly_price_minor AS package_price_minor,
@@ -227,28 +230,53 @@ async function writeTable(db, body) {
     throw new Error("Invalid advertising update.");
   }
 
-  if (table === "partner_subscriptions" && action === "activate") {
+  if (table === "partner_subscriptions" && (action === "activate" || action === "grant")) {
     const q = parseQuery(String(body.query || ""));
-    if (!q.id) throw new Error("A valid package request is required.");
-    const row = await db.prepare("SELECT id,advertiser_id,package_key,amount_minor,currency,status FROM partner_subscriptions WHERE id=?").bind(q.id).first();
-    if (!row) throw new Error("Package request not found.");
-    if (row.status!=="pending_payment") throw new Error("This package request is no longer awaiting payment confirmation.");
-    const packageRow = await db.prepare("SELECT package_key,monthly_price_minor FROM partner_packages WHERE package_key=? AND active=1").bind(row.package_key).first();
-    if (!packageRow) throw new Error("The requested package is no longer available.");
+    const isGrant = action === "grant";
+    if (!isGrant && !q.id) throw new Error("A valid package request is required.");
+    const requestRow = isGrant ? null : await db.prepare("SELECT id,advertiser_id,package_key,amount_minor,currency,status FROM partner_subscriptions WHERE id=?").bind(q.id).first();
+    if (!isGrant && !requestRow) throw new Error("Package request not found.");
+    if (!isGrant && requestRow.status !== "pending_payment") throw new Error("This package request is no longer awaiting payment confirmation.");
+    const advertiserId = isGrant ? String(body.advertiser_id || "") : requestRow.advertiser_id;
+    if (!UUID.test(advertiserId)) throw new Error("Choose a valid partner account.");
+    const packageKey = String(body.package_key || requestRow?.package_key || "").toLowerCase();
+    const packageRow = await db.prepare("SELECT package_key,display_name,monthly_price_minor,advertising_weight FROM partner_packages WHERE package_key=? AND active=1").bind(packageKey).first();
+    if (!packageRow) throw new Error("Choose an available partner package.");
+    const months = Number(body.paid_months ?? body.months ?? 1);
+    if (!Number.isInteger(months) || months < 1 || months > 36) throw new Error("Choose a paid duration between 1 and 36 months.");
     const now = new Date().toISOString();
-    const start = now;
-    const end = new Date(Date.now()+30*86400000).toISOString();
-    const amount = Number(body.amount_minor ?? row.amount_minor ?? packageRow.monthly_price_minor ?? 0);
-    if (!Number.isInteger(amount) || amount < 0) throw new Error("Enter a valid confirmed payment amount.");
-    const note=String(body.admin_note||"Offline payment confirmed by PhoneYa2 admin").slice(0,1000);
-    await db.batch([
-      db.prepare("UPDATE partner_subscriptions SET status='expired',updated_at=? WHERE advertiser_id=? AND status='active'").bind(now,row.advertiser_id),
-      db.prepare("UPDATE partner_subscriptions SET status='active',amount_minor=?,currency=?,starts_at=?,current_period_start=?,current_period_end=?,updated_at=? WHERE id=? AND status='pending_payment'").bind(amount,String(body.currency||row.currency||"ZMW").slice(0,8),start,start,end,now,row.id),
-      db.prepare("UPDATE advertisers SET tier=? WHERE id=?").bind(row.package_key,row.advertiser_id),
-      db.prepare("UPDATE ads SET weight=(SELECT advertising_weight FROM partner_packages WHERE package_key=?) WHERE advertiser_id=? AND status IN ('pending','approved')").bind(row.package_key,row.advertiser_id),
-      db.prepare("INSERT INTO partner_payment_submissions(id,subscription_id,advertiser_id,amount_minor,currency,payment_method,provider_reference,status,admin_note,reviewed_at,reviewed_by) VALUES(?,?,?,?,?,'offline','CONFIRMED-OFFLINE','confirmed',?,?,?)").bind(crypto.randomUUID(),row.id,row.advertiser_id,amount,String(body.currency||row.currency||"ZMW").slice(0,8),note,now,"admin")
-    ]);
-    return all(db,"SELECT * FROM partner_subscriptions WHERE id=?",[row.id]);
+    const amount = Number(body.amount_minor ?? (Number(packageRow.monthly_price_minor || 0) * months));
+    if (!Number.isSafeInteger(amount) || amount < 0) throw new Error("Enter a valid confirmed payment amount.");
+    const currency = String(body.currency || requestRow?.currency || "ZMW").slice(0,8);
+    const note = String(body.admin_note || "Offline payment confirmed by PhoneYa2 admin").slice(0,1000);
+    const reference = String(body.payment_reference || "CONFIRMED-OFFLINE").trim().slice(0,120);
+    const current = await db.prepare("SELECT id,package_key,current_period_end FROM partner_subscriptions WHERE advertiser_id=? AND status='active' AND package_key!='free' ORDER BY created_at DESC LIMIT 1").bind(advertiserId).first();
+    const currentEnd = current?.current_period_end ? new Date(current.current_period_end) : null;
+    const startDate = current && current.package_key === packageKey && currentEnd && currentEnd > new Date(now) ? currentEnd : new Date(now);
+    const startsAt = startDate.toISOString();
+    const endDate = new Date(startDate);
+    const originalDay = endDate.getUTCDate();
+    endDate.setUTCDate(1);
+    endDate.setUTCMonth(endDate.getUTCMonth() + months);
+    const lastDay = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth() + 1, 0)).getUTCDate();
+    endDate.setUTCDate(Math.min(originalDay, lastDay));
+    const endsAt = endDate.toISOString();
+    const subscriptionId = isGrant ? crypto.randomUUID() : requestRow.id;
+    const statements = [];
+    if (current) {
+      statements.push(db.prepare("UPDATE partner_subscriptions SET status='expired',ended_at=?,updated_at=? WHERE id=? AND status='active'").bind(now,now,current.id));
+    }
+    if (isGrant) {
+      statements.push(db.prepare("INSERT INTO partner_subscriptions(id,advertiser_id,package_key,status,currency,amount_minor,billing_cycle,starts_at,current_period_start,current_period_end,paid_months,payment_reference,admin_note,activated_by,updated_at) VALUES(?,?,?,'active',?,?,'monthly',?,?,?,?,?,?,?,?)").bind(subscriptionId,advertiserId,packageKey,currency,amount,startsAt,startsAt,endsAt,months,reference,note,"admin",now));
+    } else {
+      statements.push(db.prepare("UPDATE partner_subscriptions SET package_key=?,status='active',amount_minor=?,currency=?,starts_at=?,current_period_start=?,current_period_end=?,paid_months=?,payment_reference=?,admin_note=?,activated_by='admin',ended_at=NULL,updated_at=? WHERE id=? AND status='pending_payment'").bind(packageKey,amount,currency,startsAt,startsAt,endsAt,months,reference,note,now,subscriptionId));
+    }
+    statements.push(db.prepare("UPDATE advertisers SET tier=? WHERE id=?").bind(packageKey,advertiserId));
+    statements.push(db.prepare("UPDATE ads SET weight=? WHERE advertiser_id=? AND status IN ('pending','approved')").bind(Number(packageRow.advertising_weight || 1),advertiserId));
+    statements.push(db.prepare("INSERT INTO partner_payment_submissions(id,subscription_id,advertiser_id,amount_minor,currency,payment_method,provider_reference,status,admin_note,reviewed_at,reviewed_by) VALUES(?,?,?, ?,?,'offline',?,'confirmed',?,?,?)").bind(crypto.randomUUID(),subscriptionId,advertiserId,amount,currency,reference,note,now,"admin"));
+    statements.push(db.prepare("INSERT INTO partner_subscription_events(id,subscription_id,advertiser_id,event_type,package_key,paid_months,amount_minor,currency,starts_at,ends_at,note,actor,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),subscriptionId,advertiserId,current?"renewed":"activated",packageKey,months,amount,currency,startsAt,endsAt,note,"admin",now));
+    await db.batch(statements);
+    return all(db, "SELECT * FROM partner_subscriptions WHERE id=?", [subscriptionId]);
   }
   if (table === "partner_subscriptions" && action === "reject") {
     const q = parseQuery(String(body.query || ""));
