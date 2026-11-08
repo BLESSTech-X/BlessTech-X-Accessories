@@ -271,32 +271,12 @@ collections:
         name: "seasonal_campaigns"
         file: "content/settings/seasonal-campaigns.json"
         format: "json"
-        description: "Control which campaign is live, its schedule, page coverage, decorations and display behaviour. Edit each season's unique headings, messages, buttons and images in Seasonal Campaign Content."
+        description: "PhoneYa2 automatically chooses and schedules each seasonal campaign. Configure shared display behaviour here; edit each season's unique creative content in Seasonal Campaign Content."
         fields:
-          - { label: "Campaign enabled", name: "enabled", widget: "boolean", default: false, hint: "Turn on to activate the seasonal experience on the public website." }
-          - label: "Active season"
-            name: "theme"
-            widget: "select"
-            default: "christmas"
-            hint: "Select which season's separately saved campaign content is displayed on the website. To edit its wording, open that season under Seasonal Campaign Content."
-            options:
-              - { label: "Christmas 🎄", value: "christmas" }
-              - { label: "Valentine's Day 💗", value: "valentines" }
-              - { label: "Easter 🐣", value: "easter" }
-              - { label: "Halloween 🎃", value: "halloween" }
-              - { label: "Black Friday 🏷️", value: "black-friday" }
-              - { label: "New Year 🎆", value: "new-year" }
-              - { label: "Mother's Day 💐", value: "mothers-day" }
-              - { label: "Father's Day 🎁", value: "fathers-day" }
-              - { label: "Back to School 🎒", value: "back-to-school" }
-              - { label: "Summer ☀️", value: "summer" }
-              - { label: "Zambian Independence 🇿🇲", value: "independence" }
+          - { label: "Automatic seasonal calendar", name: "autoSchedule", widget: "boolean", default: true, hint: "When enabled, PhoneYa2 automatically selects the appropriate seasonal theme using the Africa/Lusaka calendar. It starts seven days before each season date and ends seven days after. No annual date or season selection is required." }
           - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained seasonal ornaments beside selected page and section headings." }
           - { label: "Snowfall", name: "snow", widget: "boolean", default: false, hint: "Only snowflakes fall. Other decorations remain fixed to headings." }
           - { label: "Snowfall intensity", name: "snowIntensity", widget: "number", min: 5, max: 60, step: 5, default: 24, hint: "Controls the number of snowflakes. Keep it subtle for mobile performance." }
-          - { label: "Schedule campaign", name: "scheduled", widget: "boolean", default: false }
-          - { label: "Campaign start date", name: "start", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
-          - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Page coverage", name: "coverage", widget: "select", options: [{ label: "All supported pages", value: "all" }, { label: "Shopping pages", value: "shopping" }, { label: "Content and information pages", value: "content" }], default: "all" }
           - { label: "Seasonal campaign banner", name: "banner", widget: "boolean", default: true, hint: "Show the active season's saved announcement banner." }
           - { label: "Promotional popup", name: "popup", widget: "boolean", default: false }
