@@ -271,8 +271,30 @@ collections:
         name: "seasonal_campaigns"
         file: "content/settings/seasonal-campaigns.json"
         format: "json"
-        description: "PhoneYa2 automatically chooses and schedules each seasonal campaign. Configure shared display behaviour here; edit each season's unique creative content in Seasonal Campaign Content."
+        description: "Complete campaign control. Use automatic scheduling for the Africa/Lusaka seasonal calendar, or turn it off to manage a manual campaign and its dates. These settings are independent of Seasonal Studio."
         fields:
+          - { label: "Campaign experience enabled", name: "enabled", widget: "boolean", default: true, hint: "Master switch for seasonal campaign display." }
+          - { label: "Automatically select campaigns from the calendar", name: "autoSchedule", widget: "boolean", default: true, hint: "When enabled, PhoneYa2 automatically selects the active season using its Africa/Lusaka calendar. This overrides the manual season and dates below." }
+          - label: "Manual campaign season"
+            name: "theme"
+            widget: "select"
+            required: false
+            options:
+              - { label: "Christmas", value: "christmas" }
+              - { label: "New Year", value: "new-year" }
+              - { label: "Valentine's Day", value: "valentines" }
+              - { label: "Easter", value: "easter" }
+              - { label: "Mother's Day", value: "mothers-day" }
+              - { label: "Father's Day", value: "fathers-day" }
+              - { label: "Back to School", value: "back-to-school" }
+              - { label: "Zambian Independence", value: "independence" }
+              - { label: "Halloween", value: "halloween" }
+              - { label: "Black Friday", value: "black-friday" }
+              - { label: "Summer", value: "summer" }
+            hint: "Only used when automatic scheduling is disabled. The matching season's creative content is loaded from Seasonal Campaign Content."
+          - { label: "Use manual start and end dates", name: "scheduled", widget: "boolean", default: false, hint: "When automatic scheduling is off, enable this to show the selected campaign only between the dates below." }
+          - { label: "Campaign start date", name: "start", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
+          - { label: "Campaign end date", name: "end", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, required: false }
           - { label: "Decorations on headings", name: "decorations", widget: "boolean", default: true, hint: "Adds restrained seasonal ornaments beside selected page and section headings." }
           - { label: "Snowfall", name: "snow", widget: "boolean", default: false, hint: "Only snowflakes fall. Other decorations remain fixed to headings." }
           - { label: "Snowfall intensity", name: "snowIntensity", widget: "number", min: 5, max: 60, step: 5, default: 24, hint: "Controls the number of snowflakes. Keep it subtle for mobile performance." }
