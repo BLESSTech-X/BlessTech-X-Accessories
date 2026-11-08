@@ -64,7 +64,7 @@
   return pickControls(next);
  }
  function preview(){
-  const draft=collect();draft.enabled=true;draft.autoSchedule=true;draft.scheduled=false;
+  const draft=collect();draft.enabled=true;draft.autoSchedule=true;draft.scheduled=false;delete draft.theme;
   try{localStorage.setItem('phoneya2-seasonal-preview-v3',JSON.stringify(draft));window.open('/?py2-seasonal-preview=1','_blank','noopener');setStatus('Storefront preview opened. Your saved campaign has not been changed.','success');}
   catch(error){setStatus('Could not open preview: '+error.message,'error');}
  }
