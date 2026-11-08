@@ -241,12 +241,12 @@ async function writeTable(db, body) {
     if (!UUID.test(advertiserId)) throw new Error("Choose a valid partner account.");
     const packageKey = String(body.package_key || requestRow?.package_key || "").toLowerCase();
     const packageRow = await db.prepare("SELECT package_key,display_name,monthly_price_minor,advertising_weight FROM partner_packages WHERE package_key=? AND active=1").bind(packageKey).first();
-    if (!packageRow) throw new Error("Choose an available partner package.");
+    if (!packageRow || packageKey === "free") throw new Error("Choose an available paid partner package.");
     const months = Number(body.paid_months ?? body.months ?? 1);
     if (!Number.isInteger(months) || months < 1 || months > 36) throw new Error("Choose a paid duration between 1 and 36 months.");
     const now = new Date().toISOString();
     const amount = Number(body.amount_minor ?? (Number(packageRow.monthly_price_minor || 0) * months));
-    if (!Number.isSafeInteger(amount) || amount < 0) throw new Error("Enter a valid confirmed payment amount.");
+    if (!Number.isSafeInteger(amount) || amount <= 0) throw new Error("Enter the positive amount actually received for this paid package.");
     const currency = String(body.currency || requestRow?.currency || "ZMW").slice(0,8);
     const note = String(body.admin_note || "Offline payment confirmed by PhoneYa2 admin").slice(0,1000);
     const reference = String(body.payment_reference || "CONFIRMED-OFFLINE").trim().slice(0,120);
