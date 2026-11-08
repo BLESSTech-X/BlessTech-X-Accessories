@@ -23,8 +23,8 @@ async function sendEmail(env, to, name, subject, html) {
 }
 async function logEmail(db, row, subject, result, eventType) {
   try {
-    await db.prepare("INSERT INTO communication_activity(id,campaign_id,recipient,recipient_name,channel,event_type,status,provider,provider_message_id,error_message) VALUES(?,'',?,?,'email',?,?, 'brevo',?,?)")
-      .bind(crypto.randomUUID(), row.email, row.owner_name || row.business_name || "", eventType, result.ok ? "sent" : "failed", result.id || "", result.error || "").run();
+    await db.prepare("INSERT INTO email_activity(id,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,retry_count,sent_at,metadata_json) VALUES(?,?, 'automatic',?,?,?,?,?,?,?, ?,0,?,?)")
+      .bind(crypto.randomUUID(), eventType, "partner_subscription_lifecycle", row.email, row.owner_name || row.business_name || "", subject, result.ok ? "sent" : "failed", "brevo", result.id || "", result.error || "", result.ok ? new Date().toISOString() : null, JSON.stringify({ advertiser_id: row.advertiser_id, subscription_id: row.id })).run();
   } catch (error) { console.warn("Partner subscription email activity could not be recorded:", error?.message || error); }
 }
 function emailHtml(row, title, message, cta) {
