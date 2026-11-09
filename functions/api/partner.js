@@ -380,7 +380,7 @@ export async function onRequest({request,env}){
 if(!env.DB)return fail("PhoneYa2 D1 is not configured.",503);
 if(!sameOrigin(request))return fail("Cross-origin request blocked.",403);
 if(request.method==="GET"){
-try{const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);await expirePartnerSubscriptions(env.DB,partner.advertiser_id);return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
+try{const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);try{await expirePartnerSubscriptions(env.DB,partner.advertiser_id);}catch(expiryError){console.warn("Partner subscription expiry check skipped; workspace will continue loading:",expiryError?.stack||expiryError);}return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
 }
 if(request.method!=="POST")return fail("Method not allowed.",405);
 if((request.headers.get("content-type")||"").includes("multipart/form-data")){
