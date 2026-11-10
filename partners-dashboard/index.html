@@ -704,7 +704,7 @@ async function boot(){
  }
  if(response.status===401){
   $('app').classList.add('hidden');$('signin').classList.remove('hidden');
-  $('auth-error').textContent='Your saved session could not be restored. Please sign in again.';
+  $('auth-error').textContent=({cookie_missing:'Your browser did not send the saved sign-in cookie.',session_not_found:'The saved sign-in cookie has no matching session in PhoneYa2.',session_revoked:'This sign-in session was revoked.',session_expired:'This sign-in session has expired.',account_inactive:'This partner account is not active.',advertiser_missing:'The partner business record could not be found.',advertiser_suspended:'This partner business account is suspended.',workspace_lookup_rejected:'The session exists, but the workspace lookup rejected it.'}[payload?.reason]||'Your saved session could not be restored.')+' Please sign in again. ('+(payload?.reason||'unknown')+')';
   $('auth-error').classList.remove('hidden');return;
  }
  if(!response.ok||!payload.ok){$('signin').classList.add('hidden');$('app').classList.remove('hidden');$('workspace-load-error').classList.remove('hidden');$('workspace-load-error').textContent=payload.error||'Your partner session could not be checked. Your sign-in has not been cleared. Please retry.';console.error('Partner session check returned',response.status,payload);return;}
