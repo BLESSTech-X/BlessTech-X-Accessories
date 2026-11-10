@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS admin_notifications (
   related_label TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
   is_read INTEGER NOT NULL DEFAULT 0 CHECK(is_read IN (0,1)),
-  read_at TEXT
+  read_at TEXT,
+  image_url TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS idx_admin_notifications_created ON admin_notifications(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_admin_notifications_unread ON admin_notifications(is_read,category,created_at DESC);

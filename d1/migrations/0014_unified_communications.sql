@@ -39,7 +39,10 @@ CREATE TABLE IF NOT EXISTS email_campaigns (
   sent_count INTEGER NOT NULL DEFAULT 0,
   failed_count INTEGER NOT NULL DEFAULT 0,
   last_error TEXT NOT NULL DEFAULT '',
-  completed_at TEXT
+  completed_at TEXT,
+  source_key TEXT NOT NULL DEFAULT '',
+  hero_image_url TEXT NOT NULL DEFAULT '',
+  archived_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_email_campaigns_created ON email_campaigns(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_email_campaigns_status ON email_campaigns(status,updated_at DESC);
@@ -71,6 +74,9 @@ CREATE TABLE IF NOT EXISTS product_announcement_jobs (
   sent_count INTEGER NOT NULL DEFAULT 0,
   failed_count INTEGER NOT NULL DEFAULT 0,
   last_error TEXT NOT NULL DEFAULT '',
-  completed_at TEXT
+  completed_at TEXT,
+  source_key TEXT NOT NULL DEFAULT '',
+  hero_image_url TEXT NOT NULL DEFAULT '',
+  archived_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_product_announcement_jobs_status ON product_announcement_jobs(status,created_at DESC);

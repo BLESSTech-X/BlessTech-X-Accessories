@@ -131,16 +131,18 @@ try {
 const workQueueMigrationPath = path.join(root, 'd1', 'migrations', '0024_command_centre_work_queue.sql');
 try {
   const migration = fs.readFileSync(workQueueMigrationPath, 'utf8');
-  for (const required of [
-    'ALTER TABLE admin_notifications ADD COLUMN image_url',
-    'ALTER TABLE email_campaigns ADD COLUMN source_key',
-    'ALTER TABLE email_campaigns ADD COLUMN hero_image_url',
-    'ALTER TABLE email_campaigns ADD COLUMN archived_at',
-    'CREATE TABLE IF NOT EXISTS admin_work_items'
+  const notificationsBase = fs.readFileSync(path.join(root, 'd1', 'migrations', '0015_admin_notifications.sql'), 'utf8');
+  const communicationsBase = fs.readFileSync(path.join(root, 'd1', 'migrations', '0014_unified_communications.sql'), 'utf8');
+  for (const [source, required] of [
+    [notificationsBase, "image_url TEXT NOT NULL DEFAULT ''"],
+    [communicationsBase, "source_key TEXT NOT NULL DEFAULT ''"],
+    [communicationsBase, "hero_image_url TEXT NOT NULL DEFAULT ''"],
+    [communicationsBase, "archived_at TEXT"],
+    [migration, 'CREATE TABLE IF NOT EXISTS admin_work_items']
   ]) {
-    if (!migration.includes(required)) fail('Command Centre work-queue migration is missing: ' + required);
+    if (!source.includes(required)) fail('Command Centre schema is missing: ' + required);
   }
-  pass('Command Centre work-queue migration includes thumbnails, prepared campaigns and persistent tasks.');
+  pass('Command Centre schema includes notification thumbnails, prepared campaigns and persistent tasks.');
 } catch (error) {
   fail('Command Centre work-queue migration is missing or unreadable: ' + error.message);
 }
