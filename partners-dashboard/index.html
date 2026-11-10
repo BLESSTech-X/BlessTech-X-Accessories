@@ -410,7 +410,36 @@ body:not(.dark) #app #package-banner button{
 <style>
 .overview-post-tabs{display:flex;gap:8px;overflow-x:auto;padding:3px 1px 12px;margin-bottom:2px;scrollbar-width:thin}.overview-post-tab{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:9px 15px;font-size:12px;font-weight:800;cursor:pointer;transition:.18s}.overview-post-tab:hover{border-color:var(--accent);color:var(--text)}.overview-post-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.overview-post-tab span{display:inline-grid;place-items:center;min-width:19px;height:19px;margin-left:5px;padding:0 5px;border-radius:999px;background:#00000012;font-size:10px}.overview-post-filter-summary{font-size:11px;color:var(--muted);margin:0 0 10px}.overview-post-empty{padding:24px 16px;text-align:center;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}body.dark .overview-post-tab{background:#252a30;color:#d1d8e0;border-color:#424b55}body.dark .overview-post-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 </style>
-</head><body>
+<style>
+/* Clear package comparison: common inclusions + explicit tier-by-tier upgrades */
+#plans.plan-grid{grid-template-columns:repeat(auto-fit,minmax(225px,1fr));align-items:stretch;gap:14px}
+#plans .package-includes{grid-column:1/-1;padding:19px 21px;border:1px solid #dce7f2;border-radius:16px;background:linear-gradient(120deg,#f1f7ff,#fff9f4);color:#203650}
+#plans .package-includes>b{display:block;font:800 17px Manrope;margin-bottom:12px}
+#plans .package-common-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 18px;font-size:12px;line-height:1.5}
+#plans .package-common-grid span: first-letter{color:#16865b}
+#plans .package-includes small{display:block;margin-top:12px;color:#64758a;line-height:1.5}
+#plans .plan-card{display:flex;flex-direction:column;gap:7px;padding:18px}
+#plans .package-tier-tag{align-self:flex-start;padding:5px 9px;border-radius:99px;background:#eef3f9;color:#526780;font-size:9px;font-weight:950;letter-spacing:.8px}
+#plans .plan-card.current{border:2px solid var(--orange);box-shadow:0 9px 28px #ff641f20}
+#plans .plan-card h3{font-size:20px;margin:3px 0 0}
+#plans .plan-card .price{font-size:26px;margin:2px 0}
+#plans .package-best{font-size:12px;font-weight:850;color:var(--ink);margin:0;line-height:1.45}
+#plans .package-intro{font-size:11px;color:var(--muted);line-height:1.55;margin:0;min-height:50px}
+#plans .package-added-heading{margin-top:5px;padding-top:11px;border-top:1px solid var(--line);font-size:11px;font-weight:950;color:var(--orange);text-transform:uppercase;letter-spacing:.5px}
+#plans .package-benefits{padding-left:18px;margin:0;color:var(--ink);font-size:11px;line-height:1.65}
+#plans .package-benefits li{margin:0 0 7px}
+#plans .package-benefits .package-design-add{list-style:none;margin-left:-18px;padding:9px 10px;border-radius:9px;background:#fff4ec;color:#874019}
+#plans .package-rotation-note{margin-top:auto;padding:10px;border-radius:9px;background:#f4f7fa;color:#64758a;font-size:10px;line-height:1.5}
+#plans .plan-card .btn{margin-top:7px}
+body.dark #plans .package-includes{background:#303b47;border-color:#4a5663;color:#f0f4f8}
+body.dark #plans .package-includes small{color:#c1ccd8}
+body.dark #plans .package-tier-tag{background:#3b4652;color:#dce5ee}
+body.dark #plans .package-best{color:#f0f4f8}
+body.dark #plans .package-benefits{color:#e6ebf1}
+body.dark #plans .package-design-add{background:#49382f!important;color:#ffd0b6!important}
+body.dark #plans .package-rotation-note{background:#252c33;color:#c1cad4}
+@media(max-width:560px){#plans .package-common-grid{grid-template-columns:1fr}#plans .package-intro{min-height:0}}
+</style></head><body>
 <style>@keyframes session-spin{to{transform:rotate(360deg)}}.session-spinner{width:34px;height:34px;margin:0 auto 18px;border:3px solid #d8e3ef;border-top-color:#ff641f;border-right-color:#102b4e;border-radius:50%;animation:session-spin .8s linear infinite;box-shadow:0 3px 12px #102b4e12}@media(prefers-reduced-motion:reduce){.session-spinner{animation-duration:2.5s}}</style><div id="session-loading" role="status" aria-live="polite" style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#f4f7fb;color:#102b4e;text-align:center"><div><div class="session-spinner" aria-hidden="true"></div><div class="brand">PhoneYa<span>2</span></div><p style="font-weight:800;margin:14px 0 6px">Restoring your Partner Studio…</p><p style="color:#718096;font-size:12px;margin:0">Checking your secure session. Please wait.</p></div></div>
 <div id="signin" class="auth hidden"><header class="auth-head"><a class="brand" href="/" style="color:white">PhoneYa<span>2</span></a><div class="auth-menu-wrap"><button class="btn secondary small" id="signin-menu-toggle">☰ Menu</button><div class="auth-menu" id="signin-menu"><a href="/community/">PhoneYa2 Community ↗</a><a href="/blog.html">PhoneYa2 Blog ↗</a><a href="/">PhoneYa2 home ↗</a><a href="/partners/">Register as a partner ↗</a><a href="/partners-admin/">Partner network admin ↗</a></div></div></header><section class="authhero"><div><div class="eyebrow" style="margin-top:76px;color:#ffb185">PHONEYA2 PARTNER NETWORK</div><h1>Everything your business needs to grow.</h1><p>Manage your storefront, catalogue, updates, promotions and customer enquiries from one clear workspace.</p></div></section><section class="authpanel"><div class="authcard"><div class="brand">PhoneYa<span>2</span></div><div class="eyebrow" style="margin-top:28px">WELCOME BACK</div><h2>Sign in to Partner Studio</h2><p class="muted">Use your partner account email and password.</p><div id="auth-error" class="alert hidden"></div><form id="login-form"><div class="field"><label>Email address</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><button id="login-btn" class="btn block">Sign in securely →</button></form><p class="muted" style="font-size:12px;text-align:center;margin-top:18px">New partner? <a href="/partners/index.html" style="color:#e85b20;font-weight:900">Create an account</a></p></div></section></div><nav class="auth-bottom-nav" aria-label="Partner sign-in navigation"><a href="/"><span>⌂</span><small>Home</small></a><a href="/community/"><span>◎</span><small>Community</small></a><a href="/partners/"><span>＋</span><small>Register</small></a><a class="active" href="/partners-dashboard/"><span>↗</span><small>Sign in</small></a></nav>
 <div id="app" class="hidden"><div id="workspace-load-error" class="alert hidden" role="status" style="margin:12px auto;max-width:900px"><button class="btn small" type="button" onclick="location.reload()">Retry</button></div><header class="top partner-top"><div class="brand">PhoneYa<span>2</span> <small style="font:700 10px 'DM Sans';color:#7b8a9c">PARTNER STUDIO</small></div><nav id="header-nav" class="header-nav" aria-label="Partner workspace navigation"></nav><div class="right"><span id="account-email" class="email muted"></span><div class="top-menu-wrap"><button type="button" id="account-menu-toggle" class="btn secondary small top-menu-toggle" aria-label="Account menu">☰</button><div class="top-menu" id="account-menu"><a href="/" target="_blank">PhoneYa2 home ↗</a><a href="/partners/">Partner support ↗</a><button type="button" id="logout" class="danger">Sign out ↗</button></div></div></div></header>
@@ -543,32 +572,80 @@ const plans=data.packages||[],current=data.subscription?.package_key||'free',pen
 const status=$('partner-subscription-status');
 if(status){status.innerHTML=current==='free'?'<h2 style="margin:0 0 6px">Free Partner package</h2><p class="muted" style="margin:0">Your Partner Studio account and business website remain available. Choose a paid package below when you are ready to unlock additional benefits.</p>': '<h2 style="margin:0 0 6px">'+esc(sub.package_name||current)+' · Paid subscription</h2><p class="muted" style="margin:0">Paid term: '+Number(sub.paid_months||1)+' month(s) · Started: '+(sub.current_period_start?new Date(sub.current_period_start).toLocaleDateString():'—')+' · Deadline: <b>'+ (expiry?expiry.toLocaleDateString():'Not set')+'</b> · '+(days===null?'':days+' day(s) remaining')+'</p>'+(days!==null&&days<=7?'<p style="color:#b45309;font-weight:800;margin:9px 0 0">Your package is approaching its deadline. Request renewal before it ends.</p>':'');}
 const labels={
-design:{basic:'Essential design settings',expanded:'Expanded colours, image and layout controls',advanced:'Advanced layouts and styling controls',premium:'Premium mini-site design options',full:'Full design customisation and premium layouts'},
-website:{professional:'Professional mini-website builder',advanced:'Advanced website layout options',premium:'Premium website experience'},
-promotion:{directory:'Standard shared campaign visibility',boosted:'Enhanced campaign visibility',priority:'Priority campaign visibility',premium:'Premium campaign exposure',maximum:'Highest campaign exposure tier'},
-analytics:{essential:'Campaign impressions, clicks and enquiry totals',advanced:'Expanded campaign performance reporting',premium:'Premium campaign performance insights'},
-branding:{standard:'Standard business branding',expanded:'Expanded brand styling options',custom:'Custom brand styling',full:'Full brand customisation'},
-leads:{inbox:'Customer enquiry inbox',tracking:'Customer enquiry inbox with lead-status tracking'},
-campaigns:{standard:'Create campaigns and submit them for review',reporting:'Campaign management with performance reporting',insights:'Campaign management with expanded performance insights'},
-verification:{none:'',eligible:'Eligible to request manual business verification',priority:'Priority request for manual verification review — approval is not guaranteed'},
-support:{standard:'Standard partner support access',enhanced:'Enhanced partner support access',priority:'Priority partner support contact'}
+design:{
+basic:'Core design settings: choose a template, logo, cover image and brand colours',
+expanded:'ADDS: individual colour controls, gradient page background, social-feed post layout, full-image display, minimal post cards, pill buttons, announcement bar and taller hero',
+advanced:'ADDS: glass or centred header, outlined post cards, square buttons, compact content width and floating menu',
+premium:'ADDS: full-page background image, masonry gallery and premium page styling',
+full:'ADDS: cinematic hero, premium overlay menu and every available design control'
+},
+website:{
+professional:'Professional business mini-site with its own public link',
+advanced:'Advanced website layout and section presentation options',
+premium:'Premium website presentation options'
+},
+promotion:{
+directory:'1× standard rotation weight',
+boosted:'3× rotation weight in the shared PhoneYa2 campaign rotation',
+priority:'6× rotation weight in the shared PhoneYa2 campaign rotation',
+premium:'12× rotation weight in the shared PhoneYa2 campaign rotation',
+maximum:'25× rotation weight in the shared PhoneYa2 campaign rotation'
+},
+analytics:{
+essential:'Campaign totals: impressions, clicks and enquiries',
+advanced:'Expanded campaign performance reporting',
+premium:'Premium campaign performance insights'
+},
+branding:{
+standard:'Standard business identity using your logo, colours and profile details',
+expanded:'More brand styling choices',
+custom:'Custom brand styling controls',
+full:'Full brand customisation options'
+},
+leads:{
+inbox:'Customer enquiries collected in one Partner Studio inbox',
+tracking:'Customer enquiry inbox plus lead-status tracking'
+},
+campaigns:{
+standard:'Create advertising campaigns and submit them for review',
+reporting:'Campaign management with performance reporting',
+insights:'Campaign management with expanded performance insights'
+},
+verification:{
+none:'',
+eligible:'Eligible to request manual business verification; approval is subject to review',
+priority:'Priority request for manual business verification review; approval is not guaranteed'
+},
+support:{
+standard:'Standard partner support access',
+enhanced:'Enhanced partner support access',
+priority:'Priority partner support contact'
+}
 };
 const feature=(group,key)=>labels[group]?.[key]||'';
-const rotation={free:'1× standard rotation weight',starter:'3× rotation weight',standard:'6× rotation weight',business:'12× rotation weight',premium:'25× rotation weight'};
 const common=[
-'Your own business website with logo, cover image, brand colours and social links',
+'Your own public business website with logo, cover image, brand colours and social links',
 'Product and service catalogue with images, descriptions and pricing',
 'Publish business updates, offers and announcements on your website',
 'Customer enquiries delivered to your Partner Studio inbox',
-'Create PhoneYa2 advertising campaigns and manage their approval status'
+'Create PhoneYa2 advertising campaigns and submit them for approval',
+'Manage your business profile and edit your website content'
 ];
-$('plans').innerHTML=plans.map(x=>{
+const tierCopy={
+free:{tag:'GET ONLINE',best:'For businesses starting their online presence',intro:'Build your business home and start receiving customer enquiries.'},
+starter:{tag:'FIRST UPGRADE',best:'For businesses ready to look more professional',intro:'Adds stronger brand control, lead tracking and a higher campaign rotation weight.'},
+standard:{tag:'POPULAR UPGRADE',best:'For businesses focused on growth',intro:'Adds more advanced website layouts, deeper campaign reporting and priority rotation.'},
+business:{tag:'MORE VISIBILITY',best:'For established businesses seeking stronger exposure',intro:'Adds premium website layouts, higher rotation priority and priority support.'},
+premium:{tag:'TOP PACKAGE',best:'For businesses wanting the highest available package',intro:'Unlocks the full design studio, maximum rotation weight and priority review requests.'}
+};
+$('plans').innerHTML='<div class="package-includes"><b>Included in every package</b><div class="package-common-grid">'+common.map(f=>'<span>✓ '+esc(f)+'</span>').join('')+'</div><small>Paid packages unlock the extra benefits shown on each card below. Catalogue and publishing access are not artificially restricted by package.</small></div>'+plans.map(x=>{
 let b={};try{b=JSON.parse(x.benefits_json||'{}')}catch{};
 const price=Number(x.monthly_price_minor||0)/100;
-const features=[...common,feature('website',b.website),feature('design',b.design),feature('analytics',b.analytics),feature('branding',b.branding),feature('promotion',b.promotion),rotation[x.package_key],feature('leads',b.leads),feature('campaigns',b.campaigns),feature('verification',b.verification),feature('support',b.support)].filter(Boolean);
-const isCurrent=x.package_key===current,isPending=pending?.package_key===x.package_key;
-const action=isCurrent?'<button class="btn secondary small" disabled>Current package</button>':isPending?'<button class="btn secondary small" disabled>Request sent · awaiting call</button>':'<button class="btn small" data-request-package="'+esc(x.package_key)+'">Request this package →</button>';
-return '<article class="plan-card '+(isCurrent?'current':'')+'"><span class="badge '+(isCurrent?'approved':'')+'">'+(isCurrent?'CURRENT PACKAGE':isPending?'REQUEST PENDING':'PACKAGE OPTION')+'</span><h3>'+esc(x.display_name)+'</h3><div class="price">'+(price===0?'Free':'K'+price.toLocaleString())+'<small style="font-size:10px;color:var(--muted)"> / month</small></div><p class="muted" style="font-size:12px;margin:8px 0">A practical business toolkit — not just ad rotation.</p><ul>'+features.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+action+'</article>';
+const key=x.package_key,copy=tierCopy[key]||{tag:'PACKAGE',best:'Business tools',intro:'Additional Partner Studio benefits.'};
+const benefits=[feature('website',b.website),feature('design',b.design),feature('analytics',b.analytics),feature('branding',b.branding),feature('promotion',b.promotion),feature('leads',b.leads),feature('campaigns',b.campaigns),feature('verification',b.verification),feature('support',b.support)].filter(Boolean);
+const isCurrent=key===current,isPending=pending?.package_key===key;
+const action=isCurrent?'<button class="btn secondary small" disabled>Current package</button>':isPending?'<button class="btn secondary small" disabled>Request sent · awaiting call</button>':'<button class="btn small" data-request-package="'+esc(key)+'">Request this package →</button>';
+return '<article class="plan-card '+(isCurrent?'current':'')+'"><span class="package-tier-tag">'+esc(copy.tag)+'</span>'+(isCurrent?'<span class="badge approved">CURRENT PACKAGE</span>':isPending?'<span class="badge pending">REQUEST PENDING</span>':'')+'<h3>'+esc(x.display_name)+'</h3><div class="price">'+(price===0?'Free':'K'+price.toLocaleString())+'<small style="font-size:10px;color:var(--muted)"> / month</small></div><p class="package-best">'+esc(copy.best)+'</p><p class="package-intro">'+esc(copy.intro)+'</p><div class="package-added-heading">What this package gives you</div><ul class="package-benefits">'+benefits.map((f,i)=>'<li class="'+(f.startsWith('ADDS:')?'package-design-add':'')+'">'+(f.startsWith('ADDS:')?'<b>✦ '+esc(f.replace('ADDS:','Added design options:'))+'</b>':esc(f))+'</li>').join('')+'</ul><div class="package-rotation-note">Rotation weight is relative priority in the shared campaign rotation—not a guaranteed number of views, clicks or sales. Campaigns must be approved before they run.</div>'+action+'</article>';
 }).join('')||'<div class="empty">Package details are being prepared.</div>';
 const note=$('package-request-note');
 if(note)note.textContent=pending?'Your '+(pending.package_name||pending.package_key)+' request is with PhoneYa2. We will call you to confirm details and arrange payment outside this website. Your current package remains active until payment is confirmed.':'Choose a package to send a request to PhoneYa2. We will call you, confirm the package and arrange payment outside the website. Your upgrade starts only after payment is confirmed.';
