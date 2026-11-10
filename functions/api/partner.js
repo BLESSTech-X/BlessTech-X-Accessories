@@ -20,6 +20,27 @@ async function uniqueSlug(db,name){const base=slugify(name);let slug=base;for(le
 function sessionCookies(token){const age=SESSION_DAYS*86400;return [COOKIE+"="+token+"; Path=/; Max-Age="+age+"; HttpOnly; Secure; SameSite=Lax","py2_partner_session="+token+"; Path=/; Max-Age="+age+"; HttpOnly; Secure; SameSite=Lax"];}
 function clearCookies(){return [COOKIE+"=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax","py2_partner_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax"];}
 async function createSession(db,accountId){const raw=b64url(crypto.getRandomValues(new Uint8Array(32)));const tokenHash=b64url(await digest(raw));const id=crypto.randomUUID();const expires=new Date(Date.now()+SESSION_DAYS*86400000).toISOString();await db.prepare("INSERT INTO partner_sessions(id,account_id,token_hash,expires_at) VALUES(?,?,?,?)").bind(id,accountId,tokenHash,expires).run();return raw;}
+async function partnerSessionFailureReason(request,env){
+ const tokens=cookieValues(request);
+ if(!tokens.length)return "cookie_missing";
+ const now=new Date().toISOString();
+ for(const raw of tokens){
+  const tokenHash=b64url(await digest(raw));
+  const row=await env.DB.prepare(`SELECT ps.revoked_at,ps.expires_at,a.id AS account_id,a.status AS account_status,adv.id AS advertiser_id,adv.status AS advertiser_status
+   FROM partner_sessions ps
+   LEFT JOIN advertiser_accounts a ON a.id=ps.account_id
+   LEFT JOIN advertisers adv ON adv.account_id=a.id
+   WHERE ps.token_hash=? LIMIT 1`).bind(tokenHash).first();
+  if(!row)continue;
+  if(row.revoked_at)return "session_revoked";
+  if(!row.expires_at||row.expires_at<=now)return "session_expired";
+  if(!row.account_id||row.account_status!=="active")return "account_inactive";
+  if(!row.advertiser_id)return "advertiser_missing";
+  if(row.advertiser_status==="suspended")return "advertiser_suspended";
+  return "workspace_lookup_rejected";
+ }
+ return "session_not_found";
+}
 async function currentPartner(request,env){const tokens=cookieValues(request);if(!tokens.length)return null;const lookup=env.DB.prepare(`SELECT a.id AS account_id,a.email AS account_email,a.status AS account_status,
 adv.id AS advertiser_id,adv.business_name,adv.owner_name,adv.phone,adv.email,adv.logo_url,adv.tier,adv.status AS advertiser_status,
 p.id AS profile_id,p.slug,p.tagline,p.about,p.primary_color,p.accent_color,p.cover_image_url,p.social_links_json,p.contact_phone,p.contact_whatsapp,p.contact_email,
@@ -380,7 +401,7 @@ export async function onRequest({request,env}){
 if(!env.DB)return fail("PhoneYa2 D1 is not configured.",503);
 if(!sameOrigin(request))return fail("Cross-origin request blocked.",403);
 if(request.method==="GET"){
-try{const partner=await currentPartner(request,env);if(!partner)return json({ok:false,authenticated:false},401);try{await expirePartnerSubscriptions(env.DB,partner.advertiser_id);}catch(expiryError){console.warn("Partner subscription expiry check skipped; workspace will continue loading:",expiryError?.stack||expiryError);}return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
+try{const partner=await currentPartner(request,env);if(!partner){const reason=await partnerSessionFailureReason(request,env);return json({ok:false,authenticated:false,reason},401);}try{await expirePartnerSubscriptions(env.DB,partner.advertiser_id);}catch(expiryError){console.warn("Partner subscription expiry check skipped; workspace will continue loading:",expiryError?.stack||expiryError);}return json({ok:true,authenticated:true,...await workspace(env.DB,partner)});}catch(error){console.error("Partner workspace GET failed:",error?.stack||error);return fail("Your partner workspace could not be loaded. Your account and sign-in session have been preserved. Please retry shortly.",500);}
 }
 if(request.method!=="POST")return fail("Method not allowed.",405);
 if((request.headers.get("content-type")||"").includes("multipart/form-data")){
