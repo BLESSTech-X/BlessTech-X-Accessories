@@ -531,7 +531,7 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
 <script src="/partner-message.js?v=20261105-1" defer></script>
 <script>
 (function(){
- const slug=""
+ const slug=${JSON.stringify(data.slug || "")};
  const sent=new Set();
  function track(postId,eventType){
   const key=postId+":"+eventType;
