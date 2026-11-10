@@ -529,6 +529,24 @@ document.getElementById("partner-enquiry").addEventListener("submit", async func
 });
 </script>
 <script src="/partner-message.js?v=20261105-1" defer></script>
+<script>
+(function(){
+ const slug=""
+ const sent=new Set();
+ function track(postId,eventType){
+  const key=postId+":"+eventType;
+  if(eventType!=="view"&&sent.has(key))return;
+  sent.add(key);
+  fetch("/api/partner-post-analytics",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},keepalive:true,body:JSON.stringify({slug:slug||decodeURIComponent((location.pathname.match(/^\\/b\\/([^/]+)/i)||[])[1]||""),post_id:postId,event_type:eventType})}).catch(()=>{});
+ }
+ const cards=[...document.querySelectorAll("[data-py2-post-id]")];
+ if("IntersectionObserver" in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){track(entry.target.dataset.py2PostId,"view");observer.unobserve(entry.target);}}),{threshold:0.35});
+  cards.forEach(card=>observer.observe(card));
+ }else cards.forEach(card=>track(card.dataset.py2PostId,"view"));
+ document.addEventListener("click",event=>{const control=event.target.closest("[data-py2-post-event]");if(!control)return;const card=control.closest("[data-py2-post-id]");if(card)track(card.dataset.py2PostId,control.dataset.py2PostEvent);},true);
+})();
+</script>
 </body>
 </html>`;
 }
