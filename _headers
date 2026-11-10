@@ -2,3 +2,9 @@
   Content-Type: application/xml
   Cache-Control: public, no-transform
   X-Content-Type-Options: nosniff
+
+/partners-admin/*
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/admin/command-center.html
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
