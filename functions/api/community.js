@@ -73,13 +73,24 @@ export async function onRequestGet({ env }) {
       cover_image_url: ad.media_url || '',
       is_featured: 1
     }));
-    const posts = (result.results || []).map(post => ({ ...post, is_paid_ad: false }));
-    const productsAndServices = (catalogue.results || []).map(item => ({ ...item, is_paid_ad: false }));
-    const combined = [...posts, ...productsAndServices, ...sponsored].sort((a, b) => {
+    const organic = [
+      ...(result.results || []).map(post => ({ ...post, is_paid_ad: false })),
+      ...(catalogue.results || []).map(item => ({ ...item, is_paid_ad: false }))
+    ].sort((a, b) => {
       const featured = Number(b.is_featured || 0) - Number(a.is_featured || 0);
       if (featured) return featured;
       return new Date(b.published_at || b.created_at || 0) - new Date(a.published_at || a.created_at || 0);
-    }).slice(0, 180);
+    });
+    const combined = [];
+    const paid = sponsored.slice(0, 12);
+    let paidIndex = 0;
+    organic.forEach((item, index) => {
+      combined.push(item);
+      // Keep the Community useful as a discovery feed: one sponsored item per five organic items.
+      if ((index + 1) % 5 === 0 && paidIndex < paid.length) combined.push(paid[paidIndex++]);
+    });
+    while (paidIndex < paid.length && organic.length === 0) combined.push(paid[paidIndex++]);
+    combined.splice(180);
 
     return Response.json({ ok: true, posts: combined }, {
       headers: { "cache-control": "public, max-age=30, s-maxage=60" }
