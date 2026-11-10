@@ -686,10 +686,27 @@ function updateSocialPostPreview(imageUrl){$('social-preview-title').textContent
 $('publish').onclick=async()=>{try{await api('site.publish');await refresh();toast('Website published.')}catch(x){toast(x.message)}};$('unpublish').onclick=async()=>{try{await api('site.unpublish');await refresh();toast('Website is private.')}catch(x){toast(x.message)}};
 let partnerDark=localStorage.getItem('py2-partner-theme')==='dark';if(partnerDark)document.body.classList.add('dark');function updatePartnerThemeButton(){$('floating-theme').innerHTML=(document.body.classList.contains('dark')?'☀️<span>Light mode</span>':'🌙<span>Dark mode</span>');$('floating-theme').setAttribute('aria-label',document.body.classList.contains('dark')?'Switch to light mode':'Switch to dark mode')}$('floating-theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('py2-partner-theme',document.body.classList.contains('dark')?'dark':'light');updatePartnerThemeButton()};updatePartnerThemeButton();$('floating-guide').onclick=()=>{if(!('speechSynthesis'in window)){toast('Your browser does not support voice guidance.');return}window.speechSynthesis.cancel();const section=document.querySelector('.section.active');const heading=section?.querySelector('h1,h2')?.innerText||'Partner Studio';const summary=section?.innerText?.replace(/\s+/g,' ').slice(0,850)||'Manage your business website, catalogue, posts and PhoneYa2 advertising from Partner Studio.';const utterance=new SpeechSynthesisUtterance(heading+'. '+summary);utterance.rate=.96;window.speechSynthesis.speak(utterance)};
 async function boot(){
- let response,payload;
- try{response=await fetch(API,{credentials:'include',cache:'no-store',headers:{'accept':'application/json'}});payload=await response.json().catch(()=>({}));}
- catch(error){$('signin').classList.add('hidden');$('app').classList.remove('hidden');$('workspace-load-error').classList.remove('hidden');$('workspace-load-error').textContent='PhoneYa2 could not reach the Partner Studio session service. Your sign-in has not been cleared. Check your connection and retry.';console.error('Partner session request failed',error);return;}
- if(response.status===401){$('app').classList.add('hidden');$('signin').classList.remove('hidden');return;}
+ let response,payload,lastError;
+ // Mobile browsers can briefly race cookie restoration against the first request after a page reload.
+ // A single 401 is therefore rechecked before we ever present the sign-in screen.
+ for(let attempt=0;attempt<3;attempt++){
+  try{
+   response=await fetch(API,{credentials:'same-origin',cache:'no-store',headers:{'accept':'application/json'}});
+   payload=await response.json().catch(()=>({}));
+   if(response.status!==401)break;
+   if(attempt<2)await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));
+  }catch(error){lastError=error;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));}
+ }
+ if(!response){
+  $('signin').classList.add('hidden');$('app').classList.remove('hidden');$('workspace-load-error').classList.remove('hidden');
+  $('workspace-load-error').textContent='PhoneYa2 could not reach the Partner Studio session service. Your sign-in has not been cleared. Check your connection and retry.';
+  console.error('Partner session request failed',lastError);return;
+ }
+ if(response.status===401){
+  $('app').classList.add('hidden');$('signin').classList.remove('hidden');
+  $('auth-error').textContent='Your saved session could not be restored. Please sign in again.';
+  $('auth-error').classList.remove('hidden');return;
+ }
  if(!response.ok||!payload.ok){$('signin').classList.add('hidden');$('app').classList.remove('hidden');$('workspace-load-error').classList.remove('hidden');$('workspace-load-error').textContent=payload.error||'Your partner session could not be checked. Your sign-in has not been cleared. Please retry.';console.error('Partner session check returned',response.status,payload);return;}
  data=payload;notificationTrackingReady=true;$('workspace-load-error').classList.add('hidden');$('signin').classList.add('hidden');$('app').classList.remove('hidden');if(partnerPolling)clearInterval(partnerPolling);partnerPolling=setInterval(()=>{if(!document.hidden&&!$('app').classList.contains('hidden'))refresh().catch(error=>console.warn('Partner Studio background refresh failed:',error.message));},20000);
  try{nav();render();if(!$('publish-destination-url').value)$('publish-destination-url').value=publicUrl();const requestedKind=new URLSearchParams(location.search).get('create'),validKinds=['update','product','service','offer','event','ad'];let saved=location.hash.slice(1);if(requestedKind&&validKinds.includes(requestedKind)){val('publish-kind',requestedKind);updatePublishForm();saved='composer'}else if(!validSection(saved)){try{saved=sessionStorage.getItem('phoneya2-partner-section')||'overview'}catch{saved='overview'}}go(saved,{restore:true});}
