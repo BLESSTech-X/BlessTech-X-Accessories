@@ -725,6 +725,9 @@ export async function onRequest(context) {
       const currentRow = await env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first();
       if (!currentRow) return json({ error: "Order not found." }, 404);
       await env.DB.prepare("UPDATE orders SET status = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").bind(status, id).run();
+      if (status === "cancelled" && currentRow.status !== "cancelled") {
+        try { await reverseAgentCommissionForCancelledOrder(env.DB,currentRow); } catch (commissionError) { console.error("Agent commission reversal failed:",String(commissionError).slice(0,220)); }
+      }
       // Restore agent-held units exactly once when an order is cancelled before delivery.
       if (status === "cancelled" && currentRow.status !== "delivered" && currentRow.fulfilment_agent_id && String(currentRow.fulfilment_source||"").startsWith("agent_stock")) {
         try {
