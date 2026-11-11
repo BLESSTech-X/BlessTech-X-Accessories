@@ -42,4 +42,5 @@ $("products").onclick=e=>{const c=e.target.closest("[data-copy]");if(c)navigator
 document.addEventListener("click",e=>{if(e.target?.id==="copyReferral")navigator.clipboard?.writeText(location.origin+"/?ref="+(data?.agent?.referral_code||""));});
 $("logout").onclick=async()=>{try{await api("logout");}finally{location.reload();}};
 (async()=>{const profile=new URLSearchParams(location.search).get("profile");if(profile){$("auth").classList.add("hidden");const r=await fetch("/api/agent-network?profile="+encodeURIComponent(profile)),d=await r.json();if(r.ok&&d.ok){$("publicProfile").classList.remove("hidden");const p=d.profile;$("publicProfile").innerHTML='<div class="profile"><img class="avatar" src="'+esc(p.profile_image_url||"")+'"><div><h1>'+esc(p.display_name)+'</h1><span class="pill">'+esc(p.agent_id)+'</span><p class="muted">'+esc(p.location)+'</p></div></div><p>'+esc(p.bio)+'</p><div class="stats"><div class="stat"><b>'+p.sales+'</b>Attributed orders</div><div class="stat"><b>'+money(p.earned_minor)+'</b>Commission earned</div></div><a class="btn" href="/?ref='+encodeURIComponent(p.referral_code)+'">Shop PhoneYa2</a>';}else{$("publicProfile").classList.remove("hidden");$("publicProfile").textContent=d.error||"Profile unavailable.";}return;}try{await load();}catch{}})();
-</script></body></html>
+</script><!-- Agent workspace UI update -->
+</body></html>
