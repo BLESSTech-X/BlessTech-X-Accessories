@@ -12,7 +12,7 @@
     {title:'Open Google Analytics', detail:'Visitors, acquisition and conversions', group:'Growth', keys:'traffic visitors analytics', href:'https://analytics.google.com/analytics/web/', external:true},
     {title:'Open Search Console', detail:'Search visibility and indexing', group:'Growth', keys:'seo search indexing', href:'https://search.google.com/search-console/', external:true},
     {title:'Open Microsoft Clarity', detail:'Heatmaps and visitor behaviour', group:'Growth', keys:'recordings heatmaps clicks', href:'https://clarity.microsoft.com/', external:true},
-    {title:'Open Affiliate / Agent Desk', detail:'Partner links and sales activity', group:'Network', keys:'affiliate agents commission partners', href:'/agents/py2-360.html'},
+    {title:'Open Affiliate / Agent Desk', detail:'Partner links and sales activity', group:'Network', keys:'affiliate agents commission partners', href:'/agents/network.html'},
     {title:'Open Advertising Admin', detail:'Manage advertisers and campaigns', group:'Monetisation', keys:'ads advertisers campaigns', href:'/ads-admin/'},
     {title:'Open AdSense', detail:'Publisher status and monetisation', group:'Monetisation', keys:'google adsense earnings', href:'https://adsense.google.com/', external:true},
     {title:'Open Communications Centre', detail:'Review email activity and failures', group:'Operations', keys:'email communications delivery', href:'/admin/communications.html'},
