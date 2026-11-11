@@ -41,6 +41,7 @@ The Agent Network schema is delivered in these additive migrations:
 - `0030_agent_sale_customer_details.sql` — assisted-sale customer location and notes.
 - `0031_agent_payout_provider.sql` — MTN, Airtel and Zamtel payout routing.
 - `0032_agent_delivery_status.sql` — agent delivery milestones and admin confirmation.
+- `0033_agent_commission_recovery.sql` — recovery offsets when an already-paid commission is later reversed.
 
 Apply all migrations in order only after checking the live D1 migration history. The storefront order API includes a compatibility fallback for older schemas, but Agent Network features require the complete migration set.
 
