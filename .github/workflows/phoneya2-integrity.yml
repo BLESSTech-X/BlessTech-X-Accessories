@@ -29,3 +29,7 @@ jobs:
         run: node scripts/verify-inline-js.js
       - name: Validate required pages, product index and sitemap
         run: node scripts/verify-phoneya2-build.js
+      - name: Validate Agent Network JavaScript and business safeguards
+        run: node scripts/verify-agent-network.js
+      - name: Apply all D1 migrations to a clean SQLite test database
+        run: python3 scripts/verify-agent-migrations.py
