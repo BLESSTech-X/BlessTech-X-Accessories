@@ -56,18 +56,19 @@ main.wrap{
 }
 html{scroll-padding-top:18px!important;scroll-padding-bottom:120px!important}
 .bottom-nav{
- position:sticky!important;
+ position:fixed!important;
  z-index:100!important;
- left:auto!important;
- right:auto!important;
- bottom:auto!important;
- margin:24px -15px 0!important;
- width:calc(100% + 30px)!important;
+ left:0!important;
+ right:0!important;
+ bottom:0!important;
+ margin:0!important;
+ width:100%!important;
+ min-height:64px!important;
 }
 .back-to-top{bottom:24px!important}
 @media(max-width:650px){
  main.wrap{padding-top:16px!important;padding-bottom:24px!important}
- .bottom-nav{margin-top:18px!important}
+ .bottom-nav{min-height:64px!important}
  .back-to-top{bottom:24px!important}
 }
 </style></head><body><div id="loadingScreen" class="loading-screen"><div class="loading-card"><div class="loading-spinner"></div><b id="loadingTitle">Restoring your sales desk…</b><p id="loadingText">Checking your secure session and returning you to where you left off.</p><button id="retryLoad" class="btn hidden" type="button">Try again</button></div></div><header class="top"><div class="top-main"><div class="brand"><b>PhoneYa2 <span>AGENT NETWORK</span></b><small>Sell smarter. Earn transparently.</small></div><div class="site-menu-wrap"><button id="siteMenuButton" class="site-menu-button" type="button" aria-expanded="false">☰ Menu</button><div id="siteMenu" class="site-menu hidden"><a href="/">PhoneYa2 Home</a><a href="/shop.html">Shop products</a><a href="/cart.html">Shopping cart</a><a href="/account.html">My account</a><a href="/blog.html">Blog</a><a href="/about.html">About PhoneYa2</a><a href="/contact.html">Contact us</a><a href="/partners/">Partner Network</a></div></div></div><nav class="header-nav" id="headerNav" aria-label="More agent tools"><button data-view="leaderboard"><span>🏆</span>Leaderboard</button><button data-view="training"><span>📘</span>Training</button><button data-view="notifications"><span>🔔</span>Notifications</button><button data-view="profile"><span>👤</span>My profile</button></nav></header><main class="wrap">
