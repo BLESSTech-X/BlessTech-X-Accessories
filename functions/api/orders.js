@@ -509,8 +509,10 @@ export async function onRequest(context) {
     const freshReferral = Number.isFinite(capturedAt) && capturedAt <= Date.now() + 300000 && Date.now() - capturedAt <= attributionDays * 86400000;
     if (agentReferralCode && freshReferral && env.DB) {
       try {
-        const attributedAgent = await env.DB.prepare("SELECT agent_id FROM agent_accounts WHERE referral_code=? AND status='active'").bind(agentReferralCode).first();
-        if (attributedAgent) agentAttribution = { agent_code: attributedAgent.agent_id, referral_code: agentReferralCode, source: "referral_link" };
+        const attributedAgent = await env.DB.prepare("SELECT agent_id,email,phone FROM agent_accounts WHERE referral_code=? AND status='active'").bind(agentReferralCode).first();
+        const customerPhoneDigits = phone.replace(/\\D/g,""), agentPhoneDigits = String(attributedAgent?.phone||"").replace(/\\D/g,"");
+        const selfReferral = attributedAgent && (String(attributedAgent.email||"").toLowerCase()===email || (agentPhoneDigits.length>=7 && agentPhoneDigits===customerPhoneDigits));
+        if (attributedAgent && !selfReferral) agentAttribution = { agent_code: attributedAgent.agent_id, referral_code: agentReferralCode, source: "referral_link" };
       } catch (error) {
         // Older D1 environments can still process normal checkout until the Agent Network migrations are applied.
         if (!/no such table: agent_accounts/i.test(String(error))) throw error;
