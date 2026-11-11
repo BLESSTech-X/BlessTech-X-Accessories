@@ -186,7 +186,7 @@ async function createD1Order(env, customer, items, attribution = {}) {
   const itemsStatements = () => items.map(item => env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total)));
   const movementStatements = reservations.map(x => env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
-    .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout"));
+    .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout:"+x.ownership));
   const full = [
     env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id, fulfilment_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?, ?)")
       .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId,fulfilmentAgentId?"assigned":"central"),
@@ -725,6 +725,24 @@ export async function onRequest(context) {
       const currentRow = await env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first();
       if (!currentRow) return json({ error: "Order not found." }, 404);
       await env.DB.prepare("UPDATE orders SET status = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").bind(status, id).run();
+      // Restore agent-held units exactly once when an order is cancelled before delivery.
+      if (status === "cancelled" && currentRow.status !== "delivered" && currentRow.fulfilment_agent_id && String(currentRow.fulfilment_source||"").startsWith("agent_stock")) {
+        try {
+          const existingRestore = await env.DB.prepare("SELECT id FROM agent_inventory_movements WHERE reference=? AND movement_type='order_cancel_restore' LIMIT 1").bind(currentRow.order_number).first();
+          if (!existingRestore) {
+            const reservations = await env.DB.prepare("SELECT product_slug,quantity_delta,actor FROM agent_inventory_movements WHERE reference=? AND movement_type='order_reservation' AND agent_id=?").bind(currentRow.order_number,currentRow.fulfilment_agent_id).all();
+            const restoreStatements = [];
+            for (const movement of (reservations.results||[])) {
+              const quantity = Math.abs(Number(movement.quantity_delta||0));
+              const ownership = String(movement.actor||"").split(":")[1] || "phoneya2";
+              if (!quantity) continue;
+              restoreStatements.push(env.DB.prepare("INSERT INTO agent_inventory(id,agent_id,product_slug,quantity,ownership,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(agent_id,product_slug,ownership) DO UPDATE SET quantity=quantity+excluded.quantity,updated_at=excluded.updated_at").bind(crypto.randomUUID(),currentRow.fulfilment_agent_id,movement.product_slug,quantity,ownership,new Date().toISOString()));
+              restoreStatements.push(env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),currentRow.fulfilment_agent_id,movement.product_slug,quantity,"order_cancel_restore",currentRow.order_number,"system"));
+            }
+            if (restoreStatements.length) await env.DB.batch(restoreStatements);
+          }
+        } catch (inventoryError) { console.error("Agent inventory cancellation restore failed:",String(inventoryError).slice(0,220)); }
+      }
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
       if (!updatedOrder) return json({ error: "Order not found." }, 404);
