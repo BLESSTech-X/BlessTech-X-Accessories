@@ -1,5 +1,5 @@
 // PhoneYa2 Agent Network — individual D1 accounts, product codes, sales leads and wallets.
-const COOKIE="__Host-py2_agent",SESSION_DAYS=30,ITERATIONS=120000;
+const COOKIE="__Host-py2_agent",SESSION_DAYS=30,ITERATIONS=100000;
 const HEADERS={"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"};
 function json(data,status=200,extra={}){const h=new Headers(HEADERS);for(const[k,v]of Object.entries(extra))h.set(k,v);return new Response(JSON.stringify(data),{status,headers:h});}
 function fail(error,status=400){return json({ok:false,error},status);}
