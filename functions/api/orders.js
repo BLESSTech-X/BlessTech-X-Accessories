@@ -161,7 +161,16 @@ async function createD1Order(env, customer, items, attribution = {}) {
         .bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total))
     );
   }
-  await env.DB.batch(statements);
+  try {
+    await env.DB.batch(statements);
+  } catch (error) {
+    // Keep checkout operational during the staged schema rollout. Before migration 0025,
+    // retry the same order using the original order columns and preserve every line item.
+    if (!/no such column: agent_(?:code|referral_code|attribution_source|attributed_at)/i.test(String(error))) throw error;
+    const legacy = [env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW')").bind(id, orderNumber, customer.name, customer.email, customer.phone, customer.address, customer.note || "", totalMinor)];
+    for (const item of items) legacy.push(env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total)));
+    await env.DB.batch(legacy);
+  }
   // Notifications are secondary to order persistence: a notification failure must never undo a confirmed order.
   try {
     await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications (id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES (?,?,?,?,?,?,?,?,?,?)")
@@ -452,8 +461,13 @@ export async function onRequest(context) {
     const attributionDays = Math.max(1, Math.min(180, Number(attributionDaysRow?.setting_value || 30)));
     const freshReferral = Number.isFinite(capturedAt) && capturedAt <= Date.now() + 300000 && Date.now() - capturedAt <= attributionDays * 86400000;
     if (agentReferralCode && freshReferral && env.DB) {
-      const attributedAgent = await env.DB.prepare("SELECT agent_id FROM agent_accounts WHERE referral_code=? AND status='active'").bind(agentReferralCode).first();
-      if (attributedAgent) agentAttribution = { agent_code: attributedAgent.agent_id, referral_code: agentReferralCode, source: "referral_link" };
+      try {
+        const attributedAgent = await env.DB.prepare("SELECT agent_id FROM agent_accounts WHERE referral_code=? AND status='active'").bind(agentReferralCode).first();
+        if (attributedAgent) agentAttribution = { agent_code: attributedAgent.agent_id, referral_code: agentReferralCode, source: "referral_link" };
+      } catch (error) {
+        // Older D1 environments can still process normal checkout until the Agent Network migrations are applied.
+        if (!/no such table: agent_accounts/i.test(String(error))) throw error;
+      }
     }
     const storedNote = note;
     if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
