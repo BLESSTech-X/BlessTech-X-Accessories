@@ -411,7 +411,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     } catch {}
     const body={
       name:$("name").value.trim(),email:$("email").value.trim(),phone:$("phone").value.trim(),address:$("address").value.trim(),note:$("order-note").value.trim(),
-      agent_referral_code:agentReferralCode,
+      agent_referral_code:agentReferralCode,agent_referral_captured_at:(()=>{try{return localStorage.getItem("py2_agent_ref_captured_at")||""}catch{return ""}})(),
       items:[...cart.entries()].map(([slug,quantity])=>({slug,quantity}))
     };
     try{
