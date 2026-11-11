@@ -5,7 +5,7 @@ const steps=[
  {key:'images',title:'Add your logo and business images',body:'Upload a clear business logo and add a cover or hero image in Website Builder. Preview images before saving.',section:'profile',target:'#profile-logo-file'},
  {key:'website',title:'Customise your business website',body:'Choose your template, colours, layout, contact options and the sections customers should see.',section:'website',target:'#site-form'},
  {key:'content',title:'Create your first post or catalogue item',body:'Publish a useful business update, product, service or offer so customers have something specific to discover.',section:'composer',target:'#composer'},
- {key:'publish',title:'Preview and publish your business page',body:'Preview the website on mobile, publish it, then copy your public business link and share it with customers.',section:'website',target:'#publish'}
+ {key:'publish',title:'Preview and publish your business page',body:'Preview the website on mobile, publish it, then copy your public business link and share it with customers.',section:'overview',target:'#publish'}
 ];
 const $=s=>document.querySelector(s);let completed=new Set(),dismissed=false,step=0,host=null;
 async function save(){try{await fetch('/api/partner',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'onboarding.save',completed_steps:[...completed],dismissed})});}catch(e){console.warn('Partner onboarding progress could not be saved:',e);}}
@@ -13,7 +13,7 @@ function go(section,target){const nav=$('[data-nav="'+section+'"]');if(nav)nav.c
 function mountNextMove(d){if($('#py2-next-move'))return;const p=d.partner||{},items=d.items||[],posts=d.posts||[],enquiries=d.enquiries||[];let choice;
 if(!p.business_name||!p.owner_name)choice={title:'Finish your business profile',body:'Customers need to know who you are and how to reach you.',section:'profile'};
 else if(!p.logo_url)choice={title:'Add a recognisable business logo',body:'A clear logo makes your business easier to recognise and trust.',section:'profile'};
-else if(!p.slug||p.published===0)choice={title:'Publish your business website',body:'Your business page needs to be live before customers can discover it.',section:'website'};
+else if(!p.slug||p.published===0)choice={title:'Publish your business website',body:'Your business page needs to be live before customers can discover it.',section:'overview'};
 else if(!items.length&&!posts.length)choice={title:'Create your first product or post',body:'Give customers something specific to discover and enquire about.',section:'composer'};
 else if(!posts.some(x=>x.status==='published'))choice={title:'Publish a business update',body:'Share a useful product, service, offer or business announcement.',section:'composer'};
 else if(!enquiries.length)choice={title:'Bring customers to your business page',body:'Share your public link and publish consistently so people can discover your offer.',section:'website'};
