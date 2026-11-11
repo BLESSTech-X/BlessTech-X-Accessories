@@ -1,5 +1,4 @@
 -- PhoneYa2 Agent Network foundation. Additive only; existing orders and partner data remain intact.
-PRAGMA foreign_keys = ON;
 ALTER TABLE orders ADD COLUMN agent_code TEXT NOT NULL DEFAULT '';
 ALTER TABLE orders ADD COLUMN agent_referral_code TEXT NOT NULL DEFAULT '';
 ALTER TABLE orders ADD COLUMN agent_attribution_source TEXT NOT NULL DEFAULT '';
