@@ -51,7 +51,7 @@ try {
 const homepagePath = path.join(root, 'index.html');
 try {
   const homepage = fs.readFileSync(homepagePath, 'utf8');
-  if (!/const productCount = items\.reduce\(\(total, product\) => \{[\s\S]*?quantity > 0 \? quantity : 1;[\s\S]*?\}, 0\);/.test(homepage)) {
+  if (!/const productCount = items\.reduce\(\(total, product\) => \{[\s\S]*?quantity > 0 \? quantity : 1\);[\s\S]*?\}, 0\);/.test(homepage)) {
     fail('Homepage Products metric must count physical stock units and one catalogue unit for each sold-out listing.');
   }
   if (!/const inStockProducts = items\.reduce\(\(total, product\) => total \+ stockQuantity\(product\), 0\);/.test(homepage)) {
