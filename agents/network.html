@@ -30,6 +30,46 @@ html{scroll-padding-top:150px;scroll-padding-bottom:100px}
  .header-nav{margin-top:8px!important;padding:7px 0 8px!important}
  .header-nav button{padding:8px 10px!important}
 }
+
+/* Prevent the header and fixed dashboard dock from covering page content. */
+header.top{
+ position:sticky!important;
+ top:0!important;
+ left:auto!important;
+ right:auto!important;
+ width:100%!important;
+ z-index:100!important;
+ display:block!important;
+ height:auto!important;
+ min-height:0!important;
+}
+main.wrap{
+ position:relative!important;
+ margin-top:0!important;
+ padding-top:22px!important;
+ padding-bottom:calc(150px + env(safe-area-inset-bottom))!important;
+ min-height:calc(100vh - 90px);
+}
+#app{min-height:calc(100vh - 90px)}
+#app>section[id^="view-"],#app .home-view{
+ scroll-margin-top:18px!important;
+}
+html{scroll-padding-top:18px!important;scroll-padding-bottom:120px!important}
+.bottom-nav{
+ position:sticky!important;
+ z-index:100!important;
+ left:auto!important;
+ right:auto!important;
+ bottom:auto!important;
+ margin:24px -15px 0!important;
+ width:calc(100% + 30px)!important;
+}
+.back-to-top{bottom:24px!important}
+@media(max-width:650px){
+ main.wrap{padding-top:16px!important;padding-bottom:24px!important}
+ .bottom-nav{margin-top:18px!important}
+ .back-to-top{bottom:24px!important}
+}
 </style></head><body><div id="loadingScreen" class="loading-screen"><div class="loading-card"><div class="loading-spinner"></div><b id="loadingTitle">Restoring your sales desk…</b><p id="loadingText">Checking your secure session and returning you to where you left off.</p><button id="retryLoad" class="btn hidden" type="button">Try again</button></div></div><header class="top"><div class="top-main"><div class="brand"><b>PhoneYa2 <span>AGENT NETWORK</span></b><small>Sell smarter. Earn transparently.</small></div><div class="site-menu-wrap"><button id="siteMenuButton" class="site-menu-button" type="button" aria-expanded="false">☰ Menu</button><div id="siteMenu" class="site-menu hidden"><a href="/">PhoneYa2 Home</a><a href="/shop.html">Shop products</a><a href="/cart.html">Shopping cart</a><a href="/account.html">My account</a><a href="/blog.html">Blog</a><a href="/about.html">About PhoneYa2</a><a href="/contact.html">Contact us</a><a href="/partners/">Partner Network</a></div></div></div><nav class="header-nav" id="headerNav" aria-label="More agent tools"><button data-view="leaderboard"><span>🏆</span>Leaderboard</button><button data-view="training"><span>📘</span>Training</button><button data-view="notifications"><span>🔔</span>Notifications</button><button data-view="profile"><span>👤</span>My profile</button></nav></header><main class="wrap">
 <section id="auth" class="card auth"><h1>Join the Agent Network</h1><p class="muted">Create your free agent account and start using your dashboard straight away. No approval queue.</p><div class="tabs"><button id="loginTab" class="active">Log in</button><button id="signupTab">Create account</button></div><form id="authForm"><div id="signupFields" class="hidden"><div class="field"><label>Full name</label><input id="fullName" autocomplete="name"></div><div class="field"><label>Mobile number</label><input id="phone" autocomplete="tel"></div></div><div class="field"><label>Email</label><input id="email" type="email" required autocomplete="email"></div><div class="field"><label>Password</label><div class="password-entry"><input id="password" type="password" required minlength="10" autocomplete="current-password"><button class="btn light password-toggle" id="togglePassword" type="button" aria-label="Show password" aria-pressed="false">Show</button></div></div><button class="btn" id="authSubmit">Log in</button></form><p id="authMessage" class="muted"></p></section>
 <section id="publicProfile" class="card hidden" style="max-width:560px;margin:7vh auto"></section>
