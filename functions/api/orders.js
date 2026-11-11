@@ -196,7 +196,14 @@ async function createD1Order(env, customer, items, attribution = {}) {
     await env.DB.batch(full);
   } catch (error) {
     try {
-      if (/no such column: fulfilment_(?:source|agent_id)/i.test(String(error))) {
+      if (/no such column: fulfilment_status/i.test(String(error))) {
+        const withFulfilment = [
+          env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?)")
+            .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId),
+          ...itemsStatements(), ...movementStatements
+        ];
+        await env.DB.batch(withFulfilment);
+      } else if (/no such column: fulfilment_(?:source|agent_id)/i.test(String(error))) {
         const withAgent = [
           env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?)")
             .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null),
