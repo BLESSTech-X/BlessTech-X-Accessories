@@ -405,7 +405,7 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
     try {
       const params=new URLSearchParams(window.location.search);
       const incoming=String(params.get("ref")||"").trim();
-      if(/^[A-Za-z0-9_-]{3,40}$/.test(incoming)){localStorage.setItem("py2_agent_ref",incoming);localStorage.setItem("py2_agent_ref_captured_at",new Date().toISOString());}
+      if(/^[A-Za-z0-9_-]{3,40}$/.test(incoming)){const existing=String(localStorage.getItem("py2_agent_ref")||"").trim(),stamp=Date.parse(localStorage.getItem("py2_agent_ref_captured_at")||"");if(!/^[A-Za-z0-9_-]{3,40}$/.test(existing)||!Number.isFinite(stamp)||Date.now()-stamp>30*86400000){localStorage.setItem("py2_agent_ref",incoming);localStorage.setItem("py2_agent_ref_captured_at",new Date().toISOString());}}
       agentReferralCode=String(localStorage.getItem("py2_agent_ref")||"").trim();
       if(!/^[A-Za-z0-9_-]{3,40}$/.test(agentReferralCode))agentReferralCode="";
     } catch {}
