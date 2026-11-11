@@ -171,7 +171,8 @@ async function createD1Order(env, customer, items, attribution = {}) {
           fulfilmentSource = kinds.length>1 ? "agent_stock_mixed" : kinds[0]==="agent" ? "agent_stock_agent_owned" : "agent_stock_phoneya2";
           fulfilmentAgentId = attribution.agent_code;
         } else {
-          await env.DB.batch(reservations.map(x => env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?")
+          const succeeded = reservations.filter((x,i)=>Number(results[i]?.meta?.changes||0)===1);
+          if(succeeded.length)await env.DB.batch(succeeded.map(x => env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?")
             .bind(x.quantity,new Date().toISOString(),x.id)));
           reservations.length = 0;
         }
