@@ -540,7 +540,13 @@ export async function onRequest(context) {
       for (const [slug, quantity] of quantities) {
         const product = await loadProduct(context, slug);
         if (!product) return json({ error: "A selected product could not be found. Please refresh the shop and try again." }, 400);
-        if (product.stock < quantity) return json({ error: product.title + " has only " + product.stock + " in stock." }, 400);
+        if (product.stock < quantity) {
+          let agentHeld = 0;
+          if (agentAttribution.agent_code) {
+            try { const held = await env.DB.prepare("SELECT COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE agent_id=? AND product_slug=?").bind(agentAttribution.agent_code,slug).first(); agentHeld = Number(held?.quantity||0); } catch {}
+          }
+          if (agentHeld < quantity) return json({ error: product.title + " has only " + (product.stock+agentHeld) + " eligible unit(s) available for this referral." }, 400);
+        }
         const unitPrice = product.price;
         items.push({
           product_slug: slug,
