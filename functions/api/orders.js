@@ -151,34 +151,80 @@ async function createD1Order(env, customer, items, attribution = {}) {
   const id = crypto.randomUUID();
   const orderNumber = "PY2-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + crypto.randomUUID().slice(0,8).toUpperCase();
   const totalMinor = items.reduce((sum, item) => sum + moneyToMinor(item.line_total), 0);
-  const statements = [
-    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?)")
-      .bind(id, orderNumber, customer.name, customer.email, customer.phone, customer.address, customer.note || "", totalMinor, attribution.agent_code || "", attribution.referral_code || "", attribution.source || "", attribution.agent_code ? new Date().toISOString() : null)
+  let fulfilmentSource = "phoneya2", fulfilmentAgentId = "";
+  const reservations = [];
+  // If this referred agent has enough allocated stock for every line, reserve it for agent-managed fulfilment.
+  if (attribution.agent_code) {
+    try {
+      let complete = true;
+      for (const item of items) {
+        const stock = await env.DB.prepare("SELECT id,ownership FROM agent_inventory WHERE agent_id=? AND product_slug=? AND quantity>=? ORDER BY CASE ownership WHEN 'agent' THEN 0 ELSE 1 END LIMIT 1")
+          .bind(attribution.agent_code, item.product_slug, item.quantity).first();
+        if (!stock) { complete = false; break; }
+        reservations.push({id:stock.id,slug:item.product_slug,quantity:item.quantity,ownership:stock.ownership});
+      }
+      if (complete && reservations.length === items.length) {
+        const results = await env.DB.batch(reservations.map(x => env.DB.prepare("UPDATE agent_inventory SET quantity=quantity-?,updated_at=? WHERE id=? AND quantity>=?")
+          .bind(x.quantity,new Date().toISOString(),x.id,x.quantity)));
+        if (results.every(x => Number(x.meta?.changes||0)===1)) {
+          const kinds = [...new Set(reservations.map(x=>x.ownership))];
+          fulfilmentSource = kinds.length>1 ? "agent_stock_mixed" : kinds[0]==="agent" ? "agent_stock_agent_owned" : "agent_stock_phoneya2";
+          fulfilmentAgentId = attribution.agent_code;
+        } else {
+          await env.DB.batch(reservations.map(x => env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?")
+            .bind(x.quantity,new Date().toISOString(),x.id)));
+          reservations.length = 0;
+        }
+      } else reservations.length = 0;
+    } catch (error) {
+      if (!/no such table: agent_inventory/i.test(String(error))) console.error("Agent stock reservation skipped:",String(error).slice(0,220));
+      reservations.length = 0;
+    }
+  }
+  const now = new Date().toISOString();
+  const itemsStatements = () => items.map(item => env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total)));
+  const movementStatements = reservations.map(x => env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
+    .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout"));
+  const full = [
+    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?)")
+      .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId),
+    ...itemsStatements(), ...movementStatements
   ];
-  for (const item of items) {
-    statements.push(
-      env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
-        .bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total))
-    );
-  }
   try {
-    await env.DB.batch(statements);
+    await env.DB.batch(full);
   } catch (error) {
-    // Keep checkout operational during the staged schema rollout. Before migration 0025,
-    // retry the same order using the original order columns and preserve every line item.
-    if (!/no such column: agent_(?:code|referral_code|attribution_source|attributed_at)/i.test(String(error))) throw error;
-    const legacy = [env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW')").bind(id, orderNumber, customer.name, customer.email, customer.phone, customer.address, customer.note || "", totalMinor)];
-    for (const item of items) legacy.push(env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total)));
-    await env.DB.batch(legacy);
+    try {
+      if (/no such column: fulfilment_(?:source|agent_id)/i.test(String(error))) {
+        const withAgent = [
+          env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?)")
+            .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null),
+          ...itemsStatements(), ...movementStatements
+        ];
+        await env.DB.batch(withAgent);
+      } else if (/no such column: agent_(?:code|referral_code|attribution_source|attributed_at)/i.test(String(error))) {
+        const legacy = [
+          env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW')")
+            .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor),
+          ...itemsStatements()
+        ];
+        await env.DB.batch(legacy);
+        fulfilmentSource = "phoneya2"; fulfilmentAgentId = "";
+      } else throw error;
+    } catch (fallbackError) {
+      if (reservations.length) {
+        try { await env.DB.batch(reservations.map(x=>env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?").bind(x.quantity,new Date().toISOString(),x.id))); } catch {}
+      }
+      throw fallbackError;
+    }
   }
-  // Notifications are secondary to order persistence: a notification failure must never undo a confirmed order.
   try {
     await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications (id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES (?,?,?,?,?,?,?,?,?,?)")
       .bind(crypto.randomUUID(),"order:"+id,"orders","new_order","New order received","Order "+orderNumber+" is awaiting review. Total: ZMW "+minorToMoney(totalMinor).toFixed(2)+".","high","/admin/orders.html",id,orderNumber).run();
   } catch (error) {
     console.error("PhoneYa2 order notification could not be recorded:",String(error).slice(0,220));
   }
-  return { id, order_number: orderNumber, total_amount: minorToMoney(totalMinor), currency: "ZMW", item_count: items.length };
+  return { id, order_number: orderNumber, total_amount: minorToMoney(totalMinor), currency: "ZMW", item_count: items.length, fulfilment_source: fulfilmentSource, fulfilment_agent_id: fulfilmentAgentId };
 }
 async function readD1Orders(env, options = {}) {
   if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
