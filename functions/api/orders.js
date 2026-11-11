@@ -445,9 +445,13 @@ export async function onRequest(context) {
     const note = cleanText(body.note, 1000);
     const submittedReferral = cleanText(body.agent_referral_code, 40);
     const agentReferralCode = /^[A-Za-z0-9_-]{3,40}$/.test(submittedReferral) ? submittedReferral.toUpperCase() : "";
-    // Credit only an approved active agent. Referral attribution is a source record, not commission approval.
+    // A referral is eligible for 30 days from the recorded click. Only active approved agents qualify.
     let agentAttribution = { agent_code: "", referral_code: "", source: "" };
-    if (agentReferralCode && env.DB) {
+    const capturedAt = Date.parse(cleanText(body.agent_referral_captured_at, 50));
+    const attributionDaysRow = await env.DB.prepare("SELECT setting_value FROM agent_commission_settings WHERE setting_key='referral_attribution_days'").first().catch(()=>null);
+    const attributionDays = Math.max(1, Math.min(180, Number(attributionDaysRow?.setting_value || 30)));
+    const freshReferral = Number.isFinite(capturedAt) && capturedAt <= Date.now() + 300000 && Date.now() - capturedAt <= attributionDays * 86400000;
+    if (agentReferralCode && freshReferral && env.DB) {
       const attributedAgent = await env.DB.prepare("SELECT agent_id FROM agent_accounts WHERE referral_code=? AND status='active'").bind(agentReferralCode).first();
       if (attributedAgent) agentAttribution = { agent_code: attributedAgent.agent_id, referral_code: agentReferralCode, source: "referral_link" };
     }
