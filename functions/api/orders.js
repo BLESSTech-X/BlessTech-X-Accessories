@@ -146,14 +146,14 @@ function mapD1Order(row, items = []) {
     }))
   };
 }
-async function createD1Order(env, customer, items) {
+async function createD1Order(env, customer, items, attribution = {}) {
   if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
   const id = crypto.randomUUID();
   const orderNumber = "PY2-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + crypto.randomUUID().slice(0,8).toUpperCase();
   const totalMinor = items.reduce((sum, item) => sum + moneyToMinor(item.line_total), 0);
   const statements = [
-    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW')")
-      .bind(id, orderNumber, customer.name, customer.email, customer.phone, customer.address, customer.note || "", totalMinor)
+    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?)")
+      .bind(id, orderNumber, customer.name, customer.email, customer.phone, customer.address, customer.note || "", totalMinor, attribution.agent_code || "", attribution.referral_code || "", attribution.source || "", attribution.agent_code ? new Date().toISOString() : null)
   ];
   for (const item of items) {
     statements.push(
@@ -444,12 +444,14 @@ export async function onRequest(context) {
     const address = cleanText(body.address, 500);
     const note = cleanText(body.note, 1000);
     const submittedReferral = cleanText(body.agent_referral_code, 40);
-    const agentReferralCode = /^[A-Za-z0-9_-]{3,40}$/.test(submittedReferral) ? submittedReferral : "";
-    // Keep attribution visible to the store in the existing order-note field without requiring a schema migration.
-    // It is marked as unverified; this is a lead-tracking hint, not commission approval.
-    const storedNote = agentReferralCode
-      ? [note, "Agent referral code (verify before crediting): " + agentReferralCode].filter(Boolean).join("\n").slice(0, 1000)
-      : note;
+    const agentReferralCode = /^[A-Za-z0-9_-]{3,40}$/.test(submittedReferral) ? submittedReferral.toUpperCase() : "";
+    // Credit only an approved active agent. Referral attribution is a source record, not commission approval.
+    let agentAttribution = { agent_code: "", referral_code: "", source: "" };
+    if (agentReferralCode && env.DB) {
+      const attributedAgent = await env.DB.prepare("SELECT agent_id FROM agent_accounts WHERE referral_code=? AND status='active'").bind(agentReferralCode).first();
+      if (attributedAgent) agentAttribution = { agent_code: attributedAgent.agent_id, referral_code: agentReferralCode, source: "referral_link" };
+    }
+    const storedNote = note;
     if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
         phone.length < 7 || address.length < 5) {
       return json({ error: "Please complete your name, valid email, phone number and delivery address." }, 400);
@@ -486,7 +488,7 @@ export async function onRequest(context) {
 
       let order;
       try {
-        order = await createD1Order(env, { name, email, phone, address, note: storedNote }, items);
+        order = await createD1Order(env, { name, email, phone, address, note: storedNote }, items, agentAttribution);
       } catch (error) {
         console.error("PhoneYa2 D1 order save failed:", String(error).slice(0,500));
         return json({ error: "We could not save your order just now. Your order was not confirmed; please try again." }, 502);
