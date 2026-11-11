@@ -9,7 +9,7 @@ const steps=[
 ];
 const $=s=>document.querySelector(s);let completed=new Set(),dismissed=false,step=0,host=null;
 async function save(){try{await fetch('/api/partner',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'onboarding.save',completed_steps:[...completed],dismissed})});}catch(e){console.warn('Partner onboarding progress could not be saved:',e);}}
-function go(section,target){const nav=$('[data-nav="'+section+'"]');if(nav)nav.click();setTimeout(()=>{$(target)?.scrollIntoView({behavior:'smooth',block:'center'});},250);}
+function go(section,target){const nav=$('[data-go="'+section+'"]');if(nav)nav.click();setTimeout(()=>{$(target)?.scrollIntoView({behavior:'smooth',block:'center'});},250);}
 function mountNextMove(d){if($('#py2-next-move'))return;const p=d.partner||{},items=d.items||[],posts=d.posts||[],enquiries=d.enquiries||[];let choice;
 if(!p.business_name||!p.owner_name)choice={title:'Finish your business profile',body:'Customers need to know who you are and how to reach you.',section:'profile'};
 else if(!p.logo_url)choice={title:'Add a recognisable business logo',body:'A clear logo makes your business easier to recognise and trust.',section:'profile'};
