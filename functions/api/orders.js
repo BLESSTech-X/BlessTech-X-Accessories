@@ -188,8 +188,8 @@ async function createD1Order(env, customer, items, attribution = {}) {
   const movementStatements = reservations.map(x => env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
     .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout"));
   const full = [
-    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?)")
-      .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId),
+    env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id, fulfilment_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?, ?)")
+      .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId,fulfilmentAgentId?"assigned":"central"),
     ...itemsStatements(), ...movementStatements
   ];
   try {
