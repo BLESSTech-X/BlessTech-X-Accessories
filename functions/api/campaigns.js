@@ -45,13 +45,16 @@ export async function onRequest({request,env}){
  if(!env.DB)return json({error:"Cloudflare D1 binding DB is not configured."},503);
  try{
   if(request.method==="GET"){
-   const [campaignRows,subs,partners]=await Promise.all([
+   const [campaignRows,subs,partners,engagementRows]=await Promise.all([
     env.DB.prepare("SELECT * FROM email_campaigns WHERE archived_at IS NULL ORDER BY created_at DESC LIMIT 100").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM customer_subscribers GROUP BY status").all(),
-    env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'')").first()
+    env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'')").first(),
+    env.DB.prepare("SELECT campaign_id,SUM(CASE WHEN event_type='impression' THEN 1 ELSE 0 END) AS impressions,SUM(CASE WHEN event_type='click' THEN 1 ELSE 0 END) AS clicks,SUM(CASE WHEN event_type='conversion' THEN 1 ELSE 0 END) AS conversions FROM campaign_engagement GROUP BY campaign_id").all()
    ]);
    const summary={total:0,subscribed:0,pending:0,unsubscribed:0,bounced:0};for(const row of subs.results||[]){summary.total+=Number(row.total||0);summary[row.status]=Number(row.total||0);}
-   return json({success:true,campaigns:campaignRows.results||[],subscribers:summary,partners:{total:Number(partners?.total||0)}});
+   const engagement=new Map((engagementRows.results||[]).map(row=>[row.campaign_id,{impressions:Number(row.impressions||0),clicks:Number(row.clicks||0),conversions:Number(row.conversions||0)}]));
+   const campaigns=(campaignRows.results||[]).map(c=>({...c,engagement:engagement.get(c.id)||{impressions:0,clicks:0,conversions:0}}));
+   return json({success:true,campaigns,subscribers:summary,partners:{total:Number(partners?.total||0)}});
   }
   if(request.method!=="POST")return json({error:"Method not allowed."},405);
   const body=await request.json().catch(()=>null);if(!body||typeof body!=="object")return json({error:"Invalid request body."},400);
@@ -82,7 +85,6 @@ export async function onRequest({request,env}){
     if(campaign.approval_status!=="approved")return json({error:"Approve this campaign before publishing."},409);
     const channels=(()=>{try{return JSON.parse(campaign.channels_json||'["email"]')}catch{return []}})();
     if(!channels.includes("homepage"))return json({error:"Add the homepage channel before publishing to the storefront."},409);
-    if(campaign.starts_at&&campaign.starts_at>now)return json({error:"This campaign is scheduled to start later. It will become visible when its start time arrives."},409);
     if(campaign.ends_at&&campaign.ends_at<now)return json({error:"This campaign has expired. Update its dates before publishing."},409);
     await env.DB.prepare("UPDATE email_campaigns SET published_at=?,updated_at=? WHERE id=?").bind(now,now,id).run();
    }
