@@ -72,6 +72,11 @@ await db.prepare("INSERT OR IGNORE INTO partner_notifications(id,advertiser_id,e
 }
 async function syncPartnerNotifications(db,partner,items,posts,enquiries,subscription,packageRequest,ads){
 const aid=partner.advertiser_id;
+// Mirror public PhoneYa2 homepage notifications into every Partner Studio inbox.
+try{
+const shared=await db.prepare("SELECT event_key,category,title,message,priority,destination,created_at FROM store_notifications WHERE expires_at IS NULL OR expires_at>strftime('%Y-%m-%dT%H:%M:%fZ','now') ORDER BY created_at DESC LIMIT 50").all();
+for(const n of (shared.results||[]))await addPartnerNotification(db,aid,{event_key:"phoneya2-store:"+String(n.event_key||"").slice(0,170),category:"phoneya2",kind:"event",title:n.title,message:n.message,priority:n.priority||"normal",destination:"overview",action_label:"View PhoneYa2",created_at:n.created_at});
+}catch(error){console.warn("Shared PhoneYa2 partner notifications skipped:",String(error).slice(0,180));}
 for(const e of enquiries.filter(x=>x.status==="new")){
 await addPartnerNotification(db,aid,{event_key:"enquiry:"+e.id,category:"enquiries",kind:"event",title:"New customer enquiry",message:(e.customer_name||"A customer")+" sent a message through your business website.",priority:"high",destination:"enquiries",action_label:"Open inbox"});
 }
