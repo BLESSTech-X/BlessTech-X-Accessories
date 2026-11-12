@@ -1,31 +1,72 @@
-/* Partner Studio guided setup and persistent, data-driven next action. */
+/* Compact Partner Studio tutorial: first-visit popup plus an always-available floating help button. */
 (()=>{'use strict';
 const steps=[
- {key:'profile',title:'Complete your business profile',body:'Add your business name, owner/contact person, phone number, tagline and business description.',section:'profile',target:'#profile-form'},
- {key:'images',title:'Add your logo and business images',body:'Upload a clear business logo and add a cover or hero image in Website Builder. Preview images before saving.',section:'profile',target:'#profile-logo-file'},
- {key:'website',title:'Customise your business website',body:'Choose your template, colours, layout, contact options and the sections customers should see.',section:'website',target:'#site-form'},
- {key:'content',title:'Create your first post or catalogue item',body:'Publish a useful business update, product, service or offer so customers have something specific to discover.',section:'composer',target:'#composer'},
- {key:'publish',title:'Preview and publish your business page',body:'Preview the website on mobile, publish it, then copy your public business link and share it with customers.',section:'overview',target:'#publish'}
+ {key:'profile',title:'Complete your business profile',body:'Add your business name, contact person, phone number, tagline and a short description so customers know who you are.',section:'profile',target:'#profile-form'},
+ {key:'images',title:'Add your logo and business images',body:'Upload a clear logo and add a cover image in Website Builder. Preview images before saving.',section:'profile',target:'#profile-logo-file'},
+ {key:'website',title:'Customise your website',body:'Choose your template, colours, layout, contact options and the sections customers should see.',section:'website',target:'#site-form'},
+ {key:'content',title:'Create your first post or catalogue item',body:'Publish a useful update, product, service or offer so customers have something specific to discover.',section:'composer',target:'#composer'},
+ {key:'publish',title:'Preview and publish your business page',body:'Check your website on mobile, publish it, then share your public business link with customers.',section:'overview',target:'#publish'}
 ];
-const $=s=>document.querySelector(s);let completed=new Set(),dismissed=false,step=0,host=null;
-async function save(){try{await fetch('/api/partner',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'onboarding.save',completed_steps:[...completed],dismissed})});}catch(e){console.warn('Partner onboarding progress could not be saved:',e);}}
-function go(section,target){const nav=$('[data-go="'+section+'"]');if(nav)nav.click();setTimeout(()=>{$(target)?.scrollIntoView({behavior:'smooth',block:'center'});},250);}
-function mountNextMove(d){if($('#py2-next-move'))return;const p=d.partner||{},items=d.items||[],posts=d.posts||[],enquiries=d.enquiries||[];let choice;
-if(!p.business_name||!p.owner_name)choice={title:'Finish your business profile',body:'Customers need to know who you are and how to reach you.',section:'profile'};
-else if(!p.logo_url)choice={title:'Add a recognisable business logo',body:'A clear logo makes your business easier to recognise and trust.',section:'profile'};
-else if(!p.slug||p.published===0)choice={title:'Publish your business website',body:'Your business page needs to be live before customers can discover it.',section:'overview'};
-else if(!items.length&&!posts.length)choice={title:'Create your first product or post',body:'Give customers something specific to discover and enquire about.',section:'composer'};
-else if(!posts.some(x=>x.status==='published'))choice={title:'Publish a business update',body:'Share a useful product, service, offer or business announcement.',section:'composer'};
-else if(!enquiries.length)choice={title:'Bring customers to your business page',body:'Share your public link and publish consistently so people can discover your offer.',section:'website'};
-else choice={title:'Review customer enquiries',body:'Respond quickly to new enquiries and move each conversation toward a sale.',section:'enquiries'};
-const card=document.createElement('section');card.id='py2-next-move';card.style.cssText='margin:0 0 16px;padding:16px;border:1px solid #d8e3ef;border-radius:14px;background:linear-gradient(120deg,#f1f7ff,#fff8f1);color:#17263b';const publicHref=$('#public-link')?.getAttribute('href')||'';card.innerHTML='<small style="font-weight:900;letter-spacing:1px;color:#2563eb">YOUR NEXT MOVE</small><h2 style="margin:6px 0" id="py2-next-title"></h2><p id="py2-next-body" style="margin:0 0 12px;color:#526176;line-height:1.6"></p><button type="button" class="btn" id="py2-next-action">Open recommended section</button>'+(publicHref?'<p style="font-size:11px;margin:10px 0 0;color:#667085">Your public page: <a href="'+publicHref+'" target="_blank" rel="noopener">Open business website ↗</a></p>':'');card.querySelector('#py2-next-title').textContent=choice.title;card.querySelector('#py2-next-body').textContent=choice.body;card.querySelector('#py2-next-action').onclick=()=>go(choice.section,choice.section==='profile'?'#profile-form':choice.section==='website'?'#site-form':'#'+choice.section);const main=$('#app .main')||$('#app main')||$('#app .layout')||$('#app').firstElementChild;if(main)main.prepend(card);else $('#app')?.prepend(card);}
-function render(){if(!host)return;const item=steps[step],done=completed.size;host.querySelector('#py2-guide-title').textContent=item.title;host.querySelector('#py2-guide-body').textContent=item.body;host.querySelector('#py2-guide-count').textContent='STEP '+(step+1)+' OF '+steps.length+' · '+done+' COMPLETED';host.querySelector('#py2-guide-progress').style.width=(done/steps.length*100)+'%';host.querySelector('#py2-guide-next').textContent=step===steps.length-1?'Finish setup':'I have completed this — Continue';host.querySelector('#py2-guide-steps').innerHTML=steps.map((x,i)=>'<button type="button" data-step="'+i+'" style="padding:6px 9px;border-radius:20px;border:1px solid #dbe3ec;background:'+(completed.has(x.key)?'#dcfce7':'#fff')+';font-size:10px;font-weight:800;color:#24364d">'+(completed.has(x.key)?'✓ ':'')+(i+1)+'. '+x.title+'</button>').join('');}
-function mountGuide(){const app=$('#app');if(!app||app.classList.contains('hidden')||host)return;host=document.createElement('section');host.id='py2-onboarding-guide';host.style.cssText='margin:0 0 16px;padding:18px;border:1px solid #cbdaf0;border-radius:15px;background:linear-gradient(120deg,#eef5ff,#fff7ed);color:#17263b;box-shadow:0 8px 24px #15233b0a';host.innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><small style="font-weight:900;letter-spacing:1px;color:#2563eb">YOUR BUSINESS LAUNCH GUIDE</small><h2 id="py2-guide-title" style="margin:6px 0"></h2><p id="py2-guide-body" style="margin:0;color:#526176;line-height:1.6"></p></div><button id="py2-guide-collapse" type="button" style="border:1px solid #dbe3ec;border-radius:8px;padding:8px 10px;background:#fff;color:#24364d;font-weight:800">Minimise</button></div><div style="height:7px;background:#dce5f0;border-radius:20px;margin:15px 0;overflow:hidden"><div id="py2-guide-progress" style="height:100%;width:0;background:#16865b"></div></div><div id="py2-guide-count" style="font-size:11px;color:#64748b;font-weight:800"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button id="py2-guide-open" type="button" class="btn">Open this section</button><button id="py2-guide-next" type="button" class="btn green">I have completed this — Continue</button></div><div id="py2-guide-steps" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:13px"></div>';
-const main=$('#app .main')||$('#app main')||$('#app .layout')||app.firstElementChild;if(main)main.prepend(host);else app.prepend(host);
-host.querySelector('#py2-guide-open').onclick=()=>go(steps[step].section,steps[step].target);
-host.querySelector('#py2-guide-next').onclick=async()=>{completed.add(steps[step].key);if(step<steps.length-1)step++;else{dismissed=true;host.remove();host=null;}await save();if(host){render();go(steps[step].section,steps[step].target);}else{try{const response=await fetch('/api/partner',{credentials:'same-origin',cache:'no-store'});if(response.ok)mountNextMove(await response.json());}catch{}}};
-host.querySelector('#py2-guide-collapse').onclick=()=>{host.classList.toggle('guide-collapsed');const collapsed=host.classList.contains('guide-collapsed');host.querySelector('#py2-guide-body').hidden=collapsed;host.querySelector('#py2-guide-open').hidden=collapsed;host.querySelector('#py2-guide-next').hidden=collapsed;host.querySelector('#py2-guide-steps').hidden=collapsed;host.querySelector('#py2-guide-collapse').textContent=collapsed?'Show guide':'Minimise';};
-host.querySelector('#py2-guide-steps').onclick=e=>{const b=e.target.closest('[data-step]');if(b){step=Number(b.dataset.step);render();go(steps[step].section,steps[step].target);}};render();}
-async function boot(){let response;for(let i=0;i<8;i++){if(!$('#app')||$('#app').classList.contains('hidden')){await new Promise(r=>setTimeout(r,500));continue;}try{response=await fetch('/api/partner',{credentials:'same-origin',cache:'no-store'});if(response.ok)break;}catch{}await new Promise(r=>setTimeout(r,500));}if(!response?.ok)return;const d=await response.json(),saved=d.onboarding||{};completed=new Set(Array.isArray(saved.completed_steps)?saved.completed_steps:[]);dismissed=!!saved.dismissed;if(dismissed||completed.size===steps.length){mountNextMove(d);return;}const remaining=steps.findIndex(x=>!completed.has(x.key));step=remaining<0?steps.length-1:remaining;mountGuide();mountNextMove(d);}
-let started=false;function startIfReady(){if(started)return;const app=$('#app');if(app&&!app.classList.contains('hidden')){started=true;boot();}}const observer=new MutationObserver(startIfReady);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startIfReady,{once:true});else startIfReady();
+const $=s=>document.querySelector(s);let completed=new Set(),dismissed=false,step=0,modal=null,partnerData=null;
+async function save(){try{await fetch('/api/partner',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'onboarding.save',completed_steps:[...completed],dismissed})});}catch(e){console.warn('Partner tutorial progress could not be saved:',e);}}
+function go(section,target){const nav=$('[data-go="'+section+'"]');if(nav)nav.click();setTimeout(()=>$(target)?.scrollIntoView({behavior:'smooth',block:'center'}),250);}
+function nextAction(){const p=partnerData?.partner||{},items=partnerData?.items||[],posts=partnerData?.posts||[],enquiries=partnerData?.enquiries||[];
+ if(!p.business_name||!p.owner_name)return 'Complete your business profile';
+ if(!p.logo_url)return 'Add your business logo';
+ if(!p.slug||p.published===0)return 'Publish your business website';
+ if(!items.length&&!posts.length)return 'Create your first product or post';
+ if(!posts.some(x=>x.status==='published'))return 'Publish a business update';
+ if(!enquiries.length)return 'Share your business website link';
+ return 'Review and respond to customer enquiries';
+}
+function ensureModal(){if(modal)return;const style=document.createElement('style');style.textContent=`
+.tutorial-fab{width:46px!important;height:46px!important;min-width:46px!important;padding:0!important;justify-content:center!important;border-radius:50%!important;font-size:22px!important;font-weight:900!important}
+.tutorial-fab .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#py2-tutorial-backdrop{position:fixed;inset:0;z-index:300;background:rgba(8,22,40,.62);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}
+#py2-tutorial-backdrop.open{display:flex}
+#py2-tutorial-modal{width:min(560px,100%);max-height:min(760px,calc(100dvh - 36px));overflow:auto;background:#fff;color:#17263b;border:1px solid #dce5ef;border-radius:20px;box-shadow:0 28px 90px #06162d66;padding:22px}
+#py2-tutorial-modal .tutorial-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+#py2-tutorial-modal .tutorial-kicker{font-size:10px;letter-spacing:1.3px;font-weight:900;color:#e85b20}
+#py2-tutorial-modal h2{font-size:22px;line-height:1.2;margin:7px 0}
+#py2-tutorial-modal p{font-size:13px;line-height:1.65;color:#5b6b7e;margin:8px 0 15px}
+#py2-tutorial-modal .tutorial-close{width:36px;height:36px;flex:none;border:1px solid #dce5ef;border-radius:50%;background:#f7f9fc;color:#263c55;font-size:20px;cursor:pointer}
+#py2-tutorial-modal .tutorial-progress{height:6px;background:#e9eef5;border-radius:9px;overflow:hidden;margin:16px 0 8px}
+#py2-tutorial-modal .tutorial-progress>span{display:block;height:100%;background:#16865b;transition:width .2s}
+#py2-tutorial-modal .tutorial-meta{font-size:10px;font-weight:850;letter-spacing:.5px;color:#758398}
+#py2-tutorial-modal .tutorial-next-action{padding:12px 14px;border:1px solid #f4d7c8;background:#fff7f1;border-radius:12px;margin:15px 0}
+#py2-tutorial-modal .tutorial-next-action small{display:block;color:#a64a1b;font-size:9px;font-weight:900;letter-spacing:1px}
+#py2-tutorial-modal .tutorial-next-action b{display:block;font-size:13px;margin-top:4px}
+#py2-tutorial-modal .tutorial-step-list{display:flex;gap:6px;flex-wrap:wrap;margin:15px 0}
+#py2-tutorial-modal .tutorial-step-list button{border:1px solid #dce5ef;background:#f8fafc;color:#34465d;border-radius:20px;padding:7px 10px;font-size:10px;font-weight:800;cursor:pointer}
+#py2-tutorial-modal .tutorial-step-list button.active{background:#173f73;color:#fff;border-color:#173f73}
+#py2-tutorial-modal .tutorial-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:16px}
+#py2-tutorial-modal .tutorial-actions button{border:0;border-radius:10px;padding:11px 14px;font-size:12px;font-weight:850;cursor:pointer}
+#py2-tutorial-modal .tutorial-secondary{background:#edf2f7;color:#34465d}
+#py2-tutorial-modal .tutorial-primary{background:#ff641f;color:#fff}
+body.dark #py2-tutorial-modal{background:#242b34;color:#f2f5f8;border-color:#46515e}
+body.dark #py2-tutorial-modal p{color:#c0cad5}
+body.dark #py2-tutorial-modal .tutorial-step-list button{background:#303944;color:#dce5ef;border-color:#4a5664}
+body.dark #py2-tutorial-modal .tutorial-step-list button.active{background:#315d91;color:#fff}
+body.dark #py2-tutorial-modal .tutorial-close,body.dark #py2-tutorial-modal .tutorial-secondary{background:#343d48;color:#f2f5f8;border-color:#4a5664}
+body.dark #py2-tutorial-modal .tutorial-next-action{background:#3a302b;border-color:#69503f;color:#fff}
+@media(max-width:520px){#py2-tutorial-backdrop{padding:10px}#py2-tutorial-modal{padding:17px;border-radius:16px}#py2-tutorial-modal h2{font-size:19px}}
+`;document.head.append(style);
+const back=document.createElement('div');back.id='py2-tutorial-backdrop';back.innerHTML='<section id="py2-tutorial-modal" role="dialog" aria-modal="true" aria-labelledby="py2-tutorial-title"><div class="tutorial-top"><div><div class="tutorial-kicker">PHONEYA2 PARTNER STUDIO</div><h2 id="py2-tutorial-title">Quick business setup</h2></div><button type="button" class="tutorial-close" id="py2-tutorial-close" aria-label="Close tutorial">×</button></div><p id="py2-tutorial-body"></p><div class="tutorial-progress"><span id="py2-tutorial-progress"></span></div><div class="tutorial-meta" id="py2-tutorial-meta"></div><div class="tutorial-next-action"><small>YOUR NEXT RECOMMENDED MOVE</small><b id="py2-tutorial-recommendation"></b></div><div class="tutorial-step-list" id="py2-tutorial-steps"></div><div class="tutorial-actions"><button type="button" class="tutorial-secondary" id="py2-tutorial-close-bottom">Close</button><button type="button" class="tutorial-secondary" id="py2-tutorial-open">Open this section</button><button type="button" class="tutorial-primary" id="py2-tutorial-next">Continue</button></div></section>';
+document.body.append(back);modal=back;
+const close=()=>{back.classList.remove('open');dismissed=true;save();};
+back.querySelector('#py2-tutorial-close').onclick=close;back.querySelector('#py2-tutorial-close-bottom').onclick=close;
+back.addEventListener('click',e=>{if(e.target===back)close();});
+back.querySelector('#py2-tutorial-open').onclick=()=>{const x=steps[step];close();go(x.section,x.target);};
+back.querySelector('#py2-tutorial-next').onclick=async()=>{completed.add(steps[step].key);if(step<steps.length-1){step++;render();await save();}else{dismissed=true;await save();close();}};
+back.querySelector('#py2-tutorial-steps').onclick=e=>{const b=e.target.closest('[data-step]');if(b){step=Number(b.dataset.step);render();}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&back.classList.contains('open'))close();});
+}
+function render(){if(!modal)return;const x=steps[step],done=completed.size;modal.querySelector('#py2-tutorial-title').textContent=x.title;modal.querySelector('#py2-tutorial-body').textContent=x.body;modal.querySelector('#py2-tutorial-meta').textContent='STEP '+(step+1)+' OF '+steps.length+' · '+done+' COMPLETED';modal.querySelector('#py2-tutorial-progress').style.width=(done/steps.length*100)+'%';modal.querySelector('#py2-tutorial-recommendation').textContent=nextAction();modal.querySelector('#py2-tutorial-next').textContent=step===steps.length-1?'Finish tutorial':'Mark done & continue';modal.querySelector('#py2-tutorial-steps').innerHTML=steps.map((v,i)=>'<button type="button" data-step="'+i+'" class="'+(i===step?'active':'')+'">'+(completed.has(v.key)?'✓ ':'')+(i+1)+'. '+v.title+'</button>').join('');}
+function open(){ensureModal();render();dismissed=false;modal.classList.add('open');modal.querySelector('#py2-tutorial-close').focus();}
+async function boot(){const btn=$('#floating-guide');if(btn){btn.onclick=null;btn.innerHTML='?<span class="sr-only">Tutorial</span>';btn.title='Open the Partner Studio tutorial';btn.setAttribute('aria-label','Open the Partner Studio tutorial');btn.addEventListener('click',open);}
+let response;for(let i=0;i<10;i++){if(!$('#app')||$('#app').classList.contains('hidden')){await new Promise(r=>setTimeout(r,450));continue;}try{response=await fetch('/api/partner',{credentials:'same-origin',cache:'no-store'});if(response.ok)break;}catch{}await new Promise(r=>setTimeout(r,450));}
+if(!response?.ok)return;partnerData=await response.json();const saved=partnerData.onboarding||{};completed=new Set(Array.isArray(saved.completed_steps)?saved.completed_steps:[]);dismissed=!!saved.dismissed;ensureModal();render();if(!dismissed&&completed.size<steps.length){modal.classList.add('open');}
+}
+let started=false;function startIfReady(){if(started)return;const app=$('#app');if(app&&!app.classList.contains('hidden')){started=true;boot();}}
+const observer=new MutationObserver(startIfReady);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startIfReady,{once:true});else startIfReady();
 })();
