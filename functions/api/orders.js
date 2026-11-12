@@ -1,4 +1,5 @@
 import {reverseAgentCommissionForCancelledOrder} from "../_agent-finance.js";
+import {recordAdminActivity} from "../_activity.js";
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
 const ALLOWED_STATUSES = new Set(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]);
 const MAX_LINES = 30;
@@ -726,6 +727,10 @@ export async function onRequest(context) {
       const currentRow = await env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first();
       if (!currentRow) return json({ error: "Order not found." }, 404);
       await env.DB.prepare("UPDATE orders SET status = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").bind(status, id).run();
+      if (currentRow.status !== status) {
+        try { await recordAdminActivity(env.DB,{key:"order-status:"+id+":"+status+":"+Date.now(),category:"orders",type:"order_status_changed",title:"Order "+(currentRow.order_number||"")+" updated",message:"Order status changed from "+String(currentRow.status||"unknown")+" to "+status+".",priority:status==="cancelled"?"high":"normal",destination:"/admin/orders.html",related_id:id,related_label:currentRow.order_number||id}); }
+        catch(activityError){console.error("Command Centre order activity log failed:",String(activityError).slice(0,180));}
+      }
       if (status === "cancelled" && currentRow.status !== "cancelled") {
         try { await reverseAgentCommissionForCancelledOrder(env.DB,currentRow); } catch (commissionError) { console.error("Agent commission reversal failed:",String(commissionError).slice(0,220)); }
       }
