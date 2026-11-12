@@ -211,7 +211,7 @@ export function renderPartnerSite(data) {
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
-${share.image || heroImage ? `<meta property="og:image" content="${esc(share.image||heroImage)}"><meta name="twitter:image" content="${esc(share.image||heroImage)}">` : ""}
+${(logoUrl || share.image || heroImage) ? `<meta property="og:image" content="${esc(new URL(logoUrl || share.image || heroImage, SITE_URL).href)}"><meta property="og:image:secure_url" content="${esc(new URL(logoUrl || share.image || heroImage, SITE_URL).href)}"><meta name="twitter:image" content="${esc(new URL(logoUrl || share.image || heroImage, SITE_URL).href)}">` : ""}
 <style>
 *{box-sizing:border-box}
 :root{${colourVars};--c-primary:${primary};--c-accent:${accent}}
