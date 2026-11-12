@@ -3,6 +3,8 @@ const SITE="https://phoneya2.pages.dev";
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:JSON_HEADERS});}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 async function admin(request,env){const {getAdminSession,sameOrigin}=await import("../_auth.js");if(!sameOrigin(request))return null;return await getAdminSession(request,env);}
+function safeCampaignUrl(value){const raw=String(value||"").trim();if(!raw)return "";try{const u=new URL(raw,SITE);return ["https:","http:"].includes(u.protocol)&&!u.username&&!u.password?u.href:"";}catch{return "";}}
+function validDate(value){if(!value)return null;const d=new Date(value);return Number.isFinite(d.getTime())?d.toISOString():null;}
 function normalizeZambiaPhone(value){let d=String(value||"").replace(/\D/g,"");if(d.startsWith("0"))d="260"+d.slice(1);return d.startsWith("260")?d:"";}
 async function emailLog(env,campaign,recipient,result){
  try{await env.DB.prepare("INSERT INTO email_activity(id,event_type,source,trigger_source,recipient_email,recipient_name,subject,status,provider,provider_message_id,error_message,campaign_id,retry_count,sent_at,metadata_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)")
@@ -43,25 +45,55 @@ export async function onRequest({request,env}){
  if(!env.DB)return json({error:"Cloudflare D1 binding DB is not configured."},503);
  try{
   if(request.method==="GET"){
-   const [campaignRows,subs,partners]=await Promise.all([
+   const [campaignRows,subs,partners,engagementRows]=await Promise.all([
     env.DB.prepare("SELECT * FROM email_campaigns WHERE archived_at IS NULL ORDER BY created_at DESC LIMIT 100").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM customer_subscribers GROUP BY status").all(),
-    env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'')").first()
+    env.DB.prepare("SELECT COUNT(*) AS total FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'')").first(),
+    env.DB.prepare("SELECT campaign_id,SUM(CASE WHEN event_type='impression' THEN 1 ELSE 0 END) AS impressions,SUM(CASE WHEN event_type='click' THEN 1 ELSE 0 END) AS clicks,SUM(CASE WHEN event_type='conversion' THEN 1 ELSE 0 END) AS conversions FROM campaign_engagement GROUP BY campaign_id").all()
    ]);
    const summary={total:0,subscribed:0,pending:0,unsubscribed:0,bounced:0};for(const row of subs.results||[]){summary.total+=Number(row.total||0);summary[row.status]=Number(row.total||0);}
-   return json({success:true,campaigns:campaignRows.results||[],subscribers:summary,partners:{total:Number(partners?.total||0)}});
+   const engagement=new Map((engagementRows.results||[]).map(row=>[row.campaign_id,{impressions:Number(row.impressions||0),clicks:Number(row.clicks||0),conversions:Number(row.conversions||0)}]));
+   const campaigns=(campaignRows.results||[]).map(c=>({...c,engagement:engagement.get(c.id)||{impressions:0,clicks:0,conversions:0}}));
+   return json({success:true,campaigns,subscribers:summary,partners:{total:Number(partners?.total||0)}});
   }
   if(request.method!=="POST")return json({error:"Method not allowed."},405);
   const body=await request.json().catch(()=>null);if(!body||typeof body!=="object")return json({error:"Invalid request body."},400);
   if(body.action==="create"){
    const name=String(body.name||"").trim().slice(0,120),subject=String(body.subject||"").trim().slice(0,180),bodyText=String(body.body_text||"").trim().slice(0,12000),audience=body.audience==="partners"?"partners":"subscribed";
    if(name.length<2||subject.length<3||bodyText.length<5)return json({error:"Enter a campaign name, subject and message."},400);
-   const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO email_campaigns(id,created_by,name,subject,body_text,audience,message_type,status) VALUES(?,?,?,?,?,?,?,'draft')").bind(id,String(session.email||""),name,subject,bodyText,audience,audience==="partners"?"service":"marketing").run();
+   const hero=safeCampaignUrl(body.hero_image_url),destination=safeCampaignUrl(body.destination_url),cta=String(body.cta_label||"Shop now").trim().slice(0,60)||"Shop now";
+   const channels=Array.isArray(body.channels)?body.channels.filter(x=>["email","homepage"].includes(x)):["email"];
+   if(!channels.length)return json({error:"Select at least one campaign channel."},400);
+   const starts=validDate(body.starts_at),ends=validDate(body.ends_at);
+   if(body.starts_at&&!starts||body.ends_at&&!ends)return json({error:"Campaign dates must be valid ISO date/time values."},400);
+   if(starts&&ends&&ends<=starts)return json({error:"Campaign end must be after its start."},400);
+   const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO email_campaigns(id,created_by,name,subject,body_text,audience,message_type,status,hero_image_url,destination_url,cta_label,starts_at,ends_at,channels_json) VALUES(?,?,?,?,?,?,?,'draft',?,?,?,?,?,?)")
+    .bind(id,String(session.email||""),name,subject,bodyText,audience,audience==="partners"?"service":"marketing",hero,destination,cta,starts,ends,JSON.stringify(channels)).run();
    const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();return json({success:true,campaign},201);
+  }
+  if(body.action==="approve"||body.action==="reject"||body.action==="publish"){
+   const id=String(body.id||"");if(!/^[0-9a-f-]{36}$/i.test(id))return json({error:"Invalid campaign."},400);
+   const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=? AND archived_at IS NULL").bind(id).first();
+   if(!campaign)return json({error:"Campaign not found."},404);
+   const now=new Date().toISOString();
+   if(body.action==="approve"){
+    if(campaign.approval_status==="approved")return json({success:true,campaign,message:"Campaign is already approved."});
+    await env.DB.prepare("UPDATE email_campaigns SET approval_status='approved',approved_by=?,approved_at=?,updated_at=? WHERE id=?").bind(String(session.email||""),now,now,id).run();
+   }else if(body.action==="reject"){
+    await env.DB.prepare("UPDATE email_campaigns SET approval_status='rejected',approved_by=?,approved_at=NULL,published_at=NULL,updated_at=? WHERE id=?").bind(String(session.email||""),now,id).run();
+   }else{
+    if(campaign.approval_status!=="approved")return json({error:"Approve this campaign before publishing."},409);
+    const channels=(()=>{try{return JSON.parse(campaign.channels_json||'["email"]')}catch{return []}})();
+    if(!channels.includes("homepage"))return json({error:"Add the homepage channel before publishing to the storefront."},409);
+    if(campaign.ends_at&&campaign.ends_at<now)return json({error:"This campaign has expired. Update its dates before publishing."},409);
+    await env.DB.prepare("UPDATE email_campaigns SET published_at=?,updated_at=? WHERE id=?").bind(now,now,id).run();
+   }
+   const updated=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();
+   return json({success:true,campaign:updated,message:body.action==="approve"?"Campaign approved.":body.action==="reject"?"Campaign rejected.":"Campaign published."});
   }
   if(body.action==="send"){
    const id=String(body.id||"");if(!/^[0-9a-f-]{36}$/i.test(id))return json({error:"Invalid campaign."},400);
-   const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();if(!campaign)return json({error:"Campaign not found."},404);if(campaign.status==="sent")return json({error:"This campaign is already complete."},409);
+   const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();if(!campaign)return json({error:"Campaign not found."},404);if(campaign.approval_status!=="approved")return json({error:"Approve this campaign before sending. Drafts are never sent automatically."},409);if(campaign.status==="sent")return json({error:"This campaign is already complete."},409);
    let recipients=[];
    if(campaign.audience==="partners"){
     const rows=await env.DB.prepare("SELECT id AS advertiser_id,email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'') ORDER BY created_at ASC LIMIT 1000").all();
