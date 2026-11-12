@@ -1,0 +1,13 @@
+(()=>{"use strict";
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function track(id,event){try{await fetch("/api/campaign-feed",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({campaign_id:id,event_type:event,placement:"homepage",source:document.referrer?"referral":"direct"})})}catch{}}
+async function init(){try{const r=await fetch("/api/campaign-feed",{cache:"no-store"});if(!r.ok)return;const d=await r.json();if(!Array.isArray(d.campaigns)||!d.campaigns.length)return;
+const anchor=document.querySelector(".hero-zone")||document.querySelector(".main-wrap");if(!anchor)return;
+const section=document.createElement("section");section.className="py2-central-campaigns";section.setAttribute("aria-label","PhoneYa2 campaigns");
+section.innerHTML='<style>.py2-central-campaigns{margin:16px 0 22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}.py2-central-card{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,34%);min-height:150px;border-radius:15px;background:linear-gradient(120deg,#111827,#263b59);color:#fff;box-shadow:0 8px 24px #11182718}.py2-central-copy{padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}.py2-central-copy h3{font-size:18px;line-height:1.2;color:#fff}.py2-central-copy p{font-size:13px;line-height:1.45;color:#e5e7eb;white-space:pre-line}.py2-central-copy a{margin-top:auto;display:inline-flex;padding:9px 13px;border-radius:8px;background:#ff6500;color:white;font-size:12px;font-weight:900}.py2-central-card img{width:100%;height:100%;min-height:150px;object-fit:cover}@media(max-width:480px){.py2-central-card{grid-template-columns:1fr 100px}.py2-central-copy{padding:13px}.py2-central-copy h3{font-size:15px}}</style>'+d.campaigns.map(c=>'<article class="py2-central-card"><div class="py2-central-copy"><h3>'+esc(c.headline||c.title)+'</h3><p>'+esc(c.body||"")+'</p><a href="'+esc(c.destination_url||"/")+'" data-campaign-click="'+esc(c.id)+'">'+esc(c.cta_label||"Shop now")+' →</a></div>'+(c.image_url?'<img src="'+esc(c.image_url)+'" alt="" loading="lazy">':'')+'</article>').join("");
+anchor.insertAdjacentElement("afterend",section);
+d.campaigns.forEach(c=>track(c.id,"impression"));
+section.querySelectorAll("[data-campaign-click]").forEach(a=>a.addEventListener("click",()=>track(a.dataset.campaignClick,"click")));
+}catch{}}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+})();
