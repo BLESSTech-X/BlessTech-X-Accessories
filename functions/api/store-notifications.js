@@ -10,6 +10,11 @@ async function insertNotification(db,event){
  const metadata=JSON.stringify(event.metadata||{});
  await db.prepare("INSERT INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(event_key) DO UPDATE SET category=excluded.category,kind=excluded.kind,title=CASE WHEN excluded.title<>'' THEN excluded.title ELSE store_notifications.title END,message=CASE WHEN excluded.message<>'' THEN excluded.message ELSE store_notifications.message END,destination=CASE WHEN excluded.destination<>'' THEN excluded.destination ELSE store_notifications.destination END,priority=excluded.priority,metadata_json=CASE WHEN json_valid(store_notifications.metadata_json) THEN json_patch(store_notifications.metadata_json,excluded.metadata_json) ELSE excluded.metadata_json END,expires_at=COALESCE(excluded.expires_at,store_notifications.expires_at)")
  .bind(uuid(),event.key,event.category,"event",clean(event.title,180),clean(event.message,420),destination(event.destination),event.priority||"normal",metadata,event.expiresAt||null).run();
+ // Mirror storefront events into the Command Centre so operational changes are visible centrally.
+ try{
+  await db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label,image_url) VALUES(?,?,?,?,?,?,?,?,?,?,?)")
+   .bind(uuid(),"storefront:"+clean(event.key,150),clean(event.category||"storefront",60),"storefront_"+clean(event.category||"event",50),clean(event.title,180),clean(event.message,420),clean(event.priority||"normal",20),destination(event.destination,"/admin/communications.html"),clean(event.metadata?.slug||event.key,120),clean(event.title,180),clean(event.metadata?.image||"",800)).run();
+ }catch(error){console.warn("Storefront event Command Centre mirror skipped:",String(error).slice(0,160));}
 }
 async function refreshExistingNotification(db,event){
  await db.prepare("UPDATE store_notifications SET category=?,title=CASE WHEN ?<>'' THEN ? ELSE title END,message=CASE WHEN ?<>'' THEN ? ELSE message END,destination=CASE WHEN ?<>'' THEN ? ELSE destination END,metadata_json=CASE WHEN json_valid(metadata_json) THEN json_patch(metadata_json,?) ELSE ? END WHERE event_key=?")
@@ -78,8 +83,12 @@ async function syncEditorial(db,origin){
 async function syncCommunity(db){
  try{
   const r=await db.prepare("SELECT event_key,category,title,message,destination FROM community_notifications ORDER BY created_at DESC LIMIT 30").all();
-  const statements=(r.results||[]).map(n=>db.prepare("INSERT INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(event_key) DO UPDATE SET title=CASE WHEN excluded.title<>'' THEN excluded.title ELSE store_notifications.title END,message=CASE WHEN excluded.message<>'' THEN excluded.message ELSE store_notifications.message END,destination=excluded.destination,category='community'")
-   .bind(uuid(),"community-mirror:"+n.event_key,"community","event",clean(n.title,180),clean(n.message,420),destination(n.destination,"/community/"),"normal","{}"));
+  const statements=(r.results||[]).flatMap(n=>[
+   db.prepare("INSERT INTO store_notifications(id,event_key,category,kind,title,message,destination,priority,metadata_json) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(event_key) DO UPDATE SET title=CASE WHEN excluded.title<>'' THEN excluded.title ELSE store_notifications.title END,message=CASE WHEN excluded.message<>'' THEN excluded.message ELSE store_notifications.message END,destination=excluded.destination,category='community'")
+    .bind(uuid(),"community-mirror:"+n.event_key,"community","event",clean(n.title,180),clean(n.message,420),destination(n.destination,"/community/"),"normal","{}"),
+   db.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)")
+    .bind(uuid(),"community-mirror:"+n.event_key,"community","community_activity",clean(n.title,180),clean(n.message,420),"normal",destination(n.destination,"/community/"),clean(n.event_key,120),clean(n.title,180))
+  ]);
   if(statements.length)await db.batch(statements);
  }catch(e){/* Community migration may not yet be applied. */}
 }
