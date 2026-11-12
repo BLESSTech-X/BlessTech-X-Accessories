@@ -653,10 +653,11 @@ async function sharePartnerWebsite(){
  if(url==='#'){toast('⚠️ Your website link is not ready yet. Complete your business profile first.');return;}
  if(!data?.partner?.published){toast('⚠️ Publish your website before sharing it with customers.');go('website');return;}
  const title=data.partner.business_name||'My business';
+ const message='Visit our website: '+url;
  try{
-  if(navigator.share){await navigator.share({title,text:'Visit '+title+' on PhoneYa2',url});return;}
-  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);toast('Website link copied. Share it with your customers!');return;}
-  const field=document.createElement('textarea');field.value=url;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();const copied=document.execCommand('copy');field.remove();if(copied)toast('Website link copied. Share it with your customers!');else toast('Your website link: '+url);
+  if(navigator.share){await navigator.share({title,text:message});return;}
+  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(message);toast('Website invitation copied. Share it with your customers!');return;}
+  const field=document.createElement('textarea');field.value=message;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();const copied=document.execCommand('copy');field.remove();if(copied)toast('Website invitation copied. Share it with your customers!');else toast(message);
  }catch(error){if(error?.name!=='AbortError')toast('⚠️ Could not share the link. Please try again.');}
 }
 $('share-website').addEventListener('click',sharePartnerWebsite);
