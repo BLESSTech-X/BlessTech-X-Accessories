@@ -6,7 +6,8 @@
     "/blog-post.html",
     "/b/*",
     "/ad/*",
-    "/media/partner/*"
+    "/media/partner/*",
+    "/media/agent/*"
   ],
   "exclude": []
 }
