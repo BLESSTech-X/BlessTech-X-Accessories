@@ -44,7 +44,12 @@ for (const [label, token] of [
   ['admin session protection', 'getAdminSession(request,env)'],
   ['delivered-order commission gate', 'order.status!=="delivered"'],
   ['payout allocation ledger', 'agent_payout_allocations'],
-  ['delivery confirmation', "fulfilment_status='confirmed'"]
+  ['delivery confirmation state', "fulfilment_status='confirmed'"],
+  ['delivery report prerequisite', 'fulfilment_status!=="delivery_reported"'],
+  ['cancelled-order protection', 'order.status==="cancelled"'],
+  ['admin confirmation action', 'fulfilment.confirm'],
+  ['delivery audit event', 'agent_delivery_confirmed'],
+  ['agent delivery notification', 'delivery-confirmed:']
 ]) {
   if (!admin.includes(token)) {
     console.error('FAIL missing:', label);
