@@ -264,7 +264,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 #leaderboard .leaderboard-results a:hover{text-decoration:underline}
 @media(max-width:420px){#leaderboard .leaderboard-item{padding:8px;gap:7px}#leaderboard .leaderboard-avatar{width:38px;height:38px}#leaderboard .leaderboard-results>b{font-size:10px}}
 
-/* Agent header actions: keep Logout visible beside Menu. */\n.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}.logout-button{border:1px solid #f3b8b8;background:#fff1f1;color:#b42318;border-radius:10px;padding:10px 12px;font-weight:850;white-space:nowrap}.logout-button:hover{background:#ffe1e1;border-color:#e88b8b;transform:translateY(-1px)}.logout-button:disabled{opacity:.6;cursor:wait}@media(max-width:420px){.header-actions{gap:5px}.logout-button,.site-menu-button{padding:9px 9px;font-size:12px}}\n
+/* Compact, vertically stacked header actions. */
+.header-actions{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:5px;flex-shrink:0}
+.header-actions .logout-button,.header-actions .site-menu-button{width:100%;min-width:88px;padding:6px 10px;border-radius:8px;font-size:12px;line-height:1.15;text-align:center}
+.header-actions .logout-button{border:1px solid #f3b8b8;background:#fff1f1;color:#b42318;font-weight:850;white-space:nowrap}
+.header-actions .logout-button:hover{background:#ffe1e1;border-color:#e88b8b;transform:translateY(-1px)}
+.header-actions .logout-button:disabled{opacity:.6;cursor:wait}
+.header-actions .site-menu-button{background:#fff;color:#1456b5;border:1px solid #dceaff;font-weight:850}
+@media(max-width:420px){.header-actions{gap:4px}.header-actions .logout-button,.header-actions .site-menu-button{min-width:78px;padding:6px 8px;font-size:11px}}
 /* Facebook-blue navigation theme with high-contrast labels and icons. */
 header.top{
  background:#1877F2!important;
