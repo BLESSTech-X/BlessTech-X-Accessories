@@ -514,27 +514,32 @@ document.addEventListener("click",e=>{if(e.target?.id==="copyReferral")navigator
 </script><!-- Agent workspace UI update -->
 </body></html>
 
-/* Subtle PhoneYa2 logo watermark behind the agent-network title and tagline. */
+/* Place the PhoneYa2 logo beside the agent-network heading, not behind it. */
 header.top .brand{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:flex-start!important;
  position:relative!important;
- isolation:isolate!important;
- padding:5px 12px 6px 8px!important;
+ isolation:auto!important;
+ padding:5px 0 6px 56px!important;
+ min-height:48px!important;
+ justify-content:center!important;
 }
-header.top .brand::before{
+header.top .brand::before{content:none!important;display:none!important}
+header.top .brand::after{
  content:""!important;
  position:absolute!important;
- z-index:-1!important;
- inset:-5px 0 -6px -5px!important;
- width:190px!important;
- max-width:calc(100vw - 125px)!important;
- background:url('/icon-512x512.jpg') left center/contain no-repeat!important;
- opacity:.16!important;
+ left:0!important;
+ top:50%!important;
+ transform:translateY(-50%)!important;
+ width:46px!important;
+ height:46px!important;
+ background:url('/icon-512x512.jpg') center/contain no-repeat!important;
+ border-radius:9px!important;
  pointer-events:none!important;
 }
-header.top .brand b,header.top .brand small{
- position:relative!important;
- z-index:1!important;
-}
+header.top .brand b,header.top .brand small{position:relative!important;z-index:auto!important}
 @media(max-width:420px){
- header.top .brand::before{width:160px!important;opacity:.14!important}
+ header.top .brand{padding-left:44px!important;min-height:40px!important}
+ header.top .brand::after{width:36px!important;height:36px!important}
 }
