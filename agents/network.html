@@ -272,39 +272,39 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .header-actions .logout-button:disabled{opacity:.6;cursor:wait}
 .header-actions .site-menu-button{background:#fff;color:#1456b5;border:1px solid #dceaff;font-weight:850}
 @media(max-width:420px){.header-actions{gap:4px}.header-actions .logout-button,.header-actions .site-menu-button{min-width:78px;padding:6px 8px;font-size:11px}}
-/* Facebook-blue navigation theme with high-contrast labels and icons. */
+/* Professional deep-blue header and bottom navigation; white secondary header nav. */
 header.top{
- background:#1877F2!important;
+ background:#123B70!important;
  color:#fff!important;
- border-bottom:1px solid #1265d8!important;
- box-shadow:0 3px 14px #0b4fb533!important;
+ border-bottom:1px solid #0B2D55!important;
+ box-shadow:0 3px 14px #071f3b33!important;
 }
 header.top .brand b,header.top .brand b span,
-header.top .brand small,header.top span{
- color:#fff!important;
-}
+header.top .brand small{color:#fff!important}
 header.top .header-nav{
- border-top:1px solid #ffffff55!important;
- background:transparent!important;
+ background:#fff!important;
+ border-top:1px solid #e5eaf1!important;
 }
 header.top .header-nav button{
- color:#fff!important;
+ color:#173B65!important;
  background:transparent!important;
- border:1px solid #ffffff35!important;
+ border:1px solid transparent!important;
+ font-weight:750!important;
+ text-shadow:none!important;
 }
-header.top .header-nav button span{color:#fff!important}
+header.top .header-nav button span{color:#173B65!important}
 header.top .header-nav button.active,
 header.top .header-nav button:hover{
- background:#fff!important;
- color:#1456b5!important;
- border-color:#fff!important;
+ background:#EAF1F9!important;
+ color:#123B70!important;
+ border-color:#D7E3F1!important;
 }
 header.top .header-nav button.active span,
-header.top .header-nav button:hover span{color:#1456b5!important}
+header.top .header-nav button:hover span{color:#123B70!important}
 header.top .site-menu-button{
  background:#fff!important;
- color:#1456b5!important;
- border:1px solid #dceaff!important;
+ color:#123B70!important;
+ border:1px solid #dce6f2!important;
 }
 header.top .logout-button{
  background:#fff!important;
@@ -313,54 +313,23 @@ header.top .logout-button{
 }
 header.top .logout-button:hover{background:#fff0f0!important;color:#991b1b!important}
 .bottom-nav{
- background:#1877F2!important;
- border-top:1px solid #1265d8!important;
- box-shadow:0 -4px 18px #0b4fb533!important;
+ background:#123B70!important;
+ border-top:1px solid #0B2D55!important;
+ box-shadow:0 -4px 18px #071f3b33!important;
 }
 .bottom-nav button{
  color:#fff!important;
  background:transparent!important;
+ font-weight:750!important;
+ text-shadow:none!important;
 }
 .bottom-nav button span,.bottom-nav button small{color:#fff!important}
 .bottom-nav button.active{
  background:#fff!important;
- color:#1456b5!important;
- box-shadow:inset 0 0 0 1px #dceaff!important;
+ color:#123B70!important;
+ box-shadow:inset 0 0 0 1px #dce6f2!important;
 }
-.bottom-nav button.active span,.bottom-nav button.active small{color:#1456b5!important}
-
-/* Bright, high-contrast navigation colours on the Facebook-blue bars. */
-header.top .header-nav button,
-.bottom-nav button{
- font-weight:850!important;
- text-shadow:0 1px 2px #073b8566!important;
-}
-header.top .header-nav button:nth-child(1){color:#ffe66d!important}
-header.top .header-nav button:nth-child(1) span{color:#ffe66d!important}
-header.top .header-nav button:nth-child(2){color:#8ff0ff!important}
-header.top .header-nav button:nth-child(2) span{color:#8ff0ff!important}
-header.top .header-nav button:nth-child(3){color:#b9ff8a!important}
-header.top .header-nav button:nth-child(3) span{color:#b9ff8a!important}
-header.top .header-nav button:nth-child(4){color:#ffc58a!important}
-header.top .header-nav button:nth-child(4) span{color:#ffc58a!important}
-header.top .header-nav button:nth-child(5){color:#ffb6e1!important}
-header.top .header-nav button:nth-child(5) span{color:#ffb6e1!important}
-header.top .header-nav button.active,
-header.top .header-nav button:hover{
- color:#1456b5!important;
- text-shadow:none!important;
-}
-header.top .header-nav button.active span,
-header.top .header-nav button:hover span{color:#1456b5!important}
-.bottom-nav button:nth-child(1) span,.bottom-nav button:nth-child(1) small{color:#ffe66d!important}
-.bottom-nav button:nth-child(2) span,.bottom-nav button:nth-child(2) small{color:#8ff0ff!important}
-.bottom-nav button:nth-child(3) span,.bottom-nav button:nth-child(3) small{color:#b9ff8a!important}
-.bottom-nav button:nth-child(4) span,.bottom-nav button:nth-child(4) small{color:#ffc58a!important}
-.bottom-nav button.active span,.bottom-nav button.active small{
- color:#1456b5!important;
- text-shadow:none!important;
-}
-
+.bottom-nav button.active span,.bottom-nav button.active small{color:#123B70!important}
 </style></head><body><div id="loadingScreen" class="loading-screen"><div class="loading-card"><div class="loading-spinner"></div><b id="loadingTitle">Restoring your sales desk…</b><p id="loadingText">Checking your secure session and returning you to where you left off.</p><button id="retryLoad" class="btn hidden" type="button">Try again</button></div></div><header class="top"><div class="top-main"><div class="brand"><b>PhoneYa2 <span>AGENT NETWORK</span></b><small>Sell smarter. Earn transparently.</small></div><div class="header-actions"><button id="logoutButton" class="logout-button" type="button">↪ Logout</button><div class="site-menu-wrap"><button id="siteMenuButton" class="site-menu-button" type="button" aria-expanded="false">☰ Menu</button><div id="siteMenu" class="site-menu hidden"><a href="/">PhoneYa2 Home</a><a href="/shop.html">Shop products</a><a href="/cart.html">Shopping cart</a><a href="/account.html">My account</a><a href="/blog.html">Blog</a><a href="/about.html">About PhoneYa2</a><a href="/contact.html">Contact us</a><a href="/partners/">Partner Network</a></div></div></div></div><nav class="header-nav" id="headerNav" aria-label="More agent tools"><button data-view="sales" aria-label="My sales"><span>▤</span>My Sales</button><button data-view="leaderboard" aria-label="Leaderboard"><span>🏆</span>Ranks</button><button data-view="training" aria-label="Training"><span>📘</span>Learn</button><button data-view="notifications" class="alert-nav-button" aria-label="Notifications"><span>🔔</span>Alerts <b id="alertCount" class="alert-count" aria-live="polite">0</b></button><button data-view="profile" aria-label="My profile"><span>👤</span>Profile</button></nav></header><main class="wrap">
 <section id="auth" class="card auth"><h1>Join the Agent Network</h1><p class="muted">Create your free agent account and start using your dashboard straight away. No approval queue.</p><div class="tabs"><button id="loginTab" class="active">Log in</button><button id="signupTab">Create account</button></div><form id="authForm"><div id="signupFields" class="hidden"><div class="field"><label>Full name</label><input id="fullName" autocomplete="name"></div><div class="field"><label>Mobile number</label><input id="phone" autocomplete="tel"></div></div><div class="field"><label>Email</label><input id="email" type="email" required autocomplete="email"></div><div class="field"><label>Password</label><div class="password-entry"><input id="password" type="password" required minlength="10" autocomplete="current-password"><button class="btn light password-toggle" id="togglePassword" type="button" aria-label="Show password" aria-pressed="false">Show</button></div></div><button class="btn" id="authSubmit">Log in</button></form><p id="authMessage" class="muted"></p></section>
 <section id="publicProfile" class="card hidden" style="max-width:560px;margin:7vh auto"></section>
