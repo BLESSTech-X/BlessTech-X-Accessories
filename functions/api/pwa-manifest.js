@@ -49,7 +49,8 @@ export async function onRequestGet({ request }) {
     orientation: "any",
     lang: "en",
     icons: [
-      { src: icon, sizes: "any", purpose: "any" },
+      { src: icon, sizes: "192x192", purpose: "any" },
+      { src: icon, sizes: "512x512", purpose: "any" },
       { src: "/icon-512x512.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any" }
     ]
   };
