@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101322">
-<meta name="robots" content="noindex,nofollow"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Command Centre — PhoneYa2</title><link rel="manifest" href="/api/pwa-manifest?app=command"><script>window.PHONEYA2_PWA_CONFIG={id:'command',name:'PhoneYa2 Command Centre',shortName:'PhoneYa2 Command',startUrl:'/admin/command-center.html?source=installed',scope:'/admin/'};</script>
+<meta name="robots" content="noindex,nofollow">
+<title>Command Centre — PhoneYa2</title>
 <style>
 :root{--ink:#151827;--navy:#101322;--orange:#ff6500;--blue:#3478f6;--green:#159c68;--red:#d84a4a;--muted:#747b8e;--line:#e7eaf1;--bg:#f5f7fb;--white:#fff}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}a{color:inherit;text-decoration:none}.hidden{display:none!important}
@@ -864,8 +864,8 @@ async function loadAdminNotifications(){
 async function refreshData(options={}){const button=$('refresh');if(button&&!options.silent)button.disabled=true;if(!options.silent)message('global-message','Refreshing live business data…','');try{const data=await api('/api/orders?admin=1');orders=Array.isArray(data.orders)?data.orders:[];renderStats();await loadAdminNotifications();if(!options.silent)await Promise.all([checkHealth(),loadInventory(),refreshGa4()]);renderCommandCentreExtensions();renderSystemOverview();detectNewOrders();$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();updateAssistantMeasurement();updateAssistantFreshness();if(!options.silent)message('global-message','Live data refreshed successfully.','success');}catch(e){if(!options.silent)message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{if(button&&!options.silent)button.disabled=false;}}
 
 window.PY2_GET_ORDERS=()=>orders;window.PY2_REFRESH_DATA=()=>refreshData();
-async function signOut(){window.dispatchEvent(new Event('phoneya2:pwa-logout'));try{await fetch('/api/auth',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'logout'})});}catch{}if(silentRefreshTimer)clearInterval(silentRefreshTimer);session=null;window.PY2_SEASONAL_AUTH_TOKEN='';orders=[];hasOrderBaseline=false;closeLabSequence();closeWorkspaceModal();$('dashboard').classList.add('hidden');$('login').classList.remove('hidden');$('password').value='';}
-async function openDashboard(){window.PHONEYA2_PWA_AUTHENTICATED=true;window.dispatchEvent(new CustomEvent('phoneya2:pwa-ready'));session={user:{email:ADMIN_EMAIL}};window.PY2_SEASONAL_AUTH_TOKEN='';window.dispatchEvent(new Event('py2-admin-ready'));$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');window.PY2_mountSeasonalAdmin?.();await refreshData();startQuietRefresh();launchLabSequence();}
+async function signOut(){try{await fetch('/api/auth',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'logout'})});}catch{}if(silentRefreshTimer)clearInterval(silentRefreshTimer);session=null;window.PY2_SEASONAL_AUTH_TOKEN='';orders=[];hasOrderBaseline=false;closeLabSequence();closeWorkspaceModal();$('dashboard').classList.add('hidden');$('login').classList.remove('hidden');$('password').value='';}
+async function openDashboard(){session={user:{email:ADMIN_EMAIL}};window.PY2_SEASONAL_AUTH_TOKEN='';window.dispatchEvent(new Event('py2-admin-ready'));$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');window.PY2_mountSeasonalAdmin?.();await refreshData();startQuietRefresh();launchLabSequence();}
 async function init(){try{const response=await fetch('/api/auth',{credentials:'same-origin',cache:'no-store'});if(response.ok){const data=await response.json();if(data.authenticated&&data.email===ADMIN_EMAIL){await openDashboard();return;}}}catch{}$('login').classList.remove('hidden');$('dashboard').classList.add('hidden');}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();const button=$('login-button');button.disabled=true;message('login-message','','');try{const response=await fetch('/api/auth',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'Sign-in failed.');$('password').value='';await openDashboard();}catch(err){message('login-message',err.message||'Sign-in failed.','error');}finally{button.disabled=false;}});
 
@@ -1053,6 +1053,6 @@ window.phoneya2ChartDays=Number(localStorage.getItem('phoneya2_cc_chart_days')||
   <script src="/password-visibility.js" defer></script>
 <script src="/admin/shared-admin.js?v=20261102-headerfix1" defer></script>
 <script src="/admin/partner-network-embed.js?v=20261104-integrated1" defer></script>
-<script src="/pwa-dashboard.js?v=20261115-dashboard-pwa6"></script>
+
 </body>
 </html>
