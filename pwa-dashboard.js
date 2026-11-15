@@ -89,18 +89,15 @@
         return;
       }
 
-      // Installed app windows do not receive beforeinstallprompt. Open this
-      // exact dashboard in a normal browser tab so its native install prompt
-      // can be offered there instead of showing manual instructions.
-      var browserTab = window.open(config.startUrl || location.href, '_blank');
-      if (browserTab) {
-        help.textContent = 'Opened this dashboard in your browser. Press Install app there to install it separately.';
-      } else if (isIOS && isSafari) {
-        help.textContent = 'Open this dashboard in Safari, then tap Share → Add to Home Screen.';
+      if (isIOS && isSafari) {
+        help.textContent = 'In Safari, tap Share, then “Add to Home Screen”, and tap Add.';
+      } else if (standalone()) {
+        help.textContent = 'To install separately: open this dashboard in Chrome, tap ⋮, then “Install app”.';
       } else {
-        help.textContent = 'Open this dashboard in your browser (not inside the PhoneYa2 app) to get its separate installation prompt.';
+        help.textContent = 'Tap your browser menu (⋮), then choose “Install app” or “Add to Home screen”.';
       }
       help.hidden = false;
+      button.textContent = 'Install instructions';
     });
   };
   function escapeHtml(value) {
