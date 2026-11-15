@@ -76,22 +76,31 @@
         var choice = await promptEvent.userChoice.catch(function () { return { outcome: 'dismissed' }; });
         deferredPrompt = null;
         if (choice && choice.outcome === 'accepted') {
-          help.textContent = 'Finish installing in your browser. This message will close automatically once installation is complete.';
+          help.textContent = 'Installation started. Complete the browser prompt; this window will close when the app is installed.';
+          help.hidden = false;
+          button.textContent = 'Installing…';
+          button.disabled = true;
         } else {
-          help.textContent = 'Installation was not completed. You can try again or use your browser menu to install this app.';
+          help.textContent = 'The installation prompt was closed. Press Install app to try again.';
+          help.hidden = false;
+          button.disabled = false;
+          button.textContent = 'Install app';
         }
-        help.hidden = false;
-        button.disabled = false;
-        button.textContent = 'Try install again';
         return;
       }
-      if (isIOS && isSafari) {
-        help.textContent = 'To install: tap the Share button in Safari, choose “Add to Home Screen”, then tap Add. Return here after adding the app.';
+
+      // Installed app windows do not receive beforeinstallprompt. Open this
+      // exact dashboard in a normal browser tab so its native install prompt
+      // can be offered there instead of showing manual instructions.
+      var browserTab = window.open(config.startUrl || location.href, '_blank');
+      if (browserTab) {
+        help.textContent = 'Opened this dashboard in your browser. Press Install app there to install it separately.';
+      } else if (isIOS && isSafari) {
+        help.textContent = 'Open this dashboard in Safari, then tap Share → Add to Home Screen.';
       } else {
-        help.textContent = 'Open your browser menu (⋮ or Share) and choose “Install app” or “Add to Home screen”. Return here after installation.';
+        help.textContent = 'Open this dashboard in your browser (not inside the PhoneYa2 app) to get its separate installation prompt.';
       }
       help.hidden = false;
-      button.textContent = 'Installation instructions';
     });
   };
   function escapeHtml(value) {
