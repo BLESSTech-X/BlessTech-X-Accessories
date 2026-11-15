@@ -1,5 +1,6 @@
 const APPS = {
   agent: {
+    id: "/agents/network.html",
     name: "PhoneYa2 Agent",
     short_name: "Agent",
     description: "Your personal PhoneYa2 sales and commission dashboard.",
@@ -9,6 +10,7 @@ const APPS = {
     background_color: "#f4f7fb"
   },
   partner: {
+    id: "/partners-dashboard/index.html",
     name: "PhoneYa2 Partner",
     short_name: "Partner",
     description: "Your PhoneYa2 business partner workspace.",
@@ -18,6 +20,7 @@ const APPS = {
     background_color: "#f4f7fb"
   },
   command: {
+    id: "/admin/command-center.html",
     name: "PhoneYa2 Command Centre",
     short_name: "Command Centre",
     description: "Private PhoneYa2 administration workspace.",
