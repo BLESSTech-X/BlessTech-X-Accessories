@@ -1,31 +1,31 @@
 const APPS = {
   agent: {
-    id: "/agents/network.html",
+    id: "/agents/",
     name: "PhoneYa2 Agent",
     short_name: "Agent",
     description: "Your personal PhoneYa2 sales and commission dashboard.",
     start_url: "/agents/network.html?source=installed",
-    scope: "/agents/network.html",
+    scope: "/agents/",
     theme_color: "#1877f2",
     background_color: "#f4f7fb"
   },
   partner: {
-    id: "/partners-dashboard/index.html",
+    id: "/partners-dashboard/",
     name: "PhoneYa2 Partner",
     short_name: "Partner",
     description: "Your PhoneYa2 business partner workspace.",
     start_url: "/partners-dashboard/index.html?source=installed",
-    scope: "/partners-dashboard/index.html",
+    scope: "/partners-dashboard/",
     theme_color: "#102b4e",
     background_color: "#f4f7fb"
   },
   command: {
-    id: "/admin/command-center.html",
+    id: "/admin/",
     name: "PhoneYa2 Command Centre",
     short_name: "Command Centre",
     description: "Private PhoneYa2 administration workspace.",
     start_url: "/admin/command-center.html?source=installed",
-    scope: "/admin/command-center.html",
+    scope: "/admin/",
     theme_color: "#101322",
     background_color: "#f5f7fb"
   }
