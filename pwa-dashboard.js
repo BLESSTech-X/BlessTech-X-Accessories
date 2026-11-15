@@ -77,8 +77,12 @@
         window.location.href = 'googlechromes://' + window.location.host + window.location.pathname + window.location.search + window.location.hash;
         window.setTimeout(function () { help.textContent = 'If Chrome did not open, install/open Chrome manually and paste this dashboard address: ' + target; }, 900);
       } else {
-        window.location.href = 'googlechrome://navigate?url=' + encodeURIComponent(target);
-        window.setTimeout(function () { help.textContent = 'If Chrome did not open, copy this address into Chrome: ' + target; }, 900);
+        // From an installed desktop PWA, a user-initiated new-tab window
+        // leaves the app window and opens the URL in Chrome's normal browser.
+        var opened = window.open(target, '_blank', 'noopener');
+        if (!opened) {
+          help.textContent = 'Your browser blocked the new tab. Allow pop-ups for this site, then press Open in Chrome again. You can also copy this address into a Chrome tab: ' + target;
+        }
       }
     });
     button.addEventListener('click', async function () {
