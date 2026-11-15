@@ -7,7 +7,6 @@
   var config = window.PHONEYA2_PWA_CONFIG || {};
   if (!config.id || !config.startUrl || !config.scope) return;
 
-  var key = 'py2-dashboard-installed-v3:' + config.id;
   var deferredPrompt = null;
   var banner = null;
   var help = null;
@@ -26,12 +25,12 @@
   var launchedAsThisApp = function () {
     return standalone() && new URLSearchParams(window.location.search).get('source') === 'installed';
   };
+  // Do not use a shared-origin localStorage install flag: installing the
+  // main PhoneYa2 app must never suppress another dashboard's install popup.
+  // A dashboard is considered installed only when launched standalone through
+  // its own manifest start URL.
   var installed = function () {
-    if (launchedAsThisApp()) {
-      try { localStorage.setItem(key, '1'); } catch (e) {}
-      return true;
-    }
-    try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
+    return launchedAsThisApp();
   };
   var manifestLink = document.querySelector('link[rel="manifest"]');
   var manifestUrl = function (icon) {
@@ -135,13 +134,11 @@
   });
   var confirmInstalled = function () {
     if (!launchedAsThisApp()) return false;
-    try { localStorage.setItem(key, '1'); } catch (e) {}
     deferredPrompt = null;
     hide();
     return true;
   };
   window.addEventListener('appinstalled', function () {
-    try { localStorage.setItem(key, '1'); } catch (e) {}
     deferredPrompt = null;
     hide();
   });
