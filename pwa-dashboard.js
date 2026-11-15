@@ -7,7 +7,7 @@
   var config = window.PHONEYA2_PWA_CONFIG || {};
   if (!config.id || !config.startUrl || !config.scope) return;
 
-  var key = 'py2-dashboard-installed:' + config.id;
+  var key = 'py2-dashboard-installed-v2:' + config.id;
   var deferredPrompt = null;
   var banner = null;
   var help = null;
@@ -49,36 +49,43 @@
   };
   var show = function () {
     if (!window.PHONEYA2_PWA_AUTHENTICATED || installed() || banner) return;
-    banner = document.createElement('section');
-    banner.id = 'py2-dashboard-install';
-    banner.setAttribute('role', 'region');
-    banner.setAttribute('aria-label', 'Install PhoneYa2 app');
+    banner = document.createElement('div');
+    banner.id = 'py2-dashboard-install-overlay';
     banner.innerHTML =
+      '<section id="py2-dashboard-install" role="dialog" aria-modal="true" aria-labelledby="py2-pwa-title">' +
       '<div class="py2-pwa-icon" aria-hidden="true">↓</div>' +
-      '<div class="py2-pwa-copy"><strong>Install ' + escapeHtml(config.shortName || config.name || 'PhoneYa2') + '</strong>' +
-      '<span>Get direct access from your home screen.</span><small class="py2-pwa-help" hidden></small></div>' +
-      '<button type="button" class="py2-pwa-button">Install app</button>';
+      '<div class="py2-pwa-copy"><strong id="py2-pwa-title">Install ' + escapeHtml(config.shortName || config.name || 'PhoneYa2') + '</strong>' +
+      '<span>Install this dashboard as an app for quick, direct access from your home screen.</span>' +
+      '<small class="py2-pwa-help" aria-live="polite" hidden></small></div>' +
+      '<button type="button" class="py2-pwa-button">Install app</button></section>';
     document.body.appendChild(banner);
     button = banner.querySelector('button');
     help = banner.querySelector('.py2-pwa-help');
     button.addEventListener('click', async function () {
       if (deferredPrompt) {
+        button.disabled = true;
+        button.textContent = 'Opening…';
         deferredPrompt.prompt();
-        var choice = await deferredPrompt.userChoice.catch(function () { return { outcome: 'dismissed' }; });
+        var promptEvent = deferredPrompt;
+        var choice = await promptEvent.userChoice.catch(function () { return { outcome: 'dismissed' }; });
         deferredPrompt = null;
         if (choice && choice.outcome === 'accepted') {
-          try { localStorage.setItem(key, '1'); } catch (e) {}
-          hide();
+          help.textContent = 'Finish installing in your browser. This message will close automatically once installation is complete.';
+        } else {
+          help.textContent = 'Installation was not completed. You can try again or use your browser menu to install this app.';
         }
+        help.hidden = false;
+        button.disabled = false;
+        button.textContent = 'Try install again';
         return;
       }
       if (isIOS && isSafari) {
-        help.textContent = 'In Safari, tap Share, then choose “Add to Home Screen”, and tap Add.';
+        help.textContent = 'To install: tap the Share button in Safari, choose “Add to Home Screen”, then tap Add. Return here after adding the app.';
       } else {
-        help.textContent = 'Open your browser menu (⋮ or Share) and choose “Install app” or “Add to Home screen”.';
+        help.textContent = 'Open your browser menu (⋮ or Share) and choose “Install app” or “Add to Home screen”. Return here after installation.';
       }
       help.hidden = false;
-      button.textContent = 'Installation steps';
+      button.textContent = 'Installation instructions';
     });
   };
   function escapeHtml(value) {
@@ -89,11 +96,12 @@
 
   var style = document.createElement('style');
   style.textContent =
-    '#py2-dashboard-install{position:fixed;z-index:99990;left:14px;right:14px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:470px;margin:0 auto;display:flex;align-items:center;gap:11px;padding:12px 13px;background:#fff;color:#172033;border:1px solid #dfe5ee;border-radius:16px;box-shadow:0 12px 36px rgba(15,23,42,.2);font:inherit}' +
-    '.py2-pwa-icon{width:42px;height:42px;flex:0 0 42px;border-radius:12px;display:grid;place-items:center;background:#fff0e7;color:#f05b22;font-size:24px;font-weight:900}' +
-    '.py2-pwa-copy{min-width:0;flex:1;display:grid;gap:2px}.py2-pwa-copy strong{font-size:13px}.py2-pwa-copy span{font-size:11px;color:#667085}.py2-pwa-help{font-size:11px;color:#344054;line-height:1.45;margin-top:4px}' +
-    '.py2-pwa-button{border:0;border-radius:10px;padding:10px 12px;background:#f15b24;color:#fff;font-size:12px;font-weight:900;white-space:nowrap;cursor:pointer}' +
-    '@media(max-width:420px){#py2-dashboard-install{left:9px;right:9px;gap:8px;padding:10px}.py2-pwa-icon{width:36px;height:36px;flex-basis:36px}.py2-pwa-button{padding:9px;font-size:11px}}';
+    '#py2-dashboard-install-overlay{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;padding:20px;background:rgba(9,18,34,.66);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}' +
+    '#py2-dashboard-install{width:min(100%,430px);display:grid;justify-items:center;gap:15px;padding:28px 24px;background:#fff;color:#172033;border:1px solid #e2e8f0;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);font:inherit;text-align:center}' +
+    '.py2-pwa-icon{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#fff0e7;color:#f05b22;font-size:31px;font-weight:900}' +
+    '.py2-pwa-copy{min-width:0;display:grid;gap:8px}.py2-pwa-copy strong{font-size:19px;font-weight:900}.py2-pwa-copy span{font-size:13px;line-height:1.55;color:#667085}.py2-pwa-help{font-size:12px;line-height:1.55;color:#344054;margin-top:5px}' +
+    '.py2-pwa-button{width:100%;border:0;border-radius:12px;padding:14px 18px;background:#f15b24;color:#fff;font-size:14px;font-weight:900;cursor:pointer}.py2-pwa-button:disabled{opacity:.65;cursor:wait}' +
+    '@media(max-width:420px){#py2-dashboard-install{padding:24px 19px;border-radius:19px}}';
   document.head.appendChild(style);
 
   if (manifestLink) setIcon(window.PHONEYA2_PWA_PROFILE_ICON || '');
@@ -113,10 +121,21 @@
     deferredPrompt = event;
     if (window.PHONEYA2_PWA_AUTHENTICATED) show();
   });
+  var confirmInstalled = function () {
+    if (!standalone()) return false;
+    try { localStorage.setItem(key, '1'); } catch (e) {}
+    deferredPrompt = null;
+    hide();
+    return true;
+  };
   window.addEventListener('appinstalled', function () {
     try { localStorage.setItem(key, '1'); } catch (e) {}
     deferredPrompt = null;
     hide();
+  });
+  window.addEventListener('focus', confirmInstalled);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) confirmInstalled();
   });
   window.addEventListener('phoneya2:pwa-ready', function (event) {
     window.PHONEYA2_PWA_AUTHENTICATED = true;
