@@ -62,10 +62,25 @@
       '<div class="py2-pwa-copy"><strong id="py2-pwa-title">Install ' + escapeHtml(config.shortName || config.name || 'PhoneYa2') + '</strong>' +
       '<span>Install this dashboard as an app for quick, direct access from your home screen.</span>' +
       '<small class="py2-pwa-help" aria-live="polite" hidden></small></div>' +
-      '<button type="button" class="py2-pwa-button">Install app</button></section>';
+      '<div class="py2-pwa-actions"><button type="button" class="py2-pwa-button">Install app</button><button type="button" class="py2-pwa-chrome" hidden>Open in Chrome</button></div></section>';
     document.body.appendChild(banner);
-    button = banner.querySelector('button');
+    button = banner.querySelector('.py2-pwa-button');
+    var chromeButton = banner.querySelector('.py2-pwa-chrome');
     help = banner.querySelector('.py2-pwa-help');
+    chromeButton.addEventListener('click', function () {
+      var target = window.location.href;
+      var hostPath = window.location.host + window.location.pathname + window.location.search + window.location.hash;
+      if (/android/i.test(navigator.userAgent)) {
+        var fallback = encodeURIComponent(target);
+        window.location.href = 'intent://' + hostPath + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + fallback + ';end';
+      } else if (isIOS) {
+        window.location.href = 'googlechromes://' + window.location.host + window.location.pathname + window.location.search + window.location.hash;
+        window.setTimeout(function () { help.textContent = 'If Chrome did not open, install/open Chrome manually and paste this dashboard address: ' + target; }, 900);
+      } else {
+        window.location.href = 'googlechrome://navigate?url=' + encodeURIComponent(target);
+        window.setTimeout(function () { help.textContent = 'If Chrome did not open, copy this address into Chrome: ' + target; }, 900);
+      }
+    });
     button.addEventListener('click', async function () {
       if (deferredPrompt) {
         button.disabled = true;
@@ -96,6 +111,7 @@
         help.textContent = 'Tap your browser menu (⋮), then choose “Install app” or “Add to Home screen”.';
       }
       help.hidden = false;
+      chromeButton.hidden = false;
       button.textContent = 'Install instructions';
     });
   };
@@ -111,7 +127,7 @@
     '#py2-dashboard-install{width:min(100%,430px);display:grid;justify-items:center;gap:15px;padding:28px 24px;background:#fff;color:#172033;border:1px solid #e2e8f0;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);font:inherit;text-align:center}' +
     '.py2-pwa-icon{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#fff0e7;color:#f05b22;font-size:31px;font-weight:900}' +
     '.py2-pwa-copy{min-width:0;display:grid;gap:8px}.py2-pwa-copy strong{font-size:19px;font-weight:900}.py2-pwa-copy span{font-size:13px;line-height:1.55;color:#667085}.py2-pwa-help{font-size:12px;line-height:1.55;color:#344054;margin-top:5px}' +
-    '.py2-pwa-button{width:100%;border:0;border-radius:12px;padding:14px 18px;background:#f15b24;color:#fff;font-size:14px;font-weight:900;cursor:pointer}.py2-pwa-button:disabled{opacity:.65;cursor:wait}' +
+    '.py2-pwa-actions{width:100%;display:grid;gap:9px}.py2-pwa-button,.py2-pwa-chrome{width:100%;border:0;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:900;cursor:pointer}.py2-pwa-button{background:#f15b24;color:#fff}.py2-pwa-chrome{background:#172033;color:#fff}.py2-pwa-button:disabled{opacity:.65;cursor:wait}.py2-pwa-chrome[hidden]{display:none}' +
     '@media(max-width:420px){#py2-dashboard-install{padding:24px 19px;border-radius:19px}}';
   document.head.appendChild(style);
 
