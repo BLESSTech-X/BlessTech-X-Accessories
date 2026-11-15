@@ -93,8 +93,8 @@
   var style = document.createElement('style');
   style.textContent =
     '#py2-pwa-install-control{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:9998;display:grid;justify-items:end;gap:8px;max-width:min(300px,calc(100vw - 24px));font:inherit}' +
-    '.py2-pwa-install-button{display:inline-flex;align-items:center;gap:7px;border:1px solid #d7e5f7;border-radius:999px;padding:8px 13px;background:#fff;color:#1456a0;box-shadow:0 3px 12px #17203318;font:700 12px system-ui,-apple-system,sans-serif;cursor:pointer}' +
-    '.py2-pwa-install-button:disabled{opacity:.7;cursor:wait}' +
+    '.py2-pwa-install-button{display:inline-flex;align-items:center;gap:7px;border:1px solid #ff9a52;border-radius:999px;padding:9px 15px;background:linear-gradient(120deg,#ff7a18 0%,#f04438 52%,#c026d3 100%);color:#fff;box-shadow:0 5px 16px #e94b3745,0 2px 5px #17203318;font:850 12px system-ui,-apple-system,sans-serif;letter-spacing:.15px;cursor:pointer}' +
+    '.py2-pwa-install-button:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px)}.py2-pwa-install-button:disabled{opacity:.7;cursor:wait}' +
     '.py2-pwa-install-help{max-width:280px;padding:10px 12px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#344054;box-shadow:0 5px 20px #17203318;font:12px/1.5 system-ui,-apple-system,sans-serif}' +
     '.py2-pwa-install-help[hidden]{display:none}' +
     '@media(max-width:650px){#py2-pwa-install-control{right:12px;bottom:calc(78px + env(safe-area-inset-bottom))}}';
