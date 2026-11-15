@@ -1847,6 +1847,24 @@ body .hero-slide .hero-slide-title span {
   }
 </style>
 
+
+<style id="phoneya2-home-remove-logo-watermarks-v1">
+  /* Homepage: remove the large background logo and all logo watermark motion.
+     Keep the actual header logo and all other page content/animations intact. */
+  body::before,
+  .phoneya2-home-intro::before,
+  .heading::before,
+  .hero::before,
+  #product-detail::before,
+  .py2-page-logo-ambient{
+    content:none!important;
+    display:none!important;
+    background-image:none!important;
+    animation:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+</style>
 </head>
 <body class="py2-show-floating-top">
 
