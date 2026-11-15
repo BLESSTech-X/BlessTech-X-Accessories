@@ -1793,65 +1793,13 @@ body .hero-slide .hero-slide-title span {
   <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-image-polish2">
 <link rel="stylesheet" href="/storefront-canvas.css?v=20261030-white-canvas2">
   <link rel="stylesheet" href="/premium-homepage.css?v=20261105-1">\n
-<style id="phoneya2-home-watermark-visibility-v2">
-  /* Fixed-position brand mark: stays visually anchored as the intro moves during scroll. */
-  .phoneya2-home-intro{
-    position:relative!important;
-    isolation:isolate!important;
-    overflow:visible!important;
-    background-attachment:fixed!important;
-  }
-  .phoneya2-home-intro::before{
-    content:""!important;
-    position:fixed!important;
-    z-index:0!important;
-    pointer-events:none!important;
-    width:clamp(340px,44vw,460px)!important;
-    height:clamp(340px,44vw,460px)!important;
-    left:50%!important;
-    top:26vh!important;
-    transform:translate(-50%,-50%)!important;
-    border-radius:50%!important;
-    background-image:url("https://i.ibb.co/s9CG52wV/file-0000000059948211a0bdd52c4d236852-1.jpg")!important;
-    background-position:center!important;
-    background-size:contain!important;
-    background-repeat:no-repeat!important;
-    filter:blur(6px)!important;
-    opacity:.52!important;
-    mix-blend-mode:multiply!important;
-    animation:none!important;
-    transition:none!important;
-    will-change:auto!important;
-  }
-  .phoneya2-home-intro::after{
-    z-index:1!important;
-    pointer-events:none!important;
-  }
-  .phoneya2-home-intro .phoneya2-intro-copy,
-  .phoneya2-home-intro .pwa-action-buttons,
-  .phoneya2-home-intro #py2-mini-insights{
-    position:relative!important;
-    z-index:2!important;
-  }
-  @media(max-width:600px){
-    .phoneya2-home-intro::before{
-      width:290px!important;
-      height:290px!important;
-      top:24vh!important;
-      left:50%!important;
-      opacity:.48!important;
-    }
-  }
-  @media(prefers-reduced-motion:reduce){
-    .phoneya2-home-intro::before{animation:none!important;transition:none!important}
-  }
-</style>
 
-
-<style id="phoneya2-home-remove-logo-watermarks-v1">
-  /* Homepage: remove the large background logo and all logo watermark motion.
-     Keep the actual header logo and all other page content/animations intact. */
+<style id="phoneya2-home-remove-logo-watermarks-v2">
+  /* Remove every decorative PhoneYa2 logo watermark from the homepage.
+     The real header logo (.logo-img) is intentionally unaffected. */
+  body{isolation:auto!important}
   body::before,
+  body::after,
   .phoneya2-home-intro::before,
   .heading::before,
   .hero::before,
@@ -1859,11 +1807,24 @@ body .hero-slide .hero-slide-title span {
   .py2-page-logo-ambient{
     content:none!important;
     display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    background:none!important;
     background-image:none!important;
     animation:none!important;
     transition:none!important;
+    transform:none!important;
+    filter:none!important;
+    mix-blend-mode:normal!important;
     will-change:auto!important;
   }
+  .phoneya2-home-intro{
+    background-attachment:scroll!important;
+  }
+  @keyframes phoneya2WatermarkDrift{}
+  @keyframes phoneya2LogoDrift{}
+  @keyframes py2AmbientFloat{}
+  @keyframes py2HomeLogoDrift{}
 </style>
 </head>
 <body class="py2-show-floating-top">
