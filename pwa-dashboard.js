@@ -7,7 +7,7 @@
   var config = window.PHONEYA2_PWA_CONFIG || {};
   if (!config.id || !config.startUrl || !config.scope) return;
 
-  var key = 'py2-dashboard-installed-v2:' + config.id;
+  var key = 'py2-dashboard-installed-v3:' + config.id;
   var deferredPrompt = null;
   var banner = null;
   var help = null;
@@ -20,8 +20,14 @@
       window.matchMedia('(display-mode: fullscreen)').matches ||
       navigator.standalone === true;
   };
+  // A generic standalone window may be the main PhoneYa2 store app.
+  // Only treat standalone mode as installed when this dashboard's own
+  // manifest start URL launched it (or its appinstalled event fired).
+  var launchedAsThisApp = function () {
+    return standalone() && new URLSearchParams(window.location.search).get('source') === 'installed';
+  };
   var installed = function () {
-    if (standalone()) {
+    if (launchedAsThisApp()) {
       try { localStorage.setItem(key, '1'); } catch (e) {}
       return true;
     }
@@ -122,7 +128,7 @@
     if (window.PHONEYA2_PWA_AUTHENTICATED) show();
   });
   var confirmInstalled = function () {
-    if (!standalone()) return false;
+    if (!launchedAsThisApp()) return false;
     try { localStorage.setItem(key, '1'); } catch (e) {}
     deferredPrompt = null;
     hide();
