@@ -8,9 +8,8 @@
   if (!config.id || !config.startUrl || !config.scope) return;
 
   var deferredPrompt = null;
-  var banner = null;
+  var installButton = null;
   var help = null;
-  var button = null;
   var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -19,19 +18,10 @@
       window.matchMedia('(display-mode: fullscreen)').matches ||
       navigator.standalone === true;
   };
-  // A generic standalone window may be the main PhoneYa2 store app.
-  // Only treat standalone mode as installed when this dashboard's own
-  // manifest start URL launched it (or its appinstalled event fired).
   var launchedAsThisApp = function () {
     return standalone() && new URLSearchParams(window.location.search).get('source') === 'installed';
   };
-  // Do not use a shared-origin localStorage install flag: installing the
-  // main PhoneYa2 app must never suppress another dashboard's install popup.
-  // A dashboard is considered installed only when launched standalone through
-  // its own manifest start URL.
-  var installed = function () {
-    return launchedAsThisApp();
-  };
+  var installed = function () { return launchedAsThisApp(); };
   var manifestLink = document.querySelector('link[rel="manifest"]');
   var manifestUrl = function (icon) {
     var url = '/api/pwa-manifest?app=' + encodeURIComponent(config.id);
@@ -49,76 +39,67 @@
     appleIcon.href = icon || '/icon-512x512.jpg';
   };
   var hide = function () {
-    if (banner) banner.remove();
-    banner = null;
+    if (installButton) installButton.remove();
+    installButton = null;
   };
   var show = function () {
-    if (!window.PHONEYA2_PWA_AUTHENTICATED || installed() || banner) return;
-    banner = document.createElement('div');
-    banner.id = 'py2-dashboard-install-overlay';
-    banner.innerHTML =
-      '<section id="py2-dashboard-install" role="dialog" aria-modal="true" aria-labelledby="py2-pwa-title">' +
-      '<div class="py2-pwa-icon" aria-hidden="true">↓</div>' +
-      '<div class="py2-pwa-copy"><strong id="py2-pwa-title">Install ' + escapeHtml(config.shortName || config.name || 'PhoneYa2') + '</strong>' +
-      '<span>Install this dashboard as an app for quick, direct access from your home screen.</span>' +
-      '<small class="py2-pwa-help" aria-live="polite" hidden></small></div>' +
-      '<div class="py2-pwa-actions"><button type="button" class="py2-pwa-button">Install app</button><button type="button" class="py2-pwa-chrome" hidden>Open in Chrome</button></div></section>';
-    document.body.appendChild(banner);
-    button = banner.querySelector('.py2-pwa-button');
-    var chromeButton = banner.querySelector('.py2-pwa-chrome');
-    help = banner.querySelector('.py2-pwa-help');
-    chromeButton.addEventListener('click', function () {
-      var target = window.location.href;
-      var hostPath = window.location.host + window.location.pathname + window.location.search + window.location.hash;
-      if (/android/i.test(navigator.userAgent)) {
-        var fallback = encodeURIComponent(target);
-        window.location.href = 'intent://' + hostPath + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + fallback + ';end';
-      } else if (isIOS) {
-        window.location.href = 'googlechromes://' + window.location.host + window.location.pathname + window.location.search + window.location.hash;
-        window.setTimeout(function () { help.textContent = 'If Chrome did not open, install/open Chrome manually and paste this dashboard address: ' + target; }, 900);
-      } else {
-        // From an installed desktop PWA, a user-initiated new-tab window
-        // leaves the app window and opens the URL in Chrome's normal browser.
-        var opened = window.open(target, '_blank', 'noopener');
-        if (!opened) {
-          help.textContent = 'Your browser blocked the new tab. Allow pop-ups for this site, then press Open in Chrome again. You can also copy this address into a Chrome tab: ' + target;
-        }
-      }
-    });
+    if (!window.PHONEYA2_PWA_AUTHENTICATED || installed() || installButton) return;
+    installButton = document.createElement('div');
+    installButton.id = 'py2-pwa-install-control';
+    installButton.innerHTML =
+      '<button type="button" class="py2-pwa-install-button" aria-label="Install this dashboard as an app">↓ <span>Install</span></button>' +
+      '<div class="py2-pwa-install-help" role="status" aria-live="polite" hidden></div>';
+    document.body.appendChild(installButton);
+    var button = installButton.querySelector('button');
+    help = installButton.querySelector('.py2-pwa-install-help');
     button.addEventListener('click', async function () {
       if (deferredPrompt) {
+        var promptEvent = deferredPrompt;
+        deferredPrompt = null;
         button.disabled = true;
         button.textContent = 'Opening…';
-        deferredPrompt.prompt();
-        var promptEvent = deferredPrompt;
-        var choice = await promptEvent.userChoice.catch(function () { return { outcome: 'dismissed' }; });
-        deferredPrompt = null;
-        if (choice && choice.outcome === 'accepted') {
-          help.textContent = 'Installation started. Complete the browser prompt; this window will close when the app is installed.';
-          help.hidden = false;
-          button.textContent = 'Installing…';
-          button.disabled = true;
-        } else {
-          help.textContent = 'The installation prompt was closed. Press Install app to try again.';
-          help.hidden = false;
+        try {
+          await promptEvent.prompt();
+          var choice = await promptEvent.userChoice;
+          if (choice && choice.outcome === 'accepted') {
+            button.textContent = 'Installing…';
+            help.textContent = 'Finish the confirmation from your browser.';
+            help.hidden = false;
+          } else {
+            button.disabled = false;
+            button.innerHTML = '↓ <span>Install</span>';
+          }
+        } catch (error) {
           button.disabled = false;
-          button.textContent = 'Install app';
+          button.innerHTML = '↓ <span>Install</span>';
+          showManualHelp();
         }
         return;
       }
-
-      if (isIOS && isSafari) {
-        help.textContent = 'In Safari, tap Share, then “Add to Home Screen”, and tap Add.';
-      } else if (standalone()) {
-        help.textContent = 'To install separately: open this dashboard in Chrome, tap ⋮, then “Install app”.';
-      } else {
-        help.textContent = 'Tap your browser menu (⋮), then choose “Install app” or “Add to Home screen”.';
-      }
-      help.hidden = false;
-      chromeButton.hidden = false;
-      button.textContent = 'Install instructions';
+      showManualHelp();
     });
   };
+  var showManualHelp = function () {
+    if (!help) return;
+    if (isIOS && isSafari) {
+      help.textContent = 'Safari: tap Share, choose “Add to Home Screen”, then tap Add.';
+    } else if (/android/i.test(navigator.userAgent)) {
+      help.textContent = 'Chrome on Android: tap ⋮, choose “Install app” or “Add to Home screen”, then confirm.';
+    } else {
+      help.textContent = 'Chrome on computer: select ⋮, choose “Cast, save and share” → “Install page as app” (or “Install app”), then confirm.';
+    }
+    help.hidden = false;
+  };
+  var style = document.createElement('style');
+  style.textContent =
+    '#py2-pwa-install-control{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:9998;display:grid;justify-items:end;gap:8px;max-width:min(300px,calc(100vw - 24px));font:inherit}' +
+    '.py2-pwa-install-button{display:inline-flex;align-items:center;gap:7px;border:1px solid #d7e5f7;border-radius:999px;padding:8px 13px;background:#fff;color:#1456a0;box-shadow:0 3px 12px #17203318;font:700 12px system-ui,-apple-system,sans-serif;cursor:pointer}' +
+    '.py2-pwa-install-button:disabled{opacity:.7;cursor:wait}' +
+    '.py2-pwa-install-help{max-width:280px;padding:10px 12px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#344054;box-shadow:0 5px 20px #17203318;font:12px/1.5 system-ui,-apple-system,sans-serif}' +
+    '.py2-pwa-install-help[hidden]{display:none}' +
+    '@media(max-width:650px){#py2-pwa-install-control{right:12px;bottom:calc(78px + env(safe-area-inset-bottom))}}';
+  document.head.appendChild(style);
+
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, function (ch) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
