@@ -35,6 +35,13 @@
   };
   var setIcon = function (icon) {
     if (manifestLink) manifestLink.href = manifestUrl(icon || '');
+    var appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+    if (!appleIcon) {
+      appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      document.head.appendChild(appleIcon);
+    }
+    appleIcon.href = icon || '/icon-512x512.jpg';
   };
   var hide = function () {
     if (banner) banner.remove();
