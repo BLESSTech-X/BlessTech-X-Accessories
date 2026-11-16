@@ -3,7 +3,7 @@
   "redirects": [
     {
       "source": "/:path*",
-      "destination": "https://phoneya2.pages.dev/:path*",
+      "destination": "https://phoneya2.pages.dev",
       "permanent": true
     }
   ]
