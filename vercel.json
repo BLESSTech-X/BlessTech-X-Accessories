@@ -1,8 +1,10 @@
 {
-  "routes": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/:path*",
+      "destination": "https://phoneya2.pages.dev/:path*",
+      "permanent": true
     }
   ]
 }
