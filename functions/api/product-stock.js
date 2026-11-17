@@ -4,8 +4,17 @@ export async function onRequest({request,env}){
  const headers={"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"};
  if(!env.DB)return new Response(JSON.stringify({ok:true,stock:{}}),{headers});
  try{
-  const result=await env.DB.prepare("SELECT p.product_slug,MAX(0,p.stock) central,COALESCE(SUM(CASE WHEN i.ownership='phoneya2' THEN i.quantity ELSE 0 END),0) agent_custody FROM agent_product_codes p LEFT JOIN agent_inventory i ON i.product_slug=p.product_slug WHERE p.active=1 GROUP BY p.product_slug").all();
-  const stock=Object.fromEntries((result.results||[]).map(row=>[String(row.product_slug),{central:Math.max(0,Number(row.central||0)),agent_custody:Math.max(0,Number(row.agent_custody||0)),total:Math.max(0,Number(row.central||0))+Math.max(0,Number(row.agent_custody||0))}]));
+  const url=new URL(request.url),ref=String(url.searchParams.get("ref")||"").trim().toUpperCase();
+  let agentId="";
+  if(/^[A-Z0-9_-]{3,40}$/.test(ref)){
+   const agent=await env.DB.prepare("SELECT agent_id FROM agent_accounts WHERE referral_code=? AND status='active'").bind(ref).first();
+   agentId=String(agent?.agent_id||"");
+  }
+  const result=await env.DB.prepare("SELECT product_slug,MAX(0,stock) central FROM agent_product_codes WHERE active=1").all();
+  let heldRows=[];
+  if(agentId){const held=await env.DB.prepare("SELECT product_slug,COALESCE(SUM(quantity),0) agent_custody FROM agent_inventory WHERE agent_id=? AND ownership='phoneya2' GROUP BY product_slug").bind(agentId).all();heldRows=held.results||[];}
+  const heldBySlug=new Map(heldRows.map(row=>[String(row.product_slug),Math.max(0,Number(row.agent_custody||0))]));
+  const stock=Object.fromEntries((result.results||[]).map(row=>{const central=Math.max(0,Number(row.central||0)),agent_custody=heldBySlug.get(String(row.product_slug))||0;return[String(row.product_slug),{central,agent_custody,total:central+agent_custody}];}));
   return new Response(JSON.stringify({ok:true,stock}),{headers});
  }catch(error){
   if(/no such table: agent_product_codes|no such table: agent_inventory/i.test(String(error)))return new Response(JSON.stringify({ok:true,stock:{}}),{headers});
