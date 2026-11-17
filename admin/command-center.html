@@ -1013,7 +1013,13 @@ async function refreshData(options={}){const button=$('refresh');if(button&&!opt
   const pages=await Promise.all(offsets.map(next=>api('/api/orders?admin=1&summary=1&offset='+next)));
   for(const result of pages){appendPage(result);page=result;if(!result.has_more)break;}
  }
- orders=allOrders;renderStats();renderCommandCentreExtensions();renderSystemOverview();detectNewOrders();$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();updateAssistantMeasurement();updateAssistantFreshness();
+ // Approved offline agent sales are first-class analytics records. Linked sales are excluded to prevent counting the same purchase twice.
+ const assistedData=await api('/api/agent-sales-analytics');
+ const assistedOrders=(Array.isArray(assistedData.sales)?assistedData.sales:[]).map(s=>{
+  const quantity=Math.max(1,Number(s.quantity||1)),amount=Number(s.estimated_sale_minor||0)/100;
+  return{id:'agent-sale-'+s.id,order_number:'AGENT-'+String(s.id||'').slice(0,8).toUpperCase(),customer_name:s.customer_name||'Agent customer',customer_email:s.customer_email||'',customer_phone:s.customer_phone||'',delivery_address:'Agent-assisted sale',customer_note:'Recorded outside the website and verified by PhoneYa2. Agent: '+String(s.display_name||s.agent_id||'Agent')+' ('+String(s.agent_id||'')+').',status:'delivered',total_amount:amount,currency:'ZMW',created_at:s.created_at,updated_at:s.updated_at,order_source:'agent_assisted',agent_code:s.agent_id||'',order_items:[{id:'agent-sale-line-'+s.id,order_id:'agent-sale-'+s.id,product_slug:s.product_slug||'',product_name:s.product_name||s.product_code||'Agent sale',quantity,unit_price:amount/quantity,line_total:amount,product_image:''}]};
+ });
+ orders=[...allOrders,...assistedOrders].sort((a,b)=>new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime());renderStats();renderCommandCentreExtensions();renderSystemOverview();detectNewOrders();$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();updateAssistantMeasurement();updateAssistantFreshness();
  // The action list is useful as soon as orders arrive; slow stock and health
  // checks now update it in the background instead of blocking first paint.
  const notificationPromise=loadAdminNotifications();
