@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var posts=[],category='All',search='',showSaved=false,visibleCount=2,PAGE_SIZE=2,scrollObserver=null;
+var posts=[],category='All',search='',showSaved=false,visibleCount=3,PAGE_SIZE=3,scrollObserver=null,featuredPartnerIndex=0;
 var SAVED_KEY='phoneya2_blog_saved_v1';
 
 function ensureCompactEditorialStyles(){if(document.getElementById('py2-compact-editorial-style'))return;var s=document.createElement('style');s.id='py2-compact-editorial-style';s.textContent="#blog-feed .py2-social-post{border-radius:14px!important;box-shadow:0 5px 18px rgba(23,75,135,.06)!important;margin-bottom:12px!important}\n#blog-feed .py2-post-author-row{padding:10px 12px!important;min-height:48px!important}\n#blog-feed .py2-post-avatar{width:32px!important;height:32px!important;flex:0 0 32px!important}\n#blog-feed .py2-post-copy{padding:8px 13px 10px!important}\n#blog-feed .py2-post-copy h3{font-size:clamp(16px,2vw,19px)!important;line-height:1.3!important;margin:0 0 5px!important}\n#blog-feed .py2-post-copy p{font-size:12px!important;line-height:1.48!important;margin:0!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}\n#blog-feed .py2-feed-media{display:block;max-height:210px!important;min-height:0!important;overflow:hidden!important}\n#blog-feed .py2-feed-media img{width:100%!important;height:210px!important;max-height:210px!important;object-fit:cover!important}\n#blog-feed .py2-feed-video iframe,#blog-feed .py2-feed-video video{max-height:210px!important}\n#blog-feed .py2-post-actions{padding:8px 11px!important;gap:6px!important}\n#blog-feed .py2-post-action{min-height:34px!important;padding:7px 9px!important;font-size:11px!important}\n#blog-feed .py2-post-footer{padding:7px 12px!important;font-size:10px!important}\n#blog-feed .py2-comments-panel{padding:11px!important}\n#blog-feed .py2-blog-gallery-preview{padding:0 12px 9px!important}\n#blog-feed .py2-featured-product-strip{padding:8px 11px 10px!important}\n#blog-feed .py2-featured-product-mini{width:78px!important;padding:5px!important}\n#blog-feed .py2-featured-product-mini img{height:58px!important}\n#blog-feed .py2-sales-conversion{margin:8px 11px 2px!important;padding:10px 11px!important}\n#blog-feed .blog-scroll-sentinel{padding:12px 8px!important}\n@media(max-width:600px){#blog-feed .py2-feed-media,#blog-feed .py2-feed-media img{max-height:175px!important;height:175px!important}#blog-feed .py2-post-copy{padding:7px 11px 9px!important}#blog-feed .py2-post-actions{flex-wrap:wrap!important}#blog-feed .py2-post-action{flex:1 1 auto!important;justify-content:center!important}}\n";document.head.appendChild(s)}
@@ -128,6 +128,24 @@ function card(p){
   commentsPanel(p),'</article>'
  ].join('');
 }
+function featuredPartnerCard(p,index){
+ var href=p.business_slug?'/b/'+encodeURIComponent(p.business_slug)+'/':'/community/';
+ var image=p.cover_image_url?'<img src="'+esc(p.cover_image_url)+'" alt="'+esc(p.title||'Partner story')+'" loading="lazy" decoding="async">':'';
+ return '<article class="py2-inline-editorial py2-inline-editorial-partner py2-blog-inline-featured"><a class="py2-inline-editorial-link" href="'+href+'">'+image+'<div class="py2-inline-editorial-copy"><span>PHONEYA2 PARTNER SPOTLIGHT · FEATURED</span><strong>'+esc(p.title||'A story from our business community')+'</strong><p>'+esc(p.excerpt||p.body||'Discover this PhoneYa2 business partner and what they offer.').slice(0,125)+'</p><b>Discover partner ↗</b></div></a></article>';
+}
+function feedCards(items){
+ var partners=Array.isArray(window.PhoneYa2FeaturedPartnerPosts)?window.PhoneYa2FeaturedPartnerPosts:[];
+ var partnerCursor=0,out=[];
+ items.forEach(function(post,index){
+  out.push(card(post));
+  if((index+1)%3===0&&partners.length){
+   out.push(featuredPartnerCard(partners[partnerCursor%partners.length],partnerCursor));
+   partnerCursor++;
+  }
+ });
+ return out.join('');
+}
+
 function populateCategoryFilters(){
  var filters=document.getElementById('blog-filters');if(!filters)return;
  var names=Array.from(new Set(posts.map(function(p){return String(p.category||'Community').trim()}).filter(Boolean)));
@@ -182,7 +200,7 @@ function render(){
  var saved=getSaved();
  var list=posts.filter(function(p){var matchesCategory=category==='All'||p.category===category;var hay=(p.title+' '+p.excerpt+' '+(p.tags||[]).join(' ')+' '+(p.category||'')).toLowerCase();return matchesCategory&&hay.includes(search.toLowerCase())&&(!showSaved||saved.indexOf(p.slug)>=0)});
  var count=document.getElementById('post-count');if(count)count.textContent=list.length+' post'+(list.length===1?'':'s');
- var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?visible.map(card).join(''):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<span>Keep scrolling for more stories</span><button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}ensureLatestCommentStyles();loadLatestCommentPreviews()}
+ var feed=document.getElementById('blog-feed');if(feed){var visible=list.slice(0,visibleCount);feed.innerHTML=list.length?feedCards(visible):'<div class="py2-empty"><strong>'+(showSaved?'No saved posts yet.':'Nothing matches that search yet.')+'</strong><p>'+(showSaved?'Tap Save on any post to keep it here on this device.':'Try another topic or choose All stories to see all posts.')+'</p></div>';if(list.length>visible.length){var sentinel=document.createElement('div');sentinel.className='blog-scroll-sentinel';sentinel.innerHTML='<span>Keep scrolling for more stories</span><button type="button" data-load-more>Load more stories ↓</button>';feed.appendChild(sentinel);if(scrollObserver)scrollObserver.observe(sentinel)}ensureLatestCommentStyles();loadLatestCommentPreviews()}
  document.querySelectorAll('[data-rail-category]').forEach(function(b){b.classList.toggle('is-active',b.getAttribute('data-rail-category')===category)});
  updateSavedCount();track('blog_feed_render',{category:category,result_count:list.length,visible_count:Math.min(list.length,visibleCount),search_used:!!search,saved_view:showSaved})
 }
@@ -228,6 +246,7 @@ if(feed){
  });
 }
 ensureCompactEditorialStyles();
+document.addEventListener('phoneya2:featured-partners-ready',function(){if(document.getElementById('blog-feed'))render()});
 var savedButton=document.getElementById('show-saved-posts');
 if(savedButton)savedButton.addEventListener('click',function(){showSaved=!showSaved;visibleCount=PAGE_SIZE;category='All';if(filters)filters.querySelectorAll('.blog-category-tab').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-category')==='All')});if(searchInput)searchInput.value='';search='';this.innerHTML=showSaved?'<i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>All posts</span>':'<i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Saved</span>';this.setAttribute('aria-pressed',showSaved?'true':'false');render();if(feed)feed.scrollIntoView({behavior:'smooth',block:'start'})});
 var blogTabs=document.querySelector('.py2-blog-tabs');
