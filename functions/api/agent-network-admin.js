@@ -72,7 +72,15 @@ if(b.action==="sale.review"){
    await db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(Number(sale.quantity),now,sale.agent_id,sale.product_slug).run();
    return fail("This sale has already been reviewed. Refresh the sales list.",409);
   }
-  await db.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),sale.agent_id,sale.product_slug,-Number(sale.quantity),"agent_sale_verified",id,actor).run();
+  try{
+   await db.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),sale.agent_id,sale.product_slug,-Number(sale.quantity),"agent_sale_verified",id,actor).run();
+  }catch(error){
+   await db.batch([
+    db.prepare("UPDATE agent_sales SET status='submitted',updated_at=? WHERE id=? AND status='verified'").bind(now,id),
+    db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(Number(sale.quantity),now,sale.agent_id,sale.product_slug)
+   ]);
+   throw error;
+  }
  }else{
   const updated=await db.prepare("UPDATE agent_sales SET status='rejected',admin_note=?,updated_at=? WHERE id=? AND status='submitted'").bind(String(b.note||"").slice(0,500),now,id).run();
   if(!Number(updated.meta?.changes||0))return fail("This sale has already been reviewed. Refresh the sales list.",409);
