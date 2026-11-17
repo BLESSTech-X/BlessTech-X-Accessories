@@ -82,8 +82,36 @@ async function run(env) {
   const expired = await processExpiries(env);
   return { ok: true, reminders, expired, checked_at: new Date().toISOString() };
 }
+async function recordWorkerHealth(env,workerKey,workerName,schedule,fields){
+ try{
+  if(!env.DB)return;
+  const now=new Date().toISOString();
+  if(fields.status==="running"){
+   await env.DB.prepare("INSERT INTO worker_health(worker_key,worker_name,schedule,status,last_started_at,total_runs,updated_at) VALUES(?,?,?,'running',?,1,?) ON CONFLICT(worker_key) DO UPDATE SET worker_name=excluded.worker_name,schedule=excluded.schedule,status='running',last_started_at=excluded.last_started_at,total_runs=worker_health.total_runs+1,updated_at=excluded.updated_at")
+    .bind(workerKey,workerName,schedule,now,now).run();
+  }else if(fields.status==="success"){
+   await env.DB.prepare("UPDATE worker_health SET status='success',last_success_at=?,last_duration_ms=?,last_error=NULL,updated_at=? WHERE worker_key=?")
+    .bind(now,fields.duration,now,workerKey).run();
+  }else if(fields.status==="failed"){
+   await env.DB.prepare("UPDATE worker_health SET status='failed',last_failure_at=?,last_duration_ms=?,last_error=?,failed_runs=failed_runs+1,updated_at=? WHERE worker_key=?")
+    .bind(now,fields.duration,String(fields.error||"Worker execution failed").replace(/[\\u0000-\\u001f\\u007f]/g," ").slice(0,700),now,workerKey).run();
+  }
+ }catch(error){console.warn("Worker health telemetry could not be saved:",String(error?.message||error).slice(0,200));}
+}
+async function monitoredWorkerRun(env,workerKey,workerName,schedule,task){
+ const started=Date.now();
+ await recordWorkerHealth(env,workerKey,workerName,schedule,{status:"running"});
+ try{
+  const result=await task();
+  await recordWorkerHealth(env,workerKey,workerName,schedule,{status:"success",duration:Date.now()-started});
+  return result;
+ }catch(error){
+  await recordWorkerHealth(env,workerKey,workerName,schedule,{status:"failed",duration:Date.now()-started,error:error?.stack||error?.message||error});
+  throw error;
+ }
+}
 export default {
-  async scheduled(_event, env, ctx) { ctx.waitUntil(run(env).then(result => console.log("Partner lifecycle sweep complete",result)).catch(error => console.error("Partner lifecycle sweep failed",error?.stack||error))); },
+  async scheduled(_event, env, ctx) { ctx.waitUntil(monitoredWorkerRun(env,"partner-lifecycle","PhoneYa2 Partner Lifecycle","Hourly",()=>run(env)).then(result => console.log("Partner lifecycle sweep complete",result)).catch(error => console.error("Partner lifecycle sweep failed",error?.stack||error))); },
   async fetch(request, env) {
     if (request.method !== "POST") return json({ ok:false, error:"Method not allowed." });
     const secret = env.PARTNER_LIFECYCLE_SECRET;
