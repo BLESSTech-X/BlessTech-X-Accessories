@@ -239,18 +239,19 @@ async function createD1Order(env, customer, items, attribution = {}) {
 async function readD1Orders(env, options = {}) {
   if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
   const limit = Math.min(200, Math.max(1, Number(options.limit) || 100));
+  const offset = Math.max(0, Math.min(1000000, Math.floor(Number(options.offset) || 0)));
   let rows;
   if (options.orderNumbers?.length) {
     const valid = [...new Set(options.orderNumbers)].filter(value => /^[A-Za-z0-9_-]{3,100}$/.test(value)).slice(-100);
     if (!valid.length) return [];
     const placeholders = valid.map(() => "?").join(",");
-    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) AND order_number IN (" + placeholders + ") ORDER BY created_at DESC LIMIT ?")
-      .bind(options.email || "", ...valid, limit).all();
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) AND order_number IN (" + placeholders + ") ORDER BY created_at DESC LIMIT ? OFFSET ?")
+      .bind(options.email || "", ...valid, limit, offset).all();
   } else if (options.email) {
-    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) ORDER BY created_at DESC LIMIT ?")
-      .bind(options.email, limit).all();
+    rows = await env.DB.prepare("SELECT * FROM orders WHERE lower(customer_email)=lower(?) ORDER BY created_at DESC LIMIT ? OFFSET ?")
+      .bind(options.email, limit, offset).all();
   } else {
-    rows = await env.DB.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?").bind(limit).all();
+    rows = await env.DB.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT ? OFFSET ?").bind(limit, offset).all();
   }
   const orders = rows.results || [];
   if (!orders.length) return [];
@@ -709,12 +710,14 @@ export async function onRequest(context) {
         return json({ error: outcomes.join(" ") }, 502);
       }
       if (request.method === "GET") {
-        const orders = await readD1Orders(env, { limit: 200 });
+        const limit = 200;
+        const offset = Math.max(0, Math.min(1000000, Math.floor(Number(url.searchParams.get("offset")) || 0)));
+        const orders = await readD1Orders(env, { limit, offset });
         const slugs = [...new Set(orders.flatMap(order => (order.order_items || []).map(item => item.product_slug).filter(Boolean)))];
         const productMap = new Map();
         await Promise.all(slugs.map(async slug => { try { const product = await loadProduct(context, slug); if (product) productMap.set(slug, product); } catch {} }));
         const enriched = orders.map(order => ({ ...order, order_items: (order.order_items || []).map(item => ({ ...item, product_image: productMap.get(item.product_slug)?.image || "" })) }));
-        return json({ orders: enriched });
+        return json({ orders: enriched, has_more: orders.length === limit, next_offset: orders.length === limit ? offset + limit : null });
       }
       let body;
       try { body = await request.json(); } catch { return json({ error: "Invalid update." }, 400); }
