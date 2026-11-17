@@ -1414,8 +1414,8 @@ function parseFrontmatter(text, slug) {
     }
     return result;
   }
-  out.other_phoneya2_product = out.other_phoneya2_product === true || out.other_phoneya2_product === 'true';
   out.other_product_details = readNestedObject('other_product_details');
+  out.other_phoneya2_product = out.other_phoneya2_product === true || out.other_phoneya2_product === 'true' || out.other_product_details.enabled === true || out.other_product_details.enabled === 'true';
   out.visibility = readNestedObject('visibility');
   return out;
 }
