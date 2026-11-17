@@ -130,7 +130,35 @@ async function runSync(env){
  await prepareWork(env.DB,products,posts);
  return {ok:true,generated_at:new Date().toISOString(),products:products.length,articles:posts.length,store_notifications:storeResult.notifications?.length||0};
 }
+async function recordWorkerHealth(env,workerKey,workerName,schedule,fields){
+ try{
+  if(!env.DB)return;
+  const now=new Date().toISOString();
+  if(fields.status==="running"){
+   await env.DB.prepare("INSERT INTO worker_health(worker_key,worker_name,schedule,status,last_started_at,total_runs,updated_at) VALUES(?,?,?,'running',?,1,?) ON CONFLICT(worker_key) DO UPDATE SET worker_name=excluded.worker_name,schedule=excluded.schedule,status='running',last_started_at=excluded.last_started_at,total_runs=worker_health.total_runs+1,updated_at=excluded.updated_at")
+    .bind(workerKey,workerName,schedule,now,now).run();
+  }else if(fields.status==="success"){
+   await env.DB.prepare("UPDATE worker_health SET status='success',last_success_at=?,last_duration_ms=?,last_error=NULL,updated_at=? WHERE worker_key=?")
+    .bind(now,fields.duration,now,workerKey).run();
+  }else if(fields.status==="failed"){
+   await env.DB.prepare("UPDATE worker_health SET status='failed',last_failure_at=?,last_duration_ms=?,last_error=?,failed_runs=failed_runs+1,updated_at=? WHERE worker_key=?")
+    .bind(now,fields.duration,String(fields.error||"Worker execution failed").replace(/[\\u0000-\\u001f\\u007f]/g," ").slice(0,700),now,workerKey).run();
+  }
+ }catch(error){console.warn("Worker health telemetry could not be saved:",String(error?.message||error).slice(0,200));}
+}
+async function monitoredWorkerRun(env,workerKey,workerName,schedule,task){
+ const started=Date.now();
+ await recordWorkerHealth(env,workerKey,workerName,schedule,{status:"running"});
+ try{
+  const result=await task();
+  await recordWorkerHealth(env,workerKey,workerName,schedule,{status:"success",duration:Date.now()-started});
+  return result;
+ }catch(error){
+  await recordWorkerHealth(env,workerKey,workerName,schedule,{status:"failed",duration:Date.now()-started,error:error?.stack||error?.message||error});
+  throw error;
+ }
+}
 export default {
- async scheduled(controller,env,ctx){ctx.waitUntil(runSync(env).then(result=>console.log("PhoneYa2 automation cycle completed:",JSON.stringify(result))).catch(error=>console.error("PhoneYa2 automation cycle failed:",String(error?.stack||error).slice(0,500))));},
+ async scheduled(controller,env,ctx){ctx.waitUntil(monitoredWorkerRun(env,"notification-scheduler","PhoneYa2 Notification Scheduler","Every 15 minutes",()=>runSync(env)).then(result=>console.log("PhoneYa2 automation cycle completed:",JSON.stringify(result))).catch(error=>console.error("PhoneYa2 automation cycle failed:",String(error?.stack||error).slice(0,500))));},
  async fetch(){return new Response("PhoneYa2 scheduled automation worker is active.",{headers:{"content-type":"text/plain; charset=utf-8","cache-control":"no-store"}});}
 };
