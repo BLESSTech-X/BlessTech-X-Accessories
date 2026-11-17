@@ -4,8 +4,8 @@ export async function onRequest({request,env}){
  const headers={"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"};
  if(!env.DB)return new Response(JSON.stringify({ok:true,stock:{}}),{headers});
  try{
-  const result=await env.DB.prepare("SELECT p.product_slug,MAX(0,p.stock)+COALESCE(SUM(CASE WHEN i.ownership='phoneya2' THEN i.quantity ELSE 0 END),0) available FROM agent_product_codes p LEFT JOIN agent_inventory i ON i.product_slug=p.product_slug WHERE p.active=1 GROUP BY p.product_slug").all();
-  const stock=Object.fromEntries((result.results||[]).map(row=>[String(row.product_slug),Math.max(0,Number(row.available||0))]));
+  const result=await env.DB.prepare("SELECT p.product_slug,MAX(0,p.stock) central,COALESCE(SUM(CASE WHEN i.ownership='phoneya2' THEN i.quantity ELSE 0 END),0) agent_custody FROM agent_product_codes p LEFT JOIN agent_inventory i ON i.product_slug=p.product_slug WHERE p.active=1 GROUP BY p.product_slug").all();
+  const stock=Object.fromEntries((result.results||[]).map(row=>[String(row.product_slug),{central:Math.max(0,Number(row.central||0)),agent_custody:Math.max(0,Number(row.agent_custody||0)),total:Math.max(0,Number(row.central||0))+Math.max(0,Number(row.agent_custody||0))}]));
   return new Response(JSON.stringify({ok:true,stock}),{headers});
  }catch(error){
   if(/no such table: agent_product_codes|no such table: agent_inventory/i.test(String(error)))return new Response(JSON.stringify({ok:true,stock:{}}),{headers});
