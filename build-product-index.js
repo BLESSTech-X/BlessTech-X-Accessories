@@ -171,7 +171,7 @@ try {
       video_url: String(meta.video_url || ''),
       order_note: String(meta.order_note || ''),
       featured: meta.featured === true || meta.featured === 'true',
-      other_phoneya2_product: meta.other_phoneya2_product === true || meta.other_phoneya2_product === 'true',
+      other_phoneya2_product: meta.other_phoneya2_product === true || meta.other_phoneya2_product === 'true' || parseNestedObject(source, 'other_product_details').enabled === true || parseNestedObject(source, 'other_product_details').enabled === 'true',
       other_product_details: parseNestedObject(source, 'other_product_details'),
       visibility: parseNestedObject(source, 'visibility'),
       date_added: String(meta.date_added || meta.created_at || ''),
