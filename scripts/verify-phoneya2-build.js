@@ -245,6 +245,8 @@ try {
   const campaignApi = fs.readFileSync(path.join(root, 'functions', 'api', 'campaigns.js'), 'utf8');
   if (!campaignApi.includes('deliveryChannels.includes("email")')) fail('Campaign send endpoint must enforce the saved email delivery channel server-side.');
   pass('Campaign email delivery is restricted by the saved server-side channel selection.');
+  if (!campaignApi.includes('INSERT INTO campaign_send_locks') || !campaignApi.includes('DELETE FROM campaign_send_locks WHERE campaign_id=? AND lock_token=?')) fail('Campaign send endpoint must acquire and release its D1 concurrency lock.');
+  pass('Campaign delivery batches are protected against concurrent send requests.');
 } catch (error) {
   fail('Prepared-work interaction validation failed: ' + error.message);
 }
