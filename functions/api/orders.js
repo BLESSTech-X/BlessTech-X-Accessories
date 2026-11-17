@@ -183,6 +183,20 @@ async function createD1Order(env, customer, items, attribution = {}) {
       }
     }
   }
+  if(!attribution.agent_code){
+    const rows=await Promise.all(items.map(item=>env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=? AND active=1").bind(item.product_slug).first()));
+    if(rows.every(Boolean)){
+      for(const item of items){
+        const result=await env.DB.prepare("UPDATE agent_product_codes SET stock=stock-? WHERE product_slug=? AND active=1 AND stock>=?").bind(item.quantity,item.product_slug,item.quantity).run();
+        if(!Number(result.meta?.changes||0)){
+          if(centralReservations.length)await env.DB.batch(centralReservations.map(x=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(x.quantity,x.slug)));
+          throw new Error("Central PhoneYa2 stock is no longer sufficient for this order. Please refresh the shop or contact PhoneYa2.");
+        }
+        centralReservations.push({slug:item.product_slug,quantity:item.quantity});
+      }
+      if(centralReservations.length)fulfilmentSource="phoneya2_central_reserved";
+    }
+  }
   const now=new Date().toISOString();
   const itemsStatements=()=>items.map(item=>env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(crypto.randomUUID(),id,item.product_slug,item.product_name,item.quantity,moneyToMinor(item.unit_price),moneyToMinor(item.line_total)));
@@ -535,8 +549,10 @@ export async function onRequest(context) {
             agentHeld=Math.max(0,Number(held?.quantity||0));
           }catch{}
           if(centralAvailable<quantity&&agentHeld<quantity)return json({error:product.title+" has insufficient central or agent-allocated stock for this order. Central stock: "+centralAvailable+" · agent stock: "+agentHeld+"."},409);
-        }else if(product.stock<quantity){
-          return json({error:product.title+" has only "+product.stock+" unit(s) available."},400);
+        }else{
+          let centralAvailable=product.stock;
+          try{const central=await env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=? AND active=1").bind(slug).first();if(central)centralAvailable=Math.max(0,Number(central.stock||0));}catch{}
+          if(centralAvailable<quantity)return json({error:product.title+" has only "+centralAvailable+" central unit(s) available."},409);
         }
         const unitPrice = product.price;
         items.push({
