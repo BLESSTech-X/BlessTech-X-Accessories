@@ -247,6 +247,7 @@ try {
   pass('Campaign email delivery is restricted by the saved server-side channel selection.');
   if (campaignApi.includes('sendSms(') || campaignApi.includes('communication_activity') || campaignApi.includes('BREVO_SMS_SENDER')) fail('Campaign send endpoint must not send SMS unless SMS is explicitly selectable as a campaign channel.');
   if (!/TRIM\(COALESCE\(email,''\)\)<>''/.test(campaignApi) || !campaignApi.includes('recipients.filter(r=>r.email&&!sentSet.has(r.email))')) fail('Campaign recipients must be filtered to unsent email addresses only.');
+  if (!campaignApi.includes('const attemptedSet=new Set(') || !campaignApi.includes('recipients.sort((a,b)=>Number(attemptedSet.has(a.email))-Number(attemptedSet.has(b.email)))')) fail('Campaign batches must prioritize recipients never attempted before retrying failures.');
   pass('Campaign delivery uses only email recipients; unselected SMS delivery is disabled.');
   if (!campaignApi.includes('INSERT INTO campaign_send_locks') || !campaignApi.includes('DELETE FROM campaign_send_locks WHERE campaign_id=? AND lock_token=?')) fail('Campaign send endpoint must acquire and release its D1 concurrency lock.');
   pass('Campaign delivery batches are protected against concurrent send requests.');
