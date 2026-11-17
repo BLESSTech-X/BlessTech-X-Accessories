@@ -540,6 +540,8 @@ export async function onRequest(context) {
       for (const [slug, quantity] of quantities) {
         const product = await loadProduct(context, slug);
         if (!product) return json({ error: "A selected product could not be found. Please refresh the shop and try again." }, 400);
+        const pendingOfflineSale=await env.DB.prepare("SELECT s.id FROM agent_sales s WHERE lower(s.customer_phone)=lower(?) AND s.product_slug=? AND s.status='submitted' AND s.created_at>datetime('now','-30 days') LIMIT 1").bind(phone,slug).first().catch(()=>null);
+        if(pendingOfflineSale)return json({error:"An agent-assisted sale for this customer and product is awaiting PhoneYa2 review. Please contact PhoneYa2 before placing a duplicate order."},409);
         if(agentAttribution.agent_code){
           let centralAvailable=product.stock,agentHeld=0;
           try{
