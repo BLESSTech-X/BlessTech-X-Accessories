@@ -70,7 +70,7 @@ function parseNestedObject(markdown, key) {
     let value = String(field[2] || '').trim().replace(/^['"]|['"]$/g, '');
     if (value === 'true') value = true;
     else if (value === 'false') value = false;
-    else if (/^-?[0-9]+(?:\\.[0-9]+)?$/.test(value)) value = Number(value);
+    else if (/^-?[0-9]+(?:[.][0-9]+)?$/.test(value)) value = Number(value);
     result[field[1]] = value;
   });
   return result;
