@@ -24,24 +24,32 @@ collections:
     sortable_fields: ["title", "price", "stock", "date_added"]
     fields:
       - { label: "Title", name: "title", widget: "string" }
+      - { label: "Other PhoneYa2 Product", name: "other_phoneya2_product", widget: "boolean", default: false, required: false, hint: "Turn ON for perfumes and other non-accessory product lines. These remain normal PhoneYa2 products and use the same customer ordering and checkout system." }
+      - label: "Other Product Details"
+        name: "other_product_details"
+        widget: "object"
+        required: false
+        condition: { field: "other_phoneya2_product", value: true }
+        fields:
+          - { label: "Brand", name: "brand", widget: "string", required: false }
+          - { label: "Variant / Model", name: "variant", widget: "string", required: false }
+          - { label: "Size / Volume", name: "size", widget: "string", required: false, hint: "For perfumes, enter bottle size such as 30ml, 50ml or 100ml." }
+          - { label: "Scent Family", name: "scent_family", widget: "string", required: false, hint: "Perfumes only, e.g. woody, floral, fresh or oriental." }
+          - { label: "Fragrance Concentration", name: "concentration", widget: "string", required: false, hint: "Perfumes only, if known, e.g. Eau de Parfum or Eau de Toilette." }
+          - { label: "Scent Notes", name: "scent_notes", widget: "text", required: false, hint: "Perfumes only. Include only confirmed fragrance notes." }
+          - { label: "Additional Specifications", name: "specifications", widget: "text", required: false }
       - { label: "Date Added", name: "date_added", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}", required: false, hint: "Used to order New Arrivals newest first. Keep the default for new products." }
       - { label: "Selling Price (ZMW)", name: "price", widget: "number", hint: "The actual price customers pay. Keep this updated when prices change." }
       - { label: "Original / Reference Price (ZMW)", name: "original_price", widget: "number", required: false, hint: "Only enter a genuine previous/reference price higher than the selling price. The site calculates savings from these two values; do not use a made-up comparison price." }
       - { label: "Stock", name: "stock", widget: "number", default: 10 }
       - label: "Category"
         name: "category"
-        widget: "select"
-        options:
-          - { label: "Phone Cases", value: "case" }
-          - { label: "Chargers", value: "charger" }
-          - { label: "Cables", value: "cable" }
-          - { label: "Earphones & Headsets", value: "earphone" }
-          - { label: "Power Banks", value: "powerbank" }
-          - { label: "Screen Protectors", value: "protector" }
-          - { label: "Phones", value: "phone" }
-          - { label: "Watches & Smartwatches", value: "watch" }
-          - { label: "Other Phone Accessories", value: "accessory" }
-          - { label: "Other / Miscellaneous", value: "other" }
+        widget: "relation"
+        collection: "product_categories"
+        search_fields: ["title", "description"]
+        value_field: "{{slug}}"
+        display_fields: ["title"]
+        hint: "Choose an existing category. To create another one, open Product Categories in the CMS and add it there; new categories are included in the storefront category index at build time."
       - { label: "Sales Hook", name: "sales_hook", widget: "string", required: false, hint: "A short customer-focused reason to consider this product. Lead with a practical benefit; only claim features you can confirm." }
       - { label: "Offer Badge", name: "offer_label", widget: "string", required: false, hint: "Optional label shown on product cards, e.g. Featured Pick, Bundle Idea, or Back-to-School Pick. Do not claim a discount unless the Original Price is accurate." }
       - { label: "Offer Details", name: "offer_details", widget: "string", required: false, hint: "Optional short offer terms or bundle details. Keep accurate, include end date/conditions when relevant, and do not invent scarcity." }
@@ -60,7 +68,34 @@ collections:
       - { label: "Video Link (optional)", name: "video_url", widget: "string", required: false, hint: "Paste a YouTube, TikTok, Instagram Reel/Post, Facebook video, Vimeo, or direct MP4/WebM URL. The site will embed supported links in the page." }
       - { label: "Order Note", name: "order_note", widget: "string", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - label: "Page Visibility"
+        name: "visibility"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Show in Shop", name: "shop", widget: "boolean", default: true }
+          - { label: "Show in Search", name: "search", widget: "boolean", default: true }
+          - { label: "Show on Homepage", name: "homepage", widget: "boolean", default: false }
+          - { label: "Allow Featured Sections", name: "featured", widget: "boolean", default: false }
+          - { label: "Allow Special Offers Section", name: "offers", widget: "boolean", default: false }
+          - { label: "Available to Agents", name: "agents", widget: "boolean", default: false, hint: "Enable only when this product is approved for agent selling. Stock distribution and commission rules are managed separately." }
 
+
+  - name: "product_categories"
+    label: "Product Categories"
+    label_singular: "Product Category"
+    description: "Create and manage categories used by products throughout PhoneYa2. Keep existing category slugs unchanged."
+    folder: "content/product-categories"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: ["title", "sort_order"]
+    fields:
+      - { label: "Category Name", name: "title", widget: "string" }
+      - { label: "Icon (Font Awesome class)", name: "icon", widget: "string", required: false, hint: "Optional, e.g. fa-solid fa-spray-can. Leave blank to use a default category icon." }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Display Order", name: "sort_order", widget: "number", default: 100, required: false }
+      - { label: "Active", name: "active", widget: "boolean", default: true }
 
   - name: "blog_posts"
     label: "Blog & Updates"
