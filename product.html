@@ -1943,7 +1943,8 @@ async function loadProductPage() {
   } catch(e) {}
   if (!product) { renderNotFound(slug); return; }
   try {
-    const stockResponse = await fetch('/api/product-stock', { cache: 'no-store' });
+    const referralCode = new URLSearchParams(window.location.search).get('ref') || '';
+    const stockResponse = await fetch('/api/product-stock' + (referralCode ? '?ref=' + encodeURIComponent(referralCode) : ''), { cache: 'no-store' });
     if (stockResponse.ok) {
       const stockData = await stockResponse.json();
       if (stockData && stockData.ok && Object.prototype.hasOwnProperty.call(stockData.stock || {}, slug)) {
