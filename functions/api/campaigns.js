@@ -92,9 +92,11 @@ export async function onRequest({request,env}){
     const rows=await env.DB.prepare("SELECT email,full_name,confirmation_token FROM customer_subscribers WHERE status='subscribed' ORDER BY created_at ASC LIMIT 1000").all();
     recipients=(rows.results||[]).map(s=>({...s,email:String(s.email||"").trim().toLowerCase()}));
    }
-   const sentEmails=await env.DB.prepare("SELECT recipient_email FROM email_activity WHERE campaign_id=? AND status IN ('sent','delivered')").bind(id).all();
-   const sentSet=new Set((sentEmails.results||[]).map(x=>String(x.recipient_email||"").toLowerCase()));
+   const emailHistory=await env.DB.prepare("SELECT recipient_email,status FROM email_activity WHERE campaign_id=?").bind(id).all();
+   const sentSet=new Set((emailHistory.results||[]).filter(x=>["sent","delivered"].includes(String(x.status||"").toLowerCase())).map(x=>String(x.recipient_email||"").toLowerCase()));
+   const attemptedSet=new Set((emailHistory.results||[]).map(x=>String(x.recipient_email||"").toLowerCase()).filter(Boolean));
    recipients=recipients.filter(r=>r.email&&!sentSet.has(r.email));
+   recipients.sort((a,b)=>Number(attemptedSet.has(a.email))-Number(attemptedSet.has(b.email)));
    if(!recipients.length){const completedAt=new Date().toISOString();await env.DB.prepare("UPDATE email_campaigns SET status='sent',completed_at=?,updated_at=?,last_error='' WHERE id=?").bind(completedAt,completedAt,id).run();try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"campaign-completed:"+id+":sent","communications","campaign_sent","Campaign completed",campaign.name+" finished. No remaining recipients were waiting to be processed.","normal","/admin/communications.html",id,campaign.name).run();}catch(e){console.error("Campaign notification failed:",String(e).slice(0,180));}return json({success:true,done:true,message:"Campaign complete. No remaining recipients in this audience.",processed:0,remaining:0});}
    await env.DB.prepare("UPDATE email_campaigns SET status='sending',updated_at=?,total_recipients=? WHERE id=?").bind(new Date().toISOString(),sentSet.size+recipients.length,id).run();
    const batch=recipients.slice(0,20);let sent=0,failed=0;const errors=[];
