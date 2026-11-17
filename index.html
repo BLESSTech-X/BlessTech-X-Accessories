@@ -3308,7 +3308,7 @@ async function init() {
       const stockData = await stockResponse.json();
       if (stockData && stockData.ok && stockData.stock) {
         products = products.map(product => Object.prototype.hasOwnProperty.call(stockData.stock, product.slug)
-          ? { ...product, stock: Math.max(0, Number(stockData.stock[product.slug]) || 0) }
+          ? { ...product, stock: Math.max(0, Number(stockData.stock[product.slug]?.central) || 0) }
           : product);
       }
     }
