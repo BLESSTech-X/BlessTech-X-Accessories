@@ -578,10 +578,10 @@ async function checkHealth(){
    if(!r.ok)throw new Error('HTTP '+r.status);
    let detail=item.detail;
    if(item.type==='html'){
-    const body=await r.text();if(!/<html[\\s>]/i.test(body))throw new Error('Response is not an HTML page');
+    const body=await r.text();if(!/<html[\s>]/i.test(body))throw new Error('Response is not an HTML page');
     detail='Page returned valid HTML';
    }else if(item.type==='sitemap'){
-    const body=await r.text();if(!/<urlset[\\s>]/i.test(body)||!/<url[\\s>]/i.test(body))throw new Error('Sitemap XML structure is invalid');
+    const body=await r.text();if(!/<urlset[\s>]/i.test(body)||!/<url[\s>]/i.test(body))throw new Error('Sitemap XML structure is invalid');
     detail='Sitemap XML structure is valid';
    }else if(item.type==='robots'){
     const body=await r.text();if(!/User-agent:/i.test(body)||!/Sitemap:/i.test(body))throw new Error('Crawler rules or sitemap reference missing');
