@@ -81,7 +81,12 @@ function categoryGuide(category) {
     intro: 'Smartwatch features and companion apps vary by model. Confirm what the specific listing includes before you order.',
     checks: ['Check compatibility with your phone and its operating system.', 'Review the listed features and whether an app is required.', 'Confirm the charging method, included accessories and any stated limitations.']
   };
-  if (key === 'perfumes') return {\n    heading: 'Choose a fragrance that suits you',\n    intro: 'Fragrances vary by scent profile, concentration and bottle size. Review the exact product details and ask PhoneYa2 about anything not stated.',\n    checks: ['Confirm the bottle size and fragrance concentration where listed.', 'Review the scent family and notes, if provided, and choose according to your preference.', 'Ask about packaging, seal condition and availability before completing your order.']\n  };\n  if (key === 'phone') return {
+  if (key === 'perfumes') return {
+    heading: 'Choose a fragrance that suits you',
+    intro: 'Fragrances vary by scent profile, concentration and bottle size. Review the exact product details and ask PhoneYa2 about anything not stated.',
+    checks: ['Confirm the bottle size and fragrance concentration where listed.', 'Review the scent family and notes, if provided, and choose according to your preference.', 'Ask about packaging, seal condition and availability before completing your order.']
+  };
+  if (key === 'phone') return {
     heading: 'Confirm the exact device details',
     intro: 'Phone model, storage, condition and included accessories can vary. Ask questions before paying if any detail is unclear.',
     checks: ['Confirm the exact model, storage capacity and stated condition.', 'Ask what accessories, warranty or return terms are included.', 'Inspect the device and verify its basic functions and account status before completing a second-hand purchase.']
