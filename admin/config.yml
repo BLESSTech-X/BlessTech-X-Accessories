@@ -24,6 +24,10 @@ collections:
     sortable_fields: ["title", "price", "stock", "date_added"]
     fields:
       - { label: "Title", name: "title", widget: "string" }
+      - { label: "Selling Price (ZMW)", name: "price", widget: "number", min: 0, step: 0.01, value_type: "float", hint: "The customer-facing selling price in ZMW." }
+      - { label: "Original Price (optional)", name: "original_price", widget: "number", min: 0, step: 0.01, value_type: "float", required: false, hint: "Only enter a genuine previous price when displaying a discount." }
+      - { label: "Initial Stock Quantity", name: "stock", widget: "number", min: 0, value_type: "int", hint: "Initial stock used when this product first enters the live inventory system. After first sync, manage central stock and agent issue/return in Command Centre → Agents → Agent inventory." }
+      - { label: "Publish Product", name: "publish", widget: "boolean", default: true, hint: "Turn off to keep this product out of the public catalogue." }
       - label: "Product Type & Details"
         name: "other_product_details"
         widget: "other-product-setup"
