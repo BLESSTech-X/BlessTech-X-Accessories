@@ -34,7 +34,7 @@ PhoneYa2 owns the stock. Agents collect approved quantities from central stock w
 5. Agent-attributed online checkout reserves either the agent's custody or central stock. Orders fulfilled from agent custody appear in the agent fulfilment queue; central-stock orders remain with PhoneYa2.
 6. Cancelling an undelivered reserved order restores the relevant stock automatically.
 
-Every issue, return, verified sale and order reservation is recorded in the stock movement history. New product stock is initially seeded from the CMS product record; after a product is synced to Agent Network, live central stock is managed in Command Centre → Agents → Agent inventory. The public Shop shows central availability; an agent referral product link can also show stock held by that agent network.
+Every issue, return, verified sale and order reservation is recorded in the stock movement history. New product stock is initially seeded from the CMS product record; after a product is synced to Agent Network, live central stock is managed in Command Centre → Agents → Agent inventory. The public Shop shows central availability; an agent referral product link shows central availability plus stock held by that specific referred agent.
 
 Do not issue more stock than the central available quantity. Reconcile physical stock before approving sale records or changing central stock counts.
 
