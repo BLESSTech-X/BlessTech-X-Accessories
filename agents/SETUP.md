@@ -21,11 +21,22 @@ The active agent system is part of the PhoneYa2 Cloudflare Pages application.
 
 ## Commission rules
 
-The default progressive bands are configured in D1 migration `0026_agent_wallet_allocations.sql`. The percentages apply to successive portions of the sale value, not the entire sale. Commission is capped by a configurable share of gross profit. Product unit costs must be entered by an administrator before commission can be approved.
+The Agent Network uses configurable percentage commission bands. Administrators manage the price thresholds and percentages in Command Centre → Agents → Commission rules. The applicable percentage is calculated from the product selling price and saved with the assisted-sale estimate. Online referral commissions are reconciled after delivery; offline agent sales are credited only after an administrator verifies the sale.
 
-## Inventory
+## Central stock and agent custody
 
-Command Centre → Agents → Agent inventory records PhoneYa2 stock held by agents and agent-owned stock declarations. Stock allocations must be reconciled with the central product catalogue and fulfilment process.
+PhoneYa2 owns the stock. Agents collect approved quantities from central stock without buying the stock upfront. Command Centre → Agents → Agent inventory is the control point:
+
+1. Issue stock to an active agent. Central available stock decreases and the agent's PhoneYa2 custody increases.
+2. Record a return. The agent's custody decreases and central available stock increases.
+3. Record an offline sale only against unreserved PhoneYa2 stock allocated to that agent. The sale remains pending until an administrator verifies it.
+4. Approving the sale deducts the sold quantity from the agent's custody and credits the saved percentage commission.
+5. Agent-attributed online checkout reserves either the agent's custody or central stock. Orders fulfilled from agent custody appear in the agent fulfilment queue; central-stock orders remain with PhoneYa2.
+6. Cancelling an undelivered reserved order restores the relevant stock automatically.
+
+Every issue, return, verified sale and order reservation is recorded in the stock movement history. New product stock is initially seeded from the CMS product record; after a product is synced to Agent Network, live central stock is managed in Command Centre → Agents → Agent inventory. The public Shop shows central availability; an agent referral product link can also show stock held by that agent network.
+
+Do not issue more stock than the central available quantity. Reconcile physical stock before approving sale records or changing central stock counts.
 
 ## Deployment and database
 
