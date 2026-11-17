@@ -242,6 +242,9 @@ try {
     fail('Prepared-work API is missing approval handling or truthful campaign status.');
   }
   pass('Prepared-work interface includes image alerts, search, filters and owner-controlled task actions.');
+  const campaignApi = fs.readFileSync(path.join(root, 'functions', 'api', 'campaigns.js'), 'utf8');
+  if (!/deliveryChannels\\.includes\\(['\"]email['\"]\\)/.test(campaignApi)) fail('Campaign send endpoint must enforce the saved email delivery channel server-side.');
+  pass('Campaign email delivery is restricted by the saved server-side channel selection.');
 } catch (error) {
   fail('Prepared-work interaction validation failed: ' + error.message);
 }
