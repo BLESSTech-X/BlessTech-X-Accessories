@@ -38,8 +38,21 @@ export async function syncProductCodes(db,list){
   if(!code){code=codeFromSlug(p.slug);for(let i=0;used.has(String(code).toUpperCase())&&i<100;i++)code=codeFromSlug(p.slug+"-"+i);used.add(String(code).toUpperCase());}
   map.set(p.slug,code);
   if(!old)statements.push(db.prepare("INSERT INTO agent_product_codes(product_slug,product_code,product_name,price_minor,stock,active) VALUES(?,?,?,?,?,1)").bind(p.slug,code,p.title,Math.round(p.price*100),p.stock));
-  else if(old.product_name!==p.title||Number(old.price_minor)!==Math.round(p.price*100)||Number(old.active)!==1)
-   statements.push(db.prepare("UPDATE agent_product_codes SET product_name=?,price_minor=?,active=1 WHERE product_slug=?").bind(p.title,Math.round(p.price*100),p.slug));
+  else {
+   // A product may have been registered in the Agent Network while its CMS stock was still zero.
+   // Seed that untouched zero once from the published catalogue, but never overwrite stock that
+   // has a movement, order, or explicit administrator adjustment behind it.
+   if(Number(old.stock||0)===0&&Number(p.stock||0)>0){
+    const [movement,order,adjustment]=await Promise.all([
+     db.prepare("SELECT 1 FROM agent_inventory_movements WHERE product_slug=? LIMIT 1").bind(p.slug).first(),
+     db.prepare("SELECT 1 FROM order_items WHERE product_slug=? LIMIT 1").bind(p.slug).first(),
+     db.prepare("SELECT 1 FROM admin_notifications WHERE event_key LIKE ? LIMIT 1").bind("central-stock-adjust:"+p.slug+":%").first()
+    ]);
+    if(!movement&&!order&&!adjustment)statements.push(db.prepare("UPDATE agent_product_codes SET stock=? WHERE product_slug=? AND stock=0").bind(Math.floor(Number(p.stock)),p.slug));
+   }
+   if(old.product_name!==p.title||Number(old.price_minor)!==Math.round(p.price*100)||Number(old.active)!==1)
+    statements.push(db.prepare("UPDATE agent_product_codes SET product_name=?,price_minor=?,active=1 WHERE product_slug=?").bind(p.title,Math.round(p.price*100),p.slug));
+  }
  }
  if(list.length){const activeSlugs=new Set(list.map(p=>p.slug));for(const row of rows){if(!activeSlugs.has(row.product_slug)&&Number(row.active)!==0)statements.push(db.prepare("UPDATE agent_product_codes SET active=0 WHERE product_slug=?").bind(row.product_slug));}}
  for(let i=0;i<statements.length;i+=90)await db.batch(statements.slice(i,i+90));
