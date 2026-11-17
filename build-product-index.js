@@ -136,6 +136,7 @@ try {
       .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title))
     : [];
   fs.writeFileSync(path.join(categoriesDir, 'index.json'), JSON.stringify(categories, null, 2));
+  const categoryBySlug = new Map(categories.map(category => [category.slug, category]));
 
   const productSlugs = fs.readdirSync(productsDir)
     .filter(f => f.endsWith('.md') && f !== 'README.md')
@@ -160,6 +161,7 @@ try {
       original_price: Number(meta.original_price) || 0,
       stock: Number(meta.stock) || 0,
       category: String(meta.category || 'other'),
+      category_title: String(categoryBySlug.get(String(meta.category || 'other'))?.title || meta.category || 'Other'),
       description: String(meta.description || ''),
       sales_hook: String(meta.sales_hook || ''),
       offer_label: String(meta.offer_label || ''),
