@@ -1942,6 +1942,7 @@ async function loadProductPage() {
     if (r.ok) { const t = await r.text(); product = parseFrontmatter(t, slug); }
   } catch(e) {}
   if (!product) { renderNotFound(slug); return; }
+  try { const categoryResponse = await fetch('/content/product-categories/index.json'); if (categoryResponse.ok) { const categoryRows = await categoryResponse.json(); if (Array.isArray(categoryRows)) categoryRows.forEach(category => { if (category && category.slug && category.title) CAT_LABELS[category.slug] = category.title; }); } } catch (_) {}
   renderProduct(product);
   gtag('event', 'view_product', {
   product_name: product.name || slug,
