@@ -520,20 +520,56 @@ function renderTopProducts(){
  drawProductPerformanceChart();
 }
 function drawChart(){
- const canvas=$('orders-chart'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;if(!rect.width||!rect.height)return;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
- const w=rect.width,h=rect.height,pad={l:34,r:12,t:18,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;ctx.clearRect(0,0,w,h);
- const allTime=window.phoneya2ChartDays==='all',now=new Date();now.setHours(0,0,0,0);let buckets=[];
- if(allTime){const dates=orders.map(o=>safeDate(o.created_at)).filter(Boolean);const earliest=dates.length?new Date(Math.min(...dates.map(d=>d.getTime()))):new Date(now);const first=new Date(earliest.getFullYear(),earliest.getMonth(),1),last=new Date(now.getFullYear(),now.getMonth(),1);for(let d=new Date(first);d<=last;d.setMonth(d.getMonth()+1))buckets.push(new Date(d));}
- else{const chartDays=Math.max(7,Math.min(90,Number(window.phoneya2ChartDays||7)));for(let i=chartDays-1;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);buckets.push(d);}}
+ const canvas=$('orders-chart');if(!canvas)return;
+ const rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ if(!rect.width||!rect.height)return;
+ canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);
+ const ctx=canvas.getContext('2d');if(!ctx)return;ctx.setTransform(dpr,0,0,dpr,0,0);
+ const w=rect.width,h=rect.height,pad={l:34,r:12,t:18,b:30},cw=Math.max(1,w-pad.l-pad.r),ch=Math.max(1,h-pad.t-pad.b);
+ ctx.clearRect(0,0,w,h);
+ const allTime=window.phoneya2ChartDays==='all',now=new Date();now.setHours(0,0,0,0);
+ const chartOrders=Array.isArray(orders)?orders:[];
+ const monthKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+ const dailyKey=d=>d.toDateString();
+ const totals=new Map();let earliest=null;
+ // Aggregate once. This avoids rescanning the complete order history for every month.
+ chartOrders.forEach(order=>{
+  const date=safeDate(order.created_at);if(!date)return;
+  if(!earliest||date<earliest)earliest=date;
+  const key=allTime?monthKey(date):dailyKey(date),entry=totals.get(key)||{count:0,value:0};
+  entry.count++;
+  if(order.status!=='cancelled'){const amount=Number(order.total_amount);if(Number.isFinite(amount))entry.value+=amount;}
+  totals.set(key,entry);
+ });
+ let buckets=[];
+ if(allTime){
+  const first=earliest?new Date(earliest.getFullYear(),earliest.getMonth(),1):new Date(now.getFullYear(),now.getMonth(),1);
+  const last=new Date(now.getFullYear(),now.getMonth(),1);
+  const monthSpan=Math.max(1,(last.getFullYear()-first.getFullYear())*12+last.getMonth()-first.getMonth()+1);
+  // Protect the dashboard from malformed historical dates creating an enormous chart.
+  if(monthSpan>1200){
+   const summary=$('chart-summary');if(summary)summary.innerHTML='<strong>Order history date needs review</strong><span>The earliest order date is unusually old, so the chart was paused to keep Analytics responsive.</span>';
+   $('range-label').textContent='All time · date review needed';return;
+  }
+  for(let i=0;i<monthSpan;i++)buckets.push(new Date(first.getFullYear(),first.getMonth()+i,1));
+ }else{
+  const chartDays=Math.max(7,Math.min(90,Number(window.phoneya2ChartDays)||7));
+  for(let i=chartDays-1;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);buckets.push(d);}
+ }
  if(!buckets.length)buckets=[new Date(now)];
- const key=d=>allTime?d.getFullYear()+'-'+d.getMonth():d.toDateString();
- const counts=buckets.map(d=>orders.filter(o=>{const od=safeDate(o.created_at);return od&&key(od)===key(d);}).length);
- const vals=buckets.map(d=>orders.filter(o=>{const od=safeDate(o.created_at);return od&&key(od)===key(d)&&o.status!=='cancelled';}).reduce((sum,o)=>sum+Number(o.total_amount||0),0));
- const total=counts.reduce((a,b)=>a+b,0),value=vals.reduce((a,b)=>a+b,0),peak=Math.max(...counts,0),peakIndex=counts.indexOf(peak),summary=$('chart-summary');if(summary)summary.innerHTML='<strong>'+total+' orders <i>·</i> '+money(value)+'</strong><span>Peak '+(allTime?'month':'day')+': '+(peak?buckets[peakIndex].toLocaleDateString('en-GB',allTime?{month:'short',year:'numeric'}:{day:'numeric',month:'short'})+' · '+peak+' orders':'No orders in this period')+'</span>';
+ const key=d=>allTime?monthKey(d):dailyKey(d);
+ const counts=buckets.map(d=>totals.get(key(d))?.count||0);
+ const vals=buckets.map(d=>totals.get(key(d))?.value||0);
+ const total=counts.reduce((a,b)=>a+b,0),value=vals.reduce((a,b)=>a+b,0),peak=Math.max(...counts,0),peakIndex=counts.indexOf(peak),summary=$('chart-summary');
+ if(summary)summary.innerHTML='<strong>'+total+' orders <i>·</i> '+money(value)+'</strong><span>Peak '+(allTime?'month':'day')+': '+(peak?buckets[peakIndex].toLocaleDateString('en-GB',allTime?{month:'short',year:'numeric'}:{day:'numeric',month:'short'})+' · '+peak+' orders':'No orders in this period')+'</span>';
  const maxC=Math.max(4,...counts);ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';
  for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;ctx.strokeStyle=dashboard.dataset.ccTheme==='dark'?'#34435a':'#edf0f5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(String(Math.round(maxC*(1-i/4))),pad.l-8,y);}
- const step=cw/Math.max(1,buckets.length-1),pts=counts.map((v,i)=>({x:pad.l+step*i,y:pad.t+ch-(v/maxC)*ch}));ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ff6500';ctx.lineWidth=2.5;ctx.stroke();pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.3,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
- const maxSales=Math.max(...vals,1),salesPts=vals.map((v,i)=>({x:pad.l+step*i,y:pad.t+ch-(v/maxSales)*ch*.76}));ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+ const step=cw/Math.max(1,buckets.length-1),pts=counts.map((v,i)=>({x:pad.l+step*i,y:pad.t+ch-(v/maxC)*ch}));
+ ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();
+ ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ff6500';ctx.lineWidth=2.5;ctx.stroke();
+ pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.3,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
+ const maxSales=Math.max(...vals,1),salesPts=vals.map((v,i)=>({x:pad.l+step*i,y:pad.t+ch-(v/maxSales)*ch*.76}));
+ ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
  ctx.textAlign='center';ctx.textBaseline='top';buckets.forEach((d,i)=>{const every=Math.max(1,Math.ceil(buckets.length/6));if(buckets.length<=7||i===0||i===buckets.length-1||i%every===0){ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(d.toLocaleDateString('en-GB',allTime?{month:'short',year:'2-digit'}:buckets.length===7?{weekday:'short'}:{day:'numeric',month:'short'}),pad.l+step*i,h-pad.b+10);}});
  const first=buckets[0],last=buckets[buckets.length-1];$('range-label').textContent=allTime?'All time · '+buckets.length+' months':first.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+last.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 }
