@@ -545,14 +545,13 @@ function drawChart(){
  if(!rect.width||!rect.height)return;
  canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);
  const ctx=canvas.getContext('2d');if(!ctx)return;ctx.setTransform(dpr,0,0,dpr,0,0);
- const w=rect.width,h=rect.height,pad={l:34,r:12,t:18,b:30},cw=Math.max(1,w-pad.l-pad.r),ch=Math.max(1,h-pad.t-pad.b);
+ const w=rect.width,h=rect.height,pad={l:40,r:62,t:24,b:32},cw=Math.max(1,w-pad.l-pad.r),ch=Math.max(1,h-pad.t-pad.b);
  ctx.clearRect(0,0,w,h);
  const allTime=window.phoneya2ChartDays==='all',now=new Date();now.setHours(0,0,0,0);
  const chartOrders=Array.isArray(orders)?orders:[];
  const monthKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
  const dailyKey=d=>d.toDateString();
  const totals=new Map();let earliest=null;
- // Aggregate once. This avoids rescanning the complete order history for every month.
  chartOrders.forEach(order=>{
   const date=safeDate(order.created_at);if(!date)return;
   if(!earliest||date<earliest)earliest=date;
@@ -566,7 +565,6 @@ function drawChart(){
   const first=earliest?new Date(earliest.getFullYear(),earliest.getMonth(),1):new Date(now.getFullYear(),now.getMonth(),1);
   const last=new Date(now.getFullYear(),now.getMonth(),1);
   const monthSpan=Math.max(1,(last.getFullYear()-first.getFullYear())*12+last.getMonth()-first.getMonth()+1);
-  // Protect the dashboard from malformed historical dates creating an enormous chart.
   if(monthSpan>1200){
    const summary=$('chart-summary');if(summary)summary.innerHTML='<strong>Order history date needs review</strong><span>The earliest order date is unusually old, so the chart was paused to keep Analytics responsive.</span>';
    $('range-label').textContent='All time · date review needed';return;
@@ -582,22 +580,33 @@ function drawChart(){
  const vals=buckets.map(d=>totals.get(key(d))?.value||0);
  const total=counts.reduce((a,b)=>a+b,0),value=vals.reduce((a,b)=>a+b,0),peak=Math.max(...counts,0),peakIndex=counts.indexOf(peak),summary=$('chart-summary');
  if(summary)summary.innerHTML='<strong>'+total+' orders <i>·</i> '+money(value)+'</strong><span>Peak '+(allTime?'month':'day')+': '+(peak?buckets[peakIndex].toLocaleDateString('en-GB',allTime?{month:'short',year:'numeric'}:{day:'numeric',month:'short'})+' · '+peak+' orders':'No orders in this period')+'</span>';
- const maxC=Math.max(4,...counts);ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';
- for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;ctx.strokeStyle=dashboard.dataset.ccTheme==='dark'?'#34435a':'#edf0f5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(String(Math.round(maxC*(1-i/4))),pad.l-8,y);}
- // Centre a single month instead of pinning its only point to the far-left edge.
+ // These are different units: order count uses the left axis; ZMW value uses the right axis.
+ const maxC=Math.max(4,...counts),maxSales=Math.max(1,...vals);
+ ctx.font='10px system-ui';ctx.textBaseline='middle';
+ for(let i=0;i<=4;i++){
+  const fraction=1-i/4,y=pad.t+ch*i/4;
+  ctx.strokeStyle=dashboard.dataset.ccTheme==='dark'?'#34435a':'#edf0f5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+  ctx.textAlign='right';ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(String(Math.round(maxC*fraction)),pad.l-8,y);
+  ctx.textAlign='left';ctx.fillText(Math.round(maxSales*fraction).toLocaleString(),w-pad.r+8,y);
+ }
+ ctx.textBaseline='top';ctx.font='9px system-ui';ctx.textAlign='left';ctx.fillStyle='#ff6500';ctx.fillText('ORDERS',pad.l,5);
+ ctx.textAlign='right';ctx.fillStyle='#3478f6';ctx.fillText('ZMW',w-pad.r+42,5);
  const step=cw/Math.max(1,buckets.length-1),xAt=i=>buckets.length===1?pad.l+cw/2:pad.l+step*i;
  const pts=counts.map((v,i)=>({x:xAt(i),y:pad.t+ch-(v/maxC)*ch}));
- ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));if(pts.length>1){ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();}
+ if(pts.length>1){
+  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();
+ }
  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ff6500';ctx.lineWidth=2.5;ctx.stroke();
  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
- const maxSales=Math.max(...vals,1),salesPts=vals.map((v,i)=>({x:xAt(i),y:pad.t+ch-(v/maxSales)*ch*.76}));
- ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
- salesPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle='#3478f6';ctx.fill();});
- if(buckets.length===1){ctx.save();ctx.setLineDash([2,3]);ctx.lineWidth=2;ctx.strokeStyle='#ff6500';ctx.beginPath();ctx.moveTo(pts[0].x-10,pts[0].y);ctx.lineTo(pts[0].x+10,pts[0].y);ctx.stroke();ctx.strokeStyle='#3478f6';ctx.beginPath();ctx.moveTo(salesPts[0].x-10,salesPts[0].y);ctx.lineTo(salesPts[0].x+10,salesPts[0].y);ctx.stroke();ctx.restore();}
+ const salesPts=vals.map((v,i)=>({x:xAt(i),y:pad.t+ch-(v/maxSales)*ch}));
+ ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2.5;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+ salesPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,Math.PI*2);ctx.fillStyle='#3478f6';ctx.fill();});
  const tooltipLabels=buckets.map(d=>d.toLocaleDateString('en-GB',allTime?{month:'long',year:'numeric'}:{day:'numeric',month:'long',year:'numeric'}));
- attachChartTooltip(canvas,(x,y)=>{let index=0,best=Infinity;pts.forEach((p,i)=>{const distance=Math.abs(p.x-x);if(distance<best){best=distance;index=i;}});if(best>Math.max(28,cw/Math.max(1,buckets.length-1)*.48))return '';return tooltipLabels[index]+'\nOrders: '+counts[index].toLocaleString()+'\nRecorded order value: '+money(vals[index]);});
+ attachChartTooltip(canvas,(x,y)=>{let index=0,best=Infinity;pts.forEach((p,i)=>{const distance=Math.abs(p.x-x);if(distance<best){best=distance;index=i;}});if(best>Math.max(28,cw/Math.max(1,buckets.length-1)*.48))return '';return tooltipLabels[index]+'\\nOrders: '+counts[index].toLocaleString()+'\\nRecorded order value: '+money(vals[index]);});
  ctx.textAlign='center';ctx.textBaseline='top';buckets.forEach((d,i)=>{const every=Math.max(1,Math.ceil(buckets.length/6));if(buckets.length<=7||i===0||i===buckets.length-1||i%every===0){ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(d.toLocaleDateString('en-GB',allTime?{month:'short',year:'2-digit'}:buckets.length===7?{weekday:'short'}:{day:'numeric',month:'short'}),xAt(i),h-pad.b+10);}});
- const first=buckets[0],last=buckets[buckets.length-1];$('range-label').textContent=allTime?'All time · '+buckets.length+' months':first.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+last.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+ const first=buckets[0],last=buckets[buckets.length-1];
+ $('range-label').textContent=allTime?buckets.length+' '+(buckets.length===1?'month':'months')+' of recorded data':first.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+last.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+
 }
 async function loadInventory(){
  const host=$('inventory-grid');host.replaceChildren();try{
