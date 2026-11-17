@@ -1942,6 +1942,15 @@ async function loadProductPage() {
     if (r.ok) { const t = await r.text(); product = parseFrontmatter(t, slug); }
   } catch(e) {}
   if (!product) { renderNotFound(slug); return; }
+  try {
+    const stockResponse = await fetch('/api/product-stock', { cache: 'no-store' });
+    if (stockResponse.ok) {
+      const stockData = await stockResponse.json();
+      if (stockData && stockData.ok && Object.prototype.hasOwnProperty.call(stockData.stock || {}, slug)) {
+        product.stock = Math.max(0, Number(stockData.stock[slug]) || 0);
+      }
+    }
+  } catch (stockError) { console.warn('[PhoneYa2] Live product stock unavailable; using published catalogue quantity.', stockError); }
   try { const categoryResponse = await fetch('/content/product-categories/index.json'); if (categoryResponse.ok) { const categoryRows = await categoryResponse.json(); if (Array.isArray(categoryRows)) categoryRows.forEach(category => { if (category && category.slug && category.title) CAT_LABELS[category.slug] = category.title; }); } } catch (_) {}
   renderProduct(product);
   gtag('event', 'view_product', {
