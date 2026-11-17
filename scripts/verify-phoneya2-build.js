@@ -183,7 +183,7 @@ try {
   for (const [label, pattern] of [
     ['clear empty-queue message', /Nothing needs your attention right now/],
     ['live new-work popups', /showWorkPopup/],
-    ['periodic work-queue refresh', /45000/],
+    ['periodic work-queue refresh', /90000/],
     ['optional work alert sound', /work-sound/]
   ]) if (!pattern.test(workQueue)) fail('Command Centre work queue is missing ' + label + '.');
   pass('Command Centre and storefront notification image, filter, popup and sound interfaces are wired.');
