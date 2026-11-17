@@ -1813,3 +1813,75 @@ body.py2-management-open{overflow:hidden!important}
 #dashboard[data-cc-theme="dark"] #view-growth .gi-opportunity,#dashboard[data-cc-theme="dark"] #view-growth .gi-next-move{background:#1d304a;border-color:#314965}
 @media(max-width:1050px){#view-growth .gi-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){#view-growth .gi-header{display:grid;padding:17px}#view-growth .gi-header-actions{align-items:flex-start;flex-direction:row;flex-wrap:wrap}#view-growth .gi-two-col,#view-growth .gi-opportunities{grid-template-columns:1fr}#view-growth .gi-section{padding:14px}#view-growth .gi-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#view-growth .gi-readiness-grid{grid-template-columns:1fr}#view-growth .gi-next-move,#view-growth .gi-experiment-cta{align-items:flex-start;flex-direction:column}}
+
+/* Growth Lab: experiment portfolio */
+#view-experiments .growth-lab{display:grid;gap:15px;min-width:0}
+#view-experiments .gl-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:23px 25px;border-radius:16px;background:linear-gradient(120deg,#101a31,#203c64);color:#fff}
+#view-experiments .gl-kicker,#view-experiments .gl-step{font-size:9px;font-weight:950;letter-spacing:1.4px;color:#75aaff}
+#view-experiments .gl-hero h2{font-size:clamp(19px,2.4vw,27px);margin:7px 0;color:#fff}
+#view-experiments .gl-hero p{font-size:12px;color:#c6d3e6;margin:0;max-width:700px}
+#view-experiments .gl-hero-stat{min-width:110px;text-align:center;padding:13px;border:1px solid #ffffff30;border-radius:12px;background:#ffffff12}
+#view-experiments .gl-hero-stat strong{display:block;font-size:28px;color:#fff}
+#view-experiments .gl-hero-stat span{font-size:9px;letter-spacing:1px;color:#c6d3e6;font-weight:900}
+#view-experiments .gl-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+#view-experiments .gl-summary>div{padding:13px;border:1px solid #e5eaf2;border-radius:11px;background:#fff}
+#view-experiments .gl-summary span{display:block;font-size:10px;color:#778398;font-weight:800}
+#view-experiments .gl-summary strong{display:block;font-size:23px;color:#20334e;margin-top:4px}
+#view-experiments .gl-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+#view-experiments .gl-toolbar h3{font-size:16px;margin:0;color:var(--text,#23334b)}
+#view-experiments .gl-toolbar p{font-size:11px;color:#8190a3;margin:4px 0 0}
+#view-experiments .gl-filters{display:flex;gap:8px}
+#view-experiments .gl-filters input,#view-experiments .gl-filters select{min-height:37px;padding:7px 10px;border:1px solid #dce3ed;border-radius:8px;background:#fff;color:#253650;font-size:11px}
+#view-experiments .gl-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:14px;align-items:start}
+#view-experiments .gl-panel{min-width:0;padding:19px;border:1px solid #e5eaf2;border-radius:15px;background:#fff;box-shadow:0 4px 18px #192a4608}
+#view-experiments .gl-panel-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:14px}
+#view-experiments .gl-panel-head h3{font-size:15px;margin:4px 0;color:#23334b}
+#view-experiments .gl-panel-head p{font-size:11px;color:#7c899c;margin:0}
+#view-experiments .gl-create form{display:grid;gap:10px}
+#view-experiments .gl-create label{display:grid;gap:5px;font-size:10px;font-weight:850;color:#53647c}
+#view-experiments .gl-create input,#view-experiments .gl-create select,#view-experiments .gl-create textarea{width:100%;min-width:0;padding:9px 10px;border:1px solid #dce3ed;border-radius:8px;background:#fff;color:#26364d;font:inherit;font-size:11px}
+#view-experiments .gl-create textarea{resize:vertical}
+#view-experiments .gl-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#view-experiments .gl-form-actions{display:flex;gap:8px;flex-wrap:wrap}
+#view-experiments .gl-help{font-size:10px;color:#8793a5;line-height:1.5;margin:0}
+#view-experiments .gl-playbooks{display:grid;gap:7px;max-height:780px;overflow:auto;padding-right:3px}
+#view-experiments .gl-playbook{display:grid;gap:4px;text-align:left;padding:10px 11px;border:1px solid #e6ebf2;border-radius:9px;background:#fbfcfe;cursor:pointer}
+#view-experiments .gl-playbook:hover{border-color:#8eb2e9;background:#f3f7ff}
+#view-experiments .gl-playbook strong{font-size:11px;color:#273951}
+#view-experiments .gl-playbook span{font-size:10px;line-height:1.4;color:#758398}
+#view-experiments .gl-playbook small{font-size:9px;color:#5278b5;font-weight:800}
+#view-experiments .gl-board{display:grid;gap:10px}
+#view-experiments .gl-list{display:grid;gap:10px}
+#view-experiments .gl-experiment{padding:15px;border:1px solid #e4eaf2;border-radius:12px;background:#fff}
+#view-experiments .gl-experiment-top{display:flex;justify-content:space-between;gap:10px}
+#view-experiments .gl-experiment h4{font-size:14px;color:#253650;margin:8px 0 4px}
+#view-experiments .gl-experiment-top p{font-size:11px;line-height:1.5;color:#718096;margin:0}
+#view-experiments .gl-status{display:inline-flex;padding:4px 7px;border-radius:6px;font-size:9px;text-transform:uppercase;font-weight:950;letter-spacing:.5px;background:#eef2f7;color:#63748b}
+#view-experiments .gl-running{background:#e8f1ff;color:#2864b6}.gl-planned{background:#f0edff;color:#7256b5}.gl-review{background:#fff3df;color:#a66a17}.gl-won{background:#e5f6ed;color:#168052}.gl-lost{background:#ffeded;color:#bd4a4a}.gl-inconclusive{background:#edf0f4;color:#63748b}.gl-paused{background:#fff0e8;color:#b45e2a}
+#view-experiments .gl-channel{font-size:9px;font-weight:850;color:#6d7e94;padding:5px 7px;border-radius:6px;background:#f1f4f8;height:max-content}
+#view-experiments .gl-experiment-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}
+#view-experiments .gl-experiment-meta span{font-size:9px;color:#8792a2}
+#view-experiments .gl-experiment-meta b{display:block;color:#33445c;font-size:10px;margin-top:3px;overflow-wrap:anywhere}
+#view-experiments .gl-progress{height:6px;border-radius:9px;background:#e9eef5;overflow:hidden}
+#view-experiments .gl-progress span{display:block;height:100%;background:linear-gradient(90deg,#3979d5,#f39a35);border-radius:9px}
+#view-experiments .gl-countdown{display:block;font-size:9px;color:#74839a;margin-top:5px}
+#view-experiments .gl-details{margin:11px 0;font-size:10px;color:#728096}
+#view-experiments .gl-details summary{cursor:pointer;font-weight:850;color:#4e6688}
+#view-experiments .gl-details p{line-height:1.5;margin:7px 0}
+#view-experiments .gl-card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+#view-experiments .gl-card-actions .btn{font-size:10px;padding:6px 9px;min-height:30px}
+#view-experiments .gl-empty{padding:28px;text-align:center;border:1px dashed #d6dfeb;border-radius:11px;color:#708097}
+#view-experiments .gl-empty strong{font-size:13px}.gl-empty p{font-size:11px}
+#view-experiments .gl-error{padding:13px;border-radius:9px;background:#fff0f0;color:#a43e3e;font-size:11px}
+#view-experiments .gl-method-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#view-experiments .gl-method-grid article{padding:12px;border-radius:9px;background:#f5f8fc}
+#view-experiments .gl-method-grid b{font-size:11px;color:#2c405d}
+#view-experiments .gl-method-grid p{font-size:10px;line-height:1.5;color:#7a8799;margin:5px 0 0}
+#dashboard[data-cc-theme="dark"] #view-experiments .gl-panel,#dashboard[data-cc-theme="dark"] #view-experiments .gl-summary>div,#dashboard[data-cc-theme="dark"] #view-experiments .gl-experiment{background:#17263b;border-color:#2a3d57}
+#dashboard[data-cc-theme="dark"] #view-experiments .gl-panel-head h3,#dashboard[data-cc-theme="dark"] #view-experiments .gl-summary strong,#dashboard[data-cc-theme="dark"] #view-experiments .gl-experiment h4,#dashboard[data-cc-theme="dark"] #view-experiments .gl-experiment-meta b,#dashboard[data-cc-theme="dark"] #view-experiments .gl-toolbar h3{color:#edf4ff}
+#dashboard[data-cc-theme="dark"] #view-experiments .gl-create label,#dashboard[data-cc-theme="dark"] #view-experiments .gl-experiment-top p,#dashboard[data-cc-theme="dark"] #view-experiments .gl-experiment-meta span{color:#a9bad1}
+#dashboard[data-cc-theme="dark"] #view-experiments .gl-create input,#dashboard[data-cc-theme="dark"] #view-experiments .gl-create select,#dashboard[data-cc-theme="dark"] #view-experiments .gl-create textarea,#dashboard[data-cc-theme="dark"] #view-experiments .gl-filters input,#dashboard[data-cc-theme="dark"] #view-experiments .gl-filters select{background:#102039;border-color:#344a67;color:#edf4ff}
+#dashboard[data-cc-theme="dark"] #view-experiments .gl-playbook,#dashboard[data-cc-theme="dark"] #view-experiments .gl-method-grid article{background:#1d304a;border-color:#314965}
+#dashboard[data-cc-theme="dark"] #view-experiments .gl-playbook strong,#dashboard[data-cc-theme="dark"] #view-experiments .gl-method-grid b{color:#edf4ff}
+@media(max-width:1000px){#view-experiments .gl-layout{grid-template-columns:1fr}#view-experiments .gl-playbooks{max-height:360px}#view-experiments .gl-method-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){#view-experiments .gl-hero{align-items:flex-start;padding:17px}#view-experiments .gl-hero-stat{min-width:80px}#view-experiments .gl-summary{grid-template-columns:repeat(2,minmax(0,1fr))}#view-experiments .gl-toolbar{align-items:stretch;flex-direction:column}#view-experiments .gl-filters{flex-direction:column}#view-experiments .gl-form-grid{grid-template-columns:1fr}#view-experiments .gl-experiment-meta{grid-template-columns:repeat(2,minmax(0,1fr))}#view-experiments .gl-method-grid{grid-template-columns:1fr}}
