@@ -713,6 +713,11 @@ export async function onRequest(context) {
         const limit = 200;
         const offset = Math.max(0, Math.min(1000000, Math.floor(Number(url.searchParams.get("offset")) || 0)));
         const orders = await readD1Orders(env, { limit, offset });
+        // Command Centre summary reads do not need product image lookups. Keep the
+        // enriched response for the full Order Desk, but make dashboard refreshes light.
+        if (url.searchParams.get("summary") === "1") {
+          return json({ orders, has_more: orders.length === limit, next_offset: orders.length === limit ? offset + limit : null });
+        }
         const slugs = [...new Set(orders.flatMap(order => (order.order_items || []).map(item => item.product_slug).filter(Boolean)))];
         const productMap = new Map();
         await Promise.all(slugs.map(async slug => { try { const product = await loadProduct(context, slug); if (product) productMap.set(slug, product); } catch {} }));
