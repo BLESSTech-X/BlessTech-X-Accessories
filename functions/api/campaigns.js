@@ -94,6 +94,10 @@ export async function onRequest({request,env}){
   if(body.action==="send"){
    const id=String(body.id||"");if(!/^[0-9a-f-]{36}$/i.test(id))return json({error:"Invalid campaign."},400);
    const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();if(!campaign)return json({error:"Campaign not found."},404);if(campaign.approval_status!=="approved")return json({error:"Approve this campaign before sending. Drafts are never sent automatically."},409);const deliveryChannels=(()=>{try{const value=JSON.parse(campaign.channels_json||'["email"]');return Array.isArray(value)?value:[]}catch{return []}})();if(!deliveryChannels.includes("email"))return json({error:"This campaign is not configured for email delivery. Add the email channel before sending."},409);if(campaign.status==="sent")return json({error:"This campaign is already complete."},409);
+   const lockToken=crypto.randomUUID(),lockNow=new Date().toISOString(),lockUntil=new Date(Date.now()+10*60*1000).toISOString();
+   const lock=await env.DB.prepare("INSERT INTO campaign_send_locks(campaign_id,lock_token,locked_until,updated_at) VALUES(?,?,?,?) ON CONFLICT(campaign_id) DO UPDATE SET lock_token=excluded.lock_token,locked_until=excluded.locked_until,updated_at=excluded.updated_at WHERE campaign_send_locks.locked_until<=excluded.updated_at RETURNING lock_token").bind(id,lockToken,lockUntil,lockNow).first();
+   if(!lock)return json({error:"This campaign is already being processed. Wait for the current batch to finish before retrying."},409);
+   try{
    let recipients=[];
    if(campaign.audience==="partners"){
     const rows=await env.DB.prepare("SELECT id AS advertiser_id,email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'') ORDER BY created_at ASC LIMIT 1000").all();
@@ -123,6 +127,7 @@ export async function onRequest({request,env}){
    await env.DB.prepare("UPDATE email_campaigns SET status=?,updated_at=?,sent_count=sent_count+?,failed_count=failed_count+?,completed_at=?,last_error=? WHERE id=?").bind(status,completedAt,sent,failed,done?completedAt:null,errors.join(" | "),id).run();
    if(done){try{await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications(id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(crypto.randomUUID(),"campaign-completed:"+id+":"+status,"communications",status==="failed"?"campaign_failed":"campaign_sent",status==="failed"?"Campaign needs attention":"Campaign completed",campaign.name+" finished. "+sent+" delivery successes and "+failed+" failed attempts.",status==="failed"?"high":"normal","/admin/communications.html",id,campaign.name).run();}catch(e){console.error("Campaign notification failed:",String(e).slice(0,180));}}
    return json({success:true,done,processed:batch.length,sent,failed,remaining,errors,message:done?"Campaign batch completed.":"Batch processed. Select Send/Resume again to continue."});
+   }finally{try{await env.DB.prepare("DELETE FROM campaign_send_locks WHERE campaign_id=? AND lock_token=?").bind(id,lockToken).run();}catch(lockError){console.error("Campaign send lock release failed:",String(lockError?.message||lockError).slice(0,180));}}
   }
   return json({error:"Unsupported action."},400);
  }catch(e){console.error("PhoneYa2 D1 campaign endpoint failed:",String(e).slice(0,300));return json({error:"Campaign operation failed. Check D1 migrations and server logs."},503);}
