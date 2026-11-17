@@ -1303,6 +1303,11 @@ function orderUrl(p, qty) {
   return '/checkout.html?product=' + encodeURIComponent(p.slug) + '&qty=' + encodeURIComponent(qty);
 }
 const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',watch:'Watch',accessory:'Other Accessories',other:'Other'};
+let productCategories = [];
+const CATEGORY_FALLBACK_ICONS = {case:'fa-solid fa-mobile-screen',charger:'fa-solid fa-bolt',cable:'fa-solid fa-plug',earphone:'fa-solid fa-headphones',powerbank:'fa-solid fa-battery-full',protector:'fa-solid fa-shield-halved',phone:'fa-solid fa-mobile',watch:'fa-regular fa-clock',accessory:'fa-solid fa-puzzle-piece',other:'fa-solid fa-box',perfumes:'fa-solid fa-spray-can'};
+async function loadProductCategories(){try{const r=await fetch('/content/product-categories/index.json?v='+Date.now());if(r.ok){const rows=await r.json();if(Array.isArray(rows)&&rows.length)productCategories=rows.filter(x=>x&&x.slug&&x.active!==false);}}catch(e){}if(!productCategories.length){const seen=new Set();productCategories=allProducts.map(p=>String(p.category||'other')).filter(slug=>{if(seen.has(slug))return false;seen.add(slug);return true;}).map((slug,i)=>({slug,title:CAT_LABELS[slug]||slug.replace(/[-_]/g,' ').replace(/\b\w/g,x=>x.toUpperCase()),icon:CATEGORY_FALLBACK_ICONS[slug]||'fa-solid fa-box',sort_order:i+1}));}productCategories.forEach(x=>{CAT_LABELS[x.slug]=x.title;});}
+function renderCategoryNavigation(){const pills=document.getElementById('filter-pills');if(pills){pills.innerHTML='';const addPill=(slug,label)=>{const b=document.createElement('button');b.type='button';b.className='fpill'+(activeCat===slug?' active':'');b.dataset.cat=slug;b.append(document.createTextNode(label+' '));const count=document.createElement('span');count.className='cnt';count.id='cnt-'+slug;b.appendChild(count);pills.appendChild(b);};addPill('all','All');productCategories.forEach(x=>addPill(x.slug,x.title));}const nav=document.querySelector('.cat-nav-inner');if(nav){nav.innerHTML='';const addLink=(href,label,icon)=>{const a=document.createElement('a');a.href=href;a.className='cat-nav-item';const i=document.createElement('i');i.className=icon||'fa-solid fa-box';i.setAttribute('aria-hidden','true');a.append(i,document.createTextNode(' '+label));nav.appendChild(a);};addLink('/shop.html?cat=all','All Products','fa-solid fa-store');productCategories.forEach(x=>addLink('/shop.html?cat='+encodeURIComponent(x.slug),x.title,x.icon||CATEGORY_FALLBACK_ICONS[x.slug]));addLink('/about.html','About Us','fa-solid fa-circle-info');}}
+
 const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',watch:'linear-gradient(135deg,#5f27cd,#ff9ff3)',accessory:'linear-gradient(135deg,#54a0ff,#25d366)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
 
 function parseFrontmatter(text, slug) {
@@ -1478,12 +1483,16 @@ function renderGrid(appendOnly) {
   let list = allProducts.filter(p => {
     const catOk = activeCat === 'all' || p.category === activeCat;
     const q = searchQuery.toLowerCase().trim();
+    const visibility = p.visibility && typeof p.visibility === 'object' ? p.visibility : null;
+    const pageVisible = q
+      ? !visibility || visibility.search !== false
+      : !visibility || visibility.shop !== false;
     const searchOk = !q ||
       (p.title||'').toLowerCase().includes(q) ||
       (p.category||'').toLowerCase().includes(q) ||
       (p.description||'').toLowerCase().includes(q) ||
-      (CAT_LABELS[p.category]||'').toLowerCase().includes(q);
-    return catOk && searchOk;
+      ((p.category_title || CAT_LABELS[p.category])||'').toLowerCase().includes(q);
+    return pageVisible && catOk && searchOk;
   });
 
   const sort = document.getElementById('sort-sel').value;
@@ -1514,7 +1523,7 @@ function renderGrid(appendOnly) {
     const st = stockStatus(p.stock);
     const op = parseFloat(p.original_price)||0;
     const hasDrop = op > p.price;
-    const cat = CAT_LABELS[p.category] || p.category || 'Other';
+    const cat = (p.category_title || CAT_LABELS[p.category]) || p.category || 'Other';
     const bg = CAT_BG[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
     const img = p.image
       ? '<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'📱\'">'
@@ -1578,11 +1587,12 @@ function renderGrid(appendOnly) {
 }
 
 function updateCounts() {
-  const cats = ['all','case','charger','cable','earphone','powerbank','protector','phone','watch','accessory','other'];
+  const cats = ['all'].concat(productCategories.map(x => x.slug));
   cats.forEach(cat => {
     const el = document.getElementById('cnt-' + cat);
     if (!el) return;
-    const n = cat === 'all' ? allProducts.length : allProducts.filter(p => p.category === cat).length;
+    const visibleProducts = allProducts.filter(p => !p.visibility || p.visibility.shop !== false);
+    const n = cat === 'all' ? visibleProducts.length : visibleProducts.filter(p => p.category === cat).length;
     el.textContent = '(' + n + ')';
   });
 }
@@ -1595,26 +1605,21 @@ function showError(msg) {
   if (countEl) countEl.textContent = '0';
 }
 
-document.querySelectorAll('.fpill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeCat = btn.dataset.cat;
-    const url = new URL(window.location);
-    activeCat === 'all' ? url.searchParams.delete('cat') : url.searchParams.set('cat', activeCat);
-    history.replaceState(null, '', url);
-    renderGrid();
-  });
+document.getElementById('filter-pills').addEventListener('click', event => {
+  const btn = event.target.closest('.fpill');
+  if (!btn) return;
+  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = btn.dataset.cat || 'all';
+  const url = new URL(window.location);
+  activeCat === 'all' ? url.searchParams.delete('cat') : url.searchParams.set('cat', activeCat);
+  history.replaceState(null, '', url);
+  renderGrid();
 });
 
 (function() {
   const cat = new URLSearchParams(window.location.search).get('cat');
-  if (cat) {
-    activeCat = cat;
-    document.querySelectorAll('.fpill').forEach(b => {
-      b.classList.toggle('active', b.dataset.cat === cat);
-    });
-  }
+  if (cat) activeCat = cat;
 })();
 
 document.getElementById('sort-sel').addEventListener('change', renderGrid);
@@ -1673,6 +1678,8 @@ window.dismissNotif = function() {
 async function loadShop() {
   try {
     allProducts = await fetchAllProducts();
+    await loadProductCategories();
+    renderCategoryNavigation();
     window.phoneya2Products = allProducts;
     window.dispatchEvent(new CustomEvent("phoneya2:catalog-ready", { detail: allProducts }));
     window.allProductsMap = {};
@@ -2108,7 +2115,7 @@ s0.parentNode.insertBefore(s1,s0);
 </script>
 <script src="/blog-comment-success.js?v=20261029-shared-success2" defer></script><script src="/blog-widgets.js?v=20261029-shared-success1" defer></script>
 
-<script src="/site-header.js?v=20261015-shop-header-no-search1" defer></script>
+<script src="/site-header.js?v=20261117-dynamic-categories" defer></script>
 <script src="/smart-guide.js?v=20261017-context-help7" defer></script><script src="/interest-popups.js?v=20261029-product-picks-more-pages1" defer></script>
 
 <script src="/water-experience.js?v=20261030-retired1"></script>

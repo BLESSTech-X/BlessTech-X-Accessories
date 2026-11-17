@@ -32,6 +32,23 @@ function runSearch(value){const q=String(value||'').trim();if(!q){const input=dr
 document.addEventListener('submit',e=>{const form=e.target;if(form.matches('.py2-menu-search')){e.preventDefault();runSearch(form.querySelector('input')?.value);return;}if(form.matches('.header-search form,[role="search"].header-search')){e.preventDefault();runSearch(form.querySelector('input')?.value);}},true);
 document.addEventListener('click',e=>{const button=e.target.closest('.header-search button, .header-search [type="submit"]');if(button){const area=button.closest('.header-search');const input=area&&area.querySelector('input');if(input){e.preventDefault();e.stopImmediatePropagation();runSearch(input.value);}}},true);
 document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const input=e.target;if(input.matches('.header-search input, #main-search, #mob-search, #py2-menu-search-input')){e.preventDefault();e.stopImmediatePropagation();runSearch(input.value);}});
+/* Dynamic product categories: keep category navigation in sync across every public page. */
+(async function(){
+ const nav=document.querySelector('body>.cat-nav .cat-nav-inner');
+ if(!nav)return;
+ try{
+  const response=await fetch('/content/product-categories/index.json');
+  if(!response.ok)return;
+  const categories=await response.json();
+  if(!Array.isArray(categories)||!categories.length)return;
+  const active=new URLSearchParams(location.search).get('cat')||'all';
+  nav.innerHTML='';
+  const add=(href,label,icon,slug)=>{const a=document.createElement('a');a.href=href;a.className='cat-nav-item'+(slug===active?' active':'');const i=document.createElement('i');i.className=icon||'fa-solid fa-box';i.setAttribute('aria-hidden','true');a.append(i,document.createTextNode(' '+label));nav.appendChild(a);};
+  add('/shop.html?cat=all','All Products','fa-solid fa-store','all');
+  categories.filter(x=>x&&x.slug&&x.active!==false).forEach(x=>add('/shop.html?cat='+encodeURIComponent(x.slug),x.title||x.slug,x.icon||'fa-solid fa-box',x.slug));
+  add('/about.html','About Us','fa-solid fa-circle-info','');
+ }catch(_){}
+})();
 const query=new URLSearchParams(location.search).get('q');
 if(query){document.querySelectorAll('body>.top-header .header-search input, #main-search').forEach(i=>{i.value=query;});}
 /* Shared sitewide background and professional button polish. */

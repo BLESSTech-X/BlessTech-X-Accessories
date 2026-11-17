@@ -81,6 +81,11 @@ function categoryGuide(category) {
     intro: 'Smartwatch features and companion apps vary by model. Confirm what the specific listing includes before you order.',
     checks: ['Check compatibility with your phone and its operating system.', 'Review the listed features and whether an app is required.', 'Confirm the charging method, included accessories and any stated limitations.']
   };
+  if (key === 'perfumes') return {
+    heading: 'Choose a fragrance that suits you',
+    intro: 'Fragrances vary by scent profile, concentration and bottle size. Review the exact product details and ask PhoneYa2 about anything not stated.',
+    checks: ['Confirm the bottle size and fragrance concentration where listed.', 'Review the scent family and notes, if provided, and choose according to your preference.', 'Ask about packaging, seal condition and availability before completing your order.']
+  };
   if (key === 'phone') return {
     heading: 'Confirm the exact device details',
     intro: 'Phone model, storage, condition and included accessories can vary. Ask questions before paying if any detail is unclear.',
@@ -97,7 +102,7 @@ function renderCrawlerProduct(product, slug, url) {
   const esc = escapeHtml;
   const title = String(product.title || 'PhoneYa2 product').trim();
   const description = String(product.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-  const categoryNames = {case:'Phone case',charger:'Phone charger',cable:'Charging cable',earphone:'Earphones and headsets',powerbank:'Power bank',protector:'Screen protector',phone:'Phone',watch:'Watch or smartwatch',accessory:'Phone accessory',other:'Accessory'};
+  const categoryNames = {case:'Phone case',charger:'Phone charger',cable:'Charging cable',earphone:'Earphones and headsets',powerbank:'Power bank',protector:'Screen protector',phone:'Phone',watch:'Watch or smartwatch',accessory:'Phone accessory',other:'Product',perfumes:'Perfume'};
   const category = String(product.category || 'other').toLowerCase();
   const guide = categoryGuide(category);
   const price = Number(product.price);

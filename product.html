@@ -1278,8 +1278,8 @@ function orderUrl(p, qty) {
   qty = Math.max(1, Number(qty) || 1);
   return '/checkout.html?product=' + encodeURIComponent(p.slug) + '&qty=' + encodeURIComponent(qty);
 }
-const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',watch:'Watch',accessory:'Other Accessories',other:'Other'};
-const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',watch:'linear-gradient(135deg,#5f27cd,#ff9ff3)',accessory:'linear-gradient(135deg,#54a0ff,#25d366)',other:'linear-gradient(135deg,#feca57,#48dbfb)'};
+const CAT_LABELS = {case:'Case',charger:'Charger',cable:'Cable',earphone:'Earphone',powerbank:'Power Bank',protector:'Protector',phone:'Phone',watch:'Watch',accessory:'Other Accessories',other:'Other',perfumes:'Perfumes'};
+const CAT_BG = {case:'linear-gradient(135deg,#54a0ff,#5f27cd)',charger:'linear-gradient(135deg,#feca57,#ff6b6b)',cable:'linear-gradient(135deg,#48dbfb,#54a0ff)',earphone:'linear-gradient(135deg,#ff9ff3,#ff6b6b)',powerbank:'linear-gradient(135deg,#5f27cd,#48dbfb)',protector:'linear-gradient(135deg,#48dbfb,#ff9ff3)',phone:'linear-gradient(135deg,#ff6b6b,#5f27cd)',watch:'linear-gradient(135deg,#5f27cd,#ff9ff3)',accessory:'linear-gradient(135deg,#54a0ff,#25d366)',other:'linear-gradient(135deg,#feca57,#48dbfb)',perfumes:'linear-gradient(135deg,#8b5cf6,#ec4899)'};
 
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escJs(s)   { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
@@ -1394,9 +1394,31 @@ function parseFrontmatter(text, slug) {
     else if (key === 'featured') out[key] = v === 'true';
     else out[key] = v;
   }
+  function readNestedObject(key) {
+    const lines = raw.split('\n');
+    const start = lines.findIndex(line => line.trim() === key + ':');
+    if (start < 0) return {};
+    const result = {};
+    for (let i = start + 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      if (!line.startsWith('  ')) break;
+      const trimmed = line.trim();
+      const colon = trimmed.indexOf(':');
+      if (colon < 1) continue;
+      const name = trimmed.slice(0, colon).trim();
+      let value = trimmed.slice(colon + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (value === 'true') value = true;
+      else if (value === 'false') value = false;
+      result[name] = value;
+    }
+    return result;
+  }
+  out.other_product_details = readNestedObject('other_product_details');
+  out.other_phoneya2_product = out.other_phoneya2_product === true || out.other_phoneya2_product === 'true' || out.other_product_details.enabled === true || out.other_product_details.enabled === 'true';
+  out.visibility = readNestedObject('visibility');
   return out;
 }
-
 async function fetchAllProducts() {
   // Related-product cards only need catalogue fields, not every product's full Markdown file.
   try {
@@ -1749,6 +1771,18 @@ function renderProduct(p) {
       + '</section>'
     : '';
 
+  const extra = p.other_product_details && typeof p.other_product_details === 'object' ? p.other_product_details : {};
+  const detailRows = [
+    ['Brand', extra.brand], ['Variant / Model', extra.variant], ['Size / Volume', extra.size],
+    ['Scent Family', extra.scent_family], ['Fragrance Concentration', extra.concentration],
+    ['Scent Notes', extra.scent_notes], ['Specifications', extra.specifications]
+  ].filter(row => String(row[1] || '').trim());
+  const productAttributesHTML = p.other_phoneya2_product && detailRows.length
+    ? '<section class="py2-product-attributes" aria-label="Product specifications"><h2>Product details</h2><dl>'
+      + detailRows.map(row => '<div><dt>' + escHtml(row[0]) + '</dt><dd>' + escHtml(row[1]) + '</dd></div>').join('')
+      + '</dl></section>'
+    : '';
+
   const qtyBlock = st.canOrder
     ? '<div class="qty-block"><span class="qty-lbl">Quantity</span><div class="qty-ctrl"><button class="qty-btn" onclick="changeQty(-1)" aria-label="Decrease">−</button><span class="qty-num" id="qty-disp">1</span><button class="qty-btn" onclick="changeQty(1)" aria-label="Increase">+</button></div><span class="qty-total" id="qty-total">Total: <strong>ZMW '+(p.price||0).toLocaleString()+'</strong></span></div>'
     : '';
@@ -1785,6 +1819,7 @@ function renderProduct(p) {
       ${dropBanner}
       ${priceHTML}
       ${salesMessageHTML}
+      ${productAttributesHTML}
       <div class="stock-pill ${st.cls}"><i class="${st.ico}"></i> ${st.label}</div>
       <div class="feat-pills">
         <span class="fpill">🔎 Review product details</span>
@@ -1907,6 +1942,7 @@ async function loadProductPage() {
     if (r.ok) { const t = await r.text(); product = parseFrontmatter(t, slug); }
   } catch(e) {}
   if (!product) { renderNotFound(slug); return; }
+  try { const categoryResponse = await fetch('/content/product-categories/index.json'); if (categoryResponse.ok) { const categoryRows = await categoryResponse.json(); if (Array.isArray(categoryRows)) categoryRows.forEach(category => { if (category && category.slug && category.title) CAT_LABELS[category.slug] = category.title; }); } } catch (_) {}
   renderProduct(product);
   gtag('event', 'view_product', {
   product_name: product.name || slug,
@@ -2427,7 +2463,7 @@ s0.parentNode.insertBefore(s1,s0);
 
   <script src="/blog-widgets.js?v=20261029-comment-preview2" defer></script>
 <script src="/blog-header-button.js" defer></script>
-<script src="/site-header.js?v=20261015-center3" defer></script>
+<script src="/site-header.js?v=20261117-dynamic-categories" defer></script>
 <script src="/smart-guide.js?v=20261017-context-help7" defer></script><script src="/interest-popups.js?v=20261029-product-picks-more-pages1" defer></script>
 
 <script src="/water-experience.js?v=20261030-retired1"></script>
@@ -2462,6 +2498,8 @@ s0.parentNode.insertBefore(s1,s0);
   .bottom-nav .bnav-item { font-size:9px !important; gap:3px !important; }
   .bottom-nav .bnav-item i { font-size:17px !important; }
 }
+
+.py2-product-attributes{margin:16px 0;padding:16px;border:1px solid #e4e8f0;border-radius:14px;background:#f8fafc}.py2-product-attributes h2{font-size:15px;margin:0 0 10px;color:#172033}.py2-product-attributes dl{display:grid;gap:8px;margin:0}.py2-product-attributes dl>div{display:grid;grid-template-columns:minmax(110px,.7fr) 1.3fr;gap:12px;padding-bottom:8px;border-bottom:1px solid #e6eaf0}.py2-product-attributes dl>div:last-child{border-bottom:0;padding-bottom:0}.py2-product-attributes dt{font-size:12px;font-weight:700;color:#667085}.py2-product-attributes dd{margin:0;font-size:13px;color:#172033;font-weight:600}@media(max-width:520px){.py2-product-attributes dl>div{grid-template-columns:1fr;gap:2px}}
 </style>
 </body>
 </html>

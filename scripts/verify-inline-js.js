@@ -7,7 +7,7 @@ const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const files = ['index.html', 'shop.html', 'product.html', 'blog.html', 'agents/py2-360.html', 'admin/command-center.html', 'admin/campaigns.html'];
-const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js', 'cart.js', 'store-notifications.js', 'seasonal-experience.js', 'admin/work-queue.js'];
+const externalScripts = ['blog-hub.js', 'blog-post.js', 'blog-products.js', 'build-product-index.js', 'cart.js', 'store-notifications.js', 'seasonal-experience.js', 'admin/work-queue.js', 'admin/category-select.js', 'admin/product-studio.js', 'site-header.js', 'home-endless-products.js'];
 let checked = 0;
 for (const file of files) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
@@ -25,7 +25,7 @@ for (const file of files) {
       new vm.Script(code, { filename: file + '#inline-script-' + inlineIndex });
       checked++;
     } catch (error) {
-      console.error('FAIL: Inline JavaScript syntax error in ' + file + ' script ' + inlineIndex + ': ' + error.message);
+      console.error('FAIL: Inline JavaScript syntax error in ' + file + ' script ' + inlineIndex + ': ' + (error.stack || error.message));
       process.exitCode = 1;
     }
   }

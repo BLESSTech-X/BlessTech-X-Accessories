@@ -2842,7 +2842,7 @@ window.setCsCat = function(cat, el) {
 
 function renderCsGrid(cat) {
   const grid=document.getElementById('cs-grid'); if(!grid) return;
-  const filtered=allProducts.filter(p=>p.category===cat);
+  const filtered=allProducts.filter(p=>p.category===cat&&(!p.visibility||p.visibility.homepage!==false));
   grid.innerHTML='';
   if(!filtered.length){grid.innerHTML='<p style="color:var(--muted);font-size:13px;padding:16px">No products in this category yet.</p>';return;}
   filtered.slice(0,6).forEach(p=>{
@@ -3360,7 +3360,9 @@ async function init() {
     }
   }
 
-  renderHomepageHeroPromotions(products, homepageSettings);
+  const homeProducts = products.filter(p => !p.visibility || p.visibility.homepage !== false);
+  const offerProducts = homeProducts.filter(p => !p.visibility || p.visibility.offers !== false);
+  renderHomepageHeroPromotions(offerProducts, homepageSettings);
   initHero();
 
   function fillTrack(id, items, cardFn, emptyMessage) {
@@ -3388,7 +3390,7 @@ async function init() {
   }
 
   // Sale sections must never silently substitute regular-price products.
-  const onSale = products
+  const onSale = offerProducts
     .filter(p => Number(p.stock) > 0 && Number(p.original_price) > Number(p.price) && Number(p.original_price) > 0)
     .sort((a, b) => {
       const discountA = ((Number(a.original_price) - Number(a.price)) / Number(a.original_price)) * 100;
@@ -3409,7 +3411,7 @@ async function init() {
   const featSide = document.getElementById('featured-side');
   if (featSide) {
     featSide.innerHTML = '';
-    const featured = products.filter(p => p.featured && Number(p.stock) > 0).slice(0, 3);
+    const featured = homeProducts.filter(p => p.featured && (!p.visibility || p.visibility.featured !== false) && Number(p.stock) > 0).slice(0, 3);
     featured.forEach(p => featSide.appendChild(buildSideRow(p)));
     if (!featured.length) {
       featSide.innerHTML = '<p style="padding:12px;color:var(--muted);font-size:13px">No featured products selected yet.</p>';
@@ -3419,7 +3421,7 @@ async function init() {
   // New Arrivals is chronological, not a featured-products or alphabetical list.
   // date_added is populated by Decap CMS for new products. Undated legacy products
   // stay behind dated products; use a stable slug fallback only among legacy items.
-  const newArrivals = [...products]
+  const newArrivals = [...homeProducts]
     .sort((a, b) => {
       const dateA = Date.parse(a.date_added || a.created_at || '') || 0;
       const dateB = Date.parse(b.date_added || b.created_at || '') || 0;
@@ -3438,7 +3440,7 @@ async function init() {
   fillTrack('deals-track', dealsList, buildFeaturedCard, 'No active deals right now.');
 
   // "For You" is currently discovery, not personalisation: show available items only.
-  const forYou = shuffle(products.filter(p => Number(p.stock) > 0)).sort((a, b) => {
+  const forYou = shuffle(homeProducts.filter(p => Number(p.stock) > 0)).sort((a, b) => {
     const rank = value => value === 'promote' ? 0 : value === 'campaign' ? 1 : 2;
     return rank(a.sales_priority) - rank(b.sales_priority);
   });
@@ -3451,7 +3453,7 @@ async function init() {
     if (installBarBtn) installBarBtn.style.display = 'flex';
   }
 
-  const showcaseProds = shuffle(products.filter(p => (parseInt(p.stock)||0) > 0));
+  const showcaseProds = shuffle(homeProducts.filter(p => (parseInt(p.stock)||0) > 0));
   buildShowcase(showcaseProds);
 
   setTimeout(showSalesNotif, 9000);
@@ -3957,7 +3959,7 @@ var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 
 
   <script src="/blog-comment-success.js?v=20261029-shared-success2" defer></script><script src="/blog-widgets.js?v=20261029-shared-success1" defer></script>
-<script src="/site-header.js?v=20261015-center3" defer></script>
+<script src="/site-header.js?v=20261117-dynamic-categories" defer></script>
 <script src="/smart-guide.js?v=20261017-context-help7" defer></script><script src="/interest-popups.js?v=20261029-product-picks-more-pages1" defer></script>
 
 
