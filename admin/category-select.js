@@ -84,5 +84,47 @@
       return h('span', {}, label);
     }
   });
+
+  var ProductSetupControl = window.createClass({
+    updateField: function (key, value) {
+      var next = Object.assign({}, this.props.value || {});
+      next.enabled = key === 'enabled' ? Boolean(value) : true;
+      if (key !== 'enabled') next[key] = value;
+      this.props.onChange(next);
+    },
+    render: function () {
+      var self = this;
+      var value = this.props.value || {};
+      function field(label, key, placeholder, multiline) {
+        var control = multiline
+          ? h('textarea', { value: value[key] || '', placeholder: placeholder || '', rows: 3, onChange: function (e) { self.updateField(key, e.target.value); } })
+          : h('input', { type: 'text', value: value[key] || '', placeholder: placeholder || '', onChange: function (e) { self.updateField(key, e.target.value); } });
+        return h('label', { className: 'py2-other-product-field', key: key },
+          h('span', {}, label), control);
+      }
+      return h('div', { className: 'py2-other-product-setup' },
+        h('label', { className: 'py2-other-product-toggle' },
+          h('input', {
+            type: 'checkbox',
+            checked: Boolean(value.enabled),
+            onChange: function (e) { self.updateField('enabled', e.target.checked); }
+          }),
+          h('span', {}, 'Other PhoneYa2 Product'),
+          h('small', {}, 'Turn ON for perfumes and products outside the phone-accessories range.')
+        ),
+        value.enabled ? h('div', { className: 'py2-other-product-fields' },
+          field('Brand', 'brand', 'e.g. Lattafa, Armaf'),
+          field('Variant / Model', 'variant', 'Product variant or model'),
+          field('Size / Volume', 'size', 'e.g. 30ml, 50ml, 100ml'),
+          field('Scent Family', 'scent_family', 'e.g. woody, floral, fresh'),
+          field('Fragrance Concentration', 'concentration', 'e.g. Eau de Parfum'),
+          field('Scent Notes', 'scent_notes', 'Enter confirmed fragrance notes', true),
+          field('Additional Specifications', 'specifications', 'Other useful product details', true)
+        ) : h('small', { className: 'py2-other-product-hint' }, 'OFF — the normal phone-accessories product form stays in use. Turn ON to reveal the additional product fields.')
+      );
+    }
+  });
+  window.CMS.registerWidget('other-product-setup', ProductSetupControl);
+
   window.CMS.registerWidget('category-select', CategoryControl, CategoryPreview);
 })();
