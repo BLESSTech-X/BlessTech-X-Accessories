@@ -43,12 +43,13 @@ export async function syncProductCodes(db,list){
    // Seed that untouched zero once from the published catalogue, but never overwrite stock that
    // has a movement, order, or explicit administrator adjustment behind it.
    if(Number(old.stock||0)===0&&Number(p.stock||0)>0){
-    const [movement,order,adjustment]=await Promise.all([
+    const [movement,order,custody,adjustment]=await Promise.all([
      db.prepare("SELECT 1 FROM agent_inventory_movements WHERE product_slug=? LIMIT 1").bind(p.slug).first(),
      db.prepare("SELECT 1 FROM order_items WHERE product_slug=? LIMIT 1").bind(p.slug).first(),
+     db.prepare("SELECT 1 FROM agent_inventory WHERE product_slug=? AND quantity>0 LIMIT 1").bind(p.slug).first(),
      db.prepare("SELECT 1 FROM admin_notifications WHERE event_key LIKE ? LIMIT 1").bind("central-stock-adjust:"+p.slug+":%").first()
     ]);
-    if(!movement&&!order&&!adjustment)statements.push(db.prepare("UPDATE agent_product_codes SET stock=? WHERE product_slug=? AND stock=0").bind(Math.floor(Number(p.stock)),p.slug));
+    if(!movement&&!order&&!custody&&!adjustment)statements.push(db.prepare("UPDATE agent_product_codes SET stock=? WHERE product_slug=? AND stock=0").bind(Math.floor(Number(p.stock)),p.slug));
    }
    if(old.product_name!==p.title||Number(old.price_minor)!==Math.round(p.price*100)||Number(old.active)!==1)
     statements.push(db.prepare("UPDATE agent_product_codes SET product_name=?,price_minor=?,active=1 WHERE product_slug=?").bind(p.title,Math.round(p.price*100),p.slug));
