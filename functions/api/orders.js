@@ -174,7 +174,7 @@ async function createD1Order(env, customer, items, attribution = {}) {
     }else agentReservations.length=0;
     if(!agentReservations.length){
       for(const item of items){
-        const result=await env.DB.prepare("UPDATE agent_product_codes SET stock=stock-? WHERE product_slug=? AND stock>=?").bind(item.quantity,item.product_slug,item.quantity).run();
+        const result=await env.DB.prepare("UPDATE agent_product_codes SET stock=stock-? WHERE product_slug=? AND active=1 AND stock>=?").bind(item.quantity,item.product_slug,item.quantity).run();
         if(!Number(result.meta?.changes||0)){
           if(centralReservations.length)await env.DB.batch(centralReservations.map(x=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(x.quantity,x.slug)));
           throw new Error("Central PhoneYa2 stock is no longer sufficient for this order. Please refresh the shop or contact PhoneYa2.");
@@ -545,7 +545,7 @@ export async function onRequest(context) {
         if(agentAttribution.agent_code){
           let centralAvailable=product.stock,agentHeld=0;
           try{
-            const central=await env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=?").bind(slug).first();
+            const central=await env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=? AND active=1").bind(slug).first();
             if(central)centralAvailable=Math.max(0,Number(central.stock||0));
             const held=await env.DB.prepare("SELECT COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(agentAttribution.agent_code,slug).first();
             agentHeld=Math.max(0,Number(held?.quantity||0));
