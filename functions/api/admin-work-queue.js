@@ -77,7 +77,8 @@ async function syncWork(db,request){
   await addTask(db,{source_key:"notification:"+n.event_key,category:n.category,title:n.title,message:n.message,image_url:n.image_url,destination:n.destination,action_url:n.destination||"/admin/communications.html",priority:n.priority,related_id:n.related_id});
  }
 }
-export async function onRequest(context){\n const {request,env}=context;
+export async function onRequest(context){
+ const {request,env}=context;
  if(!await authorized(request,env))return json({error:"Administrator sign-in required."},401);
  if(!env.DB)return json({error:"Cloudflare D1 binding DB is not configured."},503);
  try{
