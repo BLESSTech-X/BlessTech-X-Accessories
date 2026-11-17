@@ -30,14 +30,10 @@ fetch('/api/community',{headers:{accept:'application/json'},cache:'no-store'})
 .then(r=>r.json())
 .then(data=>{
  if(!data.ok)throw Error('Unable to load partner stories');
- const posts=(data.posts||[]).filter(p=>Number(p.is_featured)===1).slice(0,4);
- if(!posts.length){root.hidden=true;return}
- grid.innerHTML=posts.map(p=>{
-  const href=p.business_slug?'/b/'+encodeURIComponent(p.business_slug)+'/':'/community/';
-  const image=p.cover_image_url?'<img src="'+esc(p.cover_image_url)+'" alt="'+esc(p.title||'Partner story')+'" loading="lazy" decoding="async">':'';
-  return '<article class="py2-inline-editorial py2-inline-editorial-partner"><a class="py2-inline-editorial-link" href="'+href+'">'+image+'<div class="py2-inline-editorial-copy"><span>PHONEYA2 PARTNER SPOTLIGHT</span><strong>'+esc(p.title||'A story from our business community')+'</strong><p>'+esc(p.excerpt||p.body||'Discover this PhoneYa2 business partner and what they offer.').slice(0,125)+'</p><b>Discover partner ↗</b></div></a></article>';
- }).join('');
- root.hidden=false;
+ const posts=(data.posts||[]).filter(p=>Number(p.is_featured)===1).slice(0,12);
+ window.PhoneYa2FeaturedPartnerPosts=posts;
+ root.hidden=true;
+ document.dispatchEvent(new CustomEvent('phoneya2:featured-partners-ready'));
 })
 .catch(e=>console.warn('Partner featured stories:',e.message));
 })();
