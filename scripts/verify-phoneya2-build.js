@@ -37,6 +37,7 @@ try {
   const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
   if (!Array.isArray(catalog) || catalog.length !== slugs.length) throw new Error('Product catalogue count does not match product index.');
   const requiredSalesFields = ['sales_hook', 'offer_label', 'offer_details', 'sales_priority'];
+  if (!catalog.every(product => product.visibility && typeof product.visibility.blog === 'boolean' && typeof product.visibility.community === 'boolean')) throw new Error('Every product must include explicit Blog and Community visibility settings.');
   for (const product of catalog) {
     if (!product || !slugs.includes(product.slug)) throw new Error('Catalogue contains a product absent from the index.');
     if (requiredSalesFields.some(field => typeof product[field] !== 'string')) throw new Error('Sales messaging fields are missing for ' + product.slug + '.');
