@@ -94,7 +94,7 @@ async function recordWorkerHealth(env,workerKey,workerName,schedule,fields){
     .bind(now,fields.duration,now,workerKey).run();
   }else if(fields.status==="failed"){
    await env.DB.prepare("UPDATE worker_health SET status='failed',last_failure_at=?,last_duration_ms=?,last_error=?,failed_runs=failed_runs+1,updated_at=? WHERE worker_key=?")
-    .bind(now,fields.duration,String(fields.error||"Worker execution failed").replace(/[\\u0000-\\u001f\\u007f]/g," ").slice(0,700),now,workerKey).run();
+    .bind(now,fields.duration,String(fields.error||"Worker execution failed").replace(/[\u0000-\u001f\u007f]/g," ").slice(0,700),now,workerKey).run();
   }
  }catch(error){console.warn("Worker health telemetry could not be saved:",String(error?.message||error).slice(0,200));}
 }
