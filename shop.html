@@ -1491,7 +1491,7 @@ function renderGrid(appendOnly) {
       (p.title||'').toLowerCase().includes(q) ||
       (p.category||'').toLowerCase().includes(q) ||
       (p.description||'').toLowerCase().includes(q) ||
-      (CAT_LABELS[p.category]||'').toLowerCase().includes(q);
+      ((p.category_title || CAT_LABELS[p.category])||'').toLowerCase().includes(q);
     return pageVisible && catOk && searchOk;
   });
 
@@ -1523,7 +1523,7 @@ function renderGrid(appendOnly) {
     const st = stockStatus(p.stock);
     const op = parseFloat(p.original_price)||0;
     const hasDrop = op > p.price;
-    const cat = CAT_LABELS[p.category] || p.category || 'Other';
+    const cat = (p.category_title || CAT_LABELS[p.category]) || p.category || 'Other';
     const bg = CAT_BG[p.category] || 'linear-gradient(135deg,#feca57,#48dbfb)';
     const img = p.image
       ? '<img src="'+p.image+'" alt="'+escHtml(p.title)+'" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'📱\'">'
