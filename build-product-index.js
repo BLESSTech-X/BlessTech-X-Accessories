@@ -64,13 +64,13 @@ function parseNestedObject(markdown, key) {
   const match = String(markdown || '').match(new RegExp('^' + key + ':\\s*\\r?\\n((?:[ \\t]+[^\\r\\n]*(?:\\r?\\n|$))*)', 'm'));
   if (!match) return {};
   const result = {};
-  match[1].split(/\\r?\\n/).forEach(line => {
-    const field = line.match(/^\\s+([A-Za-z0-9_-]+):\\s*(.*?)\\s*$/);
+  match[1].split(/\r?\n/).forEach(line => {
+    const field = line.match(/^ +([A-Za-z0-9_-]+): +(.*?) *$/);
     if (!field) return;
     let value = String(field[2] || '').trim().replace(/^['"]|['"]$/g, '');
     if (value === 'true') value = true;
     else if (value === 'false') value = false;
-    else if (/^-?\\d+(?:\\.\\d+)?$/.test(value)) value = Number(value);
+    else if (/^-?[0-9]+(?:\\.[0-9]+)?$/.test(value)) value = Number(value);
     result[field[1]] = value;
   });
   return result;
