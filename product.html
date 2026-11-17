@@ -1947,7 +1947,9 @@ async function loadProductPage() {
     if (stockResponse.ok) {
       const stockData = await stockResponse.json();
       if (stockData && stockData.ok && Object.prototype.hasOwnProperty.call(stockData.stock || {}, slug)) {
-        product.stock = Math.max(0, Number(stockData.stock[slug]) || 0);
+        const live = stockData.stock[slug];
+        const agentReferral = new URLSearchParams(window.location.search).get('ref');
+        product.stock = Math.max(0, Number(agentReferral ? live.total : live.central) || 0);
       }
     }
   } catch (stockError) { console.warn('[PhoneYa2] Live product stock unavailable; using published catalogue quantity.', stockError); }
