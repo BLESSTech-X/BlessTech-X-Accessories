@@ -363,7 +363,7 @@ body .cc-float-tools-grouped #cc-float-refresh.is-spinning .cc-float-icon{displa
   </div>
   <section class="panel section" id="journey-insights-panel"><div class="section-head"><div><h2>Visitor-to-order journey</h2><p>Scale comparison across GA4 activity and recorded orders · rolling 30 days</p></div><span class="journey-note-badge">Directional view</span></div><div id="journey-funnel" class="journey-funnel"></div><p class="journey-footnote">Page views, sessions and active users are different GA4 measurements, not a user-level sequence. This visual compares scale only; it must not be read as a verified conversion funnel.</p><div class="journey-bottom-grid"><div class="journey-highlight"><span>ORDER TARGET</span><strong id="journey-target-value">—</strong><div class="journey-target-track"><i id="journey-target-fill"></i></div><small id="journey-target-note"></small></div><div class="journey-highlight"><span>ORDER CONCENTRATION</span><strong id="journey-peak-day">—</strong><small id="journey-peak-detail">Peak day in rolling 30 days</small><div id="journey-peak-donut" class="journey-peak-donut"></div></div></div></section>
   <section class="panel section" id="inventory-overview-panel"><div class="section-head"><div><h2>Inventory overview</h2><p>Based on stock and price fields in your published product files. Verify stock values are kept current.</p></div></div><div class="health-grid" id="inventory-grid"><div class="health-item"><div><strong>Loading catalogue inventory…</strong></div></div></div></section>
-  <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Read-only checks of storefront content, D1-backed admin services and Google Analytics.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
+  <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Read-only checks of storefront content, D1-backed services, scheduled Workers and Google Analytics.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
   <div class="section-head" style="margin:24px 0 12px"><div><h2 style="font-size:19px;margin:0">PhoneYa2 Admin Links</h2><p class="muted" style="font-size:12px;margin:4px 0 0">Private tools for managing orders, products, campaigns and operations.</p></div></div>
   <div class="modules">
     <a class="panel module" href="/admin/orders.html"><span class="module-icon">▤</span><h3>Orders & Fulfilment</h3><p>Review customer orders, update status, export records and test order notifications.</p><span class="module-link">Open order dashboard ↗</span></a>
@@ -570,7 +570,9 @@ async function checkHealth(){
   {name:'Product index',path:'/content/products/index.json',detail:'Published catalogue index',type:'products'},
   {name:'Orders and D1',path:'/api/orders?admin=1&limit=1',detail:'Authenticated order service and database read',type:'orders'},
   {name:'Partner database',path:'/api/partner-admin?table=advertisers&query=limit%3D1',detail:'Partner records and database schema',type:'partner'},
-  {name:'Agent Network database',path:'/api/agent-network-admin?view=overview',detail:'Agent operations and commission tables',type:'agents'}
+  {name:'Agent Network database',path:'/api/agent-network-admin?view=overview',detail:'Agent operations and commission tables',type:'agents'},
+  {name:'Notification scheduler',path:'/api/worker-health?worker=notification-scheduler',detail:'15-minute scheduled notification and automation Worker',type:'worker',staleMinutes:45},
+  {name:'Partner lifecycle Worker',path:'/api/worker-health?worker=partner-lifecycle',detail:'Hourly partner reminder and package-expiry Worker',type:'worker',staleMinutes:180}
  ];
  const results=await Promise.all(tests.map(async item=>{
   try{
@@ -598,6 +600,16 @@ async function checkHealth(){
    }else if(item.type==='agents'){
     const data=await r.json();if(data.ok!==true||!Array.isArray(data.agents)||!Array.isArray(data.commissions))throw new Error('Agent Network response is incomplete');
     detail='Agent and commission database queries succeeded';
+   }else if(item.type==='worker'){
+    const data=await r.json();if(data.success!==true||!Array.isArray(data.workers))throw new Error('Worker health response is incomplete');
+    const worker=data.workers[0];if(!worker)throw new Error('No execution has been recorded yet. Apply migration 0035, deploy the updated Worker and wait for its next scheduled run.');
+    const lastSuccess=worker.last_success_at?new Date(worker.last_success_at):null;
+    const ageMinutes=lastSuccess?Math.max(0,(Date.now()-lastSuccess.getTime())/60000):Infinity;
+    const lastSuccessLabel=lastSuccess&&!Number.isNaN(lastSuccess.getTime())?lastSuccess.toLocaleString():'no successful run recorded';
+    if(worker.status==='failed')throw new Error('Latest run failed: '+(worker.last_error||'No error detail recorded')+' · last success: '+lastSuccessLabel);
+    if(!lastSuccess)throw new Error(worker.status==='running'?'A run is in progress, but no successful run has been recorded yet.':'No successful execution has been recorded yet.');
+    if(ageMinutes>item.staleMinutes)throw new Error('Last success was '+Math.floor(ageMinutes)+' minutes ago; expected within '+item.staleMinutes+' minutes. Check the Worker cron trigger.');
+    detail='Last success '+lastSuccessLabel+' · '+Number(worker.total_runs||0)+' runs · '+Number(worker.failed_runs||0)+' failures'+(worker.status==='running'?' · latest run in progress':'');
    }
    return {name:item.name,ok:true,detail};
   }catch(e){return {name:item.name,ok:false,detail:e.message||'Could not reach'};}
