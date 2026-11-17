@@ -34,9 +34,10 @@ function card(p){
  var order=node('a','order','Order Now ↗');order.href=url;body.appendChild(order);
  article.appendChild(body);return article;
 }
-fetch('/content/products/catalog.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Catalogue unavailable');return r.json()}).then(function(products){
+Promise.all([fetch('/content/products/catalog.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('Catalogue unavailable');return r.json()}),fetch('/api/product-stock',{cache:'no-store'}).then(function(r){return r.ok?r.json():{stock:{}}}).catch(function(){return {stock:{}}})]).then(function(results){
+ var products=results[0],stockMap=results[1]&&results[1].stock||{};
  if(!Array.isArray(products))throw Error('Invalid product catalogue');
- var selected=products.filter(function(p){return p&&p.visibility&&p.visibility.community===true&&Number(p.price)>0&&Number(p.stock)>0});
+ var selected=products.filter(function(p){return p&&p.visibility&&p.visibility.community===true&&Number(p.price)>0&&Number(stockMap[p.slug]&&stockMap[p.slug].central!=null?stockMap[p.slug].central:p.stock)>0}).map(function(p){return Object.assign({},p,{stock:Number(stockMap[p.slug]&&stockMap[p.slug].central!=null?stockMap[p.slug].central:p.stock)})});
  selected.sort(function(a,b){var rank=function(p){return p.sales_priority==='promote'?0:p.sales_priority==='campaign'?1:2};return rank(a)-rank(b)||(Number(!!b.featured)-Number(!!a.featured))||String(b.date_added||'').localeCompare(String(a.date_added||''))});
  if(!selected.length)return;
  selected.slice(0,12).forEach(function(p){root.appendChild(card(p))});
