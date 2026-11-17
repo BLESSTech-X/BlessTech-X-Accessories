@@ -8,20 +8,21 @@ const style=document.createElement('style');
 style.textContent=`
 /* Partner features on Blog use the same compact editorial treatment as homepage inserts. */
 #partner-featured-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
-#partner-featured-grid .py2-inline-editorial{overflow:hidden;border:2px solid #c9e3d2;border-left:5px solid #159447;border-radius:15px;background:linear-gradient(110deg,#fff 0%,#f7fcf8 100%);box-shadow:0 7px 22px rgba(18,43,74,.11);max-width:100%;margin:0}
-#partner-featured-grid .py2-inline-editorial-link{display:grid;grid-template-columns:clamp(104px,18%,180px) minmax(0,1fr);align-items:stretch;min-height:138px;color:#14243a;text-decoration:none}
+#partner-featured-grid .py2-inline-editorial{position:relative;overflow:hidden;border:1px solid rgba(148,163,184,.28);border-left:5px solid #22c55e;border-radius:16px;background:linear-gradient(125deg,#10251f 0%,#123b35 58%,#172033 100%);box-shadow:0 12px 30px rgba(2,8,23,.24);max-width:100%;margin:0;isolation:isolate}
+#partner-featured-grid .py2-inline-editorial:after{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#22c55e,#38bdf8,#f59e0b);pointer-events:none}
+#partner-featured-grid .py2-inline-editorial-link{display:grid;grid-template-columns:clamp(104px,18%,180px) minmax(0,1fr);align-items:stretch;min-height:142px;color:#fff;text-decoration:none}
 #partner-featured-grid .py2-inline-editorial-link:not(:has(>img)){grid-template-columns:minmax(0,1fr)}
-#partner-featured-grid .py2-inline-editorial-link>img{display:block;width:100%;height:100%;min-height:138px;max-height:168px;object-fit:cover;background:#edf4fb}
-#partner-featured-grid .py2-inline-editorial-copy{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:14px 17px;min-width:0}
-#partner-featured-grid .py2-inline-editorial-copy>span{font-size:9px;font-weight:900;letter-spacing:.9px;color:#159447}
-#partner-featured-grid .py2-inline-editorial-copy strong{font-size:clamp(14px,1.6vw,17px);line-height:1.3;color:#14243a}
-#partner-featured-grid .py2-inline-editorial-copy p{margin:0;color:#607187;font-size:12px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#partner-featured-grid .py2-inline-editorial-copy b{font-size:11px;color:#e65b00}
-#partner-featured-grid .py2-inline-editorial:hover{border-color:#a8d4b7;box-shadow:0 10px 25px rgba(18,43,74,.14);transform:translateY(-1px)}
+#partner-featured-grid .py2-inline-editorial-link>img{display:block;width:100%;height:100%;min-height:142px;max-height:174px;object-fit:cover;background:#0f172a}
+#partner-featured-grid .py2-inline-editorial-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:7px;padding:15px 18px;min-width:0}
+#partner-featured-grid .py2-inline-editorial-copy>span{font-size:9px;font-weight:900;letter-spacing:1.1px;color:#86efac}
+#partner-featured-grid .py2-inline-editorial-copy strong{font-size:clamp(14px,1.6vw,18px);line-height:1.3;color:#fff}
+#partner-featured-grid .py2-inline-editorial-copy p{margin:0;color:#cbd5e1;font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#partner-featured-grid .py2-inline-editorial-copy b{display:inline-flex;align-items:center;justify-content:center;margin-top:3px;padding:8px 13px;border-radius:9px;background:linear-gradient(110deg,#059669,#16a34a);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:900;box-shadow:0 5px 14px rgba(5,150,105,.25)}
+#partner-featured-grid .py2-inline-editorial:hover{border-color:#4ade80;box-shadow:0 14px 32px rgba(2,8,23,.32);transform:translateY(-1px)}
 @media(max-width:520px){
-#partner-featured-grid .py2-inline-editorial-link{grid-template-columns:88px minmax(0,1fr);min-height:116px}
-#partner-featured-grid .py2-inline-editorial-link>img{min-height:116px;max-height:132px}
-#partner-featured-grid .py2-inline-editorial-copy{padding:10px 12px;gap:5px}
+#partner-featured-grid .py2-inline-editorial-link{grid-template-columns:88px minmax(0,1fr);min-height:120px}
+#partner-featured-grid .py2-inline-editorial-link>img{min-height:120px;max-height:136px}
+#partner-featured-grid .py2-inline-editorial-copy{padding:11px 12px;gap:6px}
 }
 `;
 document.head.appendChild(style);
