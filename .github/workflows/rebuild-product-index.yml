@@ -29,11 +29,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet content/products/index.json; then
-            echo "index.json unchanged, nothing to commit"
+          git add content/products/index.json content/products/catalog.json content/blog/index.json
+
+          if git diff --cached --quiet; then
+            echo "Generated product and blog indexes unchanged, nothing to commit"
             exit 0
           fi
 
-          git add content/products/index.json content/products/catalog.json content/blog/index.json
-          git commit -m "chore: rebuild product index [skip ci]"
+          git commit -m "chore: publish generated product catalogue [skip ci]"
           git push
