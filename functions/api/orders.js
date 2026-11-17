@@ -771,6 +771,13 @@ export async function onRequest(context) {
           }
         }catch(inventoryError){console.error("Central stock cancellation restore failed:",String(inventoryError).slice(0,220));}
       }
+      if(status==="cancelled"&&currentRow.status!=="delivered"&&currentRow.fulfilment_source==="phoneya2_central_reserved"&&!currentRow.agent_code){
+        try{
+          const items=await env.DB.prepare("SELECT product_slug,quantity FROM order_items WHERE order_id=?").bind(id).all();
+          const restore=(items.results||[]).map(item=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(Number(item.quantity||0),item.product_slug));
+          if(restore.length)await env.DB.batch(restore);
+        }catch(inventoryError){console.error("Central stock cancellation restore failed:",String(inventoryError).slice(0,220));}
+      }
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
       if (!updatedOrder) return json({ error: "Order not found." }, 404);
