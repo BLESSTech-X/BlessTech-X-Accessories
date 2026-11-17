@@ -45,7 +45,7 @@ async function prepareBlogCampaign(db,post){
  const campaign=await db.prepare("SELECT id FROM email_campaigns WHERE source_key=?").bind(sourceKey).first();
  return campaign?.id||null;
 }
-async function syncWork(db,request){
+let workSyncInFlight=null;\nlet workSyncCompletedAt=0;\nasync function syncWork(db,request){
  const origin=new URL(request.url).origin;
  const [indexRes,catalogRes,blogRes]=await Promise.all([
   fetch(new URL("/content/products/index.json",origin),{headers:{"cache-control":"no-cache"}}),
@@ -75,12 +75,17 @@ async function syncWork(db,request){
   await addTask(db,{source_key:"notification:"+n.event_key,category:n.category,title:n.title,message:n.message,image_url:n.image_url,destination:n.destination,action_url:n.destination||"/admin/communications.html",priority:n.priority,related_id:n.related_id});
  }
 }
-export async function onRequest({request,env}){
+export async function onRequest(context){\n const {request,env}=context;
  if(!await authorized(request,env))return json({error:"Administrator sign-in required."},401);
  if(!env.DB)return json({error:"Cloudflare D1 binding DB is not configured."},503);
  try{
   if(request.method==="GET"){
-   await syncWork(env.DB,request);
+   // Serve the persisted queue immediately. Content discovery and draft preparation
+   // run in the background so slow catalogue reads never hold the Actions screen.
+   if(!workSyncInFlight && Date.now()-workSyncCompletedAt>30000){
+    workSyncInFlight=syncWork(env.DB,request).then(()=>{workSyncCompletedAt=Date.now();}).catch(error=>{console.error("Prepared-work background sync failed:",error?.stack||error);}).finally(()=>{workSyncInFlight=null;});
+    if(typeof context.waitUntil==="function")context.waitUntil(workSyncInFlight);
+   }
    const [rows,counts]=await Promise.all([
     env.DB.prepare("SELECT * FROM admin_work_items ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 WHEN 'completed' THEN 2 ELSE 3 END,CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,created_at DESC LIMIT 300").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM admin_work_items GROUP BY status").all()
