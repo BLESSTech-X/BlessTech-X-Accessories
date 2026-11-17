@@ -36,6 +36,7 @@ checks = {
     "agent_adjustment_recoveries": {"adjustment_id", "commission_id", "amount_minor"},
     "partner_onboarding_progress": {"advertiser_id", "completed_steps_json"},
     "admin_work_items": {"source_key", "image_url", "status"},
+    "worker_health": {"worker_key", "status", "last_success_at", "last_error", "total_runs", "failed_runs"},
 }
 for table, expected in checks.items():
     actual = columns(table)
