@@ -24,8 +24,9 @@ collections:
     sortable_fields: ["title", "price", "stock", "date_added"]
     fields:
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Selling Price (ZMW)", name: "price", widget: "number", min: 0, step: 0.01, value_type: "float", hint: "The customer-facing selling price in ZMW." }
-      - { label: "Original Price (optional)", name: "original_price", widget: "number", min: 0, step: 0.01, value_type: "float", required: false, hint: "Only enter a genuine previous price when displaying a discount." }
+      - { label: "Date Added", name: "date_added", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", required: false, hint: "The date this product was first added to PhoneYa2. Keep the original date when editing an existing product." }
+      - { label: "Selling Price (ZMW)", name: "price", widget: "number", min: 0, step: 0.01, value_type: "float", hint: "Enter the actual customer-facing selling price in ZMW." }
+      - { label: "Original Price Before Discount (ZMW)", name: "original_price", widget: "number", min: 0, step: 0.01, value_type: "float", required: false, hint: "Enter a genuine previous price higher than Selling Price. PhoneYa2 calculates the discount automatically and can list eligible in-stock products in Special Offers. Leave blank when there is no discount." }
       - { label: "Initial Stock Quantity", name: "stock", widget: "number", min: 0, value_type: "int", hint: "Initial stock used when this product first enters the live inventory system. After first sync, manage central stock and agent issue/return in Command Centre → Agents → Agent inventory." }
       - { label: "Publish Product", name: "publish", widget: "boolean", default: true, hint: "Turn off to keep this product out of the public catalogue." }
       - label: "Product Type & Details"
@@ -141,7 +142,6 @@ collections:
     label: "Blog Comments"
     label_singular: "Comment"
     folder: "content/blog-comments"
-    branch: "community-comments"
     create: false
     extension: "md"
     format: "frontmatter"
