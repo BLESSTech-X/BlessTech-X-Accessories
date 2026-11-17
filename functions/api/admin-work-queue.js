@@ -45,7 +45,9 @@ async function prepareBlogCampaign(db,post){
  const campaign=await db.prepare("SELECT id FROM email_campaigns WHERE source_key=?").bind(sourceKey).first();
  return campaign?.id||null;
 }
-let workSyncInFlight=null;\nlet workSyncCompletedAt=0;\nasync function syncWork(db,request){
+let workSyncInFlight=null;
+let workSyncCompletedAt=0;
+async function syncWork(db,request){
  const origin=new URL(request.url).origin;
  const [indexRes,catalogRes,blogRes]=await Promise.all([
   fetch(new URL("/content/products/index.json",origin),{headers:{"cache-control":"no-cache"}}),
