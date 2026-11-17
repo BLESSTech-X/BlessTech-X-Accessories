@@ -22,7 +22,7 @@ export async function onRequest({request,env}){if(!sameOrigin(request))return fa
 if(request.method==="GET"){const view=url.searchParams.get("view")||"overview";
 if(view==="overview"){const [agents,sales,payouts,ledger,revenue]=await Promise.all([db.prepare("SELECT status,COUNT(*) n FROM agent_accounts GROUP BY status").all(),db.prepare("SELECT COUNT(*) n FROM agent_sales WHERE status='submitted'").first(),db.prepare("SELECT COUNT(*) n FROM agent_payout_requests WHERE status='requested'").first(),db.prepare("SELECT status,COALESCE(SUM(commission_minor),0) total FROM agent_commission_ledger GROUP BY status").all(),db.prepare("SELECT COUNT(*) n,COALESCE(SUM(total_amount_minor),0) amount FROM orders WHERE agent_code<>'' AND status='delivered'").first()]);return json({ok:true,agents:rows(agents),assisted_sales:Number(sales?.n||0),payout_requests:Number(payouts?.n||0),delivered_orders:Number(revenue?.n||0),revenue_minor:Number(revenue?.amount||0),commissions:rows(ledger)});}
 if(view==="agents"){const r=await db.prepare("SELECT a.agent_id,a.email,a.phone,a.status,a.created_at,p.display_name,p.profile_image_url,(SELECT COUNT(*) FROM orders o WHERE o.agent_code=a.agent_id AND o.status='delivered') sales FROM agent_accounts a LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id ORDER BY a.created_at DESC LIMIT 500").all();return json({ok:true,agents:rows(r)});}
-if(view==="sales"){const [s,o,c]=await Promise.all([db.prepare("SELECT s.*,a.email,o.order_number,o.status order_status FROM agent_sales s JOIN agent_accounts a ON a.agent_id=s.agent_id LEFT JOIN orders o ON o.id=s.linked_order_id ORDER BY s.created_at DESC LIMIT 500").all(),db.prepare("SELECT id,order_number,agent_code,fulfilment_source,fulfilment_agent_id,fulfilment_status,status,total_amount_minor,customer_name,customer_phone,customer_email,delivery_address,created_at FROM orders WHERE agent_code<>'' ORDER BY created_at DESC LIMIT 500").all(),db.prepare("SELECT * FROM agent_commission_ledger ORDER BY created_at DESC LIMIT 500").all()]);return json({ok:true,sales:rows(s),orders:rows(o),commissions:rows(c)});}
+if(view==="sales"){const [s,o,c]=await Promise.all([db.prepare("SELECT s.*,a.email,o.order_number,o.status order_status,(SELECT COUNT(*) FROM agent_sales d WHERE d.id<>s.id AND lower(d.customer_phone)=lower(s.customer_phone) AND d.product_slug=s.product_slug AND d.status NOT IN ('rejected','cancelled') AND d.created_at>datetime(s.created_at,'-30 days')) duplicate_count,(SELECT COUNT(*) FROM orders x JOIN order_items xi ON xi.order_id=x.id WHERE lower(x.customer_phone)=lower(s.customer_phone) AND xi.product_slug=s.product_slug AND x.status<>'cancelled' AND x.created_at>datetime(s.created_at,'-30 days')) online_order_matches FROM agent_sales s JOIN agent_accounts a ON a.agent_id=s.agent_id LEFT JOIN orders o ON o.id=s.linked_order_id ORDER BY s.created_at DESC LIMIT 500").all(),db.prepare("SELECT id,order_number,agent_code,fulfilment_source,fulfilment_agent_id,fulfilment_status,status,total_amount_minor,customer_name,customer_phone,customer_email,delivery_address,created_at FROM orders WHERE agent_code<>'' ORDER BY created_at DESC LIMIT 500").all(),db.prepare("SELECT * FROM agent_commission_ledger ORDER BY created_at DESC LIMIT 500").all()]);return json({ok:true,sales:rows(s),orders:rows(o),commissions:rows(c)});}
 if(view==="payouts"){const r=await db.prepare("SELECT p.*,a.agent_id,a.email,pr.display_name FROM agent_payout_requests p JOIN agent_accounts a ON a.agent_id=p.agent_id LEFT JOIN agent_profiles pr ON pr.agent_id=a.agent_id ORDER BY p.requested_at DESC LIMIT 500").all();return json({ok:true,payouts:rows(r)});}
 if(view==="inventory"){await syncCatalogueForAdmin(db,env,request);const [stock,agents,products,movements]=await Promise.all([db.prepare("SELECT i.*,a.agent_id,p.display_name,c.product_name,c.product_code FROM agent_inventory i JOIN agent_accounts a ON a.agent_id=i.agent_id LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id LEFT JOIN agent_product_codes c ON c.product_slug=i.product_slug ORDER BY p.display_name,c.product_name").all(),db.prepare("SELECT agent_id FROM agent_accounts WHERE status='active' ORDER BY agent_id").all(),db.prepare("SELECT product_slug,product_code,product_name,stock,active FROM agent_product_codes ORDER BY product_name").all(),db.prepare("SELECT m.*,p.display_name,c.product_name FROM agent_inventory_movements m LEFT JOIN agent_profiles p ON p.agent_id=m.agent_id LEFT JOIN agent_product_codes c ON c.product_slug=m.product_slug ORDER BY m.created_at DESC LIMIT 150").all()]);return json({ok:true,inventory:rows(stock),agents:rows(agents),products:rows(products),movements:rows(movements)});}
 if(view==="recruitment"){const r=await db.prepare("SELECT x.*,a.agent_id referrer_id,p.display_name referrer_name,b.agent_id recruited_id,q.display_name recruited_name FROM agent_referrals x JOIN agent_accounts a ON a.agent_id=x.referrer_agent_id LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id JOIN agent_accounts b ON b.agent_id=x.recruited_agent_id LEFT JOIN agent_profiles q ON q.agent_id=b.agent_id ORDER BY x.created_at DESC LIMIT 500").all();return json({ok:true,recruitments:rows(r)});}
@@ -73,31 +73,47 @@ if(b.action==="sale.review"){
  if(!["verified","rejected"].includes(status))return fail("Choose verified or rejected.");
  const sale=await db.prepare("SELECT * FROM agent_sales WHERE id=? AND status='submitted'").bind(id).first();
  if(!sale)return fail("Assisted sale record not found or already reviewed.",404);
+ let stockSource="none",inventoryWarning="";
  if(status==="verified"){
-  const stock=await db.prepare("UPDATE agent_inventory SET quantity=quantity-?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2' AND quantity>=?").bind(Number(sale.quantity),now,sale.agent_id,sale.product_slug,Number(sale.quantity)).run();
-  if(!Number(stock.meta?.changes||0))return fail("This agent no longer has enough PhoneYa2 stock allocated to complete this sale. Review stock movements before approving.",409);
-  const updated=await db.prepare("UPDATE agent_sales SET status='verified',admin_note=?,updated_at=? WHERE id=? AND status='submitted'").bind(String(b.note||"").slice(0,500),now,id).run();
+  const qty=Math.max(1,Number(sale.quantity)||1);
+  const allocated=await db.prepare("UPDATE agent_inventory SET quantity=quantity-?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2' AND quantity>=?").bind(qty,now,sale.agent_id,sale.product_slug,qty).run();
+  if(Number(allocated.meta?.changes||0)){
+   stockSource="agent_allocation";
+  }else{
+   const central=await db.prepare("UPDATE agent_product_codes SET stock=stock-? WHERE product_slug=? AND active=1 AND stock>=?").bind(qty,sale.product_slug,qty).run();
+   if(Number(central.meta?.changes||0))stockSource="central_stock";
+   else inventoryWarning="Approved without automatic stock deduction: the agent had no sufficient allocated units and PhoneYa2 central stock was insufficient. Reconcile the physical stock count.";
+  }
+  const adminNote=[String(b.note||"").trim(),inventoryWarning].filter(Boolean).join(" | ").slice(0,500);
+  const updated=await db.prepare("UPDATE agent_sales SET status='verified',admin_note=?,updated_at=? WHERE id=? AND status='submitted'").bind(adminNote,now,id).run();
   if(!Number(updated.meta?.changes||0)){
-   await db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(Number(sale.quantity),now,sale.agent_id,sale.product_slug).run();
+   if(stockSource==="agent_allocation")await db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(qty,now,sale.agent_id,sale.product_slug).run();
+   if(stockSource==="central_stock")await db.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(qty,sale.product_slug).run();
    return fail("This sale has already been reviewed. Refresh the sales list.",409);
   }
-  try{
-   await db.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),sale.agent_id,sale.product_slug,-Number(sale.quantity),"agent_sale_verified",id,actor).run();
-  }catch(error){
-   await db.batch([
-    db.prepare("UPDATE agent_sales SET status='submitted',updated_at=? WHERE id=? AND status='verified'").bind(now,id),
-    db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(Number(sale.quantity),now,sale.agent_id,sale.product_slug)
-   ]);
-   throw error;
+  if(stockSource==="agent_allocation"){
+   try{
+    await db.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),sale.agent_id,sale.product_slug,-qty,"agent_sale_verified",id,actor).run();
+   }catch(error){
+    await db.batch([
+     db.prepare("UPDATE agent_sales SET status='submitted',updated_at=? WHERE id=? AND status='verified'").bind(now,id),
+     db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(qty,now,sale.agent_id,sale.product_slug)
+    ]);
+    throw error;
+   }
+  }
+  if(stockSource==="central_stock"){
+   await recordAdminActivity(db,{key:"agent-sale-central-stock:"+id,category:"inventory",type:"agent_sale_central_stock",title:"Central stock reconciled for agent sale",message:qty+" unit(s) of "+sale.product_code+" deducted from central PhoneYa2 stock after approval of agent "+sale.agent_id+"'s sale.",destination:"/admin/command-center.html",related_id:id,related_label:sale.product_code});
   }
  }else{
   const updated=await db.prepare("UPDATE agent_sales SET status='rejected',admin_note=?,updated_at=? WHERE id=? AND status='submitted'").bind(String(b.note||"").slice(0,500),now,id).run();
   if(!Number(updated.meta?.changes||0))return fail("This sale has already been reviewed. Refresh the sales list.",409);
  }
- const notification=status==="verified"?"Your sale for "+sale.product_code+" was approved. Commission of ZMW "+(Number(sale.estimated_commission_minor||0)/100).toFixed(2)+" has been added to your earnings. The sold PhoneYa2 stock has been deducted from your allocation.":"Your sale for "+sale.product_code+" was rejected. Admin note: "+String(b.note||"No reason supplied.");
+ const stockMessage=status!=="verified"?"":stockSource==="agent_allocation"?" Sold units were deducted from the agent's allocated stock.":stockSource==="central_stock"?" Sold units were deducted from PhoneYa2 central stock.":" Stock needs a manual physical-count reconciliation.";
+ const notification=status==="verified"?"Your sale for "+sale.product_code+" was approved. Commission of ZMW "+(Number(sale.estimated_commission_minor||0)/100).toFixed(2)+" has been added to your earnings."+stockMessage:"Your sale for "+sale.product_code+" was rejected. Admin note: "+String(b.note||"No reason supplied.");
  await db.prepare("INSERT OR IGNORE INTO agent_notifications(id,agent_id,event_key,title,message,destination) VALUES(?,?,?,?,?,?)").bind(crypto.randomUUID(),sale.agent_id,"assisted-sale-review:"+id,"Assisted sale reviewed",notification,"/agents/network.html").run();
- await recordAdminActivity(db,{key:"agent-assisted-sale:"+id+":"+status,category:"sales",type:"assisted_sale_reviewed",title:"Assisted sale "+status,message:"Agent "+sale.agent_id+" submitted product "+sale.product_code+"; the record was "+status+" and PhoneYa2 stock custody was reconciled.",destination:"/admin/command-center.html",related_id:id,related_label:sale.product_code});
- return json({ok:true});
+ await recordAdminActivity(db,{key:"agent-assisted-sale:"+id+":"+status,category:"sales",type:"assisted_sale_reviewed",title:"Assisted sale "+status,message:"Agent "+sale.agent_id+" submitted product "+sale.product_code+"; the record was "+status+"."+stockMessage,destination:"/admin/command-center.html",related_id:id,related_label:sale.product_code});
+ return json({ok:true,stock_source:stockSource,inventory_warning:inventoryWarning});
 }
 if(b.action==="fulfilment.confirm"){
  const id=String(b.order_id||"").trim();
