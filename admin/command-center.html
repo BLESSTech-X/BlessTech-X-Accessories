@@ -1112,7 +1112,8 @@ function renderGrowthInsights(growthView,ctx){
  growthView.querySelectorAll('#growth-open-lab').forEach(b=>b.addEventListener('click',()=>activateWorkspaceTab('experiments',true)));
  growthView.querySelector('#gi-refresh')?.addEventListener('click',async()=>{const b=growthView.querySelector('#gi-refresh');b.disabled=true;await refreshGa4();b.disabled=false;});
 }
-\nfunction renderCommandCentreExtensions(){
+
+function renderCommandCentreExtensions(){
  const actions=$('view-actions'),moneyView=$('view-money'),network=$('view-network'),growthView=$('view-growth'),lab=$('view-experiments');
  if(!actions||!moneyView||!network||!lab)return;
  const recent=orders.filter(o=>withinDays(o,30)),pending=orders.filter(o=>o.status==='pending').length,cancelled=orders.filter(o=>o.status==='cancelled').length,low=products.filter(p=>p.stock!==null&&p.stock<=3),out=products.filter(p=>p.stock===0),valid=orders.filter(o=>o.status!=='cancelled'),orderValue=valid.reduce((sum,o)=>sum+Number(o.total_amount||0),0),checks=[...document.querySelectorAll('#health-grid .health-item')],failed=checks.filter(x=>x.querySelector('.health-symbol.warn')).length,remaining=Math.max(0,30-recent.length);
