@@ -919,6 +919,36 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   <link rel="stylesheet" href="/phoneya2-performance.css?v=20261030-white-canvas1">
   <link rel="stylesheet" href="/seasonal-experience.css?v=20261030-image-polish2">
 <link rel="stylesheet" href="/storefront-canvas.css?v=20261030-white-canvas2">
+
+<style id="phoneya2-unified-bottom-navigation">
+@media (max-width: 768px) {
+  body { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important; }
+  .bottom-nav {
+    display:flex !important; position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important;
+    width:100% !important; max-width:none !important; height:calc(66px + env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing:border-box !important; margin:0 !important; padding:5px 7px calc(5px + env(safe-area-inset-bottom, 0px)) !important;
+    transform:none !important; align-items:stretch !important; justify-content:space-around !important; gap:2px !important;
+    z-index:1000 !important; background:rgba(255,255,255,.98) !important; -webkit-backdrop-filter:blur(16px);
+    backdrop-filter:blur(16px); border:0 !important; border-top:1px solid rgba(15,23,42,.12) !important;
+    border-radius:0 !important; box-shadow:0 -4px 18px rgba(15,23,42,.10) !important;
+  }
+  .bottom-nav .bnav-item {
+    flex:1 1 0 !important; width:auto !important; min-width:0 !important; max-width:none !important; min-height:0 !important;
+    margin:0 !important; padding:5px 1px 3px !important; display:flex !important; flex-direction:column !important;
+    align-items:center !important; justify-content:center !important; gap:4px !important; border-radius:10px !important;
+    font-size:10px !important; line-height:1.1 !important; font-weight:700 !important; white-space:nowrap !important;
+    box-sizing:border-box !important; color:#596579 !important; text-decoration:none !important;
+  }
+  .bottom-nav .bnav-item i { display:block !important; flex:0 0 auto !important; font-size:18px !important; line-height:1 !important; }
+  .bottom-nav .bnav-item span { display:block !important; max-width:100% !important; overflow:visible !important; text-overflow:clip !important; }
+  .bottom-nav .bnav-item.active { color:#ff6500 !important; font-weight:900 !important; background:#fff2e9 !important; }
+  .bottom-nav .bnav-item:focus-visible { outline:2px solid #ff6500; outline-offset:-2px; }
+}
+@media (max-width:360px) {
+  .bottom-nav .bnav-item { font-size:9px !important; gap:3px !important; }
+  .bottom-nav .bnav-item i { font-size:17px !important; }
+}
+</style>
 </head>
 <body>
 
@@ -1169,10 +1199,12 @@ body:not(.py2-blog-page) .py2-global-blog-button span:first-child{font-size:15px
   <div class="py2-footer-copyright">© <span class="py2-footer-year">2026</span> PhoneYa2. All rights reserved.</div>
 </footer>
 
-<nav class="bottom-nav">
-  <a href="index.html" class="bnav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a href="shop.html" class="bnav-item"><i class="fa-solid fa-bag-shopping"></i><span>Shop</span></a>
-  <a href="contact.html" class="bnav-item active"><i class="fa-solid fa-envelope"></i><span>Contact</span></a>
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="/" class="bnav-item"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
+  <a href="/shop.html" class="bnav-item"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span>Shop</span></a>
+  <a href="/blog.html" class="bnav-item"><i class="fa-solid fa-book-open" aria-hidden="true"></i><span>Blog</span></a>
+  <a href="/community/" class="bnav-item"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Community</span></a>
+  <a href="/cart.html" class="bnav-item"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Cart</span></a>
 </nav>
 
 <script>
