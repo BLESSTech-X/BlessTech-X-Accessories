@@ -2824,6 +2824,7 @@ function addCarouselDrag(id) {
 }
 let allProducts = [];
 let currentCsCat = 'case';
+let homepageCategoryLabels = {};
 
 window.setCsCat = function(cat, el) {
   currentCsCat = cat;
@@ -2835,10 +2836,41 @@ window.setCsCat = function(cat, el) {
   // Keep the selected mobile pill visible after a category change.
   if(el && el.closest('.cat-showcase-mobile-cats')) el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
   const labels={case:'📱 Cases',charger:'⚡ Chargers',cable:'🔌 Cables',earphone:'🎧 Earphones',powerbank:'🔋 Power Banks',protector:'🛡️ Protectors',phone:'📲 Phones',watch:'⌚ Watches',accessory:'🧩 Other Accessories',other:'📦 Other'};
-  const t=document.getElementById('cs-title'); if(t) t.textContent=labels[cat]||cat;
+  const t=document.getElementById('cs-title'); if(t) t.textContent=homepageCategoryLabels[cat]||labels[cat]||cat;
   const va=document.getElementById('cs-view-all'); if(va) va.href='shop.html?cat='+cat;
   renderCsGrid(cat);
 };
+
+async function loadHomepageCategories(){
+ const fallback={case:'📱',charger:'⚡',cable:'🔌',earphone:'🎧',powerbank:'🔋',protector:'🛡️',phone:'📲',watch:'⌚',accessory:'🧩',other:'📦',perfumes:'🌸'};
+ try{
+  const response=await fetch('/content/product-categories/index.json',{cache:'no-store'});
+  if(!response.ok)return;
+  const rows=await response.json();
+  if(!Array.isArray(rows)||!rows.length)return;
+  const categories=rows.filter(x=>x&&x.slug&&x.active!==false);
+  if(!categories.length)return;
+  homepageCategoryLabels={};
+  const desktop=document.getElementById('cs-cats'),mobile=document.getElementById('cs-mobile-cats');
+  const renderIcon=category=>category.icon&&/^fa(?:s|r|b)?\\s+fa-[a-z0-9-]+(?:\\s+fa-[a-z0-9-]+)*$/i.test(category.icon)
+    ? '<i class="'+escHtml(category.icon)+'" aria-hidden="true"></i>'
+    : (fallback[category.slug]||'📦');
+  const renderCategory=category=>{
+    const slug=String(category.slug),title=String(category.title||slug);
+    homepageCategoryLabels[slug]=title;
+    return {slug,title,icon:renderIcon(category)};
+  };
+  const items=categories.map(renderCategory);
+  if(desktop)desktop.innerHTML=items.map((x,i)=>'<div class="cs-cat-item'+(i===0?' active':'')+'" data-cat="'+escHtml(x.slug)+'"><span class="cs-cat-icon">'+x.icon+'</span><span class="cs-cat-name">'+escHtml(x.title)+'</span></div>').join('');
+  if(mobile)mobile.innerHTML=items.map((x,i)=>'<button type="button" class="cs-cat-item'+(i===0?' active':'')+'" data-cat="'+escHtml(x.slug)+'" aria-pressed="'+(i===0?'true':'false')+'"><span class="cs-cat-icon" aria-hidden="true">'+x.icon+'</span><span class="cs-cat-name">'+escHtml(x.title)+'</span></button>').join('');
+  [desktop,mobile].filter(Boolean).forEach(host=>host.addEventListener('click',event=>{
+    const item=event.target.closest('[data-cat]');
+    if(item&&host.contains(item))window.setCsCat(item.dataset.cat,item);
+  }));
+  const initial=categories.find(x=>x.slug==='case')||categories[0];
+  if(initial)window.setCsCat(initial.slug,desktop?.querySelector('[data-cat="'+CSS.escape(initial.slug)+'"]')||mobile?.querySelector('[data-cat="'+CSS.escape(initial.slug)+'"]'));
+ }catch(error){console.warn('[PhoneYa2] Dynamic homepage categories unavailable; keeping the built-in categories.',error);}
+}
 
 function renderCsGrid(cat) {
   const grid=document.getElementById('cs-grid'); if(!grid) return;
@@ -3315,6 +3347,7 @@ async function init() {
   } catch (stockError) { console.warn('[PhoneYa2] Live stock overlay unavailable; showing published catalogue quantities.', stockError); }
 
   allProducts = products;
+  await loadHomepageCategories();
   window.phoneya2Products = products;
   window.dispatchEvent(new CustomEvent('phoneya2:catalog-ready', { detail: products }));
 
