@@ -81,7 +81,7 @@ function mount(){
   const button=e.target.closest("[data-work-action]");if(!button)return;const item=button.closest(".work-item");if(!item)return;
   button.disabled=true;try{const result=await api({action:button.dataset.workAction,id:item.dataset.id});if(!result.success)throw new Error("The task action was not confirmed.");await load(section,false);}catch(err){button.disabled=false;alert(err.message);}
  });
- load(section,true);setInterval(()=>{if(!document.hidden)load(section,true);},45000);
+ load(section,true);setTimeout(()=>{if(!document.hidden)load(section,false);},7000);setInterval(()=>{if(!document.hidden)load(section,true);},90000);
 }
 document.addEventListener("py2-admin-ready",mount);
 const observer=new MutationObserver(()=>{if(document.getElementById("view-actions")&&!document.querySelector("#view-actions .work-queue")){mounted=false;mount();}});observer.observe(document.documentElement,{childList:true,subtree:true});mount();
