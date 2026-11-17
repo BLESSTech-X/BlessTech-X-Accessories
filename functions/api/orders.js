@@ -188,7 +188,7 @@ async function createD1Order(env, customer, items, attribution = {}) {
     .bind(crypto.randomUUID(),id,item.product_slug,item.product_name,item.quantity,moneyToMinor(item.unit_price),moneyToMinor(item.line_total)));
   const movementStatements=[
     ...agentReservations.map(x=>env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
-      .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout:phoneya2_agent_custody")),
+      .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout:phoneya2")),
     ...centralReservations.map(x=>env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
       .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"central_order_reservation",orderNumber,"checkout:central_stock"))
   ];
