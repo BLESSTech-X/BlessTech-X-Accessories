@@ -12,7 +12,7 @@ async function adminUser(request,env){
 function githubConfig(env){
  const token=env.PHONEYA2_GITHUB_TOKEN||env.GITHUB_TOKEN;
  if(!token)throw new Error("GitHub publishing is not configured. Add PHONEYA2_GITHUB_TOKEN as a Cloudflare Pages secret.");
- return {token,owner:env.PHONEYA2_GITHUB_OWNER||OWNER,repo:env.PHONEYA2_GITHUB_REPO||REPO,branch:env.PHONEYA2_GITHUB_BRANCH||BRANCH};
+ return {token,owner:env.PHONEYA2_GITHUB_OWNER||OWNER,repo:env.PHONEYA2_GITHUB_REPO||REPO,branch:BRANCH};
 }
 async function githubRequest(config,path,init={}){
  const response=await fetch("https://api.github.com/repos/"+config.owner+"/"+config.repo+"/contents/"+path+(init.method?"":"?ref="+encodeURIComponent(config.branch)),{
