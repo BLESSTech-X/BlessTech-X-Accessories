@@ -28,7 +28,7 @@ async function syncProductCodes(db,list){
   const held=await db.prepare("SELECT product_slug,COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE ownership='phoneya2' GROUP BY product_slug").all();
   const heldBySlug=new Map((held.results||[]).map(x=>[x.product_slug,Number(x.quantity||0)]));
   for(const row of rows){const allocated=heldBySlug.get(row.product_slug)||0;if(allocated>0)statements.push(db.prepare("UPDATE agent_product_codes SET stock=MAX(0,stock-?) WHERE product_slug=?").bind(allocated,row.product_slug));}
-  statements.push(db.prepare("INSERT INTO agent_commission_settings(setting_key,setting_value) VALUES('central_stock_initialized','1')"));
+  statements.push(db.prepare("INSERT OR IGNORE INTO agent_commission_settings(setting_key,setting_value) VALUES('central_stock_initialized','1')"));
  }
  for(const p of list){
   const old=bySlug.get(p.slug);let code=old?.product_code;
