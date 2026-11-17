@@ -120,7 +120,7 @@ try {
     ? fs.readdirSync(categoriesDir)
       .filter(file => file.endsWith('.md') && file !== 'README.md')
       .map(file => {
-        const slug = file.replace(/\\.md$/, '');
+        const slug = file.replace(/\.md$/, '');
         const source = fs.readFileSync(path.join(categoriesDir, file), 'utf8');
         const meta = parseFrontmatter(source);
         return {
