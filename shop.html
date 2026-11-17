@@ -1591,7 +1591,8 @@ function updateCounts() {
   cats.forEach(cat => {
     const el = document.getElementById('cnt-' + cat);
     if (!el) return;
-    const visibleProducts = allProducts.filter(p => !p.visibility || p.visibility.shop !== false);\n    const n = cat === 'all' ? visibleProducts.length : visibleProducts.filter(p => p.category === cat).length;
+    const visibleProducts = allProducts.filter(p => !p.visibility || p.visibility.shop !== false);
+    const n = cat === 'all' ? visibleProducts.length : visibleProducts.filter(p => p.category === cat).length;
     el.textContent = '(' + n + ')';
   });
 }
