@@ -1086,7 +1086,7 @@ function renderGrowthInsights(growthView,ctx){
  if(!growthView)return;
  const {recent,pending,cancelled,low,out,growthVisitors,growthSessions,growthViews,growthOrders,growthGap,growthNext}=ctx;
  const src=Array.isArray(ga4ReportData?.sources)?ga4ReportData.sources:[],pages=Array.isArray(ga4ReportData?.pages)?ga4ReportData.pages:[];
- const sourceTotal=src.reduce((n,x)=>n+Number(x.sessions||0),0),topSources=[...src].sort((a,b)=>Number(b.sessions||0)-Number(a.sessions||0)).slice(0,5),topPages=[...pages].sort((a,b)=>Number(b.views||0)-Number(a.views||0)).slice(0,6),productPages=pages.filter(x=>/\\/(products?|shop)\\//i.test(String(x.path||''))).sort((a,b)=>Number(b.views||0)-Number(a.views||0)).slice(0,5);
+ const sourceTotal=src.reduce((n,x)=>n+Number(x.sessions||0),0),topSources=[...src].sort((a,b)=>Number(b.sessions||0)-Number(a.sessions||0)).slice(0,5),topPages=[...pages].sort((a,b)=>Number(b.views||0)-Number(a.views||0)).slice(0,6),productPages=pages.filter(x=>{const p=String(x.path||'').toLowerCase();return p.includes('/product/')||p.includes('/products/')||p.includes('/shop/');}).sort((a,b)=>Number(b.views||0)-Number(a.views||0)).slice(0,5);
  const sold=new Map();recent.filter(o=>o.status!=='cancelled').forEach(o=>(o.order_items||[]).forEach(i=>{const n=String(i.product_name||i.title||i.product_slug||'Product'),v=sold.get(n)||{name:n,units:0,lines:0};v.units+=Number(i.quantity||1);v.lines++;sold.set(n,v);}));
  const best=[...sold.values()].sort((a,b)=>b.units-a.units).slice(0,5),cancelRate=orders.length?cancelled/orders.length*100:0,ratio=growthViews?growthOrders/growthViews*100:null,esc=escapeFinancialText;
  const metric=(a,b,d)=>'<div class="gi-metric"><span>'+a+'</span><strong>'+b+'</strong><small>'+d+'</small></div>';
