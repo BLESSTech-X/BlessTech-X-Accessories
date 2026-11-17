@@ -363,7 +363,7 @@ body .cc-float-tools-grouped #cc-float-refresh.is-spinning .cc-float-icon{displa
   </div>
   <section class="panel section" id="journey-insights-panel"><div class="section-head"><div><h2>Visitor-to-order journey</h2><p>Scale comparison across GA4 activity and recorded orders · rolling 30 days</p></div><span class="journey-note-badge">Directional view</span></div><div id="journey-funnel" class="journey-funnel"></div><p class="journey-footnote">Page views, sessions and active users are different GA4 measurements, not a user-level sequence. This visual compares scale only; it must not be read as a verified conversion funnel.</p><div class="journey-bottom-grid"><div class="journey-highlight"><span>ORDER TARGET</span><strong id="journey-target-value">—</strong><div class="journey-target-track"><i id="journey-target-fill"></i></div><small id="journey-target-note"></small></div><div class="journey-highlight"><span>ORDER CONCENTRATION</span><strong id="journey-peak-day">—</strong><small id="journey-peak-detail">Peak day in rolling 30 days</small><div id="journey-peak-donut" class="journey-peak-donut"></div></div></div></section>
   <section class="panel section" id="inventory-overview-panel"><div class="section-head"><div><h2>Inventory overview</h2><p>Based on stock and price fields in your published product files. Verify stock values are kept current.</p></div></div><div class="health-grid" id="inventory-grid"><div class="health-item"><div><strong>Loading catalogue inventory…</strong></div></div></div></section>
-  <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Basic availability checks for the storefront and connected services.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
+  <section class="panel section" style="margin-top:17px"><div class="section-head"><div><h2>System health</h2><p>Read-only checks of storefront content, D1-backed admin services and Google Analytics.</p></div><button class="btn" id="health-refresh">Run checks</button></div><div class="health-grid" id="health-grid"></div></section>
   <div class="section-head" style="margin:24px 0 12px"><div><h2 style="font-size:19px;margin:0">PhoneYa2 Admin Links</h2><p class="muted" style="font-size:12px;margin:4px 0 0">Private tools for managing orders, products, campaigns and operations.</p></div></div>
   <div class="modules">
     <a class="panel module" href="/admin/orders.html"><span class="module-icon">▤</span><h3>Orders & Fulfilment</h3><p>Review customer orders, update status, export records and test order notifications.</p><span class="module-link">Open order dashboard ↗</span></a>
@@ -561,9 +561,56 @@ async function loadInventory(){
 }
 async function checkHealth(){
  const host=$('health-grid');host.replaceChildren();
- const items=[['Storefront','/','Main store page'],['Shop page','/shop.html','Product browsing'],['Contact page','/contact.html','Customer support page'],['Sitemap','/sitemap.xml','Search engine URL list'],['Robots file','/robots.txt','Crawler instructions'],['Product index','/content/products/index.json','Catalogue data'],['Orders API','/api/orders?admin=1','Authenticated order service']];
- const results=await Promise.all(items.map(async item=>{try{const headers={};const r=await fetch(item[1],{method:'GET',credentials:'same-origin',headers,cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);if(item[0]==='Product index'){const data=await r.json();$('stat-products').textContent=Array.isArray(data)?data.length.toLocaleString():'—';}return {...item,ok:true,detail:item[0]==='Orders API'?'Admin endpoint responding':item[0]==='Product index'?'Catalogue index responding':item[0]==='Sitemap'?'Sitemap file responding':item[0]==='Robots file'?'Crawler rules responding':'Page responding (HTTP '+r.status+')'};}catch(e){return {...item,ok:false,detail:e.message||'Could not reach'};}}));
- results.forEach(item=>{const el=document.createElement('div');el.className='health-item';const icon=document.createElement('span');icon.className='health-symbol'+(item.ok?'':' warn');icon.textContent=item.ok?'✓':'!';const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');name.textContent=item[0];detail.textContent=(item.ok?'Operational · ':'Needs attention · ')+item.detail;body.append(name,detail);el.append(icon,body);host.append(el);});
+ const tests=[
+  {name:'Storefront',path:'/',detail:'Main store page',type:'html'},
+  {name:'Shop page',path:'/shop.html',detail:'Product browsing',type:'html'},
+  {name:'Contact page',path:'/contact.html',detail:'Customer support page',type:'html'},
+  {name:'Sitemap',path:'/sitemap.xml',detail:'Search engine URL list',type:'sitemap'},
+  {name:'Robots file',path:'/robots.txt',detail:'Crawler instructions',type:'robots'},
+  {name:'Product index',path:'/content/products/index.json',detail:'Published catalogue index',type:'products'},
+  {name:'Orders and D1',path:'/api/orders?admin=1&limit=1',detail:'Authenticated order service and database read',type:'orders'},
+  {name:'Partner database',path:'/api/partner-admin?table=advertisers&query=limit%3D1',detail:'Partner records and database schema',type:'partner'},
+  {name:'Agent Network database',path:'/api/agent-network-admin?view=overview',detail:'Agent operations and commission tables',type:'agents'}
+ ];
+ const results=await Promise.all(tests.map(async item=>{
+  try{
+   const r=await fetch(item.path,{method:'GET',credentials:'same-origin',cache:'no-store'});
+   if(!r.ok)throw new Error('HTTP '+r.status);
+   let detail=item.detail;
+   if(item.type==='html'){
+    const body=await r.text();if(!/<html[\\s>]/i.test(body))throw new Error('Response is not an HTML page');
+    detail='Page returned valid HTML';
+   }else if(item.type==='sitemap'){
+    const body=await r.text();if(!/<urlset[\\s>]/i.test(body)||!/<url[\\s>]/i.test(body))throw new Error('Sitemap XML structure is invalid');
+    detail='Sitemap XML structure is valid';
+   }else if(item.type==='robots'){
+    const body=await r.text();if(!/User-agent:/i.test(body)||!/Sitemap:/i.test(body))throw new Error('Crawler rules or sitemap reference missing');
+    detail='Crawler rules and sitemap reference found';
+   }else if(item.type==='products'){
+    const data=await r.json();if(!Array.isArray(data))throw new Error('Catalogue index is not an array');
+    $('stat-products').textContent=data.length.toLocaleString();detail=data.length+' product entries returned';
+   }else if(item.type==='orders'){
+    const data=await r.json();if(!Array.isArray(data.orders))throw new Error('Orders response has an unexpected format');
+    detail='Authenticated D1 read succeeded · '+data.orders.length+' sample order(s)';
+   }else if(item.type==='partner'){
+    const data=await r.json();if(!Array.isArray(data))throw new Error('Partner records response has an unexpected format');
+    detail='Partner database query succeeded';
+   }else if(item.type==='agents'){
+    const data=await r.json();if(data.ok!==true||!Array.isArray(data.agents)||!Array.isArray(data.commissions))throw new Error('Agent Network response is incomplete');
+    detail='Agent and commission database queries succeeded';
+   }
+   return {name:item.name,ok:true,detail};
+  }catch(e){return {name:item.name,ok:false,detail:e.message||'Could not reach'};}
+ }));
+ const ga4Ok=await refreshGa4();
+ results.push({name:'Google Analytics 4',ok:ga4Ok,detail:ga4Ok?'Authenticated GA4 report retrieved':'GA4 report unavailable · see Analytics status above'});
+ results.forEach(item=>{
+  const el=document.createElement('div');el.className='health-item';
+  const icon=document.createElement('span');icon.className='health-symbol'+(item.ok?'':' warn');icon.textContent=item.ok?'✓':'!';
+  const body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');
+  name.textContent=item.name;detail.textContent=(item.ok?'Operational · ':'Needs attention · ')+item.detail;
+  body.append(name,detail);el.append(icon,body);host.append(el);
+ });
  return results.every(item=>item.ok);
 }
 function fmtCount(value){return Number(value||0).toLocaleString('en-US');}
@@ -864,7 +911,7 @@ async function loadAdminNotifications(){
  try{const data=await api('/api/admin-notifications?limit=150');notificationRows=Array.isArray(data.notifications)?data.notifications:[];notificationUnread=Number(data.unread||0);notificationCounts=data.unread_by_category||{};updateNotificationBadges();renderNotificationList();return true;}
  catch(error){console.warn('Command Centre notifications unavailable:',error.message);showNotificationError(error.message);updateNotificationBadges();return false;}
 }
-async function refreshData(options={}){const button=$('refresh');if(button&&!options.silent)button.disabled=true;if(!options.silent)message('global-message','Refreshing live business data…','');try{let offset=0,allOrders=[],page;do{page=await api('/api/orders?admin=1&offset='+offset);const batch=Array.isArray(page.orders)?page.orders:[];allOrders.push(...batch);offset=Number(page.next_offset||0);if(!page.has_more)break;if(allOrders.length>=10000)throw new Error('Order history exceeds the safe dashboard loading limit (10,000). Contact support before running full-history analytics.');}while(page.has_more);orders=allOrders;renderStats();const notificationOk=await loadAdminNotifications();let checks=[];if(!options.silent)checks=await Promise.allSettled([checkHealth(),loadInventory(),refreshGa4()]);renderCommandCentreExtensions();renderSystemOverview();detectNewOrders();$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();updateAssistantMeasurement();updateAssistantFreshness();if(!options.silent){const failed=[];if(!notificationOk)failed.push('notifications');['site health','stock','Google Analytics'].forEach((name,i)=>{if(checks[i]?.status!=='fulfilled'||checks[i].value!==true)failed.push(name);});if(failed.length)message('global-message','Orders refreshed, but these systems need attention: '+failed.join(', ')+'.','error');else message('global-message','Orders, notifications, site health, stock and Google Analytics refreshed successfully.','success');}}catch(e){if(!options.silent)message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{if(button&&!options.silent)button.disabled=false;}}
+async function refreshData(options={}){const button=$('refresh');if(button&&!options.silent)button.disabled=true;if(!options.silent)message('global-message','Refreshing live business data…','');try{let offset=0,allOrders=[],page;do{page=await api('/api/orders?admin=1&offset='+offset);const batch=Array.isArray(page.orders)?page.orders:[];allOrders.push(...batch);offset=Number(page.next_offset||0);if(!page.has_more)break;if(allOrders.length>=10000)throw new Error('Order history exceeds the safe dashboard loading limit (10,000). Contact support before running full-history analytics.');}while(page.has_more);orders=allOrders;renderStats();const notificationOk=await loadAdminNotifications();let checks=[];if(!options.silent)checks=await Promise.allSettled([checkHealth(),loadInventory()]);renderCommandCentreExtensions();renderSystemOverview();detectNewOrders();$('last-updated').textContent='Updated '+new Date().toLocaleTimeString();updateAssistantMeasurement();updateAssistantFreshness();if(!options.silent){const failed=[];if(!notificationOk)failed.push('notifications');['site health','stock'].forEach((name,i)=>{if(checks[i]?.status!=='fulfilled'||checks[i].value!==true)failed.push(name);});if(failed.length)message('global-message','Orders refreshed, but these systems need attention: '+failed.join(', ')+'.','error');else message('global-message','Orders, notifications, site health, stock and Google Analytics refreshed successfully.','success');}}catch(e){if(!options.silent)message('global-message',e.message,'error');if(/sign in|unauthorized|forbidden/i.test(e.message))await signOut();}finally{if(button&&!options.silent)button.disabled=false;}}
 
 window.PY2_GET_ORDERS=()=>orders;window.PY2_REFRESH_DATA=()=>refreshData();
 async function signOut(){try{await fetch('/api/auth',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({action:'logout'})});}catch{}if(silentRefreshTimer)clearInterval(silentRefreshTimer);session=null;window.PY2_SEASONAL_AUTH_TOKEN='';orders=[];hasOrderBaseline=false;closeLabSequence();closeWorkspaceModal();$('dashboard').classList.add('hidden');$('login').classList.remove('hidden');$('password').value='';}
