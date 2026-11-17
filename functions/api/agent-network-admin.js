@@ -36,14 +36,14 @@ if(b.action==="inventory.issue"||b.action==="inventory.return"){
   try{
    await db.prepare("INSERT INTO agent_inventory(id,agent_id,product_slug,quantity,ownership,updated_at) VALUES(?,?,?,?,'phoneya2',?) ON CONFLICT(agent_id,product_slug,ownership) DO UPDATE SET quantity=agent_inventory.quantity+excluded.quantity,updated_at=excluded.updated_at").bind(crypto.randomUUID(),agentId,slug,qty,now).run();
    await db.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),agentId,slug,qty,"issued_to_agent","Central stock issued from PhoneYa2",actor).run();
-  }catch(error){await db.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(qty,slug).run();throw error;}
+  }catch(error){try{await db.prepare("UPDATE agent_inventory SET quantity=MAX(0,quantity-?),updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(qty,now,agentId,slug).run();}catch{}await db.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(qty,slug).run();throw error;}
  }else{
   const returned=await db.prepare("UPDATE agent_inventory SET quantity=quantity-?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2' AND quantity>=?").bind(qty,now,agentId,slug,qty).run();
   if(!Number(returned.meta?.changes||0))return fail("The agent does not have that many PhoneYa2-owned units to return.",409);
   try{
    await db.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(qty,slug).run();
    await db.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),agentId,slug,-qty,"returned_to_central","Agent returned stock to PhoneYa2",actor).run();
-  }catch(error){await db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(qty,now,agentId,slug).run();throw error;}
+  }catch(error){try{await db.prepare("UPDATE agent_product_codes SET stock=MAX(0,stock-?) WHERE product_slug=?").bind(qty,slug).run();}catch{}await db.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(qty,now,agentId,slug).run();throw error;}
  }
  await recordAdminActivity(db,{key:"agent-stock:"+b.action+":"+agentId+":"+slug+":"+now,category:"inventory",type:b.action,title:b.action==="inventory.issue"?"PhoneYa2 stock issued to agent":"PhoneYa2 stock returned by agent",message:qty+" unit(s) of "+product.product_name+" "+(b.action==="inventory.issue"?"issued to ":"returned by ")+agentId+".",destination:"/admin/command-center.html",related_id:agentId,related_label:product.product_name});
  return json({ok:true,message:qty+" unit(s) "+(b.action==="inventory.issue"?"issued to ":"returned from ")+agentId+"."});
