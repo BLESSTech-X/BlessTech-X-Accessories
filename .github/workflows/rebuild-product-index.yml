@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'content/products/**'
+      - 'build-product-index.js'
+      - '.github/workflows/rebuild-product-index.yml'
 
 jobs:
   rebuild-index:
@@ -22,7 +24,7 @@ jobs:
       - name: Rebuild product index
         run: node build-product-index.js
 
-      - name: Commit and push updated index.json
+      - name: Commit and push generated product and blog indexes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -32,6 +34,6 @@ jobs:
             exit 0
           fi
 
-          git add content/products/index.json
+          git add content/products/index.json content/products/catalog.json content/blog/index.json
           git commit -m "chore: rebuild product index [skip ci]"
           git push
