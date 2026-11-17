@@ -17,13 +17,13 @@ other_product_details:
         - Fresh 🌹
       - - concentration
         - Eau due
-  __ownerID: null
-  __hash: null
-  __altered: false
   enabled: true
   brand: "ONLY YOU COLLECTION "
   scent_family: Floral
   concentration: Eau deu
+  __hash: null
+  __ownerID: null
+  __altered: false
 category: perfumes
 sales_hook: Limited Stock 🛒
 offer_label: "On Discount "
@@ -38,4 +38,6 @@ visibility:
   featured: true
   offers: false
   agents: true
+  community: true
+  blog: true
 ---
