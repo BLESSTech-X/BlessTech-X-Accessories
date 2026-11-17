@@ -21,8 +21,8 @@ function card(p){
  addText(body,'span','product-badge',p.offer_label||(p.sales_priority==='campaign'?'Campaign pick':p.sales_priority==='promote'?'PhoneYa2 pick':'PhoneYa2 product'));
  addText(body,'h3','',p.title);
  addText(body,'small','meta',p.category_title);
- addText(body,'p','',p.description);
- addText(body,'p','',p.sales_hook);
+ var description=String(p.description||'');var descriptionNode=node('p','product-description',description);body.appendChild(descriptionNode);if(description.length>105){var more=node('button','product-read-more','Read more');more.type='button';more.setAttribute('aria-expanded','false');body.appendChild(more);}
+ addText(body,'p','product-hook',p.sales_hook);
  addText(body,'small','meta',variant);
  var prices=node('div','price-row');prices.appendChild(node('strong','price',money(price)));
  if(save>0)prices.appendChild(node('span','was',money(original)));
@@ -30,7 +30,7 @@ function card(p){
  if(save>0)addText(body,'p','saving','Save '+money(save)+' · '+discount+'% off');
  addText(body,'p','terms',p.offer_details);
  addText(body,'p','terms',p.order_note);
- addText(body,'small','meta',stock>0?'In stock · '+stock+' in published catalogue':'Check availability on product page');
+ addText(body,'small','meta',stock>0?'In stock · '+stock:'Check availability on product page');
  var order=node('a','order','Order Now ↗');order.href=url;body.appendChild(order);
  article.appendChild(body);return article;
 }
@@ -42,5 +42,11 @@ Promise.all([fetch('/content/products/catalog.json',{cache:'no-cache'}).then(fun
  if(!selected.length)return;
  selected.slice(0,12).forEach(function(p){root.appendChild(card(p))});
  section.hidden=false;
+ var prev=document.getElementById('community-products-prev'),next=document.getElementById('community-products-next');
+ function step(direction){root.scrollBy({left:direction*Math.max(220,root.clientWidth*.72),behavior:'smooth'});}
+ if(prev)prev.addEventListener('click',function(){step(-1)});if(next)next.addEventListener('click',function(){step(1)});
+ root.addEventListener('click',function(event){var button=event.target.closest('.product-read-more');if(!button)return;var expanded=button.getAttribute('aria-expanded')==='true';button.setAttribute('aria-expanded',String(!expanded));button.textContent=expanded?'Read more':'Show less';button.previousElementSibling.classList.toggle('expanded',!expanded);});
+ var autoTimer=null;function startAuto(){if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||autoTimer)return;autoTimer=setInterval(function(){if(section.matches(':hover')||section.contains(document.activeElement))return;var max=root.scrollWidth-root.clientWidth;if(max<10)return;if(root.scrollLeft>=max-8)root.scrollTo({left:0,behavior:'smooth'});else step(1);},4200);}
+ section.addEventListener('mouseenter',function(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;}});section.addEventListener('mouseleave',startAuto);section.addEventListener('focusin',function(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;}});section.addEventListener('focusout',startAuto);startAuto();
 }).catch(function(error){console.warn('[PhoneYa2] Community product catalogue unavailable',error)});
 })();
