@@ -4,6 +4,7 @@ date_added: 2026-11-12T23:08:00+02:00
 price: 150
 original_price: 190
 stock: 1000
+publish: true
 category: earphone
 sales_priority: promote
 description: >-
@@ -30,4 +31,13 @@ gallery:
   - image: /assets/images/uploads/1000285739.jpg
   - image: /assets/images/uploads/1000285729.jpg
 featured: true
+visibility:
+  shop: true
+  search: true
+  homepage: true
+  featured: true
+  offers: true
+  community: true
+  blog: true
+  agents: true
 ---
