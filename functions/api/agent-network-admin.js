@@ -2,11 +2,17 @@
 import {getAdminSession} from "../_auth.js";
 import {applyAgentCommissionRecoveries} from "../_agent-finance.js";
 import {recordAdminActivity} from "../_activity.js";
+import {getProducts,syncProductCodes} from "./agent-network.js";
 const H={"content-type":"application/json; charset=utf-8","cache-control":"no-store"};
 const rows=r=>r?.results||[];
 const json=(d,s=200)=>new Response(JSON.stringify(d),{status:s,headers:H});
 const fail=(m,s=400)=>json({ok:false,error:m},s);
 function sameOrigin(r){const o=r.headers.get("origin");if(!o)return r.method==="GET"||r.headers.get("sec-fetch-site")==="same-origin";try{return new URL(o).host===new URL(r.url).host;}catch{return false;}}
+async function syncCatalogueForAdmin(db,env,request){
+ const products=await getProducts({request,env});
+ await syncProductCodes(db,products);
+ return products;
+}
 function normalizeBands(input){if(!Array.isArray(input))return[];if(input.some(x=>x.up_from_minor!=null))return input.map(x=>({up_from_minor:Number(x.up_from_minor),rate:Number(x.rate)})).sort((a,b)=>a.up_from_minor-b.up_from_minor);let lower=0;return input.map(x=>{const row={up_from_minor:lower,rate:Number(x.rate)};if(x.up_to_minor!=null)lower=Number(x.up_to_minor);return row;}).sort((a,b)=>a.up_from_minor-b.up_from_minor);}
 function commissionRate(amount,bands){const list=normalizeBands(bands);let selected=list[0];for(const band of list){if(amount>=band.up_from_minor)selected=band;else break;}return Number(selected?.rate||0);}
 async function settings(db){const r=await db.prepare("SELECT setting_key,setting_value FROM agent_commission_settings").all();return Object.fromEntries(rows(r).map(x=>[x.setting_key,x.setting_value]));}
@@ -18,12 +24,13 @@ if(view==="overview"){const [agents,sales,payouts,ledger,revenue]=await Promise.
 if(view==="agents"){const r=await db.prepare("SELECT a.agent_id,a.email,a.phone,a.status,a.created_at,p.display_name,p.profile_image_url,(SELECT COUNT(*) FROM orders o WHERE o.agent_code=a.agent_id AND o.status='delivered') sales FROM agent_accounts a LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id ORDER BY a.created_at DESC LIMIT 500").all();return json({ok:true,agents:rows(r)});}
 if(view==="sales"){const [s,o,c]=await Promise.all([db.prepare("SELECT s.*,a.email,o.order_number,o.status order_status FROM agent_sales s JOIN agent_accounts a ON a.agent_id=s.agent_id LEFT JOIN orders o ON o.id=s.linked_order_id ORDER BY s.created_at DESC LIMIT 500").all(),db.prepare("SELECT id,order_number,agent_code,fulfilment_source,fulfilment_agent_id,fulfilment_status,status,total_amount_minor,customer_name,customer_phone,customer_email,delivery_address,created_at FROM orders WHERE agent_code<>'' ORDER BY created_at DESC LIMIT 500").all(),db.prepare("SELECT * FROM agent_commission_ledger ORDER BY created_at DESC LIMIT 500").all()]);return json({ok:true,sales:rows(s),orders:rows(o),commissions:rows(c)});}
 if(view==="payouts"){const r=await db.prepare("SELECT p.*,a.agent_id,a.email,pr.display_name FROM agent_payout_requests p JOIN agent_accounts a ON a.agent_id=p.agent_id LEFT JOIN agent_profiles pr ON pr.agent_id=a.agent_id ORDER BY p.requested_at DESC LIMIT 500").all();return json({ok:true,payouts:rows(r)});}
-if(view==="inventory"){const [stock,agents,products,movements]=await Promise.all([db.prepare("SELECT i.*,a.agent_id,p.display_name,c.product_name,c.product_code FROM agent_inventory i JOIN agent_accounts a ON a.agent_id=i.agent_id LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id LEFT JOIN agent_product_codes c ON c.product_slug=i.product_slug ORDER BY p.display_name,c.product_name").all(),db.prepare("SELECT agent_id FROM agent_accounts WHERE status='active' ORDER BY agent_id").all(),db.prepare("SELECT product_slug,product_code,product_name,stock,active FROM agent_product_codes ORDER BY product_name").all(),db.prepare("SELECT m.*,p.display_name,c.product_name FROM agent_inventory_movements m LEFT JOIN agent_profiles p ON p.agent_id=m.agent_id LEFT JOIN agent_product_codes c ON c.product_slug=m.product_slug ORDER BY m.created_at DESC LIMIT 150").all()]);return json({ok:true,inventory:rows(stock),agents:rows(agents),products:rows(products),movements:rows(movements)});}
+if(view==="inventory"){await syncCatalogueForAdmin(db,env,request);const [stock,agents,products,movements]=await Promise.all([db.prepare("SELECT i.*,a.agent_id,p.display_name,c.product_name,c.product_code FROM agent_inventory i JOIN agent_accounts a ON a.agent_id=i.agent_id LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id LEFT JOIN agent_product_codes c ON c.product_slug=i.product_slug ORDER BY p.display_name,c.product_name").all(),db.prepare("SELECT agent_id FROM agent_accounts WHERE status='active' ORDER BY agent_id").all(),db.prepare("SELECT product_slug,product_code,product_name,stock,active FROM agent_product_codes ORDER BY product_name").all(),db.prepare("SELECT m.*,p.display_name,c.product_name FROM agent_inventory_movements m LEFT JOIN agent_profiles p ON p.agent_id=m.agent_id LEFT JOIN agent_product_codes c ON c.product_slug=m.product_slug ORDER BY m.created_at DESC LIMIT 150").all()]);return json({ok:true,inventory:rows(stock),agents:rows(agents),products:rows(products),movements:rows(movements)});}
 if(view==="recruitment"){const r=await db.prepare("SELECT x.*,a.agent_id referrer_id,p.display_name referrer_name,b.agent_id recruited_id,q.display_name recruited_name FROM agent_referrals x JOIN agent_accounts a ON a.agent_id=x.referrer_agent_id LEFT JOIN agent_profiles p ON p.agent_id=a.agent_id JOIN agent_accounts b ON b.agent_id=x.recruited_agent_id LEFT JOIN agent_profiles q ON q.agent_id=b.agent_id ORDER BY x.created_at DESC LIMIT 500").all();return json({ok:true,recruitments:rows(r)});}
 if(view==="products"){const r=await db.prepare("SELECT * FROM agent_product_codes ORDER BY product_name").all();return json({ok:true,products:rows(r),settings:await settings(db)});}
 return fail("Unknown admin view.");}
 if(request.method!=="POST")return fail("Method not allowed.",405);let b;try{b=await request.json();}catch{return fail("Invalid JSON.");}const actor="command-centre",now=new Date().toISOString();
 if(b.action==="inventory.issue"||b.action==="inventory.return"){
+ await syncCatalogueForAdmin(db,env,request);
  const agentId=String(b.agent_id||"").trim().toUpperCase(),slug=String(b.product_slug||""),qty=Number(b.quantity);
  if(!agentId||!slug||!Number.isInteger(qty)||qty<1||qty>10000)return fail("Choose an agent and product and enter a whole quantity greater than zero.");
  const agent=await db.prepare("SELECT agent_id FROM agent_accounts WHERE agent_id=? AND status='active'").bind(agentId).first();
@@ -50,6 +57,7 @@ if(b.action==="inventory.issue"||b.action==="inventory.return"){
  return json({ok:true,message:qty+" unit(s) "+(b.action==="inventory.issue"?"issued to ":"returned from ")+agentId+"."});
 }
 if(b.action==="inventory.central_adjust"){
+ await syncCatalogueForAdmin(db,env,request);
  const slug=String(b.product_slug||""),qty=Number(b.quantity),note=String(b.note||"").trim().slice(0,300);
  if(!slug||!Number.isInteger(qty)||qty<0||qty>100000||note.length<5)return fail("Choose a product, enter a valid central stock count and explain the adjustment.");
  const product=await db.prepare("SELECT product_name,stock FROM agent_product_codes WHERE product_slug=?").bind(slug).first();
