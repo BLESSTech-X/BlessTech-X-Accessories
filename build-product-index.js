@@ -173,7 +173,7 @@ try {
       featured: meta.featured === true || meta.featured === 'true',
       other_phoneya2_product: meta.other_phoneya2_product === true || meta.other_phoneya2_product === 'true' || parseNestedObject(source, 'other_product_details').enabled === true || parseNestedObject(source, 'other_product_details').enabled === 'true',
       other_product_details: parseNestedObject(source, 'other_product_details'),
-      visibility: parseNestedObject(source, 'visibility'),
+      visibility: (() => { const value = parseNestedObject(source, 'visibility'); return { ...value, blog: value.blog === true || value.blog === 'true', community: value.community === true || value.community === 'true' }; })(),
       date_added: String(meta.date_added || meta.created_at || ''),
       gallery: parseBlogGallery(source, meta.gallery)
     };
