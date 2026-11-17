@@ -93,7 +93,7 @@ export async function onRequest({request,env}){
   }
   if(body.action==="send"){
    const id=String(body.id||"");if(!/^[0-9a-f-]{36}$/i.test(id))return json({error:"Invalid campaign."},400);
-   const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();if(!campaign)return json({error:"Campaign not found."},404);if(campaign.approval_status!=="approved")return json({error:"Approve this campaign before sending. Drafts are never sent automatically."},409);if(campaign.status==="sent")return json({error:"This campaign is already complete."},409);
+   const campaign=await env.DB.prepare("SELECT * FROM email_campaigns WHERE id=?").bind(id).first();if(!campaign)return json({error:"Campaign not found."},404);if(campaign.approval_status!=="approved")return json({error:"Approve this campaign before sending. Drafts are never sent automatically."},409);const deliveryChannels=(()=>{try{const value=JSON.parse(campaign.channels_json||'["email"]');return Array.isArray(value)?value:[]}catch{return []}})();if(!deliveryChannels.includes("email"))return json({error:"This campaign is not configured for email delivery. Add the email channel before sending."},409);if(campaign.status==="sent")return json({error:"This campaign is already complete."},409);
    let recipients=[];
    if(campaign.audience==="partners"){
     const rows=await env.DB.prepare("SELECT id AS advertiser_id,email,owner_name AS full_name,business_name,phone FROM advertisers WHERE status IN ('active','approved') AND (TRIM(COALESCE(email,''))<>'' OR TRIM(COALESCE(phone,''))<>'') ORDER BY created_at ASC LIMIT 1000").all();
