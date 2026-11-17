@@ -564,13 +564,16 @@ function drawChart(){
  if(summary)summary.innerHTML='<strong>'+total+' orders <i>·</i> '+money(value)+'</strong><span>Peak '+(allTime?'month':'day')+': '+(peak?buckets[peakIndex].toLocaleDateString('en-GB',allTime?{month:'short',year:'numeric'}:{day:'numeric',month:'short'})+' · '+peak+' orders':'No orders in this period')+'</span>';
  const maxC=Math.max(4,...counts);ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';
  for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;ctx.strokeStyle=dashboard.dataset.ccTheme==='dark'?'#34435a':'#edf0f5';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(String(Math.round(maxC*(1-i/4))),pad.l-8,y);}
- const step=cw/Math.max(1,buckets.length-1),pts=counts.map((v,i)=>({x:pad.l+step*i,y:pad.t+ch-(v/maxC)*ch}));
- ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();
+ // Centre a single month instead of pinning its only point to the far-left edge.
+ const step=cw/Math.max(1,buckets.length-1),xAt=i=>buckets.length===1?pad.l+cw/2:pad.l+step*i;
+ const pts=counts.map((v,i)=>({x:xAt(i),y:pad.t+ch-(v/maxC)*ch}));
+ ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));if(pts.length>1){ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();ctx.fillStyle='rgba(255,101,0,.09)';ctx.fill();}
  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#ff6500';ctx.lineWidth=2.5;ctx.stroke();
- pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.3,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
- const maxSales=Math.max(...vals,1),salesPts=vals.map((v,i)=>({x:pad.l+step*i,y:pad.t+ch-(v/maxSales)*ch*.76}));
+ pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fillStyle='#ff6500';ctx.fill();});
+ const maxSales=Math.max(...vals,1),salesPts=vals.map((v,i)=>({x:xAt(i),y:pad.t+ch-(v/maxSales)*ch*.76}));
  ctx.beginPath();salesPts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#3478f6';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
- ctx.textAlign='center';ctx.textBaseline='top';buckets.forEach((d,i)=>{const every=Math.max(1,Math.ceil(buckets.length/6));if(buckets.length<=7||i===0||i===buckets.length-1||i%every===0){ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(d.toLocaleDateString('en-GB',allTime?{month:'short',year:'2-digit'}:buckets.length===7?{weekday:'short'}:{day:'numeric',month:'short'}),pad.l+step*i,h-pad.b+10);}});
+ salesPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle='#3478f6';ctx.fill();});
+ ctx.textAlign='center';ctx.textBaseline='top';buckets.forEach((d,i)=>{const every=Math.max(1,Math.ceil(buckets.length/6));if(buckets.length<=7||i===0||i===buckets.length-1||i%every===0){ctx.fillStyle=dashboard.dataset.ccTheme==='dark'?'#c1cde0':'#858b9b';ctx.fillText(d.toLocaleDateString('en-GB',allTime?{month:'short',year:'2-digit'}:buckets.length===7?{weekday:'short'}:{day:'numeric',month:'short'}),xAt(i),h-pad.b+10);}});
  const first=buckets[0],last=buckets[buckets.length-1];$('range-label').textContent=allTime?'All time · '+buckets.length+' months':first.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' – '+last.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 }
 async function loadInventory(){
