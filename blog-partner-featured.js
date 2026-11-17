@@ -1,1 +1,42 @@
-(()=>{const root=document.getElementById('partner-featured-stories'),grid=document.getElementById('partner-featured-grid');if(!root||!grid)return;const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const date=s=>{const d=new Date(s||'');return Number.isNaN(d.getTime())?'Partner spotlight':d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})};const style=document.createElement('style');style.textContent='#partner-featured-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))!important;gap:14px!important}#partner-featured-grid .py2-partner-spotlight-compact{border:2px solid #c8d9ec!important;border-radius:15px!important;background:linear-gradient(110deg,#fff 0%,#f8fbff 100%)!important;box-shadow:0 7px 22px rgba(23,75,135,.11)!important}#partner-featured-grid .py2-social-post-link{display:grid;grid-template-columns:128px minmax(0,1fr);align-items:stretch}#partner-featured-grid .py2-partner-no-image{display:block!important}#partner-featured-grid .py2-social-post-link>img{width:128px;height:100%;min-height:132px;max-height:166px;object-fit:cover}#partner-featured-grid .py2-social-post-content{padding:13px 14px!important;min-width:0}#partner-featured-grid .py2-social-post-content h3{font-size:16px!important;line-height:1.32!important;margin:5px 0!important}#partner-featured-grid .py2-social-post-content p{font-size:12px!important;line-height:1.5!important;margin:0 0 6px!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}#partner-featured-grid .py2-partner-message-row{padding:0 11px 10px!important;gap:7px!important}#partner-featured-grid .py2-partner-message-row button{min-height:32px!important;padding:6px 9px!important;font-size:11px!important}@media(max-width:520px){#partner-featured-grid .py2-social-post-link{grid-template-columns:96px minmax(0,1fr)}#partner-featured-grid .py2-social-post-link>img{width:96px;min-height:116px;max-height:140px}}';document.head.appendChild(style);fetch('/api/community',{headers:{accept:'application/json'},cache:'no-store'}).then(r=>r.json()).then(data=>{if(!data.ok)throw Error('Unable to load partner stories');const posts=(data.posts||[]).filter(p=>Number(p.is_featured)===1).slice(0,4);if(!posts.length)return;grid.innerHTML=posts.map(p=>{const slug=p.business_slug?'/b/'+encodeURIComponent(p.business_slug)+'/':'/community/';return '<article class="py2-social-post py2-partner-spotlight-compact"><a href="'+slug+'" class="py2-social-post-link'+(p.cover_image_url?'':' py2-partner-no-image')+'">'+(p.cover_image_url?'<img src="'+esc(p.cover_image_url)+'" alt="'+esc(p.title)+'" loading="lazy">':'')+'<div class="py2-social-post-content"><span class="blog-eyebrow">PARTNER SPOTLIGHT · '+date(p.published_at)+'</span><h3>'+esc(p.title)+'</h3><p>'+esc(p.excerpt||p.body||'').slice(0,150)+'</p><strong>'+esc(p.business_name)+' ↗</strong></div></a>'+(p.business_slug?'<div class="py2-partner-message-row"><button type="button" data-message-business="'+esc(p.business_slug)+'" data-business-name="'+esc(p.business_name)+'" data-message-source="Blog partner spotlight: '+esc(p.title||p.business_name)+'">✉ Message</button><button type="button" data-share-post data-share-title="'+esc(p.title||p.business_name)+'" data-share-text="'+esc(p.excerpt||p.body||'').slice(0,150)+'" data-share-url="/b/'+encodeURIComponent(p.business_slug)+'/?share=post%3A'+encodeURIComponent(p.slug||'')+'" data-share-image="'+esc(p.cover_image_url||'')+'">↗ Share</button></div>':'')+'</article>'}).join('');root.hidden=false}).catch(e=>console.warn('Partner featured stories:',e.message))})();
+(()=> {
+'use strict';
+const root=document.getElementById('partner-featured-stories');
+const grid=document.getElementById('partner-featured-grid');
+if(!root||!grid)return;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const style=document.createElement('style');
+style.textContent=`
+/* Partner features on Blog use the same compact editorial treatment as homepage inserts. */
+#partner-featured-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+#partner-featured-grid .py2-inline-editorial{overflow:hidden;border:2px solid #c9e3d2;border-left:5px solid #159447;border-radius:15px;background:linear-gradient(110deg,#fff 0%,#f7fcf8 100%);box-shadow:0 7px 22px rgba(18,43,74,.11);max-width:100%;margin:0}
+#partner-featured-grid .py2-inline-editorial-link{display:grid;grid-template-columns:clamp(104px,18%,180px) minmax(0,1fr);align-items:stretch;min-height:138px;color:#14243a;text-decoration:none}
+#partner-featured-grid .py2-inline-editorial-link:not(:has(>img)){grid-template-columns:minmax(0,1fr)}
+#partner-featured-grid .py2-inline-editorial-link>img{display:block;width:100%;height:100%;min-height:138px;max-height:168px;object-fit:cover;background:#edf4fb}
+#partner-featured-grid .py2-inline-editorial-copy{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:14px 17px;min-width:0}
+#partner-featured-grid .py2-inline-editorial-copy>span{font-size:9px;font-weight:900;letter-spacing:.9px;color:#159447}
+#partner-featured-grid .py2-inline-editorial-copy strong{font-size:clamp(14px,1.6vw,17px);line-height:1.3;color:#14243a}
+#partner-featured-grid .py2-inline-editorial-copy p{margin:0;color:#607187;font-size:12px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#partner-featured-grid .py2-inline-editorial-copy b{font-size:11px;color:#e65b00}
+#partner-featured-grid .py2-inline-editorial:hover{border-color:#a8d4b7;box-shadow:0 10px 25px rgba(18,43,74,.14);transform:translateY(-1px)}
+@media(max-width:520px){
+#partner-featured-grid .py2-inline-editorial-link{grid-template-columns:88px minmax(0,1fr);min-height:116px}
+#partner-featured-grid .py2-inline-editorial-link>img{min-height:116px;max-height:132px}
+#partner-featured-grid .py2-inline-editorial-copy{padding:10px 12px;gap:5px}
+}
+`;
+document.head.appendChild(style);
+fetch('/api/community',{headers:{accept:'application/json'},cache:'no-store'})
+.then(r=>r.json())
+.then(data=>{
+ if(!data.ok)throw Error('Unable to load partner stories');
+ const posts=(data.posts||[]).filter(p=>Number(p.is_featured)===1).slice(0,4);
+ if(!posts.length){root.hidden=true;return}
+ grid.innerHTML=posts.map(p=>{
+  const href=p.business_slug?'/b/'+encodeURIComponent(p.business_slug)+'/':'/community/';
+  const image=p.cover_image_url?'<img src="'+esc(p.cover_image_url)+'" alt="'+esc(p.title||'Partner story')+'" loading="lazy" decoding="async">':'';
+  return '<article class="py2-inline-editorial py2-inline-editorial-partner"><a class="py2-inline-editorial-link" href="'+href+'">'+image+'<div class="py2-inline-editorial-copy"><span>PHONEYA2 PARTNER SPOTLIGHT</span><strong>'+esc(p.title||'A story from our business community')+'</strong><p>'+esc(p.excerpt||p.body||'Discover this PhoneYa2 business partner and what they offer.').slice(0,125)+'</p><b>Discover partner ↗</b></div></a></article>';
+ }).join('');
+ root.hidden=false;
+})
+.catch(e=>console.warn('Partner featured stories:',e.message));
+})();
