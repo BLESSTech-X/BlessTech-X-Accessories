@@ -2852,7 +2852,7 @@ async function loadHomepageCategories(){
   if(!categories.length)return;
   homepageCategoryLabels={};
   const desktop=document.getElementById('cs-cats'),mobile=document.getElementById('cs-mobile-cats');
-  const renderIcon=category=>category.icon&&/^fa(?:s|r|b)?\\s+fa-[a-z0-9-]+(?:\\s+fa-[a-z0-9-]+)*$/i.test(category.icon)
+  const renderIcon=category=>category.icon&&/^fa-[a-z0-9-]+(?:\s+fa-[a-z0-9-]+)*$/i.test(category.icon)
     ? '<i class="'+escHtml(category.icon)+'" aria-hidden="true"></i>'
     : (fallback[category.slug]||'📦');
   const renderCategory=category=>{
@@ -2868,7 +2868,7 @@ async function loadHomepageCategories(){
     if(item&&host.contains(item))window.setCsCat(item.dataset.cat,item);
   }));
   const initial=categories.find(x=>x.slug==='case')||categories[0];
-  if(initial)window.setCsCat(initial.slug,desktop?.querySelector('[data-cat="'+CSS.escape(initial.slug)+'"]')||mobile?.querySelector('[data-cat="'+CSS.escape(initial.slug)+'"]'));
+  if(initial){const buttons=[...(desktop?desktop.querySelectorAll('[data-cat]'):[]),...(mobile?mobile.querySelectorAll('[data-cat]'):[])];window.setCsCat(initial.slug,buttons.find(button=>button.dataset.cat===initial.slug)||null);}
  }catch(error){console.warn('[PhoneYa2] Dynamic homepage categories unavailable; keeping the built-in categories.',error);}
 }
 
