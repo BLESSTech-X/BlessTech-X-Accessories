@@ -66,6 +66,8 @@ collections:
           - { label: "Show on Homepage", name: "homepage", widget: "boolean", default: false }
           - { label: "Allow Featured Sections", name: "featured", widget: "boolean", default: false }
           - { label: "Allow Special Offers Section", name: "offers", widget: "boolean", default: false }
+          - { label: "Show as a PhoneYa2 product on the Blog", name: "blog", widget: "boolean", default: false, hint: "Adds the full product card to the PhoneYa2 Blog showcase, including image, description, price, discount, availability and Order Now." }
+          - { label: "Show as a PhoneYa2 product in the Community", name: "community", widget: "boolean", default: false, hint: "Adds the full product card to the Community PhoneYa2 Products section, with an Order Now link to the normal product page." }
           - { label: "Available to Agents", name: "agents", widget: "boolean", default: false, hint: "Enable only when this product is approved for agent selling. Stock distribution and commission rules are managed separately." }
 
 
