@@ -739,6 +739,22 @@ export async function onRequest(context) {
           }
         } catch (inventoryError) { console.error("Agent inventory cancellation restore failed:",String(inventoryError).slice(0,220)); }
       }
+      // Restore centrally held stock reserved by an agent-attributed order if it is cancelled before delivery.
+      if(status==="cancelled"&&currentRow.status!=="delivered"&&currentRow.agent_code){
+        try{
+          const existing=await env.DB.prepare("SELECT id FROM agent_inventory_movements WHERE reference=? AND movement_type='central_order_cancel_restore' LIMIT 1").bind(currentRow.order_number).first();
+          if(!existing){
+            const movements=await env.DB.prepare("SELECT product_slug,quantity_delta FROM agent_inventory_movements WHERE reference=? AND movement_type='central_order_reservation' AND agent_id=?").bind(currentRow.order_number,currentRow.agent_code).all();
+            const restore=[];
+            for(const movement of (movements.results||[])){
+              const quantity=Math.abs(Number(movement.quantity_delta||0));if(!quantity)continue;
+              restore.push(env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(quantity,movement.product_slug));
+              restore.push(env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),currentRow.agent_code,movement.product_slug,quantity,"central_order_cancel_restore",currentRow.order_number,"system"));
+            }
+            if(restore.length)await env.DB.batch(restore);
+          }
+        }catch(inventoryError){console.error("Central stock cancellation restore failed:",String(inventoryError).slice(0,220));}
+      }
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
       if (!updatedOrder) return json({ error: "Order not found." }, 404);
