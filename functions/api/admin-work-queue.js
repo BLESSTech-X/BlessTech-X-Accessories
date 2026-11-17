@@ -90,7 +90,7 @@ export async function onRequest(context){
     if(typeof context.waitUntil==="function")context.waitUntil(workSyncInFlight);
    }
    const [rows,counts]=await Promise.all([
-    env.DB.prepare("SELECT * FROM admin_work_items ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 WHEN 'completed' THEN 2 ELSE 3 END,CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,created_at DESC LIMIT 300").all(),
+    env.DB.prepare("SELECT w.*,(SELECT c.id FROM email_campaigns c WHERE c.id=w.related_id AND c.archived_at IS NULL) AS campaign_id,(SELECT c.channels_json FROM email_campaigns c WHERE c.id=w.related_id AND c.archived_at IS NULL) AS campaign_channels FROM admin_work_items w ORDER BY CASE w.status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 WHEN 'completed' THEN 2 ELSE 3 END,CASE w.priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'normal' THEN 2 ELSE 3 END,w.created_at DESC LIMIT 300").all(),
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM admin_work_items GROUP BY status").all()
    ]);
    const summary={pending:0,approved:0,ignored:0,completed:0};for(const r of counts.results||[])summary[r.status]=Number(r.total||0);
@@ -99,8 +99,24 @@ export async function onRequest(context){
   if(request.method==="POST"){
    const body=await request.json().catch(()=>null);if(!body||typeof body!=="object")return json({error:"Invalid request."},400);
    const id=clean(body.id,100),action=clean(body.action,30);
+   if(!id)return json({error:"Choose a valid work item."},400);
+   if(action==="approve_campaign"){
+    const item=await env.DB.prepare("SELECT related_id FROM admin_work_items WHERE id=? AND status='pending'").bind(id).first();
+    if(!item)return json({error:"This task is no longer waiting for approval. Refresh the Action Centre."},404);
+    if(!/^[0-9a-f-]{36}$/i.test(String(item.related_id||"")))return json({error:"This task is not linked to a valid campaign."},409);
+    const campaign=await env.DB.prepare("SELECT id,name,approval_status,channels_json,ends_at,archived_at FROM email_campaigns WHERE id=?").bind(item.related_id).first();
+    if(!campaign||campaign.archived_at)return json({error:"The linked campaign is unavailable or archived."},404);
+    let channels=[];try{channels=JSON.parse(campaign.channels_json||'["email"]');}catch{}
+    const publish=Array.isArray(channels)&&channels.includes("homepage"),now=new Date().toISOString();
+    if(publish&&campaign.ends_at&&campaign.ends_at<now)return json({error:"This campaign has expired. Update its dates before publishing."},409);
+    await env.DB.batch([
+     env.DB.prepare("UPDATE email_campaigns SET approval_status='approved',approved_by=?,approved_at=COALESCE(approved_at,?),published_at=CASE WHEN ?=1 THEN ? ELSE published_at END,updated_at=? WHERE id=? AND archived_at IS NULL").bind("Command Centre",now,publish?1:0,now,now,campaign.id),
+     env.DB.prepare("UPDATE admin_work_items SET status=?,updated_at=? WHERE id=? AND status='pending'").bind(publish?"completed":"approved",now,id)
+    ]);
+    return json({success:true,status:publish?"completed":"approved",published:publish,message:publish?"Campaign approved and published to the PhoneYa2 storefront.":"Campaign approved. It is ready for its configured delivery step; email is not sent automatically."});
+   }
    const status=({ignore:"ignored",complete:"completed",approve:"approved",reopen:"pending"})[action];
-   if(!id||!status)return json({error:"Choose a valid work item action."},400);
+   if(!status)return json({error:"Choose a valid task action."},400);
    const item=await env.DB.prepare("SELECT related_id FROM admin_work_items WHERE id=?").bind(id).first();
    if(!item)return json({error:"Work item not found."},404);
    if(action==="ignore"&&item.related_id)await env.DB.prepare("UPDATE email_campaigns SET archived_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'),updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=? AND status='draft'").bind(item.related_id).run();
