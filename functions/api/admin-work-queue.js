@@ -94,7 +94,8 @@ export async function onRequest(context){
     env.DB.prepare("SELECT status,COUNT(*) AS total FROM admin_work_items GROUP BY status").all()
    ]);
    const summary={pending:0,approved:0,ignored:0,completed:0};for(const r of counts.results||[])summary[r.status]=Number(r.total||0);
-   return json({success:true,items:rows.results||[],summary,generated_at:new Date().toISOString()});
+   const items=(rows.results||[]).map(item=>{let channels=[];try{channels=JSON.parse(item.campaign_channels||"[]");}catch{}return{...item,campaign_publish:!!item.campaign_id&&Array.isArray(channels)&&channels.includes("homepage")};});
+   return json({success:true,items,summary,generated_at:new Date().toISOString()});
   }
   if(request.method==="POST"){
    const body=await request.json().catch(()=>null);if(!body||typeof body!=="object")return json({error:"Invalid request."},400);
