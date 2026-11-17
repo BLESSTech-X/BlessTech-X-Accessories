@@ -70,6 +70,7 @@ collections:
     description: "Create and manage categories used by products throughout PhoneYa2. Keep existing category slugs unchanged."
     folder: "content/product-categories"
     create: true
+    delete: false
     slug: "{{slug}}"
     summary: "{{title}}"
     sortable_fields: ["title", "sort_order"]
