@@ -25,7 +25,7 @@ for (const file of files) {
       new vm.Script(code, { filename: file + '#inline-script-' + inlineIndex });
       checked++;
     } catch (error) {
-      console.error('FAIL: Inline JavaScript syntax error in ' + file + ' script ' + inlineIndex + ': ' + error.message);
+      console.error('FAIL: Inline JavaScript syntax error in ' + file + ' script ' + inlineIndex + ': ' + (error.stack || error.message));
       process.exitCode = 1;
     }
   }
