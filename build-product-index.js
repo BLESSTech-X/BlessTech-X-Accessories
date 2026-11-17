@@ -60,6 +60,22 @@ function parseFeaturedProducts(markdown, fallback) {
   return fallback.map(item => typeof item === 'string' ? { product: item, caption: '' } : item && typeof item === 'object' && item.product ? { product: String(item.product), caption: String(item.caption || '') } : null).filter(Boolean);
 }
 
+function parseNestedObject(markdown, key) {
+  const match = String(markdown || '').match(new RegExp('^' + key + ':\\s*\\r?\\n((?:[ \\t]+[^\\r\\n]*(?:\\r?\\n|$))*)', 'm'));
+  if (!match) return {};
+  const result = {};
+  match[1].split(/\\r?\\n/).forEach(line => {
+    const field = line.match(/^\\s+([A-Za-z0-9_-]+):\\s*(.*?)\\s*$/);
+    if (!field) return;
+    let value = String(field[2] || '').trim().replace(/^['"]|['"]$/g, '');
+    if (value === 'true') value = true;
+    else if (value === 'false') value = false;
+    else if (/^-?\\d+(?:\\.\\d+)?$/.test(value)) value = Number(value);
+    result[field[1]] = value;
+  });
+  return result;
+}
+
 function parseFrontmatter(markdown) {
   const match = markdown.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/);
   if (!match) return {};
@@ -99,6 +115,28 @@ function parseFrontmatter(markdown) {
 }
 
 try {
+  const categoriesDir = path.join(root, 'content', 'product-categories');
+  const categories = fs.existsSync(categoriesDir)
+    ? fs.readdirSync(categoriesDir)
+      .filter(file => file.endsWith('.md') && file !== 'README.md')
+      .map(file => {
+        const slug = file.replace(/\\.md$/, '');
+        const source = fs.readFileSync(path.join(categoriesDir, file), 'utf8');
+        const meta = parseFrontmatter(source);
+        return {
+          slug,
+          title: String(meta.title || slug),
+          icon: String(meta.icon || ''),
+          description: String(meta.description || ''),
+          sort_order: Number(meta.sort_order) || 100,
+          active: meta.active !== false && meta.active !== 'false'
+        };
+      })
+      .filter(category => category.active)
+      .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title))
+    : [];
+  fs.writeFileSync(path.join(categoriesDir, 'index.json'), JSON.stringify(categories, null, 2));
+
   const productSlugs = fs.readdirSync(productsDir)
     .filter(f => f.endsWith('.md') && f !== 'README.md')
     .filter(file => {
@@ -131,6 +169,9 @@ try {
       video_url: String(meta.video_url || ''),
       order_note: String(meta.order_note || ''),
       featured: meta.featured === true || meta.featured === 'true',
+      other_phoneya2_product: meta.other_phoneya2_product === true || meta.other_phoneya2_product === 'true',
+      other_product_details: parseNestedObject(source, 'other_product_details'),
+      visibility: parseNestedObject(source, 'visibility'),
       date_added: String(meta.date_added || meta.created_at || ''),
       gallery: parseBlogGallery(source, meta.gallery)
     };
