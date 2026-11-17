@@ -3302,6 +3302,18 @@ async function init() {
     return;
   }
 
+  try {
+    const stockResponse = await fetch('/api/product-stock', { cache: 'no-store' });
+    if (stockResponse.ok) {
+      const stockData = await stockResponse.json();
+      if (stockData && stockData.ok && stockData.stock) {
+        products = products.map(product => Object.prototype.hasOwnProperty.call(stockData.stock, product.slug)
+          ? { ...product, stock: Math.max(0, Number(stockData.stock[product.slug]?.central) || 0) }
+          : product);
+      }
+    }
+  } catch (stockError) { console.warn('[PhoneYa2] Live stock overlay unavailable; showing published catalogue quantities.', stockError); }
+
   allProducts = products;
   window.phoneya2Products = products;
   window.dispatchEvent(new CustomEvent('phoneya2:catalog-ready', { detail: products }));

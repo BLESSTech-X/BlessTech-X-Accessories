@@ -150,91 +150,79 @@ function mapD1Order(row, items = []) {
 }
 async function createD1Order(env, customer, items, attribution = {}) {
   if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
-  const id = crypto.randomUUID();
-  const orderNumber = "PY2-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + crypto.randomUUID().slice(0,8).toUpperCase();
-  const totalMinor = items.reduce((sum, item) => sum + moneyToMinor(item.line_total), 0);
-  let fulfilmentSource = "phoneya2", fulfilmentAgentId = "";
-  const reservations = [];
-  // If this referred agent has enough allocated stock for every line, reserve it for agent-managed fulfilment.
-  if (attribution.agent_code) {
-    try {
-      let complete = true;
-      for (const item of items) {
-        const stock = await env.DB.prepare("SELECT id,ownership FROM agent_inventory WHERE agent_id=? AND product_slug=? AND quantity>=? ORDER BY CASE ownership WHEN 'agent' THEN 0 ELSE 1 END LIMIT 1")
-          .bind(attribution.agent_code, item.product_slug, item.quantity).first();
-        if (!stock) { complete = false; break; }
-        reservations.push({id:stock.id,slug:item.product_slug,quantity:item.quantity,ownership:stock.ownership});
+  const id=crypto.randomUUID();
+  const orderNumber="PY2-"+new Date().toISOString().slice(0,10).replace(/-/g,"")+"-"+crypto.randomUUID().slice(0,8).toUpperCase();
+  const totalMinor=items.reduce((sum,item)=>sum+moneyToMinor(item.line_total),0);
+  let fulfilmentSource="phoneya2",fulfilmentAgentId="";
+  const agentReservations=[],centralReservations=[];
+  if(attribution.agent_code){
+    let canUseAgentStock=true;
+    for(const item of items){
+      const row=await env.DB.prepare("SELECT id,ownership FROM agent_inventory WHERE agent_id=? AND product_slug=? AND ownership='phoneya2' AND quantity>=? LIMIT 1").bind(attribution.agent_code,item.product_slug,item.quantity).first();
+      if(!row){canUseAgentStock=false;break;}
+      agentReservations.push({id:row.id,slug:item.product_slug,quantity:item.quantity});
+    }
+    if(canUseAgentStock&&agentReservations.length===items.length){
+      const results=await env.DB.batch(agentReservations.map(x=>env.DB.prepare("UPDATE agent_inventory SET quantity=quantity-?,updated_at=? WHERE id=? AND quantity>=?").bind(x.quantity,new Date().toISOString(),x.id,x.quantity)));
+      if(results.every(x=>Number(x.meta?.changes||0)===1)){
+        fulfilmentSource="agent_stock_phoneya2";fulfilmentAgentId=attribution.agent_code;
+      }else{
+        const done=agentReservations.filter((x,i)=>Number(results[i]?.meta?.changes||0)===1);
+        if(done.length)await env.DB.batch(done.map(x=>env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?").bind(x.quantity,new Date().toISOString(),x.id)));
+        agentReservations.length=0;
       }
-      if (complete && reservations.length === items.length) {
-        const results = await env.DB.batch(reservations.map(x => env.DB.prepare("UPDATE agent_inventory SET quantity=quantity-?,updated_at=? WHERE id=? AND quantity>=?")
-          .bind(x.quantity,new Date().toISOString(),x.id,x.quantity)));
-        if (results.every(x => Number(x.meta?.changes||0)===1)) {
-          const kinds = [...new Set(reservations.map(x=>x.ownership))];
-          fulfilmentSource = kinds.length>1 ? "agent_stock_mixed" : kinds[0]==="agent" ? "agent_stock_agent_owned" : "agent_stock_phoneya2";
-          fulfilmentAgentId = attribution.agent_code;
-        } else {
-          const succeeded = reservations.filter((x,i)=>Number(results[i]?.meta?.changes||0)===1);
-          if(succeeded.length)await env.DB.batch(succeeded.map(x => env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?")
-            .bind(x.quantity,new Date().toISOString(),x.id)));
-          reservations.length = 0;
+    }else agentReservations.length=0;
+    if(!agentReservations.length){
+      for(const item of items){
+        const result=await env.DB.prepare("UPDATE agent_product_codes SET stock=stock-? WHERE product_slug=? AND active=1 AND stock>=?").bind(item.quantity,item.product_slug,item.quantity).run();
+        if(!Number(result.meta?.changes||0)){
+          if(centralReservations.length)await env.DB.batch(centralReservations.map(x=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(x.quantity,x.slug)));
+          throw new Error("Central PhoneYa2 stock is no longer sufficient for this order. Please refresh the shop or contact PhoneYa2.");
         }
-      } else reservations.length = 0;
-    } catch (error) {
-      if (!/no such table: agent_inventory/i.test(String(error))) console.error("Agent stock reservation skipped:",String(error).slice(0,220));
-      reservations.length = 0;
+        centralReservations.push({slug:item.product_slug,quantity:item.quantity});
+      }
     }
   }
-  const now = new Date().toISOString();
-  const itemsStatements = () => items.map(item => env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
-    .bind(crypto.randomUUID(), id, item.product_slug, item.product_name, item.quantity, moneyToMinor(item.unit_price), moneyToMinor(item.line_total)));
-  const movementStatements = reservations.map(x => env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
-    .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout:"+x.ownership));
-  const full = [
+  if(!attribution.agent_code){
+    const rows=await Promise.all(items.map(item=>env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=?").bind(item.product_slug).first()));
+    if(rows.every(Boolean)){
+      for(const item of items){
+        const result=await env.DB.prepare("UPDATE agent_product_codes SET stock=stock-? WHERE product_slug=? AND stock>=?").bind(item.quantity,item.product_slug,item.quantity).run();
+        if(!Number(result.meta?.changes||0)){
+          if(centralReservations.length)await env.DB.batch(centralReservations.map(x=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(x.quantity,x.slug)));
+          throw new Error("Central PhoneYa2 stock is no longer sufficient for this order. Please refresh the shop or contact PhoneYa2.");
+        }
+        centralReservations.push({slug:item.product_slug,quantity:item.quantity});
+      }
+      if(centralReservations.length)fulfilmentSource="phoneya2_central_reserved";
+    }
+  }
+  const now=new Date().toISOString();
+  const itemsStatements=()=>items.map(item=>env.DB.prepare("INSERT INTO order_items (id, order_id, product_slug, product_name, quantity, unit_price_minor, line_total_minor) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .bind(crypto.randomUUID(),id,item.product_slug,item.product_name,item.quantity,moneyToMinor(item.unit_price),moneyToMinor(item.line_total)));
+  const movementStatements=[
+    ...agentReservations.map(x=>env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
+      .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"order_reservation",orderNumber,"checkout:phoneya2")),
+    ...centralReservations.map(x=>env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)")
+      .bind(crypto.randomUUID(),attribution.agent_code,x.slug,-x.quantity,"central_order_reservation",orderNumber,"checkout:central_stock"))
+  ];
+  const full=[
     env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id, fulfilment_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?, ?)")
       .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId,fulfilmentAgentId?"assigned":"central"),
-    ...itemsStatements(), ...movementStatements
+    ...itemsStatements(),...movementStatements
   ];
-  try {
+  try{
     await env.DB.batch(full);
-  } catch (error) {
-    try {
-      if (/no such column: fulfilment_status/i.test(String(error))) {
-        const withFulfilment = [
-          env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at, fulfilment_source, fulfilment_agent_id) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?, ?, ?)")
-            .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null,fulfilmentSource,fulfilmentAgentId),
-          ...itemsStatements(), ...movementStatements
-        ];
-        await env.DB.batch(withFulfilment);
-      } else if (/no such column: fulfilment_(?:source|agent_id)/i.test(String(error))) {
-        const withAgent = [
-          env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency, agent_code, agent_referral_code, agent_attribution_source, agent_attributed_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW', ?, ?, ?, ?)")
-            .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor,attribution.agent_code||"",attribution.referral_code||"",attribution.source||"",attribution.agent_code?now:null),
-          ...itemsStatements(), ...movementStatements
-        ];
-        await env.DB.batch(withAgent);
-      } else if (/no such column: agent_(?:code|referral_code|attribution_source|attributed_at)/i.test(String(error))) {
-        const legacy = [
-          env.DB.prepare("INSERT INTO orders (id, order_number, customer_name, customer_email, customer_phone, delivery_address, customer_note, status, total_amount_minor, currency) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'ZMW')")
-            .bind(id,orderNumber,customer.name,customer.email,customer.phone,customer.address,customer.note||"",totalMinor),
-          ...itemsStatements()
-        ];
-        await env.DB.batch(legacy);
-        fulfilmentSource = "phoneya2"; fulfilmentAgentId = "";
-      } else throw error;
-    } catch (fallbackError) {
-      if (reservations.length) {
-        try { await env.DB.batch(reservations.map(x=>env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?").bind(x.quantity,new Date().toISOString(),x.id))); } catch {}
-      }
-      throw fallbackError;
-    }
+  }catch(error){
+    if(agentReservations.length)try{await env.DB.batch(agentReservations.map(x=>env.DB.prepare("UPDATE agent_inventory SET quantity=quantity+?,updated_at=? WHERE id=?").bind(x.quantity,new Date().toISOString(),x.id)));}catch{}
+    if(centralReservations.length)try{await env.DB.batch(centralReservations.map(x=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(x.quantity,x.slug)));}catch{}
+    throw error;
   }
-  try {
+  try{
     await env.DB.prepare("INSERT OR IGNORE INTO admin_notifications (id,event_key,category,event_type,title,message,priority,destination,related_id,related_label) VALUES (?,?,?,?,?,?,?,?,?,?)")
       .bind(crypto.randomUUID(),"order:"+id,"orders","new_order","New order received","Order "+orderNumber+" is awaiting review. Total: ZMW "+minorToMoney(totalMinor).toFixed(2)+".","high","/admin/orders.html",id,orderNumber).run();
-  } catch (error) {
-    console.error("PhoneYa2 order notification could not be recorded:",String(error).slice(0,220));
-  }
-  return { id, order_number: orderNumber, total_amount: minorToMoney(totalMinor), currency: "ZMW", item_count: items.length, fulfilment_source: fulfilmentSource, fulfilment_agent_id: fulfilmentAgentId };
+  }catch(error){console.error("PhoneYa2 order notification could not be recorded:",String(error).slice(0,220));}
+  return{id,order_number:orderNumber,total_amount:minorToMoney(totalMinor),currency:"ZMW",item_count:items.length,fulfilment_source:fulfilmentSource,fulfilment_agent_id:fulfilmentAgentId};
 }
 async function readD1Orders(env, options = {}) {
   if (!env.DB) throw new Error("PhoneYa2 D1 database binding DB is not configured.");
@@ -552,12 +540,21 @@ export async function onRequest(context) {
       for (const [slug, quantity] of quantities) {
         const product = await loadProduct(context, slug);
         if (!product) return json({ error: "A selected product could not be found. Please refresh the shop and try again." }, 400);
-        if (product.stock < quantity) {
-          let agentHeld = 0;
-          if (agentAttribution.agent_code) {
-            try { const held = await env.DB.prepare("SELECT COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE agent_id=? AND product_slug=?").bind(agentAttribution.agent_code,slug).first(); agentHeld = Number(held?.quantity||0); } catch {}
-          }
-          if (agentHeld < quantity) return json({ error: product.title + " has only " + (product.stock+agentHeld) + " eligible unit(s) available for this referral." }, 400);
+        const pendingOfflineSale=await env.DB.prepare("SELECT s.id FROM agent_sales s WHERE lower(s.customer_phone)=lower(?) AND s.product_slug=? AND s.status='submitted' AND s.created_at>datetime('now','-30 days') LIMIT 1").bind(phone,slug).first().catch(()=>null);
+        if(pendingOfflineSale)return json({error:"An agent-assisted sale for this customer and product is awaiting PhoneYa2 review. Please contact PhoneYa2 before placing a duplicate order."},409);
+        if(agentAttribution.agent_code){
+          let centralAvailable=product.stock,agentHeld=0;
+          try{
+            const central=await env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=? AND active=1").bind(slug).first();
+            if(central)centralAvailable=Math.max(0,Number(central.stock||0));
+            const held=await env.DB.prepare("SELECT COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(agentAttribution.agent_code,slug).first();
+            agentHeld=Math.max(0,Number(held?.quantity||0));
+          }catch{}
+          if(centralAvailable<quantity&&agentHeld<quantity)return json({error:product.title+" has insufficient central or agent-allocated stock for this order. Central stock: "+centralAvailable+" · agent stock: "+agentHeld+"."},409);
+        }else{
+          let centralAvailable=product.stock;
+          try{const central=await env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=?").bind(slug).first();if(central)centralAvailable=Math.max(0,Number(central.stock||0));}catch{}
+          if(centralAvailable<quantity)return json({error:product.title+" has only "+centralAvailable+" central unit(s) available."},409);
         }
         const unitPrice = product.price;
         items.push({
@@ -759,6 +756,29 @@ export async function onRequest(context) {
             if (restoreStatements.length) await env.DB.batch(restoreStatements);
           }
         } catch (inventoryError) { console.error("Agent inventory cancellation restore failed:",String(inventoryError).slice(0,220)); }
+      }
+      // Restore centrally held stock reserved by an agent-attributed order if it is cancelled before delivery.
+      if(status==="cancelled"&&currentRow.status!=="delivered"&&currentRow.agent_code){
+        try{
+          const existing=await env.DB.prepare("SELECT id FROM agent_inventory_movements WHERE reference=? AND movement_type='central_order_cancel_restore' LIMIT 1").bind(currentRow.order_number).first();
+          if(!existing){
+            const movements=await env.DB.prepare("SELECT product_slug,quantity_delta FROM agent_inventory_movements WHERE reference=? AND movement_type='central_order_reservation' AND agent_id=?").bind(currentRow.order_number,currentRow.agent_code).all();
+            const restore=[];
+            for(const movement of (movements.results||[])){
+              const quantity=Math.abs(Number(movement.quantity_delta||0));if(!quantity)continue;
+              restore.push(env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(quantity,movement.product_slug));
+              restore.push(env.DB.prepare("INSERT INTO agent_inventory_movements(id,agent_id,product_slug,quantity_delta,movement_type,reference,actor) VALUES(?,?,?,?,?,?,?)").bind(crypto.randomUUID(),currentRow.agent_code,movement.product_slug,quantity,"central_order_cancel_restore",currentRow.order_number,"system"));
+            }
+            if(restore.length)await env.DB.batch(restore);
+          }
+        }catch(inventoryError){console.error("Central stock cancellation restore failed:",String(inventoryError).slice(0,220));}
+      }
+      if(status==="cancelled"&&currentRow.status!=="delivered"&&currentRow.fulfilment_source==="phoneya2_central_reserved"&&!currentRow.agent_code){
+        try{
+          const items=await env.DB.prepare("SELECT product_slug,quantity FROM order_items WHERE order_id=?").bind(id).all();
+          const restore=(items.results||[]).map(item=>env.DB.prepare("UPDATE agent_product_codes SET stock=stock+? WHERE product_slug=?").bind(Number(item.quantity||0),item.product_slug));
+          if(restore.length)await env.DB.batch(restore);
+        }catch(inventoryError){console.error("Central stock cancellation restore failed:",String(inventoryError).slice(0,220));}
       }
       const updatedRows = await readD1Orders(env, { limit: 200 });
       const updatedOrder = updatedRows.find(order => order.id === id);
