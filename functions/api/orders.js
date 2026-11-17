@@ -526,12 +526,17 @@ export async function onRequest(context) {
       for (const [slug, quantity] of quantities) {
         const product = await loadProduct(context, slug);
         if (!product) return json({ error: "A selected product could not be found. Please refresh the shop and try again." }, 400);
-        if (product.stock < quantity) {
-          let agentHeld = 0;
-          if (agentAttribution.agent_code) {
-            try { const held = await env.DB.prepare("SELECT COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE agent_id=? AND product_slug=?").bind(agentAttribution.agent_code,slug).first(); agentHeld = Number(held?.quantity||0); } catch {}
-          }
-          if (agentHeld < quantity) return json({ error: product.title + " has only " + (product.stock+agentHeld) + " eligible unit(s) available for this referral." }, 400);
+        if(agentAttribution.agent_code){
+          let centralAvailable=product.stock,agentHeld=0;
+          try{
+            const central=await env.DB.prepare("SELECT stock FROM agent_product_codes WHERE product_slug=? AND active=1").bind(slug).first();
+            if(central)centralAvailable=Math.max(0,Number(central.stock||0));
+            const held=await env.DB.prepare("SELECT COALESCE(SUM(quantity),0) quantity FROM agent_inventory WHERE agent_id=? AND product_slug=? AND ownership='phoneya2'").bind(agentAttribution.agent_code,slug).first();
+            agentHeld=Math.max(0,Number(held?.quantity||0));
+          }catch{}
+          if(centralAvailable<quantity&&agentHeld<quantity)return json({error:product.title+" has insufficient central or agent-allocated stock for this order. Central stock: "+centralAvailable+" · agent stock: "+agentHeld+"."},409);
+        }else if(product.stock<quantity){
+          return json({error:product.title+" has only "+product.stock+" unit(s) available."},400);
         }
         const unitPrice = product.price;
         items.push({
