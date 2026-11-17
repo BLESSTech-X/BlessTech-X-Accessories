@@ -24,24 +24,11 @@ collections:
     sortable_fields: ["title", "price", "stock", "date_added"]
     fields:
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Other PhoneYa2 Product", name: "other_phoneya2_product", widget: "boolean", default: false, required: false, hint: "Turn ON for perfumes and other non-accessory product lines. These remain normal PhoneYa2 products and use the same customer ordering and checkout system." }
-      - label: "Other Product Details"
+      - label: "Product Type & Details"
         name: "other_product_details"
-        widget: "object"
+        widget: "other-product-setup"
         required: false
-        condition: { field: "other_phoneya2_product", value: true }
-        fields:
-          - { label: "Brand", name: "brand", widget: "string", required: false }
-          - { label: "Variant / Model", name: "variant", widget: "string", required: false }
-          - { label: "Size / Volume", name: "size", widget: "string", required: false, hint: "For perfumes, enter bottle size such as 30ml, 50ml or 100ml." }
-          - { label: "Scent Family", name: "scent_family", widget: "string", required: false, hint: "Perfumes only, e.g. woody, floral, fresh or oriental." }
-          - { label: "Fragrance Concentration", name: "concentration", widget: "string", required: false, hint: "Perfumes only, if known, e.g. Eau de Parfum or Eau de Toilette." }
-          - { label: "Scent Notes", name: "scent_notes", widget: "text", required: false, hint: "Perfumes only. Include only confirmed fragrance notes." }
-          - { label: "Additional Specifications", name: "specifications", widget: "text", required: false }
-      - { label: "Date Added", name: "date_added", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}", required: false, hint: "Used to order New Arrivals newest first. Keep the default for new products." }
-      - { label: "Selling Price (ZMW)", name: "price", widget: "number", hint: "The actual price customers pay. Keep this updated when prices change." }
-      - { label: "Original / Reference Price (ZMW)", name: "original_price", widget: "number", required: false, hint: "Only enter a genuine previous/reference price higher than the selling price. The site calculates savings from these two values; do not use a made-up comparison price." }
-      - { label: "Stock", name: "stock", widget: "number", default: 10 }
+        hint: "Use the toggle to switch this listing to another PhoneYa2 product line. Perfumes and other products still use the same catalogue, stock, cart, checkout and order system."
       - label: "Category"
         name: "category"
         widget: "category-select"
