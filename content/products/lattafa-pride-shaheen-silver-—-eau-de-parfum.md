@@ -1,7 +1,7 @@
 ---
 title: Lattafa Pride Shaheen Silver — Eau de Parfum
 date_added: 2026-11-18T13:30:00+02:00
-price: 45
+price: 40
 original_price: 50
 stock: 1000
 publish: true
