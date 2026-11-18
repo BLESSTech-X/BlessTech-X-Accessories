@@ -1,7 +1,7 @@
 ---
 title: "T3000 Ultra Max "
 date_added: 2026-11-18T02:16:00+02:00
-price: 299
+price: 340
 stock: 1000
 publish: true
 category: watch
