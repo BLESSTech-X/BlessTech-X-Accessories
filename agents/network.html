@@ -637,5 +637,21 @@ render=function(){
  if(el('agentBadges'))el('agentBadges').innerHTML=(a.badges||[]).map(b=>'<span class="pill" title="'+esc(b.description)+'">'+esc(b.icon)+' '+esc(b.name)+'</span>').join('')||'<span class="pill">Your first badge is waiting</span>';
  if(el('agentPortfolio'))el('agentPortfolio').innerHTML=(data.portfolio||[]).map(p=>'<article class="card" style="padding:10px">'+(p.product_image?'<img src="'+esc(p.product_image)+'" alt="" style="width:100%;height:90px;object-fit:contain">':'')+'<b>'+esc(p.product_name)+'</b><small class="muted">'+Number(p.units_sold||0)+' units · '+Number(p.transactions||0)+' sales</small></article>').join('')||'<p class="muted">Approved products you sell will appear here.</p>';
 };
+
+// Refresh public reputation views with the same server-calculated achievements and approved sales portfolio.
+fetch("/api/agent-network?leaderboard=1",{credentials:"same-origin"}).then(r=>r.json()).then(d=>{
+ const host=document.getElementById("leaderboard");if(!host||!Array.isArray(d.leaderboard))return;
+ host.innerHTML=d.leaderboard.map((x,i)=>'<article class="leaderboard-item"><div class="leaderboard-person"><span class="leaderboard-rank">#'+(i+1)+'</span><img class="leaderboard-avatar" src="'+esc(x.profile_image_url||'')+'" alt="" loading="lazy" onerror="this.classList.add(\'avatar-fallback\');this.removeAttribute(\'src\')"><span class="leaderboard-identity"><b>'+esc(x.display_name)+'</b><small class="muted">'+esc(x.agent_id)+'</small><small class="agent-badge-line">'+((x.achievements?.badges||[]).slice(-3).map(b=>esc(b.icon)+' '+esc(b.name)).join(' · ')||'New agent')+'</small></span></div><div class="leaderboard-results"><b>'+Number(x.sales||0)+' sales · '+money(x.earnings_minor)+'</b><a href="/agents/network.html?profile='+encodeURIComponent(x.agent_id)+'">View profile</a></div></article>').join('')||'<p class="muted">No public leaderboard data yet.</p>';
+}).catch(()=>{});
+(async()=>{
+ const profileId=new URLSearchParams(location.search).get("profile");if(!profileId)return;
+ try{
+  const r=await fetch("/api/agent-network?profile="+encodeURIComponent(profileId),{credentials:"same-origin"}),d=await r.json();if(!r.ok||!d.ok)return;
+  const host=document.getElementById("publicProfile"),p=d.profile;if(!host)return;
+  host.classList.remove("hidden");
+  host.innerHTML='<div class="profile"><img class="avatar" src="'+esc(p.profile_image_url||'')+'" alt=""><div><h1>'+esc(p.display_name)+'</h1><span class="pill">'+esc(p.agent_id)+'</span><p class="muted">'+esc(p.location||'')+'</p></div></div><p>'+esc(p.bio||'')+'</p><div class="stats"><div class="stat"><b>'+Number(p.sales||0)+'</b>Approved sales</div><div class="stat"><b>'+Number((p.portfolio||[]).reduce((n,x)=>n+Number(x.units_sold||0),0))+'</b>Units sold</div></div><h2>Achievements</h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">'+((p.achievements?.badges||[]).map(b=>'<span class="pill" title="'+esc(b.description)+'">'+esc(b.icon)+' '+esc(b.name)+'</span>').join('')||'<span class="pill">New agent</span>')+'</div><h2>Products sold</h2><div class="grid">'+((p.portfolio||[]).map(x=>'<article class="card" style="padding:10px">'+(x.product_image?'<img src="'+esc(x.product_image)+'" alt="" style="width:100%;height:110px;object-fit:contain">':'')+'<b>'+esc(x.product_name)+'</b><p class="muted">'+Number(x.units_sold||0)+' units sold · '+Number(x.transactions||0)+' sales</p></article>').join('')||'<p class="muted">No approved product sales to display yet.</p>')+'</div><a class="btn" href="/?ref='+encodeURIComponent(p.referral_code)+'">Shop PhoneYa2</a>';
+ }catch{}
+})();
+
 </script><!-- Agent workspace UI update -->
 </body></html>
