@@ -715,6 +715,55 @@ body.public-profile-mode #publicProfile{display:grid!important;gap:18px!importan
 }
 @media(max-width:370px){.public-product-grid{grid-template-columns:1fr!important}.public-profile-identity{gap:8px!important}.public-profile-name{margin-left:-106px!important}}
 
+/* Keep public-profile identity text in its own column; never overlap the avatar. */
+body.public-profile-mode .public-profile-identity{
+ display:grid!important;
+ grid-template-columns:150px minmax(0,1fr)!important;
+ align-items:center!important;
+ gap:22px!important;
+ padding:0 30px!important;
+ margin-top:-76px!important;
+}
+body.public-profile-mode .public-profile-avatar{
+ grid-column:1!important;grid-row:1!important;
+ width:148px!important;height:148px!important;
+ border:6px solid #fff!important;
+}
+body.public-profile-mode .public-profile-name{
+ grid-column:2!important;grid-row:1!important;
+ min-width:0!important;margin:0!important;padding:0!important;
+ display:flex!important;flex-direction:column!important;
+ align-items:flex-start!important;gap:6px!important;
+}
+body.public-profile-mode .public-profile-name .public-profile-kicker,
+body.public-profile-mode .public-profile-name h1,
+body.public-profile-mode .public-profile-name p,
+body.public-profile-mode .public-profile-name .public-profile-id,
+body.public-profile-mode .public-profile-name .profile-rank-title{
+ position:static!important;max-width:100%!important;
+}
+@media(max-width:650px){
+ body.public-profile-mode .public-profile-cover{height:165px!important}
+ body.public-profile-mode .public-profile-identity{
+  grid-template-columns:116px minmax(0,1fr)!important;
+  gap:14px!important;padding:0 16px!important;margin-top:-58px!important;
+  align-items:center!important;
+ }
+ body.public-profile-mode .public-profile-avatar{
+  width:114px!important;height:114px!important;border-width:5px!important;
+ }
+ body.public-profile-mode .public-profile-name{
+  margin:0!important;padding:0!important;gap:5px!important;
+ }
+ body.public-profile-mode .public-profile-name h1{font-size:clamp(19px,5.5vw,25px)!important;line-height:1.12!important;margin:2px 0!important}
+ body.public-profile-mode .public-profile-name .public-profile-kicker{font-size:8px!important;letter-spacing:.8px!important}
+ body.public-profile-mode .public-profile-name p{font-size:11px!important}
+}
+@media(max-width:370px){
+ body.public-profile-mode .public-profile-identity{grid-template-columns:100px minmax(0,1fr)!important;gap:10px!important}
+ body.public-profile-mode .public-profile-avatar{width:98px!important;height:98px!important}
+ body.public-profile-mode .public-profile-name h1{font-size:19px!important}
+}
 /* Keep the extra profile-only dock hidden everywhere except a public agent profile. */
 .public-profile-bottom-nav{display:none!important}
 body.public-profile-mode{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
