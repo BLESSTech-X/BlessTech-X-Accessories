@@ -582,6 +582,9 @@ body.public-profile-mode #publicProfile{display:block!important;max-width:none!i
 .profile-page-heading p{margin:0;color:#718096;font-size:13px}
 .profile-eyebrow{display:block;color:#1769e8;font-size:9px;font-weight:950;letter-spacing:1.35px}
 .profile-account-mark{padding:8px 11px;border:1px solid #dce8f6;border-radius:9px;background:#fff;color:#45617f;font-size:9px;font-weight:900;letter-spacing:.7px;white-space:nowrap}
+/* Improve readability of the account heading and helper copy on small screens. */
+.profile-page-heading>div{min-width:0;flex:1}.profile-page-heading p{max-width:520px;color:#42536b;font-size:14px;font-weight:500;line-height:1.6;letter-spacing:0;margin-top:6px}.profile-page-heading h2{line-height:1.2}.profile-eyebrow{font-size:10px;line-height:1.4}.profile-account-mark{flex-shrink:0}
+@media(max-width:560px){.profile-page-heading{gap:8px;margin-bottom:16px}.profile-page-heading p{font-size:14px;line-height:1.55;max-width:100%;overflow-wrap:anywhere}.profile-page-heading h2{font-size:28px}.profile-account-mark{font-size:9px;padding:7px 10px}}
 .profile-workspace-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:15px;align-items:start}
 .profile-main-column,.profile-security-column{display:grid;gap:14px;min-width:0}
 .profile-identity-card,.profile-settings-card,.profile-security-card,.profile-help-card{background:#fff;border:1px solid #e2eaf3;border-radius:17px;box-shadow:0 5px 18px #18365309;overflow:hidden}
