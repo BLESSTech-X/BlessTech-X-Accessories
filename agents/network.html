@@ -997,7 +997,7 @@ function showAgentNoticeAt(index){
  agentNoticeIndex=index;
  const item=agentNoticeQueue[index],category=String(item.source||"").toLowerCase(),title=item.title||"PhoneYa2 update";
  const text=String(item.message||"");
- const image=item.image_url||item.hero_image_url||item.image||item.thumbnail_url||"";
+ const image=item.image_url||item.hero_image_url||item.image||item.thumbnail_url||"/assets/images/phoneya2-notification.svg";
  const safeImage=/^(https:\/\/|\/)/i.test(String(image))?String(image):"";
  const icons={phoneya2:"📣",store:"📣",announcement:"📣",system:"⚙️",sales:"💰",agent:"👤"};
  const icon=icons[category]||"🔔";
