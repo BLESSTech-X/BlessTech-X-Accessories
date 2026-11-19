@@ -1003,12 +1003,13 @@ $("productCode").addEventListener("input",lookupProductCode);
 $("products").onclick=e=>{const copy=e.target.closest("[data-copy]");if(copy)navigator.clipboard?.writeText(copy.dataset.copy);const share=e.target.closest("[data-share]");if(share){shareProduct(share.dataset.share,share.dataset.title);return;}const sell=e.target.closest("[data-sell]");if(sell){tab("sale");$("productCode").value=sell.dataset.sell;lookupProductCode();}};
 document.addEventListener("click",e=>{if(e.target?.id==="copyReferral")navigator.clipboard?.writeText(location.origin+"/?ref="+(data?.agent?.referral_code||""));});
 // Legacy duplicate public-profile renderer removed; unified renderer below owns this route.
-let agentNetworkRankPromise=fetch("/api/agent-network?leaderboard=1",{credentials:"same-origin"}).then(r=>{if(!r.ok)throw new Error("Leaderboard unavailable");return r.json();}).then(board=>{const agentId=data?.agent?.agent_id||data?.agent?.id||data?.agent_id;return (board.leaderboard||[]).find(x=>String(x.agent_id)===String(agentId))||null;});
+let agentNetworkRankPromise=null;
 const py2OriginalRender=render;
 render=function(){
  py2OriginalRender();
  const a=data?.achievements||{badges:[],xp:0,level:'Starter',progress_pct:0};
  const el=id=>document.getElementById(id);
+ agentNetworkRankPromise=agentNetworkRankPromise||fetch("/api/agent-network?leaderboard=1",{credentials:"same-origin"}).then(r=>{if(!r.ok)throw new Error("Leaderboard unavailable");return r.json();}).then(board=>{const agentId=data?.agent?.agent_id||data?.agent?.id||data?.agent_id;return (board.leaderboard||[]).find(x=>String(x.agent_id)===String(agentId))||null;});
  if(el('agentLevel'))el('agentLevel').textContent=a.level||'Starter';
  if(el('agentXp'))el('agentXp').textContent=Number(a.xp||0).toLocaleString()+' XP';
  if(el('agentLevelProgress'))el('agentLevelProgress').textContent=Number(a.progress_pct||0)+'%';
