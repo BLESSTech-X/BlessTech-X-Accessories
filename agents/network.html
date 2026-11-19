@@ -869,6 +869,18 @@ body.public-profile-mode .leaderboard-item .leaderboard-identity>b{font-size:14p
 @media(max-width:420px){.achievement-panel #agentBadges{gap:6px!important}.achievement-panel .achievement-chip{font-size:10px;padding:5px 9px 5px 6px;min-height:34px}}
 
 
+
+/* Earned badges and one-time achievement celebration. */
+.achievement-panel .achievement-earned-chip{border-color:#cfe3d7;background:linear-gradient(145deg,#f0fff5,#fff);color:#205b39}
+.achievement-panel .achievement-earned-chip .achievement-chip-icon{background:#dcfce7;color:#167342;box-shadow:inset 0 0 0 1px #b8e8c9}
+.agent-badge-celebration{position:fixed;z-index:99999;right:16px;bottom:calc(82px + env(safe-area-inset-bottom));width:min(370px,calc(100vw - 32px));display:flex;align-items:center;gap:12px;padding:14px 15px;border:1px solid #b8e8c9;border-radius:16px;background:linear-gradient(135deg,#f0fff5,#fff);color:#174b30;box-shadow:0 16px 45px #102b2040;animation:py2BadgePop .35s ease-out}
+.agent-badge-celebration .celebration-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:14px;background:#dcfce7;font-size:27px}
+.agent-badge-celebration small{display:block;font-size:9px;letter-spacing:1.1px;font-weight:900;color:#16834a}
+.agent-badge-celebration b{display:block;margin:3px 0;font-size:14px}
+.agent-badge-celebration p{margin:0;font-size:11px;color:#47705a}
+.agent-badge-celebration button{align-self:flex-start;margin-left:auto;border:0;background:transparent;color:#456451;font-size:22px;line-height:1;cursor:pointer}
+@keyframes py2BadgePop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
 /* Network-rank achievement medals mirror the Sales Arena podium. */
 .achievement-panel .achievement-rank-chip{border-color:#d9e4f3;background:linear-gradient(145deg,#fff,#f3f7fc)}
 .achievement-panel .achievement-rank-chip .achievement-chip-icon{font-size:17px;background:#edf4ff}
@@ -1014,7 +1026,26 @@ render=function(){
  if(el('agentXp'))el('agentXp').textContent=Number(a.xp||0).toLocaleString()+' XP';
  if(el('agentLevelProgress'))el('agentLevelProgress').textContent=Number(a.progress_pct||0)+'%';
  if(el('agentLevelBar'))el('agentLevelBar').style.width=Number(a.progress_pct||0)+'%';
- if(el('agentBadges')){el('agentBadges').innerHTML='<span class="achievement-chip achievement-rank-loading"><span class="achievement-chip-icon">🏆</span><b>Loading network rank…</b></span>';agentNetworkRankPromise.then(agentRank=>{const target=el('agentBadges');if(!target)return;if(!agentRank){target.innerHTML='<span class="achievement-chip achievement-chip-empty"><span class="achievement-chip-icon">🏅</span><b>Not ranked yet</b></span>';return;}const rank=Number(agentRank.rank||0),medal=rank===1?'♛':rank===2?'🥈':rank===3?'🥉':'🏅';target.innerHTML='<span class="achievement-chip achievement-rank-chip rank-award-'+(rank<=3?rank:'other')+'" title="Current network position: #'+rank+'"><span class="achievement-chip-icon">'+medal+'</span><b>'+esc(agentRank.rank_title||'Network Agent')+'</b></span>';}).catch(()=>{const target=el('agentBadges');if(target)target.innerHTML='<span class="achievement-chip achievement-chip-empty"><span class="achievement-chip-icon">🏅</span><b>Rank unavailable</b></span>';});}
+ if(el('agentBadges')){
+  const target=el('agentBadges'),earned=(Array.isArray(a.badges)?a.badges:[]);
+  const badgeMarkup=earned.map(b=>'<span class="achievement-chip achievement-earned-chip" title="'+esc(b.description||b.name||'Achievement unlocked')+'"><span class="achievement-chip-icon">'+esc(b.icon||'🏅')+'</span><b>'+esc(b.name||'Achievement')+'</b></span>').join('');
+  target.innerHTML='<span class="achievement-chip achievement-rank-loading"><span class="achievement-chip-icon">🏆</span><b>Loading network rank…</b></span>'+badgeMarkup;
+  agentNetworkRankPromise.then(agentRank=>{
+   const current=el('agentBadges');if(!current)return;
+   let rankMarkup='<span class="achievement-chip achievement-chip-empty"><span class="achievement-chip-icon">🏅</span><b>Not ranked yet</b></span>';
+   if(agentRank){const rank=Number(agentRank.rank||0),medal=rank===1?'♛':rank===2?'🥈':rank===3?'🥉':'🏅';rankMarkup='<span class="achievement-chip achievement-rank-chip rank-award-'+(rank<=3?rank:'other')+'" title="Current network position: #'+rank+'"><span class="achievement-chip-icon">'+medal+'</span><b>'+esc(agentRank.rank_title||'Network Agent')+'</b></span>';}
+   current.innerHTML=rankMarkup+badgeMarkup;
+  }).catch(()=>{const current=el('agentBadges');if(current)current.innerHTML='<span class="achievement-chip achievement-chip-empty"><span class="achievement-chip-icon">🏅</span><b>Network rank unavailable</b></span>'+badgeMarkup;});
+  if(earned.length&&!window.__py2BadgeCelebrationShown){
+   window.__py2BadgeCelebrationShown=true;
+   const account=String(data?.agent?.agent_id||data?.agent?.id||'agent'),latest=earned[earned.length-1],key='py2-earned-badges-'+account;
+   try{
+    const seen=JSON.parse(localStorage.getItem(key)||'[]'),fresh=earned.filter(b=>!seen.includes(String(b.id||b.name)));
+    localStorage.setItem(key,JSON.stringify(earned.map(b=>String(b.id||b.name))));
+    if(fresh.length){const badge=fresh[fresh.length-1],toast=document.createElement('div');toast.className='agent-badge-celebration';toast.innerHTML='<span class="celebration-icon">'+esc(badge.icon||'🏅')+'</span><div><small>ACHIEVEMENT UNLOCKED</small><b>'+esc(badge.name||'New achievement')+'</b><p>'+esc(badge.description||'Your effort is paying off. Keep going!')+'</p></div><button type="button" aria-label="Close">×</button>';document.body.appendChild(toast);toast.querySelector('button').addEventListener('click',()=>toast.remove());setTimeout(()=>toast.remove(),7000);}
+   }catch(e){}
+  }
+ }
  if(el('agentPortfolio'))el('agentPortfolio').innerHTML=(data.portfolio||[]).map(p=>'<article class="card" style="padding:10px">'+(p.product_image?'<img src="'+esc(p.product_image)+'" alt="" style="width:100%;height:90px;object-fit:contain">':'')+'<b>'+esc(p.product_name)+'</b><small class="muted">'+Number(p.units_sold||0)+' units · '+Number(p.transactions||0)+' sales</small></article>').join('')||'<p class="muted">Approved products you sell will appear here.</p>';
 };
 
