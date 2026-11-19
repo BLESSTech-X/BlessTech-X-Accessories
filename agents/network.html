@@ -715,7 +715,8 @@ body.public-profile-mode #publicProfile{display:grid!important;gap:18px!importan
 }
 @media(max-width:370px){.public-product-grid{grid-template-columns:1fr!important}.public-profile-identity{gap:8px!important}.public-profile-name{margin-left:-106px!important}}
 
-/* Public profile is part of the agent workspace: keep the shared bottom dock visible. */
+/* Keep the extra profile-only dock hidden everywhere except a public agent profile. */
+.public-profile-bottom-nav{display:none!important}
 body.public-profile-mode{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
 body.public-profile-mode .public-profile-bottom-nav{position:fixed!important;z-index:500!important;left:0!important;right:0!important;bottom:0!important;display:flex!important;justify-content:center!important;gap:0!important;background:#fff!important;border-top:1px solid #dfe6ef!important;box-shadow:0 -5px 22px #172b4518!important;padding:7px max(8px,calc((100vw - 760px)/2)) calc(7px + env(safe-area-inset-bottom))!important}
 .public-profile-bottom-nav a{flex:1!important;max-width:120px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;padding:5px 2px!important;border-radius:10px!important;color:#667085!important;text-decoration:none!important;font-weight:800!important}
