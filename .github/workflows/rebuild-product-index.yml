@@ -1,4 +1,4 @@
-name: Rebuild Product Index
+name: Rebuild Product Index and Sitemap
 
 on:
   push:
@@ -6,7 +6,9 @@ on:
       - main
     paths:
       - 'content/products/**'
+      - 'content/blog/**'
       - 'build-product-index.js'
+      - 'generate-sitemap.js'
       - '.github/workflows/rebuild-product-index.yml'
 
 jobs:
@@ -21,20 +23,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Rebuild product index
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Rebuild product and blog indexes
         run: node build-product-index.js
 
-      - name: Commit and push generated product and blog indexes
+      - name: Generate sitemap
+        run: node generate-sitemap.js
+
+      - name: Commit and push generated indexes and sitemap
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add content/products/index.json content/products/catalog.json content/blog/index.json
+          git add content/products/index.json content/products/catalog.json content/blog/index.json sitemap.xml
 
           if git diff --cached --quiet; then
-            echo "Generated product and blog indexes unchanged, nothing to commit"
+            echo "Generated indexes and sitemap unchanged, nothing to commit"
             exit 0
           fi
 
-          git commit -m "chore: publish generated product catalogue [skip ci]"
+          git commit -m "chore: publish generated catalogue and sitemap [skip ci]"
           git push
